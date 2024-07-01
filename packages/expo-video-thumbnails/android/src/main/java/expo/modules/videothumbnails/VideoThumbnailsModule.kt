@@ -71,35 +71,36 @@ class VideoThumbnailsModule : Module() {
     }
   }
 
-  private class GetThumbnail(private val sourceFilename: String, private val videoOptions: VideoThumbnailOptions, private val context: Context) {
-    fun execute(): Bitmap? {
-      val retriever = MediaMetadataRetriever()
-
-      try {
-        if (URLUtil.isFileUrl(sourceFilename)) {
-          retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
-        } else if (URLUtil.isContentUrl(sourceFilename)) {
-          val fileUri = Uri.parse(sourceFilename)
-          context.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
-            FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
-              retriever.setDataSource(inputStream.fd)
+  private class GetThumbnail(
+    private val sourceFilename: String,
+    private val videoOptions: VideoThumbnailOptions,
+    private val context: Context
+  ) {
+    fun execute(): Bitmap? = MediaMetadataRetriever()
+      .use { retriever ->
+        try {
+          if (URLUtil.isFileUrl(sourceFilename)) {
+            retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
+          } else if (URLUtil.isContentUrl(sourceFilename)) {
+            val fileUri = Uri.parse(sourceFilename)
+            context.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
+              FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
+                retriever.setDataSource(inputStream.fd)
+              }
             }
+          } else {
+            retriever.setDataSource(sourceFilename, videoOptions.headers)
           }
-        } else {
-          retriever.setDataSource(sourceFilename, videoOptions.headers)
-        }
 
-        return retriever.getFrameAtTime(
-          videoOptions.time.toLong() * 1000,
-          MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-        )
-      } catch (e: Exception) {
-        Log.e(ERROR_TAG, "Unable to retrieve source file")
-        return null
-      } finally {
-        retriever.release()
+          return retriever.getFrameAtTime(
+            videoOptions.time.toLong() * 1000,
+            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+          )
+        } catch (e: Exception) {
+          Log.e(ERROR_TAG, "Unable to retrieve source file")
+          return null
+        }
       }
-    }
   }
 
   private fun isAllowedToRead(url: String): Boolean {

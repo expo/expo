@@ -7,6 +7,7 @@ import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -23,6 +24,7 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 import kotlin.experimental.and
 
 /**
@@ -160,9 +162,9 @@ object UpdatesUtils {
     }
   }
 
-  fun sendEventToAppContext(
+  fun sendEvent(
+    eventEmitter: EventEmitter?,
     shouldEmitJsEvents: Boolean,
-    weakAppContext: WeakReference<AppContext>?,
     logger: UpdatesLogger,
     eventName: String,
     eventType: String,
@@ -176,24 +178,19 @@ object UpdatesUtils {
       logger.error("Could not emit $eventName $eventType event; no subscribers registered.", UpdatesErrorCode.JSRuntimeError)
       return
     }
-    val appContext = weakAppContext?.get() ?: run {
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-      logger.error("Could not emit $eventName $eventType event; no app context was found.", UpdatesErrorCode.JSRuntimeError)
-      return
-    }
-    val updatesModule = appContext.registry.getModule("ExpoUpdates") ?: run {
-      eventsToSendToJS.add(Pair(eventName, eventParams))
-      logger.error("Could not emit $eventName $eventType event; no ExpoUpdates module was found.", UpdatesErrorCode.JSRuntimeError)
-      return
-    }
-    val eventEmitter = appContext.eventEmitter(updatesModule) ?: run {
+    if (eventEmitter == null) {
       eventsToSendToJS.add(Pair(eventName, eventParams))
       logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
       return
     }
 
     logger.info("Emitted event: name = $eventName, type = $eventType")
-    eventEmitter.emit(eventName, eventParams)
+    try {
+      eventEmitter.emit(eventName, eventParams)
+    } catch (e: Exception) {
+      logger.error("Could not emit $eventName $eventType event; ${e.message}", UpdatesErrorCode.JSRuntimeError)
+      eventsToSendToJS.add(Pair(eventName, eventParams))
+    }
   }
 
   fun sendQueuedEventsToAppContext(
@@ -276,5 +273,53 @@ object UpdatesUtils {
       // Throw if the second parse attempt fails
       throw e
     }
+  }
+
+  private val PARAMETER_PATTERN: Pattern by lazy {
+    val token = "([a-zA-Z0-9-!#$%&'*+.^_`{|}~]+)"
+    val quoted = "\"([^\"]*)\""
+    Pattern.compile(";\\s*(?:\\s*$token\\s*=\\s*(?:$token|$quoted))?\\s*")
+  }
+
+  /**
+   * Parse name parameter from content-disposition header value.
+   *
+   * Derived from Okhttp String.toMediaType
+   */
+  fun String.parseContentDispositionNameParameter(): String? {
+    val parameterNamesAndValues = mutableMapOf<String, String?>()
+    val parameter = PARAMETER_PATTERN.matcher(this)
+    var s = this.indexOf(';')
+    while (s < length) {
+      parameter.region(s, length)
+      require(parameter.lookingAt()) {
+        "Parameter is not formatted correctly: \"${substring(s)}\" for: \"$this\""
+      }
+
+      val name: String? = parameter.group(1)
+      if (name == null) {
+        s = parameter.end()
+        continue
+      }
+
+      val token: String? = parameter.group(2)
+      val value: String? = when {
+        token == null -> {
+          // Value is "double-quoted". That's valid and our regex group already strips the quotes.
+          parameter.group(3)
+        }
+        token.startsWith("'") && token.endsWith("'") && token.length > 2 -> {
+          // If the token is 'single-quoted' it's invalid! But we're lenient and strip the quotes.
+          token.substring(1, token.length - 1)
+        }
+        else -> token
+      }
+
+      if (!parameterNamesAndValues.containsKey(name)) {
+        parameterNamesAndValues[name] = value
+      }
+      s = parameter.end()
+    }
+    return parameterNamesAndValues["name"]
   }
 }

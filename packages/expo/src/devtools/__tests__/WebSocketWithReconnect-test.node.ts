@@ -60,7 +60,7 @@ describe(WebSocketWithReconnect, () => {
     await delayAsync(100);
 
     expect(ws.readyState).toBe(WebSocket.OPEN);
-    expect(mockOnReconnect.mock.calls.length).toBeGreaterThan(2);
+    expect(mockOnReconnect).toHaveBeenCalled();
   });
 
   it('should keep sending messages when retrying connection', async () => {

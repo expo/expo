@@ -6,12 +6,48 @@
 
 ### 🎉 New features
 
+- Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
+- Introduced `useEvent` hook for EventEmitter objects (e.g. native modules and shared objects). ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
+
+- Use `globalThis` instead of `global` in the URL implementation to fix issues in Jest. ([#29895](https://github.com/expo/expo/pull/29895) by [@tsapeta](https://github.com/tsapeta))
+- Fixed `WebSocket was closed before the connection was established` unhandled exceptions from WebSocketWithReconnect. ([#29904](https://github.com/expo/expo/pull/29904) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- Change `sideEffects` to use `src` folder. ([#29964](https://github.com/expo/expo/pull/29964) by [@EvanBacon](https://github.com/EvanBacon))
 - Keep using the legacy event emitter for the `DevLoadingView` in Expo Go. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
+- Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+
+## 51.0.15 - 2024-06-20
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.14 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.13 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.12 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.11 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.10 — 2024-06-05
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.9 — 2024-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 51.0.8 — 2024-05-16
 

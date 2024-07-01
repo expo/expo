@@ -1,8 +1,8 @@
 import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
-import { Terminal } from '~/ui/components/Snippet';
 
 ## Set up Android Studio
 
@@ -26,28 +26,28 @@ Open the **Android Studio** app, click **More Actions** and select **SDK Manager
 
 Open Android Studio, go to **Settings** &gt; **Languages & Frameworks** &gt; **Android SDK**. From the **SDK Platforms** tab, select the latest Android version (API level).
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android SDK Platforms"
   src="/static/images/android-studio/sdk-platforms.png"
-  style={{ maxWidth: 640 }}
+  className="max-w-[640px]"
 />
 
 Then, click on the **SDK Tools** tab and make sure you have at least one version of the **Android SDK Build-Tools** and **Android Emulator** installed.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android SDK build tools."
   src="/static/images/android-studio/build-tools.png"
-  style={{ maxWidth: 640 }}
+  className="max-w-[640px]"
 />
 </Step>
 
 <Step label="4">
 Copy or remember the path listed in the box that says **Android SDK Location**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android SDK location."
   src="/static/images/android-studio/sdk-location.png"
-  style={{ maxWidth: 640 }}
+  className="max-w-[640px]"
 />
 </Step>
 
@@ -110,10 +110,10 @@ Open **Android Studio Setup**. Under **Select components to install**, select An
 
 In the Android Studio Setup Wizard, under **Install Type**, select **Standard** and click **Next**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android Studio Setup Wizard asks for the type of installation."
   src="/static/images/android-studio/windows-install-type.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 </Step>
@@ -128,10 +128,10 @@ The Android Studio Setup Wizard will ask you to verify the settings, such as the
 
 In the next window, accept licenses for all available components.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android Studio Setup Wizard asks to accept various licenses to install the tools."
   src="/static/images/android-studio/windows-licenses.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 </Step>
@@ -140,10 +140,10 @@ In the next window, accept licenses for all available components.
 
 After the tools installation is complete, configure the `ANDROID_HOME` environment variable. Go to **Windows Control Panel** > **User Accounts** > **User Accounts** (again) > **Change my environment variables** and click **New** to create a new `ANDROID_HOME` user variable. The value of this variable will point to the path to your Android SDK:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Setting up ANDROID_HOME user variable."
   src="/static/images/android-studio/windows-android-home-variable.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 <Collapsible summary="How to find installed SDK location?">
@@ -156,10 +156,10 @@ By default, the Android SDK is installed at the following location:
 
 To find the location of the SDK in Android Studio manually, go to **Settings** > **Languages & Frameworks** > **Android SDK**. See the location next to **Android SDK Location**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android SDK location in Android Studio Settings."
   src="/static/images/android-studio/windows-android-sdk-location.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 </Collapsible>
@@ -180,10 +180,10 @@ The command will output all user environment variables. In this list, see if `AN
 
 To add platform-tools to the Path, go to **Windows Control Panel** > **User Accounts** > **User Accounts** (again) > **Change my environment variables** > **Path** > **Edit** > **New** and add the path to the platform-tools to the list as shown below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Setting up platform-tools user variable."
   src="/static/images/android-studio/windows-platform-tools-path.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 <Collapsible summary="How to find installed platform-tools location">

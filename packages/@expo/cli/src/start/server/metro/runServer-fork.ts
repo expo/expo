@@ -11,6 +11,7 @@ import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
 import { parse } from 'url';
+import type { WebSocketServer } from 'ws';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
@@ -29,7 +30,13 @@ export const runServer = async (
     waitForBundler = false,
     websocketEndpoints = {},
     watch,
-  }: RunServerOptions
+  }: RunServerOptions,
+  {
+    mockServer,
+  }: {
+    // Use a mock server object instead of creating a real server, this is used in export cases where we want to reuse codepaths but not actually start a server.
+    mockServer: boolean;
+  }
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
   // await earlyPortCheck(host, config.server.port);
 
@@ -49,7 +56,9 @@ export const runServer = async (
     watch,
   });
 
-  assert(typeof (middleware as any).use === 'function');
+  if (!mockServer) {
+    assert(typeof (middleware as any).use === 'function');
+  }
   const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
@@ -59,24 +68,58 @@ export const runServer = async (
   } else {
     httpServer = http.createServer(serverApp);
   }
+
+  httpServer.on('error', (error) => {
+    if ('code' in error && error.code === 'EADDRINUSE') {
+      // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
+      // about the process before throwing.
+      const info = getRunningProcess(config.server.port);
+      if (info) {
+        Log.error(
+          `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+        );
+      }
+    }
+
+    if (onError) {
+      onError(error);
+    }
+    end();
+  });
+
+  // Disable any kind of automatic timeout behavior for incoming
+  // requests in case it takes the packager more than the default
+  // timeout of 120 seconds to respond to a request.
+  httpServer.timeout = 0;
+
+  httpServer.on('close', () => {
+    end();
+  });
+
+  // Extend the close method to ensure all websocket servers are closed, and connections are terminated
+  const originalClose = httpServer.close.bind(httpServer);
+
+  httpServer.close = function closeHttpServer(callback) {
+    originalClose(callback);
+
+    // Close all websocket servers, including possible client connections (see: https://github.com/websockets/ws/issues/2137#issuecomment-1507469375)
+    for (const endpoint of Object.values(websocketEndpoints) as WebSocketServer[]) {
+      endpoint.close();
+      endpoint.clients.forEach((client) => client.terminate());
+    }
+
+    // Forcibly close active connections
+    this.closeAllConnections();
+    return this;
+  };
+
+  if (mockServer) {
+    return { server: httpServer, metro: metroServer };
+  }
+
   return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
     httpServer.on('error', (error) => {
-      if ('code' in error && error.code === 'EADDRINUSE') {
-        // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
-        // about the process before throwing.
-        const info = getRunningProcess(config.server.port);
-        if (info) {
-          Log.error(
-            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
-          );
-        }
-      }
-
-      if (onError) {
-        onError(error);
-      }
       reject(error);
-      end();
     });
 
     httpServer.listen(config.server.port, host, () => {
@@ -107,15 +150,6 @@ export const runServer = async (
       });
 
       resolve({ server: httpServer, metro: metroServer });
-    });
-
-    // Disable any kind of automatic timeout behavior for incoming
-    // requests in case it takes the packager more than the default
-    // timeout of 120 seconds to respond to a request.
-    httpServer.timeout = 0;
-
-    httpServer.on('close', () => {
-      end();
     });
   });
 };

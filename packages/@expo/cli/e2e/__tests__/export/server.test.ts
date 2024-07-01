@@ -14,7 +14,7 @@ describe('server-output', () => {
 
   beforeAll(
     async () => {
-      await ensurePortFreeAsync(8081);
+      console.time('export-server');
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
         cwd: projectRoot,
         env: {
@@ -25,6 +25,7 @@ describe('server-output', () => {
           EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
+      console.timeEnd('export-server');
     },
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
@@ -172,10 +173,11 @@ describe('server-output', () => {
     });
 
     it(`can serve up API route in array group`, async () => {
-      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
-      expect(getFiles()).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
-      expect(getFiles()).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
-      expect(getFiles()).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
+      const files = getFiles();
+      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
+      expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+      expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
       expect(
         await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())
@@ -185,7 +187,7 @@ describe('server-output', () => {
       const map = JSON.parse(
         await fs.readFile(
           path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
-          { encoding: 'utf8' },
+          { encoding: 'utf8' }
         )
       );
 
@@ -258,8 +260,9 @@ describe('server-output', () => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ hello: 'world' }),
-          }).then((r) => r.json());
-          expect(res).toEqual({ hello: 'world' });
+          });
+          expect(res.status).toBe(200);
+          expect(await res.json()).toEqual({ hello: 'world' });
         },
         5 * 1000
       );

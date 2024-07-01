@@ -4,9 +4,9 @@ sidebar_title: Tree shaking
 description: Learn about how Expo CLI optimizes production JavaScript bundles.
 ---
 
-import { Tab, Tabs } from '~/ui/components/Tabs';
-import { Step } from '~/ui/components/Step';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Tree shaking (also referred to as _dead code removal_) is a technique to remove unused code from the production bundle. Expo CLI employs different techniques, including [minification](/guides/minify), to improve startup time by removing unused code.
 
@@ -255,7 +255,7 @@ As of Expo SDK 50, unused imports and exports are not removed from the productio
 
 > As of Expo SDK 50, there are no built-in optimizations for barrel files.
 
-Barrel files export all of the modules in a directory. They are used to make importing modules easier. For example, a component-based icon library does the following:
+Barrel files export all the modules in a directory. They are used to make importing modules easier. For example, a component-based icon library does the following:
 
 ```js node_modules/<example library>/index.js
 export { default as IconA } from './IconA';

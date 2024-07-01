@@ -1,0 +1,55 @@
+name: Publish Canaries
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/publish-canaries.yml
+  schedule:
+    - cron: 0 1 * * * # Nightly at 1:00 AM UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-canaries:
+    runs-on: ubuntu-22.04
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🧶 Install modules in tools dir
+        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
+        run: yarn install --ignore-scripts --frozen-lockfile
+        working-directory: tools
+      - name: 📦 Publish canaries
+        run: ./bin/expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
+        env:
+          FORCE_COLOR: '2'
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+        with:
+          channel: '#expo-sdk'
+          status: ${{ job.status }}
+          fields: job,message,author,took
+          author_name: Publish Canaries

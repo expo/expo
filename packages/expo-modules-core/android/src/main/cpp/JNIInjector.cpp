@@ -9,7 +9,9 @@
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
 #include "JavaCallback.h"
+#include "JNIUtils.h"
 #include "types/FrontendConverterProvider.h"
+#include "decorators/JSDecoratorsBridgingObject.h"
 
 #if RN_FABRIC_ENABLED
 #include "FabricComponentsRegistry.h"
@@ -33,6 +35,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptFunction::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
     expo::JavaCallback::registerNatives();
+    expo::JNIUtils::registerNatives();
+
+    // Decorators
+    expo::JSDecoratorsBridgingObject::registerNatives();
+
 #if RN_FABRIC_ENABLED
     expo::FabricComponentsRegistry::registerNatives();
 #endif

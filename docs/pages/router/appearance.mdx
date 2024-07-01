@@ -4,8 +4,8 @@ description: Learn how to use a splash screen, fonts and images in your app that
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 There are three major elements that you can use to customize the appearance of your app:
 
@@ -126,16 +126,16 @@ function RootLayoutNav() {
 On a page component, you can use `<SafeAreaView>` component or `useSafeAreaInsets` hook to access the safe area insets and use them with `<View>`. The following example shows how to use `useSafeAreaInsets`:
 
 ```tsx app/index.tsx
-import { StyleSheet, View, Text } from "react-native";
-/* @info Import useSafeAreaInsets hook */import { useSafeAreaInsets } from "react-native-safe-area-context";/* @end */
+import { StyleSheet, View, Text } from 'react-native';
+/* @info Import useSafeAreaInsets hook */ import { useSafeAreaInsets } from 'react-native-safe-area-context'; /* @end */
 
 export default function TabOneScreen() {
-  /* @info */const insets = useSafeAreaInsets();/* @end */
+  /* @info */ const insets = useSafeAreaInsets(); /* @end */
 
   return (
     /* @info You can use "insets.top" to apply the top padding from the useSafeAreaInsets() hook.*/
     <View style={[styles.container, { paddingTop: insets.top }]}>
-    /* @end */
+      /* @end */
       <Text style={styles.title}>Home page</Text>
     </View>
   );

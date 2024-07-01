@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import assert from 'assert';
+import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -16,7 +16,6 @@ import { getVirtualFaviconAssetsAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
-import { DevServerManager } from '../start/server/DevServerManager';
 import {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
@@ -26,7 +25,6 @@ import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
-import { getFreePortAsync } from '../utils/port';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -41,8 +39,10 @@ type Options = {
   entryPoint?: string;
   clear: boolean;
   routerRoot: string;
+  reactCompiler: boolean;
   maxWorkers?: number;
   isExporting: boolean;
+  exp?: ExpoConfig;
 };
 
 type HtmlRequestLocation = {
@@ -53,49 +53,6 @@ type HtmlRequestLocation = {
   /** The runtime route node object, used to associate async modules with the static HTML. */
   route: RouteNode;
 };
-
-/** @private */
-export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
-  Log.log(
-    `Static rendering is enabled. ` +
-      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
-  );
-
-  // Useful for running parallel e2e tests in CI.
-  const port = await getFreePortAsync(8082);
-
-  // TODO: Prevent starting the watcher.
-  const devServerManager = new DevServerManager(projectRoot, {
-    minify: options.minify,
-    mode: options.mode,
-    port,
-    isExporting: true,
-    location: {},
-    resetDevServer: options.clear,
-    maxWorkers: options.maxWorkers,
-  });
-
-  await devServerManager.startAsync([
-    {
-      type: 'metro',
-      options: {
-        port,
-        mode: options.mode,
-        location: {},
-        isExporting: true,
-        minify: options.minify,
-        resetDevServer: options.clear,
-        maxWorkers: options.maxWorkers,
-      },
-    },
-  ]);
-
-  try {
-    return await exportFromServerAsync(projectRoot, devServerManager, options);
-  } finally {
-    await devServerManager.stopAsync();
-  }
-}
 
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
@@ -176,11 +133,24 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
 }
 
 /** Perform all fs commits */
-async function exportFromServerAsync(
+export async function exportFromServerAsync(
   projectRoot: string,
-  devServerManager: DevServerManager,
-  { outputDir, baseUrl, exportServer, includeSourceMaps, routerRoot, files = new Map() }: Options
+  devServer: MetroBundlerDevServer,
+  {
+    outputDir,
+    baseUrl,
+    exportServer,
+    includeSourceMaps,
+    routerRoot,
+    files = new Map(),
+    exp,
+  }: Options
 ): Promise<ExportAssetMap> {
+  Log.log(
+    `Static rendering is enabled. ` +
+      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
+  );
+
   const platform = 'web';
   const isExporting = true;
   const appDir = path.join(projectRoot, routerRoot);
@@ -188,10 +158,8 @@ async function exportFromServerAsync(
     outputDir,
     baseUrl,
     files,
+    exp,
   });
-
-  const devServer = devServerManager.getDefaultDevServer();
-  assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({
@@ -235,7 +203,7 @@ async function exportFromServerAsync(
   if (resources.assets) {
     // TODO: Collect files without writing to disk.
     // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
-    await persistMetroAssetsAsync(resources.assets, {
+    await persistMetroAssetsAsync(projectRoot, resources.assets, {
       files,
       platform,
       outputDirectory: outputDir,
@@ -426,6 +394,7 @@ async function exportApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     includeSourceMaps,
+    platform: 'web',
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);

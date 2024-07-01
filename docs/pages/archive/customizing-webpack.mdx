@@ -61,14 +61,13 @@ module.exports = async function (env, argv) {
 
 ## Editing static files
 
-You can also use `npx expo customize` to generate the static project files: **index.html**, **serve.json**, and so on. These can be used to customize your project more familiarly.
+You can also use `npx expo customize` to generate static project files such as **index.html** and so on. These can be used to customize your project more familiarly.
 
-All of the files you select from the terminal prompt will be copied to a **web** directory in your project's root directory. Think of this directory as **public** in Create React App. The **web** is used instead of **public** because Expo webpack is web-only, the static directory does not work for Android or iOS apps. For mobile platforms, the platform-specific project files are included in **android** and **ios** directories.
+All the files you select from the terminal prompt will be copied to a **web** directory in your project's root directory. Think of this directory as **public** in Create React App. The **web** is used instead of **public** because Expo webpack is web-only, the static directory does not work for Android or iOS apps. For mobile platforms, the platform-specific project files are included in **android** and **ios** directories.
 
-Deleting any of these files will cause Expo webpack to fallback to their respective default copies.
+Deleting any of these files will cause Expo webpack to fall back to their respective default copies.
 
 ### Why
 
 - Customizing the favicon icon.
 - Adding third-party API code to the `<head/>` in your **index.html**.
-- Changing the caching policy in the **serve.json** file.

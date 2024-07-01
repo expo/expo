@@ -8,7 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- Fix the Vercel adapter's `writeHead` call in the `respond` helper failing to pass raw headers ([#29616](https://github.com/expo/expo/pull/29616) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Reduce side-effects and imports. ([#29647](https://github.com/expo/expo/pull/29647) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade to `@remix-run/node@2.10.0` and enable undici globals. ([#30070](https://github.com/expo/expo/pull/30070) by [@byCedric](https://github.com/byCedric))
+
+## 0.4.3 - 2024-06-10
+
+### 🎉 New features
+
+- Add assertions for `NODE_OPTIONS` and Node.js versions. ([#29155](https://github.com/expo/expo/pull/29155) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fix `ExpoResponse` using incorrect object. ([#29154](https://github.com/expo/expo/pull/29154) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.4.2 — 2024-04-23
 

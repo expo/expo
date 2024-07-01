@@ -11,8 +11,8 @@ Provides access to the system's UI for selecting images and videos from the phon
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/imagepicker.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/imagepicker/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/imagepicker/)
 
 # Installation in managed Expo projects
 
@@ -26,6 +26,19 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ```
 npx expo install expo-image-picker
+```
+
+### Configure for Android
+
+> This is only required for usage in bare React Native apps.
+
+This package automatically adds the `CAMERA`, `READ_EXTERNAL_STORAGE`, and `WRITE_EXTERNAL_STORAGE` permissions. They are used when picking images from the camera directly, or from the camera roll.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
 ### Configure for iOS
@@ -44,19 +57,6 @@ Add `NSPhotoLibraryUsageDescription`, `NSCameraUsageDescription`, and `NSMicroph
 ```
 
 Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-> This is only required for usage in bare React Native apps.
-
-This package automatically adds the `CAMERA`, `READ_EXTERNAL_STORAGE`, and `WRITE_EXTERNAL_STORAGE` permissions. They are used when picking images from the camera directly, or from the camera roll.
-
-```xml
-<!-- Added permissions -->
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
 
 ## Config Plugin
 

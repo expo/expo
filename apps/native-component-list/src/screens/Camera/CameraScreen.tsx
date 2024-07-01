@@ -139,7 +139,7 @@ export default class CameraScreen extends React.Component<object, State> {
     const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
     let pictureSizeId = 0;
     if (Platform.OS === 'ios') {
-      pictureSizeId = pictureSizes.indexOf('High');
+      pictureSizeId = pictureSizes.indexOf('Photo');
     } else {
       pictureSizeId = pictureSizes.length - 1;
     }
@@ -175,7 +175,7 @@ export default class CameraScreen extends React.Component<object, State> {
       this.camera?.current?.stopRecording();
       return Promise.resolve();
     } else {
-      return await this.camera?.current?.recordAsync();
+      return this.camera?.current?.recordAsync();
     }
   };
 
@@ -372,6 +372,7 @@ export default class CameraScreen extends React.Component<object, State> {
         mode={this.state.mode}
         mute={this.state.mute}
         zoom={this.state.zoom}
+        ratio="4:3"
         videoQuality="2160p"
         onMountError={this.handleMountError}
         barcodeScannerSettings={{

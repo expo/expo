@@ -3,9 +3,10 @@ title: Subscriptions, plans, and add-ons
 description: In-depth guide on available Expo Application Services (EAS) plans and how they work, usage-based pricing and add-ons.
 ---
 
+import { CreditCard02Icon } from '@expo/styleguide-icons/outline/CreditCard02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { CreditCard02Icon } from '@expo/styleguide-icons';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 [Expo Application Services (EAS)](/eas/) offers [free access](https://expo.dev/eas/fair-use#commercial-usage) to a limited quantity of low-priority builds on [EAS Build](/build/introduction/) and free updates with [EAS Update](/eas-update/introduction/). These limits reset monthly.
 
@@ -17,10 +18,10 @@ This page lists different subscription-based plans and available add-ons.
 
 Subscriptions are billed monthly and are priced the same worldwide (pre-tax). To see your account's current subscribed plan, go to [your account's Billing](https://expo.dev/settings/billing), and under **Plan**, you will find details of your current plan.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Billing page in Expo dashboard displays the current plan for an Organization account."
   src="/static/images/billing/plan-01.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 You can also cancel a subscription at any time. See [Cancel a plan](/billing/manage/#cancel-a-plan) for more information.

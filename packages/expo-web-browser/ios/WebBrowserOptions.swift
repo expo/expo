@@ -29,7 +29,7 @@ struct AuthSessionOptions: Record {
   var preferEphemeralSession: Bool = false
 }
 
-enum DismissButtonStyle: String, EnumArgument {
+enum DismissButtonStyle: String, Enumerable {
   case done
   case close
   case cancel
@@ -46,7 +46,7 @@ enum DismissButtonStyle: String, EnumArgument {
   }
 }
 
-internal enum PresentationStyle: String, EnumArgument {
+internal enum PresentationStyle: String, Enumerable {
   case fullScreen
   case pageSheet
   case formSheet

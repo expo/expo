@@ -131,7 +131,7 @@ export async function openBrowserAsync(url, browserParams = {}) {
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not avaiable.
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
 export function dismissBrowser() {
@@ -201,7 +201,14 @@ export async function openAuthSessionAsync(url, redirectUrl, options = {}) {
         return _openAuthSessionPolyfillAsync(url, redirectUrl, options);
     }
 }
-// @docsMissing
+/**
+ * Dismisses the current authentication session. On web, it will close the popup window associated with auth process.
+ *
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ *
+ * @platform ios
+ * @platform web
+ */
 export function dismissAuthSession() {
     if (_authSessionIsNativelySupported()) {
         if (!ExponentWebBrowser.dismissAuthSession) {
@@ -211,7 +218,7 @@ export function dismissAuthSession() {
     }
     else {
         if (!ExponentWebBrowser.dismissBrowser) {
-            throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
+            throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
         }
         ExponentWebBrowser.dismissBrowser();
     }
@@ -226,7 +233,7 @@ export function dismissAuthSession() {
  * @return Returns an object with message about why the redirect failed or succeeded:
  *
  * If `type` is set to `failed`, the reason depends on the message:
- * - `Not supported on this platform`: If the platform doesn't support this method (iOS, Android).
+ * - `Not supported on this platform`: If the platform doesn't support this method (Android, iOS).
  * - `Cannot use expo-web-browser in a non-browser environment`: If the code was executed in an SSR
  *   or node environment.
  * - `No auth session is currently in progress`: (the cached state wasn't found in local storage).

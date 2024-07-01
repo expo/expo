@@ -32,9 +32,11 @@ async function fetchSchemaAsync(version: string): Promise<Record<string, any>> {
 }
 
 (async () => {
+  const programPath = program.getOptionValue('path');
   let schema = {};
-  if (program.path && typeof program.path === 'string') {
-    const filePath = path.resolve(program.path.trim());
+
+  if (programPath && typeof programPath === 'string') {
+    const filePath = path.resolve(programPath.trim());
     console.log(`Using local file: "${filePath}"`);
     try {
       schema = (await fs.readJSON(filePath)).schema;

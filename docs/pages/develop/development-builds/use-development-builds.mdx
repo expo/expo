@@ -4,8 +4,8 @@ description: Learn how to use development builds for a project.
 sidebar_title: Use a build
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 Usually, creating a new native build from scratch takes long enough that you'll be tempted to switch tasks and lose your focus. However, with the development build installed on your device or an emulator/simulator, you won't have to wait for the native build process until you [change the underlying native code](#rebuild-a-development-build) that powers your app.
 
@@ -34,10 +34,10 @@ To open the project inside your development client:
 
 If you launch the development build from your device's Home screen, you will see your launcher screen, which looks similar to the following:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The launcher screen of a development build"
   src="/static/images/dev-client/launcher-screen.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 If a bundler is detected on your local network, or if you have signed in to an Expo account in both Expo CLI and your development build, you can connect to it directly from this screen. Otherwise, you can connect by scanning the QR code displayed by the Expo CLI.

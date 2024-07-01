@@ -4,7 +4,9 @@ sidebar_title: Authentication
 description: How to implement authentication and protect routes with Expo Router.
 ---
 
-import { Lock01Icon, LockUnlocked01Icon } from '@expo/styleguide-icons';
+import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
+import { LockUnlocked01Icon } from '@expo/styleguide-icons/outline/LockUnlocked01Icon';
+
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
@@ -42,7 +44,7 @@ To follow the above example, set up a [React Context provider](https://react.dev
 
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
-```jsx ctx.tsx
+```tsx ctx.tsx
 import React from 'react';
 import { useStorageState } from './useStorageState';
 
@@ -95,7 +97,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
 The following code snippet is a basic hook that persists tokens securely on native with [`expo-secure-store`](/versions/latest/sdk/securestore) and in local storage on web.
 
 {/* prettier-ignore */}
-```ts useStorageState.ts
+```tsx useStorageState.ts
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -282,7 +284,7 @@ You now have an app that can present a loading state while it checks the initial
 
 ## Alternative loading states
 
-With Expo Router, something must be rendered to the screen while loading the initial auth state. In the example above, the app layout renders a loading message. Alternatively, you can make the `index` route a loading state, and move the initial route to something such as `/home`, which is similar to how Twitter works.
+With Expo Router, something must be rendered to the screen while loading the initial auth state. In the example above, the app layout renders a loading message. Alternatively, you can make the `index` route a loading state and move the initial route to something such as `/home`, which is similar to how X works.
 
 ## Modals and per-route authentication
 
@@ -329,7 +331,7 @@ export default function AppLayout() {
 
 You may encounter the following error when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/advanced/root-layout).
 
-```
+```text
 Error: Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.
 ```
 

@@ -11,8 +11,8 @@ Allows scanning variety of supported barcodes both as standalone module and as e
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/bar-code-scanner.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/bar-code-scanner/)
 
 # Installation in managed Expo projects
 
@@ -28,6 +28,15 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-barcode-scanner
 ```
 
+### Configure for Android
+
+This package automatically adds the `CAMERA` permission to your app.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.CAMERA" />
+```
+
 ### Configure for iOS
 
 Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` key to your `Info.plist`:
@@ -41,14 +50,6 @@ Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` key to your `I
 
 Run `npx pod-install` after installing the npm package.
 
-### Configure for Android
-
-This package automatically adds the `CAMERA` permission to your app.
-
-```xml
-<!-- Added permissions -->
-<uses-permission android:name="android.permission.CAMERA" />
-```
 
 # Contributing
 

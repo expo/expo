@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- Add support for passing `platform` and `isServer` to the Babel caller to support `process.env.EXPO_OS` and other standard Expo CLI transforms in Jest. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
+- Update `glob@7` to `glob@10`. ([#29931](https://github.com/expo/expo/pull/29931) by [@byCedric](https://github.com/byCedric))
+
+## 3.5.2 - 2024-05-29
+
+### 🎉 New features
+
+- Add support for building scripts directory (similar to cli, utils, and plugins). ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
 
 ## 3.5.1 — 2024-04-23
 

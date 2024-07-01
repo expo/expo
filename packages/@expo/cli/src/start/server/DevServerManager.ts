@@ -35,6 +35,18 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
+  static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
+    const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    await devServerManager.startAsync([
+      {
+        type: 'metro',
+        options: startOptions,
+      },
+    ]);
+    return devServerManager;
+  }
+
   private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
   public readonly devtoolsPluginManager: DevToolsPluginManager;
 
@@ -45,7 +57,9 @@ export class DevServerManager {
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.notifier = this.watchBabelConfig();
+    if (!options.isExporting) {
+      this.notifier = this.watchBabelConfig();
+    }
     this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
   }
 
@@ -216,10 +230,15 @@ export class DevServerManager {
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
       this.notifier?.stopObserving(),
-      // Stop all dev servers
-      ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
       AndroidDebugBridge.getServer().stopAsync(),
+      // Stop all dev servers
+      ...devServers.map((server) =>
+        server.stopAsync().catch((error) => {
+          Log.error(`Failed to stop dev server (bundler: ${server.name})`);
+          Log.exception(error);
+        })
+      ),
     ]);
   }
 }

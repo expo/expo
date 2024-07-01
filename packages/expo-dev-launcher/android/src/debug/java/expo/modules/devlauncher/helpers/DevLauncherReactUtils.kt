@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.helpers
 
-import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -19,7 +18,6 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.interfaces.devmenu.ReactHostWrapper
-import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
@@ -237,25 +235,6 @@ fun findDevMenuPackage(): ReactPackage? {
     clazz.newInstance() as? ReactPackage
   } catch (e: Exception) {
     null
-  }
-}
-
-fun findPackagesWithDevMenuExtension(application: Application): List<ReactPackage> {
-  return try {
-    val clazz = Class.forName("com.facebook.react.PackageList")
-    val ctor = clazz.getConstructor(Application::class.java)
-    val packageList = ctor.newInstance(application)
-
-    val getPackagesMethod = packageList.javaClass.getDeclaredMethod("getPackages")
-    val packages = getPackagesMethod.invoke(packageList) as List<*>
-    return packages
-      .filterIsInstance<ReactPackage>()
-      .filter {
-        it.javaClass.isAnnotationPresent(ContainsDevMenuExtension::class.java)
-      }
-  } catch (e: Exception) {
-    Log.e("DevLauncher", "Unable find packages with dev menu extension.`.", e)
-    emptyList()
   }
 }
 

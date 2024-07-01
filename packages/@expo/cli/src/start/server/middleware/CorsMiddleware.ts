@@ -20,8 +20,9 @@ export function createCorsMiddleware(exp: ExpoConfig) {
 
   return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (typeof req.headers.origin === 'string') {
-      const { hostname } = new URL(req.headers.origin);
-      if (!allowedHostnames.includes(hostname)) {
+      const { host, hostname } = new URL(req.headers.origin);
+      const isSameOrigin = host === req.headers.host;
+      if (!isSameOrigin && !allowedHostnames.includes(hostname)) {
         next(
           new Error(
             `Unauthorized request from ${req.headers.origin}. ` +

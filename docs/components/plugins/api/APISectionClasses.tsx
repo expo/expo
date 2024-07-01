@@ -1,3 +1,4 @@
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
 import {
@@ -23,7 +24,7 @@ import {
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, P, CODE, MONOSPACE, DEMI } from '~/ui/components/Text';
+import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -75,7 +76,7 @@ const remapClass = (clx: ClassDefinitionData) => {
 
 const renderClass = (
   clx: ClassDefinitionData,
-  options: { exposeAllClassPropsInSidebar: boolean; baseNestingLevelForClassProps: number },
+  options: { hasOnlyOneClass: boolean },
   sdkVersion: string
 ): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
@@ -85,6 +86,8 @@ const renderClass = (
     ?.filter(child => isMethod(child, isSensor))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
+
+  const linksNestingLevel = DEFAULT_BASE_NESTING_LEVEL + 2 + (options.hasOnlyOneClass ? 1 : 0);
 
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
@@ -96,12 +99,18 @@ const renderClass = (
         </MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
-        <P className="mb-3">
-          <DEMI theme="secondary">Type: </DEMI>
-          {type ? <CODE>{resolveTypeName(type, sdkVersion)}</CODE> : 'Class'}
+        <CALLOUT className="mb-3">
+          <SPAN theme="secondary" weight="medium">
+            Type:{' '}
+          </SPAN>
+          {type ? (
+            <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+          ) : (
+            <SPAN theme="secondary">Class</SPAN>
+          )}
           {extendedTypes?.length && (
             <>
-              <span> extends </span>
+              <SPAN theme="secondary"> extends </SPAN>
               {extendedTypes.map(extendedType => (
                 <CODE key={`extends-${extendedType.name}`}>
                   {resolveTypeName(extendedType, sdkVersion)}
@@ -111,7 +120,7 @@ const renderClass = (
           )}
           {implementedTypes?.length && (
             <>
-              <span> implements </span>
+              <SPAN theme="secondary"> implements </SPAN>
               {implementedTypes.map(implementedType => (
                 <CODE key={`implements-${implementedType.name}`}>
                   {resolveTypeName(implementedType, sdkVersion)}
@@ -119,29 +128,40 @@ const renderClass = (
               ))}
             </>
           )}
-        </P>
+        </CALLOUT>
       )}
-      <CommentTextBlock comment={comment} includePlatforms={false} />
-      {returnComment && (
-        <>
-          <BoxSectionHeader text="Returns" />
-          <ReactMarkdown components={mdComponents}>
-            {getCommentContent(returnComment.content)}
-          </ReactMarkdown>
-        </>
-      )}
+      <CommentTextBlock
+        comment={comment}
+        includePlatforms={false}
+        afterContent={
+          returnComment && (
+            <div className="flex flex-col gap-2 items-start">
+              <div className="flex flex-row gap-2 items-center">
+                <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+                <CALLOUT tag="span" theme="secondary" weight="medium">
+                  Returns
+                </CALLOUT>
+              </div>
+              <ReactMarkdown components={mdComponents}>
+                {getCommentContent(returnComment.content)}
+              </ReactMarkdown>
+            </div>
+          )
+        }
+      />
       {properties?.length ? (
         <>
           <BoxSectionHeader
             text={`${name} Properties`}
-            exposeInSidebar={options.exposeAllClassPropsInSidebar}
-            baseNestingLevel={options.baseNestingLevelForClassProps}
+            className="!text-secondary !font-medium"
+            exposeInSidebar={options.hasOnlyOneClass}
+            baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
           <div>
             {properties.map(property =>
               renderProp(property, sdkVersion, property?.defaultValue, {
-                exposeInSidebar: options.exposeAllClassPropsInSidebar,
-                baseNestingLevel: options.baseNestingLevelForClassProps + 1,
+                exposeInSidebar: true,
+                baseNestingLevel: linksNestingLevel,
               })
             )}
           </div>
@@ -151,13 +171,14 @@ const renderClass = (
         <>
           <BoxSectionHeader
             text={`${name} Methods`}
-            exposeInSidebar={options.exposeAllClassPropsInSidebar}
-            baseNestingLevel={options.baseNestingLevelForClassProps}
+            className="!text-secondary !font-medium !text-sm"
+            exposeInSidebar={options.hasOnlyOneClass}
+            baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
           {methods.map(method =>
             renderMethod(method, {
-              exposeInSidebar: options.exposeAllClassPropsInSidebar,
-              baseNestingLevel: options.baseNestingLevelForClassProps + 1,
+              exposeInSidebar: true,
+              baseNestingLevel: linksNestingLevel,
               sdkVersion,
             })
           )}
@@ -167,13 +188,9 @@ const renderClass = (
   );
 };
 
-const APISectionClasses = ({ data, sdkVersion, ...props }: APISectionClassesProps) => {
+const APISectionClasses = ({ data, sdkVersion }: APISectionClassesProps) => {
   if (data?.length) {
-    const hasMultipleClasses = data.length > 1;
-    const exposeAllClassPropsInSidebar = props.exposeAllClassPropsInSidebar ?? !hasMultipleClasses;
-    const baseNestingLevelForClassProps = hasMultipleClasses
-      ? DEFAULT_BASE_NESTING_LEVEL + 2
-      : DEFAULT_BASE_NESTING_LEVEL;
+    const hasOnlyOneClass = data.length === 1;
     return (
       <>
         <H2>Classes</H2>
@@ -181,8 +198,7 @@ const APISectionClasses = ({ data, sdkVersion, ...props }: APISectionClassesProp
           renderClass(
             remapClass(clx),
             {
-              exposeAllClassPropsInSidebar,
-              baseNestingLevelForClassProps,
+              hasOnlyOneClass,
             },
             sdkVersion
           )

@@ -62,7 +62,10 @@ export async function graphToSerialAssetsAsync(
   config: MetroConfig,
   serializeChunkOptions: SerializeChunkOptions,
   ...props: SerializerParameters
-): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
+): Promise<{
+  artifacts: SerialAsset[] | null;
+  assets: AssetData[];
+}> {
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
@@ -173,7 +176,10 @@ export async function graphToSerialAssetsAsync(
     publicPath,
   })) as AssetData[];
 
-  return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
+  return {
+    artifacts: [...jsAssets, ...cssDeps],
+    assets: metroAssets,
+  };
 }
 
 export class Chunk {
@@ -224,7 +230,7 @@ export class Chunk {
           },
           sourceMapUrl: undefined,
           debugId: undefined,
-        });
+        }).code;
   }
 
   private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
@@ -258,7 +264,7 @@ export class Chunk {
       ...options,
     });
 
-    return bundleToString(jsSplitBundle).code;
+    return { code: bundleToString(jsSplitBundle).code, paths: jsSplitBundle.paths };
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
@@ -314,7 +320,8 @@ export class Chunk {
       return this.options.sourceMapUrl ?? null;
     }
 
-    const isAbsolute = this.getPlatform() !== 'web';
+    const platform = this.getPlatform();
+    const isAbsolute = platform !== 'web';
 
     const baseUrl = getBaseUrlOption(this.graph, this.options);
     const filename = this.getFilenameForConfig(serializerConfig);
@@ -326,6 +333,7 @@ export class Chunk {
       '.map';
 
     let adjustedSourceMapUrl = this.options.sourceMapUrl;
+
     // Metro has lots of issues...
     if (this.options.sourceMapUrl.startsWith('//localhost')) {
       adjustedSourceMapUrl = 'http:' + this.options.sourceMapUrl;
@@ -340,6 +348,10 @@ export class Chunk {
 
       return parsed.pathname;
     } catch (error) {
+      // NOTE: export:embed that don't use baseUrl will use file paths instead of URLs.
+      if (!this.options.dev && isAbsolute) {
+        return adjustedSourceMapUrl;
+      }
       console.error(
         `Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`,
         error
@@ -402,8 +414,26 @@ export class Chunk {
         // Provide a list of module paths that can be used for matching chunks to routes.
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
+        paths: jsCode.paths,
+        reactClientReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'reactClientReference' in output.data &&
+                    typeof output.data.reactClientReference === 'string'
+                  ) {
+                    return output.data.reactClientReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
       },
-      source: jsCode,
+      source: jsCode.code,
     };
 
     const assets: SerialAsset[] = [jsAsset];

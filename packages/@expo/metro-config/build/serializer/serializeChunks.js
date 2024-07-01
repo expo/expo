@@ -119,7 +119,10 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         projectRoot: options.projectRoot,
         publicPath,
     }));
-    return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
+    return {
+        artifacts: [...jsAssets, ...cssDeps],
+        assets: metroAssets,
+    };
 }
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 class Chunk {
@@ -167,7 +170,7 @@ class Chunk {
                 },
                 sourceMapUrl: undefined,
                 debugId: undefined,
-            });
+            }).code;
     }
     getFilenameForConfig(serializerConfig) {
         return this.getFilename(this.getStableChunkSource(serializerConfig));
@@ -189,7 +192,7 @@ class Chunk {
             computedAsyncModulePaths: null,
             ...options,
         });
-        return (0, bundleToString_1.default)(jsSplitBundle).code;
+        return { code: (0, bundleToString_1.default)(jsSplitBundle).code, paths: jsSplitBundle.paths };
     }
     hasAbsolutePath(absolutePath) {
         return [...this.deps].some((module) => module.path === absolutePath);
@@ -230,7 +233,8 @@ class Chunk {
         if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
             return this.options.sourceMapUrl ?? null;
         }
-        const isAbsolute = this.getPlatform() !== 'web';
+        const platform = this.getPlatform();
+        const isAbsolute = platform !== 'web';
         const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options);
         const filename = this.getFilenameForConfig(serializerConfig);
         const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
@@ -251,6 +255,10 @@ class Chunk {
             return parsed.pathname;
         }
         catch (error) {
+            // NOTE: export:embed that don't use baseUrl will use file paths instead of URLs.
+            if (!this.options.dev && isAbsolute) {
+                return adjustedSourceMapUrl;
+            }
             console.error(`Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`, error);
             return null;
         }
@@ -293,8 +301,22 @@ class Chunk {
                 // Provide a list of module paths that can be used for matching chunks to routes.
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),
+                paths: jsCode.paths,
+                reactClientReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('reactClientReference' in output.data &&
+                                typeof output.data.reactClientReference === 'string') {
+                                return output.data.reactClientReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
             },
-            source: jsCode,
+            source: jsCode.code,
         };
         const assets = [jsAsset];
         const mutateSourceMapWithDebugId = (sourceMap) => {

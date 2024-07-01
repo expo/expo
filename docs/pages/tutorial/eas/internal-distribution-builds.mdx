@@ -4,13 +4,13 @@ sidebar_title: Internal distribution build
 description: Learn about what are internal distribution builds, why we need them, and how to create them.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
-import { ProgressTracker } from '~/ui/components/ProgressTracker';
 
 In this chapter, we'll learn how to set up [internal distribution builds](/guides/sharing-preview-releases/#internal-distribution).
 
@@ -53,7 +53,7 @@ From our initial setup in **eas.json**, we already have a default configuration 
 }
 ```
 
-This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has a `distribution` property whose value is set to `internal`. This value allows us to share our build URLs with anyone so they to install it on their device and do not require a development server to run the app.
+This is all we need to create our first internal distribution build. The `preview` build profile from the above snippet has a `distribution` property whose value is set to `internal`. This value allows us to share our build URLs with anyone so they can install it on their device and do not require a development server to run the app.
 
 As discussed in the previous chapters, for non-app store builds, Android requires **.apk** and iOS needs **.ipa** formats. This applies to internal distribution builds as well. The `distribution` when set to `internal`, automatically creates the app binary in these file formats for devices.
 
@@ -73,10 +73,10 @@ As discussed in the previous chapters, for non-app store builds, Android require
 
 - This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/android-preview-build.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 <Collapsible summary="No Android app signing credentials required for internal distribution">
@@ -105,10 +105,10 @@ Apple has stricter rules for app distribution on iOS devices. We need an ad hoc 
 
 - This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="iOS preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/ios-preview-build.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 <Collapsible summary={<>Alternative method to register devices using <CODE>eas build:resign</CODE></>}>
@@ -141,10 +141,10 @@ Once the build finishes, the Build artifact section gets updated, indicating tha
 - Click **Install** under the Build artifact section to display the **Install on a test device** popup.
 - Copy the link from **Send a link to a device** section and send it to the test device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Internal distribution build details and install link in Expo dashboard"
   src="/static/images/tutorial/eas/distribution-link.png"
-  style={{ maxWidth: 450 }}
+  className="max-w-[450px]"
 />
 
 </Collapsible>
@@ -161,18 +161,18 @@ Since we have already set up multiple app variants, we can see both the developm
 
 - On Android:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Internal distribution build details and install link in Expo dashboard for Android"
   src="/static/images/tutorial/eas/android-multi-variants-installed.png"
-  style={{ maxWidth: 270 }}
+  className="max-w-[270px]"
 />
 
 - On iOS:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Internal distribution build details and install link in Expo dashboard for iOS"
   src="/static/images/tutorial/eas/ios-multi-variants-installed.png"
-  style={{ maxWidth: 250 }}
+  className="max-w-[250px]"
 />
 
 </Step>

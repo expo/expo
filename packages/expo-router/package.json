@@ -87,8 +87,10 @@
   "devDependencies": {
     "@react-navigation/drawer": "^6.5.0",
     "@testing-library/jest-native": "^5.4.2",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/react-native": "^12.0.1",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/react-native": "^12.5.1",
+    "immer": "^10.1.1",
+    "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
     "tsd": "^0.28.1"
   },
   "dependencies": {
@@ -98,8 +100,10 @@
     "@react-navigation/bottom-tabs": "~6.5.7",
     "@react-navigation/native": "~6.1.6",
     "@react-navigation/native-stack": "~6.9.12",
+    "client-only": "^0.0.1",
     "expo-splash-screen": "0.27.4",
     "react-native-helmet-async": "2.0.4",
-    "schema-utils": "^4.0.1"
+    "schema-utils": "^4.0.1",
+    "server-only": "^0.0.1"
   }
 }

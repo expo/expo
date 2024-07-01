@@ -226,9 +226,11 @@ export abstract class BundlerDevServer {
     ) {
       await this._startTunnelAsync();
     }
-    await this.startDevSessionAsync();
 
-    this.watchConfig();
+    if (!options.isExporting) {
+      await this.startDevSessionAsync();
+      this.watchConfig();
+    }
   }
 
   protected abstract getConfigModuleIds(): string[];
@@ -328,11 +330,16 @@ export abstract class BundlerDevServer {
           debug(`Stopping dev server (bundler: ${this.name})`);
 
           if (this.instance?.server) {
+            // Check if server is even running.
             this.instance.server.close((error) => {
               debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
-                reject(error);
+                if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
+                  resolve();
+                } else {
+                  reject(error);
+                }
               } else {
                 resolve();
               }
@@ -379,6 +386,18 @@ export abstract class BundlerDevServer {
       return `${location.protocol}://localhost:${location.port}`;
     }
     return location.url ?? null;
+  }
+
+  public getDevServerUrlOrAssert(options: { hostType?: 'localhost' } = {}): string {
+    const instance = this.getDevServerUrl(options);
+    if (!instance) {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the dev server URL before the server has started - bundler[${this.name}]`
+      );
+    }
+
+    return instance;
   }
 
   /** Get the base URL for JS inspector */

@@ -2,6 +2,7 @@ export var AppOwnership;
 (function (AppOwnership) {
     /**
      * The experience is running inside of the Expo Go app.
+     * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
      */
     AppOwnership["Expo"] = "expo";
 })(AppOwnership || (AppOwnership = {}));

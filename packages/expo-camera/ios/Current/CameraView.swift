@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
@@ -163,6 +163,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       isSessionPaused = false
       sessionQueue.async {
         self.session.startRunning()
+        self.enableTorch()
       }
     }
   }
@@ -266,6 +267,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.barcodeScanner.maybeStartBarcodeScanning()
       self.session.startRunning()
       self.onCameraReady()
+      self.enableTorch()
     }
   }
 
@@ -359,7 +361,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
       }
 
-      var requestedFlashMode = self.flashMode.toDeviceFlashMode()
+      let requestedFlashMode = self.flashMode.toDeviceFlashMode()
       if photoOutput.supportedFlashModes.contains(requestedFlashMode) {
         photoSettings.flashMode = requestedFlashMode
       }
@@ -468,7 +470,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
       let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
-        with: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
+        with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
       updatedExif[kCGImagePropertyExifPixelYDimension] = width

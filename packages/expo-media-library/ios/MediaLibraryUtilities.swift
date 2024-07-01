@@ -16,21 +16,20 @@ func stringify(mediaType: PHAssetMediaType) -> String {
 }
 
 func stringifyMedia(mediaSubtypes: PHAssetMediaSubtype) -> [String] {
-  var subtypes = [String]()
-  var subtypesDict: [String: PHAssetMediaSubtype] = [
-    "hdr": PHAssetMediaSubtype.photoHDR,
-    "panorama": PHAssetMediaSubtype.photoPanorama,
-    "stream": PHAssetMediaSubtype.videoStreamed,
-    "timelapse": PHAssetMediaSubtype.videoTimelapse,
-    "screenshot": PHAssetMediaSubtype.photoScreenshot,
-    "highFrameRate": PHAssetMediaSubtype.videoHighFrameRate
+  let subtypesDict: [String: PHAssetMediaSubtype] = [
+    "hdr": .photoHDR,
+    "panorama": .photoPanorama,
+    "stream": .videoStreamed,
+    "timelapse": .videoTimelapse,
+    "screenshot": .photoScreenshot,
+    "highFrameRate": .videoHighFrameRate,
+    "livePhoto": .photoLive,
+    "depthEffect": .photoDepthEffect
   ]
 
-  subtypesDict["livePhoto"] = PHAssetMediaSubtype.photoLive
-  subtypesDict["depthEffect"] = PHAssetMediaSubtype.photoDepthEffect
-
+  var subtypes = [String]()
   for (subtype, value) in subtypesDict where mediaSubtypes.contains(value) {
-    subtypes.append(subtype as String)
+    subtypes.append(subtype)
   }
   return subtypes
 }
@@ -104,7 +103,6 @@ func assetIdFromLocalId(localId: String) -> String? {
 }
 
 func assetUriForLocalId(localId: String) -> String {
-  let assetId = assetIdFromLocalId(localId: localId)
   return String(format: "ph://\(localId)")
 }
 
@@ -347,7 +345,7 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
   let fetchOptions = PHFetchOptions()
   var predicates: [NSPredicate] = []
   var response = [String: Any?]()
-  var assets: [[String: Any]] = []
+  var assets: [[String: Any?]] = []
 
   var cursor: PHAsset?
   if let after = options.after {

@@ -58,11 +58,20 @@ const home = [
     makePage('get-started/next-steps.mdx'),
   ]),
   makeSection('Develop', [
+    makePage('develop/tools.mdx'),
+    makeGroup(
+      'Navigation',
+      [
+        makePage('develop/file-based-routing.mdx'),
+        makePage('develop/dynamic-routes.mdx'),
+        makePage('develop/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
     makeGroup(
       'User interface',
       [
-        makePage('develop/user-interface/splash-screen.mdx'),
-        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
         makePage('develop/user-interface/assets.mdx'),
@@ -204,12 +213,13 @@ const general = [
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/reference/hooks.mdx'),
-      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
@@ -354,7 +364,6 @@ const general = [
       makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
@@ -380,7 +389,9 @@ const general = [
     makeGroup(
       'Reference',
       [
+        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
@@ -506,7 +517,7 @@ const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
-    makePage('preview/support.mdx'),
+    makePage('preview/react-compiler.mdx'),
     { expanded: true },
   ]),
 ];
@@ -567,6 +578,7 @@ const versionsReference = VERSIONS.reduce(
         'More',
         [
           makePage('more/expo-cli.mdx'),
+          makePage('more/create-expo.mdx'),
           makePage('more/qr-codes.mdx'),
           makePage('more/glossary-of-terms.mdx'),
         ],

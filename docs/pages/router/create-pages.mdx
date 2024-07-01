@@ -4,8 +4,8 @@ description: Learn about the file-based routing convention used by Expo Router.
 sidebar_title: Create pages
 ---
 
-import { Tabs, Tab } from '~/ui/components/Tabs';
 import { FileTree } from '~/ui/components/FileTree';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 When a file is created in the **app** directory, it automatically becomes a route in the app. For example, the following files will create the following routes:
 
@@ -56,7 +56,31 @@ For example, create the **app** directory in your project and then create a file
 
 The above example matches the `/` route in the app and the browser. Files named **index** match the parent directory and do not add a path segment. For example, **app/settings/index.js** matches `/settings` in the app.
 
-> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. See [Platform-specific modules](/router/advanced/platform-specific-modules), for more information.
+## Platform specific extensions
+
+> **warning** Platform-specific extensions were added in Expo Router `3.5.x`. If you are using an older version of the library, follow instructions from [Platform-specific modules](/router/advanced/platform-specific-modules).
+
+Metro bundler's platform-specific extensions (for example, **.ios.js** or **.native.ts**) are supported in the **app** directory only if a **non-platform version** also exists. This ensures that routes are universal across platforms for deep linking.
+
+Consider the following project structure:
+
+<FileTree
+  files={[
+    'app/_layout.js',
+    'app/_layout.web.js',
+    'app/index.js',
+    'app/about.js',
+    'app/about.web.js',
+  ]}
+/>
+
+In the above file structure:
+
+- **\_layout.web.js** file is used as a layout on the web and **\_layout.js** is used on all other platforms.
+- **index.js** file is used as the home page for all platforms.
+- **about.web.js** file is used as the about page for the web, and the **about.js** file is used on all other platforms.
+
+> **info** Providing a route file without a platform-specific extension is required to ensure every platform has a default implementation.
 
 ## Dynamic routes
 
@@ -71,7 +95,7 @@ Routes with higher specificity will be matched before a dynamic route. For examp
 
 Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** matches `/blog/123/settings`.
 
-Dynamic segments are accessible as [search parameters](/router/reference/search-parameters) in the page component.
+Dynamic segments are accessible as [route parameters](/router/reference/url-parameters) in the page component.
 
 {/* prettier-ignore */}
 ```jsx app/blog/[slug].js

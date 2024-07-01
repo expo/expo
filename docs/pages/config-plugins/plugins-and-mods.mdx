@@ -4,7 +4,6 @@ description: Learn about what are plugins and mods when creating a config plugin
 ---
 
 import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified [`ExpoConfig`](/versions/latest/config/app/).
@@ -476,7 +475,7 @@ Here is what the serialized config would look like:
 ## Why app.plugin.js for plugins
 
 Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
-This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
+This is because Node environments are often different to Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
 Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,

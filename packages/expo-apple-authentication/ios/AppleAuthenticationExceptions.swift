@@ -63,5 +63,7 @@ func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception 
     return RequestFailedException()
   case .notInteractive:
     return RequestNotInteractiveException()
+  @unknown default:
+    return RequestUnknownException()
   }
 }

@@ -127,7 +127,14 @@ class Location {
             // this, that message is unused (ref: `RCTTriggerReloadCommandNotification`).
             const DevSettings = (require('react-native') as typeof import('react-native'))
               .DevSettings;
+
             return DevSettings.reload();
+          } else if (
+            typeof globalThis.expo !== 'undefined' &&
+            'reloadAppAsync' in globalThis.expo
+          ) {
+            // Expo SDK 51 and above.
+            globalThis.expo.reloadAppAsync('');
           } else {
             throw new DOMException(`Cannot call "location.reload()".`, 'NotSupportedError');
           }

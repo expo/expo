@@ -65,7 +65,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
 
     AsyncFunction("presentPermissionsPickerAsync") {
-      if #available(iOS 15.0, *) {
+      if #available(iOS 14.0, *) {
         guard let vc = appContext?.utilities?.currentViewController() else {
           return
         }
@@ -419,7 +419,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       promise.reject(MediaLibraryPermissionsException())
       return false
     }
-    let permission = permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly))
     if !permissions.hasGrantedPermission(usingRequesterClass: requesterClass(self.writeOnly)) {
       promise.reject(MediaLibraryPermissionsException())
       return false

@@ -8,11 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
 
 - Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.0.7 - 2024-06-06
+
+### 🐛 Bug fixes
+
+- On `iOS`, store the font `postscriptName` instead of `fullName` which is what `iOS` will use to register the font. ([#29502](https://github.com/expo/expo/pull/29502) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.0.6 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
 
 ## 12.0.5 — 2024-05-10
 

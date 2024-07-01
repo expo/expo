@@ -261,7 +261,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas/submit/': '/submit/introduction/',
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
-  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#use-a-custom-font',
+  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
   '/accounts/teams-and-accounts/': '/accounts/account-types/',
   '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
   '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
@@ -357,6 +357,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v50.0.0/sdk/in-app-purchases/': '/guides/in-app-purchases/',
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
+  '/router/reference/search-parameters/': '/router/reference/url-parameters/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -403,7 +404,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/expokit/eject/': '/archive/glossary/#eject',
   '/versions/latest/sdk/admob/': '/versions/latest/',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
-  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
   '/tutorial/': '/tutorial/overview/',
 
@@ -412,6 +413,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
   '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
   '/eas-update/debug-updates/': '/eas-update/debug/',
+  '/eas-update/known-issues/': '/eas-update/introduction/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
   '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
@@ -425,6 +427,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
   '/router/advance/modal': '/router/advanced/modals/',
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
 
@@ -461,4 +464,14 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect for /learn URL
   '/learn/': '/tutorial/introduction/',
+
+  // May 2024 home / develop section
+  '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
+  '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
+
+  // Preview section
+  '/preview/support/': '/preview/introduction/',
+
+  // Temporary redirects
+  '/guides/react-compiler/': '/preview/react-compiler/',
 };

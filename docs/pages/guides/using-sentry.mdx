@@ -6,9 +6,9 @@ description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -24,7 +24,7 @@ It notifies you of exceptions or errors that your users run into while using you
 
 <Tabs>
 
-<Tab label="SDK 50">
+<Tab label="SDK 50 and above">
 
 <Step label="1">
 
@@ -47,7 +47,7 @@ them later:
 
 <Step label="1.2">
 
-Go to the [Developer Settings > Auth Tokens](https://sentry.io/settings/) page and create a new token. The token is automatically scoped for Source Map Upload and Release Creation. Save it.
+Go to the [Developer Settings > Auth Tokens](https://sentry.io/settings/auth-tokens/) page and create a new [Organization Auth Token](https://docs.sentry.io/account/auth-tokens/#organization-auth-tokens). The token is automatically scoped for Source Map Upload and Release Creation. Save it.
 
 </Step>
 
@@ -298,7 +298,7 @@ Sentry.configureScope(scope => {
 
 Once configured, information about the associated update will show up in an error's tag section:
 
-<ImageSpotlight alt="Sentry update tags" src="/static/images/guides/sentry-tags.png" />
+<ContentSpotlight alt="Sentry update tags" src="/static/images/guides/sentry-tags.png" />
 
 </Collapsible>
 

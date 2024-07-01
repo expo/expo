@@ -3,12 +3,14 @@ title: Create your first app
 description: In this tutorial, learn how to create a new Expo project.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { A } from '~/ui/components/Text';
-import { Step } from '~/ui/components/Step';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Download03Icon } from '@expo/styleguide-icons/outline/Download03Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon, Download03Icon } from '@expo/styleguide-icons';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { A } from '~/ui/components/Text';
 
 In this chapter, let's learn how to create a new Expo project and how to get it running.
 
@@ -25,7 +27,7 @@ This tutorial also assumes that you have a basic knowledge of JavaScript and Rea
 
 ## Initialize a new Expo app
 
-We will use <A href="/more/glossary-of-terms/#create-expo-app">`create-expo-app`</A> to initialize a new Expo app. It is a command line tool that allows us to create a new React Native project with the `expo` package installed. Run the following command in your terminal:
+We will use <A href="/more/create-expo/">`create-expo-app`</A> to initialize a new Expo app. It is a command line tool that allows us to create a new React Native project with the `expo` package installed. Run the following command in your terminal:
 
 <Terminal
   cmd={[
@@ -38,7 +40,7 @@ We will use <A href="/more/glossary-of-terms/#create-expo-app">`create-expo-app`
   cmdCopy="npx create-expo-app StickerSmash --template blank && cd StickerSmash"
 />
 
-This command will create a new directory for the project with the name **StickerSmash**. The `create-expo-app` has a `--template` option, which we use to create a new project with different pre-installed libraries and set it up. In this case, we're using the `blank` which installs the minimum required libraries. We'll continue to add more dependencies throughout this tutorial when we need them.
+This command will create a new directory for the project with the name **StickerSmash**. The `create-expo-app` has a `--template` option, which we can use to create and set up a new project with different pre-installed libraries. In this case, we're using the `blank` which installs the minimum required libraries. We'll continue to add more libraries throughout this tutorial when needed.
 
 </Step>
 
@@ -83,10 +85,10 @@ To see the web app in action, press <kbd>w</kbd> in the terminal. It will open t
 
 Once it is running on all platforms, the project should look like this:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App running on all platforms"
   src="/static/images/tutorial/01-app-running-on-all-platforms.jpg"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 The text displayed on the app's screen above can be found in the **App.js** file which is at the root of the project's directory. It is the entry point of the project and is executed when the development server starts.

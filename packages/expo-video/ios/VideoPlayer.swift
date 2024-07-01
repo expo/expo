@@ -16,7 +16,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       if oldValue != playbackRate {
         safeEmit(event: "playbackRateChange", arguments: playbackRate, oldValue)
       }
-      if #available(iOS 16.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, *) {
         pointer.defaultRate = playbackRate
       }
       pointer.rate = playbackRate
@@ -83,9 +83,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
+    observer.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
-    observer.unregisterDelegate(delegate: self)
     pointer.replaceCurrentItem(with: nil)
   }
 
@@ -98,7 +98,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    let asset = AVURLAsset(url: url)
+    let asset = if let headers = videoSource.headers {
+      AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
+    } else {
+      AVURLAsset(url: url)
+    }
     let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
 
     if let drm = videoSource.drm {
@@ -143,7 +147,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       if player.defaultRate != playbackRate {
         // User changed the playback speed in the native controls. Update the desiredRate variable
         playbackRate = player.defaultRate

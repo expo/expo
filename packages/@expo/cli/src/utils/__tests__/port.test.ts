@@ -38,6 +38,12 @@ describe(ensurePortAvailabilityAsync, () => {
 });
 
 describe(choosePortAsync, () => {
+  it(`returns any port when given port is 0`, async () => {
+    jest.mocked(freeportAsync).mockResolvedValueOnce(1000);
+    const port = await choosePortAsync('/', { defaultPort: 0 });
+    expect(port).toBe(1000);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
   it(`returns same port when given port is available`, async () => {
     jest.mocked(freeportAsync).mockResolvedValueOnce(8081);
     const port = await choosePortAsync('/', { defaultPort: 8081 });

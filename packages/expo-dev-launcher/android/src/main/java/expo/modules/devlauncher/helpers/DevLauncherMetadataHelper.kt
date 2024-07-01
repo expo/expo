@@ -8,8 +8,11 @@ object DevLauncherMetadataHelper {
     val packageManager = context.packageManager
     val packageName = context.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    var metaDataValue = if (applicationInfo.metaData != null) {
-      applicationInfo.metaData.getString(key, defaultValue)
+    var metaDataValue = if (applicationInfo.metaData != null && applicationInfo.metaData.containsKey(key)) {
+      // The key could be a boolean, if so we should return it as a string
+      @Suppress("DEPRECATION")
+      val value = applicationInfo.metaData.get(key)
+      value.toString()
     } else {
       defaultValue
     }

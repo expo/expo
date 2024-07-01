@@ -118,6 +118,8 @@ class InvalidRequireCallError extends Error {
     }
 }
 async function transformJS(file, { config, options, projectRoot }) {
+    // const targetEnv = options.customTransformOptions?.environment;
+    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
@@ -243,6 +245,9 @@ async function transformJS(file, { config, options, projectRoot }) {
                 allowOptionalDependencies: config.allowOptionalDependencies,
                 dependencyMapName: config.unstable_dependencyMapReservedName,
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
+                // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+                // This requires a patch to Metro collectDeps.
+                // allowArbitraryImport: isServerEnv,
             };
             ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, opts));
         }
@@ -257,7 +262,12 @@ async function transformJS(file, { config, options, projectRoot }) {
         }
         else {
             // TODO: Replace this with a cheaper transform that doesn't require AST.
-            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix));
+            ({ ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, importDefault, importAll, dependencyMapName, config.globalPrefix, 
+            // TODO: This config is optional to allow its introduction in a minor
+            // release. It should be made non-optional in ConfigT or removed in
+            // future.
+            // @ts-expect-error: Not on types yet (Metro 0.80.9).
+            config.unstable_renameRequire === false));
         }
     }
     const reserved = [];
@@ -294,6 +304,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 lineCount: (0, countLines_1.default)(code),
                 map,
                 functionMap: file.functionMap,
+                reactClientReference: file.reactClientReference,
             },
             type: file.type,
         },
@@ -313,6 +324,7 @@ async function transformAsset(file, context) {
         type: 'js/module/asset',
         ast: result.ast,
         functionMap: null,
+        reactClientReference: result.reactClientReference,
     };
     return transformJS(jsFile, context);
 }
@@ -323,6 +335,16 @@ async function transformAsset(file, context) {
 async function transformJSWithBabel(file, context) {
     const { babelTransformerPath } = context.config;
     const transformer = require(babelTransformerPath);
+    // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
+    // a malformed state. For now, we'll enable the experimental import support which compiles import statements
+    // outside of the standard Babel process.
+    if (!context.options.experimentalImportSupport) {
+        const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
+        if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+            // @ts-expect-error: readonly.
+            context.options.experimentalImportSupport = true;
+        }
+    }
     const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));
@@ -333,6 +355,7 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
+        reactClientReference: transformResult.metadata?.reactClientReference,
     };
     return await transformJS(jsFile, context);
 }

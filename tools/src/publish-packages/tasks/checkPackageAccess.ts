@@ -20,6 +20,11 @@ export const checkPackageAccess = new Task<TaskArgs>(
     ],
   },
   async (parcels: Parcel[]) => {
+    // The access token for our CI is not allowing to check the access to packages.
+    if (process.env.CI) {
+      return;
+    }
+
     return await runWithSpinner(
       'Checking write access to the packages',
       async (step): Promise<any> => {

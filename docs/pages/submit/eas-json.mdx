@@ -4,10 +4,11 @@ sidebar_title: Configure with eas.json
 description: Learn how to configure your project for EAS Submit with eas.json.
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { EasSubmitIcon } from '@expo/styleguide-icons';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 
-**eas.json** is your go-to place for configuring EAS Submit (and [EAS Build](/build/eas-json)). It is located at the root of your project next to your **package.json**. Even though **eas.json** is not mandatory for using EAS Submit, it makes your life easier if you need to switch between different configurations.
+import { BoxLink } from '~/ui/components/BoxLink';
+
+**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Even though **eas.json** is not mandatory for using EAS Submit, it makes your life easier if you need to switch between different configurations.
 
 ## Production profile
 

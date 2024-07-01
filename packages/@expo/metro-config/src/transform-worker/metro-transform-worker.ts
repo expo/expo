@@ -61,6 +61,7 @@ interface JSFile extends BaseFile {
   readonly ast?: ParseResult | null;
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
+  readonly reactClientReference?: string;
 }
 
 interface JSONFile extends BaseFile {
@@ -75,8 +76,14 @@ interface TransformationContext {
 
 interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
-  readonly output: readonly JsOutput[];
+  readonly output: readonly ExpoJsOutput[];
 }
+
+export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
+  readonly data: JsOutput['data'] & {
+    readonly reactClientReference?: string;
+  };
+};
 
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
@@ -169,6 +176,9 @@ async function transformJS(
   file: JSFile,
   { config, options, projectRoot }: TransformationContext
 ): Promise<TransformResponse> {
+  // const targetEnv = options.customTransformOptions?.environment;
+  // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
   let ast: babylon.ParseResult<types.File> =
@@ -313,6 +323,10 @@ async function transformJS(
         allowOptionalDependencies: config.allowOptionalDependencies,
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
+
+        // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+        // This requires a patch to Metro collectDeps.
+        // allowArbitraryImport: isServerEnv,
       };
 
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
@@ -332,7 +346,12 @@ async function transformJS(
         importDefault,
         importAll,
         dependencyMapName,
-        config.globalPrefix
+        config.globalPrefix,
+        // TODO: This config is optional to allow its introduction in a minor
+        // release. It should be made non-optional in ConfigT or removed in
+        // future.
+        // @ts-expect-error: Not on types yet (Metro 0.80.9).
+        config.unstable_renameRequire === false
       ));
     }
   }
@@ -385,13 +404,14 @@ async function transformJS(
     ));
   }
 
-  const output: JsOutput[] = [
+  const output: ExpoJsOutput[] = [
     {
       data: {
         code,
         lineCount: countLines(code),
         map,
         functionMap: file.functionMap,
+        reactClientReference: file.reactClientReference,
       },
       type: file.type,
     },
@@ -422,6 +442,7 @@ async function transformAsset(
     type: 'js/module/asset',
     ast: result.ast,
     functionMap: null,
+    reactClientReference: result.reactClientReference,
   };
 
   return transformJS(jsFile, context);
@@ -438,6 +459,17 @@ async function transformJSWithBabel(
   const { babelTransformerPath } = context.config;
   const transformer: BabelTransformer = require(babelTransformerPath);
 
+  // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
+  // a malformed state. For now, we'll enable the experimental import support which compiles import statements
+  // outside of the standard Babel process.
+  if (!context.options.experimentalImportSupport) {
+    const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
+    if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+      // @ts-expect-error: readonly.
+      context.options.experimentalImportSupport = true;
+    }
+  }
+
   const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [functionMapBabelPlugin])
@@ -451,6 +483,7 @@ async function transformJSWithBabel(
       // Fallback to deprecated explicitly-generated `functionMap`
       transformResult.functionMap ??
       null,
+    reactClientReference: transformResult.metadata?.reactClientReference,
   };
 
   return await transformJS(jsFile, context);
@@ -482,7 +515,7 @@ async function transformJSON(
     jsType = 'js/module';
   }
 
-  const output: JsOutput[] = [
+  const output: ExpoJsOutput[] = [
     {
       data: { code, lineCount: countLines(code), map, functionMap: null },
       type: jsType,

@@ -51,7 +51,6 @@ function convertRequest(req, res) {
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
         init.body = (0, node_1.createReadableStreamFromReadable)(req);
-        // @ts-expect-error
         init.duplex = 'half';
     }
     return new Request(url.href, init);
@@ -59,7 +58,7 @@ function convertRequest(req, res) {
 exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
-    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()]);
+    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
     if (expoRes.body) {
         await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
     }

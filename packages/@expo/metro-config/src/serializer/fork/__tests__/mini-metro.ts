@@ -1,11 +1,14 @@
-import * as babel from '@babel/core';
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
+import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
 import * as path from 'path';
 
-export const projectRoot = '/app/';
+import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
+
+export const projectRoot = '/app';
+
+const METRO_CONFIG_DEFAULTS =
+  require('metro-config/src/defaults/index').getDefaultValues() as import('metro-config').ConfigT;
 
 function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   const map = new Map();
@@ -17,28 +20,45 @@ function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   return map;
 }
 
-export function microBundle({
+export async function microBundle({
   fs,
   entry,
   resolve = (from, id) => {
-    for (const ext of ['', '.js', '.ts', '.tsx']) {
-      const next = path.join(path.dirname(from), id) + ext;
-      if (fs[next]) {
-        return next;
+    const fullFs = {
+      ...preModulesFs,
+      ...fs,
+    };
+    for (const index of ['index', '']) {
+      for (const ext of ['', '.js', '.ts', '.tsx']) {
+        let next = path.join(path.dirname(from), id);
+        if (index) {
+          next = path.join(next, index);
+        }
+        next += ext;
+        if (fullFs[next] != null) {
+          return next;
+        }
       }
     }
-    if (id === 'expo-mock/async-require' && !fs['expo-mock/async-require']) {
-      fs['expo-mock/async-require'] = `
+    if (id === 'expo-mock/async-require' && !fullFs['expo-mock/async-require']) {
+      fullFs['expo-mock/async-require'] = `
                 module.exports = () => 'MOCK'
             `;
       return 'expo-mock/async-require';
     }
+    if (id === 'react-server-dom-webpack/server' && !fullFs['react-server-dom-webpack/server']) {
+      fullFs['react-server-dom-webpack/server'] = `
+                module.exports = () => 'MOCK'
+            `;
+      return 'react-server-dom-webpack/server';
+    }
 
     throw new Error(
-      `Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fs).join(', ')}`
+      `Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fullFs).join(', ')}`
     );
   },
   options = {},
+  preModulesFs = {},
 }: {
   fs: Record<string, string>;
   entry?: string;
@@ -50,42 +70,87 @@ export function microBundle({
     output?: 'static';
     hermes?: boolean;
     sourceMaps?: boolean;
+    sourceUrl?: string;
+    isServer?: boolean;
+    isReactServer?: boolean;
     inlineSourceMaps?: boolean;
     hot?: boolean;
     splitChunks?: boolean;
   };
-}): [
-  string,
-  readonly Module<MixedOutput>[],
-  ReadOnlyGraph<MixedOutput>,
-  SerializerOptions<MixedOutput>,
-] {
+  preModulesFs?: Record<string, string>;
+}): Promise<
+  [
+    string,
+    readonly Module<MixedOutput>[],
+    ReadOnlyGraph<MixedOutput>,
+    SerializerOptions<MixedOutput>,
+  ]
+> {
+  const fullFs = {
+    'react-server-dom-webpack/server': ``,
+    'expo-mock/async-require': `
+    module.exports = () => 'MOCK'
+`,
+    ...preModulesFs,
+    ...fs,
+  };
   if (!entry) {
-    entry = Object.keys(fs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/));
+    entry = Object.keys(fullFs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/));
     if (!entry) {
       throw new Error(
-        'No entrypoint found and cannot infer one from the mock fs: ' + Object.keys(fs).join(', ')
+        'No entrypoint found and cannot infer one from the mock fs: ' +
+          Object.keys(fullFs).join(', ')
       );
     }
   }
 
+  const absEntry = path.join(projectRoot, entry);
+  const dev = options.dev ?? true;
+  const transformOptions: TransformInputOptions = {
+    hot: options.hot ?? false,
+    minify: false,
+    dev,
+    type: 'module',
+    unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
+    platform: options.platform ?? 'web',
+    customTransformOptions: {
+      __proto__: null,
+      bytecode: options.hermes,
+      baseUrl: options.baseUrl,
+      engine: options.hermes ? 'hermes' : undefined,
+      environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
+    },
+
+    // NOTE: This is non-standard but it provides a cleaner output
+    experimentalImportSupport: true,
+  };
+
   const modules = new Map<string, Module>();
   const visited = new Set<string>();
 
-  function recurseWith(queue: string[], parent?: Module) {
+  const parsedPreModules = await Promise.all(
+    Object.entries(preModulesFs).map(
+      async ([id, code]) => await parseModule(id, code, transformOptions)
+    )
+  );
+
+  async function recurseWith(queue: string[], parent?: Module) {
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
       if (visited.has(absPath)) {
-        modules.get(absPath)?.inverseDependencies.add(parent?.path);
+        modules.get(absPath)?.inverseDependencies.add(
+          // @ts-expect-error
+          parent?.path
+        );
         continue;
       }
       visited.add(absPath);
-      const code = fs[id];
-      if (!code) {
+      const code = fullFs[id];
+      if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      const module = parseModule(id, code);
+      const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
       if (parent?.path) {
@@ -94,38 +159,27 @@ export function microBundle({
 
       // @ts-ignore
       for (const dep of module.dependencies.values()) {
+        if (dep.data.data.contextParams) {
+          throw new Error(`mini-metro runner doesn't support require context (yet)`);
+        }
+
         const resolved = resolve(id, dep.data.name);
-        recurseWith([resolved], module);
+        await recurseWith([resolved], module);
       }
     }
   }
-  recurseWith([entry]);
+  await recurseWith([entry]);
 
-  const absEntry = path.join(projectRoot, entry);
-  const dev = options.dev ?? true;
   return [
     // entryPoint: string,
     absEntry,
     // preModules: readonly Module<MixedOutput>[],
-    [],
+    parsedPreModules,
     // graph: ReadOnlyGraph<MixedOutput>,
     {
       dependencies: modules,
       entryPoints: new Set([absEntry]),
-      transformOptions: {
-        hot: options.hot ?? false,
-        minify: false,
-        dev,
-        type: 'module',
-        unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
-        platform: options.platform ?? 'web',
-        customTransformOptions: {
-          __proto__: null,
-          bytecode: options.hermes,
-          baseUrl: options.baseUrl,
-          engine: options.hermes ? 'hermes' : undefined,
-        },
-      },
+      transformOptions,
     },
     // options: SerializerOptions<MixedOutput>
     {
@@ -145,6 +199,7 @@ export function microBundle({
         : undefined,
       asyncRequireModulePath: 'expo-mock/async-require',
 
+      sourceUrl: options.sourceUrl,
       createModuleId(filePath) {
         return filePath as unknown as number;
       },
@@ -169,77 +224,39 @@ export function microBundle({
 }
 
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
-export function parseModule(
+export async function parseModule(
   relativeFilePath: string,
-  code: string
-): Module<{ type: string; data: { lineCount: number; code: string } }> {
+  code: string,
+  transformOptions: TransformInputOptions,
+  transformConfig: any = {}
+): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
-  const filename = absoluteFilePath;
+  const codeBuffer = Buffer.from(code);
 
-  let ast = babel.parseSync(code, {
-    ast: true,
-    babelrc: false,
-    configFile: false,
-    filename,
-    code: false,
-  });
-
-  const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
-  const { importDefault, importAll } = generateImportNames(ast);
-  const metroTransformPlugins = require('metro-transform-plugins');
-
-  const babelPluginOpts = {
-    // ...options,
-    inlineableCalls: [importDefault, importAll],
-    importDefault,
-    importAll,
-  };
-
-  // @ts-ignore
-  ast = babel.transformFromAstSync(ast, '', {
-    ast: true,
-    babelrc: false,
-    code: false,
-    configFile: false,
-    comments: true,
-    filename,
-    plugins: [[metroTransformPlugins.importExportPlugin, babelPluginOpts]],
-    sourceMaps: false,
-    // Not-Cloning the input AST here should be safe because other code paths above this call
-    // are mutating the AST as well and no code is depending on the original AST.
-    // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-    // either because one of the plugins is doing something funky or Babel messes up some caches.
-    // Make sure to test the above mentioned case before flipping the flag back to false.
-    cloneInputAst: true,
-  }).ast!;
-
-  const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
-
-  let dependencyMapName = null;
-  let dependencies = null;
-  ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
-    unstable_allowRequireContext: true,
-    allowOptionalDependencies: true,
-    asyncRequireModulePath: 'expo-mock/async-require',
-    dynamicRequires: 'throwAtRuntime',
-    inlineableCalls: [importDefault, importAll],
-    keepRequireNames: true,
-    dependencyTransformer: null,
-    dependencyMapName: 'dependencyMap',
-  }));
-
-  ({ ast } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, ''));
-
-  const output = babel.transformFromAstSync(ast, code, {
-    code: true,
-    ast: false,
-    babelrc: false,
-    configFile: false,
-  }).code!;
+  const { output, dependencies } = await expoMetroTransformWorker.transform(
+    // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
+    {
+      ...METRO_CONFIG_DEFAULTS.transformer,
+      asyncRequireModulePath: 'expo-mock/async-require',
+      unstable_allowRequireContext: true,
+      allowOptionalDependencies: true,
+      assetPlugins: [],
+      babelTransformerPath: '@expo/metro-config/build/babel-transformer',
+      ...transformConfig,
+    },
+    projectRoot,
+    absoluteFilePath,
+    codeBuffer,
+    {
+      ...transformOptions,
+      inlinePlatform: true,
+      inlineRequires: false,
+    }
+  );
 
   return {
     getSource() {
-      return Buffer.from(code);
+      return codeBuffer;
     },
     path: absoluteFilePath,
     dependencies: toDependencyMap(
@@ -249,15 +266,9 @@ export function parseModule(
       }))
     ),
     inverseDependencies: new CountingSet(),
-    output: [
-      {
-        data: {
-          code: output,
-          lineCount: countLines(output),
-        },
-        type: 'js/module',
-      },
-    ],
+
+    // @ts-expect-error
+    output,
   };
 }
 

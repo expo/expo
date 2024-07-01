@@ -1,6 +1,5 @@
 import { Platform, UnavailabilityError, type EventSubscription } from 'expo-modules-core';
-import * as React from 'react';
-import { Ref } from 'react';
+import { type Ref, Component, createRef } from 'react';
 
 import {
   CameraCapturedPicture,
@@ -24,29 +23,30 @@ const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 
 function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
-  const pictureOptions: CameraPictureOptions =
-    !options || typeof options !== 'object' ? {} : options;
+  if (!options || typeof options !== 'object') {
+    return {};
+  }
 
-  if (!pictureOptions.quality) {
-    pictureOptions.quality = 1;
+  if (!options.quality) {
+    options.quality = 1;
   }
-  if (pictureOptions.onPictureSaved) {
+
+  if (options.onPictureSaved) {
     const id = _GLOBAL_PICTURE_ID++;
-    _PICTURE_SAVED_CALLBACKS[id] = pictureOptions.onPictureSaved;
-    pictureOptions.id = id;
-    pictureOptions.fastMode = true;
+    _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
+    options.id = id;
+    options.fastMode = true;
   }
-  return pictureOptions;
+
+  return options;
 }
 
-function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordingOptions {
-  let recordingOptions = options || {};
-
-  if (!recordingOptions || typeof recordingOptions !== 'object') {
-    recordingOptions = {};
+function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
+  if (!options || typeof options !== 'object') {
+    return {};
   }
 
-  return recordingOptions;
+  return options;
 }
 
 function _onPictureSaved({
@@ -62,7 +62,7 @@ function _onPictureSaved({
   }
 }
 
-export default class CameraView extends React.Component<CameraProps> {
+export default class CameraView extends Component<CameraProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -116,33 +116,34 @@ export default class CameraView extends React.Component<CameraProps> {
   };
 
   _cameraHandle?: number | null;
-  _cameraRef = React.createRef<CameraViewRef>();
+  _cameraRef = createRef<CameraViewRef>();
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
   // @needsAudit
   /**
    * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
-   * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview. Anyway on Android it is essential
-   * to set ratio prop to get a picture with correct dimensions.
+   * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
    * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
    * @param options An object in form of `CameraPictureOptions` type.
-   * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on iOS,
-   * Android, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
-   * the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
-   * of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
-   * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
-   * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+   * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
+   * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
+   * the dimensions of the image.
+   *
+   * `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
+   * of the image in Base64. Prepend it with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
+   * for an `Image` element for example.
+   *
+   * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
+   * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
    *
    * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
    * > to make a permanent copy of the image.
    */
-  async takePictureAsync(
-    options?: CameraPictureOptions
-  ): Promise<CameraCapturedPicture | undefined> {
+  async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 
-    return await this._cameraRef.current?.takePicture(pictureOptions);
+    return this._cameraRef.current?.takePicture(pictureOptions);
   }
 
   /**
@@ -159,7 +160,7 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   /**
-   * Dimiss the scanner presented by `launchScanner`.
+   * Dismiss the scanner presented by `launchScanner`.
    * @platform ios
    */
   static async dismissScanner(): Promise<void> {
@@ -189,9 +190,9 @@ export default class CameraView extends React.Component<CameraProps> {
    * @platform android
    * @platform ios
    */
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string } | undefined> {
+  async recordAsync(options?: CameraRecordingOptions) {
     const recordingOptions = ensureRecordingOptions(options);
-    return await this._cameraRef.current?.record(recordingOptions);
+    return this._cameraRef.current?.record(recordingOptions);
   }
 
   /**

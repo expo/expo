@@ -24,5 +24,9 @@ var SourceSkips;
     SourceSkips[SourceSkips["ExpoConfigEASProject"] = 64] = "ExpoConfigEASProject";
     // Assets in app.json, including icons and splash assets
     SourceSkips[SourceSkips["ExpoConfigAssets"] = 128] = "ExpoConfigAssets";
+    // package.json scripts if android and ios items do not contain "run".
+    // Because prebuild will change the scripts in package.json,
+    // this is useful to generate a consistent fingerprint before and after prebuild.
+    SourceSkips[SourceSkips["PackageJsonAndroidAndIosScriptsIfNotContainRun"] = 256] = "PackageJsonAndroidAndIosScriptsIfNotContainRun";
 })(SourceSkips || (exports.SourceSkips = SourceSkips = {}));
 //# sourceMappingURL=SourceSkips.js.map

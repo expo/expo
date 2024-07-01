@@ -20,7 +20,6 @@ export const mapNotificationResponse = (response) => {
     catch (e) {
         console.log(`Error in response: ${e}`);
     }
-    console.log(`response received: ${JSON.stringify(mappedResponse, null, 2)}`);
     return mappedResponse;
 };
 //# sourceMappingURL=mapNotificationResponse.js.map

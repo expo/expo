@@ -6,8 +6,11 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
-    Function("isPictureInPictureSupported") {
-      return AVPictureInPictureController.isPictureInPictureSupported()
+    Function("isPictureInPictureSupported") { () -> Bool in
+      if #available(iOS 13.4, tvOS 14.0, *) {
+        return AVPictureInPictureController.isPictureInPictureSupported()
+      }
+      return false
     }
 
     View(VideoView.self) {
@@ -22,6 +25,10 @@ public final class VideoModule: Module {
 
       Prop("nativeControls") { (view, nativeControls: Bool?) in
         view.playerViewController.showsPlaybackControls = nativeControls ?? true
+        #if os(tvOS)
+        view.playerViewController.isSkipForwardEnabled = nativeControls ?? true
+        view.playerViewController.isSkipBackwardEnabled = nativeControls ?? true
+        #endif
       }
 
       Prop("contentFit") { (view, contentFit: VideoContentFit?) in
@@ -40,11 +47,15 @@ public final class VideoModule: Module {
       }
 
       Prop("allowsFullscreen") { (view, allowsFullscreen: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.setValue(allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
+        #endif
       }
 
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.showsTimecodes = showsTimecodes ?? true
+        #endif
       }
 
       Prop("requiresLinearPlayback") { (view, requiresLinearPlayback: Bool?) in
@@ -56,7 +67,9 @@ public final class VideoModule: Module {
       }
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
+        #if !os(tvOS)
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+        #endif
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -77,7 +90,7 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: VideoSource) -> VideoPlayer in
+      Constructor { (source: VideoSource?) -> VideoPlayer in
         let player = AVPlayer()
         let videoPlayer = VideoPlayer(player)
 
@@ -154,8 +167,8 @@ public final class VideoModule: Module {
         player.showNowPlayingNotification = showNowPlayingNotification
       }
 
-      Property("status") { player -> PlayerStatus in
-        return player.status
+      Property("status") { player in
+        return player.status.rawValue
       }
 
       Property("volume") { player -> Float in
@@ -173,7 +186,11 @@ public final class VideoModule: Module {
         player.pointer.pause()
       }
 
-      Function("replace") { (player, source: Either<String, VideoSource>) in
+      Function("replace") { (player, source: Either<String, VideoSource>?) in
+        guard let source else {
+          try player.replaceCurrentItem(with: nil)
+          return
+        }
         var videoSource: VideoSource?
 
         if source.is(String.self), let url: String = source.get() {

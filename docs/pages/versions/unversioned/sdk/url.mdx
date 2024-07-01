@@ -29,11 +29,10 @@ The only missing exception is that native platforms do not currently support [no
 Consider the following example:
 
 ```js
-console.log(new URL('http://🥓').toString())
+console.log(new URL('http://🥓').toString());
 ```
 
 This outputs the following:
+
 - Web, Node.js: `http://xn--pr9h/`
-- iOS, Android: `http://🥓/`
-
-
+- Android, iOS: `http://🥓/`

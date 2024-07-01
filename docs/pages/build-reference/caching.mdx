@@ -13,7 +13,7 @@ The `cache` field on build profiles in [eas.json](/build/eas-json) can be used t
 
 ## JavaScript dependencies
 
-EAS Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. Projects that are using npm or yarn v2 will use the cache by default, but yarn v1 will require that you apply this [workaround](/build-reference/npm-cache-with-yarn).
+EAS Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. By default, projects using npm or Yarn 2+ will use the cache. However, Yarn 1 (Classic) requires that you apply this [workaround](/build-reference/npm-cache-with-yarn) to use the cache in your project's **package.json**.
 
 To disable using our npm cache server for your builds set the `EAS_BUILD_DISABLE_NPM_CACHE` env variable value to `"1"` in **eas.json**.
 

@@ -8,12 +8,12 @@ platforms: ['android*', 'ios*', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, torch, and flash mode are adjustable. Using `CameraView`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
@@ -169,7 +169,7 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 import { CameraView } from 'expo-camera';
 ```
 
-<APISection packageName="expo-camera" apiName="Camera" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-camera" apiName="Camera" exposeAllClassPropsInSidebar />
 
 ## Permissions
 

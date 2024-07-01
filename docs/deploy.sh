@@ -69,7 +69,7 @@ declare -A redirects # associative array variable
 
 # Temporarily create a redirect for a page that Home links to
 redirects[versions/latest/introduction/installation.html]=versions/latest/introduction/installation
-# useful link on twitter
+# useful link on x.com
 redirects[versions/latest/guides/app-stores.html]=versions/latest/distribution/app-stores
 # Xdl caches
 redirects[versions/latest/guides/offline-support.html]=versions/latest/guides/offline-support
@@ -153,7 +153,7 @@ redirects[workflow/debugging]=debugging/runtime-issues
 redirects[guides/userinterface]=ui-programming/user-interface-libraries
 redirects[introduction/expo]=core-concepts
 redirects[introduction/faq]=faq
-redirects[workflow/expo-go]=get-started/expo-go
+redirects[workflow/expo-go]=get-started/set-up-your-environment
 redirects[errors-and-warnings]=debugging/errors-and-warnings
 redirects[guides/splash-screens]=develop/user-interface/splash-screen
 redirects[guides/app-icons]=develop/user-interface/app-icons
@@ -171,6 +171,7 @@ redirects[develop/development-builds/parallel-installation]=build-reference/vari
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas
 redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction
 redirects[guides/assets]=develop/user-interface/assets
+redirects[router/reference/search-parameters]=router/reference/url-parameters
 
 # Redirects after Guides organization
 redirects[guides]=guides/overview
@@ -232,6 +233,7 @@ redirects[router/advance/drawer]=router/advanced/drawer
 redirects[router/advance/nesting-navigators]=router/advanced/nesting-navigators
 redirects[router/advance/modal]=router/advanced/modals
 redirects[router/advance/platform-specific-modules]=router/advanced/platform-specific-modules
+redirects[router/reference/platform-specific-modules]=router/advanced/platform-specific-modules
 redirects[router/advance/shared-routes]=router/advanced/shared-routes
 redirects[router/advance/router-setttings]=router/advanced/router-settings
 redirects[home/config-plugins/plugins-and-mods]=config-plugins/plugins-and-mods
@@ -312,7 +314,7 @@ redirects[push-notifications]=push-notifications/overview
 redirects[eas/submit]=submit/introduction
 redirects[development/tools/expo-dev-client]=develop/development-builds/introduction
 redirects[develop/user-interface/custom-fonts]=develop/user-interface/fonts
-redirects[workflow/snack]=/more/glossary-of-terms
+redirects[workflow/snack]=more/glossary-of-terms
 redirects[accounts/teams-and-accounts]=accounts/account-types
 redirects[push-notifications/fcm]=push-notifications/sending-notifications-custom
 redirects[troubleshooting/clear-cache-mac]=troubleshooting/clear-cache-macos-linux
@@ -355,18 +357,29 @@ redirects[guides/customizing-webpack]=archive/customizing-webpack
 redirects[bare/using-expo-client]=archive/using-expo-client
 
 # May 2024 home / get started section
-redirects[/overview]=get-started/introduction
-redirects[/get-started/installation]=get-started/create-a-project
-redirects[/get-started/expo-go]=get-started/set-up-your-environment
+redirects[overview]=get-started/introduction
+redirects[get-started/installation]=get-started/create-a-project
+redirects[get-started/expo-go]=get-started/set-up-your-environment
 
 # Redirect for /learn URL
-redirects[/learn]=tutorial/introduction
+redirects[learn]=tutorial/introduction
+
+# May 2024 home / develop section
+redirects[develop/user-interface/app-icons]=develop/user-interface/splash-screen-and-app-icon
+redirects[develop/user-interface/splash-screen]=develop/user-interface/splash-screen-and-app-icon
+
+# Preview section
+redirects[/preview/support]=preview/introduction
+
+# Temporary redirects
+redirects[guides/react-compiler]=preview/react-compiler
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
     --no-progress \
+    --cache-control "public, max-age=86400" \
     --metadata-directive REPLACE \
     --website-redirect "/${redirects[$i]}" \
     "$target/404.html" \
@@ -377,6 +390,7 @@ do
   if [[ $i != *".html" ]] && [[ $i != *"/" ]]; then
     aws s3 cp \
       --no-progress \
+      --cache-control "public, max-age=86400" \
       --metadata-directive REPLACE \
       --website-redirect "/${redirects[$i]}" \
       "$target/404.html" \

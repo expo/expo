@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { TagProps } from './Tag';
 import { labelStyle, tagStyle, tagToCStyle } from './styles';
@@ -20,7 +21,7 @@ export const StatusTag = ({ status, type, note, className }: StatusTagProps) => 
         className
       )}
       css={[tagStyle, type === 'toc' && tagToCStyle]}>
-      {status === 'experimental'}
+      {status === 'experimental' && <Star06Icon className="icon-xs text-palette-pink12" />}
       <span css={labelStyle}>{status ? formatName(status) + (note ? `: ${note}` : '') : note}</span>
     </div>
   );

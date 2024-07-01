@@ -98,8 +98,7 @@ export async function getSystemBrightnessAsync(): Promise<number> {
 
 // @needsAudit
 /**
- * > __WARNING:__ This method is experimental.
- *
+ * @experimental
  * Sets the global system screen brightness and changes the brightness mode to
  * `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
  * @param brightnessValue A number between `0` and `1`, inclusive, representing the desired screen
