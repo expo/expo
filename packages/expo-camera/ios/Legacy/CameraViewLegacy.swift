@@ -4,7 +4,7 @@ import CoreMotion
 
 // swiftlint:disable:next type_body_length
 public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
