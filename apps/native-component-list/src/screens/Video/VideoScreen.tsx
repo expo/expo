@@ -250,18 +250,6 @@ export default function VideoScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
-        {Platform.OS === 'ios' && (
-          <View style={styles.row}>
-            <TitledSwitch
-              title="Allow video frame analysis (Live Text interaction for video)"
-              value={allowsVideoFrameAnalysis}
-              setValue={setAllowsVideoFrameAnalysis}
-              style={styles.switch}
-              titleStyle={styles.switchTitle}
-            />
-          </View>
-        )}
-
         <View style={styles.row}>
           <TitledSwitch
             title="Requires linear playback"
@@ -318,6 +306,15 @@ export default function VideoScreen() {
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
+          {Platform.OS === 'ios' && (
+            <TitledSwitch
+              title="Allow video frame analysis (Live Text interaction for video)"
+              value={allowsVideoFrameAnalysis}
+              setValue={setAllowsVideoFrameAnalysis}
+              style={styles.switch}
+              titleStyle={styles.switchTitle}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

@@ -29,18 +29,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
   #endif
 
-  #if os(tvOS)
-  let allowsVideoFrameAnalsysis = false
-  #else
-  var allowsVideoFrameAnalsysis: Bool = true {
-    didSet {
-      if #available(iOS 16.0, macCatalyst 18.0, *) {
-        playerViewController.allowsVideoFrameAnalysis = allowsVideoFrameAnalsysis
-      }
-    }
-  }
-  #endif
-
   var allowPictureInPicture: Bool = false {
     didSet {
       // PiP requires `.playback` audio session category in `.moviePlayback` mode
