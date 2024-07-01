@@ -88,33 +88,6 @@ const getPackageJsonMatcher = (
   const dirRoot = path.dirname(packageJsonPath);
   const isSideEffect = (fp: string): boolean | null => {
     // Default is that everything is a side-effect unless explicitly marked as not.
-    // if (packageJson.sideEffects == null) {
-    //   // TODO: How to avoid needing this hardcoded list?
-    //   if (
-    //     [
-    //       'react',
-    //       '@babel/runtime',
-    //       'invariant',
-    //       'react-dom',
-    //       'scheduler',
-    //       'inline-style-prefixer',
-    //       'metro-runtime',
-    //       'fbjs',
-    //       '@react-native/normalize-color',
-    //       '@react-native/asset-registry',
-    //       'postcss-value-parser',
-    //       'css-in-js-utils',
-    //       'nullthrows',
-    //       'nanoid',
-    //     ].includes(packageJson.name)
-    //   ) {
-    //     console.log('Skipping FX for:', packageJson.name);
-    //     return null;
-    //   }
-
-    //   return true;
-    // }
-
     if (packageJson.sideEffects == null) {
       return null;
     }
@@ -163,7 +136,6 @@ function detectHasSideEffectInPackageJson(
   if (value.output.some((output) => output.type === 'js/module')) {
     const isSideEffect = getPackageJsonMatcher(options, value.path);
     if (isSideEffect == null) {
-      // console.log('no side effects matcher:', value.path);
       return null;
     }
     return isSideEffect(value.path);
