@@ -28,6 +28,8 @@ concurrency:
 jobs:
   docs-pr:
     runs-on: ubuntu-22.04
+    env:
+      NODE_ENV: production
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
