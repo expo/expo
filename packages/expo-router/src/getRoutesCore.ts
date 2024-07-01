@@ -284,7 +284,7 @@ function flattenDirectoryTreeToRoutes(
 
     // Now update this layout with the new relative route and dynamic conventions
     layout.route = newRoute;
-    layout.dynamic = generateDynamic(layout.route);
+    layout.dynamic = generateDynamic(layout.contextKey.slice(0));
   }
 
   // This should never occur as there will always be a root layout, but it makes the type system happy
@@ -465,10 +465,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
   /**
    * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
    * Each of these layouts will have a different initialRouteName based upon the first group name.
-   *
-   * So
    */
-
   // We may strip loadRoute during testing
   const groupName = matchGroupName(node.route);
   const childMatchingGroup = node.children.find((child) => {
