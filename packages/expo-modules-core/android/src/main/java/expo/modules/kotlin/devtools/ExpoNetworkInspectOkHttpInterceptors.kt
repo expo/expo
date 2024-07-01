@@ -36,7 +36,7 @@ class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
           it.priorResponse = response
         }
       } else {
-        val body = peekResponseBody(response)
+        val body = if (shouldParseBody(response)) peekResponseBody(response) else null
         delegate.didReceiveResponse(requestId, request, response, body)
         body?.close()
       }
@@ -122,4 +122,28 @@ internal fun peekResponseBody(
   val buffer = okio.Buffer()
   buffer.write(source, minOf(byteCount, source.buffer.size))
   return buffer.asResponseBody(body.contentType(), buffer.size)
+}
+
+internal fun shouldParseBody(response: Response): Boolean {
+  // Check for Content-Type
+  val skipContentTypes = listOf(
+    "text/event-stream", // Server Sent Events
+    "text/x-component", // React Server Components
+    "audio", // Media might be streaming and not inspectable in DevTools
+    "video" // Media might be streaming and not inspectable in DevTools
+  )
+  val contentType = response.header("Content-Type") ?: ""
+  if (skipContentTypes.any { contentType.startsWith(it) }) {
+    return false
+  }
+
+  // HTTP 1.1 chunked encoding
+  val transferEncoding = response.header("Transfer-Encoding")
+  if ("chunked".equals(transferEncoding, ignoreCase = true)) {
+    return false
+  }
+
+  // If Content-Length is known to exceed the limit
+  val contentLength = response.header("Content-Length")?.toLong() ?: -1
+  return contentLength < 1 || contentLength <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE
 }

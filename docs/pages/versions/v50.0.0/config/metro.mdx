@@ -3,10 +3,10 @@ title: metro.config.js
 description: A reference of available configurations in Metro.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -587,7 +587,7 @@ The `debugId` is a deterministic hash of the bundle's contents without the exter
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
 
-{/* If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work. */}
+{/* If this isn't done, then features like [aliases](/guides/typescript/#path-aliases-optional), [absolute imports](/guides/typescript/#absolute-imports-optional), asset hashing, and more will not work. */}
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start` respectively.
 

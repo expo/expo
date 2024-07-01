@@ -13,7 +13,7 @@ type TableProps = PropsWithChildren<{
 }>;
 
 export const Table = ({ children, headers = [], headersAlign, className }: TableProps) => (
-  <div css={tableWrapperStyle}>
+  <div css={tableWrapperStyle} className="table-wrapper">
     <table css={tableStyle} className={className}>
       {headers.length ? (
         <>

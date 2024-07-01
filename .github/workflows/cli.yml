@@ -45,6 +45,7 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         shard: [1, 2, 3]
     steps:

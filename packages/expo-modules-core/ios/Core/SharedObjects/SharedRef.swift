@@ -1,12 +1,17 @@
 /**
- Shared object (ref) that holds a pointer to any native object. Allows passing references
+ Shared object that holds a reference to any native object. Allows passing references
  to native instances among different independent libraries.
  */
-open class SharedRef<PointerType>: SharedObject {
-  public let pointer: PointerType
+open class SharedRef<RefType>: SharedObject {
+  public let ref: RefType
 
-  public init(_ pointer: PointerType) {
-    self.pointer = pointer
+  @available(*, deprecated, renamed: "ref", message: "it has been renamed to 'ref' in Expo SDK 52")
+  public var pointer: RefType {
+    return ref
+  }
+
+  public init(_ ref: RefType) {
+    self.ref = ref
     super.init()
   }
 }

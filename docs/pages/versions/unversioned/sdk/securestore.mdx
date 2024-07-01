@@ -8,12 +8,12 @@ platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import {
   ConfigPluginExample,
   ConfigReactNative,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-secure-store` provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
@@ -57,7 +57,8 @@ You can configure `expo-secure-store` using its built-in [config plugin](/config
     {
       name: 'configureAndroidBackup',
       platform: 'android',
-      description: 'A boolean indicating whether to configure automatic Android backup to work correctly with `expo-secure-store`. [Learn more](#android-auto-backup).',
+      description:
+        'A boolean indicating whether to configure automatic Android backup to work correctly with `expo-secure-store`. [Learn more](#android-auto-backup).',
       default: 'true',
     },
     {

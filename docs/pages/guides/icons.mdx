@@ -42,11 +42,11 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> As with [any custom font](/develop/user-interface/fonts/#use-a-custom-font) in Expo, you can preload icon fonts before rendering your app. The font object is available as a static property on the font component. So, in the case above, it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
+> As with [any custom font](/develop/user-interface/fonts/#use-a-local-font-file) in Expo, you can preload icon fonts before rendering your app. The font object is available as a static property on the font component. So, in the case above, it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
 
 ## Custom icon fonts
 
-To use a custom icon font, first import it into your project. Only after the font has loaded, can you create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#use-a-custom-font).
+To use a custom icon font, first import it into your project. Only after the font has loaded, can you create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#handle-expovector-icons-initial-load).
 
 `@expo/vector-icons` exposes three methods to help you create an icon set:
 
@@ -154,12 +154,14 @@ You can use the `Image` component from [Expo Image](/versions/latest/sdk/image/)
 <Tabs>
 
 <Tab label="Expo Image">
+
 <SnackInline
   label='Usage with Expo Image'
   dependencies={['expo-image']}
   files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
+
 ```jsx collapseHeight=440
 import { Image } from 'expo-image';
 import { View, StyleSheet } from 'react-native';
@@ -180,16 +182,19 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
 </SnackInline>
 
 </Tab>
 
 <Tab label="React Native Image">
+
 <SnackInline
   label='Usage with React Native Image'
   files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
+
 ```jsx
 import { Image, View, StyleSheet } from 'react-native';
 
@@ -209,6 +214,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
 </SnackInline>
 
 </Tab>

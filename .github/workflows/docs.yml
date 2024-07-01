@@ -30,7 +30,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -51,6 +51,8 @@ jobs:
         run: yarn test
       - name: 🚨 Lint Docs website code
         working-directory: docs
+        env:
+          NODE_ENV: production
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
         working-directory: docs

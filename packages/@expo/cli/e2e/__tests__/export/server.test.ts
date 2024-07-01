@@ -260,8 +260,9 @@ describe('server-output', () => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ hello: 'world' }),
-          }).then((r) => r.json());
-          expect(res).toEqual({ hello: 'world' });
+          });
+          expect(res.status).toBe(200);
+          expect(await res.json()).toEqual({ hello: 'world' });
         },
         5 * 1000
       );

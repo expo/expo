@@ -26,7 +26,8 @@ export const ExpoRequest = Request;
 export const ExpoResponse = Response;
 
 export function installGlobals() {
-  installRemixGlobals();
+  // Use global polyfills from Undici
+  installRemixGlobals({ nativeFetch: true });
 
   global.ExpoRequest = Request;
   global.ExpoResponse = Response;

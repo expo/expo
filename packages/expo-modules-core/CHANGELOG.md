@@ -23,6 +23,8 @@
 - Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
 - Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed broken `addUIBlock` and `executeUIBlock` on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+- Fixed blocking SSE responses from network interceptor on Android. ([#30062](https://github.com/expo/expo/pull/30062) by [@kudo](https://github.com/kudo))
+- Fixed a crash when the event listener throws an error. ([#30065](https://github.com/expo/expo/pull/30065) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
@@ -38,6 +40,7 @@
 - Make it possible for TypeScript to infer EventEmitter's events map. ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Exposed `Utilities` class for Expo Modules common tasks. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
 - [iOS] Stop throwing runtime errors when the promise is settled more than once. ([#30000](https://github.com/expo/expo/pull/30000) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Renamed `pointer` property in the `SharedRef` class to `ref` for parity with Android. ([#30061](https://github.com/expo/expo/pull/30061) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.12.16 - 2024-06-20
 

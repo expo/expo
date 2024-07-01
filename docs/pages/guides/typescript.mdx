@@ -3,10 +3,9 @@ title: Use TypeScript
 description: An in-depth guide on configuring an Expo project with TypeScript.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Step } from '~/ui/components/Step';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of Expo SDK is written in TypeScript.
@@ -90,7 +89,7 @@ The default configuration in **tsconfig.json** is user-friendly and encourages a
 
 <Step label="4">
 
-### (Optional) Path aliases
+### Path aliases (Optional)
 
 Expo CLI supports [path aliases](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping) in **tsconfig.json** automatically. It allows importing modules with custom aliases instead of relative paths.
 
@@ -153,7 +152,7 @@ When using path aliases, consider the following:
 
 <Step label="5">
 
-### (Optional) Absolute imports
+### Absolute imports (Optional)
 
 To enable absolute imports from a project's root directory, define [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) the **tsconfig.json** file:
 
