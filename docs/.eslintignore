@@ -3,7 +3,6 @@
 .swc
 .vale
 
-dangerfile.js
 out
 diagram-sources
 node_modules
