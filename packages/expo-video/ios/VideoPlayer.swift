@@ -86,7 +86,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     observer.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
-    pointer.replaceCurrentItem(with: nil)
+
+    DispatchQueue.main.async { [pointer] in
+      pointer.replaceCurrentItem(with: nil)
+    }
   }
 
   func replaceCurrentItem(with videoSource: VideoSource?) throws {
