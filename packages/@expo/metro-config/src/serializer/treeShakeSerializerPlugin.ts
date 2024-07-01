@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { codeFrameColumns } from '@babel/code-frame';
 import { NodePath, traverse } from '@babel/core';
 import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
-import { codeFrameColumns } from '@babel/code-frame';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 
@@ -164,6 +164,7 @@ function populateGraphWithAst(graph: ReadOnlyGraph) {
 
       try {
         // console.log('has ast:', !!output.data.ast, output.data.code);
+        // @ts-expect-error: ast is not on type.
         output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
       } catch (error) {
         if (error instanceof SyntaxError && 'loc' in error && error.loc) {
@@ -182,6 +183,8 @@ function populateGraphWithAst(graph: ReadOnlyGraph) {
         }
         throw error;
       }
+
+      // @ts-expect-error: modules is not on type.
       output.data.modules = {
         imports: [],
       };
@@ -222,12 +225,11 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
       // This can be nullish with optional dependencies in a try/catch that don't resolve.
 
       return null;
-      // console.log([...value.dependencies.values()]);
-      throw new Error(
-        `Failed to find graph key for import "${moduleId}" in module "${
-          value.path
-        }". Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`
-      );
+      // throw new Error(
+      //   `Failed to find graph key for import "${moduleId}" in module "${
+      //     value.path
+      //   }". Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`
+      // );
     }
     return key;
   }
@@ -355,25 +357,12 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
   }
 }
 
-const markUnused = (path: NodePath, node) => {
-  if (annotate) {
-    node.leadingComments = node.leadingComments ?? [];
-    if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
-      node.leadingComments.push({
-        type: 'CommentBlock',
-        value: ` unused export ${node.id.name} `,
-      });
-    }
-  } else {
-    // Format path as code
-    console.log('Delete:\n' + generate(path.node).code);
-    console.log();
-    // if (types.isStringLiteral(node)) {
-    // } else {
-    //   console.log('remove:', node.id?.name ?? node.exported?.name ?? node);
-    // }
-    path.remove();
-  }
+const markUnused = (path: NodePath) => {
+  // Format path as code
+  // console.log('Delete:\n' + generate(path.node).code);
+  // console.log();
+
+  path.remove();
 };
 
 export function treeShakeSerializerPlugin(config: InputConfigT) {
@@ -823,7 +812,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         traverse(ast, {
           ExportDefaultDeclaration(path) {
             if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
-              markUnused(path, path.node);
+              markUnused(path);
             }
           },
 
@@ -856,7 +845,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               declaration.declarations.forEach((decl) => {
                 if (decl.id.type === 'Identifier') {
                   if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
-                    markUnused(path, decl);
+                    markUnused(path);
 
                     console.log(
                       `mark remove (type: var, depth: ${depth}):`,
@@ -882,7 +871,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                   'from:',
                   value.path
                 );
-                markUnused(path, declaration);
+                markUnused(path);
 
                 // Code inside of an unused export may affect other exports in the module.
                 // e.g.
@@ -902,7 +891,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 if (removeRequest.removed) {
                   needsImportReindex = true;
                   dirtyImports.push(removeRequest.path);
-                  markUnused(path, path.node.source);
+                  markUnused(path);
                 }
               }
             }
@@ -983,6 +972,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
           // NOTE: This could be a problem if the AST is re-parsed.
           // TODO: This doesn't account for `import {} from './foo'`
+          // @ts-expect-error: custom property
           path.opts.originalSpecifiers ??= path.node.specifiers.length;
 
           importDecs.push(path);
@@ -1010,7 +1000,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             return !unusedImports.includes(specifier.local.name);
           } else if (specifier.type === 'ImportNamespaceSpecifier') {
             return !unusedImports.includes(specifier.local.name);
-          } else {
+          } else if (types.isIdentifier(specifier.imported)) {
             return !unusedImports.includes(specifier.imported.name);
           }
         });
@@ -1036,7 +1026,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           if (removeRequest.removed) {
             console.log('Disconnect import:', importModuleId, 'from:', value.path);
             // Delete the import AST
-            markUnused(path, path.node);
+            markUnused(path);
             dirtyImports.push(removeRequest.path);
             // Update crazy list
             // value.output[0].data.modules?.imports.splice(index, 1);

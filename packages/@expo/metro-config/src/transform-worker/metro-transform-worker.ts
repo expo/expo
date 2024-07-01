@@ -364,6 +364,9 @@ async function transformJS(
   // not exist yet.
   applyUseStrictDirective(ast);
 
+  // @ts-expect-error: Not on types yet (Metro 0.80).
+  const unstable_renameRequire = config.unstable_renameRequire;
+
   // Perform the import-export transform (in case it's still needed), then
   // fold requires and perform constant folding (if in dev).
   // const plugins: PluginItem[] = [];
@@ -432,7 +435,7 @@ async function transformJS(
         // release. It should be made non-optional in ConfigT or removed in
         // future.
         // @ts-expect-error: Not on types yet (Metro 0.80.9).
-        config.unstable_renameRequire === false
+        unstable_renameRequire === false
       ));
     }
   }
@@ -478,10 +481,8 @@ async function transformJS(
   let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
   let code = result.code;
 
+  // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    // if (treeshake) {
-    //   // TODO: Store settings for running this later...
-    // } else {
     ({ map, code } = await minifyCode(
       config,
       projectRoot,
@@ -491,7 +492,6 @@ async function transformJS(
       map,
       reserved
     ));
-    // }
   }
 
   const output: ExpoJsOutput[] = [
@@ -511,7 +511,6 @@ async function transformJS(
                 importDefault,
                 importAll,
                 normalizePseudoGlobals: shouldNormalizePseudoGlobals,
-                unstable_renameRequire: config.unstable_renameRequire,
                 globalPrefix: config.globalPrefix,
                 unstable_compactOutput: config.unstable_compactOutput,
                 collectDependenciesOptions,
@@ -525,6 +524,7 @@ async function transformJS(
                 optimizationSizeLimit: config.optimizationSizeLimit,
                 unstable_disableNormalizePseudoGlobals:
                   config.unstable_disableNormalizePseudoGlobals,
+                unstable_renameRequire,
               },
             }
           : {}),

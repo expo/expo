@@ -17,13 +17,14 @@ import countLines from 'metro/src/lib/countLines';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
+
+import { hasSideEffectWithDebugTrace } from './sideEffects';
 import { accessAst, isShakingEnabled } from './treeShakeSerializerPlugin';
 import {
   ReconcileTransformSettings,
   applyImportSupport,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
-import { hasSideEffectWithDebugTrace } from './sideEffects';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 

@@ -40,9 +40,9 @@ const collectDependencies_1 = __importStar(require("metro/src/ModuleGraph/worker
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
+const sideEffects_1 = require("./sideEffects");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
-const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
 class InvalidRequireCallError extends Error {

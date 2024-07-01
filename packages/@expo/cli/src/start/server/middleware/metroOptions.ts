@@ -81,10 +81,8 @@ function withDefaults({
     mode,
     minify,
     preserveEnvVars,
-    treeshake: props.environment !== 'node' && env.EXPO_UNSTABLE_TREE_SHAKING,
-    // treeshake: env.EXPO_UNSTABLE_TREE_SHAKING,
-    // treeshake: mode === 'production' && env.EXPO_UNSTABLE_TREE_SHAKING,
-
+    treeshake:
+      props.environment !== 'node' && mode === 'production' && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     ...props,
   };

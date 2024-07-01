@@ -29,7 +29,7 @@ function withExpoSerializers(config, options = {}) {
     // Then tree-shake the modules.
     processors.push((0, treeShakeSerializerPlugin_1.treeShakeSerializerPlugin)(config));
     // Then finish transforming the modules from AST to JS.
-    processors.push((0, reconcileTransformSerializerPlugin_1.createPostTreeShakeTransformSerializerPlugin)(config));
+    processors.push((0, reconcileTransformSerializerPlugin_1.createReconcileTransformerPlugin)(config));
     processors.push((...args) => {
         // @ts-expect-error: This is injected by Expo's MetroBundlerDevServer so it isn't available in development server requests.
         const metroConfig = args[3]._metroConfig ?? config;
