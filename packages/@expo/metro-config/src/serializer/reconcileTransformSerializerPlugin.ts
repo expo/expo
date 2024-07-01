@@ -14,7 +14,7 @@ import collectDependencies, {
   Options as CollectDependenciesOptions,
 } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import countLines from 'metro/src/lib/countLines';
-import { InputConfigT, SerializerConfigT } from 'metro-config';
+import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
 
