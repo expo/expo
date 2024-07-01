@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Update URL params docblocks ([#29799](https://github.com/expo/expo/pull/29799) by [@aaron-mota](https://github.com/aaron-mota))
+- Prevent creating params object with null prototype ([#30009](https://github.com/expo/expo/pull/30009) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.5.16 - 2024-06-10
 

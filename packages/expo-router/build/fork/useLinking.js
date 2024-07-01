@@ -219,7 +219,10 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
                     const focusedRoute = (0, core_1.findFocusedRoute)(stateForPath);
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
-                        (0, fast_deep_equal_1.default)(focusedRoute.params, route.params)) {
+                        /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L2278  */
+                        (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })
+                    /* End of fork */
+                    ) {
                         /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
                         return (0, getPathFromState_1.appendBaseUrl)(route.path);
                         /* End of fork */
