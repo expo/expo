@@ -717,14 +717,17 @@ export default function App() {
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
 
   **Web dev**: `https://localhost:19006`
-    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
-    - Adding a slash to the end of the URL doesn't matter.
+
+  - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+  - Adding a slash to the end of the URL doesn't matter.
 
   **Standalone / development build**: `your-scheme://`
-    - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
+
+  - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
 
   **Web production**: `https://yourwebsite.com`
-    - Set this to whatever your deployed website URL is.
+
+  - Set this to whatever your deployed website URL is.
 
 {/* prettier-ignore */}
 ```tsx Coinbase Auth Example
@@ -1601,14 +1604,21 @@ export default function App() {
 
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
-- Setup your redirect URIs: Your project > Edit Settings > Redirect URIs (be sure to save after making changes).
-  - _Web dev_: `https://localhost:19006`
-    - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
-  - _Standalone / development build_: `your-scheme://`
-    - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
-  - _Web production_: `https://yourwebsite.com`
-    - Set this to whatever your deployed website URL is.
+- Setup your redirect URIs: **Your project > Edit Settings > Redirect URIs**, be sure to save after making changes.
+
+  **Web dev**: `https://localhost:19006`
+
+  - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
+  - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+
+  **Standalone / development build**: `your-scheme://`
+
+  - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
+
+  **Web production**: `https://yourwebsite.com`
+
+  - Set this to whatever your deployed website URL is.
+
 - Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
 
 {/* prettier-ignore */}

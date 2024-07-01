@@ -5,9 +5,8 @@ description: Learn how to use app/universal links to open your app from a standa
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
 
 Universal links are different from standard deep links as they use regular HTTPS links to direct users to a specific route in your app. If a user doesn't have your app installed, the link will take them to the associated website. This allows you to send notification emails with links that work seamlessly on desktop web browsers while opening the content in your app on mobile. Android refers to this concept as **app links**, and iOS refers to it as **universal links**. This guide specifically discusses universal links that do not use a custom URL scheme.
 

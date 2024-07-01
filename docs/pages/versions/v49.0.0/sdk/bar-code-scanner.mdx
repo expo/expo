@@ -7,16 +7,16 @@ iconUrl: '/static/images/packages/expo-barcode-scanner.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-barcode-scanner` provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.

@@ -7,10 +7,10 @@ maxHeadingDepth: 5
 iconUrl: '/static/images/packages/expo-sqlite.png'
 ---
 
+import PrereleaseNotice from '~/components/PrereleaseNotice';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import PrereleaseNotice from '~/components/PrereleaseNotice';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -386,4 +386,4 @@ The following table summarizes the common API for [`SQLiteDatabase`](#sqlitedata
 | [`getAllAsync()`](#getallasyncsource-params)     | [`executeAsync()`](#executeasyncparams) + [`getFirstAsync()`](#getallasync)   | Fetches all query results at once.                                                                                                                                     | Best suited for scenarios with smaller result sets, such as queries with a LIMIT clause, like `SELECT * FROM Table LIMIT 100`, where you intend to retrieve all results in a single batch. |
 | [`getEachAsync()`](#geteachasyncsource-params)   | [`executeAsync()`](#executeasyncparams) + `for-await-of` async iterator       | Provides an iterator for result set traversal. This method fetches one row at a time from the database, potentially reducing memory usage compared to `getAllAsync()`. | Recommended for handling large result sets incrementally, such as with infinite scrolling implementations.                                                                                 |
 
-<APISection packageName="expo-sqlite-next" apiName="SQLite" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-sqlite-next" apiName="SQLite" exposeAllClassPropsInSidebar />
