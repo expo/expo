@@ -201,11 +201,10 @@ export async function reconcileTransformSerializerPlugin(
       outputItem.data.code
     );
 
-    // @ts-expect-error: TODO: Source maps are likely completely broken.
+    // @ts-expect-error: incorrectly typed upstream
     let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
     let code = result.code;
 
-    console.log(graph.transformOptions, options);
     if (reconcile.minify) {
       const source = value.getSource().toString('utf-8');
 

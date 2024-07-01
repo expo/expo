@@ -165,10 +165,9 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             sourceFileName: value.path,
             sourceMaps: true,
         }, outputItem.data.code);
-        // @ts-expect-error: TODO: Source maps are likely completely broken.
+        // @ts-expect-error: incorrectly typed upstream
         let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
         let code = result.code;
-        console.log(graph.transformOptions, options);
         if (reconcile.minify) {
             const source = value.getSource().toString('utf-8');
             ({ map, code } = await (0, metro_transform_worker_1.minifyCode)(reconcile.minify, value.path, result.code, source, map, reserved));
