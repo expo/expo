@@ -7,12 +7,13 @@ iconUrl: '/static/images/packages/expo-updates.png'
 platforms: ['android', 'ios', 'tvos']
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 `expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates.
 
@@ -24,7 +25,7 @@ Alternatively, it is also possible to configure the `expo-updates` library manua
 
 <Collapsible summary="Manual installation and configuration">
 
-<APIInstallSection hideBareInstructions={true} />
+<APIInstallSection hideBareInstructions />
 
 If you're installing this library in a [bare React Native app](/bare/overview/) or a generic app with manually configured native code, follow these [installation instructions](/bare/installing-updates/).
 
