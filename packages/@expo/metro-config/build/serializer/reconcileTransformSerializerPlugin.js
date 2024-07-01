@@ -166,6 +166,7 @@ function createReconcileTransformerPlugin(config) {
                 sourceFileName: value.path,
                 sourceMaps: true,
             }, outputItem.data.code);
+            // @ts-expect-error: TODO: Source maps are likely completely broken.
             let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
             let code = result.code;
             if (reconcile.minify) {

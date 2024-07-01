@@ -18,17 +18,6 @@ function getDep(graph, name: string) {
   return graph.dependencies.get(name);
 }
 
-function getModules(graph, name: string) {
-  return getDep(graph, name).output[0].data.modules;
-}
-
-function expectSideEffects(graph, name: string) {
-  return expect(graph.dependencies.get(name).sideEffects);
-}
-
-function expectImports(graph, name: string) {
-  return expect(getModules(graph, name).imports);
-}
 function expectCollectDeps(graph, name: string) {
   return expect([...getDep(graph, name).dependencies.values()]);
 }
@@ -39,7 +28,7 @@ const AnyPosition = expect.objectContaining({
 });
 
 it(`does unlink if a multiple import chains are removed`, async () => {
-  const [[, , graph], artifacts] = await serializeShakingAsync({
+  const [[, , graph]] = await serializeShakingAsync({
     'index.js': `
 import {run} from "./b";
 export {foo} from "./b";

@@ -202,6 +202,7 @@ export function createReconcileTransformerPlugin(config: InputConfigT) {
         outputItem.data.code
       );
 
+      // @ts-expect-error: TODO: Source maps are likely completely broken.
       let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
       let code = result.code;
 

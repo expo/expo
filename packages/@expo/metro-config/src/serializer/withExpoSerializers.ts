@@ -19,7 +19,7 @@ import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { createReconcileTransformerPlugin } from './reconcileTransformSerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
-import { treeShakeSerializerPlugin } from './treeShakeSerializerPlugin';
+import { treeShakeSerializer } from './treeShakeSerializerPlugin';
 import { env } from '../env';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -56,7 +56,7 @@ export function withExpoSerializers(
   }
 
   // Then tree-shake the modules.
-  processors.push(treeShakeSerializerPlugin(config));
+  processors.push(treeShakeSerializer);
   // Then finish transforming the modules from AST to JS.
   processors.push(createReconcileTransformerPlugin(config));
 

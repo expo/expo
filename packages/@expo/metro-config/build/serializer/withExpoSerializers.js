@@ -27,7 +27,7 @@ function withExpoSerializers(config, options = {}) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
     // Then tree-shake the modules.
-    processors.push((0, treeShakeSerializerPlugin_1.treeShakeSerializerPlugin)(config));
+    processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
     // Then finish transforming the modules from AST to JS.
     processors.push((0, reconcileTransformSerializerPlugin_1.createReconcileTransformerPlugin)(config));
     processors.push((...args) => {

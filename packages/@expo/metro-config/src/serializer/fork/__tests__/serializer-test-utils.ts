@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
 import { createReconcileTransformerPlugin } from '../../reconcileTransformSerializerPlugin';
-import { treeShakeSerializerPlugin } from '../../treeShakeSerializerPlugin';
+import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,
@@ -88,6 +88,6 @@ export async function serializeShakingAsync(
         ...options,
       },
     },
-    [treeShakeSerializerPlugin({}), createReconcileTransformerPlugin({ projectRoot: '/app' })]
+    [treeShakeSerializer, createReconcileTransformerPlugin({ projectRoot: '/app' })]
   );
 }
