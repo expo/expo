@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `requestTrackingPermissionsAsync` being resolved instantly due to iOS 17.4 bug
+
 ### 💡 Others
 
 ## 4.0.2 — 2024-04-29
