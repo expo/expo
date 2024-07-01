@@ -24,13 +24,13 @@ export function wrapFetchWithCache(fetch: FetchLike, cache: ResponseCache): Fetc
 
       // Execute the fetch request
       const response = await fetch(url, init);
-      if (!response.ok) {
+      if (!response.ok || !response.body) {
         return response;
       }
 
       // Cache the response
       cachedResponse = await cache.set(cacheKey, {
-        body: response.body!, // TODO(cedric): check if this causes issues
+        body: response.body,
         info: getResponseInfo(response),
       });
 

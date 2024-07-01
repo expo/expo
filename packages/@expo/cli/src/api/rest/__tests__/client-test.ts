@@ -1,4 +1,3 @@
-import assert from 'assert';
 import nock from 'nock';
 import { URLSearchParams } from 'url';
 
@@ -9,7 +8,7 @@ import { ApiV2Error, fetchAsync } from '../client';
 jest.mock('../../user/UserSettings');
 
 it('converts Expo APIv2 error to ApiV2Error', async () => {
-  const scope = nock(getExpoApiBaseUrl())
+  nock(getExpoApiBaseUrl())
     .post('/v2/test')
     .reply(400, {
       errors: [
@@ -26,23 +25,19 @@ it('converts Expo APIv2 error to ApiV2Error', async () => {
   expect.assertions(6);
 
   try {
-    await fetchAsync('test', {
-      method: 'POST',
-    });
+    await fetchAsync('test', { method: 'POST' });
   } catch (error: any) {
-    assert(error instanceof ApiV2Error);
-
+    expect(error).toBeInstanceOf(ApiV2Error);
     expect(error.message).toEqual('hellomessage');
     expect(error.expoApiV2ErrorCode).toEqual('TEST_CODE');
     expect(error.expoApiV2ErrorDetails).toEqual({ who: 'world' });
     expect(error.expoApiV2ErrorMetadata).toEqual({ an: 'object' });
     expect(error.expoApiV2ErrorServerStack).toEqual('line 1: hello');
   }
-  expect(scope.isDone()).toBe(true);
 });
 
 it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
-  const scope = nock(getExpoApiBaseUrl())
+  nock(getExpoApiBaseUrl())
     .post('/v2/test')
     .reply(401, {
       errors: [
@@ -57,33 +52,25 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
   expect.assertions(3);
 
   try {
-    await fetchAsync('test', {
-      method: 'POST',
-    });
+    await fetchAsync('test', { method: 'POST' });
   } catch (error: any) {
-    assert(error instanceof ApiV2Error);
-
+    expect(error).toBeInstanceOf(ApiV2Error);
     expect(error.message).toEqual('Your username, email, or password was incorrect.');
     expect(error.expoApiV2ErrorCode).toEqual('AUTHENTICATION_ERROR');
   }
-  expect(scope.isDone()).toBe(true);
 });
 
 it('does not convert non-APIv2 error to ApiV2Error', async () => {
-  const scope = nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
+  nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
 
-  expect.assertions(1);
+  expect.assertions(2);
 
   try {
-    await fetchAsync('test', {
-      method: 'POST',
-    });
+    console.log(await fetchAsync('test', { method: 'POST' }));
   } catch (error: any) {
-    // TODO(cedric): figure out an alternative
-    // expect(error).toBeInstanceOf(FetchError);
+    expect(error).toBeInstanceOf(Response);
     expect(error).not.toBeInstanceOf(ApiV2Error);
   }
-  expect(scope.isDone()).toBe(true);
 });
 
 it('makes a get request', async () => {
