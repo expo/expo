@@ -32,7 +32,7 @@ module.exports = {
               'dark-theme',
               'dialog-.+',
               'terminal-snippet',
-              'table-wrapper'
+              'table-wrapper',
             ],
             cssFiles: ['node_modules/@expo/styleguide/dist/global.css'],
             ...TAILWIND_DEFAULTS,
