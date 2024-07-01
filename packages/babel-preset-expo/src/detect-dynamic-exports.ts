@@ -59,7 +59,7 @@ export function detectDynamicExports(api: ConfigAPI & { types: typeof types }): 
 
             // TODO: Will this cause problems?
             // Stop early on the first occurrence.
-            path.stop();
+            // path.stop();
           }
         }
       },
@@ -88,7 +88,7 @@ export function detectDynamicExports(api: ConfigAPI & { types: typeof types }): 
           state.file.metadata.hasCjsExports = true;
 
           // TODO: Will this cause problems?
-          path.stop();
+          //   path.stop();
         } else if (
           t.isIdentifier(left, { name: 'exports' }) &&
           path.scope.hasGlobal('exports') &&

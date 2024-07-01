@@ -7,6 +7,7 @@
 import { NodePath, traverse } from '@babel/core';
 import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
+import { codeFrameColumns } from '@babel/code-frame';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 
@@ -161,8 +162,26 @@ function populateGraphWithAst(graph: ReadOnlyGraph) {
         return;
       }
 
-      // console.log('has ast:', !!output.data.ast, output.data.code);
-      output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
+      try {
+        // console.log('has ast:', !!output.data.ast, output.data.code);
+        output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
+      } catch (error) {
+        if (error instanceof SyntaxError && 'loc' in error && error.loc) {
+          // TODO: Unify with similar error handling in the transformer.
+          // Print code frame for syntax errors.
+          const frame = codeFrameColumns(
+            output.data.code,
+            { start: { line: error.loc.line, column: error.loc.column } },
+            { highlightCode: true }
+          );
+          console.error(`[Optimizer] Syntax error in ${value.path}:`);
+          console.error(frame);
+        } else {
+          const msg = `[Optimizer] Failed to parse AST for: ${value.path}\n----\n${output.data.code}\n----`;
+          console.error(msg);
+        }
+        throw error;
+      }
       output.data.modules = {
         imports: [],
       };

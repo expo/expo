@@ -33,6 +33,7 @@ exports.isShakingEnabled = exports.accessAst = exports.printAst = exports.treeSh
 const core_1 = require("@babel/core");
 const babylon = __importStar(require("@babel/parser"));
 const types = __importStar(require("@babel/types"));
+const code_frame_1 = require("@babel/code-frame");
 const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
 const annotate = false;
@@ -156,8 +157,24 @@ function populateGraphWithAst(graph) {
                 debug('Skipping tree-shake for wrapped module: ' + value.path);
                 return;
             }
-            // console.log('has ast:', !!output.data.ast, output.data.code);
-            output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
+            try {
+                // console.log('has ast:', !!output.data.ast, output.data.code);
+                output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
+            }
+            catch (error) {
+                if (error instanceof SyntaxError && 'loc' in error && error.loc) {
+                    // TODO: Unify with similar error handling in the transformer.
+                    // Print code frame for syntax errors.
+                    const frame = (0, code_frame_1.codeFrameColumns)(output.data.code, { start: { line: error.loc.line, column: error.loc.column } }, { highlightCode: true });
+                    console.error(`[Optimizer] Syntax error in ${value.path}:`);
+                    console.error(frame);
+                }
+                else {
+                    const msg = `[Optimizer] Failed to parse AST for: ${value.path}\n----\n${output.data.code}\n----`;
+                    console.error(msg);
+                }
+                throw error;
+            }
             output.data.modules = {
                 imports: [],
             };
