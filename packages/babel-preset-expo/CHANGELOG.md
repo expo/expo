@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `hasCjsExports` metadata for tracking static exports.
 - Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
