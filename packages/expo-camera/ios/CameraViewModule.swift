@@ -152,7 +152,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
-      AsyncFunction("takePicture") { (view: CameraView, options: TakePictureOptions, promise: Promise) in
+      AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
         #else // not simulator

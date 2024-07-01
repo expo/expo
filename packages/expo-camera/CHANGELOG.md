@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fix calling `takePicture` from the simulator.
+- On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
