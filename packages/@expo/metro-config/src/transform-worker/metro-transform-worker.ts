@@ -99,7 +99,7 @@ export type ReconcileTransformSettings = {
     minifierPath: string;
     minifierConfig: JsTransformerConfig['minifierConfig'];
   };
-  collectDependenciesOptions: CollectDependenciesOptions;
+  collectDependenciesOptions?: CollectDependenciesOptions;
 
   unstable_dependencyMapReservedName?: string;
   optimizationSizeLimit?: number;
@@ -130,7 +130,6 @@ function getDynamicDepsBehavior(
 
 export const minifyCode = async (
   config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>,
-  projectRoot: string,
   filename: string,
   code: string,
   source: string,
@@ -485,7 +484,6 @@ async function transformJS(
   if (minify) {
     ({ map, code } = await minifyCode(
       config,
-      projectRoot,
       file.filename,
       result.code,
       file.code,
@@ -493,6 +491,27 @@ async function transformJS(
       reserved
     ));
   }
+
+  const possibleReconcile: ReconcileTransformSettings | undefined = treeshake
+    ? {
+        importDefault,
+        importAll,
+        normalizePseudoGlobals: shouldNormalizePseudoGlobals,
+        globalPrefix: config.globalPrefix,
+        unstable_compactOutput: config.unstable_compactOutput,
+        collectDependenciesOptions,
+        minify: minify
+          ? {
+              minifierPath: config.minifierPath,
+              minifierConfig: config.minifierConfig,
+            }
+          : undefined,
+        unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+        optimizationSizeLimit: config.optimizationSizeLimit,
+        unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+        unstable_renameRequire,
+      }
+    : undefined;
 
   const output: ExpoJsOutput[] = [
     {
@@ -503,29 +522,11 @@ async function transformJS(
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactClientReference: file.reactClientReference,
-        ...(treeshake
+        ...(possibleReconcile
           ? {
               // Store settings for the module that will be used to finish transformation after graph-based optimizations
               // have finished.
-              reconcile: {
-                importDefault,
-                importAll,
-                normalizePseudoGlobals: shouldNormalizePseudoGlobals,
-                globalPrefix: config.globalPrefix,
-                unstable_compactOutput: config.unstable_compactOutput,
-                collectDependenciesOptions,
-                minify: minify
-                  ? {
-                      minifierPath: config.minifierPath,
-                      minifierConfig: config.minifierConfig,
-                    }
-                  : undefined,
-                unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
-                optimizationSizeLimit: config.optimizationSizeLimit,
-                unstable_disableNormalizePseudoGlobals:
-                  config.unstable_disableNormalizePseudoGlobals,
-                unstable_renameRequire,
-              },
+              reconcile: possibleReconcile,
             }
           : {}),
       },
@@ -610,7 +611,7 @@ async function transformJSWithBabel(
 
 async function transformJSON(
   file: JSONFile,
-  { options, config, projectRoot }: TransformationContext
+  { options, config }: TransformationContext
 ): Promise<TransformResponse> {
   let code =
     config.unstable_disableModuleWrapping === true
@@ -621,7 +622,7 @@ async function transformJSON(
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));
+    ({ map, code } = await minifyCode(config, file.filename, code, file.code, map));
   }
 
   let jsType: JSFileType;

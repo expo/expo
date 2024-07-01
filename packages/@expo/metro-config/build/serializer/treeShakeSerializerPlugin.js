@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = void 0;
+exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exports.isModuleEmptyFor = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -38,41 +38,32 @@ const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
 const OPTIMIZE_GRAPH = true;
 const generate = require('@babel/generator').default;
-function isEmptyModule(value) {
-    function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
-        if (!ast?.program.body.length) {
-            return true;
-        }
-        let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
-        (0, core_1.traverse)(ast, {
-            enter(path) {
-                const { node } = path;
-                // If it's not a Directive, ExpressionStatement, or empty body,
-                // it means we have actual code
-                if (node.type !== 'Directive' &&
-                    node.type !== 'ExpressionStatement' &&
-                    !(node.type === 'Program' && node.body.length === 0)) {
-                    isEmptyOrCommentsAndUseStrict = false;
-                    path.stop(); // No need to traverse further
-                    return;
-                }
-                // If it's an ExpressionStatement, check if it is "use strict"
-                if (node.type === 'ExpressionStatement' && node.expression) {
-                    // Check if it's a Literal with value "use strict"
-                    const expression = node.expression;
-                    if (expression.type !== 'Literal' || expression.value !== 'use strict') {
-                        isEmptyOrCommentsAndUseStrict = false;
-                        path.stop(); // No need to traverse further
-                    }
-                }
-            },
-            // If we encounter any non-comment nodes, it's not empty
-            noScope: true,
-        });
-        return isEmptyOrCommentsAndUseStrict;
+function isModuleEmptyFor(ast) {
+    if (!ast?.program.body.length) {
+        return true;
     }
+    let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
+    (0, core_1.traverse)(ast, {
+        enter(path) {
+            const { node } = path;
+            // If it's not a Directive, ExpressionStatement, or empty body,
+            // it means we have actual code
+            if (node.type !== 'Directive' &&
+                node.type !== 'ExpressionStatement' &&
+                !(node.type === 'Program' && node.body.length === 0)) {
+                isEmptyOrCommentsAndUseStrict = false;
+                path.stop(); // No need to traverse further
+            }
+        },
+        // If we encounter any non-comment nodes, it's not empty
+        noScope: true,
+    });
+    return isEmptyOrCommentsAndUseStrict;
+}
+exports.isModuleEmptyFor = isModuleEmptyFor;
+function isEmptyModule(value) {
     return value.output.every((outputItem) => {
-        return isASTEmptyOrContainsOnlyCommentsAndUseStrict(accessAst(outputItem));
+        return isModuleEmptyFor(accessAst(outputItem));
     });
 }
 // Collect a list of exports that are not used within the module.
@@ -148,7 +139,6 @@ function populateGraphWithAst(graph) {
                 return;
             }
             try {
-                // console.log('has ast:', !!output.data.ast, output.data.code);
                 // @ts-expect-error: ast is not on type.
                 output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
             }
@@ -318,6 +308,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         // Useful for testing the transform reconciler...
         return [entryPoint, preModules, graph, options];
     }
+    const starExportsForModules = new Map();
     for (const value of graph.dependencies.values()) {
         // TODO: Move this to the transformer and combine with collect dependencies.
         getExportsForModule(value);
@@ -328,8 +319,8 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         populateModuleWithImportUsage(value);
     }
     function getExportsForModule(value, checkedModules = new Set()) {
-        if (value.starExports) {
-            return value.starExports;
+        if (starExportsForModules.has(value.path)) {
+            return starExportsForModules.get(value.path);
         }
         if (checkedModules.has(value.path)) {
             // TODO: Handle circular dependencies.
@@ -359,10 +350,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         // Indicates that the module does not have any dynamic exports, e.g. `module.exports`, `Object.assign(exports)`, etc.
         let isStatic = true;
         let hasUnresolvableStarExport = false;
-        const t = types;
         for (const index in value.output) {
             const outputItem = value.output[index];
-            console.log(outputItem);
+            // console.log(outputItem);
             const ast = accessAst(outputItem);
             if (!ast)
                 continue;
@@ -392,6 +382,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             // ```
                             // NOTE: It's import we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
                             path.replaceWithMultiple([
+                                // @ts-expect-error: missing type
                                 types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))), types.stringLiteral(path.node.source.value)),
                             ]);
                         }
@@ -438,12 +429,13 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             });
             console.log('OUTPUT:', value.path + '\n\n' + generate(ast).code);
         }
-        value.starExports = {
+        const starExport = {
             exportNames,
             isStatic,
             hasUnresolvableStarExport,
         };
-        return value.starExports;
+        starExportsForModules.set(value.path, starExport);
+        return starExport;
     }
     // return [entryPoint, preModules, graph, options];
     const beforeList = [...graph.dependencies.keys()];
@@ -451,7 +443,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
     // treeShakeAll();
     optimizePaths([entryPoint]);
     // Debug pass: Print all orphaned modules.
-    for (const [depId, value] of graph.dependencies.entries()) {
+    for (const [, value] of graph.dependencies.entries()) {
         if (value.inverseDependencies.size === 0) {
             console.log('Orphan:', value.path);
         }
@@ -466,9 +458,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 }
             }
             if (!hasNormalNode) {
-                console.log(`ERROR: All inverse dependencies are missing for: ${value.path}`);
+                console.error(`ERROR: All inverse dependencies are missing for: ${value.path}`);
                 // TODO: Make this not happen ever
-                graph.dependencies.delete(depId);
+                // graph.dependencies.delete(depId);
             }
         }
     }
@@ -800,6 +792,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 else if (types.isIdentifier(specifier.imported)) {
                     return !unusedImports.includes(specifier.imported.name);
                 }
+                return false;
             });
             const importModuleId = path.node.source.value;
             if (originalSize !== path.node.specifiers.length) {

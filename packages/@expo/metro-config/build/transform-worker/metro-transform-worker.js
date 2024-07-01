@@ -68,7 +68,7 @@ function getDynamicDepsBehavior(inPackages, filename) {
             throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
     }
 }
-const minifyCode = async (config, projectRoot, filename, code, source, map, reserved = []) => {
+const minifyCode = async (config, filename, code, source, map, reserved = []) => {
     const sourceMap = (0, metro_source_map_1.fromRawMappings)([
         {
             code,
@@ -336,8 +336,28 @@ async function transformJS(file, { config, options, projectRoot }) {
     let code = result.code;
     // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
     if (minify) {
-        ({ map, code } = await (0, exports.minifyCode)(config, projectRoot, file.filename, result.code, file.code, map, reserved));
+        ({ map, code } = await (0, exports.minifyCode)(config, file.filename, result.code, file.code, map, reserved));
     }
+    const possibleReconcile = treeshake
+        ? {
+            importDefault,
+            importAll,
+            normalizePseudoGlobals: shouldNormalizePseudoGlobals,
+            globalPrefix: config.globalPrefix,
+            unstable_compactOutput: config.unstable_compactOutput,
+            collectDependenciesOptions,
+            minify: minify
+                ? {
+                    minifierPath: config.minifierPath,
+                    minifierConfig: config.minifierConfig,
+                }
+                : undefined,
+            unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+            optimizationSizeLimit: config.optimizationSizeLimit,
+            unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+            unstable_renameRequire,
+        }
+        : undefined;
     const output = [
         {
             data: {
@@ -347,28 +367,11 @@ async function transformJS(file, { config, options, projectRoot }) {
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
-                ...(treeshake
+                ...(possibleReconcile
                     ? {
                         // Store settings for the module that will be used to finish transformation after graph-based optimizations
                         // have finished.
-                        reconcile: {
-                            importDefault,
-                            importAll,
-                            normalizePseudoGlobals: shouldNormalizePseudoGlobals,
-                            globalPrefix: config.globalPrefix,
-                            unstable_compactOutput: config.unstable_compactOutput,
-                            collectDependenciesOptions,
-                            minify: minify
-                                ? {
-                                    minifierPath: config.minifierPath,
-                                    minifierConfig: config.minifierConfig,
-                                }
-                                : undefined,
-                            unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
-                            optimizationSizeLimit: config.optimizationSizeLimit,
-                            unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
-                            unstable_renameRequire,
-                        },
+                        reconcile: possibleReconcile,
                     }
                     : {}),
             },
@@ -428,14 +431,14 @@ async function transformJSWithBabel(file, context) {
     };
     return await transformJS(jsFile, context);
 }
-async function transformJSON(file, { options, config, projectRoot }) {
+async function transformJSON(file, { options, config }) {
     let code = config.unstable_disableModuleWrapping === true
         ? JsFileWrapping_1.default.jsonToCommonJS(file.code)
         : JsFileWrapping_1.default.wrapJson(file.code, config.globalPrefix);
     let map = [];
     const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify) {
-        ({ map, code } = await (0, exports.minifyCode)(config, projectRoot, file.filename, code, file.code, map));
+        ({ map, code } = await (0, exports.minifyCode)(config, file.filename, code, file.code, map));
     }
     let jsType;
     if (file.type === 'asset') {

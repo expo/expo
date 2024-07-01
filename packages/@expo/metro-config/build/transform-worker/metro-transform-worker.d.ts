@@ -28,13 +28,13 @@ export type ReconcileTransformSettings = {
         minifierPath: string;
         minifierConfig: JsTransformerConfig['minifierConfig'];
     };
-    collectDependenciesOptions: CollectDependenciesOptions;
+    collectDependenciesOptions?: CollectDependenciesOptions;
     unstable_dependencyMapReservedName?: string;
     optimizationSizeLimit?: number;
     unstable_disableNormalizePseudoGlobals?: boolean;
     normalizePseudoGlobals: boolean;
 };
-export declare const minifyCode: (config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>, projectRoot: string, filename: string, code: string, source: string, map: MetroSourceMapSegmentTuple[], reserved?: string[]) => Promise<{
+export declare const minifyCode: (config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>, filename: string, code: string, source: string, map: MetroSourceMapSegmentTuple[], reserved?: string[]) => Promise<{
     code: string;
     map: MetroSourceMapSegmentTuple[];
 }>;

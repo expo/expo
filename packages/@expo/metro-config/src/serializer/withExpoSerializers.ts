@@ -16,7 +16,7 @@ import {
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
-import { createReconcileTransformerPlugin } from './reconcileTransformSerializerPlugin';
+import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { treeShakeSerializer } from './treeShakeSerializerPlugin';
@@ -58,7 +58,7 @@ export function withExpoSerializers(
   // Then tree-shake the modules.
   processors.push(treeShakeSerializer);
   // Then finish transforming the modules from AST to JS.
-  processors.push(createReconcileTransformerPlugin(config));
+  processors.push(reconcileTransformSerializerPlugin);
 
   processors.push((...args) => {
     // @ts-expect-error: This is injected by Expo's MetroBundlerDevServer so it isn't available in development server requests.

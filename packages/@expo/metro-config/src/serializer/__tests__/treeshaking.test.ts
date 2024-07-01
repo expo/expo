@@ -1,4 +1,7 @@
+import * as babylon from '@babel/parser';
+
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
+import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';
 
 jest.mock('../exportHermes', () => {
   return {
@@ -323,6 +326,40 @@ it(`barrel default as`, async () => {
     expect.objectContaining({ key: '/app/math.js' }),
   ]);
   expect(artifacts[0].source).not.toMatch('subtract');
+});
+
+describe(isModuleEmptyFor, () => {
+  [
+    ``,
+    `// comment`,
+    `"use strict"`,
+    // `true`,
+    [
+      'directives',
+      `
+    "use client"
+    // Hey
+    `,
+    ],
+    [
+      'multi-line comment',
+      `
+      /** 
+       * multi-line comment 
+       */`,
+    ],
+  ].forEach((source) => {
+    const [title, src] = Array.isArray(source) ? source : [source, source];
+    it(`returns true for: ${title}`, () => {
+      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(true);
+    });
+  });
+  [`export {}`, `const foo = 'bar'`, `3`, `{}`, `true`, `console.log('hey')`].forEach((source) => {
+    const [title, src] = Array.isArray(source) ? source : [source, source];
+    it(`returns false for: ${title}`, () => {
+      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(false);
+    });
+  });
 });
 
 describe('metro require', () => {

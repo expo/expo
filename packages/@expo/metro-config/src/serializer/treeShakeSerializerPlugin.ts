@@ -27,6 +27,7 @@ type Ast = babylon.ParseResult<types.File>;
 type AdvancedMixedOutput = {
   readonly data: {
     code: string;
+    hasCjsExports?: boolean;
     modules?: {
       imports: {
         source: string;
@@ -47,49 +48,37 @@ type AdvancedMixedOutput = {
   readonly type: string;
 };
 
-function isEmptyModule(value: Module<MixedOutput>): boolean {
-  function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast?: Ast) {
-    if (!ast?.program.body.length) {
-      return true;
-    }
-
-    let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
-
-    traverse(ast, {
-      enter(path) {
-        const { node } = path;
-
-        // If it's not a Directive, ExpressionStatement, or empty body,
-        // it means we have actual code
-        if (
-          node.type !== 'Directive' &&
-          node.type !== 'ExpressionStatement' &&
-          !(node.type === 'Program' && node.body.length === 0)
-        ) {
-          isEmptyOrCommentsAndUseStrict = false;
-          path.stop(); // No need to traverse further
-          return;
-        }
-
-        // If it's an ExpressionStatement, check if it is "use strict"
-        if (node.type === 'ExpressionStatement' && node.expression) {
-          // Check if it's a Literal with value "use strict"
-          const expression = node.expression;
-          if (expression.type !== 'Literal' || expression.value !== 'use strict') {
-            isEmptyOrCommentsAndUseStrict = false;
-            path.stop(); // No need to traverse further
-          }
-        }
-      },
-      // If we encounter any non-comment nodes, it's not empty
-      noScope: true,
-    });
-
-    return isEmptyOrCommentsAndUseStrict;
+export function isModuleEmptyFor(ast?: Ast) {
+  if (!ast?.program.body.length) {
+    return true;
   }
 
+  let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
+
+  traverse(ast, {
+    enter(path) {
+      const { node } = path;
+      // If it's not a Directive, ExpressionStatement, or empty body,
+      // it means we have actual code
+      if (
+        node.type !== 'Directive' &&
+        node.type !== 'ExpressionStatement' &&
+        !(node.type === 'Program' && node.body.length === 0)
+      ) {
+        isEmptyOrCommentsAndUseStrict = false;
+        path.stop(); // No need to traverse further
+      }
+    },
+    // If we encounter any non-comment nodes, it's not empty
+    noScope: true,
+  });
+
+  return isEmptyOrCommentsAndUseStrict;
+}
+
+function isEmptyModule(value: Module<MixedOutput>): boolean {
   return value.output.every((outputItem) => {
-    return isASTEmptyOrContainsOnlyCommentsAndUseStrict(accessAst(outputItem));
+    return isModuleEmptyFor(accessAst(outputItem));
   });
 }
 
@@ -174,7 +163,6 @@ function populateGraphWithAst(graph: ReadOnlyGraph) {
       }
 
       try {
-        // console.log('has ast:', !!output.data.ast, output.data.code);
         // @ts-expect-error: ast is not on type.
         output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
       } catch (error) {
@@ -353,7 +341,6 @@ const markUnused = (path: NodePath) => {
   // Format path as code
   // console.log('Delete:\n' + generate(path.node).code);
   // console.log();
-
   path.remove();
 };
 
@@ -374,6 +361,10 @@ export async function treeShakeSerializer(
     // Useful for testing the transform reconciler...
     return [entryPoint, preModules, graph, options];
   }
+  const starExportsForModules = new Map<
+    string,
+    { exportNames: string[]; isStatic: boolean; hasUnresolvableStarExport: boolean }
+  >();
 
   for (const value of graph.dependencies.values()) {
     // TODO: Move this to the transformer and combine with collect dependencies.
@@ -390,8 +381,8 @@ export async function treeShakeSerializer(
     value: Module<AdvancedMixedOutput>,
     checkedModules: Set<string> = new Set()
   ): { exportNames: string[]; isStatic: boolean; hasUnresolvableStarExport: boolean } {
-    if (value.starExports) {
-      return value.starExports;
+    if (starExportsForModules.has(value.path)) {
+      return starExportsForModules.get(value.path)!;
     }
     if (checkedModules.has(value.path)) {
       // TODO: Handle circular dependencies.
@@ -430,10 +421,9 @@ export async function treeShakeSerializer(
     let isStatic = true;
     let hasUnresolvableStarExport = false;
 
-    const t = types;
     for (const index in value.output) {
       const outputItem = value.output[index];
-      console.log(outputItem);
+      // console.log(outputItem);
 
       const ast = accessAst(outputItem);
 
@@ -468,6 +458,7 @@ export async function treeShakeSerializer(
               // ```
               // NOTE: It's import we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
               path.replaceWithMultiple([
+                // @ts-expect-error: missing type
                 types.ExportNamedDeclaration(
                   null,
                   exportResults.exportNames.map((exportName) =>
@@ -528,13 +519,14 @@ export async function treeShakeSerializer(
       console.log('OUTPUT:', value.path + '\n\n' + generate(ast).code);
     }
 
-    value.starExports = {
+    const starExport = {
       exportNames,
       isStatic,
       hasUnresolvableStarExport,
     };
+    starExportsForModules.set(value.path, starExport);
 
-    return value.starExports;
+    return starExport;
   }
 
   // return [entryPoint, preModules, graph, options];
@@ -546,7 +538,7 @@ export async function treeShakeSerializer(
   optimizePaths([entryPoint]);
 
   // Debug pass: Print all orphaned modules.
-  for (const [depId, value] of graph.dependencies.entries()) {
+  for (const [, value] of graph.dependencies.entries()) {
     if (value.inverseDependencies.size === 0) {
       console.log('Orphan:', value.path);
     } else {
@@ -561,9 +553,9 @@ export async function treeShakeSerializer(
         }
       }
       if (!hasNormalNode) {
-        console.log(`ERROR: All inverse dependencies are missing for: ${value.path}`);
+        console.error(`ERROR: All inverse dependencies are missing for: ${value.path}`);
         // TODO: Make this not happen ever
-        graph.dependencies.delete(depId);
+        // graph.dependencies.delete(depId);
       }
     }
   }
@@ -992,6 +984,7 @@ export async function treeShakeSerializer(
         } else if (types.isIdentifier(specifier.imported)) {
           return !unusedImports.includes(specifier.imported.name);
         }
+        return false;
       });
 
       const importModuleId = path.node.source.value;
