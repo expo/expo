@@ -1,6 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { registerDevMenuItems } from 'expo-dev-menu';
 import * as Linking from 'expo-linking';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -109,13 +111,83 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
+const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 
-export default () => (
-  <NavigationContainer linking={linking}>
-    <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
-      {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-      {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-      <Switch.Screen name="main" component={TabNavigator} />
-    </Switch.Navigator>
-  </NavigationContainer>
-);
+export default () => {
+  const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
+  const [initialState, setInitialState] = React.useState();
+
+  React.useEffect(() => {
+    if (isReady) {
+      return;
+    }
+    const setupDevMenuItems = async () => {
+      const key = 'PERSIST_NAV_STATE';
+      const persistenceEnabled = !!(await AsyncStorage.getItem(key));
+
+      const label = persistenceEnabled
+        ? 'Disable navigation state persistence'
+        : 'Enable navigation state persistence';
+      const devMenuItems = [
+        {
+          shouldCollapse: true,
+          name: label,
+          callback: async () => {
+            try {
+              if (persistenceEnabled) {
+                await AsyncStorage.removeItem(key);
+              } else {
+                await AsyncStorage.setItem(key, 'true');
+              }
+              // refresh the dev menu labels with latest preference
+              await setupDevMenuItems();
+            } catch (err) {
+              console.error(err);
+            }
+          },
+        },
+      ];
+
+      await registerDevMenuItems(devMenuItems);
+      return persistenceEnabled;
+    };
+    const restoreState = async () => {
+      const persistenceEnabled = await setupDevMenuItems();
+
+      if (persistenceEnabled) {
+        const initialUrl = await Linking.getInitialURL();
+
+        if (initialUrl == null) {
+          // Only restore state if there's no deep link
+          const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
+          const state = savedStateString ? JSON.parse(savedStateString) : undefined;
+
+          if (state !== undefined) {
+            setInitialState(state);
+          }
+        }
+      }
+    };
+    restoreState()
+      .catch(console.error)
+      .finally(() => setIsReady(true));
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+  return (
+    <NavigationContainer
+      linking={linking}
+      initialState={initialState}
+      onStateChange={(state) => {
+        AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
+      }}>
+      <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
+        {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+        {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+        <Switch.Screen name="main" component={TabNavigator} />
+      </Switch.Navigator>
+    </NavigationContainer>
+  );
+};
