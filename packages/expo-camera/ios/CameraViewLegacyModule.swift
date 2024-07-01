@@ -3,7 +3,7 @@
 import AVFoundation
 import ExpoModulesCore
 
-let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarCodeScanned", "onFacesDetected", "onResponsiveOrientationChanged"]
+let cameraLegacyEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarCodeScanned", "onFacesDetected", "onResponsiveOrientationChanged"]
 
 public final class CameraViewLegacyModule: Module {
   public func definition() -> ModuleDefinition {
@@ -69,7 +69,7 @@ public final class CameraViewLegacyModule: Module {
 
     // swiftlint:disable:next closure_body_length
     View(CameraViewLegacy.self) {
-      Events(cameraEvents)
+      Events(cameraLegacyEvents)
 
       Prop("type") { (view, type: CameraTypeLegacy) in
         if view.presetCamera.rawValue != type.rawValue {
