@@ -189,16 +189,19 @@ Since Expo Router compiles your code into a separate directory you cannot use `_
 
 Instead, use `process.cwd()`, which gives you the directory where the project is being compiled.
 
-```tsx app/[id].tsx
+```tsx app/[category].tsx
+import fs from 'fs/promises';
+import path from 'path';
+
 export async function generateStaticParams(params: {
   id: string;
 }): Promise<Record<string, string>[]> {
-  const postPath = path.join(process.cwd(), './posts/', id, '.md');
-  const content = await fs.readFile(postPath);
+  const directory = await fs.readdir(path.join(process.cwd(), './posts/', category));
+  const posts = directory.filter(fileOrSubDirectory => return path.extname(fileOrSubDirectory) === '.md')
 
   return {
     id,
-    content,
+    posts,
   };
 }
 ```
