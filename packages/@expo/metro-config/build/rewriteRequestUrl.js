@@ -79,10 +79,6 @@ function getRewriteRequestUrl(projectRoot) {
                     ensured.searchParams.set('transform.bytecode', 'true');
                 }
             }
-            // TODO: This won't be needed since treeshake will be prod-only in the future.
-            if (!ensured.searchParams.has('transform.treeshake')) {
-                ensured.searchParams.set('transform.treeshake', 'true');
-            }
             const serverRoot = (0, getModulesPaths_1.getServerRoot)(projectRoot);
             const relativeEntry = path_1.default.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
             debug('Resolved entry point', { entry, relativeEntry, serverRoot });

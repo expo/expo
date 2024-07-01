@@ -25,13 +25,4 @@ config.resolver.blockList = [
 config.resolver.assetExts.push('db');
 config.transformer.enableBabelRCLookup = false;
 
-
-config.transformer.getTransformOptions = async () => ({
-  transform: {
-    experimentalImportSupport: true,
-    inlineRequires: false,
-  },
-});
-
-
 module.exports = config;
