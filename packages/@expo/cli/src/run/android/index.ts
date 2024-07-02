@@ -8,7 +8,7 @@ import * as Log from '../../log';
 import { assertWithOptionsArgs } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
 
-export const expoRunAndroid: Command = async (argv) => {
+export const expoRunAndroid: Command = async (argv, passThroughArgs) => {
   const rawArgsMap: arg.Spec = {
     // Types
     '--help': Boolean,
@@ -72,6 +72,7 @@ export const expoRunAndroid: Command = async (argv) => {
     port: args['--port'],
     variant: args['--variant'],
     allArch: args['--all-arch'],
+    gradleArgs: passThroughArgs,
 
     // Custom parsed args
     device: parsed.args['--device'],
