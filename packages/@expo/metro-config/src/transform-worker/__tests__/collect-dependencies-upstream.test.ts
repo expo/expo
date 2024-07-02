@@ -1163,7 +1163,7 @@ test('integration: records locations of inlined dependencies (Metro ESM)', () =>
     ],
     babelrc: false,
     configFile: false,
-  });
+  })!;
 
   const { dependencies } = collectDependencies(nullthrows(transformedAst), {
     ...opts,
@@ -1207,7 +1207,7 @@ test('integration: records locations of inlined dependencies (Babel ESM)', () =>
     ],
     babelrc: false,
     configFile: false,
-  });
+  })!;
 
   const { dependencies } = collectDependencies(nullthrows(transformedAst), opts);
   expect(formatDependencyLocs(dependencies, code)).toMatchInlineSnapshot(`

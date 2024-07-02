@@ -18,26 +18,26 @@ import nullthrows from 'nullthrows';
 
 type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
 
-export type AllowOptionalDependenciesWithOptions = {
+type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
 };
 
-export type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
+type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
 
 type ImportDependencyOptions = Readonly<{
   asyncType: AsyncDependencyType;
 }>;
 
-export type Dependency = Readonly<{
+type Dependency = Readonly<{
   data: DependencyData;
   name: string;
 }>;
 
-export type ContextMode = 'sync' | 'eager' | 'lazy' | 'lazy-once';
+type ContextMode = 'sync' | 'eager' | 'lazy' | 'lazy-once';
 
 type ContextFilter = Readonly<{ pattern: string; flags: string }>;
 
-export type RequireContextParams = Readonly<{
+type RequireContextParams = Readonly<{
   recursive: boolean;
   filter: Readonly<ContextFilter>;
   mode: ContextMode;
@@ -53,15 +53,15 @@ type MutableDependencyData = {
 
 type DependencyData = Readonly<MutableDependencyData>;
 
-export type MutableInternalDependency = MutableDependencyData & {
+type MutableInternalDependency = MutableDependencyData & {
   locs: types.SourceLocation[];
   index: number;
   name: string;
 };
 
-export type InternalDependency = Readonly<MutableInternalDependency>;
+type InternalDependency = Readonly<MutableInternalDependency>;
 
-export type State = {
+type State = {
   asyncRequireModulePathStringLiteral: StringLiteral | null;
   dependencyCalls: Set<string>;
   dependencyRegistry: DependencyRegistry;
@@ -73,7 +73,7 @@ export type State = {
   unstable_allowRequireContext: boolean;
 };
 
-export type Options = Readonly<{
+type Options = Readonly<{
   asyncRequireModulePath: string;
   dependencyMapName: string | null;
   dynamicRequires: DynamicRequiresBehavior;
@@ -84,13 +84,13 @@ export type Options = Readonly<{
   unstable_allowRequireContext: boolean;
 }>;
 
-export type CollectedDependencies = Readonly<{
+type CollectedDependencies = Readonly<{
   ast: types.File;
   dependencyMapName: string;
   dependencies: readonly Dependency[];
 }>;
 
-export interface DependencyTransformer {
+interface DependencyTransformer {
   transformSyncRequire(
     path: NodePath<CallExpression>,
     dependency: InternalDependency,
@@ -101,7 +101,14 @@ export interface DependencyTransformer {
   transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
 }
 
-export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+
+type ImportQualifier = Readonly<{
+  name: string;
+  asyncType: AsyncDependencyType | null;
+  optional: boolean;
+  contextParams?: RequireContextParams;
+}>;
 
 function collectDependencies(ast: types.File, options: Options): CollectedDependencies {
   const visited = new WeakSet<types.CallExpression>();
@@ -426,13 +433,6 @@ function getNearestLocFromPath(path: NodePath<any>): types.SourceLocation | null
   return current?.node.METRO_INLINE_REQUIRES_INIT_LOC ?? current?.node.loc;
 }
 
-export type ImportQualifier = Readonly<{
-  name: string;
-  asyncType: AsyncDependencyType | null;
-  optional: boolean;
-  contextParams?: RequireContextParams;
-}>;
-
 function registerDependency(
   state: State,
   qualifier: ImportQualifier,
@@ -622,7 +622,7 @@ function getKeyForDependency(qualifier: ImportQualifier): string {
 }
 
 class DependencyRegistry {
-  _dependencies: Map<string, InternalDependency> = new Map();
+  private _dependencies: Map<string, InternalDependency> = new Map();
 
   registerDependency(qualifier: ImportQualifier): InternalDependency {
     const key = getKeyForDependency(qualifier);
