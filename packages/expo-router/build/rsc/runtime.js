@@ -44,6 +44,8 @@ globalThis.__webpack_chunk_load__ = (id) => {
         searchParams.set('transform.routerRoot', url.searchParams.get('transform.routerRoot') || 'app');
         searchParams.set('modulesOnly', String(true));
         searchParams.set('runModule', String(false));
+        // TICKLE: Handshake 2
+        searchParams.set('yRSC', '1');
         if (url.searchParams.has('minify')) {
             searchParams.set('minify', url.searchParams.get('minify'));
         }

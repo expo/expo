@@ -1595,6 +1595,8 @@ function createRscDevMiddleware(
           searchParams.delete(key);
         }
       });
+      // TICKLE: Handshake 1
+      searchParams.set('xRSC', '1');
 
       clientReferenceUrl.search = searchParams.toString();
 
