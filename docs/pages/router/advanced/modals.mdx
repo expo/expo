@@ -13,12 +13,13 @@ Modals are a common pattern in mobile apps. They are a way to present a new scre
 
 You can implement a modal by creating a root layout route that renders certain routes as modals.
 
-<FileTree files={['app/_layout.js', 'app/home.js', 'app/modal.js']} />
+<FileTree files={['app/_layout.tsx', 'app/home.tsx', 'app/modal.tsx']} />
 
-The layout route **app/\_layout.js** can present components as modals. Add a new route called **modal** that is used to render modals:
+The layout route **app/\_layout.tsx** can present components as modals. Add a new route called **modal** that is used to render modals:
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
+
 export default function Layout() {
   return (
     <Stack>
@@ -41,9 +42,10 @@ export default function Layout() {
 }
 ```
 
-```jsx app/home.js
+```tsx app/home.tsx
 import { View, Text } from 'react-native';
 import { Link } from 'expo-router';
+
 export default function Home() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -56,10 +58,11 @@ export default function Home() {
 
 Now create a modal that adds a back button when the modal has lost its previous context and must be presented as a standalone page.
 
-```jsx app/modal.js
+```tsx app/modal.tsx
 import { View, Platform } from 'react-native';
 import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+
 export default function Modal() {
   // If the page was reloaded or navigated to directly, then the modal should be presented as
   // a full screen page. You may need to change the UI to account for this.
