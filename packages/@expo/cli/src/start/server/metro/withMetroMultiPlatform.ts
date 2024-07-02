@@ -146,7 +146,7 @@ export function withExtendedResolver(
     Log.warn(`Experimental module resolution is enabled.`);
   }
   if (env.EXPO_UNSTABLE_TREE_SHAKING) {
-    Log.warn(`Experimental tree shaking is enabled.`);
+    Log.warn(`Experimental Expo tree shaking is enabled.`);
   }
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
