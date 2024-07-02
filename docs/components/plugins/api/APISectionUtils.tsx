@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { shadows, theme, typography } from '@expo/styleguide';
+import { shadows, theme, typography, mergeClasses } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
@@ -761,7 +761,7 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <div key={'example-' + index} className={ELEMENT_SPACING}>
+    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
       {inlineHeaders ? (
         <DEMI theme="secondary" className="flex flex-row gap-1.5 items-center mb-1.5">
           <CodeSquare01Icon className="icon-sm" />
@@ -789,7 +789,12 @@ export const CommentTextBlock = ({
 
   return (
     <>
-      {includePlatforms && hasPlatforms && <APISectionPlatformTags comment={comment} />}
+      {includePlatforms && hasPlatforms && (
+        <APISectionPlatformTags
+          comment={comment}
+          prefix={emptyCommentFallback ? 'Only for:' : undefined}
+        />
+      )}
       {paramTags && (
         <>
           <DEMI theme="secondary">Only for:&ensp;</DEMI>
@@ -832,10 +837,10 @@ export function getPossibleComponentPropsNames(name?: string, children: PropData
 }
 
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.md,
+  borderRadius: borderRadius.lg,
   borderWidth: 1,
   borderStyle: 'solid',
-  borderColor: theme.border.default,
+  borderColor: theme.border.secondary,
   padding: spacing[5],
   boxShadow: shadows.xs,
   marginBottom: spacing[6],

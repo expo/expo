@@ -37,6 +37,7 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
                   platforms={[
                     { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
                   ]}
+                  prefix="Only for:"
                 />
               )}
               <ReactMarkdown components={mdComponents}>{property.description}</ReactMarkdown>

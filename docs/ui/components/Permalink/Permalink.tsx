@@ -37,7 +37,8 @@ const Permalink: ComponentType<Props> = withHeadingManager((props: Props & Headi
     <PermalinkBase component={component} className="group">
       <LinkBase
         className={mergeClasses(
-          'inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0',
+          'inline-flex gap-1.5 items-center relative text-[inherit] decoration-0',
+          props.additionalProps?.sidebarType === 'text' ? 'scroll-m-6' : 'scroll-m-12',
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}

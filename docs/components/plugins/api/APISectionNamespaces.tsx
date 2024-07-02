@@ -7,6 +7,7 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   getTagData,
@@ -47,12 +48,13 @@ const renderNamespace = (
   return (
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
+      <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {name}
         </MONOSPACE>
       </H3Code>
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
           <BoxSectionHeader text="Returns" />
