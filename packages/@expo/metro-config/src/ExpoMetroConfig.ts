@@ -280,7 +280,10 @@ export function getDefaultConfig(
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
         transform: {
-          experimentalImportSupport: false,
+          // NOTE(EvanBacon): Enabling this by default means `@babel/plugin-transform-modules-commonjs` and `@babel/plugin-proposal-export-default-from` will not be used
+          // to transform import/export syntax in `babel-preset-expo`. This reduces the number of `@babel/runtime` helper imports in favor of the Metro runtime equivalents.
+          experimentalImportSupport: true,
+          // We disable this feature because it isn't capable of respecting module side effects due to when it's executed.
           inlineRequires: false,
         },
       }),
