@@ -300,6 +300,74 @@ it('transforms a module with dependencies', async () => {
   ]);
 });
 
+it('transforms a module with ignored dependencies', async () => {
+  const contents = ['require("./a");', 'require("node:fs");'].join('\n');
+
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/file.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      customTransformOptions: {
+        ...baseTransformOptions,
+        environment: 'node',
+      },
+    }
+  );
+
+  expect(result.output[0].type).toBe('js/module');
+  expect(result.output[0].data.code).toBe(
+    [
+      HEADER_DEV,
+      '  _$$_REQUIRE(_dependencyMap[0], "./a");',
+      //
+      '  $$require_external("node:fs");',
+      '});',
+    ].join('\n')
+  );
+
+  expect(result.dependencies).toEqual([
+    { data: expect.objectContaining({ asyncType: null }), name: './a' },
+  ]);
+});
+
+it('transforms a module with ignored dependencies + syntax', async () => {
+  const contents = `
+import b from 'node:fs';
+import * as d from 'node:fs';
+import type {s} from 'node:fs';
+
+export type {Apple} from 'node:fs';
+export {Banana} from 'node:fs';
+export * from 'node:fs';
+
+import('node:fs').then(foo => {});
+
+require('node:fs');
+`;
+
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/file.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      customTransformOptions: {
+        ...baseTransformOptions,
+        environment: 'node',
+      },
+    }
+  );
+
+  expect(result.output[0].type).toBe('js/module');
+  expect(result.output[0].data.code).not.toContain('_$$_REQUIRE(');
+
+  expect(result.dependencies).toEqual([]);
+});
+
 it('transforms an es module with asyncToGenerator', async () => {
   const contents = 'export async function test() {}';
 

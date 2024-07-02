@@ -53,6 +53,12 @@ export interface DefaultConfigOptions {
     premodules: Module[];
     debugId?: string;
   }) => Module[])[];
+
+  /**
+   * Enable support for the experimental runtime that supports SSR, stable module IDs, and React Server Components.
+   * This does not support legacy RAM bundles.
+   */
+  unstable_runtime?: boolean;
 }
 
 function getAssetPlugins(projectRoot: string): string[] {
@@ -101,10 +107,61 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function fastCreateModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+// NOTE: MUST MATCH THE IMPL IN ExpoMetroConfig.ts
+function stableCreateModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+  // This is an absolute file path.
+  return (modulePath: string): number => {
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      id = path.relative(root, modulePath);
+      fileToIdMap.set(modulePath, id);
+    }
+    // @ts-expect-error: we patch this to support being a string.
+    return id;
+  };
+}
+
+function stringToHash(str: string): number {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
 export function getDefaultConfig(
   projectRoot: string,
-  { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
+  {
+    mode,
+    isCSSEnabled = true,
+    unstable_beforeAssetSerializationPlugins,
+    unstable_runtime,
+  }: DefaultConfigOptions = {}
 ): InputConfigT {
+  if (unstable_runtime) {
+    // Change the default metro-runtime to a custom one that supports bundle splitting.
+    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+      '@expo/metro-config/require'
+    );
+  }
+
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
   if (isCSSEnabled) {
@@ -204,7 +261,15 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
-      getModulesRunBeforeMainModule: () => {
+      createModuleIdFactory: unstable_runtime
+        ? stableCreateModuleIdFactory.bind(null, serverRoot)
+        : fastCreateModuleIdFactory,
+      getModulesRunBeforeMainModule: (entryFile) => {
+        // TODO: Pass a safer option to disable `getModulesRunBeforeMainModule` for SSR modules.
+        if (entryFile.match(/expo-router[\\/]node[\\/]render\.js$/)) {
+          return [];
+        }
+
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
