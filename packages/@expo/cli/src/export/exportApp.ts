@@ -43,6 +43,7 @@ export async function exportAppAsync(
     minify,
     bytecode,
     maxWorkers,
+    atlas,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -54,6 +55,7 @@ export async function exportAppAsync(
     | 'minify'
     | 'bytecode'
     | 'maxWorkers'
+    | 'atlas'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -106,6 +108,7 @@ export async function exportAppAsync(
     location: {},
     resetDevServer: clear,
     maxWorkers,
+    enableAtlas: atlas,
   });
 
   const devServer = devServerManager.getDefaultDevServer();
@@ -264,4 +267,11 @@ export async function exportAppAsync(
 
   // Write all files at the end for unified logging.
   await persistMetroFilesAsync(files, outputPath);
+
+  // Log information about the Atlas file, when enabled
+  if (atlas) {
+    await import('../start/server/metro/debugging/attachAtlas.js').then(({ logAtlasExport }) =>
+      logAtlasExport()
+    );
+  }
 }

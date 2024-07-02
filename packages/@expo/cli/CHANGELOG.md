@@ -12,6 +12,7 @@
 - Add microsecond format for bundling. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `.eslintrc.js` to `expo customize`. ([#29570](https://github.com/expo/expo/pull/29570) by [@EvanBacon](https://github.com/EvanBacon))
 - Support web imports of `react-native/Libraries/Image/resolveAssetSource` in Metro. ([#29685](https://github.com/expo/expo/pull/29685) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `--atlas` flags to `expo start` and `expo export` to enable Atlas. ([#29848](https://github.com/expo/expo/pull/29848) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 

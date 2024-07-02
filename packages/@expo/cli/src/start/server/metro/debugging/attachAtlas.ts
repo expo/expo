@@ -1,8 +1,11 @@
+import chalk from 'chalk';
 import type { Server as ConnectServer } from 'connect';
 import type { ConfigT as MetroConfig } from 'metro-config';
 
 import { AtlasPrerequisite } from './AtlasPrerequisite';
+import { Log } from '../../../../log';
 import { env } from '../../../../utils/env';
+import { learnMore } from '../../../../utils/link';
 import { type EnsureDependenciesOptions } from '../../../doctor/dependencies/ensureDependenciesAsync';
 
 const debug = require('debug')('expo:metro:debugging:attachAtlas') as typeof console.log;
@@ -18,10 +21,6 @@ type AttachAtlasOptions = Pick<EnsureDependenciesOptions, 'exp'> & {
 export async function attachAtlasAsync(
   options: AttachAtlasOptions
 ): Promise<void | ReturnType<typeof import('expo-atlas/cli').createExpoAtlasMiddleware>> {
-  if (!env.EXPO_UNSTABLE_ATLAS) {
-    return;
-  }
-
   debug('Atlas is enabled, initializing for this project...');
   await new AtlasPrerequisite(options.projectRoot).bootstrapAsync({ exp: options.exp });
 
@@ -99,8 +98,6 @@ function importAtlasForExport(projectRoot: string): null | typeof import('expo-a
  * @internal
  */
 export async function waitUntilAtlasExportIsReadyAsync(projectRoot: string) {
-  if (!env.EXPO_UNSTABLE_ATLAS) return;
-
   const atlas = importAtlasForExport(projectRoot);
 
   if (!atlas) {
@@ -114,3 +111,27 @@ export async function waitUntilAtlasExportIsReadyAsync(projectRoot: string) {
   await atlas.waitUntilAtlasFileReady();
   debug('Atlas export is ready');
 }
+
+/**
+ * Output a log message informing users about the Atlas file.
+ * This should only be used when Atlas is enabled during export.
+ */
+export function logAtlasExport() {
+  Log.log(chalk`Exported Atlas file to: .expo/atlas.jsonl`);
+  Log.log(
+    chalk`{dim Run {bold npx expo-atlas} to open Atlas.}`,
+    learnMore('https://docs.expo.dev/guides/analyzing-bundles/')
+  );
+  Log.log('');
+}
+
+/** Warn users that the `EXPO_UNSTABLE_ATLAS` environment variable is deprecated in favor of `--atlas` */
+export function maybeWarnUnstableAtlasEnvVar() {
+  if (env.EXPO_UNSTABLE_ATLAS) {
+    Log.warn(
+      'EXPO_UNSTABLE_ATLAS is deprecated. Use `npx expo start --atlas` and `npx expo export --atlas` instead.'
+    );
+  }
+}
+
+maybeWarnUnstableAtlasEnvVar();
