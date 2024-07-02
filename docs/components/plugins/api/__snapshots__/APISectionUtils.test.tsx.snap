@@ -28,7 +28,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
          
       </span>
       <div
-        class="!bg-palette-green4 !text-palette-green12 !border-palette-green5 select-none !rounded-full css-7sgr13-PlatformTag"
+        class="!bg-palette-green4 !text-palette-green12 !border-palette-green5 select-none css-kk7wp3-PlatformTag"
       >
         <svg
           class="icon-xs text-palette-green12"
@@ -48,7 +48,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
           </g>
         </svg>
         <span
-          class="css-1q9zso2-PlatformTag"
+          class="css-103dp5g-PlatformTag"
         >
           Android
         </span>

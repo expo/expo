@@ -837,10 +837,10 @@ export function getPossibleComponentPropsNames(name?: string, children: PropData
 }
 
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.md,
+  borderRadius: borderRadius.lg,
   borderWidth: 1,
   borderStyle: 'solid',
-  borderColor: theme.border.default,
+  borderColor: theme.border.secondary,
   padding: spacing[5],
   boxShadow: shadows.xs,
   marginBottom: spacing[6],
