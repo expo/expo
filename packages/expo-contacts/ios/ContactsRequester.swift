@@ -17,6 +17,10 @@ class ContactsPermissionRequester: NSObject, EXPermissionsRequester {
       status = EXPermissionStatusDenied
     case .notDetermined:
       status = EXPermissionStatusUndetermined
+    case .limited:
+      status = EXPermissionStatusLimited
+    @unknown default:
+      status = EXPermissionStatusUndetermined
     }
 
     return [

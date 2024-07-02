@@ -11,6 +11,7 @@ typedef enum EXPermissionStatus {
   EXPermissionStatusDenied,
   EXPermissionStatusGranted,
   EXPermissionStatusUndetermined,
+  EXPermissionStatusLimited
 } EXPermissionStatus;
 
 
