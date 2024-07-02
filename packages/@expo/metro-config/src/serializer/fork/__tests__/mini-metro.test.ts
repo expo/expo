@@ -63,6 +63,7 @@ it(`can create a micro Metro graph fixture`, async () => {
                       "<global>",
                     ],
                   },
+                  "hasCjsExports": false,
                   "lineCount": 6,
                   "map": [
                     [
@@ -206,6 +207,7 @@ it(`can create a micro Metro graph fixture`, async () => {
                       "<global>",
                     ],
                   },
+                  "hasCjsExports": false,
                   "lineCount": 9,
                   "map": [
                     [
