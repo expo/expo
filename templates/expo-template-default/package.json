@@ -1,6 +1,7 @@
 {
   "name": "expo-template-default",
   "main": "expo-router/entry",
+  "license": "MIT",
   "version": "51.0.31",
   "scripts": {
     "start": "expo start",
