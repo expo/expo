@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- add customizable margin for splash screen android ([#16182](https://github.com/expo/expo/pull/16182) by [@nomi9995](https://github.com/nomi9995))
+
 
 ### 🐛 Bug fixes
 
