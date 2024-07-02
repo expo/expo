@@ -49,7 +49,7 @@ final class RequestUnknownException: Exception {
   }
 }
 
-final class MarchedExcludedCredential: Exception {
+final class MatchedExcludedCredential: Exception {
   override var reason: String {
     "The authorization attempt failed due to matched excluded credential"
   }
