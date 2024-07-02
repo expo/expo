@@ -1,0 +1,66 @@
+diff --git a/node_modules/expo-atlas/build/src/cli.js b/node_modules/expo-atlas/build/src/cli.js
+index 3418bef..130fa94 100644
+--- a/node_modules/expo-atlas/build/src/cli.js
++++ b/node_modules/expo-atlas/build/src/cli.js
+@@ -28,8 +28,8 @@ function createExpoAtlasMiddleware(config) {
+     var registerMetro = source.registerMetro.bind(source);
+     var metroCustomSerializer = (_b = (_a = config.serializer) === null || _a === void 0 ? void 0 : _a.customSerializer) !== null && _b !== void 0 ? _b : (function () { });
+     var metroConfig = (0, MetroGraphSource_1.convertMetroConfig)(config);
+-    // @ts-expect-error Should still be writable at this stage
+-    config.serializer.customSerializer = function (entryPoint, preModules, graph, serializeOptions) {
++    config.serializer.postTreeShakingSerializer = function (entryPoint, preModules, graph, serializeOptions) {
++        console.log('postTreeShakingSerializer', entryPoint);
+         source.serializeGraph({
+             projectRoot: projectRoot,
+             entryPoint: entryPoint,
+@@ -38,8 +38,20 @@ function createExpoAtlasMiddleware(config) {
+             serializeOptions: serializeOptions,
+             metroConfig: metroConfig,
+         });
+-        return metroCustomSerializer(entryPoint, preModules, graph, serializeOptions);
++        return [entryPoint, preModules, graph, serializeOptions];
+     };
++    // @ts-expect-error Should still be writable at this stage
++    // config.serializer.customSerializer = function (entryPoint, preModules, graph, serializeOptions) {
++    //     source.serializeGraph({
++    //         projectRoot: projectRoot,
++    //         entryPoint: entryPoint,
++    //         preModules: preModules,
++    //         graph: graph,
++    //         serializeOptions: serializeOptions,
++    //         metroConfig: metroConfig,
++    //     });
++    //     return metroCustomSerializer(entryPoint, preModules, graph, serializeOptions);
++    // };
+     return { source: source, middleware: middleware, registerMetro: registerMetro };
+ }
+ exports.createExpoAtlasMiddleware = createExpoAtlasMiddleware;
+diff --git a/node_modules/expo-atlas/build/src/metro.js b/node_modules/expo-atlas/build/src/metro.js
+index d3380a6..4dca804 100644
+--- a/node_modules/expo-atlas/build/src/metro.js
++++ b/node_modules/expo-atlas/build/src/metro.js
+@@ -69,12 +69,20 @@ function withExpoAtlas(config, options) {
+     var metroConfig = (0, MetroGraphSource_1.convertMetroConfig)(config);
+     // Note(cedric): we don't have to await this, Metro would never bundle before this is finishes
+     (0, AtlasFileSource_1.ensureAtlasFileExist)(atlasFile);
+-    // @ts-expect-error
+-    config.serializer.customSerializer = function (entryPoint, preModules, graph, serializeOptions) {
+-        // Note(cedric): we don't have to await this, it has a built-in write queue
++
++    config.serializer.postTreeShakingSerializer = function (entryPoint, preModules, graph, serializeOptions) {
++        console.log('postTreeShakingSerializer', entryPoint);
+         (0, AtlasFileSource_1.writeAtlasEntry)(atlasFile, (0, MetroGraphSource_1.convertGraph)({ projectRoot: projectRoot, entryPoint: entryPoint, preModules: preModules, graph: graph, serializeOptions: serializeOptions, metroConfig: metroConfig }));
+-        return originalSerializer(entryPoint, preModules, graph, serializeOptions);
++        return [entryPoint, preModules, graph, serializeOptions];
+     };
++
++
++    // // @ts-expect-error
++    // config.serializer.customSerializer = function (entryPoint, preModules, graph, serializeOptions) {
++    //     // Note(cedric): we don't have to await this, it has a built-in write queue
++    //     (0, AtlasFileSource_1.writeAtlasEntry)(atlasFile, (0, MetroGraphSource_1.convertGraph)({ projectRoot: projectRoot, entryPoint: entryPoint, preModules: preModules, graph: graph, serializeOptions: serializeOptions, metroConfig: metroConfig }));
++    //     return originalSerializer(entryPoint, preModules, graph, serializeOptions);
++    // };
+     return config;
+ }
+ exports.withExpoAtlas = withExpoAtlas;

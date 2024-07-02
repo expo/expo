@@ -16,7 +16,9 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
+const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
 function withExpoSerializers(config, options = {}) {
     const processors = [];
@@ -24,6 +26,18 @@ function withExpoSerializers(config, options = {}) {
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
+    // Then tree-shake the modules.
+    processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
+    // Then finish transforming the modules from AST to JS.
+    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
+    processors.push((...args) => {
+        // @ts-expect-error: This is injected by Expo's MetroBundlerDevServer so it isn't available in development server requests.
+        const metroConfig = args[3]._metroConfig ?? config;
+        if (typeof metroConfig.serializer?.postTreeShakingSerializer === 'function') {
+            return metroConfig.serializer.postTreeShakingSerializer(...args);
+        }
+        return args;
+    });
     return withSerializerPlugins(config, processors, options);
 }
 exports.withExpoSerializers = withExpoSerializers;

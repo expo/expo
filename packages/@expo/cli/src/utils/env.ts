@@ -199,6 +199,11 @@ class Env {
   get EXPO_UNSTABLE_ATLAS() {
     return boolish('EXPO_UNSTABLE_ATLAS', false);
   }
+
+  /** Unstable: Enable tree shaking for Metro. */
+  get EXPO_UNSTABLE_TREE_SHAKING() {
+    return boolish('EXPO_UNSTABLE_TREE_SHAKING', false);
+  }
 }
 
 export const env = new Env();

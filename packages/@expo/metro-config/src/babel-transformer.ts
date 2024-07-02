@@ -115,7 +115,9 @@ function getBabelCaller({
     isHMREnabled: options.hot,
 
     // Set the standard Babel flag to disable ESM transformations.
-    supportsStaticESM: options.experimentalImportSupport,
+    supportsStaticESM:
+      isCustomTruthy(options.customTransformOptions?.treeshake) ||
+      options.experimentalImportSupport,
 
     // Enable React compiler support in Babel.
     // TODO: Remove this in the future when compiler is on by default.

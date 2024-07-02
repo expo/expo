@@ -367,7 +367,7 @@ it(
     );
 
     // Ensure no unexpected errors/warnings are thrown.
-    expect(res.stderr).toBe('Experimental bundling features are enabled.');
+    expect(res.stderr).toBe('Experimental module resolution is enabled.');
 
     const outputDir = path.join(projectRoot, output);
     // List output files with sizes for snapshotting.

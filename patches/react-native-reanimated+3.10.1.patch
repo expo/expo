@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-reanimated/lib/module/reanimated2/platform-specific/RNRenderer.web.js b/node_modules/react-native-reanimated/lib/module/reanimated2/platform-specific/RNRenderer.web.js
+index 1d6f84b..b9d4f4a 100644
+--- a/node_modules/react-native-reanimated/lib/module/reanimated2/platform-specific/RNRenderer.web.js
++++ b/node_modules/react-native-reanimated/lib/module/reanimated2/platform-specific/RNRenderer.web.js
+@@ -1,5 +1,5 @@
+ 'use strict';
+ 
+ // RNRender is not used for web. An export is still defined to eliminate warnings from bundlers such as esbuild.
+-module.exports = null;
++export {}
+ //# sourceMappingURL=RNRenderer.web.js.map
+\ No newline at end of file
