@@ -11,11 +11,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var currentRate: Float = 0.0
 
   var isLoaded: Bool {
-    pointer.currentItem?.status == .readyToPlay
+    ref.currentItem?.status == .readyToPlay
   }
 
   var playing: Bool {
-    pointer.timeControlStatus == .playing
+    ref.timeControlStatus == .playing
   }
 
   var isBuffering: Bool {
@@ -23,18 +23,17 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func playerIsBuffering() -> Bool {
-    let avPlayer = pointer
-    let isPlaying = avPlayer.timeControlStatus == .playing
+    let isPlaying = ref.timeControlStatus == .playing
 
     if isPlaying {
       return false
     }
 
-    if avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
       return true
     }
 
-    if let currentItem = avPlayer.currentItem {
+    if let currentItem = ref.currentItem {
       return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
     }
     return true
@@ -43,16 +42,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   func updateStatus(with dict: [String: Any]) {
     var body: [String: Any] = [
       "id": id,
-      "currentTime": (pointer.currentItem?.currentTime().seconds ?? 0) * 1000,
-      "status": statusToString(status: pointer.status),
-      "timeControlStatus": timeControlStatusString(status: pointer.timeControlStatus),
-      "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: pointer.reasonForWaitingToPlay),
-      "mute": pointer.isMuted,
-      "duration": (pointer.currentItem?.duration.seconds ?? 0) * 1000,
-      "playing": pointer.timeControlStatus == .playing,
+      "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
+      "status": statusToString(status: ref.status),
+      "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
+      "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
+      "mute": ref.isMuted,
+      "duration": (ref.currentItem?.duration.seconds ?? 0) * 1000,
+      "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
-      "isLoaded": pointer.currentItem?.status == .readyToPlay,
-      "playbackRate": pointer.rate,
+      "isLoaded": ref.currentItem?.status == .readyToPlay,
+      "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
     ]
