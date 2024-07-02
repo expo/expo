@@ -4,6 +4,7 @@ import CountingSet from 'metro/src/lib/CountingSet';
 import * as path from 'path';
 
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
+import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 
 export const projectRoot = '/app';
 
@@ -78,6 +79,7 @@ export async function microBundle({
     minify?: boolean;
     splitChunks?: boolean;
     treeshake?: boolean;
+    inlineRequires?: boolean;
   };
   preModulesFs?: Record<string, string>;
 }): Promise<
@@ -108,13 +110,14 @@ export async function microBundle({
 
   const absEntry = path.join(projectRoot, entry);
   const dev = options.dev ?? true;
-  const transformOptions: TransformInputOptions = {
+  const transformOptions: PickPartial<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'> = {
     hot: options.hot ?? false,
     minify: options.minify ?? false,
     dev,
     type: 'module',
     unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
     platform: options.platform ?? 'web',
+    inlineRequires: options.inlineRequires ?? false,
     customTransformOptions: {
       __proto__: null,
       bytecode: options.hermes,
@@ -123,7 +126,6 @@ export async function microBundle({
       environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
       treeshake: options.treeshake,
     },
-
     // NOTE: This is non-standard but it provides a cleaner output
     experimentalImportSupport: true,
   };
@@ -258,11 +260,13 @@ export async function microBundle({
   ];
 }
 
+type PickPartial<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;
+
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
 export async function parseModule(
   relativeFilePath: string,
   code: string,
-  transformOptions: TransformInputOptions,
+  transformOptions: PickPartial<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'>,
   transformConfig: any = {}
 ): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
@@ -283,9 +287,9 @@ export async function parseModule(
     absoluteFilePath,
     codeBuffer,
     {
+      inlineRequires: false,
       ...transformOptions,
       inlinePlatform: true,
-      inlineRequires: false,
     }
   );
 

@@ -85,6 +85,7 @@ export async function serializeShakingAsync(
         treeshake: true,
         splitChunks: true,
         minify: false,
+        inlineRequires: true,
         ...options,
       },
     },

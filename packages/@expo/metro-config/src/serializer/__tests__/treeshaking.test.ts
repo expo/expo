@@ -292,6 +292,12 @@ it(`supports async import()`, async () => {
       source: './math',
       specifiers: [],
     },
+    {
+      cjs: true,
+      key: '/app/node_modules/expo-mock/async-require/index.js',
+      source: 'expo-mock/async-require',
+      specifiers: [],
+    },
     // TODO: Parse these imports
   ]);
   expect(artifacts[0].source).toMatch('add');
