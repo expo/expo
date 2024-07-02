@@ -29,13 +29,24 @@ internal func readFileAsBase64(path: String, options: ReadingOptions) throws -> 
   return file.readDataToEndOfFile().base64EncodedString(options: .endLineWithLineFeed)
 }
 
-internal func writeFileAsBase64(path: String, string: String) throws {
-  let data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
-
-  if !FileManager.default.createFile(atPath: path, contents: data) {
-    throw FileWriteFailedException(path)
-  }
+internal func writeFileAsBase64(path: String, string: String, append: Bool = false) throws {
+    let data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
+    let writeOptions: Data.WritingOptions = append ? .atomic : .atomicWrite
+    
+    do {
+        if FileManager.default.fileExists(atPath: path) && append {
+            let fileHandle = try FileHandle(forWritingTo: URL(fileURLWithPath: path))
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(data)
+            fileHandle.closeFile()
+        } else {
+            try data.write(to: URL(fileURLWithPath: path), options: writeOptions)
+        }
+    } catch {
+        throw FileNotWritableException(path).causedBy(error)
+    }
 }
+
 
 internal func removeFile(path: String, idempotent: Bool = false) throws {
   if FileManager.default.fileExists(atPath: path) {

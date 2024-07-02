@@ -51,5 +51,55 @@ class EXFileSystemSpec: ExpoSpec {
         expect(assetsLibraryUri?.scheme) == "assets-library"
       }
     }
+
+    describe("appendFile") {
+      let filePath = fileSystem.documentDirectory + "test.txt"
+      let initialContent = "Initial content\n"
+      let appendContent = "Additional content\n"
+
+      beforeEach {
+        // Setup: Write initial content to the file
+        try? fileSystem.writeAsStringAsync(path: filePath, string: initialContent)
+      }
+
+      afterEach {
+        // Teardown: Delete the file after each test
+        try? fileSystem.deleteAsync(path: filePath)
+      }
+
+      it("appends content to an existing file") {
+        do {
+          // Test appending content to an existing file
+          try fileSystem.appendAsStringAsync(path: filePath, string: appendContent)
+
+          // Verify: Read the file and check if the content matches the expected result
+          let fileContents = try fileSystem.readAsStringAsync(path: filePath)
+          expect(fileContents).to(equal(initialContent + appendContent))
+        } catch {
+          fail("Failed to append content to file: \(error)")
+        }
+      }
+
+      it("creates a new file if it doesn't exist") {
+        let newFilePath = fileSystem.documentDirectory + "newFile.txt"
+
+        do {
+          // Test appending content to a new file
+          try fileSystem.appendAsStringAsync(path: newFilePath, string: appendContent)
+
+          // Verify: Read the new file and check if the content matches the appended content
+          let newFileContents = try fileSystem.readAsStringAsync(path: newFilePath)
+          expect(newFileContents).to(equal(appendContent))
+        } catch {
+          fail("Failed to create and append content to new file: \(error)")
+        }
+      }
+
+      it("throws an error if trying to append to a directory") {
+        let directoryPath = fileSystem.documentDirectory
+
+        // Test appending to a directory should throw an error
+        expect { try fileSystem.appendAsStringAsync(path: directoryPath, string: appendContent) }.to(throwError())
+      }
   }
 }
