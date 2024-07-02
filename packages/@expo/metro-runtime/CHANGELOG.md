@@ -6,14 +6,14 @@
 
 ### 🎉 New features
 
-- Always enable async bundle loading on native.
+- Always enable async bundle loading on native. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))
 - Support `location.reload()` in native production builds. ([#29572](https://github.com/expo/expo/pull/29572) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- Remove downloading indicator for split bundles.
+- Remove downloading indicator for split bundles. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.1 — 2024-04-23
 
