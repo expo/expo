@@ -10,7 +10,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
         href="#name"
         id="name"
       >
@@ -155,7 +155,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
         href="#androidnavigationbar"
         id="androidnavigationbar"
       >
@@ -377,7 +377,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#visible"
           id="visible"
         >
@@ -530,7 +530,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
             href="#always"
             id="always"
           >
@@ -607,7 +607,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#backgroundcolor"
           id="backgroundcolor"
         >
@@ -698,7 +698,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
         href="#intentfilters"
         id="intentfilters"
       >
@@ -869,7 +869,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#autoverify"
           id="autoverify"
         >
@@ -945,7 +945,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#data"
           id="data"
         >
@@ -1014,7 +1014,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
             href="#host"
             id="host"
           >

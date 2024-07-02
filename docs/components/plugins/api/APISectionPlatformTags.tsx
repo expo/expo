@@ -1,5 +1,7 @@
 import { CommentData, CommentTagData } from '~/components/plugins/api/APIDataTypes';
 import { getAllTagData, getCommentContent } from '~/components/plugins/api/APISectionUtils';
+import { usePageApiVersion } from '~/providers/page-api-version';
+import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags, StatusTag } from '~/ui/components/Tag';
 import { CALLOUT } from '~/ui/components/Text';
 
@@ -7,14 +9,30 @@ type Props = {
   comment?: CommentData;
   prefix?: string;
   platforms?: CommentTagData[];
+  disableFallback?: boolean;
 };
 
-export const APISectionPlatformTags = ({ comment, platforms, prefix = 'Only for:' }: Props) => {
+export const APISectionPlatformTags = ({
+  comment,
+  platforms,
+  prefix,
+  disableFallback = false,
+}: Props) => {
+  const { platforms: defaultPlatforms } = usePageMetadata();
+  const { version } = usePageApiVersion();
+
+  const isUnversionedVersion = version === 'unversioned';
   const platformsData = platforms || getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
-  const platformNames = platformsData?.map(platformData => getCommentContent(platformData.content));
 
-  if (!experimentalData.length && !platformsData.length) {
+  const platformNames =
+    platformsData.length > 0
+      ? platformsData?.map(platformData => getCommentContent(platformData.content))
+      : isUnversionedVersion && !disableFallback
+        ? defaultPlatforms?.map(platform => platform.replace('*', ''))
+        : [];
+
+  if (!experimentalData.length && !platformNames?.length) {
     return null;
   }
 
@@ -26,7 +44,10 @@ export const APISectionPlatformTags = ({ comment, platforms, prefix = 'Only for:
           <span className="leading-[26px]">&emsp;&bull;&emsp;</span>
         </CALLOUT>
       )}
-      <PlatformTags prefix={prefix} platforms={platformNames} />
+      <PlatformTags
+        prefix={isUnversionedVersion ? prefix : prefix ?? 'Only for:'}
+        platforms={platformNames}
+      />
     </div>
   );
 };

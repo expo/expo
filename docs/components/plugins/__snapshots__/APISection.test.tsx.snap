@@ -7,7 +7,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#component"
       id="component"
     >
@@ -50,7 +50,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationbutton"
         id="appleauthenticationbutton"
       >
@@ -287,7 +287,7 @@ for more details.
           data-text="true"
         >
           <a
-            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
+            class="relative decoration-0 scroll-m-6 text-inherit flex flex-row gap-2 items-center"
             href="#appleauthenticationbuttonprops"
             id="appleauthenticationbuttonprops"
           >
@@ -335,7 +335,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#buttonstyle"
             id="buttonstyle"
           >
@@ -412,7 +412,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#buttontype"
             id="buttontype"
           >
@@ -489,7 +489,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#cornerradius"
             id="cornerradius"
           >
@@ -574,7 +574,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#onpress"
             id="onpress"
           >
@@ -670,7 +670,7 @@ in here.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#style"
             id="style"
           >
@@ -817,7 +817,7 @@ properties.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#inherited-props"
           id="inherited-props"
         >
@@ -881,7 +881,7 @@ properties.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#methods"
       id="methods"
     >
@@ -924,7 +924,7 @@ properties.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#getcredentialstateasyncuser"
         id="getcredentialstateasyncuser"
       >
@@ -1200,7 +1200,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#isavailableasync"
         id="isavailableasync"
       >
@@ -1344,7 +1344,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#refreshasyncoptions"
         id="refreshasyncoptions"
       >
@@ -1585,7 +1585,7 @@ refresh operation.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#signinasyncoptions"
         id="signinasyncoptions"
       >
@@ -1873,7 +1873,7 @@ sign-in operation.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#signoutasyncoptions"
         id="signoutasyncoptions"
       >
@@ -2145,7 +2145,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#event-subscriptions"
       id="event-subscriptions"
     >
@@ -2188,7 +2188,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#addrevokelistenerlistener"
         id="addrevokelistenerlistener"
       >
@@ -2337,7 +2337,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#types"
       id="types"
     >
@@ -2380,7 +2380,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationcredential"
         id="appleauthenticationcredential"
       >
@@ -2918,7 +2918,7 @@ developers.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationfullname"
         id="appleauthenticationfullname"
       >
@@ -3266,7 +3266,7 @@ may be
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationrefreshoptions"
         id="appleauthenticationrefreshoptions"
       >
@@ -3573,7 +3573,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationsigninoptions"
         id="appleauthenticationsigninoptions"
       >
@@ -3897,7 +3897,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationsignoutoptions"
         id="appleauthenticationsignoutoptions"
       >
@@ -4134,7 +4134,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#subscription"
         id="subscription"
       >
@@ -4264,7 +4264,7 @@ After calling this function, the listener will no longer receive any events from
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#enums"
       id="enums"
     >
@@ -4300,7 +4300,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4310,7 +4310,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationbuttonstyle"
           id="appleauthenticationbuttonstyle"
         >
@@ -4388,7 +4388,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#white"
           id="white"
         >
@@ -4449,7 +4449,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#white_outline"
           id="white_outline"
         >
@@ -4510,7 +4510,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#black"
           id="black"
         >
@@ -4565,7 +4565,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4575,7 +4575,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationbuttontype"
           id="appleauthenticationbuttontype"
         >
@@ -4653,7 +4653,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#sign_in"
           id="sign_in"
         >
@@ -4714,7 +4714,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#continue"
           id="continue"
         >
@@ -4785,7 +4785,7 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
+            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none !rounded-full css-7sgr13-PlatformTag"
           >
             <svg
               class="icon-xs text-palette-blue12"
@@ -4818,7 +4818,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#sign_up"
           id="sign_up"
         >
@@ -4873,7 +4873,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4883,7 +4883,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationcredentialstate"
           id="appleauthenticationcredentialstate"
         >
@@ -5014,7 +5014,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#revoked"
           id="revoked"
         >
@@ -5069,7 +5069,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#authorized"
           id="authorized"
         >
@@ -5124,7 +5124,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#not_found"
           id="not_found"
         >
@@ -5179,7 +5179,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#transferred"
           id="transferred"
         >
@@ -5228,7 +5228,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5238,7 +5238,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationoperation"
           id="appleauthenticationoperation"
         >
@@ -5298,7 +5298,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#implicit"
           id="implicit"
         >
@@ -5359,7 +5359,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#login"
           id="login"
         >
@@ -5414,7 +5414,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#refresh"
           id="refresh"
         >
@@ -5469,7 +5469,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#logout"
           id="logout"
         >
@@ -5518,7 +5518,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5528,7 +5528,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationscope"
           id="appleauthenticationscope"
         >
@@ -5703,7 +5703,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#full_name"
           id="full_name"
         >
@@ -5758,7 +5758,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#email"
           id="email"
         >
@@ -5807,7 +5807,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5817,7 +5817,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationuserdetectionstatus"
           id="appleauthenticationuserdetectionstatus"
         >
@@ -5936,7 +5936,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#unsupported"
           id="unsupported"
         >
@@ -5997,7 +5997,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#unknown"
           id="unknown"
         >
@@ -6058,7 +6058,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#likely_real"
           id="likely_real"
         >
@@ -6122,7 +6122,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#component"
       id="component"
     >
@@ -6242,7 +6242,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescanner"
         id="barcodescanner"
       >
@@ -6329,7 +6329,7 @@ for more details.
           data-text="true"
         >
           <a
-            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
+            class="relative decoration-0 scroll-m-6 text-inherit flex flex-row gap-2 items-center"
             href="#barcodescannerprops"
             id="barcodescannerprops"
           >
@@ -6377,7 +6377,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#barcodetypes"
             id="barcodetypes"
           >
@@ -6493,7 +6493,7 @@ minimize battery usage.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#onbarcodescanned"
             id="onbarcodescanned"
           >
@@ -6647,7 +6647,7 @@ data has been retrieved.
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#type"
             id="type"
           >
@@ -6782,7 +6782,7 @@ Same as
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#inherited-props"
           id="inherited-props"
         >
@@ -6846,7 +6846,7 @@ Same as
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#hooks"
       id="hooks"
     >
@@ -6889,7 +6889,7 @@ Same as
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#usepermissionsoptions"
         id="usepermissionsoptions"
       >
@@ -7241,7 +7241,7 @@ This uses both
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#methods"
       id="methods"
     >
@@ -7284,7 +7284,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannergetpermissionsasync"
         id="barcodescannergetpermissionsasync"
       >
@@ -7431,7 +7431,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannerrequestpermissionsasync"
         id="barcodescannerrequestpermissionsasync"
       >
@@ -7600,7 +7600,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannerscanfromurlasyncurl-barcodetypes"
         id="barcodescannerscanfromurlasyncurl-barcodetypes"
       >
@@ -7897,7 +7897,7 @@ code.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#interfaces"
       id="interfaces"
     >
@@ -7940,7 +7940,7 @@ code.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionresponse"
         id="permissionresponse"
       >
@@ -8181,7 +8181,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#types"
       id="types"
     >
@@ -8224,7 +8224,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodebounds"
         id="barcodebounds"
       >
@@ -8382,7 +8382,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodeevent"
         id="barcodeevent"
       >
@@ -8534,7 +8534,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodeeventcallbackarguments"
         id="barcodeeventcallbackarguments"
       >
@@ -8653,7 +8653,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodepoint"
         id="barcodepoint"
       >
@@ -8822,7 +8822,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannedcallback"
         id="barcodescannedcallback"
       >
@@ -8930,7 +8930,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannerresult"
         id="barcodescannerresult"
       >
@@ -9202,7 +9202,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodesize"
         id="barcodesize"
       >
@@ -9350,7 +9350,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionhookoptions"
         id="permissionhookoptions"
       >
@@ -9443,7 +9443,7 @@ you don't get this value.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#enums"
       id="enums"
     >
@@ -9479,7 +9479,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -9489,7 +9489,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#permissionstatus"
           id="permissionstatus"
         >
@@ -9549,7 +9549,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#denied"
           id="denied"
         >
@@ -9610,7 +9610,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#granted"
           id="granted"
         >
@@ -9671,7 +9671,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#undetermined"
           id="undetermined"
         >
@@ -9735,7 +9735,7 @@ exports[`APISection expo-pedometer 1`] = `
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#methods"
       id="methods"
     >
@@ -9778,7 +9778,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#getpermissionsasync"
         id="getpermissionsasync"
       >
@@ -9913,7 +9913,7 @@ exports[`APISection expo-pedometer 1`] = `
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
+          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none !rounded-full css-7sgr13-PlatformTag"
         >
           <svg
             class="icon-xs text-palette-blue12"
@@ -9946,7 +9946,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#getstepcountasyncstart-end"
         id="getstepcountasyncstart-end"
       >
@@ -10268,7 +10268,7 @@ a start date that is more than seven days in the past returns only the available
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#isavailableasync"
         id="isavailableasync"
       >
@@ -10406,7 +10406,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#requestpermissionsasync"
         id="requestpermissionsasync"
       >
@@ -10531,7 +10531,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#watchstepcountcallback"
         id="watchstepcountcallback"
       >
@@ -10809,7 +10809,7 @@ On iOS, the
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#interfaces"
       id="interfaces"
     >
@@ -10852,7 +10852,7 @@ On iOS, the
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionresponse"
         id="permissionresponse"
       >
@@ -11093,7 +11093,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#types"
       id="types"
     >
@@ -11136,7 +11136,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#pedometerresult"
         id="pedometerresult"
       >
@@ -11251,7 +11251,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#pedometerupdatecallback"
         id="pedometerupdatecallback"
       >
@@ -11365,7 +11365,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionexpiration"
         id="permissionexpiration"
       >
@@ -11467,7 +11467,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#subscription"
         id="subscription"
       >
@@ -11597,7 +11597,7 @@ After calling this function, the listener will no longer receive any events from
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#enums"
       id="enums"
     >
@@ -11633,7 +11633,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-1xslh56-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -11643,7 +11643,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#permissionstatus"
           id="permissionstatus"
         >
@@ -11703,7 +11703,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#denied"
           id="denied"
         >
@@ -11764,7 +11764,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#granted"
           id="granted"
         >
@@ -11825,7 +11825,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#undetermined"
           id="undetermined"
         >
