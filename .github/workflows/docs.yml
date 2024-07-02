@@ -57,11 +57,6 @@ jobs:
       - name: 💬 Lint Docs website content
         working-directory: docs
         run: yarn lint-prose
-      - name: ⚠️ Danger check
-        working-directory: docs
-        run: yarn danger ci
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
         run: yarn export

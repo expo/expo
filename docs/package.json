@@ -92,7 +92,6 @@
     "acorn": "^8.12.0",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
-    "danger": "^11.3.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.0.4",
     "eslint-config-universe": "^13.0.0",
