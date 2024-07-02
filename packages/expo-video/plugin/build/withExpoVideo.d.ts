@@ -1,3 +1,7 @@
 import { ConfigPlugin } from '@expo/config-plugins';
-declare const withExpoVideo: ConfigPlugin;
+type WithExpoVideoOptions = {
+    supportsBackgroundPlayback?: boolean;
+    supportsPictureInPicture?: boolean;
+};
+declare const withExpoVideo: ConfigPlugin<WithExpoVideoOptions>;
 export default withExpoVideo;

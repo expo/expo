@@ -15,8 +15,8 @@ internal class MethodUnsupportedException(methodName: String) :
 internal class PictureInPictureEnterException(message: String?) :
   CodedException("Failed to enter Picture in Picture mode${message?.let { ". $message" } ?: ""}")
 
-internal class PictureInPictureUnsupportedException :
-  CodedException("Picture in Picture mode is not supported on this device")
+internal class PictureInPictureUnsupportedException(message: String? = null) :
+  CodedException(message ?: "Picture in Picture mode is not supported on this device")
 
 internal class UnsupportedDRMTypeException(type: DRMType) :
   CodedException("DRM type `$type` is not supported on Android")
