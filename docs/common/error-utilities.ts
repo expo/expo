@@ -358,6 +358,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/web-performance/': '/guides/analyzing-bundles/',
   '/guides/assets/': '/develop/user-interface/assets/',
   '/router/reference/search-parameters/': '/router/reference/url-parameters/',
+  '/guides/using-flipper': '/archive/using-flipper/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',

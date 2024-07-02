@@ -426,7 +426,6 @@ const general = [
         makePage('guides/facebook-authentication.mdx'),
         makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
-        makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
@@ -552,6 +551,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
+    makePage('archive/using-flipper.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];
