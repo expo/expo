@@ -1,10 +1,9 @@
 /// <reference types="node" />
-/// <reference types="metro" />
-import type { TransformResultDependency } from 'metro/src/DeltaBundler';
 import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
+import { CollectedDependencies } from './collect-dependencies';
 export { JsTransformOptions };
 interface TransformResponse {
-    readonly dependencies: readonly TransformResultDependency[];
+    readonly dependencies: CollectedDependencies['dependencies'];
     readonly output: readonly ExpoJsOutput[];
 }
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {

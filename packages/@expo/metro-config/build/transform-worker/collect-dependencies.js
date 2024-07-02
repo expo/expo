@@ -1,11 +1,4 @@
 "use strict";
-/**
- * Copyright 2024-present 650 Industries (Expo). All rights reserved.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -33,12 +26,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.InvalidRequireCallError = void 0;
+/**
+ * Copyright 2024-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 const generator_1 = __importDefault(require("@babel/generator"));
 const template_1 = __importDefault(require("@babel/template"));
 const traverse_1 = __importDefault(require("@babel/traverse"));
 const types_1 = require("@babel/types");
 const types = __importStar(require("@babel/types"));
-const crypto_1 = __importDefault(require("crypto"));
+const crypto = __importStar(require("crypto"));
 const nullthrows_1 = __importDefault(require("nullthrows"));
 function collectDependencies(ast, options) {
     const visited = new WeakSet();
@@ -324,6 +325,7 @@ class InvalidRequireCallError extends Error {
             .join('\n'));
     }
 }
+exports.InvalidRequireCallError = InvalidRequireCallError;
 collectDependencies.InvalidRequireCallError = InvalidRequireCallError;
 const dynamicRequireErrorTemplate = template_1.default.expression(`
   (function(line) {
@@ -421,7 +423,7 @@ class DependencyRegistry {
                 asyncType: qualifier.asyncType,
                 locs: [],
                 index: this._dependencies.size,
-                key: crypto_1.default.createHash('sha1').update(key).digest('base64'),
+                key: crypto.createHash('sha1').update(key).digest('base64'),
             };
             if (qualifier.optional) {
                 newDependency.isOptional = true;
@@ -447,4 +449,5 @@ class DependencyRegistry {
     }
 }
 module.exports = collectDependencies;
+exports.default = collectDependencies;
 //# sourceMappingURL=collect-dependencies.js.map

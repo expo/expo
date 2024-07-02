@@ -5,15 +5,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import generate from '@babel/generator';
+import type { ParseResult } from '@babel/parser';
 import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
-import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
+import type { NodePath } from '@babel/traverse';
 import { isImport } from '@babel/types';
 import * as types from '@babel/types';
-import crypto from 'crypto';
+import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
+import * as crypto from 'crypto';
 import nullthrows from 'nullthrows';
 
 type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
@@ -28,7 +28,7 @@ type ImportDependencyOptions = Readonly<{
   asyncType: AsyncDependencyType;
 }>;
 
-type Dependency = Readonly<{
+export type Dependency = Readonly<{
   data: DependencyData;
   name: string;
 }>;
@@ -75,7 +75,7 @@ type State = {
 
 type Options = Readonly<{
   asyncRequireModulePath: string;
-  dependencyMapName: string | null;
+  dependencyMapName?: string | null;
   dynamicRequires: DynamicRequiresBehavior;
   inlineableCalls: readonly string[];
   keepRequireNames: boolean;
@@ -84,13 +84,13 @@ type Options = Readonly<{
   unstable_allowRequireContext: boolean;
 }>;
 
-type CollectedDependencies = Readonly<{
-  ast: types.File;
+export type CollectedDependencies = Readonly<{
+  ast: ParseResult<types.File>;
   dependencyMapName: string;
   dependencies: readonly Dependency[];
 }>;
 
-interface DependencyTransformer {
+export interface DependencyTransformer {
   transformSyncRequire(
     path: NodePath<CallExpression>,
     dependency: InternalDependency,
@@ -101,7 +101,7 @@ interface DependencyTransformer {
   transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
 }
 
-type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
 
 type ImportQualifier = Readonly<{
   name: string;
@@ -110,7 +110,10 @@ type ImportQualifier = Readonly<{
   contextParams?: RequireContextParams;
 }>;
 
-function collectDependencies(ast: types.File, options: Options): CollectedDependencies {
+function collectDependencies(
+  ast: CollectedDependencies['ast'],
+  options: Options
+): CollectedDependencies {
   const visited = new WeakSet<types.CallExpression>();
 
   const state: State = {
@@ -497,7 +500,7 @@ function getModuleNameFromCallArgs(path: NodePath<CallExpression>): string | nul
 
 collectDependencies.getModuleNameFromCallArgs = getModuleNameFromCallArgs;
 
-class InvalidRequireCallError extends Error {
+export class InvalidRequireCallError extends Error {
   constructor({ node }: NodePath<any>, message?: string) {
     const line = node.loc && node.loc.start && node.loc.start.line;
 
@@ -665,3 +668,5 @@ class DependencyRegistry {
 }
 
 module.exports = collectDependencies;
+
+export default collectDependencies;

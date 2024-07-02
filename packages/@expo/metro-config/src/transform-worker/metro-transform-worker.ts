@@ -13,16 +13,7 @@ import type { ParseResult, PluginItem } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
-import type { TransformResultDependency } from 'metro/src/DeltaBundler';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import collectDependencies, {
-  InvalidRequireCallError as InternalInvalidRequireCallError,
-  Dependency,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
-import type {
-  DependencyTransformer,
-  DynamicRequiresBehavior,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import countLines from 'metro/src/lib/countLines';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
@@ -41,6 +32,13 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import collectDependencies, {
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+  Dependency,
+  DependencyTransformer,
+  DynamicRequiresBehavior,
+  CollectedDependencies,
+} from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
@@ -75,7 +73,7 @@ interface TransformationContext {
 }
 
 interface TransformResponse {
-  readonly dependencies: readonly TransformResultDependency[];
+  readonly dependencies: CollectedDependencies['dependencies'];
   readonly output: readonly ExpoJsOutput[];
 }
 
@@ -311,7 +309,7 @@ async function transformJS(
     wrappedAst = JsFileWrapping.wrapPolyfill(ast);
   } else {
     try {
-      const opts = {
+      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         asyncRequireModulePath: config.asyncRequireModulePath,
         dependencyTransformer:
           config.unstable_disableModuleWrapping === true
@@ -327,9 +325,7 @@ async function transformJS(
         // NOTE(EvanBacon): Allow arbitrary imports in server environments.
         // This requires a patch to Metro collectDeps.
         // allowArbitraryImport: isServerEnv,
-      };
-
-      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+      }));
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);
