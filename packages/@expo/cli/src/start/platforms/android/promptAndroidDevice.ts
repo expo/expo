@@ -4,20 +4,6 @@ import { Device, logUnauthorized } from './adb';
 import { AbortCommandError } from '../../../utils/errors';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 
-function nameStyleForDevice(device: Device): (name: string) => string {
-  const isActive = device.isBooted;
-  if (!isActive) {
-    // Use no style changes for a disconnected device that is available to be opened.
-    return (text: string) => text;
-  }
-  // A device that is connected and ready to be used should be bolded to match iOS.
-  if (device.isAuthorized) {
-    return chalk.bold;
-  }
-  // Devices that are unauthorized and connected cannot be used, but they are connected so gray them out.
-  return (text: string) => chalk.bold(chalk.gray(text));
-}
-
 export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
   // TODO: provide an option to add or download more simulators
 
@@ -26,14 +12,7 @@ export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
     name: 'value',
     limit: 11,
     message: 'Select a device/emulator',
-    choices: devices.map((item) => {
-      const format = nameStyleForDevice(item);
-      const type = item.isAuthorized ? item.type : 'unauthorized';
-      return {
-        title: `${format(item.name)} ${chalk.dim(`(${type})`)}`,
-        value: item.name,
-      };
-    }),
+    choices: devices.map((item) => formatDeviceChoice(item)),
     suggest: createSelectionFilter(),
   });
 
@@ -45,4 +24,48 @@ export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
   }
 
   return device!;
+}
+
+/**
+ * Format the device for prompt list.
+ * @internal - Exposed for testing.
+ */
+export function formatDeviceChoice(device: Device): { title: string; value: string } {
+  const symbol = getDeviceChoiceSymbol(device);
+  const name = getDeviceChoiceName(device);
+  const type = chalk.dim(device.isAuthorized ? device.type : 'unauthorized');
+
+  return {
+    value: device.name,
+    title: `${symbol}${name} (${type})`,
+  };
+}
+
+/** Get the styled symbol of the device, based on ADB connection type (usb vs network) */
+function getDeviceChoiceSymbol(device: Device) {
+  if (device.type === 'device' && device.connectionType === 'Network') {
+    return '🌐 ';
+  }
+
+  if (device.type === 'device') {
+    return '🔌 ';
+  }
+
+  return '';
+}
+
+/** Get the styled name of the device, based on device state */
+function getDeviceChoiceName(device: Device) {
+  // Use no style changes for a disconnected device that is available to be opened.
+  if (!device.isBooted) {
+    return device.name;
+  }
+
+  // A device that is connected and ready to be used should be bolded to match iOS.
+  if (device.isAuthorized) {
+    return chalk.bold(device.name);
+  }
+
+  // Devices that are unauthorized and connected cannot be used, but they are connected so gray them out.
+  return chalk.bold(chalk.gray(device.name));
 }
