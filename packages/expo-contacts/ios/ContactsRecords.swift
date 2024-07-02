@@ -60,7 +60,7 @@ struct Contact: Record {
 struct SocialProfile: Record {
   @Field var service: String?
   @Field var localizedProfile: String?
-  @Field var url: URL?
+  @Field var url: String?
   @Field var username: String?
   @Field var userId: String?
   @Field var label: String
@@ -77,7 +77,7 @@ struct InstantMessageAddress: Record {
 
 struct UrlAddress: Record {
   @Field var label: String
-  @Field var url: URL?
+  @Field var url: String?
   @Field var id: String?
 }
 
