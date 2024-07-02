@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add new methods for managing events using the system-provided calendar UI
+- Add new methods for managing events using the system-provided calendar UI ([#30102](https://github.com/expo/expo/pull/30102) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
