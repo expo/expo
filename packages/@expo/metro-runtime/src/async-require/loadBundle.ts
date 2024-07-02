@@ -7,8 +7,6 @@
 import { buildUrlForBundle } from './buildUrlForBundle';
 import { fetchThenEvalAsync } from './fetchThenEval';
 
-let pendingRequests = 0;
-
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
  *
@@ -20,23 +18,9 @@ export async function loadBundleAsync(bundlePath: string): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
     return fetchThenEvalAsync(requestUrl);
   } else {
-    const LoadingView = require('../LoadingView')
-      .default as typeof import('../LoadingView').default;
-    if (process.env.EXPO_OS !== 'web') {
-      // Send a signal to the `expo` package to show the loading indicator.
-      LoadingView.showMessage('Downloading...', 'load');
-    }
-    pendingRequests++;
-
-    return fetchThenEvalAsync(requestUrl)
-      .then(() => {
-        const HMRClient = require('../HMRClient').default as typeof import('../HMRClient').default;
-        HMRClient.registerBundle(requestUrl);
-      })
-      .finally(() => {
-        if (!--pendingRequests && process.env.EXPO_OS !== 'web') {
-          LoadingView.hide();
-        }
-      });
+    return fetchThenEvalAsync(requestUrl).then(() => {
+      const HMRClient = require('../HMRClient').default as typeof import('../HMRClient').default;
+      HMRClient.registerBundle(requestUrl);
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { StyleProp, TextStyle } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 export declare function Ansi({ text, style }: {
     text: string;
     style: StyleProp<TextStyle>;
