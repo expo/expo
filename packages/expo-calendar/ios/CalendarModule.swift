@@ -328,12 +328,12 @@ public class CalendarModule: Module {
       guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
         throw EventNotFoundException(eventId)
       }
-      
+
       guard let currentVc = appContext?.utilities?.currentViewController() else {
         throw Exception()
       }
       warnIfDialogInProgress()
-      
+
       let controller = EKEventViewController()
       controller.event = calendarEvent
       let promiseRef = PromiseRef(promise)
@@ -343,7 +343,7 @@ public class CalendarModule: Module {
       currentVc.present(navController, animated: true)
     }.runOnQueue(.main)
   }
-  
+
   private func presentEventEditViewController(event: EKEvent, promise: Promise) throws {
     guard let currentVc = appContext?.utilities?.currentViewController() else {
       throw Exception()
@@ -358,17 +358,17 @@ public class CalendarModule: Module {
 
     currentVc.present(controller, animated: true)
   }
-  
+
   private func warnIfDialogInProgress() {
     if calendarViewDelegate != nil {
       log.warn("Calendar: Different calendar dialog is already being presented. Await its result before presenting another.")
     }
   }
-  
+
   private func unsetDelegate() {
     self.calendarViewDelegate = nil
   }
-  
+
   private func initializeEvent(calendarEvent: EKEvent, event: Event) throws {
     if let timeZone = event.timeZone {
       if let tz = TimeZone(identifier: timeZone) {

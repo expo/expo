@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add new methods for managing events using the system-provided calendar UI
+
 ### 🐛 Bug fixes
 
 - Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))

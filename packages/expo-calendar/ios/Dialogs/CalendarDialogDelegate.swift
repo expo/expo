@@ -4,12 +4,12 @@ import ExpoModulesCore
 class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDelegate {  
   private let promise: PromiseRef
   private let onComplete: () -> Void
-  
+
   init(promise: PromiseRef, onComplete: @escaping () -> Void) {
     self.promise = promise
     self.onComplete = onComplete
   }
-  
+
   func eventEditViewController(_ controller: EKEventEditViewController, didCompleteWith action: EKEventEditViewAction) {
     switch (action) {
     case .canceled: promise.resolve(CalendarResponse(action: "canceled"))
@@ -22,7 +22,7 @@ class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDele
     }
     controller.dismiss(animated: true, completion: onComplete)
   }
-  
+
   func eventViewController(_ controller: EKEventViewController, didCompleteWith action: EKEventViewAction) {
     switch (action) {
     case .responded: promise.resolve(CalendarResponse(action: "responded"))
