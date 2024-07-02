@@ -36,10 +36,7 @@ export type ScreenProps<
   initialParams?: Record<string, any>;
   options?:
     | TOptions
-    | ((prop: {
-        route: RouteProp<ParamListBase, string>;
-        navigation: any;
-      }) => TOptions);
+    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
     | ScreenListeners<State, EventMap>
