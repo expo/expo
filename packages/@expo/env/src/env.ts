@@ -25,6 +25,7 @@ export function isEnabled(): boolean {
 export function createControlledEnvironment() {
   let userDefinedEnvironment: NodeJS.ProcessEnv | undefined = undefined;
   let memo: { env: NodeJS.ProcessEnv; files: string[] } | undefined = undefined;
+  let currentParsedEnv: Record<string, unknown> | undefined = undefined;
 
   function _getForce(
     projectRoot: string,
@@ -102,11 +103,16 @@ export function createControlledEnvironment() {
   function _expandEnv(parsedEnv: Record<string, string>) {
     const expandedEnv: Record<string, string> = {};
 
+    const envCopy = { ...process.env };
+    // allowing vars to be overwritten
+    for (const key in parsedEnv) {
+      delete envCopy[key];
+    }
     // Pass a clone of `process.env` to avoid mutating the original environment.
     // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
     const allExpandedEnv = dotenvExpand({
       parsed: parsedEnv,
-      processEnv: { ...process.env } as Record<string, string>,
+      processEnv: envCopy as Record<string, string>,
     });
 
     if (allExpandedEnv.error) {
@@ -122,6 +128,7 @@ export function createControlledEnvironment() {
         expandedEnv[key] = allExpandedEnv.parsed[key];
       }
     }
+    currentParsedEnv = allExpandedEnv.parsed;
 
     return expandedEnv;
   }
@@ -149,6 +156,8 @@ export function createControlledEnvironment() {
       return process.env;
     }
 
+    // saving before it will be mutated inside of _expandEnv
+    const prevParsedEnv = currentParsedEnv;
     const envInfo = get(projectRoot, options);
 
     if (!options.force) {
@@ -161,6 +170,12 @@ export function createControlledEnvironment() {
       }
     }
 
+    // deleting keys that possibly removed from .env file
+    if (prevParsedEnv) {
+      for (const key in prevParsedEnv) {
+        delete process.env[key];
+      }
+    }
     for (const key of Object.keys(envInfo.env)) {
       // Avoid creating a new object, mutate it instead as this causes problems in Bun
       process.env[key] = envInfo.env[key];
