@@ -301,22 +301,26 @@ public class CalendarModule: Module {
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
       try checkCalendarPermissions()
+      if calendarViewDelegate != nil {
+        throw EventDialogInProgressException()
+      }
       let calendarEvent = EKEvent(eventStore: eventStore)
       try initializeEvent(calendarEvent: calendarEvent, event: event)
 
-      try presentEventEditViewcontroller(event: calendarEvent, promise: promise)
-    }
-    
+      try presentEventEditViewController(event: calendarEvent, promise: promise)
+    }.runOnQueue(.main)
+
     AsyncFunction("editEventInCalendarAsync") { (opts: OpenInCalendarOptions, promise: Promise) in
       try checkCalendarPermissions()
+      warnIfDialogInProgress()
       let startDate = parse(date: opts.instanceStartDate)
       let eventId = opts.id
       guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
         throw EventNotFoundException(eventId)
       }
-      try presentEventEditViewcontroller(event: calendarEvent, promise: promise)
-    }
-    
+      try presentEventEditViewController(event: calendarEvent, promise: promise)
+    }.runOnQueue(.main)
+
     AsyncFunction("openEventInCalendarAsync") { (opts: OpenInCalendarOptions, promise: Promise) in
       try checkCalendarPermissions()
       let startDate = parse(date: opts.instanceStartDate)
@@ -334,26 +338,23 @@ public class CalendarModule: Module {
       controller.event = calendarEvent
       self.calendarViewDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
       controller.delegate = self.calendarViewDelegate
-      let navController = ViewEventViewController(rootViewController: controller, promise: promise, onComplete: self.unsetDelegate)
+      let navController = ViewEventViewController(rootViewController: controller, promise: promise, onDismiss: self.unsetDelegate)
       currentVc.present(navController, animated: true)
     }.runOnQueue(.main)
   }
   
-  private func presentEventEditViewcontroller(event: EKEvent, promise: Promise) throws {
+  private func presentEventEditViewController(event: EKEvent, promise: Promise) throws {
     guard let currentVc = appContext?.utilities?.currentViewController() else {
       throw Exception()
     }
-    warnIfDialogInProgress()
-    
-    DispatchQueue.main.async {
-      let controller = EditEventViewController(promise: promise, onDismiss: self.unsetDelegate)
-      controller.event = event
-      controller.eventStore = self.eventStore
-      self.calendarViewDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
-      controller.editViewDelegate = self.calendarViewDelegate
-      
-      currentVc.present(controller, animated: true)
-    }
+
+    let controller = EditEventViewController(promise: promise, onDismiss: self.unsetDelegate)
+    controller.event = event
+    controller.eventStore = self.eventStore
+    self.calendarViewDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
+    controller.editViewDelegate = self.calendarViewDelegate
+
+    currentVc.present(controller, animated: true)
   }
   
   private func warnIfDialogInProgress() {

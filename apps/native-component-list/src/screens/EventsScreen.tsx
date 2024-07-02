@@ -172,16 +172,28 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   _openEventInCalendar = async (event: Calendar.Event) => {
-    const result = await Calendar.openEventInCalendarAsync({
-      id: event.id,
-      startNewActivityTask: true,
-    });
-    Alert.alert('openEventInCalendarAsync result', JSON.stringify(result));
+    const result = await Calendar.openEventInCalendarAsync(
+      {
+        id: event.id,
+      },
+      {
+        startNewActivityTask: true,
+      }
+    );
+    setTimeout(() => {
+      Alert.alert('openEventInCalendarAsync result', JSON.stringify(result), undefined, {
+        cancelable: true,
+      });
+    }, 200);
   };
 
   _editEventInCalendar = async (event: Calendar.Event) => {
     const result = await Calendar.editEventInCalendarAsync({ id: event.id });
-    Alert.alert('editEventInCalendarAsync result', JSON.stringify(result));
+    setTimeout(() => {
+      Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {
+        cancelable: true,
+      });
+    }, 200);
   };
 
   _renderActionButtons = () => {
@@ -199,7 +211,11 @@ export default class EventsScreen extends React.Component<Props, State> {
           onPress={async () => {
             const newEvent = createEvent(true);
             const result = await Calendar.createEventInCalendarAsync(newEvent);
-            Alert.alert('createEventInCalendarAsync result', JSON.stringify(result));
+            setTimeout(() => {
+              Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {
+                cancelable: true,
+              });
+            }, 200);
           }}
           title="Create Event using the OS dialog"
         />

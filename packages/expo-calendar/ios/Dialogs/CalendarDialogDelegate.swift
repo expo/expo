@@ -14,7 +14,10 @@ class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDele
     switch (action) {
     case .canceled: promise.resolve(CalendarResponse(action: "canceled"))
     case .deleted: promise.resolve(CalendarResponse(action: "deleted"))
-    case .saved: promise.resolve(CalendarResponse(action: "saved"))
+    case .saved:
+      let evt = controller.event
+      let id = evt?.calendarItemIdentifier
+      promise.resolve(CalendarSavedResponse(id: id))
     default: promise.resolve(CalendarResponse())
     }
     controller.dismiss(animated: true, completion: onComplete)

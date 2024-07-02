@@ -1,6 +1,5 @@
 package expo.modules.calendar.dialogs
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_INSERT
@@ -53,15 +52,8 @@ internal class CreateEventContract : AppContextActivityResultContract<CreatedEve
   }
 
   override fun parseResult(input: CreatedEventOptions, resultCode: Int, intent: Intent?): EventIntentResult =
-    when (resultCode) {
-      Activity.RESULT_CANCELED -> {
-        EventIntentResult(action = "canceled")
-      }
-      Activity.RESULT_OK -> {
-        EventIntentResult(action = "done")
-      }
-      else -> {
-        EventIntentResult(action = "unknown")
-      }
-    }
+    // we return the same result for all cases because on Android, there's no reliable way to tell
+    // what the user really did. Even saving or deleting an event and then pressing "back" to get back to the app
+    // will report `Activity.RESULT_CANCELED` even though the user made an event modification.
+    EventIntentResult(action = "done")
 }

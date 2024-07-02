@@ -113,3 +113,9 @@ internal class MissingRemindersPListValueException: GenericException<String> {
     "This app is missing \(param), so reminders methods will fail. Add this key to your bundle's Info.plist"
   }
 }
+
+internal class EventDialogInProgressException: Exception {
+  override var reason: String {
+    "Different calendar UI was previously presented and is currently in progress. Await the result of the other dialog first."
+  }
+}

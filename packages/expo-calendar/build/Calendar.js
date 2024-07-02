@@ -176,9 +176,11 @@ export async function getEventAsync(id, recurringEventOptions = {}) {
 /**
  * Launches the calendar UI provided by the OS to create a new event.
  * @param eventData A map of details for the event to be created.
- * @return A promise which resolves with information about what action the user took (e.g. canceled the dialog).
+ * @param presentationOptions Configuration that influences how the calendar UI is presented.
+ * @return A promise which resolves with information about what action the user took.
+ * @header systemProvidedUI
  */
-export async function createEventInCalendarAsync(eventData = {}) {
+export async function createEventInCalendarAsync(eventData = {}, presentationOptions) {
     if (!ExpoCalendar.createEventInCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'createEventInCalendarAsync');
     }
@@ -187,33 +189,35 @@ export async function createEventInCalendarAsync(eventData = {}) {
         console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
     }
     const params = stringifyDateValues(eventData);
+    Object.assign(params, presentationOptions);
     return ExpoCalendar.createEventInCalendarAsync(params);
 }
 /**
  * Launches the calendar UI provided by the OS to preview an event.
- * @param params A map of options for the event. Event id is required.
  * @return A promise which resolves with information about what action the user took (e.g. canceled the dialog).
+ * @header systemProvidedUI
  */
-export async function openEventInCalendarAsync(params) {
+export async function openEventInCalendarAsync(params, presentationOptions) {
     if (!ExpoCalendar.openEventInCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');
     }
     if (!params.id) {
         throw new Error('openEventInCalendarAsync must be called with an id (string) of the target event');
     }
-    return ExpoCalendar.openEventInCalendarAsync(params);
+    const newParams = { ...params, ...presentationOptions };
+    return ExpoCalendar.openEventInCalendarAsync(newParams);
 }
 /**
- * Launches the calendar UI provided by the OS to edit an event. On Android, this is the same as `openEventInCalendarAsync`.
- * @param params A map of options for the event. Event id is required.
- * @return A promise which resolves with information about what action the user took (e.g. canceled the dialog).
+ * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @return A promise which resolves with information about what action the user took.
+ * @header systemProvidedUI
  */
-export async function editEventInCalendarAsync(params) {
+export async function editEventInCalendarAsync(params, presentationOptions) {
     if (!params.id) {
         throw new Error('editEventInCalendarAsync must be called with an id (string) of the target event');
     }
     if (Platform.OS === 'android') {
-        return openEventInCalendarAsync(params);
+        return openEventInCalendarAsync(params, presentationOptions);
     }
     if (!ExpoCalendar.editEventInCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
@@ -527,6 +531,7 @@ export async function getSourceAsync(id) {
  * @param id ID of the event to open.
  * @platform android
  * @deprecated use `openEventInCalendarAsync` instead
+ * @header systemProvidedUI
  */
 export function openEventInCalendar(id) {
     if (!ExpoCalendar.openEventInCalendar) {

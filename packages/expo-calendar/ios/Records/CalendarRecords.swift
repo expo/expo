@@ -128,3 +128,8 @@ struct OpenInCalendarOptions: Record {
 struct CalendarResponse: Record {
   @Field var action: String = "done"
 }
+
+struct CalendarSavedResponse: Record {
+  @Field var action: String = "saved"
+  @Field var id: String? = ""
+}
