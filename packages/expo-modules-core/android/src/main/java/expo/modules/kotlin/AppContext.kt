@@ -55,7 +55,7 @@ class AppContext(
 
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
-  val hostingContext = RuntimeContext(this, reactContextHolder)
+  val hostingRuntimeContext = RuntimeContext(this, reactContextHolder)
 
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -91,7 +91,7 @@ class AppContext(
   )
 
   val registry
-    get() = hostingContext.registry
+    get() = hostingRuntimeContext.registry
 
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
@@ -108,16 +108,16 @@ class AppContext(
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
       // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      hostingContext.registry.register(ErrorManagerModule())
-      hostingContext.registry.register(NativeModulesProxyModule())
-      hostingContext.registry.register(modulesProvider)
+      hostingRuntimeContext.registry.register(ErrorManagerModule())
+      hostingRuntimeContext.registry.register(NativeModulesProxyModule())
+      hostingRuntimeContext.registry.register(modulesProvider)
 
       logger.info("✅ AppContext was initialized")
     }
   }
 
   fun onCreate() = trace("AppContext.onCreate") {
-    hostingContext.registry.postOnCreate()
+    hostingRuntimeContext.registry.postOnCreate()
   }
 
   /**
@@ -125,7 +125,7 @@ class AppContext(
    * It will be a NOOP if the remote debugging was activated.
    */
   fun installJSIInterop() {
-    hostingContext.installJSIContext()
+    hostingRuntimeContext.installJSIContext()
   }
 
   /**
@@ -217,13 +217,13 @@ class AppContext(
    * Provides access to the react application context
    */
   val reactContext: Context?
-    get() = hostingContext.reactContext
+    get() = hostingRuntimeContext.reactContext
 
   /**
    * @return true if there is an non-null, alive react native instance
    */
   val hasActiveReactInstance: Boolean
-    get() = hostingContext.reactContext?.hasActiveReactInstance() ?: false
+    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() ?: false
 
   /**
    * Provides access to the event emitter
@@ -232,11 +232,11 @@ class AppContext(
     val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
       ?: return null
     return KModuleEventEmitterWrapper(
-      requireNotNull(hostingContext.registry.getModuleHolder(module)) {
+      requireNotNull(hostingRuntimeContext.registry.getModuleHolder(module)) {
         "Cannot create an event emitter for the module that isn't present in the module registry."
       },
       legacyEventEmitter,
-      hostingContext.reactContextHolder
+      hostingRuntimeContext.reactContextHolder
     )
   }
 
@@ -244,20 +244,20 @@ class AppContext(
     get() {
       val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
         ?: return null
-      return KEventEmitterWrapper(legacyEventEmitter, hostingContext.reactContextHolder)
+      return KEventEmitterWrapper(legacyEventEmitter, hostingRuntimeContext.reactContextHolder)
     }
 
   val errorManager: ErrorManagerModule?
-    get() = hostingContext.registry.getModule()
+    get() = hostingRuntimeContext.registry.getModule()
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
-    hostingContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
-    hostingContext.registry.post(EventName.MODULE_DESTROY)
-    hostingContext.registry.cleanUp()
+    hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
+    hostingRuntimeContext.registry.post(EventName.MODULE_DESTROY)
+    hostingRuntimeContext.registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    hostingContext.deallocate()
+    hostingRuntimeContext.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
 
@@ -270,15 +270,15 @@ class AppContext(
     // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
     if (hostWasDestroyed) {
       hostWasDestroyed = false
-      hostingContext.registry.registerActivityContracts()
+      hostingRuntimeContext.registry.registerActivityContracts()
     }
 
     activityResultsManager.onHostResume(activity)
-    hostingContext.registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
+    hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
   internal fun onHostPause() {
-    hostingContext.registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
+    hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
   internal fun onHostDestroy() {
@@ -289,7 +289,7 @@ class AppContext(
 
       activityResultsManager.onHostDestroy(it)
     }
-    hostingContext.registry.post(EventName.ACTIVITY_DESTROYS)
+    hostingRuntimeContext.registry.post(EventName.ACTIVITY_DESTROYS)
     // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
     // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
     hostWasDestroyed = true
@@ -297,7 +297,7 @@ class AppContext(
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     activityResultsManager.onActivityResult(requestCode, resultCode, data)
-    hostingContext.registry.post(
+    hostingRuntimeContext.registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
       OnActivityResultPayload(
@@ -309,7 +309,7 @@ class AppContext(
   }
 
   internal fun onNewIntent(intent: Intent?) {
-    hostingContext.registry.post(
+    hostingRuntimeContext.registry.post(
       EventName.ON_NEW_INTENT,
       intent
     )
@@ -318,12 +318,12 @@ class AppContext(
   @Suppress("UNCHECKED_CAST")
   @UiThread
   fun <T : View> findView(viewTag: Int): T? {
-    val reactContext = hostingContext.reactContext ?: return null
+    val reactContext = hostingRuntimeContext.reactContext ?: return null
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
   internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
-    val reactContext = hostingContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val reactContext = hostingRuntimeContext.reactContext ?: throw Exceptions.ReactContextLost()
     val uiManager = UIManagerHelper.getUIManagerForReactTag(
       reactContext,
       UIManagerType.DEFAULT
@@ -342,7 +342,7 @@ class AppContext(
    * Runs a code block on the JavaScript thread.
    */
   fun executeOnJavaScriptThread(runnable: Runnable) {
-    hostingContext.reactContext?.runOnJSQueueThread(runnable)
+    hostingRuntimeContext.reactContext?.runOnJSQueueThread(runnable)
   }
 
 // region CurrentActivityProvider

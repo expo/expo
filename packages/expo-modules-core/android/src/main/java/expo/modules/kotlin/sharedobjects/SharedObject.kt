@@ -11,7 +11,7 @@ import expo.modules.kotlin.weak
 
 @DoNotStrip
 open class SharedObject(runtimeContext: RuntimeContext? = null) {
-  constructor(appContext: AppContext) : this(appContext.hostingContext)
+  constructor(appContext: AppContext) : this(appContext.hostingRuntimeContext)
 
   /**
    * An identifier of the native shared object that maps to the JavaScript object.

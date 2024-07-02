@@ -21,7 +21,6 @@ import java.lang.ref.WeakReference
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JSIContext : Destructible, AutoCloseable {
-  @VisibleForTesting
   lateinit var runtimeContextHolder: WeakReference<RuntimeContext>
 
   // Has to be called "mHybridData" - fbjni uses it via reflection

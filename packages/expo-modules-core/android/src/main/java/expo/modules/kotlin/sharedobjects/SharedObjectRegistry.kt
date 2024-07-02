@@ -11,19 +11,19 @@ import expo.modules.kotlin.weak
 value class SharedObjectId(val value: Int) {
   @Deprecated("Use toNativeObject(runtimeContext: RuntimeContext) instead.", ReplaceWith("toNativeObject(runtimeContext: RuntimeContext)"))
   fun toNativeObject(appContext: AppContext): SharedObject? {
-    return appContext.hostingContext.sharedObjectRegistry.toNativeObject(this)
+    return appContext.hostingRuntimeContext.sharedObjectRegistry.toNativeObject(this)
   }
 
   @Deprecated("Use toJavaScriptObject(runtimeContext: RuntimeContext) instead.", ReplaceWith("toJavaScriptObject(runtimeContext: RuntimeContext)"))
   fun toJavaScriptObject(appContext: AppContext): JavaScriptObject? {
     val nativeObject = toNativeObject(appContext) ?: return null
-    return appContext.hostingContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
+    return appContext.hostingRuntimeContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
   }
 
   @Deprecated("Use toWeakJavaScriptObject(runtimeContext: RuntimeContext) instead.", ReplaceWith("toWeakJavaScriptObject(runtimeContext: RuntimeContext)"))
   fun toWeakJavaScriptObject(appContext: AppContext): JavaScriptWeakObject? {
     val nativeObject = toNativeObject(appContext) ?: return null
-    return appContext.hostingContext.sharedObjectRegistry.toWeakJavaScriptObject(nativeObject)
+    return appContext.hostingRuntimeContext.sharedObjectRegistry.toWeakJavaScriptObject(nativeObject)
   }
 
   fun toNativeObject(runtimeContext: RuntimeContext): SharedObject? {
