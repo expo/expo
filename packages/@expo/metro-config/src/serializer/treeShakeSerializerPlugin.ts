@@ -516,7 +516,7 @@ export async function treeShakeSerializer(
         },
       });
 
-      console.log('OUTPUT:', value.path + '\n\n' + generate(ast).code);
+      // console.log('OUTPUT:', value.path + '\n\n' + generate(ast).code);
     }
 
     const starExport = {
@@ -540,7 +540,7 @@ export async function treeShakeSerializer(
   // Debug pass: Print all orphaned modules.
   for (const [, value] of graph.dependencies.entries()) {
     if (value.inverseDependencies.size === 0) {
-      console.log('Orphan:', value.path);
+      // console.log('Orphan:', value.path);
     } else {
       let hasNormalNode = false;
       for (const dep of value.inverseDependencies) {
