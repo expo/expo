@@ -1,10 +1,21 @@
 {
-  "platforms": ["apple", "android"],
+  "platforms": [
+    "apple",
+    "android"
+  ],
   "apple": {
-    "modules": ["FileSystemModule"],
-    "appDelegateSubscribers": ["FileSystemBackgroundSessionHandler"]
+    "modules": [
+      "FileSystemModule",
+      "FileSystemNextModule"
+    ],
+    "appDelegateSubscribers": [
+      "FileSystemBackgroundSessionHandler"
+    ]
   },
   "android": {
-    "modules": ["expo.modules.filesystem.FileSystemModule"]
+    "modules": [
+      "expo.modules.filesystem.FileSystemModule",
+      "expo.modules.filesystem.next.FileSystemNextModule"
+    ]
   }
 }
