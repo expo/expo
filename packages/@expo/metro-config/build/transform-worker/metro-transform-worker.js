@@ -229,7 +229,7 @@ function performConstantFolding(ast, { filename }) {
     }).ast);
     return ast;
 }
-async function transformJS(file, { config, options, projectRoot }) {
+async function transformJS(file, { config, options }) {
     const treeshake = 
     // Ensure we don't enable tree shaking for scripts or assets.
     file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
@@ -287,6 +287,8 @@ async function transformJS(file, { config, options, projectRoot }) {
                 // This setting shouldn't be shared with the tree shaking transformer.
                 dependencyTransformer: unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
             }));
+            // console.log('>', dependencies);
+            collectDependenciesOptions.dependencyMapName = dependencyMapName;
         }
         catch (error) {
             if (error instanceof collectDependencies_1.InvalidRequireCallError) {
@@ -340,6 +342,7 @@ async function transformJS(file, { config, options, projectRoot }) {
     }
     const possibleReconcile = treeshake
         ? {
+            inlineRequires: options.inlineRequires,
             importDefault,
             importAll,
             normalizePseudoGlobals: shouldNormalizePseudoGlobals,
@@ -543,6 +546,12 @@ function getCacheKey(config) {
     ].join('$');
 }
 exports.getCacheKey = getCacheKey;
+const template_1 = __importDefault(require("@babel/template"));
+/**
+ * Produces a Babel template that transforms an "import(...)" call into a
+ * "require(...)" call to the asyncRequire specified.
+ */
+const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => {
         // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
@@ -553,7 +562,22 @@ const disabledDependencyTransformer = {
             path.node.callee = types.memberExpression(types.identifier('require'), types.identifier('context'));
         }
     },
-    transformImportCall: () => { },
+    transformImportCall: (path, dependency, state) => {
+        // HACK: Ensure the async import code is included in the bundle when an import() call is found.
+        let topParent = path;
+        while (topParent.parentPath) {
+            topParent = topParent.parentPath;
+        }
+        // @ts-expect-error
+        if (topParent._handled) {
+            return;
+        }
+        path.insertAfter(makeShimAsyncRequireTemplate({
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+        }));
+        // @ts-expect-error: Prevent recursive loop
+        topParent._handled = true;
+    },
     transformPrefetch: () => { },
     transformIllegalDynamicRequire: () => { },
 };

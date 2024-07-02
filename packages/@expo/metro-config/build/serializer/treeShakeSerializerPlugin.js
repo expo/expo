@@ -467,7 +467,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
     const afterList = [...graph.dependencies.keys()];
     // Print the removed modules:
     const removedModules = beforeList.filter((value) => !afterList.includes(value));
-    console.log('Fully removed:', removedModules.sort());
+    console.log('Fully removed:', removedModules.sort().join('\n'));
     // console.log('ALL:', JSON.stringify(afterList, null, 2));
     return [entryPoint, preModules, graph, options];
     function disposeOfGraphNode(nodePath) {

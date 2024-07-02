@@ -23,6 +23,7 @@ import type {
   DependencyTransformer,
   DynamicRequiresBehavior,
   Options as CollectDependenciesOptions,
+  State,
 } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import countLines from 'metro/src/lib/countLines';
@@ -414,6 +415,8 @@ async function transformJS(
         dependencyTransformer:
           unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
       }));
+      // console.log('>', dependencies);
+      collectDependenciesOptions.dependencyMapName = dependencyMapName;
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);
@@ -754,6 +757,17 @@ export function getCacheKey(config: JsTransformerConfig): string {
   ].join('$');
 }
 
+import template from '@babel/template';
+import type { NodePath } from '@babel/traverse';
+
+/**
+ * Produces a Babel template that transforms an "import(...)" call into a
+ * "require(...)" call to the asyncRequire specified.
+ */
+const makeShimAsyncRequireTemplate = template.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
+
+type InternalDependency = any;
+
 const disabledDependencyTransformer: DependencyTransformer = {
   transformSyncRequire: (path) => {
     // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
@@ -768,7 +782,26 @@ const disabledDependencyTransformer: DependencyTransformer = {
       );
     }
   },
-  transformImportCall: () => {},
+  transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
+    // HACK: Ensure the async import code is included in the bundle when an import() call is found.
+    let topParent = path;
+    while (topParent.parentPath) {
+      topParent = topParent.parentPath;
+    }
+
+    // @ts-expect-error
+    if (topParent._handled) {
+      return;
+    }
+
+    path.insertAfter(
+      makeShimAsyncRequireTemplate({
+        ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+      })
+    );
+    // @ts-expect-error: Prevent recursive loop
+    topParent._handled = true;
+  },
   transformPrefetch: () => {},
   transformIllegalDynamicRequire: () => {},
 };

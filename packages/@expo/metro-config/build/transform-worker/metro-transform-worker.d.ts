@@ -19,6 +19,7 @@ export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     };
 };
 export type ReconcileTransformSettings = {
+    inlineRequires: boolean;
     importDefault: string;
     importAll: string;
     globalPrefix: string;
