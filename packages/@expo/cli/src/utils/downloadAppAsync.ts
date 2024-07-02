@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 import temporary from 'tempy';
+import { Agent } from 'undici';
 import { promisify } from 'util';
 
 import { ensureDirectoryAsync } from './dir';
@@ -40,16 +41,16 @@ async function downloadAsync({
 
   debug(`Downloading ${url} to ${outputPath}`);
   const res = await fetchInstance(url, {
-    timeout: TIMER_DURATION,
     onProgress,
+    dispatcher: new Agent({ connectTimeout: TIMER_DURATION }),
   });
-  if (!res.ok) {
+  if (!res.ok || !res.body) {
     throw new CommandError(
       'FILE_DOWNLOAD',
       `Unexpected response: ${res.statusText}. From url: ${url}`
     );
   }
-  return pipeline(res.body, fs.createWriteStream(outputPath));
+  return pipeline(Readable.fromWeb(res.body), fs.createWriteStream(outputPath));
 }
 
 export async function downloadAppAsync({

@@ -5,7 +5,6 @@ import {
 } from '@expo/multipart-body-parser';
 import execa from 'execa';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -154,7 +153,7 @@ describe('server', () => {
 
       const multipartParts = await parseMultipartMixedResponseAsync(
         response.headers.get('content-type') as string,
-        await response.buffer()
+        Buffer.from(await response.arrayBuffer())
       );
       const manifestPart = nullthrows(
         multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))

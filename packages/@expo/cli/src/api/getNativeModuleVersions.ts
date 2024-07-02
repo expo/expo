@@ -1,4 +1,4 @@
-import { createCachedFetch } from './rest/client';
+import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 import { CommandError } from '../utils/errors';
 
 interface NativeModule {
@@ -36,14 +36,16 @@ export async function getNativeModuleVersionsAsync(
     // 1 minute cache
     ttl: 1000 * 60 * 1,
   });
-  const results = await fetchAsync(`sdks/${sdkVersion}/native-modules`);
-  if (!results.ok) {
+  const response = await fetchAsync(`sdks/${sdkVersion}/native-modules`);
+  if (!response.ok) {
     throw new CommandError(
       'API',
-      `Unexpected response when fetching version info from Expo servers: ${results.statusText}.`
+      `Unexpected response when fetching version info from Expo servers: ${response.statusText}.`
     );
   }
-  const { data } = await results.json();
+
+  const json = await response.json();
+  const data = getResponseDataOrThrow<BundledNativeModuleList>(json);
   if (!data.length) {
     throw new CommandError('VERSIONS', 'The bundled native module list from the Expo API is empty');
   }

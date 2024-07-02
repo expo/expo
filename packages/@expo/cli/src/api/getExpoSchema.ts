@@ -3,7 +3,7 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
-import { createCachedFetch } from './rest/client';
+import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 
@@ -87,6 +87,7 @@ async function getConfigurationSchemaAsync(sdkVersion: string): Promise<JSONObje
     ttl: 1000 * 60 * 60 * 24 * 7,
   });
   const response = await fetchAsync(`project/configuration/schema/${sdkVersion}`);
-  const { data } = await response.json();
-  return data;
+  const json = await response.json();
+
+  return getResponseDataOrThrow<JSONObject>(json);
 }

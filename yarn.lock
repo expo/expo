@@ -11620,11 +11620,6 @@ lodash.merge@4.6.2, lodash.merge@^4.6.2:
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash.set@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/lodash.set/-/lodash.set-4.3.2.tgz#d8757b1da807dde24816b0d6a84bea1a76230b23"
-  integrity sha1-2HV7HagH3eJIFrDWqEvqGnYjCyM=
-
 lodash.throttle@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
@@ -12634,22 +12629,12 @@ nocache@^3.0.1:
   resolved "https://registry.yarnpkg.com/nocache/-/nocache-3.0.4.tgz#5b37a56ec6e09fc7d401dceaed2eab40c8bfdf79"
   integrity sha512-WDD0bdg9mbq6F4mRxEYcPWwfA1vxd0mrvKOyxI7Xj/atfRHVeutzuWByG//jfm4uPzp0y4Kj051EORCBSQMycw==
 
-nock@^14.0.0-beta.7:
+nock@14.0.0-beta.7, nock@^14.0.0-beta.7:
   version "14.0.0-beta.7"
   resolved "https://registry.yarnpkg.com/nock/-/nock-14.0.0-beta.7.tgz#bdb3f3cfa2276659c87412f6dff2aea9ee69a7fc"
   integrity sha512-+EQMm5W9K8YnBE2Ceg4hnJynaCZmvK8ZlFXQ2fxGwtkOkBUq8GpQLTks2m1jpvse9XDxMDDOHgOWpiznFuh0bA==
   dependencies:
     json-stringify-safe "^5.0.1"
-    propagate "^2.0.0"
-
-nock@~13.2.2:
-  version "13.2.4"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-13.2.4.tgz#43a309d93143ee5cdcca91358614e7bde56d20e1"
-  integrity sha512-8GPznwxcPNCH/h8B+XZcKjYPXnUV5clOKCjAqyjsiqA++MpNx9E9+t8YPp0MbThO+KauRo7aZJ1WuIZmOrT2Ug==
-  dependencies:
-    debug "^4.1.0"
-    json-stringify-safe "^5.0.1"
-    lodash.set "^4.3.2"
     propagate "^2.0.0"
 
 node-abi@^3.3.0:
@@ -16608,7 +16593,7 @@ undici-types@~5.26.4:
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
 
-undici@^6.11.1:
+undici@^6.11.1, undici@^6.18.2:
   version "6.19.2"
   resolved "https://registry.yarnpkg.com/undici/-/undici-6.19.2.tgz#231bc5de78d0dafb6260cf454b294576c2f3cd31"
   integrity sha512-JfjKqIauur3Q6biAtHJ564e3bWa8VvT+7cSiOJHFbX4Erv6CLGDpg8z+Fmg/1OI/47RA+GI2QZaF48SSaLvyBA==

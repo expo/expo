@@ -18,7 +18,6 @@ export function wrapFetchWithBaseUrl(fetch: FetchLike, baseUrl: string): FetchLi
     if (init?.searchParams) {
       parsed.search = init.searchParams.toString();
     }
-    // debug('fetch:', parsed.toString().trim());
     return fetch(parsed.toString(), init);
   };
 }

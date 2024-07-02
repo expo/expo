@@ -1,6 +1,5 @@
 import type { CustomMessageHandlerConnection } from '@react-native/dev-middleware';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 
 import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 import { Log } from '../../../../log';

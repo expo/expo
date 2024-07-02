@@ -70,7 +70,7 @@ async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | u
     if (infoResponse.status !== 200) {
       return;
     }
-    const info = await infoResponse.json();
+    const info: any = await infoResponse.json();
     return { username, name, branch: info['default_branch'], filePath };
   }
 
