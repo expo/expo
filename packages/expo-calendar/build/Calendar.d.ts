@@ -4,7 +4,7 @@ import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'exp
  */
 export type RecurringEventOptions = {
     /**
-     * Whether or not future events in the recurring series should also be updated. If `true`, will
+     * Whether future events in the recurring series should also be updated. If `true`, will
      * apply the given changes to the recurring instance specified by `instanceStartDate` and all
      * future events in the series. If `false`, will only apply the given changes to the instance
      * specified by `instanceStartDate`.
@@ -525,6 +525,91 @@ export type DaysOfTheWeek = {
 };
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 /**
+ * The result of presenting the calendar dialog.
+ * These constants map to [`EKEventEditViewAction`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewaction) and [`EKEventViewAction`](https://developer.apple.com/documentation/eventkitui/ekeventviewaction).
+ * @platform ios
+ * */
+export type CalendarDialogResultActionsIos = 'done' | 'canceled' | 'deleted' | 'responded';
+/**
+ * The result of launching the calendar Activity.
+ * Android doesn't provide enough information to determine the user's action, so the result is always 'done'.
+ * The user may have cancelled the dialog, saved the event, or deleted it.
+ * @platform android
+ * */
+export type CalendarDialogResultActionsAndroid = 'done';
+/**
+ * The result of presenting a calendar dialog. It indicates what action the user took (e.g. canceled the dialog).
+ * The information made available by Android is less complete compared to iOS.
+ * @header systemProvidedUI
+ * */
+export type CalendarDialogResult = {
+    action: CalendarDialogResultActionsIos | CalendarDialogResultActionsAndroid;
+};
+/**
+ * The result of creating an event in the calendar dialog on iOS.
+ * @platform ios
+ * */
+export type CalendarDialogCreatedEventResultIos = {
+    action: 'saved';
+    /**
+     * The ID of the newly created event.
+     * */
+    id: string;
+};
+/**
+ * The result of creating an event in the calendar dialog on Android. The Android OS doesn't provide any additional information.
+ * @platform android
+ * */
+export type CalendarDialogCreatedEventResultAndroid = {
+    action: 'done';
+};
+/**
+ * The result of a presenting a calendar dialog with `createEventInCalendarAsync`.
+ * */
+export type CalendarDialogCreatedEventResult = CalendarDialogCreatedEventResultIos | CalendarDialogCreatedEventResultAndroid;
+export type PresentationOptions = {
+    /**
+     * Whether to launch the Activity as a new [task](https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_NEW_TASK).
+     * If true, the promise resolves with `done` action immediately after opening the calendar activity.
+     * @default false
+     * @platform android
+     * */
+    startNewActivityTask?: boolean;
+};
+export type CalendarDialogParams = {
+    /**
+     * ID of the event to be presented in the calendar UI.
+     */
+    id: string;
+    /**
+     * Date object representing the start time of the desired instance, if looking for a single instance
+     * of a recurring event. If this is not provided and **id** represents a recurring event, the first
+     * instance of that event will be returned by default.
+     * @platform ios
+     */
+    instanceStartDate?: string | Date;
+};
+/**
+ * Launches the calendar UI provided by the OS to create a new event.
+ * @param eventData A map of details for the event to be created.
+ * @param presentationOptions Configuration that influences how the calendar UI is presented.
+ * @return A promise which resolves with information about what action the user took (e.g. saved a new event).
+ * @header systemProvidedUI
+ */
+export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Event>, 'id'>, presentationOptions?: PresentationOptions): Promise<CalendarDialogCreatedEventResult>;
+/**
+ * Launches the calendar UI provided by the OS to preview an event.
+ * @return A promise which resolves with information about what action the user took.
+ * @header systemProvidedUI
+ */
+export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<CalendarDialogResult>;
+/**
+ * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @return A promise which resolves with information about what action the user took.
+ * @header systemProvidedUI
+ */
+export declare function editEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<CalendarDialogResult>;
+/**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
  *
  * @returns Async `boolean`, indicating whether the Calendar API is available on the current device.
@@ -695,6 +780,8 @@ export declare function getSourceAsync(id: string): Promise<Source>;
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
+ * @deprecated use `openEventInCalendarAsync` instead
+ * @header systemProvidedUI
  */
 export declare function openEventInCalendar(id: string): void;
 /**
