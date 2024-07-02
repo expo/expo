@@ -31,6 +31,7 @@ export type ExpoMetroOptions = {
   baseUrl?: string;
   isExporting: boolean;
   inlineSourceMap?: boolean;
+  clientBoundaries?: string[];
   splitChunks?: boolean;
 };
 
@@ -175,13 +176,13 @@ export function getMetroDirectBundleOptions(
     customTransformOptions: {
       __proto__: null,
       engine,
-      preserveEnvVars,
-      asyncRoutes,
+      preserveEnvVars: preserveEnvVars || undefined,
+      asyncRoutes: asyncRoutes || undefined,
       environment,
-      baseUrl,
+      baseUrl: baseUrl || undefined,
       routerRoot,
-      bytecode,
-      reactCompiler,
+      bytecode: bytecode || undefined,
+      reactCompiler: reactCompiler || undefined,
     },
     customResolverOptions: {
       __proto__: null,
@@ -236,6 +237,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     reactCompiler,
     inlineSourceMap,
     isExporting,
+    clientBoundaries,
     splitChunks,
   } = withDefaults(options);
 
@@ -269,7 +271,6 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (bytecode) {
     queryParams.append('transform.bytecode', String(bytecode));
   }
-
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
   }
@@ -278,6 +279,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
+  }
+  if (clientBoundaries?.length) {
+    queryParams.append('transform.clientBoundaries', JSON.stringify(clientBoundaries));
   }
   if (routerRoot != null) {
     queryParams.append('transform.routerRoot', routerRoot);
@@ -303,6 +307,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  if (engine === 'hermes') {
+    queryParams.append('unstable_transformProfile', 'hermes-stable');
   }
 
   return queryParams;
