@@ -316,17 +316,6 @@ function getModuleNameFromCallArgs(path) {
     }
     return null;
 }
-collectDependencies.getModuleNameFromCallArgs = getModuleNameFromCallArgs;
-class InvalidRequireCallError extends Error {
-    constructor({ node }, message) {
-        const line = node.loc && node.loc.start && node.loc.start.line;
-        super([`Invalid call at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}`, message]
-            .filter(Boolean)
-            .join('\n'));
-    }
-}
-exports.InvalidRequireCallError = InvalidRequireCallError;
-collectDependencies.InvalidRequireCallError = InvalidRequireCallError;
 const dynamicRequireErrorTemplate = template_1.default.expression(`
   (function(line) {
     throw new Error(
@@ -448,6 +437,14 @@ class DependencyRegistry {
         return Array.from(this._dependencies.values());
     }
 }
-module.exports = collectDependencies;
+class InvalidRequireCallError extends Error {
+    constructor({ node }, message) {
+        const line = node.loc && node.loc.start && node.loc.start.line;
+        super([`Invalid call at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}`, message]
+            .filter(Boolean)
+            .join('\n'));
+    }
+}
+exports.InvalidRequireCallError = InvalidRequireCallError;
 exports.default = collectDependencies;
 //# sourceMappingURL=collect-dependencies.js.map

@@ -75,16 +75,12 @@ type ImportQualifier = Readonly<{
     contextParams?: RequireContextParams;
 }>;
 declare function collectDependencies(ast: CollectedDependencies['ast'], options: Options): CollectedDependencies;
-declare namespace collectDependencies {
-    var getModuleNameFromCallArgs: (path: NodePath<types.CallExpression>) => string | null;
-    var InvalidRequireCallError: typeof import("./collect-dependencies").InvalidRequireCallError;
-}
-export declare class InvalidRequireCallError extends Error {
-    constructor({ node }: NodePath<any>, message?: string);
-}
 declare class DependencyRegistry {
     private _dependencies;
     registerDependency(qualifier: ImportQualifier): InternalDependency;
     getDependencies(): InternalDependency[];
+}
+export declare class InvalidRequireCallError extends Error {
+    constructor({ node }: NodePath<any>, message?: string);
 }
 export default collectDependencies;

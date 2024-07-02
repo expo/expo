@@ -498,22 +498,6 @@ function getModuleNameFromCallArgs(path: NodePath<CallExpression>): string | nul
   return null;
 }
 
-collectDependencies.getModuleNameFromCallArgs = getModuleNameFromCallArgs;
-
-export class InvalidRequireCallError extends Error {
-  constructor({ node }: NodePath<any>, message?: string) {
-    const line = node.loc && node.loc.start && node.loc.start.line;
-
-    super(
-      [`Invalid call at line ${line || '<unknown>'}: ${generate(node).code}`, message]
-        .filter(Boolean)
-        .join('\n')
-    );
-  }
-}
-
-collectDependencies.InvalidRequireCallError = InvalidRequireCallError;
-
 const dynamicRequireErrorTemplate = template.expression(`
   (function(line) {
     throw new Error(
@@ -667,6 +651,16 @@ class DependencyRegistry {
   }
 }
 
-module.exports = collectDependencies;
+export class InvalidRequireCallError extends Error {
+  constructor({ node }: NodePath<any>, message?: string) {
+    const line = node.loc && node.loc.start && node.loc.start.line;
+
+    super(
+      [`Invalid call at line ${line || '<unknown>'}: ${generate(node).code}`, message]
+        .filter(Boolean)
+        .join('\n')
+    );
+  }
+}
 
 export default collectDependencies;

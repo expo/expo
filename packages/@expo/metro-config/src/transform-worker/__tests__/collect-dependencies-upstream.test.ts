@@ -25,15 +25,13 @@ import type {
   Options,
   State,
 } from '../collect-dependencies';
+import collectDependencies, { InvalidRequireCallError } from '../collect-dependencies';
 
 const generateOptions = { concise: true, sourceType: 'module' };
 const codeFromAst = (ast) => generate(ast, generateOptions).code;
 const comparableCode = (code) => code.trim().replace(/\s+/g, ' ');
-
-const collectDependencies = require('../collect-dependencies');
 const { any, objectContaining } = expect;
 
-const { InvalidRequireCallError } = collectDependencies;
 const opts: Options = {
   asyncRequireModulePath: 'asyncRequire',
   dynamicRequires: 'reject',
