@@ -22,6 +22,7 @@
     "_ctx-shared.js",
     "_error.js",
     "app.plugin.js",
+    "virtual-client-boundaries.js",
     "babel.js",
     "drawer.js",
     "drawer.d.ts",
