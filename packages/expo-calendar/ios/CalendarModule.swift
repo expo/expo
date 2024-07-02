@@ -6,7 +6,7 @@ import EventKitUI
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore = EKEventStore()
-  private var calendarViewDelegate: CalendarDialogDelegate?
+  private var calendarDialogDelegate: CalendarDialogDelegate?
 
   // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
@@ -301,7 +301,7 @@ public class CalendarModule: Module {
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
       try checkCalendarPermissions()
-      if calendarViewDelegate != nil {
+      if calendarDialogDelegate != nil {
         throw EventDialogInProgressException()
       }
       let calendarEvent = EKEvent(eventStore: eventStore)
@@ -337,8 +337,8 @@ public class CalendarModule: Module {
       let controller = EKEventViewController()
       controller.event = calendarEvent
       let promiseRef = PromiseRef(promise)
-      self.calendarViewDelegate = CalendarDialogDelegate(promise: promiseRef, onComplete: self.unsetDelegate)
-      controller.delegate = self.calendarViewDelegate
+      self.calendarDialogDelegate = CalendarDialogDelegate(promise: promiseRef, onComplete: self.unsetDelegate)
+      controller.delegate = self.calendarDialogDelegate
       let navController = ViewEventViewController(rootViewController: controller, promise: promiseRef, onDismiss: self.unsetDelegate)
       currentVc.present(navController, animated: true)
     }.runOnQueue(.main)
@@ -353,20 +353,20 @@ public class CalendarModule: Module {
     let controller = EditEventViewController(promise: promiseRef, onDismiss: self.unsetDelegate)
     controller.event = event
     controller.eventStore = self.eventStore
-    self.calendarViewDelegate = CalendarDialogDelegate(promise: promiseRef, onComplete: self.unsetDelegate)
-    controller.editViewDelegate = self.calendarViewDelegate
+    self.calendarDialogDelegate = CalendarDialogDelegate(promise: promiseRef, onComplete: self.unsetDelegate)
+    controller.editViewDelegate = self.calendarDialogDelegate
 
     currentVc.present(controller, animated: true)
   }
 
   private func warnIfDialogInProgress() {
-    if calendarViewDelegate != nil {
+    if calendarDialogDelegate != nil {
       log.warn("Calendar: Different calendar dialog is already being presented. Await its result before presenting another.")
     }
   }
 
   private func unsetDelegate() {
-    self.calendarViewDelegate = nil
+    self.calendarDialogDelegate = nil
   }
 
   private func initializeEvent(calendarEvent: EKEvent, event: Event) throws {
