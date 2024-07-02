@@ -111,7 +111,7 @@
     "tempy": "^0.7.1",
     "terminal-link": "^2.1.1",
     "wrap-ansi": "^7.0.0",
-    "ws": "^8.12.1"
+    "ws": "^8.17.1"
   },
   "taskr": {
     "requires": [
