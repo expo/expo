@@ -95,16 +95,12 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         // @ts-expect-error: TODO
         delete outputItem.data.ast;
         const { importDefault, importAll } = reconcile;
-        const sideEffectReferences = [...value.dependencies.values()]
+        const sideEffectReferences = () => [...value.dependencies.values()]
             .filter((dep) => {
             const fullDep = graph.dependencies.get(dep.absolutePath);
             return fullDep && (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, fullDep)[0];
         })
             .map((dep) => dep.data.name);
-        // Add side-effects to the ignore list.
-        const nonInlinedRequires = graph.transformOptions.nonInlinedRequires
-            ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
-            : sideEffectReferences;
         ast = (0, metro_transform_worker_1.applyImportSupport)(ast, {
             filename: value.path,
             importAll,
@@ -112,9 +108,14 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             options: {
                 // NOTE: This might not be needed...
                 ...graph.transformOptions,
-                nonInlinedRequires,
-                inlineRequires: true,
                 experimentalImportSupport: true,
+                inlineRequires: reconcile.inlineRequires,
+                // Add side-effects to the ignore list.
+                nonInlinedRequires: reconcile.inlineRequires
+                    ? graph.transformOptions.nonInlinedRequires
+                        ? sideEffectReferences().concat(graph.transformOptions.nonInlinedRequires)
+                        : sideEffectReferences()
+                    : [],
             },
         });
         // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.

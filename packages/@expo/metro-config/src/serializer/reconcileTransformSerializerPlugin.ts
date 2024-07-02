@@ -109,17 +109,13 @@ export async function reconcileTransformSerializerPlugin(
 
     const { importDefault, importAll } = reconcile;
 
-    const sideEffectReferences = [...value.dependencies.values()]
-      .filter((dep) => {
-        const fullDep = graph.dependencies.get(dep.absolutePath);
-        return fullDep && hasSideEffectWithDebugTrace(options, graph, fullDep)[0];
-      })
-      .map((dep) => dep.data.name);
-
-    // Add side-effects to the ignore list.
-    const nonInlinedRequires = graph.transformOptions.nonInlinedRequires
-      ? sideEffectReferences.concat(graph.transformOptions.nonInlinedRequires)
-      : sideEffectReferences;
+    const sideEffectReferences = () =>
+      [...value.dependencies.values()]
+        .filter((dep) => {
+          const fullDep = graph.dependencies.get(dep.absolutePath);
+          return fullDep && hasSideEffectWithDebugTrace(options, graph, fullDep)[0];
+        })
+        .map((dep) => dep.data.name);
 
     ast = applyImportSupport(ast, {
       filename: value.path,
@@ -129,9 +125,15 @@ export async function reconcileTransformSerializerPlugin(
         // NOTE: This might not be needed...
         ...graph.transformOptions,
 
-        nonInlinedRequires,
-        inlineRequires: true,
         experimentalImportSupport: true,
+
+        inlineRequires: reconcile.inlineRequires,
+        // Add side-effects to the ignore list.
+        nonInlinedRequires: reconcile.inlineRequires
+          ? graph.transformOptions.nonInlinedRequires
+            ? sideEffectReferences().concat(graph.transformOptions.nonInlinedRequires)
+            : sideEffectReferences()
+          : [],
       },
     });
 

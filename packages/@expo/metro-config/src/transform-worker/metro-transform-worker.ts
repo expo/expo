@@ -90,6 +90,7 @@ export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
 };
 
 export type ReconcileTransformSettings = {
+  inlineRequires: boolean;
   importDefault: string;
   importAll: string;
   globalPrefix: string;
@@ -341,7 +342,7 @@ function performConstantFolding(
 
 async function transformJS(
   file: JSFile,
-  { config, options, projectRoot }: TransformationContext
+  { config, options }: TransformationContext
 ): Promise<TransformResponse> {
   const treeshake =
     // Ensure we don't enable tree shaking for scripts or assets.
@@ -494,6 +495,7 @@ async function transformJS(
 
   const possibleReconcile: ReconcileTransformSettings | undefined = treeshake
     ? {
+        inlineRequires: options.inlineRequires,
         importDefault,
         importAll,
         normalizePseudoGlobals: shouldNormalizePseudoGlobals,
