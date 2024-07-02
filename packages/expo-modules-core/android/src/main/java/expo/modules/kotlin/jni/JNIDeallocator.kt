@@ -11,7 +11,7 @@ interface Destructible {
 }
 
 @DoNotStrip
-class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) {
+class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseable {
   /**
    * A [PhantomReference] queue managed by JVM
    */
@@ -78,5 +78,9 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) {
    */
   fun inspectMemory() = synchronized(this) {
     destructorMap.values.mapNotNull { it.get() }
+  }
+
+  override fun close() {
+    deallocate()
   }
 }

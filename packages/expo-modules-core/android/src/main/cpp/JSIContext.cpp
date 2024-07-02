@@ -42,8 +42,6 @@ void JSIContext::registerNatives() {
                    makeNativeMethod("installJSIForBridgeless",
                                     JSIContext::installJSIForBridgeless),
 #endif
-                   makeNativeMethod("installJSIForTests",
-                                    JSIContext::installJSIForTests),
                    makeNativeMethod("evaluateScript", JSIContext::evaluateScript),
                    makeNativeMethod("global", JSIContext::global),
                    makeNativeMethod("createObject", JSIContext::createObject),
@@ -101,23 +99,6 @@ void JSIContext::installJSIForBridgeless(
 
 #endif
 
-void JSIContext::installJSIForTests(
-  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
-) {
-#if !UNIT_TEST
-  throw std::logic_error("The function is only available when UNIT_TEST is defined.");
-#else
-  this->jniDeallocator = jni::make_global(jniDeallocator);
-
-  runtimeHolder = std::make_shared<JavaScriptRuntime>();
-  jsi::Runtime &jsiRuntime = runtimeHolder->get();
-
-  jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
-
-  prepareRuntime();
-#endif // !UNIT_TEST
-}
-
 void JSIContext::prepareJSIContext(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
@@ -142,15 +123,11 @@ void JSIContext::prepareRuntime() {
 
   EventEmitter::installClass(runtime);
 
-  auto threadSafeRef = std::make_shared<ThreadSafeJNIGlobalRef<JSIContext::javaobject>>(
-    jni::Environment::current()->NewGlobalRef(javaPart_.get())
-  );
-
   SharedObject::installBaseClass(
     runtime,
     // We can't predict the order of deallocation of the JSIContext and the SharedObject.
     // So we need to pass a new ref to retain the JSIContext to make sure it's not deallocated before the SharedObject.
-    [threadSafeRef = std::move(threadSafeRef)](const SharedObject::ObjectId objectId) {
+    [threadSafeRef = threadSafeJThis](const SharedObject::ObjectId objectId) {
       threadSafeRef->use([objectId](jni::alias_ref<JSIContext::javaobject> globalRef) {
         JSIContext::deleteSharedObject(globalRef, objectId);
       });
@@ -327,6 +304,7 @@ void JSIContext::prepareForDeallocation() {
   jsRegistry.reset();
   runtimeHolder.reset();
   jniDeallocator.reset();
+  threadSafeJThis.reset();
   javaPart_.reset();
   wasDeallocated_ = true;
 }

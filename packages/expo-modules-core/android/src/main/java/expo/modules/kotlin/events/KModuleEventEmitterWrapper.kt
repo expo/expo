@@ -45,10 +45,10 @@ class KModuleEventEmitterWrapper(
   }
 
   private fun emitNative(eventName: String, eventBody: ReadableNativeMap?) {
-    val appContext = moduleHolder.module.appContext
+    val runtimeContext = moduleHolder.module.runtimeContext
     val jsObject = moduleHolder.safeJSObject ?: return
     try {
-      JNIUtils.emitEvent(jsObject, appContext.jsiInterop, eventName, eventBody)
+      JNIUtils.emitEvent(jsObject, runtimeContext.jsiContext, eventName, eventBody)
     } catch (e: Exception) {
       // If the jsObject is valid, we should throw an exception.
       // Otherwise, we should ignore it.
