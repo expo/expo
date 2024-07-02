@@ -6,10 +6,6 @@
  */
 import { fetchAsync } from './fetchAsync';
 
-declare let global: {
-  globalEvalWithSourceUrl?: any;
-};
-
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
  *
@@ -26,14 +22,8 @@ export function fetchThenEvalAsync(url: string): Promise<void> {
     }
 
     if (status === 200) {
-      // Some engines do not support `sourceURL` as a comment. We expose a
-      // `globalEvalWithSourceUrl` function to handle updates in that case.
-      if (global.globalEvalWithSourceUrl) {
-        return global.globalEvalWithSourceUrl(body, url);
-      } else {
-        // eslint-disable-next-line no-eval
-        return eval(body);
-      }
+      // eslint-disable-next-line no-eval
+      return eval(body);
     } else {
       // Format Metro errors if possible.
       if (process.env.NODE_ENV === 'development') {

@@ -44,7 +44,9 @@ function getBaseUrl() {
   return productionBaseUrl?.replace(/\/$/, '');
 }
 
-function wrapFetchWithWindowLocation(fetch: Function & { __EXPO_BASE_URL_POLYFILLED?: boolean }) {
+export function wrapFetchWithWindowLocation(
+  fetch: Function & { __EXPO_BASE_URL_POLYFILLED?: boolean }
+) {
   if (fetch.__EXPO_BASE_URL_POLYFILLED) {
     return fetch;
   }
@@ -82,8 +84,18 @@ if (manifest?.extra?.router?.origin !== false) {
       install();
     }
   }
+  const { fetch } = require('react-native-fetch-api');
+
   // Polyfill native fetch to support relative URLs
   Object.defineProperty(global, 'fetch', {
+    // value: fetch,
     value: wrapFetchWithWindowLocation(fetch),
+  });
+} else {
+  const { fetch } = require('react-native-fetch-api');
+
+  // Polyfill native fetch to support relative URLs
+  Object.defineProperty(global, 'fetch', {
+    value: fetch,
   });
 }

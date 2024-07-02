@@ -7,9 +7,9 @@
 
 // Ensure this is removed in production.
 // TODO: Enable in production.
-if (process.env.NODE_ENV !== 'production') {
-  const { buildAsyncRequire } =
-    require('./buildAsyncRequire') as typeof import('./buildAsyncRequire');
-  // @ts-ignore
-  global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = buildAsyncRequire();
-}
+// if (process.env.NODE_ENV !== 'production') {
+const { buildAsyncRequire } =
+  require('./buildAsyncRequire') as typeof import('./buildAsyncRequire');
+// @ts-ignore
+global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = buildAsyncRequire();
+// }

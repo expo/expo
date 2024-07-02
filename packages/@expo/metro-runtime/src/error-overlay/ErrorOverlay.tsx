@@ -6,7 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, ScrollView, View, StyleSheet } from 'react-native';
+import {
+  // Keyboard,
+  ScrollView,
+  View,
+  StyleSheet,
+} from 'react-native';
 
 import * as LogBoxData from './Data/LogBoxData';
 import { LogBoxLog, StackType } from './Data/LogBoxLog';
@@ -91,7 +96,7 @@ export function LogBoxInspector({
   }, [logs, selectedLogIndex]);
 
   useEffect(() => {
-    Keyboard.dismiss();
+    // Keyboard.dismiss();
   }, []);
 
   const _handleRetry = useCallback(
