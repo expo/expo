@@ -3,7 +3,7 @@
  */
 import { ConfigAPI, NodePath, types } from '@babel/core';
 
-import { getIsReactServer } from './common';
+import { getIsReactServer, getIsServer } from './common';
 
 const FORBIDDEN_CLIENT_IMPORTS = ['server-only'];
 const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
@@ -14,7 +14,7 @@ export function environmentRestrictedImportsPlugin(
 ): babel.PluginObj {
   const { types: t } = api;
 
-  const isReactServer = api.caller(getIsReactServer);
+  const isReactServer = api.caller(getIsReactServer) || api.caller(getIsServer);
 
   const forbiddenPackages = isReactServer
     ? FORBIDDEN_REACT_SERVER_IMPORTS
