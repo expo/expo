@@ -116,6 +116,6 @@ internal class MissingRemindersPListValueException: GenericException<String> {
 
 internal class EventDialogInProgressException: Exception {
   override var reason: String {
-    "Different calendar UI was previously presented and is currently in progress. Await the result of the other dialog first."
+    "Different calendar dialog is already being presented. Await its result before presenting another."
   }
 }

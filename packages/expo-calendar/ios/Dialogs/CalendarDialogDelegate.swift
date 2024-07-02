@@ -2,10 +2,10 @@ import EventKitUI
 import ExpoModulesCore
 
 class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDelegate {  
-  private let promise: Promise
+  private let promise: PromiseRef
   private let onComplete: () -> Void
   
-  init(promise: Promise, onComplete: @escaping () -> Void) {
+  init(promise: PromiseRef, onComplete: @escaping () -> Void) {
     self.promise = promise
     self.onComplete = onComplete
   }

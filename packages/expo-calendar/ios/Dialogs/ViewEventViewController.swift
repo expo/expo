@@ -3,10 +3,10 @@ import ExpoModulesCore
 // only for `openEventInCalendarAsync`
 class ViewEventViewController: UINavigationController, UIAdaptivePresentationControllerDelegate {
   
-  private let promise: Promise
+  private let promise: PromiseRef
   private let onDismiss: () -> Void
 
-  init(rootViewController: UIViewController, promise: Promise, onDismiss: @escaping () -> Void) {
+  init(rootViewController: UIViewController, promise: PromiseRef, onDismiss: @escaping () -> Void) {
     self.promise = promise
     self.onDismiss = onDismiss
     super.init(rootViewController: rootViewController)
