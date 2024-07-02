@@ -4,9 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { codeFrameColumns } from '@babel/code-frame';
 import { NodePath, traverse } from '@babel/core';
-import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import { SerializerConfigT } from 'metro-config';
@@ -17,15 +15,13 @@ const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
 const OPTIMIZE_GRAPH = true;
 
-export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
+type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
-export type SerializerParameters = Parameters<Serializer>;
-// const generate = require('@babel/generator').default;
-
-type Ast = babylon.ParseResult<types.File>;
+type SerializerParameters = Parameters<Serializer>;
 
 type AdvancedMixedOutput = {
   readonly data: {
+    ast?: types.File;
     code: string;
     hasCjsExports?: boolean;
     modules?: {
@@ -48,7 +44,7 @@ type AdvancedMixedOutput = {
   readonly type: string;
 };
 
-export function isModuleEmptyFor(ast?: Ast) {
+export function isModuleEmptyFor(ast?: types.File) {
   if (!ast?.program.body.length) {
     return true;
   }
@@ -83,7 +79,7 @@ function isEmptyModule(value: Module<MixedOutput>): boolean {
 }
 
 // Collect a list of exports that are not used within the module.
-function getExportsThatAreNotUsedInModule(ast: Ast) {
+function getExportsThatAreNotUsedInModule(ast: types.File) {
   const exportedIdentifiers = new Set<string>();
   const usedIdentifiers = new Set<string>();
   const unusedExports: string[] = [];
@@ -138,58 +134,6 @@ function getExportsThatAreNotUsedInModule(ast: Ast) {
   });
 
   return unusedExports;
-}
-
-function populateGraphWithAst(graph: ReadOnlyGraph) {
-  // Generate AST for all modules.
-  graph.dependencies.forEach((value) => {
-    if (
-      // No tree shaking needed for JSON files.
-      value.path.endsWith('.json')
-    ) {
-      return;
-    }
-    value.output.forEach((output) => {
-      if (output.type !== 'js/module') {
-        return;
-      }
-      if (
-        // This is a hack to prevent modules that are already wrapped from being included.
-        output.data.code.startsWith('__d(function ')
-      ) {
-        // TODO: This should probably assert.
-        debug('Skipping tree-shake for wrapped module: ' + value.path);
-        return;
-      }
-
-      try {
-        // @ts-expect-error: ast is not on type.
-        output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
-      } catch (error) {
-        if (error instanceof SyntaxError && isBabelSyntaxError(error)) {
-          // TODO: Unify with similar error handling in the transformer.
-          // Print code frame for syntax errors.
-          const frame = codeFrameColumns(
-            output.data.code,
-            { start: { line: error.loc.line, column: error.loc.column } },
-            { highlightCode: true }
-          );
-          console.error(`[Optimizer] Syntax error in ${value.path}:\n${frame}`);
-        } else {
-          console.error(
-            `[Optimizer] Failed to parse AST for: ${value.path}\n----\n${output.data.code}\n----`
-          );
-        }
-        throw error;
-      }
-    });
-  });
-}
-
-function isBabelSyntaxError(error: SyntaxError): error is SyntaxError & {
-  loc: { line: number; column: number };
-} {
-  return 'loc' in error && !!error.loc && typeof error.loc === 'object';
 }
 
 function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
@@ -353,9 +297,6 @@ export async function treeShakeSerializer(
   if (!isShakingEnabled(graph, options)) {
     return [entryPoint, preModules, graph, options];
   }
-
-  // Generate AST for all modules.
-  populateGraphWithAst(graph);
 
   if (!OPTIMIZE_GRAPH) {
     // Useful for testing the transform reconciler...
@@ -971,7 +912,7 @@ export async function treeShakeSerializer(
     );
 
     // Remove the unused imports from the AST
-    importDecs.forEach((path, index) => {
+    importDecs.forEach((path) => {
       const originalSize = path.node.specifiers.length;
       // @ts-expect-error: custom property
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
@@ -1084,8 +1025,7 @@ export async function treeShakeSerializer(
   }
 }
 
-export function accessAst(output: MixedOutput): Ast | undefined {
-  // @ts-expect-error
+export function accessAst(output: AdvancedMixedOutput): types.File | undefined {
   return output.data.ast;
 }
 

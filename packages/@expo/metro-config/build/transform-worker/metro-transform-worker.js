@@ -40,6 +40,7 @@ exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.r
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
 const babylon = __importStar(require("@babel/parser"));
+const template_1 = __importDefault(require("@babel/template"));
 const types = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const collectDependencies_1 = __importStar(require("metro/src/ModuleGraph/worker/collectDependencies"));
@@ -168,7 +169,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // NOTE(EvanBacon): We apply this conditionally in `babel-preset-expo` with other AST transforms.
     // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
     // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
-    if (plugins.length) {
+    if (plugins.length && ast) {
         ast = nullthrows(
         // @ts-expect-error
         (0, core_1.transformFromAstSync)(ast, '', {
@@ -189,7 +190,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
             // > either because one of the plugins is doing something funky or Babel messes up some caches.
             // > Make sure to test the above mentioned case before flipping the flag back to false.
             cloneInputAst: false,
-        }).ast);
+        })?.ast);
     }
     return ast;
 }
@@ -232,7 +233,10 @@ function performConstantFolding(ast, { filename }) {
 async function transformJS(file, { config, options }) {
     const treeshake = 
     // Ensure we don't enable tree shaking for scripts or assets.
-    file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
+    file.type === 'js/module' &&
+        String(options.customTransformOptions?.treeshake) === 'true' &&
+        // Disable tree shaking on JSON files.
+        !file.filename.endsWith('.json');
     const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
     // const targetEnv = options.customTransformOptions?.environment;
     // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
@@ -372,6 +376,7 @@ async function transformJS(file, { config, options }) {
                 reactClientReference: file.reactClientReference,
                 ...(possibleReconcile
                     ? {
+                        ast: wrappedAst,
                         // Store settings for the module that will be used to finish transformation after graph-based optimizations
                         // have finished.
                         reconcile: possibleReconcile,
@@ -546,7 +551,6 @@ function getCacheKey(config) {
     ].join('$');
 }
 exports.getCacheKey = getCacheKey;
-const template_1 = __importDefault(require("@babel/template"));
 /**
  * Produces a Babel template that transforms an "import(...)" call into a
  * "require(...)" call to the asyncRequire specified.

@@ -370,13 +370,13 @@ describe(isModuleEmptyFor, () => {
 
 describe('metro require', () => {
   xit(`uses missing optional require`, async () => {
-    const [[, , graph], artifacts] = await serializeShakingAsync({
-      'index.js': `
-          try {
-            require('@dotlottie/react-player').DotLottiePlayer;
-          } catch (e) {}
-        `,
-    });
+    // const [[, , graph], artifacts] = await serializeShakingAsync({
+    //   'index.js': `
+    //       try {
+    //         require('@dotlottie/react-player').DotLottiePlayer;
+    //       } catch (e) {}
+    //     `,
+    // });
   });
 
   // Not supported in the mini runner

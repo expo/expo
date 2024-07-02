@@ -30,9 +30,7 @@ exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exp
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const code_frame_1 = require("@babel/code-frame");
 const core_1 = require("@babel/core");
-const babylon = __importStar(require("@babel/parser"));
 const types = __importStar(require("@babel/types"));
 const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
@@ -117,47 +115,6 @@ function getExportsThatAreNotUsedInModule(ast) {
         }
     });
     return unusedExports;
-}
-function populateGraphWithAst(graph) {
-    // Generate AST for all modules.
-    graph.dependencies.forEach((value) => {
-        if (
-        // No tree shaking needed for JSON files.
-        value.path.endsWith('.json')) {
-            return;
-        }
-        value.output.forEach((output) => {
-            if (output.type !== 'js/module') {
-                return;
-            }
-            if (
-            // This is a hack to prevent modules that are already wrapped from being included.
-            output.data.code.startsWith('__d(function ')) {
-                // TODO: This should probably assert.
-                debug('Skipping tree-shake for wrapped module: ' + value.path);
-                return;
-            }
-            try {
-                // @ts-expect-error: ast is not on type.
-                output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
-            }
-            catch (error) {
-                if (error instanceof SyntaxError && isBabelSyntaxError(error)) {
-                    // TODO: Unify with similar error handling in the transformer.
-                    // Print code frame for syntax errors.
-                    const frame = (0, code_frame_1.codeFrameColumns)(output.data.code, { start: { line: error.loc.line, column: error.loc.column } }, { highlightCode: true });
-                    console.error(`[Optimizer] Syntax error in ${value.path}:\n${frame}`);
-                }
-                else {
-                    console.error(`[Optimizer] Failed to parse AST for: ${value.path}\n----\n${output.data.code}\n----`);
-                }
-                throw error;
-            }
-        });
-    });
-}
-function isBabelSyntaxError(error) {
-    return 'loc' in error && !!error.loc && typeof error.loc === 'object';
 }
 function populateModuleWithImportUsage(value) {
     function getGraphId(moduleId) {
@@ -301,8 +258,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
     if (!isShakingEnabled(graph, options)) {
         return [entryPoint, preModules, graph, options];
     }
-    // Generate AST for all modules.
-    populateGraphWithAst(graph);
     if (!OPTIMIZE_GRAPH) {
         // Useful for testing the transform reconciler...
         return [entryPoint, preModules, graph, options];
@@ -777,7 +732,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         // Determine unused identifiers by subtracting the used from the imported
         const unusedImports = [...importedIdentifiers].filter((identifier) => !usedIdentifiers.has(identifier));
         // Remove the unused imports from the AST
-        importDecs.forEach((path, index) => {
+        importDecs.forEach((path) => {
             const originalSize = path.node.specifiers.length;
             // @ts-expect-error: custom property
             const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
@@ -879,7 +834,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
 }
 exports.treeShakeSerializer = treeShakeSerializer;
 function accessAst(output) {
-    // @ts-expect-error
     return output.data.ast;
 }
 exports.accessAst = accessAst;

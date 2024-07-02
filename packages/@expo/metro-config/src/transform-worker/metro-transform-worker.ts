@@ -12,6 +12,8 @@ import { transformFromAstSync } from '@babel/core';
 import type { ParseResult, PluginItem } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
+import template from '@babel/template';
+import type { NodePath } from '@babel/traverse';
 import * as types from '@babel/types';
 import type { TransformResultDependency } from 'metro/src/DeltaBundler';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
@@ -86,6 +88,7 @@ export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
     readonly hasCjsExports?: boolean;
     readonly reactClientReference?: string;
+    readonly ast?: types.File;
     readonly reconcile?: ReconcileTransformSettings;
   };
 };
@@ -216,8 +219,8 @@ function applyUseStrictDirective(ast: babylon.ParseResult<types.File>) {
   }
 }
 
-export function applyImportSupport(
-  ast: babylon.ParseResult<types.File>,
+export function applyImportSupport<TFile extends types.File>(
+  ast: TFile,
   {
     filename,
     options,
@@ -233,7 +236,7 @@ export function applyImportSupport(
     importDefault: string;
     importAll: string;
   }
-) {
+): TFile {
   // Perform the import-export transform (in case it's still needed), then
   // fold requires and perform constant folding (if in dev).
   const plugins: PluginItem[] = [];
@@ -271,8 +274,8 @@ export function applyImportSupport(
   // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
-  if (plugins.length) {
-    ast = nullthrows<babylon.ParseResult<types.File>>(
+  if (plugins.length && ast) {
+    ast = nullthrows<TFile>(
       // @ts-expect-error
       transformFromAstSync(ast, '', {
         ast: true,
@@ -293,7 +296,7 @@ export function applyImportSupport(
         // > either because one of the plugins is doing something funky or Babel messes up some caches.
         // > Make sure to test the above mentioned case before flipping the flag back to false.
         cloneInputAst: false,
-      }).ast!
+      })?.ast
     );
   }
   return ast;
@@ -347,7 +350,10 @@ async function transformJS(
 ): Promise<TransformResponse> {
   const treeshake =
     // Ensure we don't enable tree shaking for scripts or assets.
-    file.type === 'js/module' && String(options.customTransformOptions?.treeshake) === 'true';
+    file.type === 'js/module' &&
+    String(options.customTransformOptions?.treeshake) === 'true' &&
+    // Disable tree shaking on JSON files.
+    !file.filename.endsWith('.json');
   const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
 
   // const targetEnv = options.customTransformOptions?.environment;
@@ -529,6 +535,7 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         ...(possibleReconcile
           ? {
+              ast: wrappedAst,
               // Store settings for the module that will be used to finish transformation after graph-based optimizations
               // have finished.
               reconcile: possibleReconcile,
@@ -756,9 +763,6 @@ export function getCacheKey(config: JsTransformerConfig): string {
     babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
   ].join('$');
 }
-
-import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
 
 /**
  * Produces a Babel template that transforms an "import(...)" call into a

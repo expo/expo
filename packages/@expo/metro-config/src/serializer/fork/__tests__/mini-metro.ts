@@ -1,10 +1,9 @@
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import { type TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import CountingSet from 'metro/src/lib/CountingSet';
 import * as path from 'path';
 
-import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
 import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
+import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
 
 export const projectRoot = '/app';
 
@@ -144,10 +143,7 @@ export async function microBundle({
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
       if (visited.has(absPath)) {
-        modules.get(absPath)?.inverseDependencies.add(
-          // @ts-expect-error
-          parent?.path
-        );
+        modules.get(absPath)?.inverseDependencies.add(parent?.path);
         continue;
       }
       visited.add(absPath);
