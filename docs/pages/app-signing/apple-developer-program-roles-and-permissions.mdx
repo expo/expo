@@ -70,3 +70,7 @@ When uploading the credentials, you will need the **.p12** and **.mobileprovisio
 ### Provisioning profile expiry and updates
 
 The associated provisioning profile needs to be updated if certain [iOS capabilities](/build-reference/ios-capabilities/) (such as, entitlements) are added or removed, or at the annual expiry of the profile. This step is handled by the Apple Developer account's authorized user.
+
+### App submissions for federated Apple Developer accounts
+
+When using a [Federated Apple Developer account](https://support.apple.com/en-in/guide/apple-business-manager/axmb19317543/web), submitting a [production build](/build/eas-json/#production-builds) to the Apple App Store will result in a failure. To submit the app for Apple App Store, follow the steps in [Provide an ASC API Token for your Apple Team](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team).
