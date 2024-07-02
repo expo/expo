@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Handle new error code on `iOS` 18. ([#29639](https://github.com/expo/expo/pull/29639) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 6.4.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
