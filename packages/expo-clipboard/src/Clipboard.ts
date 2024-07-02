@@ -14,7 +14,7 @@ const onClipboardEventName = 'onClipboardChanged';
 
 type ClipboardEvent = {
   /**
-   * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
+   * @deprecated Returns empty string. Use {@link getStringAsync()} instead to retrieve clipboard content.
    */
   content: string;
   /**
@@ -59,7 +59,7 @@ export async function setStringAsync(
 
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
+ * @deprecated Use {@link setStringAsync()} instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
@@ -104,7 +104,7 @@ export async function getUrlAsync(): Promise<string | null> {
 /**
  * Sets a URL in the user's clipboard.
  *
- * This function behaves the same as [`setStringAsync()`](#setstringasynctext-options), except that
+ * This function behaves the same as {@link setStringAsync()}, except that
  * it sets the clipboard content type to be a URL. It lets your app or other apps know that the
  * clipboard contains a URL and behave accordingly.
  *
@@ -137,7 +137,7 @@ export async function hasUrlAsync(): Promise<boolean> {
  *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to
- * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
+ * a {@link ClipboardImage} object containing the base64 string and metadata of the image.
  * Otherwise, it resolves to `null`.
  *
  * @example
