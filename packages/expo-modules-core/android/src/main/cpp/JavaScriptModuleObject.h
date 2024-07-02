@@ -50,7 +50,7 @@ public:
   /**
    * Decorates the given object with properties and functions provided in the module definition.
    */
-  void decorate(jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> jsDecoratorsBridgingObject);
+  void decorate(jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> jsDecoratorsBridgingObject) noexcept;
 
 private:
   friend HybridBase;

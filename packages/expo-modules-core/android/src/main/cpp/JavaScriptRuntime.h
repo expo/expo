@@ -45,7 +45,7 @@ public:
   /**
    * Returns the underlying runtime object.
    */
-  jsi::Runtime &get() const;
+  jsi::Runtime &get() const noexcept;
 
   /**
    * Evaluates given JavaScript source code.
@@ -59,12 +59,12 @@ public:
   /**
    * Returns the runtime global object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global() noexcept;
 
   /**
    * Creates a new object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject() noexcept;
 
   /**
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
@@ -75,7 +75,7 @@ public:
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
 
-  std::shared_ptr<jsi::Object> getMainObject();
+  std::shared_ptr<jsi::Object> getMainObject() noexcept;
 
 private:
   std::shared_ptr<jsi::Runtime> runtime;

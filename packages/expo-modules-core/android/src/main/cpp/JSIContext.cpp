@@ -73,7 +73,7 @@ void JSIContext::installJSI(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
   jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
-) {
+) noexcept {
   prepareJSIContext(
     jsRuntimePointer,
     jniDeallocator,
@@ -122,7 +122,7 @@ void JSIContext::prepareJSIContext(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
   std::shared_ptr<react::CallInvoker> callInvoker
-) {
+) noexcept {
   this->jniDeallocator = jni::make_global(jniDeallocator);
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
   jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
@@ -133,7 +133,7 @@ void JSIContext::prepareJSIContext(
   );
 }
 
-void JSIContext::prepareRuntime() {
+void JSIContext::prepareRuntime() noexcept {
   jsi::Runtime &runtime = runtimeHolder->get();
 
   bindJSIContext(runtime, this);
@@ -252,11 +252,11 @@ jni::local_ref<JavaScriptValue::javaobject> JSIContext::evaluateScript(
   return runtimeHolder->evaluateScript(script.toStdString());
 }
 
-jni::local_ref<JavaScriptObject::javaobject> JSIContext::global() {
+jni::local_ref<JavaScriptObject::javaobject> JSIContext::global() noexcept {
   return runtimeHolder->global();
 }
 
-jni::local_ref<JavaScriptObject::javaobject> JSIContext::createObject() {
+jni::local_ref<JavaScriptObject::javaobject> JSIContext::createObject() noexcept {
   return runtimeHolder->createObject();
 }
 
@@ -323,7 +323,7 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
   return method(javaPart_, std::move(native));
 }
 
-void JSIContext::prepareForDeallocation() {
+void JSIContext::prepareForDeallocation() noexcept {
   jsRegistry.reset();
   runtimeHolder.reset();
   jniDeallocator.reset();
@@ -334,7 +334,7 @@ void JSIContext::prepareForDeallocation() {
 void JSIContext::jniSetNativeStateForSharedObject(
   int id,
   jni::alias_ref<JavaScriptObject::javaobject> jsObject
-) {
+) noexcept {
   auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
     id,
     // We can't predict the order of deallocation of the JSIContext and the SharedObject.
@@ -352,7 +352,7 @@ void JSIContext::jniSetNativeStateForSharedObject(
     ->setNativeState(runtimeHolder->get(), std::move(nativeState));
 }
 
-bool JSIContext::wasDeallocated() const {
+bool JSIContext::wasDeallocated() const noexcept {
   return wasDeallocated_;
 }
 
