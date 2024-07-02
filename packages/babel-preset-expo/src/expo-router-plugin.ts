@@ -1,12 +1,15 @@
+/**
+ * Copyright © 2024 650 Industries.
+ */
 import { ConfigAPI, NodePath, types } from '@babel/core';
 import nodePath from 'path';
 import resolveFrom from 'resolve-from';
 
 import {
-  getAsyncRoutes,
   getExpoRouterAbsoluteAppRoot,
   getPlatform,
   getPossibleProjectRoot,
+  getAsyncRoutes,
 } from './common';
 
 const debug = require('debug')('expo:babel:router');

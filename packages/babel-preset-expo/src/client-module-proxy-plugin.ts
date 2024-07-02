@@ -82,7 +82,9 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
                   pushProxy(exportName);
                 }
               } else if (
-                !['InterfaceDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)
+                !['InterfaceDeclaration', 'TSTypeAliasDeclaration', 'TypeAlias'].includes(
+                  exportPath.node.declaration.type
+                )
               ) {
                 // TODO: What is this type?
                 console.warn(

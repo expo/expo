@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- Add `process.env.EXPO_SERVER` for detecting when the JS was bundled for a server or react server environment.
 - Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
+
+- Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native.
 
 ### 💡 Others
 
