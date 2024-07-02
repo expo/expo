@@ -14,6 +14,7 @@ const _ctx_1 = require("expo-router/_ctx");
 const react_1 = __importDefault(require("react"));
 const ExpoRoot_1 = require("./ExpoRoot");
 const head_1 = require("./head");
+require("./fast-refresh");
 // Must be exported or Fast Refresh won't update the context
 function App() {
     return (<head_1.Head.Provider>
