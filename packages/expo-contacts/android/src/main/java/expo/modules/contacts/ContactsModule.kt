@@ -58,6 +58,23 @@ fun Contact?.toBundle(keys: Set<String>): Bundle {
   }
 }
 
+fun List<Group>?.toBundle(): Bundle {
+  val data = this?.map { it.toMap() } ?: emptyList()
+
+  return Bundle().apply {
+    putParcelableArrayList("data", ArrayList(data))
+  }
+}
+
+fun Group?.toBundle(): Bundle {
+  val serializedGroup = this?.toMap()
+  val data = serializedGroup?.let { listOf(it) } ?: emptyList()
+
+  return Bundle().apply {
+    putParcelableArrayList("data", ArrayList(data))
+  }
+}
+
 private val defaultFields = setOf(
   "phoneNumbers", "emails", "addresses", "note", "birthday", "dates", "instantMessageAddresses",
   "urlAddresses", "extraNames", "relationships", "phoneticFirstName", "phoneticLastName", "phoneticMiddleName",
@@ -109,7 +126,18 @@ class ContactQuery : Record {
   val name: String? = null
 
   @Field
+  val groupId: String? = null
+
+  @Field
   val id: String? = null
+}
+
+class GroupQuery : Record {
+  @Field
+  val groupName: String? = null
+
+  @Field
+  val groupId: String? = null
 }
 
 class QueryArguments(
@@ -160,9 +188,12 @@ class ContactsModule : Module() {
           }
 
           val name = options.name
+          val group = options.groupId
           val contactData = if (!name.isNullOrBlank()) {
             val predicateMatchingName = "%$name%"
-            getContactByName(predicateMatchingName, options.fields, options.sort)
+            getContactsByName(predicateMatchingName, options.fields, options.sort)
+          } else if (!group.isNullOrBlank()) {
+            getContactsByGroup(group, options.fields, options.sort)
           } else {
             getAllContactsAsync(options)
           }
@@ -222,6 +253,97 @@ class ContactsModule : Module() {
 
       val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId)
       resolver.delete(uri, null, null)
+    }
+
+    AsyncFunction("getGroupsAsync") { options: GroupQuery, promise: Promise ->
+      ensureReadPermission()
+
+      appContext
+        .backgroundCoroutineScope
+        .launch {
+          if (options.groupId != null) {
+            val group = getGroupById(options.groupId)
+            promise.resolve(group.toBundle())
+            return@launch
+          }
+
+          val name = options.groupName
+          val groupData = if (!name.isNullOrBlank()) {
+            val predicateMatchingName = "%$name%"
+            getGroupByName(predicateMatchingName)
+          } else {
+            fetchGroups(null, null)
+          }
+
+          promise.resolve(groupData.toBundle())
+        }
+    }
+
+    AsyncFunction("createGroupAsync") { name: String? ->
+      ensurePermissions()
+
+      val resolver: ContentResolver = context.contentResolver
+      val contentValues = ContentValues().apply {
+        put(ContactsContract.Groups.TITLE, name)
+      }
+
+      val uri: Uri = resolver.insert(ContactsContract.Groups.CONTENT_URI, contentValues)
+      val groupId = uri.lastPathSegment?.toLongOrNull()
+    }
+
+    AsyncFunction("updateGroupName") { groupName: String?, groupId: String? ->
+      ensurePermissions()
+
+      if (getGroupById(groupId) != null) {
+        val resolver: ContentResolver = context.contentResolver
+        val contentValues = ContentValues().apply {
+          put(ContactsContract.Groups.TITLE, groupName)
+        }
+
+        val uri: Uri = Uri.withAppendedPath(ContactsContract.Groups.CONTENT_URI, groupId)
+        resolver.update(uri, contentValues, null, null)
+      } else {
+        throw GroupNotFoundException()
+      }
+    }
+
+    AsyncFunction("removeGroupAsync") { groupId: String? ->
+      ensurePermissions()
+
+      val uri = Uri.withAppendedPath(ContactsContract.Groups.CONTENT_URI, groupId)
+      val rowsDeleted = resolver.delete(uri, null, null)
+      return rowsDeleted
+    }
+
+    AsyncFunction("addExistingContactToGroupAsync") { contactId: String?, groupId: String? ->
+      ensurePermissions()
+
+      if (getGroupById(groupId) != null) {
+        val contentValues = ContentValues().apply {
+          put(ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID, contactId)
+          put(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, groupId)
+          put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
+        }
+        val uri: Uri = ContactsContract.Data.CONTENT_URI
+        resolver.insert(uri, contentValues)
+      } else {
+        throw GroupNotFoundException()
+      }
+    }
+
+    AsyncFunction("removeContactFromGroupAsync") { contactId: String?, groupId: String? ->
+      ensurePermissions()
+
+      if (getGroupById(groupId) != null) {
+        val selection = "${ContactsContract.CommonDataKinds.GroupMembership.RAW_CONTACT_ID} = ? AND " +
+          "${ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID} = ?"
+        val selectionArgs = arrayOf(contactId, groupId)
+        val uri: Uri = ContactsContract.Data.CONTENT_URI
+        val rowsDeleted = resolver.delete(uri, selection, selectionArgs)
+        return rowsDeleted
+      } else {
+        throw GroupNotFoundException()
+      }
     }
 
     AsyncFunction("shareContactAsync") { contactId: String?, subject: String? ->
@@ -442,7 +564,18 @@ class ContactsModule : Module() {
     return null
   }
 
-  private fun getContactByName(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
+  private fun getContactsByGroup(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
+    return fetchContacts(
+      0,
+      9999,
+      arrayOf(query),
+      ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID,
+      keysToFetch,
+      sortOrder
+    )
+  }
+
+  private fun getContactsByName(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
     return fetchContacts(
       0,
       9999,
@@ -450,6 +583,31 @@ class ContactsModule : Module() {
       ContactsContract.Data.DISPLAY_NAME_PRIMARY,
       keysToFetch,
       sortOrder
+    )
+  }
+
+  private fun getGroupById(groupId: String?): Group? {
+    val cursorSelection = ContactsContract.Groups._ID + " = ?"
+    resolver.query(
+      ContactsContract.Groups.CONTENT_URI,
+      arrayOf(ContactsContract.Groups._ID, ContactsContract.Groups.TITLE),
+      cursorSelection,
+      arrayOf(groupId),
+      null
+    )?.use { cursor ->
+      val groups = loadGroupsFrom(cursor)
+      val groupList = ArrayList(groups.values)
+      if (groupList.size > 0) {
+        return groupList[0]
+      }
+    }
+    return null
+  }
+
+  private fun getGroupByName(query: String): List<Group>? {
+    return fetchGroups(
+      arrayOf(query),
+      ContactsContract.Groups.TITLE
     )
   }
 
@@ -640,6 +798,39 @@ class ContactsModule : Module() {
     return input
   }
 
+  private fun fetchGroups(
+    queryStrings: Array<String>?,
+    initQueryField: String?
+  ): List<Group>? {
+    val queryField = initQueryField ?: ContactsContract.Groups._ID
+    val groups: Map<String, Group>
+    val cr = resolver
+
+    if (!queryStrings.isNullOrEmpty()) {
+      val cursorSelection = "$queryField LIKE ?"
+      cr.query(
+        ContactsContract.Groups.CONTENT_URI,
+        arrayOf(ContactsContract.Groups._ID, ContactsContract.Groups.TITLE),
+        cursorSelection,
+        queryStrings,
+        null
+      )
+    } else {
+      cr.query(
+        ContactsContract.Groups.CONTENT_URI,
+        arrayOf(ContactsContract.Groups._ID, ContactsContract.Groups.TITLE),
+        null,
+        null,
+        null
+      )
+    }?.use { cursor ->
+      groups = loadGroupsFrom(cursor)
+
+      return groups.values.toList()
+    }
+    return null
+  }
+
   private fun loadContactsFrom(cursor: Cursor): Map<String, Contact> {
     val map: MutableMap<String, Contact> = LinkedHashMap()
     while (cursor.moveToNext()) {
@@ -652,6 +843,22 @@ class ContactsModule : Module() {
       }
       val contact = map[contactId]
       contact!!.fromCursor(cursor)
+    }
+    return map
+  }
+
+  private fun loadGroupsFrom(cursor: Cursor): Map<String, Group> {
+    val map: MutableMap<String, Group> = LinkedHashMap()
+    while (cursor.moveToNext()) {
+      val columnIndex = cursor.getColumnIndex(ContactsContract.Groups._ID)
+      val groupId = cursor.getString(columnIndex)
+
+      // add or update existing group for iterating data based on group id
+      if (!map.containsKey(groupId)) {
+        map[groupId] = Group(groupId)
+      }
+      val group = map[groupId]
+      group!!.fromCursor(cursor)
     }
     return map
   }

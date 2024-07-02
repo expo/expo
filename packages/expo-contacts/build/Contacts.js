@@ -225,23 +225,25 @@ export async function addExistingGroupToContainerAsync(groupId, containerId) {
 /**
  * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
- * @param containerId The container you to add membership to.
+ * @param containerId @tag-ios The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.
  * @example
  * ```js
  * const groupId = await Contacts.createGroupAsync('Sailor Moon');
  * ```
- * @platform ios
  */
 export async function createGroupAsync(name, containerId) {
     if (!ExpoContacts.createGroupAsync) {
         throw new UnavailabilityError('Contacts', 'createGroupAsync');
     }
     name = name || uuid.v4();
-    if (!containerId) {
-        containerId = await getDefaultContainerIdAsync();
+    if (Platform.OS === 'ios') {
+        if (!containerId) {
+            containerId = await getDefaultContainerIdAsync();
+        }
+        return await ExpoContacts.createGroupAsync(name, containerId);
     }
-    return await ExpoContacts.createGroupAsync(name, containerId);
+    return await ExpoContacts.createGroupAsync(name);
 }
 /**
  * Change the name of an existing group.
@@ -251,7 +253,6 @@ export async function createGroupAsync(name, containerId) {
  * ```js
  * await Contacts.updateGroupName('Expo Friends', '161A368D-D614-4A15-8DC6-665FDBCFAE55');
  * ```
- * @platform ios
  */
 export async function updateGroupNameAsync(groupName, groupId) {
     if (!ExpoContacts.updateGroupNameAsync) {
@@ -267,7 +268,6 @@ export async function updateGroupNameAsync(groupName, groupId) {
  * ```js
  * await Contacts.removeGroupAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
  * ```
- * @platform ios
  */
 export async function removeGroupAsync(groupId) {
     if (!ExpoContacts.removeGroupAsync) {
@@ -287,7 +287,6 @@ export async function removeGroupAsync(groupId) {
  *   '161A368D-D614-4A15-8DC6-665FDBCFAE55'
  * );
  * ```
- * @platform ios
  */
 export async function addExistingContactToGroupAsync(contactId, groupId) {
     if (!ExpoContacts.addExistingContactToGroupAsync) {
@@ -307,7 +306,6 @@ export async function addExistingContactToGroupAsync(contactId, groupId) {
  *   '161A368D-D614-4A15-8DC6-665FDBCFAE55'
  * );
  * ```
- * @platform ios
  */
 export async function removeContactFromGroupAsync(contactId, groupId) {
     if (!ExpoContacts.removeContactFromGroupAsync) {
@@ -325,7 +323,6 @@ export async function removeContactFromGroupAsync(contactId, groupId) {
  * const allGroups = await Contacts.getGroupsAsync({});
  * ```
  * @return A promise that fulfills with array of groups that fit the query.
- * @platform ios
  */
 export async function getGroupsAsync(groupQuery) {
     if (!ExpoContacts.getGroupsAsync) {
