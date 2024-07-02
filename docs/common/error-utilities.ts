@@ -261,7 +261,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas/submit/': '/submit/introduction/',
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
-  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#use-a-custom-font',
+  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
   '/accounts/teams-and-accounts/': '/accounts/account-types/',
   '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
   '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',

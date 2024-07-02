@@ -6,8 +6,8 @@ description: Learn how to create server endpoints with Expo Router.
 > **warning** This feature is still experimental. Available from Expo SDK 50 and Expo Router v3.
 
 import { FileTree } from '~/ui/components/FileTree';
-import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo Router enables you to write server code for all platforms, right in your **app** directory.
@@ -167,7 +167,7 @@ Making requests with an undefined method will automatically return `405: Method 
 
 API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro). They have access to all of the language features as your client code:
 
-- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript#path-aliases).
+- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript/#path-aliases-optional).
 - [Environment variables](/guides/environment-variables) &mdash; server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
 - Node.js standard library &mdash; ensure that you are using the correct version of Node.js locally for your server environment.
 - **babel.config.js** and **metro.config.js** support &mdash; settings work across both client and server code.

@@ -3,10 +3,10 @@ title: Progressive web apps
 description: Learn how to add progressive web app support to Expo websites.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
 <TabsGroup>
 
@@ -84,7 +84,7 @@ Now link the manifest in your HTML file. The method here depends on the output m
 
 <Tabs>
 
-<Tab label={`single`}>
+<Tab label="single">
 
 If you're using a single-page app, you can link the manifest in your HTML file by first creating a template HTML in **public/index.html**:
 
@@ -101,7 +101,7 @@ Then add the manifest to the `<head>` tag:
 
 </Tab>
 
-<Tab label={`static & server`}>
+<Tab label="static & server">
 
 If you're using static or server rendering, the HTML entry can be dynamically created in **app/+html.tsx**. Here we'll link the manifest by adding a `<link>` tag to the `<head>` component:
 
@@ -169,7 +169,7 @@ Now register the service worker in the HTML file. The method here depends on the
 
 <Tabs>
 
-<Tab label={`single`}>
+<Tab label="single">
 
 Next add a service worker registration script to the root **index.html**.
 
@@ -201,7 +201,7 @@ Then create the service worker registration script in the `<head>` tag:
 
 </Tab>
 
-<Tab label={`static & server`}>
+<Tab label="static & server">
 
 Next, create a root HTML file for the app and add the service worker registration script:
 
