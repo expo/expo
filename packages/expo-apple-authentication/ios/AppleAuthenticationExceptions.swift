@@ -49,6 +49,12 @@ final class RequestUnknownException: Exception {
   }
 }
 
+final class MarchedExcludedCredential: Exception {
+  override var reason: String {
+    "The authorization attempt failed due to matched excluded credential"
+  }
+}
+
 func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception {
   switch error.code {
   case .unknown:
@@ -63,6 +69,8 @@ func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception 
     return RequestFailedException()
   case .notInteractive:
     return RequestNotInteractiveException()
+  case .matchedExcludedCredential:
+    return MarchedExcludedCredential()
   @unknown default:
     return RequestUnknownException()
   }
