@@ -266,7 +266,7 @@ export function getDefaultConfig(
       reanimatedVersion,
       // Ensure invalidation when using identical projects in monorepos
       _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
-
+      unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

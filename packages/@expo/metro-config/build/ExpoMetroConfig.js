@@ -222,6 +222,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             reanimatedVersion,
             // Ensure invalidation when using identical projects in monorepos
             _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
+            unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
             // `require.context` support
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
