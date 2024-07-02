@@ -16,5 +16,5 @@ data class CreatedEventOptions(
   @Field val endDate: String?,
   @Field val recurrenceRule: ReadableArguments?,
   // presentation options
-  @Field val startNewActivityTask: Boolean?,
+  @Field val startNewActivityTask: Boolean?
 ) : Record, Serializable

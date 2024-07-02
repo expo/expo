@@ -1,7 +1,7 @@
 import EventKitUI
 import ExpoModulesCore
 
-class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDelegate {  
+class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDelegate {
   private let promise: PromiseRef
   private let onComplete: () -> Void
 

@@ -7,5 +7,5 @@ import java.io.Serializable
 data class ViewedEventOptions(
   @Field val id: String,
   // presentation options
-  @Field val startNewActivityTask: Boolean?,
+  @Field val startNewActivityTask: Boolean?
 ) : Record, Serializable

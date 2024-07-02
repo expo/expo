@@ -2,7 +2,6 @@ import ExpoModulesCore
 
 // only for `openEventInCalendarAsync`
 class ViewEventViewController: UINavigationController, UIAdaptivePresentationControllerDelegate {
-
   private let promise: PromiseRef
   private let onDismiss: () -> Void
 
@@ -12,6 +11,7 @@ class ViewEventViewController: UINavigationController, UIAdaptivePresentationCon
     super.init(rootViewController: rootViewController)
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

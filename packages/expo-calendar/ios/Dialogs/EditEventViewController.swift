@@ -2,7 +2,6 @@ import EventKitUI
 import ExpoModulesCore
 
 class EditEventViewController: EKEventEditViewController, UIAdaptivePresentationControllerDelegate {
-
   private let promise: PromiseRef
   private let onDismiss: () -> Void
 
@@ -12,6 +11,7 @@ class EditEventViewController: EKEventEditViewController, UIAdaptivePresentation
     super.init(nibName: nil, bundle: nil)
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

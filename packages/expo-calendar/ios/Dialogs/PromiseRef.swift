@@ -8,7 +8,7 @@ class PromiseRef {
     self.promise = promise
   }
 
-  public func resolve(_ value: Any? = nil) {
+  internal func resolve(_ value: Any? = nil) {
     // This prevents double resolve of the promise (which leads to a crash)
     // when `presentationControllerDidDismiss` is called together with
     // methods from EKEventEditViewDelegate / EKEventViewDelegate.

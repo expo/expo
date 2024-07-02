@@ -45,7 +45,6 @@ internal class CreateEventContract : AppContextActivityResultContract<CreatedEve
         input.startNewActivityTask?.takeIf { boolean -> boolean }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
       }
 
-
   private fun getTimestamp(it: String): Long {
     val maybeTimestamp = dateFormat.parse(it)?.time
     return maybeTimestamp ?: throw IllegalArgumentException("Invalid date format")

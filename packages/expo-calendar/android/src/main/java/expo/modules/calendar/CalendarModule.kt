@@ -213,8 +213,8 @@ class CalendarModule : Module() {
     }
 
     /**
-    * @deprecated in favor of openEventInCalendarAsync
-    * */
+     * @deprecated in favor of openEventInCalendarAsync
+     * */
     AsyncFunction("openEventInCalendar") { eventID: String ->
       val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
