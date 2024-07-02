@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 import { guardAsync } from './fn';
 
 const debug = require('debug')('expo:utils:exit') as typeof console.log;
@@ -65,4 +67,34 @@ function attachMasterListener() {
       process.removeListener(signal, hook);
     }
   };
+}
+
+/**
+ * Monitor if the current process is exiting before the delay is reached.
+ * If there are active resources, the process will be forced to exit after the delay is reached.
+ *
+ * @see https://nodejs.org/docs/latest-v18.x/api/process.html#processgetactiveresourcesinfo
+ */
+export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtMs = Date.now()) {
+  // Check active resources, besides the TTYWrap (process.stdin, process.stdout, process.stderr)
+  // @ts-expect-error Added in v17.3.0, v16.14.0 but unavailable in v18 typings
+  const activeResources = process.getActiveResourcesInfo() as string[];
+  const canExitProcess = activeResources.filter((resource) => resource !== 'TTYWrap').length === 0;
+  if (canExitProcess) {
+    return debug('no active resources detected, process can safely exit');
+  }
+
+  // Check if the process needs to be force-closed
+  const elapsedTime = Date.now() - startedAtMs;
+  if (elapsedTime > waitUntilExitMs) {
+    debug('active handles detected past the exit delay, forcefully exiting:', activeResources);
+    return process.exit(0);
+  }
+
+  const timeoutId = setTimeout(() => {
+    // Ensure the timeout is cleared before checking the active resources
+    clearTimeout(timeoutId);
+    // Check if the process can exit
+    ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
+  }, 100);
 }
