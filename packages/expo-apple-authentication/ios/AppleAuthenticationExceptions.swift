@@ -70,7 +70,7 @@ func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception 
   case .notInteractive:
     return RequestNotInteractiveException()
   case .matchedExcludedCredential:
-    return MarchedExcludedCredential()
+    return MatchedExcludedCredential()
   @unknown default:
     return RequestUnknownException()
   }
