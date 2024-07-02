@@ -19,7 +19,7 @@ public:
 
   void addReference(
     jni::local_ref<Destructible::javaobject> jniObject
-  );
+  ) noexcept;
 };
 
 } // namespace expo

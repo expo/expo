@@ -34,7 +34,7 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   return moduleObject;
 }
 
-void JavaScriptModuleObject::decorate(jni::alias_ref<JSDecoratorsBridgingObject::javaobject> jsDecoratorsBridgingObject) {
+void JavaScriptModuleObject::decorate(jni::alias_ref<JSDecoratorsBridgingObject::javaobject> jsDecoratorsBridgingObject) noexcept {
   this->decorators = jsDecoratorsBridgingObject->cthis()->bridge();
 }
 

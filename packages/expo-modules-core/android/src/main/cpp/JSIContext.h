@@ -56,7 +56,7 @@ public:
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
-  );
+  ) noexcept;
 
 #if IS_NEW_ARCHITECTURE_ENABLED
 
@@ -101,12 +101,12 @@ public:
   /**
    * Exposes a `JavaScriptRuntime::global` function to Kotlin
    */
-  jni::local_ref<JavaScriptObject::javaobject> global();
+  jni::local_ref<JavaScriptObject::javaobject> global() noexcept;
 
   /**
    * Exposes a `JavaScriptRuntime::createObject` function to Kotlin
    */
-  jni::local_ref<JavaScriptObject::javaobject> createObject();
+  jni::local_ref<JavaScriptObject::javaobject> createObject() noexcept;
 
   /**
   * Gets a core module.
@@ -144,15 +144,15 @@ public:
 
   ~JSIContext();
 
-  void prepareForDeallocation();
+  void prepareForDeallocation() noexcept;
 
-  bool wasDeallocated() const;
+  bool wasDeallocated() const noexcept;
 
 private:
   friend HybridBase;
 
   /*
-   * We store two global references to the Java part of the JSIContext.
+   * We store two global references to the Java part of the JSIContext.registerClass
    * However, one is wrapped in additional abstraction to make it thread-safe,
    * which increase the access time. For most operations, we should use the bare reference.
    * Only for operations that are executed on different threads that aren't attached to JVM,
@@ -179,14 +179,14 @@ private:
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     std::shared_ptr<react::CallInvoker> callInvoker
-  );
+  ) noexcept;
 
-  void prepareRuntime();
+  void prepareRuntime() noexcept;
 
   void jniSetNativeStateForSharedObject(
     int id,
     jni::alias_ref<JavaScriptObject::javaobject> jsObject
-  );
+  ) noexcept;
 };
 
 /**
