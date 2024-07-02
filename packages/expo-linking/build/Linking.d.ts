@@ -35,6 +35,11 @@ export declare function openSettings(): Promise<void>;
  */
 export declare function getInitialURL(): Promise<string | null>;
 /**
+ * Get the URL that was used to launch the app if it was launched by a link.
+ * @return The URL string that launched your app, or `null`.
+ */
+export declare function getLinkingURL(): string | null;
+/**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.
  * @param url A URL for the operating system to open, eg: `tel:5555555`, `exp://`.
@@ -59,6 +64,12 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  * @return Returns the initial URL or `null`.
  */
 export declare function useURL(): string | null;
+/**
+ * Returns the linking URL followed by any subsequent changes to the URL.
+ * Always returns the initial URL immediately on reload.
+ * @return Returns the initial URL or `null`.
+ */
+export declare function useLinkingURL(): string | null;
 export * from './Linking.types';
 export * from './Schemes';
 export { parse, createURL } from './createURL';
