@@ -159,7 +159,7 @@ export async function requestPermissionsAsync(): Promise<PermissionResponse> {
  *
  * @example
  * ```js
- * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * const [status, requestPermission] = ScreenCapture.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({
