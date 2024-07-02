@@ -1,6 +1,8 @@
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
 
+import 'expo/src/winter';
+
 class DOMException extends Error {
   constructor(message: string, name: string) {
     super(message);

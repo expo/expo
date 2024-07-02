@@ -100,6 +100,7 @@ function getGlobalCacheForPlatform(): Pick<AsyncLocalStorage<RenderStore>, 'getS
   // console.log('[RSC]: NEW:', AsyncLocalStorage);
   try {
     const { AsyncLocalStorage } = require('node:async_hooks');
+    // @ts-expect-error: This is a Node.js feature.
     const serverCache = new AsyncLocalStorage<RenderStore>();
     globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS, serverCache);
     return serverCache;

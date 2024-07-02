@@ -40,7 +40,45 @@ const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+function getStringArray(value) {
+    if (!value)
+        return undefined;
+    if (typeof value === 'string') {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+            return parsed;
+        }
+        throw new Error('Expected an array of strings for the `clientBoundaries` option.');
+    }
+    if (Array.isArray(value)) {
+        return value;
+    }
+    throw new Error('Expected an array of strings for the `clientBoundaries` option.');
+}
 async function transform(config, projectRoot, filename, data, options) {
+    if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
+        const environment = options.customTransformOptions?.environment;
+        const isServer = environment === 'node' || environment === 'react-server';
+        if (!isServer) {
+            const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
+            // Inject client boundaries into the root client bundle for production bundling.
+            if (clientBoundaries) {
+                console.log('Parsed client boundaries:', clientBoundaries);
+                // Inject source
+                const src = 'module.exports = {\n' +
+                    clientBoundaries
+                        .map((boundary) => {
+                        return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+                    })
+                        .join('\n') +
+                    '\n};';
+                return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\nconsole.log("DEBUG_MARKER")\n' + src), options);
+            }
+            else if (!options.dev) {
+                console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
+            }
+        }
+    }
     const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
     // If the file is not CSS, then use the default behavior.
     if (!isCss) {

@@ -120,7 +120,6 @@ function fastCreateModuleIdFactory(): (path: string) => number {
   };
 }
 
-// NOTE: MUST MATCH THE IMPL IN ExpoMetroConfig.ts
 function stableCreateModuleIdFactory(root: string): (path: string) => number {
   const fileToIdMap = new Map<string, string>();
   // This is an absolute file path.
@@ -133,17 +132,6 @@ function stableCreateModuleIdFactory(root: string): (path: string) => number {
     // @ts-expect-error: we patch this to support being a string.
     return id;
   };
-}
-
-function stringToHash(str: string): number {
-  let hash = 0;
-  if (str.length === 0) return hash;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash);
 }
 
 export function getDefaultConfig(

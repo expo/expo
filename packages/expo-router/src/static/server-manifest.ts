@@ -6,7 +6,7 @@
  */
 
 import { ctx } from '../../_ctx';
-import { getRoutes } from '../getRoutes';
+import { getRoutes } from '../getRoutesSSR';
 import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 

@@ -1,1 +1,1 @@
-{"version":3,"file":"install.native.d.ts","sourceRoot":"","sources":["../../src/location/install.native.ts"],"names":[],"mappings":"AACA,OAAO,4CAA4C,CAAC"}
+{"version":3,"file":"install.native.d.ts","sourceRoot":"","sources":["../../src/location/install.native.ts"],"names":[],"mappings":"AACA,OAAO,4CAA4C,CAAC;AA6CpD,wBAAgB,2BAA2B,CACzC,KAAK,EAAE,QAAQ,GAAG;IAAE,0BAA0B,CAAC,EAAE,OAAO,CAAA;CAAE;;EA4B3D"}

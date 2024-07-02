@@ -118,8 +118,8 @@ class InvalidRequireCallError extends Error {
     }
 }
 async function transformJS(file, { config, options, projectRoot }) {
-    // const targetEnv = options.customTransformOptions?.environment;
-    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+    const targetEnv = options.customTransformOptions?.environment;
+    const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
@@ -247,7 +247,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
                 // NOTE(EvanBacon): Allow arbitrary imports in server environments.
                 // This requires a patch to Metro collectDeps.
-                // allowArbitraryImport: isServerEnv,
+                allowArbitraryImport: isServerEnv,
             };
             ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, opts));
         }

@@ -3,6 +3,7 @@
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.install = exports.setLocationHref = void 0;
+require("expo/src/winter");
 class DOMException extends Error {
     constructor(message, name) {
         super(message);

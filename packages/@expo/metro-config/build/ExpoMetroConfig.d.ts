@@ -29,7 +29,12 @@ export interface DefaultConfigOptions {
         premodules: Module[];
         debugId?: string;
     }) => Module[])[];
+    /**
+     * Enable support for the experimental runtime that supports SSR, stable module IDs, and React Server Components.
+     * This does not support legacy RAM bundles.
+     */
+    unstable_runtime?: boolean;
 }
-export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): InputConfigT;
+export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins, unstable_runtime, }?: DefaultConfigOptions): InputConfigT;
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 export declare const EXPO_DEBUG: boolean;

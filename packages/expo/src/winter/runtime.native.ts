@@ -26,3 +26,9 @@ install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+// NOTE: Fetch is polyfilled in expo/metro-runtime
+install('ReadableStream', () => require('web-streams-polyfill/ponyfill/es6').ReadableStream);
+
+install('Headers', () => require('react-native-fetch-api').Headers);
+install('Request', () => require('react-native-fetch-api').Request);
+install('Response', () => require('react-native-fetch-api').Response);

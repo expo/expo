@@ -1,0 +1,22 @@
+{
+  "ios": {
+    "bundleIdentifier": "app.expo.rsc"
+  },
+  "plugins": [
+    [
+      "expo-build-properties",
+      {
+        "ios": {
+          "newArchEnabled": true,
+          "ccacheEnabled": true
+        },
+        "android": {
+          "newArchEnabled": true
+        }
+      }
+    ]
+  ],
+  "experiments": {
+    "reactCanary": true
+  }
+}

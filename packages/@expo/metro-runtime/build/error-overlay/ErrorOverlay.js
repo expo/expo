@@ -100,7 +100,7 @@ function LogBoxInspector({ log, selectedLogIndex, logs, }) {
         }
     }, [logs, selectedLogIndex]);
     (0, react_1.useEffect)(() => {
-        react_native_1.Keyboard.dismiss();
+        // Keyboard.dismiss();
     }, []);
     const _handleRetry = (0, react_1.useCallback)((type) => {
         LogBoxData.retrySymbolicateLogNow(type, log);

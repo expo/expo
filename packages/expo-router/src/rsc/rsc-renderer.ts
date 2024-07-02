@@ -128,17 +128,18 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
         }
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-        const metroOpaqueId = absoluteFilePathToMetroId(filePath);
+        // TODO: Make relative to server root
+        const metroOpaqueId = filePath;
         // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
         // This is similar to how we handle lazy bundling.
 
         if (resolveClientEntry) {
           const resolved = resolveClientEntry(filePath);
-          const clientReference = { id: metroOpaqueId, chunks: resolved.url, name, async: true };
+          const clientReference = { id: resolved.id, chunks: resolved.url, name, async: true };
           // const id = resolveClientEntry(file, args.config);
 
           // console.log('Returning server module:', id, 'for', encodedId);
-          moduleIdCallback?.({ id: filePath });
+          moduleIdCallback?.(resolved);
           return clientReference;
         }
 
@@ -228,7 +229,6 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   if (method === 'POST') {
     // TODO(Bacon): Fix Server action ID generation
     const rsfId = decodeURIComponent(input);
-    // const rsfId = decodeURIComponent(decodeInput(input));
     let args: unknown[] = [];
     let bodyStr = '';
     if (body) {
@@ -295,19 +295,6 @@ const parseFormData = (body: string, contentType: string) => {
   return formData;
 };
 
-const decodeInput = (encodedInput: string) => {
-  console.log('> decodeInput:', encodedInput);
-  if (encodedInput === 'index.txt') {
-    return '';
-  }
-  if (encodedInput?.endsWith('.txt')) {
-    return encodedInput.slice(0, -'.txt'.length);
-  }
-  const err = new Error('Invalid encoded input');
-  (err as any).statusCode = 400;
-  throw err;
-};
-
 // TODO: Implement this in production exports.
 export async function getBuildConfig(opts: {
   config: ResolvedConfig;
@@ -326,10 +313,6 @@ export async function getBuildConfig(opts: {
     return [];
   }
 
-  // const resolveClientEntry = isDev
-  // ? opts.resolveClientEntry
-  // : resolveClientEntryForPrd;
-
   const unstable_collectClientModules = async (input: string): Promise<string[]> => {
     const idSet = new Set<string>();
     const readable = await renderRsc(
@@ -340,16 +323,10 @@ export async function getBuildConfig(opts: {
         method: 'GET',
         context: undefined,
         moduleIdCallback: ({ id }) => idSet.add(id),
-        // resolveClientEntry: (id) => {
-        //   const entry = resolveClientEntryForPrd(id, config);
-        //   return { id: entry, url: entry };
-        //   // throw new Error('TODO: Implement resolveClientEntry');
-        // },
       },
       {
         isExporting: true,
         entries,
-        // resolveClientEntry: opts.resolveClientEntry,
       }
     );
     await new Promise<void>((resolve, reject) => {
@@ -385,18 +362,14 @@ type GetSsrConfigOpts =
     };
 
 export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpts) {
-  const { config, pathname, searchParams } = args;
-  const { isDev, entries } = opts;
+  const { pathname, searchParams } = args;
+  const { entries } = opts;
 
   const resolveClientEntry = opts.resolveClientEntry;
 
   const {
     default: { getSsrConfig },
-    // loadModule,
   } = entries as (EntriesDev & { loadModule: undefined }) | EntriesPrd;
-  // const { renderToReadableStream } = await loadModule!('react-server-dom-webpack/server.edge').then(
-  //   (m: any) => m.default
-  // );
 
   const ssrConfig = await getSsrConfig?.(pathname, { searchParams });
   if (!ssrConfig) {
@@ -425,16 +398,3 @@ const fileURLToFilePath = (fileURL: string) => {
   }
   return decodeURI(fileURL.slice('file://'.length));
 };
-
-// NOTE: MUST MATCH THE IMPL IN ExpoMetroConfig.ts
-function absoluteFilePathToMetroId(str: string): number | string {
-  return str;
-  let hash = 0;
-  if (str.length === 0) return hash;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash);
-}

@@ -7,7 +7,7 @@ const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
 /** Prevent importing certain known imports in given environments. This is for sanity to ensure a module never accidentally gets imported unexpectedly. */
 function environmentRestrictedImportsPlugin(api) {
     const { types: t } = api;
-    const isReactServer = api.caller(common_1.getIsReactServer);
+    const isReactServer = api.caller(common_1.getIsReactServer) || api.caller(common_1.getIsServer);
     const forbiddenPackages = isReactServer
         ? FORBIDDEN_REACT_SERVER_IMPORTS
         : FORBIDDEN_CLIENT_IMPORTS;

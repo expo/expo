@@ -366,26 +366,6 @@ export function withExtendedResolver(
           // TODO: Add more
           /^@babel\/runtime\/helpers\/(wrapNativeSuper)$/.test(moduleName);
 
-        if (!isExternal && (platform === 'ios' || platform === 'android')) {
-          // Auto extern all modules that are imported from React Native since RN has no tree-shaking/chill.
-          // if (context.originModulePath.match(/node_modules[\\/]react-native[\\/]/)) {
-          //   return true;
-          // }
-        }
-
-        if (isExternal) {
-          // console.log('Extern async chunk >', moduleName);
-        } else {
-          // if (!moduleName.match(/^[/.]/))
-          //   console.log('[SKIP] Extern async chunk >', moduleName, context.originModulePath);
-        }
-        // if (!isExternal && !moduleName.match(/^[/.]/)) {
-        //   if (!hasLogged.has(moduleName)) {
-        //     console.log('>>>>', moduleName);
-        //   }
-        //   hasLogged.add(moduleName);
-        // }
-
         return isExternal;
       },
       replace: 'weak',
