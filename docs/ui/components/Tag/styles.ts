@@ -33,11 +33,3 @@ export const labelStyle = css({
   fontWeight: 'normal',
   fontSize: 'inherit !important',
 });
-
-export const tagToCStyle = css({
-  fontSize: '0.7rem',
-  marginBottom: 0,
-  marginRight: 0,
-  marginLeft: spacing[1],
-  padding: `0 ${spacing[1.5]}px`,
-});

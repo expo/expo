@@ -4785,7 +4785,7 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-kk7wp3-PlatformTag"
+            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-1e5tu91-PlatformTag"
           >
             <svg
               class="icon-xs text-palette-blue12"
@@ -7135,7 +7135,7 @@ This uses both
       </p>
     </div>
     <div
-      class="mb-3.5"
+      class="mb-3.5 last:[&>*]:mb-0"
     >
       <p
         class="!mt-1 css-1xg9efr-BoxSectionHeader"
@@ -9913,7 +9913,7 @@ exports[`APISection expo-pedometer 1`] = `
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-kk7wp3-PlatformTag"
+          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-1e5tu91-PlatformTag"
         >
           <svg
             class="icon-xs text-palette-blue12"
