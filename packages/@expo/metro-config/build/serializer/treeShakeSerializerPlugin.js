@@ -37,7 +37,6 @@ const types = __importStar(require("@babel/types"));
 const sideEffects_1 = require("./sideEffects");
 const debug = require('debug')('expo:treeshaking');
 const OPTIMIZE_GRAPH = true;
-const generate = require('@babel/generator').default;
 function isModuleEmptyFor(ast) {
     if (!ast?.program.body.length) {
         return true;
@@ -368,7 +367,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                         // Get module for import ID:
                         const nextModule = getDepForImportId(path.node.source.value);
                         const exportResults = getExportsForModule(nextModule, checkedModules);
-                        console.log('exportResults', exportResults);
+                        // console.log('exportResults', exportResults);
                         if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
                             // Collect all exports from the module.
                             // exportNames.push(...exportResults.exportNames);

@@ -65,6 +65,7 @@ export async function serializeSplitAsync(
     options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
   });
 }
+
 // Serialize to a split bundle
 export async function serializeShakingAsync(
   fs: Record<string, string>,

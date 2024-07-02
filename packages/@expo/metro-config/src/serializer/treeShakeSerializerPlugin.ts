@@ -20,7 +20,7 @@ const OPTIMIZE_GRAPH = true;
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
-const generate = require('@babel/generator').default;
+// const generate = require('@babel/generator').default;
 
 type Ast = babylon.ParseResult<types.File>;
 
@@ -443,7 +443,7 @@ export async function treeShakeSerializer(
             const nextModule = getDepForImportId(path.node.source.value);
 
             const exportResults = getExportsForModule(nextModule, checkedModules);
-            console.log('exportResults', exportResults);
+            // console.log('exportResults', exportResults);
 
             if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
               // Collect all exports from the module.
