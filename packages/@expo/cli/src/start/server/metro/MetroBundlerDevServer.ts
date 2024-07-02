@@ -1060,7 +1060,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         revision.prepend as any,
         revision.graph as any,
         {
-          _metroConfig: config,
           asyncRequireModulePath: await this.metro._resolveRelativePath(
             config.transformer.asyncRequireModulePath,
             {
@@ -1090,6 +1089,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
           // @ts-expect-error: passed to our serializer to enable non-serial return values.
           serializerOptions,
+          // NOTE: Exposed for additional serializer logging in atlas.
+          _metroConfig: config,
         }
       );
 
