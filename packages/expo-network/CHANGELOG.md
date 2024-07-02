@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add network state change listeners ([#28808](https://github.com/expo/expo/pull/28808) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
