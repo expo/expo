@@ -26,6 +26,7 @@ type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
 
 type ImportDependencyOptions = Readonly<{
   asyncType: AsyncDependencyType;
+  dynamicRequires: DynamicRequiresBehavior;
 }>;
 
 export type Dependency = Readonly<{
@@ -141,6 +142,7 @@ function collectDependencies(
 
         if (isImport(callee)) {
           processImportCall(path, state, {
+            dynamicRequires: options.dynamicRequires,
             asyncType: 'async',
           });
           return;
@@ -148,6 +150,7 @@ function collectDependencies(
 
         if (name === '__prefetchImport' && !path.scope.getBinding(name)) {
           processImportCall(path, state, {
+            dynamicRequires: options.dynamicRequires,
             asyncType: 'prefetch',
           });
           return;
@@ -380,6 +383,11 @@ function processImportCall(
   const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {
+    if (options.dynamicRequires === 'warn') {
+      warnDynamicRequire(path);
+      return;
+    }
+
     throw new InvalidRequireCallError(path);
   }
 
@@ -402,10 +410,10 @@ function processImportCall(
   }
 }
 
-function warnAmbiguousImport({ node }: NodePath<CallExpression>, message = '') {
+function warnDynamicRequire({ node }: NodePath<CallExpression>, message = '') {
   const line = node.loc && node.loc.start && node.loc.start.line;
   console.warn(
-    `Ambiguous import at line ${line || '<unknown>'}: ${generate(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim()
+    `Dynamic import at line ${line || '<unknown>'}: ${generate(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim()
   );
 }
 
@@ -418,7 +426,7 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
     if (state.dynamicRequires === 'reject') {
       throw new InvalidRequireCallError(path);
     } else if (state.dynamicRequires === 'warn') {
-      warnAmbiguousImport(path);
+      warnDynamicRequire(path);
       return;
     } else {
       transformer.transformIllegalDynamicRequire(path, state);

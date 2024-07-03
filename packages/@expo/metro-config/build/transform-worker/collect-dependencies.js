@@ -63,12 +63,14 @@ function collectDependencies(ast, options) {
             const name = callee.type === 'Identifier' ? callee.name : null;
             if ((0, types_1.isImport)(callee)) {
                 processImportCall(path, state, {
+                    dynamicRequires: options.dynamicRequires,
                     asyncType: 'async',
                 });
                 return;
             }
             if (name === '__prefetchImport' && !path.scope.getBinding(name)) {
                 processImportCall(path, state, {
+                    dynamicRequires: options.dynamicRequires,
                     asyncType: 'prefetch',
                 });
                 return;
@@ -234,6 +236,10 @@ function collectImports(path, state) {
 function processImportCall(path, state, options) {
     const name = getModuleNameFromCallArgs(path);
     if (name == null) {
+        if (options.dynamicRequires === 'warn') {
+            warnDynamicRequire(path);
+            return;
+        }
         throw new InvalidRequireCallError(path);
     }
     const dep = registerDependency(state, {
@@ -249,9 +255,9 @@ function processImportCall(path, state, options) {
         transformer.transformPrefetch(path, dep, state);
     }
 }
-function warnAmbiguousImport({ node }, message = '') {
+function warnDynamicRequire({ node }, message = '') {
     const line = node.loc && node.loc.start && node.loc.start.line;
-    console.warn(`Ambiguous import at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim());
+    console.warn(`Dynamic import at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim());
 }
 function processRequireCall(path, state) {
     const name = getModuleNameFromCallArgs(path);
@@ -261,7 +267,7 @@ function processRequireCall(path, state) {
             throw new InvalidRequireCallError(path);
         }
         else if (state.dynamicRequires === 'warn') {
-            warnAmbiguousImport(path);
+            warnDynamicRequire(path);
             return;
         }
         else {

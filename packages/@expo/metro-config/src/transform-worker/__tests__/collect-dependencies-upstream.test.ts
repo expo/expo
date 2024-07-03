@@ -1035,7 +1035,31 @@ describe('Evaluating static arguments', () => {
     );
     expect(console.warn).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledWith(
-      'Ambiguous import at line 1: require(someVariable). This module may not work as intended when deployed to a runtime.'
+      'Dynamic import at line 1: require(someVariable). This module may not work as intended when deployed to a runtime.'
+    );
+  });
+  it('warns at build-time when async import of non-strings with special option', () => {
+    jest.mocked(console.warn).mockReset();
+    const ast = astFromCode('import(someVariable)');
+    const opts: Options = {
+      asyncRequireModulePath: 'asyncRequire',
+      dynamicRequires: 'warn',
+      inlineableCalls: [],
+      keepRequireNames: true,
+      allowOptionalDependencies: false,
+      dependencyMapName: null,
+      unstable_allowRequireContext: false,
+    };
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        import(someVariable);
+      `)
+    );
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Dynamic import at line 1: import(someVariable). This module may not work as intended when deployed to a runtime.'
     );
   });
 });
