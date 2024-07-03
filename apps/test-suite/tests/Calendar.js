@@ -276,6 +276,14 @@ export async function test(t) {
         const result = await Calendar.openEventInCalendarAsync({ id: eventId });
         t.expect(result).toEqual({ action: 'done' });
       });
+
+      t.it('can edit an event', async () => {
+        const calendarId = await createTestCalendarAsync();
+        const eventId = await createTestEventAsync(calendarId);
+        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+        const result = await Calendar.editEventInCalendarAsync({ id: eventId });
+        t.expect(typeof result.action).toBe('string'); // done or canceled
+      });
     });
 
     t.describe('createCalendarAsync()', () => {
