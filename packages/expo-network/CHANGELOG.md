@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fix wired ethernet connection being reported as unknown type.
+- On iOS, fix wired ethernet connection being reported as unknown type. ([#30169](https://github.com/expo/expo/pull/30169) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 
