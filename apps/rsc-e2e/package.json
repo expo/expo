@@ -14,7 +14,6 @@
     "react-native": "0.74.2",
     "expo-linking": "*",
     "react-native-safe-area-context": "*",
-    "react-native-screens": "*",
     "react-native-fetch-api": "^3.0.0"
   },
   "private": true
