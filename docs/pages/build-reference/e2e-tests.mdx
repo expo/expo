@@ -52,7 +52,6 @@ The following command creates a new project on Expo servers for your app and cre
 <Step label="3">
 ## Add example Maestro test cases
 
-
 This is how the UI of the app created from the default Expo template looks like:
 
 <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -61,7 +60,6 @@ This is how the UI of the app created from the default Expo template looks like:
 </div>
 
 Let's create two simple Maestro flows for the example app. Start by creating a directory called **maestro** in the root of your project directory. This directory will contain the flows that you will configure and should be at the same level as **eas.json**.
-
 
 Inside it, create a new flow called **home.yaml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
 
@@ -126,7 +124,7 @@ Now modify the **eas.json** by adding a new [build profile](/build/eas-json/#bui
         "image": "latest"
       }
     }
-  },
+  }
   /* @hide ... */ /* @end */
 }
 ```
