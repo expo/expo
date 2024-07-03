@@ -64,6 +64,10 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     shouldCorrectPitch: boolean;
     /**
+     * The current status of the audio player.
+     */
+    currentStatus: AudioStatus;
+    /**
      * Resumes the player.
      */
     play(): void;

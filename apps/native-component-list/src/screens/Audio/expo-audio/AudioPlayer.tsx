@@ -1,4 +1,4 @@
-import { useAudioPlayer, AudioSource } from 'expo-audio';
+import { useAudioPlayer, AudioSource, useAudioPlayerStatus } from 'expo-audio';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from './Player';
@@ -9,8 +9,8 @@ type AudioPlayerProps = {
 };
 
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
-  const [player, status] = useAudioPlayer(source);
-
+  const player = useAudioPlayer(source);
+  const status = useAudioPlayerStatus(player);
   const setVolume = (volume: number) => {
     player.volume = volume;
   };

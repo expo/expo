@@ -51,13 +51,8 @@ class AudioModule : Module() {
   private var appIsPaused = false
   private var staysActiveInBackground = false
   private var audioEnabled = true
-  private var audioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS
+  private var audioInterruptionMode = InterruptionMode.DO_NOT_MIX
   private var shouldRouteThroughEarpiece = false
-
-  private enum class AudioInterruptionMode {
-    DO_NOT_MIX,
-    DUCK_OTHERS
-  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
@@ -67,6 +62,7 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
+      audioInterruptionMode = mode.interruptionMode
       staysActiveInBackground = mode.shouldPlayInBackground
       shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
       if (shouldRouteThroughEarpiece) {
@@ -167,6 +163,12 @@ class AudioModule : Module() {
       Property("isBuffering") { ref ->
         runOnMain {
           ref.player.playbackState == Player.STATE_BUFFERING
+        }
+      }
+
+      Property("currentStatus") { ref ->
+        runOnMain {
+          ref.currentStatus()
         }
       }
 
@@ -361,14 +363,14 @@ class AudioModule : Module() {
     mediaItem: MediaItem
   ): MediaSource {
     val uri = mediaItem.localConfiguration?.uri
-    val factory = when (val type = retrieveStreamType(uri!!)) {
+    val newFactory = when (val type = retrieveStreamType(uri!!)) {
       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
       CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
       else -> throw IllegalStateException("Unsupported type: $type")
     }
-    return factory.createMediaSource(MediaItem.fromUri(uri))
+    return newFactory.createMediaSource(MediaItem.fromUri(uri))
   }
 
   private fun <T> runOnMain(block: () -> T): T =

@@ -19,7 +19,7 @@ export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 export type AudioStatus = {
     id: number;
     currentTime: number;
-    status: string;
+    playbackState: string;
     timeControlStatus: string;
     reasonForWaitingToPlay: string;
     mute: boolean;

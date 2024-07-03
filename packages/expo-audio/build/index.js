@@ -7,25 +7,11 @@ import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 export function useAudioPlayer(source = null) {
     const parsedSource = resolveSource(source);
-    const player = useReleasingSharedObject(() => {
-        return new AudioModule.AudioPlayer(parsedSource);
-    }, [JSON.stringify(parsedSource)]);
-    const status = useEvent(player, 'onPlaybackStatusUpdate', {
-        id: player.id,
-        currentTime: player.currentTime,
-        status: 'unknown',
-        timeControlStatus: 'unknown',
-        reasonForWaitingToPlay: 'unknown',
-        mute: player.muted,
-        duration: player.duration,
-        playing: player.playing,
-        loop: player.loop,
-        isBuffering: player.isBuffering,
-        isLoaded: player.isLoaded,
-        playbackRate: player.playbackRate,
-        shouldCorrectPitch: player.shouldCorrectPitch,
-    });
-    return [player, status];
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource), [JSON.stringify(parsedSource)]);
+    return player;
+}
+export function useAudioPlayerStatus(player) {
+    return useEvent(player, 'onPlaybackStatusUpdate', player.currentStatus);
 }
 export function useAudioRecorder(options, statusListener) {
     const platformOptions = createRecordingOptions(options);

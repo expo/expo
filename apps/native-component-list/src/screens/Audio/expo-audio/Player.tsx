@@ -151,8 +151,6 @@ export default function Player(props: Props) {
     );
   };
 
-  console.log({ props });
-
   return (
     <View style={props.style}>
       <View style={{ opacity: isScrubbing ? 0.8 : 1, backgroundColor: 'black' }}>

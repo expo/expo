@@ -38,15 +38,14 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     return true
   }
-
-  func updateStatus(with dict: [String: Any]) {
+  
+  func currentStatus() -> [String: Any] {
     let time = ref.currentItem?.duration
     let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
-
-    var body: [String: Any] = [
+    return [
       "id": id,
       "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
-      "status": statusToString(status: ref.status),
+      "playbackState": statusToString(status: ref.status),
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
       "mute": ref.isMuted,
@@ -58,7 +57,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
     ]
+  }
 
+  func updateStatus(with dict: [String: Any]) {
+    var body = currentStatus()
     body.merge(dict) { _, new in
       new
     }
