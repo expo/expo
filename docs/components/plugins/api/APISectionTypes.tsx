@@ -105,7 +105,7 @@ const renderType = (
     // Object Types
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
-        <APISectionDeprecationNote comment={comment} />
+        <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -133,7 +133,7 @@ const renderType = (
     if (propTypes.length) {
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
-          <APISectionDeprecationNote comment={comment} />
+          <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -175,7 +175,7 @@ const renderType = (
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
-          <APISectionDeprecationNote comment={comment} />
+          <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
             <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -215,7 +215,7 @@ const renderType = (
   ) {
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
-        <APISectionDeprecationNote comment={comment} />
+        <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -234,7 +234,7 @@ const renderType = (
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
-        <APISectionDeprecationNote comment={comment} />
+        <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -253,7 +253,7 @@ const renderType = (
   } else if (type.type === 'conditional' && type.checkType) {
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
-        <APISectionDeprecationNote comment={comment} />
+        <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -298,7 +298,7 @@ const renderType = (
 
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
-        <APISectionDeprecationNote comment={comment} />
+        <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
           <MONOSPACE weight="medium" className="wrap-anywhere">

@@ -844,7 +844,6 @@ export const STYLES_APIBOX = css({
   padding: spacing[5],
   boxShadow: shadows.xs,
   marginBottom: spacing[6],
-  overflowX: 'hidden',
 
   h3: {
     marginBottom: spacing[2.5],
@@ -884,7 +883,7 @@ export const STYLES_APIBOX_NESTED = css({
 });
 
 export const STYLES_APIBOX_WRAPPER = css({
-  marginBottom: spacing[4],
+  marginBottom: spacing[3.5],
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   [`.css-${tableWrapperStyle.name}:last-child`]: {
@@ -906,6 +905,10 @@ export const STYLES_NESTED_SECTION_HEADER = css({
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,
+  },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    marginInline: -spacing[4],
   },
 });
 

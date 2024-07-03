@@ -47,7 +47,7 @@ const renderNamespace = (
 
   return (
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
-      <APISectionDeprecationNote comment={comment} />
+      <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">

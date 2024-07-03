@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="!shadow-none css-gxnqn3"
+    class="!shadow-none css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -279,7 +279,7 @@ for more details.
     </blockquote>
     <div>
       <p
-        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        class="!text-secondary !font-medium css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -328,7 +328,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -405,7 +405,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -482,7 +482,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -567,7 +567,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -663,7 +663,7 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -917,7 +917,7 @@ properties.
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1193,7 +1193,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1337,7 +1337,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1578,7 +1578,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1866,7 +1866,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -2181,7 +2181,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -2373,7 +2373,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -2911,7 +2911,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -3259,7 +3259,7 @@ may be
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -3566,7 +3566,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -3890,7 +3890,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -4127,7 +4127,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -4300,7 +4300,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4369,7 +4369,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -4565,7 +4565,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4634,7 +4634,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -4785,10 +4785,10 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-1e5tu91-PlatformTag"
+            class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none css-1e5tu91-PlatformTag"
           >
             <svg
-              class="icon-xs text-palette-blue12"
+              class="opacity-80 icon-xs text-palette-blue12"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -4873,7 +4873,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4995,7 +4995,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5228,7 +5228,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5279,7 +5279,7 @@ for more details.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5518,7 +5518,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5684,7 +5684,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5807,7 +5807,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5917,7 +5917,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -6158,13 +6158,13 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="!shadow-none css-gxnqn3"
+    class="!shadow-none css-7sex76"
   >
     <div
-      class="css-1avgxs7-APISectionDeprecationNote"
+      class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-md-gutters:mx-[-17px]"
     >
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-16xozm6-Callout"
+        class="flex gap-2 rounded-md py-3 px-4 mb-4 [&_p]:!mb-0 [table_&]:last-of-type:mb-2.5 pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4 css-16xozm6-Callout"
         data-testid="callout-container"
       >
         <div
@@ -6199,7 +6199,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             <strong
               class="css-bvflvn-TextComponent"
             >
-              Deprecated.
+              Deprecated
             </strong>
              BarCodeScanner has been deprecated and will be removed in a future SDK version. Use 
             <code
@@ -6321,7 +6321,7 @@ for more details.
     </p>
     <div>
       <p
-        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        class="!text-secondary !font-medium css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -6370,7 +6370,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -6486,7 +6486,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -6640,7 +6640,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-qg659h"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -6882,7 +6882,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7138,7 +7138,7 @@ This uses both
       class="mb-3.5 last:[&>*]:mb-0"
     >
       <p
-        class="!mt-1 css-1xg9efr-BoxSectionHeader"
+        class="!mt-1 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -7277,7 +7277,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7424,7 +7424,7 @@ This uses both
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7593,7 +7593,7 @@ This uses both
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7933,7 +7933,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7987,7 +7987,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="css-1xg9efr-BoxSectionHeader"
+      class="css-19qci8h-BoxSectionHeader"
       data-text="true"
     >
       <span
@@ -8217,7 +8217,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -8375,7 +8375,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -8527,7 +8527,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -8646,7 +8646,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -8815,7 +8815,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -8923,7 +8923,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -9195,7 +9195,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -9343,7 +9343,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -9479,7 +9479,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -9530,7 +9530,7 @@ you don't get this value.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -9771,7 +9771,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -9896,7 +9896,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <div
       class="flex flex-row items-center mb-2"
@@ -9913,10 +9913,10 @@ exports[`APISection expo-pedometer 1`] = `
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-1e5tu91-PlatformTag"
+          class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none css-1e5tu91-PlatformTag"
         >
           <svg
-            class="icon-xs text-palette-blue12"
+            class="opacity-80 icon-xs text-palette-blue12"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -10261,7 +10261,7 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10399,7 +10399,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10524,7 +10524,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10845,7 +10845,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="css-qg659h"
+    class="css-17cktl8"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10899,7 +10899,7 @@ On iOS, the
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="css-1xg9efr-BoxSectionHeader"
+      class="css-19qci8h-BoxSectionHeader"
       data-text="true"
     >
       <span
@@ -11129,7 +11129,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -11244,7 +11244,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -11358,7 +11358,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -11460,7 +11460,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-gxnqn3"
+    class="css-7sex76"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -11633,7 +11633,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-1t05vdz-APISectionEnum"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -11684,7 +11684,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span

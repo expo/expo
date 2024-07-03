@@ -45,7 +45,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
       {children.sort(sortByValue).map((enumValue: EnumValueData) => (
         <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>
           <APISectionDeprecationNote comment={enumValue.comment} />
-          <APISectionPlatformTags comment={enumValue.comment} disableFallback />
+          <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" disableFallback />
           <H4 className="!mt-0" hideInSidebar>
             <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
           </H4>

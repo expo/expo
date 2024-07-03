@@ -13,19 +13,19 @@ export function getPlatformName(text: string): PlatformName {
 export function getTagClasses(type: string) {
   switch (type) {
     case 'android':
-      return '!bg-palette-green4 !text-palette-green12 !border-palette-green5';
+      return '!bg-palette-green3 !text-palette-green12 !border-palette-green4';
     case 'ios':
-      return '!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5';
+      return '!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4';
     case 'web':
-      return '!bg-palette-orange4 !text-palette-orange12 !border-palette-orange5';
+      return '!bg-palette-orange3 !text-palette-orange12 !border-palette-orange4';
     case 'macos':
-      return '!bg-palette-purple4 !text-palette-purple12 !border-palette-purple5';
+      return '!bg-palette-purple3 !text-palette-purple12 !border-palette-purple4';
     case 'tvos':
-      return '!bg-palette-pink4 !text-palette-pink12 !border-palette-pink5';
+      return '!bg-palette-pink3 !text-palette-pink12 !border-palette-pink4';
     case 'deprecated':
-      return '!bg-palette-yellow3 !text-palette-yellow12 !border-palette-yellow5';
+      return '!bg-palette-yellow2 !text-palette-yellow12 !border-palette-yellow4';
     case 'experimental':
-      return '!bg-palette-pink4 !text-palette-pink12 !border-palette-pink5';
+      return '!bg-palette-pink3 !text-palette-pink12 !border-palette-pink4';
     default:
       return undefined;
   }

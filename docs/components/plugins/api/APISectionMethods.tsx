@@ -76,7 +76,7 @@ export const renderMethod = (
       <div
         key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
         css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-        <APISectionDeprecationNote comment={comment} />
+        <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <HeaderComponent>
           <MONOSPACE
