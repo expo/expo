@@ -2438,10 +2438,10 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 91612acca9..40971e1cd1 100644
+index 91612acca9..a5a78f3e57 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,41 +1,42 @@
+@@ -1,41 +1,40 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2477,9 +2477,7 @@ index 91612acca9..40971e1cd1 100644
      # An absolute path to your application root.
 -    :app_path => "#{Dir.pwd}/.."
 +    :app_path => "#{Pod::Config.instance.installation_root}/..",
-+    # Temporarily disable privacy file aggregation by default, until React
-+    # Native 0.74.2 is released with fixes.
-+    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
    )
  
 -  # Uncomment to opt-in to using Flipper
@@ -2525,7 +2523,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..e9fcde1e4c 100644
+index d5ca09a584..fd8cf94dbd 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2533,7 +2531,7 @@ index d5ca09a584..e9fcde1e4c 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "46.0.37",
-+  "version": "51.0.29",
++  "version": "51.0.38",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2548,10 +2546,10 @@ index d5ca09a584..e9fcde1e4c 100644
 -    "react-dom": "18.0.0",
 -    "react-native": "0.69.9",
 -    "react-native-web": "~0.18.7"
-+    "expo": "~51.0.10",
++    "expo": "~51.0.17",
 +    "expo-status-bar": "~1.12.1",
 +    "react": "18.2.0",
-+    "react-native": "0.74.1"
++    "react-native": "0.74.2"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

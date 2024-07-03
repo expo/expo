@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update @react-native/dev-middleware to 0.74.85. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.18.21 — 2024-06-28
 
 _This version does not introduce any user-facing changes._
