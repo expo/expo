@@ -34,7 +34,9 @@ export type ScreenProps<
    */
   redirect?: boolean;
   initialParams?: Record<string, any>;
-  options?: TOptions;
+  options?:
+    | TOptions
+    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
     | ScreenListeners<State, EventMap>

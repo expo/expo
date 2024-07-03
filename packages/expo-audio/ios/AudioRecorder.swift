@@ -20,23 +20,23 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     } catch {
       print("Failed to set recording category")
     }
-    pointer.prepareToRecord()
+    ref.prepareToRecord()
   }
 
   var isRecording: Bool {
-    pointer.isRecording
+    ref.isRecording
   }
 
   var currentTime: Double {
-    pointer.currentTime * 1000
+    ref.currentTime * 1000
   }
 
   var deviceCurrentTime: Int {
-    Int(pointer.deviceCurrentTime * 1000)
+    Int(ref.deviceCurrentTime * 1000)
   }
 
   var uri: String {
-    pointer.url.absoluteString
+    ref.url.absoluteString
   }
 
   func getRecordingStatus() -> [String: Any] {
@@ -50,9 +50,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "mediaServicesDidReset": false
     ]
 
-    if pointer.isMeteringEnabled {
-      pointer.updateMeters()
-      let currentLevel = pointer.averagePower(forChannel: 0)
+    if ref.isMeteringEnabled {
+      ref.updateMeters()
+      let currentLevel = ref.averagePower(forChannel: 0)
       result["metering"] = currentLevel
     }
 

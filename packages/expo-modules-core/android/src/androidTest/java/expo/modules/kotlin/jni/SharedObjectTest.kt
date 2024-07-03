@@ -53,7 +53,7 @@ class SharedObjectTest {
     val sharedObject = callClass("SharedObjectExampleClass")
     val sharedObjectId = sharedObject.getObject().getProperty(sharedObjectIdPropertyName).getInt()
     val containSharedObject = jsiInterop
-      .appContextHolder
+      .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
       ?.pairs
@@ -94,7 +94,7 @@ class SharedObjectTest {
 
     // Get the native instance
     val nativeObject = jsiInterop
-      .appContextHolder
+      .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
       ?.toNativeObject(jsObject)

@@ -72,13 +72,6 @@ public:
 #endif
 
   /**
-   * Initializes the test runtime. Shouldn't be used in the production.
-   */
-  void installJSIForTests(
-    jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
-  );
-
-  /**
    * Gets a module for a given name. It will throw an exception if the module doesn't exist.
    *
    * @param moduleName

@@ -90,8 +90,8 @@ class JavaScriptClassTest {
       val jsObject = callClass("MySharedObject").getObject()
       val id = SharedObjectId(jsObject.getProperty(sharedObjectIdPropertyName).getInt())
 
-      val appContext = jsiInterop.appContextHolder.get()!!
-      val (native, _) = appContext.sharedObjectRegistry.pairs[id]!!
+      val runtimeContext = jsiInterop.runtimeContextHolder.get()!!
+      val (native, _) = runtimeContext.sharedObjectRegistry.pairs[id]!!
       Truth.assertThat(native).isSameInstanceAs(mySharedObject)
     }
   }
@@ -155,7 +155,7 @@ class JavaScriptClassTest {
     }) {
       val jsObject = callClass("MySharedObject").getObject()
       id = SharedObjectId(jsObject.getProperty(sharedObjectIdPropertyName).getInt())
-      registry = jsiInterop.appContextHolder.get()?.sharedObjectRegistry
+      registry = jsiInterop.runtimeContextHolder.get()?.sharedObjectRegistry
     }
 
     Truth.assertThat(registry!!.pairs[id!!]).isNull()
