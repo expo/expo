@@ -2340,10 +2340,10 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 474455b90d..40971e1cd1 100644
+index 474455b90d..a5a78f3e57 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,43 +1,42 @@
+@@ -1,43 +1,40 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2382,9 +2382,7 @@ index 474455b90d..40971e1cd1 100644
 -    # Uncomment to opt-in to using Flipper
 -    # Note that if you have use_frameworks! enabled, Flipper will not work
 -    # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
-+    # Temporarily disable privacy file aggregation by default, until React
-+    # Native 0.74.2 is released with fixes.
-+    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
    )
  
    post_install do |installer|
@@ -2425,7 +2423,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a41fdc0d8d..01a1bbd884 100644
+index a41fdc0d8d..87791e2d65 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2449,7 +2447,7 @@ index a41fdc0d8d..01a1bbd884 100644
 +    "expo": "~51.0.8",
 +    "expo-status-bar": "~1.12.1",
 +    "react": "18.2.0",
-+    "react-native": "0.74.1"
++    "react-native": "0.74.2"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"
