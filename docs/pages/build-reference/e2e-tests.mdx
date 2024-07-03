@@ -8,11 +8,11 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **info** This guide will evolve over time as support for testing workflows in EAS Build improves.
+> **info** This guide will evolve over time as support for E2E testing in EAS Build improves.
 
 In this guide, you will learn how to create and run E2E tests on EAS Build using [Maestro](https://maestro.mobile.dev/), which is one of the most popular tools for running E2E tests in mobile apps.
 
-In the following steps, the example demonstrates how to configure your EAS Build Maestro E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you will need to adjust the flows to match your app's UI.
+The example demonstrates how to configure your EAS Build Maestro E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you will need to adjust the flows to match your app's UI.
 
 <Step label="1">
 ## Initialize a new project
@@ -52,7 +52,7 @@ The following command creates a new project on Expo servers for your app and cre
 <Step label="3">
 ## Add example Maestro test cases
 
-This is how the UI of the app created from the default Expo template looks like:
+This is what the UI of the app created from the default Expo template looks like:
 
 <div style={{ display: 'flex', justifyContent: 'center' }}>
   <ContentSpotlight src="/static/images/eas-build/tests/01-home.png" className="max-w-[360px]" />
@@ -61,7 +61,7 @@ This is how the UI of the app created from the default Expo template looks like:
 
 Let's create two simple Maestro flows for the example app. Start by creating a directory called **maestro** in the root of your project directory. This directory will contain the flows that you will configure and should be at the same level as **eas.json**.
 
-Inside it, create a new flow called **home.yaml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
+Inside, create a new file called **home.yaml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
 
 ```yaml maestro/home.yaml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
@@ -90,7 +90,7 @@ The easiest way to run Maestro E2E tests on EAS Build is to create a [custom bui
 
 Start by adding a custom build config file to your project. Create a directory **.eas/build** at the same level as **eas.json** in the project. The path and the name of both directories are important for EAS Build to identify that a project contains a custom build config.
 
-Inside it, create a new config file called **build-and-maestro-test.yml**. This file defines the custom build workflow config that you want to run. Workflow contains steps that are executed during the custom build process. This custom build config will execute the [`eas/build`](custom-builds/schema/#easbuild) custom function group to create a build and then the [`eas/maestro_test`](custom-builds/schema/#easmaestro_test) which is an all-in-one custom function group that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator) and tests the app using flows specified by the `flow_path` input.
+Inside, create a new config file called **build-and-maestro-test.yml**. This file defines the custom build workflow config that you want to run. Workflow contains steps that are executed during the custom build process. This custom build config will execute the [`eas/build`](custom-builds/schema/#easbuild) custom function group to create a build and then the [`eas/maestro_test`](custom-builds/schema/#easmaestro_test) which is an all-in-one custom function group that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator) and tests the app using flows specified by the `flow_path` input.
 
 ```yaml .eas/build/build-and-maestro-test.yml
 build:
@@ -144,7 +144,7 @@ To execute a custom build using the `build-and-maestro-test` profile that will b
   className="max-w-[600px]"
 />
 
-When the flow fails, any Maestro artifacts are automatically uploaded as build artifacts. This includes screenshots saved at `/Users/expo/.maestro/tests` (the default destination). You can download them from the build page.
+When the flow fails, any Maestro artifacts are automatically uploaded as build artifacts. This includes screenshots saved at `~/.maestro/tests` (the default destination). You can download them from the build page.
 
 <ContentSpotlight
   alt="Failed Maestro tests artifacts"
