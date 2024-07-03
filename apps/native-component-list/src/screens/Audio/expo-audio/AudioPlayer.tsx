@@ -1,5 +1,4 @@
 import { useAudioPlayer, AudioSource } from 'expo-audio';
-import { useEffect } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Player from './Player';
@@ -28,10 +27,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     player.shouldCorrectPitch = shouldCorrectPitch;
     player.setPlaybackRate(rate);
   };
-
-  useEffect(() => {
-    return () => player.remove();
-  }, []);
 
   return (
     <Player

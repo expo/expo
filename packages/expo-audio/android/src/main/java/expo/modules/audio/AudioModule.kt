@@ -149,7 +149,7 @@ class AudioModule : Module() {
 
         val item = MediaItem.fromUri(source?.uri ?: "")
         val mediaSource = buildMediaSourceFactory(factory, item)
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           val player = AudioPlayer(
             context,
             appContext,
@@ -165,13 +165,13 @@ class AudioModule : Module() {
       }
 
       Property("isBuffering") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.playbackState == Player.STATE_BUFFERING
         }
       }
 
       Property("loop") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE
         }
       }.set { ref, isLooping: Boolean ->
@@ -185,19 +185,19 @@ class AudioModule : Module() {
       }
 
       Property("isLoaded") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.playbackState == Player.STATE_READY
         }
       }
 
       Property("playing") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.isPlaying
         }
       }
 
       Property("mute") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.isDeviceMuted
         }
       }.set { ref, muted: Boolean ->
@@ -213,25 +213,25 @@ class AudioModule : Module() {
       }
 
       Property("currentTime") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.currentPosition
         }
       }
 
       Property("duration") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.duration
         }
       }
 
       Property("playbackRate") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.playbackParameters.speed
         }
       }
 
       Property("volume") { ref ->
-        runBlocking(appContext.mainQueue.coroutineContext) {
+        runOnMain {
           ref.player.volume
         }
       }.set { ref, volume: Float ->
@@ -370,6 +370,9 @@ class AudioModule : Module() {
     }
     return factory.createMediaSource(MediaItem.fromUri(uri))
   }
+
+  private fun <T> runOnMain(block: () -> T): T =
+    runBlocking(appContext.mainQueue.coroutineContext) { block() }
 
   private fun checkRecordingPermission() {
     val permission = ContextCompat.checkSelfPermission(activity.applicationContext, Manifest.permission.RECORD_AUDIO)
