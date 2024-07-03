@@ -25,23 +25,23 @@ public class ImageManipulatorModule: Module {
     }
 
     Class("Context", ImageManipulatorContext.self) {
-      Function("resize") { (context: ImageManipulatorContext, options: ResizeOptions) in
+      Function("resize") { (context: ImageManipulatorContext, options: ResizeOptions) -> ImageManipulatorContext in
         return context.addTransformer(ImageResizeTransformer(options: options))
       }
 
-      Function("rotate") { (context: ImageManipulatorContext, rotate: Double) in
+      Function("rotate") { (context: ImageManipulatorContext, rotate: Double) -> ImageManipulatorContext in
         return context.addTransformer(ImageRotateTransformer(rotate: rotate))
       }
 
-      Function("flip") { (context: ImageManipulatorContext, flipType: FlipType) in
+      Function("flip") { (context: ImageManipulatorContext, flipType: FlipType) -> ImageManipulatorContext in
         return context.addTransformer(ImageFlipTransformer(flip: flipType))
       }
 
-      Function("crop") { (context: ImageManipulatorContext, rect: CropRect) in
+      Function("crop") { (context: ImageManipulatorContext, rect: CropRect) -> ImageManipulatorContext in
         return context.addTransformer(ImageCropTransformer(options: rect))
       }
 
-      Function("reset") { (context: ImageManipulatorContext) in
+      Function("reset") { (context: ImageManipulatorContext) -> ImageManipulatorContext in
         context.reset()
         return context
       }
