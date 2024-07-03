@@ -1,8 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Asset } from 'expo-asset';
-import { ImageResult, FlipType, useImageManipulator } from 'expo-image-manipulator';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import {
   Image,
   ScrollView,
@@ -15,40 +15,47 @@ import {
 
 import Colors from '../constants/Colors';
 
+interface State {
+  ready: boolean;
+  image?: Asset | ImageManipulator.ImageResult | ImagePicker.ImagePickerAsset;
+  original?: Asset;
+}
+
 ImageManipulatorScreen.navigationOptions = {
-  title: 'ImageManipulator',
+  title: 'ImageManipulator (legacy)',
 };
 
-const DEFAULT_IMAGE = Asset.fromModule(require('../../assets/images/example2.jpg'));
-
 export default function ImageManipulatorScreen() {
-  const [originalImageUri, setOriginalImageUri] = useState(DEFAULT_IMAGE.uri);
-  const [image, setImage] = useState<Asset | ImageResult>(DEFAULT_IMAGE);
-  const context = useImageManipulator(originalImageUri);
+  const [state, setState] = useReducer((s: State, a: Partial<State>) => ({ ...s, ...a }), {
+    ready: false,
+  });
 
   useEffect(() => {
-    refreshImage();
-  }, [context]);
+    const image = Asset.fromModule(require('../../assets/images/example2.jpg'));
+    image.downloadAsync().then(() => {
+      setState({
+        ready: true,
+        image,
+        original: image,
+      });
+    });
+  }, []);
 
   const renderImage = () => {
-    const height = image.height && image.height < 300 ? image.height : 300;
-    const width = image.width && image.width < 300 ? image.width : 300;
+    const height = state.image?.height && state.image?.height < 300 ? state.image?.height : 300;
+    const width = state.image?.width && state.image?.width < 300 ? state.image?.width : 300;
 
     return (
       <View style={styles.imageContainer}>
-        <Image source={{ uri: image.uri }} style={[styles.image, { height, width }]} />
+        <Image
+          source={{ uri: (state.image! as Asset).localUri || state.image!.uri }}
+          style={[styles.image, { height, width }]}
+        />
       </View>
     );
   };
 
-  async function refreshImage() {
-    const image = await context.renderAsync();
-    const result = await image.saveAsync();
-
-    setImage(result);
-  }
-
-  async function pickPhoto() {
+  const pickPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Permission to MEDIA_LIBRARY not granted!');
@@ -61,59 +68,61 @@ export default function ImageManipulatorScreen() {
       alert('No image selected!');
       return;
     }
-    setOriginalImageUri(result.assets[0].uri);
-  }
+    setState({ image: result.assets[0] });
+  };
 
-  function rotate(deg: number) {
-    context.rotate(deg);
-    refreshImage();
-  }
-
-  function resize(size: { width?: number; height?: number }) {
-    context.resize(size);
-    refreshImage();
-  }
-
-  function flip(flip: FlipType) {
-    context.flip(flip);
-    refreshImage();
-  }
-
-  async function compress(compress: number) {
-    const image = await context.renderAsync();
-    const saveResult = await image.saveAsync({ compress });
-
-    setOriginalImageUri(saveResult.uri);
-  }
-
-  function crop() {
-    context.crop({
-      originX: 0,
-      originY: 0,
-      width: image.width! / 2,
-      height: image.height! / 2,
+  const rotate = async (deg: number) =>
+    await manipulate([{ rotate: deg }], {
+      format: ImageManipulator.SaveFormat.PNG,
     });
-    refreshImage();
-  }
 
-  function combo() {
-    context
-      .rotate(180)
-      .flip(FlipType.Vertical)
-      .crop({
-        originX: image.width! / 4,
-        originY: image.height! / 4,
-        width: image.width! / 2,
-        height: image.width! / 2,
-      });
-    refreshImage();
-  }
+  const resize = async (size: { width?: number; height?: number }) =>
+    await manipulate([{ resize: size }]);
 
-  function reset() {
-    context.reset();
-    setImage(DEFAULT_IMAGE);
-    setOriginalImageUri(DEFAULT_IMAGE.uri);
-  }
+  const flip = async (flip: ImageManipulator.FlipType) => await manipulate([{ flip }]);
+
+  const compress = async (compress: number) => await manipulate([], { compress });
+
+  const crop = async () =>
+    await manipulate([
+      {
+        crop: {
+          originX: 0,
+          originY: 0,
+          width: state.image!.width! / 2,
+          height: state.image!.height!,
+        },
+      },
+    ]);
+
+  const combo = async () =>
+    await manipulate([
+      { rotate: 180 },
+      { flip: ImageManipulator.FlipType.Vertical },
+      {
+        crop: {
+          originX: state.image!.width! / 4,
+          originY: state.image!.height! / 4,
+          width: state.image!.width! / 2,
+          height: state.image!.width! / 2,
+        },
+      },
+    ]);
+
+  const reset = () => setState({ image: state.original });
+
+  const manipulate = async (
+    actions: ImageManipulator.Action[],
+    saveOptions?: ImageManipulator.SaveOptions
+  ) => {
+    const { image } = state;
+    const manipResult = await ImageManipulator.manipulateAsync(
+      (image! as Asset).localUri || image!.uri,
+      actions,
+      saveOptions
+    );
+    setState({ image: manipResult });
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -128,10 +137,10 @@ export default function ImageManipulatorScreen() {
           <Button style={styles.button} onPress={() => rotate(-90)}>
             -90
           </Button>
-          <Button style={styles.button} onPress={() => flip(FlipType.Horizontal)}>
+          <Button style={styles.button} onPress={() => flip(ImageManipulator.FlipType.Horizontal)}>
             Flip horizontal
           </Button>
-          <Button style={styles.button} onPress={() => flip(FlipType.Vertical)}>
+          <Button style={styles.button} onPress={() => flip(ImageManipulator.FlipType.Vertical)}>
             Flip vertical
           </Button>
           <Button style={styles.button} onPress={() => resize({ width: 250 })}>
@@ -151,7 +160,7 @@ export default function ImageManipulatorScreen() {
           </Button>
         </View>
 
-        {renderImage()}
+        {state.ready && renderImage()}
         <View style={styles.footerButtons}>
           <Button style={styles.button} onPress={pickPhoto}>
             Pick a photo
