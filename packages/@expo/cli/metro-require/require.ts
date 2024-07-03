@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * Universal require runtime based on:
- * https://github.com/facebook/metro/blob/c84368021aa3123c221a49e269e2ef5afe4c663d/packages/metro-runtime/src/polyfills/require.js#L1
  * https://github.com/facebook/metro/blob/ebd40efa3bd3363930ffe21120714a4d9e0b7bac/packages/metro-runtime/src/polyfills/require.js#L1
  */
 'use strict';
