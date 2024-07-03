@@ -32,7 +32,7 @@ export async function manipulateAsync(
     return ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
   }
 
-  const context = ExpoImageManipulator.loadImage(uri);
+  const context = ExpoImageManipulator.manipulate(uri);
 
   for (const action of actions) {
     if ('resize' in action) {
@@ -60,7 +60,7 @@ export async function manipulateAsync(
 }
 
 export function useImageManipulator(uri: string): Context {
-  return useReleasingSharedObject(() => ExpoImageManipulator.loadImage(uri), [uri]);
+  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(uri), [uri]);
 }
 
 export { ExpoImageManipulator as ImageManipulator };
