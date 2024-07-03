@@ -135,8 +135,6 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
 
-  ~JSIContext();
-
   void prepareForDeallocation() noexcept;
 
   bool wasDeallocated() const noexcept;
