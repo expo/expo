@@ -101,13 +101,8 @@ async function promptUpgradeIosDeployTargetAsync(projectRoot: string, iosDeploym
  * @returns true if user confirm to add Expo CLI integration. otherwise, returns false.
  */
 async function promptCliIntegrationAsync() {
-  const message = `This tool can install Expo CLI integration for your project.
-Using Expo CLI has some benefits over the the default CLI in bare React Native projects:
-  - Built-in JavaScript debugger and React Devtools.
-  - Support for Continuous Native Generation (CNG) with \`npx expo prebuild\` for easy upgrades.
-  - Automatic web support with Metro.
-${learnMore('https://docs.expo.dev/bare/using-expo-cli/')}
-Do you want to install the Expo CLI integration?`;
+  const message = `We recommend installing the Expo CLI integration for the best experience. Not using it may result in some features not working as expected. ${learnMore('https://docs.expo.dev/bare/using-expo-cli/')}
+Install the Expo CLI integration?`;
 
   if (program.opts().nonInteractive) {
     return true;

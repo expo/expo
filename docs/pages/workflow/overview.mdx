@@ -4,10 +4,11 @@ description: An overview of the development process of building an Expo app to h
 ---
 
 import { DocsLogo } from '@expo/styleguide';
+
+import Highlight from '~/components/plugins/Highlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Diagram } from '~/ui/components/Diagram';
-import Highlight from '~/components/plugins/Highlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 If you're new to Expo and React Native or you've been around the ecosystem for a while, this document will be useful to help you to better understand the development process of building an Expo app. It will help you build a mental model of the core development loop and how Expo tools fit into it.
@@ -62,7 +63,7 @@ Yes! We think EAS is a great fit for any React Native project.
 
 </Collapsible>
 
-<Collapsible summary={`Expo Go: an optional tool for learning, experimenting, and prototyping`}>
+<Collapsible summary="Expo Go: an optional tool for learning, experimenting, and prototyping">
 
 There's no faster way to spin up a React Native project and run it on your device or emulator than [Expo Go](https://expo.dev/go), especially when combined with [Snack](https://snack.expo.dev/).
 
@@ -76,17 +77,17 @@ A development build is a debug build of your app that contains `expo-dev-client`
 
 </Collapsible>
 
-<Collapsible summary={`Android and iOS native projects`}>
+<Collapsible summary="Android and iOS native projects">
 
 React Native apps for mobile platforms are made of two interconnected parts:
 
-<Collapsible summary={`1. The app JavaScript`}>
+<Collapsible summary="1. The app JavaScript">
 
 This contains your React components and most, if not all, of your application logic. It has more or less the same role as the app JavaScript on React websites.
 
 </Collapsible>
 
-<Collapsible summary={`2. The native projects`}>
+<Collapsible summary="2. The native projects">
 
 Android and Xcode projects that bundle the JavaScript app, serve as the launchpad for the JavaScript app on each platform. They also handle the rendering of native components and provide the means to access platform-specific functionalities and integrate with any installed native libraries. App configuration, such as the name (as it appears on the home screen), icon, required permissions, associated domains, supported orientations, and so on, is configured in the native project.
 
@@ -117,7 +118,7 @@ The following three commands result in more or less the same project:
 
 </Collapsible>
 
-<Collapsible summary={`Continuous Native Generation (CNG)`}>
+<Collapsible summary="Continuous Native Generation (CNG)">
 
 Continuous Native Generation (CNG) is a process for building an Expo app where your [native projects](#android-and-ios-native-projects) are generated on-demand from your **app.json** and **package.json**, similar to how your **node_modules** are generated from your **package.json**.
 

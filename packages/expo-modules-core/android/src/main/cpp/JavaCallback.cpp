@@ -8,6 +8,7 @@
 #include <fbjni/fbjni.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
 
 #include <functional>
 

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import { CodeSquare01Icon } from '@expo/styleguide-icons';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';

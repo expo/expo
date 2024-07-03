@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
 import { A } from '../Text';

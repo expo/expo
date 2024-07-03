@@ -1,5 +1,5 @@
 import { Button, useTheme } from '@expo/styleguide';
-import { ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { ReactNode, useEffect, useState } from 'react';
 
 type Props = {

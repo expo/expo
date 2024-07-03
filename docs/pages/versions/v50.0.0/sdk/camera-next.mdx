@@ -6,15 +6,15 @@ packageName: 'expo-camera'
 iconUrl: '/static/images/packages/expo-camera.png'
 ---
 
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import PrereleaseNotice from '~/components/PrereleaseNotice';
+import APISection from '~/components/plugins/APISection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 <PrereleaseNotice>
@@ -177,7 +177,7 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 import { CameraView } from 'expo-camera/next';
 ```
 
-<APISection packageName="expo-camera-next" apiName="Camera" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-camera-next" apiName="Camera" exposeAllClassPropsInSidebar />
 
 ## Permissions
 

@@ -1,4 +1,6 @@
-import { ArrowRightIcon, ArrowUpRightIcon, DiscordIcon } from '@expo/styleguide-icons';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 
 import { GridContainer, GridCell, HeaderDescription, HomeButton } from '~/ui/components/Home';
 import { OfficeHoursImage, SnackImage, WhyImage } from '~/ui/components/Home/resources';

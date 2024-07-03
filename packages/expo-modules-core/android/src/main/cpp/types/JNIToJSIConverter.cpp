@@ -8,6 +8,7 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <react/jni/WritableNativeArray.h>
 #include <react/jni/WritableNativeMap.h>
+#include <jsi/JSIDynamic.h>
 
 namespace react = facebook::react;
 

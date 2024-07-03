@@ -59,4 +59,15 @@ export declare enum NetworkStateType {
      */
     OTHER = "OTHER"
 }
+/**
+ * Represents an event that provides the updated network state when there is a change in the network status.
+ * This is passed as the argument to listeners registered with addNetworkStateListener.
+ */
+export type NetworkStateEvent = NetworkState;
+/**
+ * @hidden
+ */
+export type NetworkEvents = {
+    onNetworkStateChanged(event: NetworkStateEvent): any;
+};
 //# sourceMappingURL=Network.types.d.ts.map

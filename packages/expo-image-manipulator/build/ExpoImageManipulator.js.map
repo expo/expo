@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoImageManipulator.js","sourceRoot":"","sources":["../src/ExpoImageManipulator.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,sBAAsB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoImageManipulator');\n"]}

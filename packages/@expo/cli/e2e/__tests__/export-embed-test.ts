@@ -231,6 +231,79 @@ it(
 );
 
 it(
+  'runs `npx expo export:embed --platform ios` with a robot user',
+  async () => {
+    const projectRoot = ensureTesterReady('react-native-canary');
+    const output = 'dist-export-embed-robot-user';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    await execa(
+      'node',
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          E2E_ROUTER_SRC: 'react-native-canary',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
+
+          // Most important part:
+          // NOTE(EvanBacon): This is a robot user token for an expo-managed account that can authenticate with view-only permission.
+          // The token is not secret and can be used to authenticate with the Expo API.
+          EXPO_TOKEN: '4awlFlcNYg7qOFa8J3a7d5Uaph8FaTsD1SP2xWEf',
+
+          // Ensure EXPO_OFFLINE is not set!
+          // EXPO_OFFLINE
+        },
+        // stdio: 'inherit',
+      }
+    );
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
+      'output.js',
+    ]);
+  },
+  120 * 1000
+);
+
+it(
   'runs `npx expo export:embed --platform android` with source maps',
   async () => {
     const projectRoot = ensureTesterReady('static-rendering');

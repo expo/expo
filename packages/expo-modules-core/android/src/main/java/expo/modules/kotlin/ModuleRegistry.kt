@@ -11,7 +11,7 @@ import kotlinx.coroutines.SupervisorJob
 import java.lang.ref.WeakReference
 
 class ModuleRegistry(
-  private val appContext: WeakReference<AppContext>
+  private val runtimeContext: WeakReference<RuntimeContext>
 ) : Iterable<ModuleHolder<*>> {
   @PublishedApi
   internal val registry = mutableMapOf<String, ModuleHolder<*>>()
@@ -21,7 +21,7 @@ class ModuleRegistry(
   private var isReadyForPostingEvents = false
 
   fun <T : Module> register(module: T) = trace("ModuleRegistry.register(${module.javaClass})") {
-    module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
+    module._runtimeContext = requireNotNull(runtimeContext.get()) { "Cannot create a module for invalid runtime context." }
 
     val holder = ModuleHolder(module)
 

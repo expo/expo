@@ -219,7 +219,7 @@ const general = [
     ]),
     makeGroup('Reference', [
       makePage('router/reference/hooks.mdx'),
-      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
@@ -284,6 +284,7 @@ const general = [
         makePage('app-signing/existing-credentials.mdx'),
         makePage('app-signing/syncing-credentials.mdx'),
         makePage('app-signing/security.mdx'),
+        makePage('app-signing/apple-developer-program-roles-and-permissions.mdx'),
       ],
       { expanded: false }
     ),
@@ -389,7 +390,9 @@ const general = [
     makeGroup(
       'Reference',
       [
+        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
@@ -424,7 +427,6 @@ const general = [
         makePage('guides/facebook-authentication.mdx'),
         makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
-        makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
@@ -447,6 +449,13 @@ const general = [
         makePage('billing/invoices-and-receipts.mdx'),
         makePage('billing/usage-based-pricing.mdx'),
         makePage('billing/faq.mdx'),
+      ]),
+      makeSection('Troubleshooting', [
+        makePage('troubleshooting/overview.mdx'),
+        makePage('troubleshooting/application-has-not-been-registered.mdx'),
+        makePage('troubleshooting/clear-cache-macos-linux.mdx'),
+        makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/react-native-version-mismatch.mdx'),
       ]),
     ],
     { expanded: true }
@@ -550,6 +559,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
+    makePage('archive/using-flipper.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { CornerDownRightIcon } from '@expo/styleguide-icons';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
@@ -183,6 +183,7 @@ export const APIMethod = ({
       ({
         name: param.name,
         type: { name: param.typeName, type: param.isReference ? 'reference' : 'literal' },
+
         comment: {
           summary: [{ kind: 'text', text: param.comment }],
         },

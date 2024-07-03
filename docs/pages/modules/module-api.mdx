@@ -4,12 +4,12 @@ description: An API reference of Expo modules API.
 sidebar_title: Module API
 ---
 
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
-import { PlatformTags, StatusTag } from '~/ui/components/Tag';
-import { A, CALLOUT } from '~/ui/components/Text';
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIMethod } from '~/components/plugins/api/APISectionMethods';
 import { FileTree } from '~/ui/components/FileTree';
+import { PlatformTags, StatusTag } from '~/ui/components/Tag';
+import { A, CALLOUT } from '~/ui/components/Text';
 
 The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
@@ -764,8 +764,8 @@ A base class for a native module.
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
-  isProperty={true}
-  isReturnTypeReference={true}
+  isProperty
+  isReturnTypeReference
 />
 
 #### Methods
@@ -800,28 +800,28 @@ The app context is an interface to a single Expo app.
   name="constants"
   comment="Provides access to app's constants from legacy module registry."
   returnTypeName="Android: ConstantsInterface? iOS: EXConstantsInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="permissions"
   comment="Provides access to the permissions manager from legacy module registry."
   returnTypeName="Android: Permissions? iOS: EXPermissionsInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="imageLoader"
   comment="Provides access to the image loader from the legacy module registry."
   returnTypeName="Android: ImageLoaderInterface? iOS: EXImageLoaderInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="barcodeScanner"
   comment="Provides access to the bar code scanner manager from the legacy module registry."
   returnTypeName="ImageLoaderInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -829,7 +829,7 @@ The app context is an interface to a single Expo app.
   name="camera"
   comment="Provides access to the camera view manager from the legacy module registry."
   returnTypeName="CameraViewInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -837,7 +837,7 @@ The app context is an interface to a single Expo app.
   name="font"
   comment="Provides access to the font manager from the legacy module registry."
   returnTypeName="FontManagerInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -845,7 +845,7 @@ The app context is an interface to a single Expo app.
   name="sensor"
   comment="Provides access to the sensor manager from the legacy module registry."
   returnTypeName="SensorServiceInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -853,7 +853,7 @@ The app context is an interface to a single Expo app.
   name="taskManager"
   comment="Provides access to the task manager from the legacy module registry."
   returnTypeName="TaskManagerInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -861,7 +861,7 @@ The app context is an interface to a single Expo app.
   name="activityProvider"
   comment="Provides access to the activity provider from the legacy module registry."
   returnTypeName="ActivityProvider?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -869,7 +869,7 @@ The app context is an interface to a single Expo app.
   name="reactContext"
   comment="Provides access to the react application context."
   returnTypeName="Context?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -877,7 +877,7 @@ The app context is an interface to a single Expo app.
   name="hasActiveReactInstance"
   comment="Checks if there is an not-null, alive react native instance."
   returnTypeName="Boolean"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -885,7 +885,7 @@ The app context is an interface to a single Expo app.
   name="utilities"
   comment="Provides access to the utilities from legacy module registry."
   returnTypeName="EXUtilitiesInterface?"
-  isProperty={true}
+  isProperty
   platforms={['iOS']}
 />
 
@@ -903,8 +903,8 @@ On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example,
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
-  isProperty={true}
-  isReturnTypeReference={true}
+  isProperty
+  isReturnTypeReference
 />
 
 #### Extending `ExpoView`

@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowCircleUpIcon, LayoutAlt03Icon } from '@expo/styleguide-icons';
+import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
+import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import * as React from 'react';
 
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';

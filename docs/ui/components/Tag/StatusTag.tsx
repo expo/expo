@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { Star06Icon } from '@expo/styleguide-icons';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { TagProps } from './Tag';
 import { labelStyle, tagStyle, tagToCStyle } from './styles';

@@ -59,7 +59,17 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
     ...args: Parameters<TEventsMap[EventName]>
   ): void {
     const listeners = new Set(this.listeners?.get(eventName));
-    listeners.forEach((listener) => listener(...args));
+
+    listeners.forEach((listener) => {
+      // When the listener throws an error, don't stop the execution of subsequent listeners and
+      // don't propagate the error to the `emit` function. The motivation behind this is that
+      // errors thrown from a module or user's code shouldn't affect other modules' behavior.
+      try {
+        listener(...args);
+      } catch (error) {
+        console.error(error);
+      }
+    });
   }
 
   listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number {

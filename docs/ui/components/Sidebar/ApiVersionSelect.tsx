@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
