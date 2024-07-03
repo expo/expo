@@ -43,6 +43,7 @@
 - [iOS] Renamed `pointer` property in the `SharedRef` class to `ref` for parity with Android. ([#30061](https://github.com/expo/expo/pull/30061) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Started using `noexcept`. ([#30128](https://github.com/expo/expo/pull/30128) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Decouple the modules state from the `AppContext` ([#30098](https://github.com/expo/expo/pull/30098) by [@lukmccall](https://github.com/lukmccall))
+- Fix and update link for Expo Modules Overview docs page in package's README. ([#30164](https://github.com/expo/expo/pull/30164) by [@amandeepmittal](https://github.com/amandeepmittal)).
 
 ## 1.12.16 - 2024-06-20
 
