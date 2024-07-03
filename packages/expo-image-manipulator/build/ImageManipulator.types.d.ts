@@ -1,4 +1,4 @@
-import { NativeModule, SharedObject } from 'expo';
+import type { NativeModule, SharedObject } from 'expo';
 export type ImageResult = {
     /**
      * An URI to the modified image (usable as the source for an `Image` or `Video` element).

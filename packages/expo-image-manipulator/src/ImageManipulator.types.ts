@@ -1,4 +1,4 @@
-import { NativeModule, SharedObject } from 'expo';
+import type { NativeModule, SharedObject } from 'expo';
 
 // @needsAudit
 export type ImageResult = {
