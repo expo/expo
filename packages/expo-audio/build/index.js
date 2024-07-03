@@ -1,21 +1,31 @@
+import { useEvent } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
-export function useAudioPlayer(source = null, statusListener) {
+export function useAudioPlayer(source = null) {
     const parsedSource = resolveSource(source);
     const player = useReleasingSharedObject(() => {
         return new AudioModule.AudioPlayer(parsedSource);
     }, [JSON.stringify(parsedSource)]);
-    useEffect(() => {
-        const subscription = player.addListener('onPlaybackStatusUpdate', (status) => {
-            statusListener?.(status);
-        });
-        return () => subscription.remove();
-    }, [player.id]);
-    return player;
+    const status = useEvent(player, 'onPlaybackStatusUpdate', {
+        id: player.id,
+        currentTime: player.currentTime,
+        status: 'unknown',
+        timeControlStatus: 'unknown',
+        reasonForWaitingToPlay: 'unknown',
+        mute: player.muted,
+        duration: player.duration,
+        playing: player.playing,
+        loop: player.loop,
+        isBuffering: player.isBuffering,
+        isLoaded: player.isLoaded,
+        playbackRate: player.playbackRate,
+        shouldCorrectPitch: player.shouldCorrectPitch,
+    });
+    return [player, status];
 }
 export function useAudioRecorder(options, statusListener) {
     const platformOptions = createRecordingOptions(options);

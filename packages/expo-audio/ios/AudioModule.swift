@@ -119,7 +119,11 @@ public class AudioModule: Module {
       }
 
       Property("duration") { player in
-        player.ref.currentItem?.duration.seconds
+        if player.ref.status == .readyToPlay {
+          (player.ref.currentItem?.duration.seconds ?? 0.0) * 1000
+        } else {
+          0.0
+        }
       }
 
       Property("playbackRate") { player in
@@ -162,7 +166,7 @@ public class AudioModule: Module {
         player.ref.pause()
       }
 
-      Function("release") { player in
+      Function("remove") { player in
         let id = player.id
         if let token = timeTokens[id] {
           player.ref.removeTimeObserver(token as Any)

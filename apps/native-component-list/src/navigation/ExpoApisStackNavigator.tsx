@@ -5,6 +5,7 @@ import * as React from 'react';
 import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
 import TabIcon from '../components/TabIcon';
+import { AudioScreens } from '../screens/Audio/AudioScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { ScreenConfig } from '../types/ScreenConfig';
@@ -77,15 +78,9 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/AudioScreen'));
-    },
-    name: 'Audio (expo-av)',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/Audio/AudioScreen'));
     },
-    name: 'Audio (expo-audio)',
+    name: 'Audio',
   },
   {
     getComponent() {
@@ -317,20 +312,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/RecordingScreen'));
-    },
-    name: 'Recording (expo-av)',
-    options: { title: 'Audio Recording (expo-av)' },
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Audio/RecordingScreen'));
-    },
-    name: 'Recording (expo-audio)',
-    options: { title: 'Audio Recording (expo-audio)' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/RemindersScreen'));
     },
     name: 'Reminders',
@@ -435,6 +416,7 @@ export const Screens: ScreenConfig[] = [
     name: 'ViewShot',
   },
   ...ModulesCoreScreens,
+  ...AudioScreens,
 ];
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

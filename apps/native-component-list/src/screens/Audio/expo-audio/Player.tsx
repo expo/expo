@@ -15,7 +15,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import Colors from '../../constants/Colors';
+import Colors from '../../../constants/Colors';
 
 interface Props {
   header?: JSX.Element;
@@ -45,15 +45,15 @@ interface Props {
 
   // Status
   isLoaded: boolean;
-  isLooping: boolean;
+  loop: boolean;
   volume: number;
   audioPan: number;
-  rate: number;
-  positionMillis: number;
-  durationMillis: number;
+  playbackRate: number;
+  currentTime: number;
+  duration: number;
   shouldCorrectPitch: boolean;
   playing: boolean;
-  isMuted: boolean;
+  mute: boolean;
   metadata?: AVMetadata;
 
   // Error
@@ -71,13 +71,14 @@ export default function Player(props: Props) {
   const _playFromPosition = (position: number) =>
     props.setPosition(position).then(() => setIsScrubbing(false));
 
-  const _toggleLooping = () => props.setIsLooping(!props.isLooping);
+  const _toggleLooping = () => props.setIsLooping(!props.loop);
 
-  const _toggleShouldCorrectPitch = () => props.setRate(props.rate, !props.shouldCorrectPitch);
+  const _toggleShouldCorrectPitch = () =>
+    props.setRate(props.playbackRate, !props.shouldCorrectPitch);
 
-  const _seekForward = () => props.setPosition(props.positionMillis + 5000);
+  const _seekForward = () => props.setPosition(props.currentTime + 5000);
 
-  const _seekBackward = () => props.setPosition(Math.max(0, props.positionMillis - 5000));
+  const _seekBackward = () => props.setPosition(Math.max(0, props.currentTime - 5000));
 
   const _renderReplayButton = () => {
     return (
@@ -85,7 +86,7 @@ export default function Player(props: Props) {
         <Ionicons
           name="repeat"
           size={34}
-          style={[styles.icon, !props.isLooping && { color: '#C1C1C1' }]}
+          style={[styles.icon, !props.loop && { color: '#C1C1C1' }]}
         />
       </TouchableOpacity>
     );
@@ -150,6 +151,8 @@ export default function Player(props: Props) {
     );
   };
 
+  console.log({ props });
+
   return (
     <View style={props.style}>
       <View style={{ opacity: isScrubbing ? 0.8 : 1, backgroundColor: 'black' }}>
@@ -160,18 +163,18 @@ export default function Player(props: Props) {
         <Slider
           style={styles.slider}
           thumbTintColor={Colors.tintColor}
-          value={isScrubbing ? initialScrubbingMillis : props.positionMillis}
-          maximumValue={props.durationMillis}
+          value={isScrubbing ? initialScrubbingMillis : props.currentTime}
+          maximumValue={props.duration}
           disabled={!props.isLoaded}
           minimumTrackTintColor={Colors.tintColor}
           onSlidingComplete={_playFromPosition}
           onResponderGrant={() => {
             setIsScrubbing(true);
-            setInitialScrubbingMillis(props.positionMillis);
+            setInitialScrubbingMillis(props.currentTime);
           }}
         />
         <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
-          {_formatTime(props.positionMillis / 1000)} / {_formatTime(props.durationMillis / 1000)}
+          {_formatTime(props.currentTime / 1000)} / {_formatTime(props.duration / 1000)}
         </Text>
         {_renderReplayButton()}
       </View>
@@ -182,7 +185,7 @@ export default function Player(props: Props) {
 
       <View style={styles.container}>
         <VolumeSlider
-          isMuted={props.isMuted}
+          isMuted={props.mute}
           disabled={!props.isLoaded}
           style={{ width: undefined, flex: 1 }}
           volume={props.volume}

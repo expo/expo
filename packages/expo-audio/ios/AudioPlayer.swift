@@ -40,6 +40,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func updateStatus(with dict: [String: Any]) {
+    let time = ref.currentItem?.duration
+    let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
+         
     var body: [String: Any] = [
       "id": id,
       "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
@@ -47,7 +50,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
       "mute": ref.isMuted,
-      "duration": (ref.currentItem?.duration.seconds ?? 0) * 1000,
+      "duration": duration * 1000,
       "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
       "isLoaded": ref.currentItem?.status == .readyToPlay,

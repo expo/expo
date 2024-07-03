@@ -83,9 +83,9 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     /**
-     * Release the player and frees up resources.
+     * Remove the player from memory to frees up resources.
      */
-    release(): void;
+    remove(): void;
 }
 type AudioEvents = {
     onPlaybackStatusUpdate(status: AudioStatus): void;

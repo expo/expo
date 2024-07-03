@@ -399,7 +399,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/VideoScreen'));
+      return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
     },
     name: 'Video (expo-av)',
   },
