@@ -450,6 +450,13 @@ const general = [
         makePage('billing/usage-based-pricing.mdx'),
         makePage('billing/faq.mdx'),
       ]),
+      makeSection('Troubleshooting', [
+        makePage('troubleshooting/overview.mdx'),
+        makePage('troubleshooting/application-has-not-been-registered.mdx'),
+        makePage('troubleshooting/clear-cache-macos-linux.mdx'),
+        makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/react-native-version-mismatch.mdx'),
+      ]),
     ],
     { expanded: true }
   ),
