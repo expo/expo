@@ -73,7 +73,7 @@ class AudioPlayer(
     })
   }
 
-  fun currentStatus() : Map<String, Any?> {
+  fun currentStatus(): Map<String, Any?> {
     val isMuted = player.volume == 0f
     val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
     val isLoaded = player.playbackState == Player.STATE_READY

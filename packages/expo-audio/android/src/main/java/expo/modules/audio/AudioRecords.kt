@@ -21,7 +21,7 @@ class AudioMode(
 
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
-  DUCK_OTHERS("duckOthers");
+  DUCK_OTHERS("duckOthers")
 }
 
 class RecordingOptions(
