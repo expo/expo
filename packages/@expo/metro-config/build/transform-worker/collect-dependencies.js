@@ -249,6 +249,10 @@ function processImportCall(path, state, options) {
         transformer.transformPrefetch(path, dep, state);
     }
 }
+function warnAmbiguousImport({ node }, message = '') {
+    const line = node.loc && node.loc.start && node.loc.start.line;
+    console.warn(`Ambiguous import at line ${line || '<unknown>'}: ${(0, generator_1.default)(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim());
+}
 function processRequireCall(path, state) {
     const name = getModuleNameFromCallArgs(path);
     const transformer = state.dependencyTransformer;
@@ -256,7 +260,13 @@ function processRequireCall(path, state) {
         if (state.dynamicRequires === 'reject') {
             throw new InvalidRequireCallError(path);
         }
-        transformer.transformIllegalDynamicRequire(path, state);
+        else if (state.dynamicRequires === 'warn') {
+            warnAmbiguousImport(path);
+            return;
+        }
+        else {
+            transformer.transformIllegalDynamicRequire(path, state);
+        }
         return;
     }
     const dep = registerDependency(state, {

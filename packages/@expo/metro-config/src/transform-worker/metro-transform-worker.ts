@@ -316,12 +316,11 @@ async function transformJS(
           config.unstable_disableModuleWrapping === true
             ? disabledDependencyTransformer
             : undefined,
-        // dynamicRequires: isServerEnv
-        //   ? // NOTE(EvanBacon): Allow arbitrary imports in server environments.
-        //     // This requires a patch to Metro collectDeps.
-        //     'warn'
-        //   : getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
-        dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
+        dynamicRequires: isServerEnv
+          ? // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+            // This requires a patch to Metro collectDeps.
+            'warn'
+          : getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
         inlineableCalls: [importDefault, importAll],
         keepRequireNames: options.dev,
         allowOptionalDependencies: config.allowOptionalDependencies,

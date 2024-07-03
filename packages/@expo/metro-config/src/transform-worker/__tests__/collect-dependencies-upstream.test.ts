@@ -42,6 +42,16 @@ const opts: Options = {
   unstable_allowRequireContext: false,
 };
 
+const originalWarn = console.warn;
+
+beforeEach(() => {
+  console.warn = jest.fn();
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+});
+
 describe(`require.context`, () => {
   const optsWithoutContext = { ...opts, unstable_allowRequireContext: false };
   const optsWithContext = { ...opts, unstable_allowRequireContext: true };
@@ -1002,6 +1012,30 @@ describe('Evaluating static arguments', () => {
           throw new Error('Dynamic require defined at line ' + line + '; not supported by Metro');
         })(1);
       `)
+    );
+  });
+  it('warns at build-time when requiring non-strings with special option', () => {
+    jest.mocked(console.warn).mockReset();
+    const ast = astFromCode('require(someVariable)');
+    const opts: Options = {
+      asyncRequireModulePath: 'asyncRequire',
+      dynamicRequires: 'warn',
+      inlineableCalls: [],
+      keepRequireNames: true,
+      allowOptionalDependencies: false,
+      dependencyMapName: null,
+      unstable_allowRequireContext: false,
+    };
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(someVariable);
+      `)
+    );
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Ambiguous import at line 1: require(someVariable). This module may not work as intended when deployed to a runtime.'
     );
   });
 });
