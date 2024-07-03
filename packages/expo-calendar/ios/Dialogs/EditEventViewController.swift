@@ -2,10 +2,10 @@ import EventKitUI
 import ExpoModulesCore
 
 class EditEventViewController: EKEventEditViewController, UIAdaptivePresentationControllerDelegate {
-  private let promise: PromiseRef
+  private let promise: Promise
   private let onDismiss: () -> Void
 
-  init(promise: PromiseRef, onDismiss: @escaping () -> Void) {
+  init(promise: Promise, onDismiss: @escaping () -> Void) {
     self.promise = promise
     self.onDismiss = onDismiss
     super.init(nibName: nil, bundle: nil)

@@ -336,10 +336,9 @@ public class CalendarModule: Module {
 
       let controller = EKEventViewController()
       controller.event = calendarEvent
-      let promiseRef = PromiseRef(promise)
-      self.calendarDialogDelegate = CalendarDialogDelegate(promise: promiseRef, onComplete: self.unsetDelegate)
+      self.calendarDialogDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
       controller.delegate = self.calendarDialogDelegate
-      let navController = ViewEventViewController(rootViewController: controller, promise: promiseRef, onDismiss: self.unsetDelegate)
+      let navController = ViewEventViewController(rootViewController: controller, promise: promise, onDismiss: self.unsetDelegate)
       currentVc.present(navController, animated: true)
     }.runOnQueue(.main)
   }
@@ -349,11 +348,10 @@ public class CalendarModule: Module {
       throw Exception()
     }
 
-    let promiseRef = PromiseRef(promise)
-    let controller = EditEventViewController(promise: promiseRef, onDismiss: self.unsetDelegate)
+    let controller = EditEventViewController(promise: promise, onDismiss: self.unsetDelegate)
     controller.event = event
     controller.eventStore = self.eventStore
-    self.calendarDialogDelegate = CalendarDialogDelegate(promise: promiseRef, onComplete: self.unsetDelegate)
+    self.calendarDialogDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
     controller.editViewDelegate = self.calendarDialogDelegate
 
     currentVc.present(controller, animated: true)

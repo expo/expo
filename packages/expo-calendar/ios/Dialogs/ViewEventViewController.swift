@@ -2,10 +2,10 @@ import ExpoModulesCore
 
 // only for `openEventInCalendarAsync`. Sublassing UINavigationController provides a header for the modal window.
 class ViewEventViewController: UINavigationController, UIAdaptivePresentationControllerDelegate {
-  private let promise: PromiseRef
+  private let promise: Promise
   private let onDismiss: () -> Void
 
-  init(rootViewController: UIViewController, promise: PromiseRef, onDismiss: @escaping () -> Void) {
+  init(rootViewController: UIViewController, promise: Promise, onDismiss: @escaping () -> Void) {
     self.promise = promise
     self.onDismiss = onDismiss
     super.init(rootViewController: rootViewController)
