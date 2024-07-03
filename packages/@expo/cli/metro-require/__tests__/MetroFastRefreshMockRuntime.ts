@@ -131,7 +131,7 @@ export class Runtime {
   }
 }
 
-const moduleSystemCode = (() => {
+export const moduleSystemCode = (() => {
   const rawCode = fs.readFileSync(require.resolve('../require.ts'), 'utf8');
   return transformSync(rawCode, {
     ast: false,
@@ -145,7 +145,7 @@ const moduleSystemCode = (() => {
   }).code;
 })();
 
-const createModuleSystem: (RuntimeGlobal, boolean, string) => mixed =
+export const createModuleSystem: (RuntimeGlobal, boolean, string) => any =
   // eslint-disable-next-line no-new-func
   new Function(
     'global',

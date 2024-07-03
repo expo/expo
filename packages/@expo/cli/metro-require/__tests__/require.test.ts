@@ -8,10 +8,7 @@
  * https://github.com/facebook/metro/blob/ebd40efa3bd3363930ffe21120714a4d9e0b7bac/packages/metro-runtime/src/polyfills/__tests__/require-test.js#L1
  */
 
-'use strict';
-
-import { transformSync } from '@babel/core';
-import * as fs from 'fs';
+import { createModuleSystem, moduleSystemCode } from './MetroFastRefreshMockRuntime';
 
 jest.useFakeTimers();
 jest.unmock('fs');
@@ -31,28 +28,6 @@ function createModule(
 const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 describe('require', () => {
-  const moduleSystemCode = (() => {
-    const rawCode = fs.readFileSync(require.resolve('../require.ts'), 'utf8');
-    return transformSync(rawCode, {
-      ast: false,
-      babelrc: false,
-      cwd: '/',
-      filename: 'test.ts',
-      presets: [require.resolve('babel-preset-expo')],
-      retainLines: true,
-      sourceMaps: 'inline',
-      sourceType: 'module',
-    }).code;
-  })();
-
-  // eslint-disable-next-line no-new-func
-  const createModuleSystem = new Function(
-    'global',
-    '__DEV__',
-    '__METRO_GLOBAL_PREFIX__',
-    moduleSystemCode
-  );
-
   function createReactRefreshMock(moduleSystem) {
     const familiesByID = new Map();
     const familiesByType = new Map();
@@ -2635,7 +2610,7 @@ describe('require', () => {
       );
       moduleSystem.__r(ids['root.js']);
 
-      expect(moduleSystem.__r('middleA.js')).toBe('version 1');
+      expect(moduleSystem.__r(ids['middleA.js'])).toBe('version 1');
 
       moduleSystem.__accept(
         ids['leaf.js'],
