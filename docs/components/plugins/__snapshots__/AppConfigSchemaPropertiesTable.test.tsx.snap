@@ -3,14 +3,14 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
         href="#name"
         id="name"
       >
@@ -148,14 +148,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
   </div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
         href="#androidnavigationbar"
         id="androidnavigationbar"
       >
@@ -370,14 +370,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#visible"
           id="visible"
         >
@@ -523,14 +523,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
             href="#always"
             id="always"
           >
@@ -600,14 +600,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#backgroundcolor"
           id="backgroundcolor"
         >
@@ -691,14 +691,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
         href="#intentfilters"
         id="intentfilters"
       >
@@ -862,14 +862,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </span>
     </span>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#autoverify"
           id="autoverify"
         >
@@ -938,14 +938,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
     </div>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
           href="#data"
           id="data"
         >
@@ -1007,14 +1007,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </code>
       </p>
       <div
-        class="!pb-4 last:[&>*]:!mb-1 css-1vn7kkx-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 css-pvem2h-PropertyName"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
             href="#host"
             id="host"
           >

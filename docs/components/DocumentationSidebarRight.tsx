@@ -139,16 +139,18 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
 
   private handleLinkClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
-    { slug, ref }: Heading
+    { slug, ref, type }: Heading
   ) => {
     event.preventDefault();
 
     // disable sidebar scrolling until we reach that slug
     this.slugScrollingTo = slug;
 
+    const scrollOffset = type === 'inlineCode' ? 50 : 26;
+
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - 28,
+      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - scrollOffset,
     });
 
     if (history?.replaceState) {
