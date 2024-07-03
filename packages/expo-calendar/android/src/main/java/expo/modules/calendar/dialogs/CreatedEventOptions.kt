@@ -5,16 +5,34 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 
-data class CreatedEventOptions(
-  @Field val title: String?,
-  @Field val location: String?,
-  @Field val notes: String?,
-  @Field val timeZone: String?,
-  @Field val availability: String?,
-  @Field val allDay: Boolean?,
-  @Field val startDate: String?,
-  @Field val endDate: String?,
-  @Field val recurrenceRule: ReadableArguments?,
-  // presentation options
-  @Field val startNewActivityTask: Boolean?
-) : Record, Serializable
+class CreatedEventOptions : Record, Serializable {
+	@Field
+	var title: String? = null
+
+	@Field
+	var location: String? = null
+
+	@Field
+	var notes: String? = null
+
+	@Field
+	var timeZone: String? = null
+
+	@Field
+	var availability: String? = null
+
+	@Field
+	var allDay: Boolean? = null
+
+	@Field
+	var startDate: String? = null
+
+	@Field
+	var endDate: String? = null
+
+	@Field
+	var recurrenceRule: ReadableArguments? = null
+
+	@Field
+	var startNewActivityTask: Boolean = true
+}

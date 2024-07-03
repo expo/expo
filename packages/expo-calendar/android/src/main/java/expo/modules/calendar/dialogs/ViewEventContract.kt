@@ -12,7 +12,7 @@ internal class ViewEventContract : AppContextActivityResultContract<ViewedEventO
     val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, input.id.toLong())
     val sendIntent = Intent(Intent.ACTION_VIEW).apply {
       data = uri
-      input.startNewActivityTask?.takeIf { it }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+      input.startNewActivityTask.takeIf { it }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
     }
     return sendIntent
   }
