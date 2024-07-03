@@ -14,7 +14,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Initializes a new audio player instance with the given source.
      * @hidden
      */
-    constructor(source: AudioSource | string | number | null);
+    constructor(source: AudioSource | string | number | null, updateInterval: number);
     /**
      * Unique identifier for the player object.
      */
@@ -65,6 +65,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     shouldCorrectPitch: boolean;
     /**
      * The current status of the audio player.
+     * @hidden
      */
     currentStatus: AudioStatus;
     /**

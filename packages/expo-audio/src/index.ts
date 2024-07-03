@@ -1,6 +1,6 @@
 import { useEvent } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import {
   AudioMode,
@@ -15,10 +15,13 @@ import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
-export function useAudioPlayer(source: AudioSource | string | number | null = null): AudioPlayer {
+export function useAudioPlayer(
+  source: AudioSource | string | number | null = null,
+  updateInterval: number = 500
+): AudioPlayer {
   const parsedSource = resolveSource(source);
   const player = useReleasingSharedObject(
-    () => new AudioModule.AudioPlayer(parsedSource),
+    () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
     [JSON.stringify(parsedSource)]
   );
 
@@ -26,7 +29,8 @@ export function useAudioPlayer(source: AudioSource | string | number | null = nu
 }
 
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
-  return useEvent(player, 'onPlaybackStatusUpdate', player.currentStatus);
+  const currentStatus = useMemo(() => player.currentStatus, [player.id]);
+  return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
 }
 
 export function useAudioRecorder(

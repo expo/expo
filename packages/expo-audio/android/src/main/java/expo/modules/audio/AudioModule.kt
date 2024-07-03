@@ -130,7 +130,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource? ->
+      Constructor { source: AudioSource?, updateInterval: Double ->
         val isLocal = Util.isLocalFileUri(Uri.parse(source?.uri))
         val factory = if (isLocal) {
           DefaultDataSource.Factory(context)
@@ -149,7 +149,8 @@ class AudioModule : Module() {
           val player = AudioPlayer(
             context,
             appContext,
-            mediaSource
+            mediaSource,
+            updateInterval
           )
           players[player.id] = player
           player

@@ -21,7 +21,8 @@ import java.util.UUID
 class AudioPlayer(
   context: Context,
   appContext: AppContext,
-  source: MediaSource
+  source: MediaSource,
+  updateInterval: Double
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
@@ -46,7 +47,7 @@ class AudioPlayer(
     playerScope.launch {
       while (isActive) {
         sendPlayerUpdate()
-        delay(500)
+        delay(updateInterval.toLong())
       }
     }
   }

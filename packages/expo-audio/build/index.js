@@ -1,17 +1,18 @@
 import { useEvent } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
-export function useAudioPlayer(source = null) {
+export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource), [JSON.stringify(parsedSource)]);
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
     return player;
 }
 export function useAudioPlayerStatus(player) {
-    return useEvent(player, 'onPlaybackStatusUpdate', player.currentStatus);
+    const currentStatus = useMemo(() => player.currentStatus, [player.id]);
+    return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
 }
 export function useAudioRecorder(options, statusListener) {
     const platformOptions = createRecordingOptions(options);

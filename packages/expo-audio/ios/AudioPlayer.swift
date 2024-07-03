@@ -9,6 +9,12 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
+  let interval: Double
+
+  init(_ ref: AVPlayer, interval: Double) {
+    self.interval = interval
+    super.init(ref)
+  }
 
   var isLoaded: Bool {
     ref.currentItem?.status == .readyToPlay
