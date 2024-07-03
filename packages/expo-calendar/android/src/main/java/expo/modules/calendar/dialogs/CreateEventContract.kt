@@ -42,7 +42,7 @@ internal class CreateEventContract : AppContextActivityResultContract<CreatedEve
           val rule = createRecurrenceRule(extractRecurrence(it))
           putExtra(CalendarContract.Events.RRULE, rule)
         }
-        input.startNewActivityTask?.takeIf { boolean -> boolean }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+        input.startNewActivityTask?.takeIf { it }?.let { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
       }
 
   private fun getTimestamp(it: String): Long {
