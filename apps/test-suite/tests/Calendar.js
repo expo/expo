@@ -278,11 +278,18 @@ export async function test(t) {
       });
 
       t.it('can edit an event', async () => {
-        const calendarId = await createTestCalendarAsync();
-        const eventId = await createTestEventAsync(calendarId);
-        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
-        const result = await Calendar.editEventInCalendarAsync({ id: eventId });
-        t.expect(typeof result.action).toBe('string'); // done or canceled
+        if (Platform.OS === 'ios') {
+          const calendarId = await createTestCalendarAsync();
+          const eventId = await createTestEventAsync(calendarId);
+          await alertAndWaitForResponse(
+            'Please verify you can see the event and close the dialog.'
+          );
+          const result = await Calendar.editEventInCalendarAsync({ id: eventId });
+          t.expect(typeof result.action).toBe('string'); // done or canceled
+        } else {
+          // on Android, editEventInCalendarAsync is the same as openEventInCalendarAsync
+          t.expect(true).toBe(true);
+        }
       });
     });
 
