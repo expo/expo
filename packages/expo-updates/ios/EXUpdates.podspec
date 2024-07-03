@@ -55,8 +55,8 @@ Pod::Spec.new do |s|
     'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'OTHER_CFLAGS[config=Debug]' => other_c_flags,
-    'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags
+    'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
+    'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags
   }
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/Swift Compatibility Header"',
