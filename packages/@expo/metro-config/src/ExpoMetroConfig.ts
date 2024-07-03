@@ -252,12 +252,20 @@ export function getDefaultConfig(
       createModuleIdFactory: unstable_runtime
         ? stableCreateModuleIdFactory.bind(null, serverRoot)
         : fastCreateModuleIdFactory,
-      getModulesRunBeforeMainModule: (entryFile) => {
-        // TODO: Pass a safer option to disable `getModulesRunBeforeMainModule` for SSR modules.
-        if (entryFile.match(/expo-router[\\/]node[\\/]render\.js$/)) {
-          return [];
-        }
 
+      isThirdPartyModule(module) {
+        // Block virtual modules from appearing in the source maps.
+        if (module.path.startsWith('\0')) return true;
+
+        // Generally block node modules
+        if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+          // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+          return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
+        }
+        return false;
+      },
+
+      getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
@@ -319,7 +327,7 @@ export function getDefaultConfig(
       reanimatedVersion,
       // Ensure invalidation when using identical projects in monorepos
       _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
-
+      unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

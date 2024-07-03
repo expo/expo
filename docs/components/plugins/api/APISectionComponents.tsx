@@ -59,7 +59,7 @@ const renderComponent = (
   const extractedComment = getComponentComment(comment, signatures);
   return (
     <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX} className="!shadow-none">
-      <APISectionDeprecationNote comment={extractedComment} />
+      <APISectionDeprecationNote comment={extractedComment} sticky />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {resolvedName}

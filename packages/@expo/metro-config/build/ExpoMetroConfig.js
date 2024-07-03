@@ -84,36 +84,7 @@ function patchMetroGraphToSupportUncachedModules() {
         Graph.prototype.traverseDependencies.__patched = true;
     }
 }
-function fastCreateModuleIdFactory() {
-    const fileToIdMap = new Map();
-    let nextId = 0;
-    return (modulePath) => {
-        let id = fileToIdMap.get(modulePath);
-        if (typeof id !== 'number') {
-            id = nextId++;
-            fileToIdMap.set(modulePath, id);
-        }
-        return id;
-    };
-}
-function stableCreateModuleIdFactory(root) {
-    const fileToIdMap = new Map();
-    // This is an absolute file path.
-    return (modulePath) => {
-        let id = fileToIdMap.get(modulePath);
-        if (id == null) {
-            id = path_1.default.relative(root, modulePath);
-            fileToIdMap.set(modulePath, id);
-        }
-        // @ts-expect-error: we patch this to support being a string.
-        return id;
-    };
-}
-function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins, unstable_runtime, } = {}) {
-    if (unstable_runtime) {
-        // Change the default metro-runtime to a custom one that supports bundle splitting.
-        require('metro-config/src/defaults/defaults').moduleSystem = require.resolve('@expo/metro-config/require');
-    }
+function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
@@ -194,14 +165,18 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             additionalExts: envFiles.map((file) => file.replace(/^\./, '')),
         },
         serializer: {
-            createModuleIdFactory: unstable_runtime
-                ? stableCreateModuleIdFactory.bind(null, serverRoot)
-                : fastCreateModuleIdFactory,
-            getModulesRunBeforeMainModule: (entryFile) => {
-                // TODO: Pass a safer option to disable `getModulesRunBeforeMainModule` for SSR modules.
-                if (entryFile.match(/expo-router[\\/]node[\\/]render\.js$/)) {
-                    return [];
+            isThirdPartyModule(module) {
+                // Block virtual modules from appearing in the source maps.
+                if (module.path.startsWith('\0'))
+                    return true;
+                // Generally block node modules
+                if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+                    // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+                    return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
                 }
+                return false;
+            },
+            getModulesRunBeforeMainModule: () => {
                 const preModules = [
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
@@ -258,6 +233,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             reanimatedVersion,
             // Ensure invalidation when using identical projects in monorepos
             _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
+            unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
             // `require.context` support
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
