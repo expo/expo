@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.18.22 — 2024-07-03
+
+### 🎉 New features
+
+- Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
 
 ### 📚 3rd party library updates
 
