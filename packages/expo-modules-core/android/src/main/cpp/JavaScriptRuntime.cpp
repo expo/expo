@@ -21,7 +21,7 @@ JavaScriptRuntime::JavaScriptRuntime(
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
 }
 
-jsi::Runtime &JavaScriptRuntime::get() const {
+jsi::Runtime &JavaScriptRuntime::get() const noexcept {
   return *runtime;
 }
 
@@ -51,12 +51,12 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
   }
 }
 
-jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
+jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() noexcept {
   auto global = std::make_shared<jsi::Object>(runtime->global());
   return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), global);
 }
 
-jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
+jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() noexcept {
   auto newObject = std::make_shared<jsi::Object>(*runtime);
   return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), newObject);
 }
@@ -90,7 +90,7 @@ void JavaScriptRuntime::installMainObject() {
   );
 }
 
-std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {
+std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() noexcept {
   return mainObject;
 }
 } // namespace expo
