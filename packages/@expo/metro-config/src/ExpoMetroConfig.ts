@@ -101,6 +101,34 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function createNumericModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+function createStableModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+  // This is an absolute file path.
+  return (modulePath: string): number => {
+    // TODO: We may want a hashed version for production builds in the future.
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      id = path.relative(root, modulePath);
+      fileToIdMap.set(modulePath, id);
+    }
+    // @ts-expect-error: we patch this to support being a string.
+    return id;
+  };
+}
+
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
@@ -216,9 +244,9 @@ export function getDefaultConfig(
         return false;
       },
 
-      createModuleIdFactory() {
-        return (str) => str;
-      },
+      createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
+        ? createStableModuleIdFactory.bind(null, projectRoot)
+        : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
