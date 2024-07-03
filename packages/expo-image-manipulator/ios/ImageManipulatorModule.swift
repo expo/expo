@@ -7,8 +7,6 @@ import ExpoModulesCore
 import SDWebImageWebPCoder
 
 public class ImageManipulatorModule: Module {
-  typealias LoadImageCallback = (Result<UIImage, Error>) -> Void
-
   public func definition() -> ModuleDefinition {
     Name("ExpoImageManipulator")
 
