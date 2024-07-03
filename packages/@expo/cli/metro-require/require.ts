@@ -1,19 +1,20 @@
 /**
  * Copyright © 2024 650 Industries.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright © Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * Fork with bundle splitting and RSC support:
+ * Universal require runtime based on:
  * https://github.com/facebook/metro/blob/c84368021aa3123c221a49e269e2ef5afe4c663d/packages/metro-runtime/src/polyfills/require.js#L1
+ * https://github.com/facebook/metro/blob/ebd40efa3bd3363930ffe21120714a4d9e0b7bac/packages/metro-runtime/src/polyfills/require.js#L1
  */
+'use strict';
 
 declare let global: {
   ErrorUtils?: {
     reportFatalError(e: unknown): void;
   };
-  //   nativeRequire?: (localId: number, segmentId: number) => void;
   $RefreshReg$?: (type: any, id: string) => void;
   $RefreshSig$?: () => (type: any) => any;
   __r: RequireFn;
@@ -82,7 +83,6 @@ interface ModuleDefinition {
 }
 
 type ModuleList = Map<ModuleID, ModuleDefinition | null>;
-// type ModuleList = Record<ModuleID, ModuleDefinition | null>;
 
 export type RequireFn = (id: ModuleID | VerboseModuleNameForDev) => Exports;
 
@@ -102,7 +102,7 @@ global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
 global.__c = clear;
 global.__registerSegment = registerSegment;
 
-let modules = clear();
+var modules = clear();
 
 // Don't use a Symbol here, it would pull in an extra polyfill with all sorts of
 // additional stuff (e.g. Array.from).
@@ -117,7 +117,6 @@ if (__DEV__) {
 
 function clear(): ModuleList {
   modules = new Map();
-  //   modules = Object.create(null);
 
   // We return modules here so that we can assign an initial value to modules
   // when defining it. Otherwise, we would have to do "let modules = null",
@@ -126,12 +125,19 @@ function clear(): ModuleList {
 }
 
 if (__DEV__) {
-  //   var verboseNamesToModuleIds: Record<string, number> = Object.create(null);
+  // var verboseNamesToModuleIds: Map<string, number> = new Map();
+  // var getModuleIdForVerboseName = (verboseName: string): number => {
+  //   const moduleId = verboseNamesToModuleIds.get(verboseName);
+  //   if (moduleId == null) {
+  //     throw new Error(`Unknown named module: "${verboseName}"`);
+  //   }
+  //   return moduleId;
+  // };
   var initializingModuleIds: ModuleID[] = [];
 }
 
 function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: DependencyMap): void {
-  if (modules.get(moduleId) != null) {
+  if (modules.has(moduleId)) {
     if (__DEV__) {
       // (We take `inverseDependencies` from `arguments` to avoid an unused
       // named parameter in `define` in production.
@@ -171,24 +177,20 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
     const verboseName: string | void = arguments[3];
     if (verboseName) {
       mod.verboseName = verboseName;
-      //   verboseNamesToModuleIds[verboseName] = moduleId;
+      // verboseNamesToModuleIds.set(verboseName, moduleId);
     }
   }
 }
 
 function metroRequire(moduleId: ModuleID | VerboseModuleNameForDev): Exports {
-  //   if (__DEV__ && typeof moduleId === 'string') {
-  //     const verboseName = moduleId;
-  //     // moduleId = verboseNamesToModuleIds[verboseName];
-  //     if (moduleId == null) {
-  //       throw new Error(`Unknown named module: "${verboseName}"`);
-  //     } else {
-  //       console.warn(
-  //         `Requiring module "${verboseName}" by name is only supported for ` +
-  //           'debugging purposes and will BREAK IN PRODUCTION!'
-  //       );
-  //     }
-  //   }
+  // if (__DEV__ && typeof moduleId === 'string') {
+  //   const verboseName = moduleId;
+  //   moduleId = getModuleIdForVerboseName(verboseName);
+  //   console.warn(
+  //     `Requiring module "${verboseName}" by name is only supported for ` +
+  //       'debugging purposes and will BREAK IN PRODUCTION!'
+  //   );
+  // }
 
   if (__DEV__) {
     const initializingIndex = initializingModuleIds.indexOf(moduleId);
@@ -219,8 +221,10 @@ function metroRequire(moduleId: ModuleID | VerboseModuleNameForDev): Exports {
 // We print require cycles unless they match a pattern in the
 // `requireCycleIgnorePatterns` configuration.
 function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]): boolean {
-  const regExps = eval(`${__METRO_GLOBAL_PREFIX__}__requireCycleIgnorePatterns`);
-  //   const regExps = global[__METRO_GLOBAL_PREFIX__ + '__requireCycleIgnorePatterns'];
+  // const regExps = eval(`${__METRO_GLOBAL_PREFIX__}__requireCycleIgnorePatterns`);
+  const rcip = __METRO_GLOBAL_PREFIX__ + '__requireCycleIgnorePatterns';
+  // Try using the globalThis version to reach outside the bundle in SSR bundles.
+  const regExps = globalThis[rcip] ?? global[rcip];
   if (!Array.isArray(regExps)) {
     return true;
   }
@@ -274,6 +278,10 @@ function metroImportAll(
   // $FlowFixMe The metroRequire call above will throw if modules.get(id) is null
   return (modules.get(moduleId)!.importedAll = importedAll);
 }
+
+// NOTE(EvanBacon): Tag for e2e testing.
+metroRequire[Symbol.for('expo.require')] = true;
+
 metroRequire.importAll = metroImportAll;
 
 // The `require.context()` syntax is never executed in the runtime because it is converted
@@ -408,7 +416,8 @@ function loadModuleImplementation(
     }
   }
 
-  // NOTE(EvanBacon): Removing support for nativeRequire because it's unclear how it's used.
+  // NOTE(EvanBacon): `nativeRequire` is used for legacy RAM bundles and the rest of the implementation doesn't appear to be public.
+  // We use modern bundle splitting (with bytecode support) instead.
   //   const nativeRequire = global.nativeRequire;
   //   if (!module && nativeRequire) {
   //     const { segmentId, localId } = unpackModuleId(moduleId);
@@ -476,13 +485,12 @@ function loadModuleImplementation(
 
     // avoid removing factory in DEV mode as it breaks HMR
     if (!__DEV__) {
-      // @ts-expect-error: This is only sound because we never access `factory` again
       module.factory = undefined;
       module.dependencyMap = undefined;
     }
 
     if (__DEV__) {
-      // $FlowIgnore: we know that __DEV__ is const and `Systrace` exists
+      // We know that __DEV__ is const and `Systrace` exists
       Systrace.endEvent();
 
       if (Refresh != null) {
@@ -518,18 +526,14 @@ function unknownModuleError(id: ModuleID): Error {
   return Error(message);
 }
 
-// NOTE(EvanBacon): We expose this in Expo for chunk loading.
-metroRequire.getModules = (): ModuleList => {
-  return modules;
-};
-
 if (__DEV__) {
-  // $FlowFixMe[prop-missing]
   metroRequire.Systrace = {
     beginEvent: (): void => {},
     endEvent: (): void => {},
   };
-
+  metroRequire.getModules = (): ModuleList => {
+    return modules;
+  };
   // HOT MODULE RELOADING
   var createHotReloadingObject = function () {
     const hot: HotModuleReloadingData = {

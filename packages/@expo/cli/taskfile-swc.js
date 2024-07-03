@@ -25,7 +25,11 @@ module.exports = function (task) {
           },
         },
         sourceMaps: false,
+
         jsc: {
+          // Remove comments:
+          // https://github.com/swc-project/swc/discussions/4446#discussioncomment-2639516
+          minify: { compress: false, mangle: false },
           loose: true,
           parser: {
             syntax: 'typescript',

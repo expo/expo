@@ -216,6 +216,10 @@ export function getDefaultConfig(
         return false;
       },
 
+      createModuleIdFactory() {
+        return (str) => str;
+      },
+
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first

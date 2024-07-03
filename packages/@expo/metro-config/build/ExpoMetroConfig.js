@@ -176,6 +176,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return false;
             },
+            createModuleIdFactory() {
+                return (str) => str;
+            },
             getModulesRunBeforeMainModule: () => {
                 const preModules = [
                     // MUST be first
