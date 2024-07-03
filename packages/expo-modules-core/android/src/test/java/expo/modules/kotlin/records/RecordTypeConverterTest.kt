@@ -196,6 +196,29 @@ class RecordTypeConverterTest {
   }
 
   @Test
+  fun `primary constructor default values are ignored if using the 'compact' class syntax`() {
+    // This is a limitation of the current implementation.
+    class MyRecord(
+      @Field
+      val int: Int = 42,
+      @Field
+      val string: String? = "string",
+      @Field
+      val boolean: Boolean = true
+    ) : Record
+
+    val map = DynamicFromObject(
+      JavaOnlyMap()
+    )
+
+    val myRecord = convert<MyRecord>(map)
+
+    Truth.assertThat(myRecord.int).isEqualTo(0)
+    Truth.assertThat(myRecord.string).isEqualTo(null)
+    Truth.assertThat(myRecord.boolean).isEqualTo(false)
+  }
+
+  @Test
   fun `should work with complex types`() {
     class InnerRecord : Record {
       @Field
