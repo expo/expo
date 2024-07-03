@@ -14,7 +14,7 @@ import { FontSource } from './Font.types';
  * - __error__ (`Error | null`) - An error encountered when loading the fonts.
  *
  * @example
- * ```ts
+ * ```tsx
  * const [loaded, error] = useFonts({ ... });
  * ```
  */
