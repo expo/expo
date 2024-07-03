@@ -1,3 +1,6 @@
+type HasTypedRoutes = ExpoRouter.__routes extends {
+    StaticRoutes: string;
+} ? true : false;
 export type StaticRoutes = ExpoRouter.__routes extends {
     StaticRoutes: string;
 } ? ExpoRouter.__routes['StaticRoutes'] : string;
@@ -16,7 +19,7 @@ export declare namespace ExpoRouter {
     interface __routes<T extends string = string> extends Record<string, unknown> {
     }
 }
-export type Routes = DynamicRouteTemplate | StaticRoutes;
+export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
 /**
  * The main routing type for Expo Router. Includes all available routes with strongly typed parameters.
  *
@@ -72,7 +75,7 @@ type UnknownInputParams = Record<string, string | number | undefined | null | (s
  * Routes can have unknown outputs (e.g query params)
  * Unlike inputs, outputs can't be undefined or null
  */
-type UnknownOutputParams = Record<string, string | string[]>;
+export type UnknownOutputParams = Record<string, string | string[]>;
 /**
  * Return the name of a route parameter
  * '[test]'    -> 'test'
@@ -129,13 +132,11 @@ export type StrictRouteParamsOutput<Path> = {
     [Key in ParameterNames<Path> as Key extends `...${infer Name}` ? Name : Key]: Key extends `...${string}` ? string[] : string;
 };
 export type RouteParamInput<Path> = StrictRouteParamsInputs<Path> & UnknownInputParams;
-/**
- */
-export type RouteParams<PathOrObject> = PathOrObject extends string ? StrictRouteParamsOutput<PathOrObject> & UnknownOutputParams : PathOrObject;
+export type RouteParams<PathOrObject extends Routes | UnknownOutputParams, ExtraPathOrObject extends UnknownOutputParams = UnknownOutputParams> = PathOrObject extends string ? StrictRouteParamsOutput<PathOrObject> & ExtraPathOrObject : PathOrObject;
 /**
  * @deprecated Use RouteParams or StrictRouteParams instead
  */
 export type SearchParams<T extends string = never> = RouteParams<T>;
-export type RouteSegments<PathOrStringArray> = PathOrStringArray extends string[] ? PathOrStringArray : PathOrStringArray extends `/${infer PartA}` ? RouteSegments<PartA> : PathOrStringArray extends `${infer PartA}/${infer PartB}` ? [PartA, ...RouteSegments<PartB>] : [PathOrStringArray];
+export type RouteSegments<PathOrStringArray extends string | string[]> = PathOrStringArray extends string[] ? PathOrStringArray : PathOrStringArray extends `/${infer PartA}` ? RouteSegments<PartA> : PathOrStringArray extends `${infer PartA}/${infer PartB}` ? [PartA, ...RouteSegments<PartB>] : HasTypedRoutes extends true ? [PathOrStringArray] : string[];
 export {};
 //# sourceMappingURL=types.d.ts.map

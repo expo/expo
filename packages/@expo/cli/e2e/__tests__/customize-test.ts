@@ -170,3 +170,46 @@ it(
   // Could take 45s depending on how fast npm installs
   120 * 1000
 );
+
+it(
+  'runs `npx expo customize tsconfig.json` sets up typed routes',
+  async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typed-routes',
+      'with-router-typed-routes',
+      { reuseExisting: false }
+    );
+
+    /*
+     * We need to copy the local `expo-router` to the project, but there's a
+     * catch. When running `npx expo typescript`, Bun will override our inject expo-router
+     * Hence,
+     *  1. Run `npx expo typescript` to get the correct version of TypeScript
+     *  2. Copy the expo-router project
+     *  3. Rerun `npx expo typescript` to regenerate the Typed Routes
+     */
+
+    // `npx expo typescript`
+    await execa('node', [bin, 'customize', 'tsconfig.json'], {
+      cwd: projectRoot,
+    });
+
+    // Override the expo-router project
+    await execa('cp', ['-rf', path.join(__dirname, '../../../../expo-router'), './node_modules/'], {
+      cwd: projectRoot,
+    });
+
+    // Regenerate the TypedRoutes
+    await execa('node', [bin, 'customize', 'tsconfig.json'], {
+      cwd: projectRoot,
+    });
+
+    await expect(
+      execa('node', [require.resolve('typescript/bin/tsc')], {
+        cwd: projectRoot,
+      })
+    ).resolves.toBeTruthy();
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
