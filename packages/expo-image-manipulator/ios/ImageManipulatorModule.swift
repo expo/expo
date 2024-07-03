@@ -61,7 +61,7 @@ public class ImageManipulatorModule: Module {
         return image.ref.cgImage?.height ?? 0
       }
 
-      AsyncFunction("saveAsync") { (image: ImageRef, options: ManipulateOptions?) in
+      AsyncFunction("saveAsync") { (image: ImageRef, options: ManipulateOptions?) -> [String: Any?] in
         guard let appContext else {
           throw Exceptions.AppContextLost()
         }
