@@ -6,6 +6,10 @@
 
 #include <ReactCommon/CallInvoker.h>
 
+#include <jsi/jsi.h>
+
+namespace jsi = facebook::jsi;
+
 namespace expo {
 
 /**
@@ -18,11 +22,11 @@ public:
 
 #if REACT_NATIVE_TARGET_VERSION >= 75
   void invokeAsync(react::CallFunc &&func) noexcept override {
-    func(*runtime);
+    func(*runtime.lock());
   }
 
   void invokeSync(react::CallFunc &&func) override {
-    func(*runtime);
+    func(*runtime.lock());
   }
 #else
   void invokeAsync(std::function<void()> &&func) noexcept override {
@@ -36,7 +40,7 @@ public:
 
   ~TestingSyncJSCallInvoker() override = default;
 
-  std::shared_ptr<jsi::Runtime> runtime;
+  std::weak_ptr<jsi::Runtime> runtime;
 };
 
 } // namespace expo

@@ -22,7 +22,7 @@ class KotlinInteropModuleRegistry(
   val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
 
   private val registry: ModuleRegistry
-    get() = appContext.registry
+    get() = appContext.hostingRuntimeContext.registry
 
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 

@@ -13,6 +13,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.weak
 import kotlinx.coroutines.launch
 
 /**
@@ -54,7 +55,7 @@ abstract class AsyncFunction(
   internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext)
 
   override fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String) {
-    val appContextHolder = appContext.jsiInterop.appContextHolder
+    val appContextHolder = appContext.weak()
     jsObject.registerAsyncFunction(
       name,
       takesOwner,

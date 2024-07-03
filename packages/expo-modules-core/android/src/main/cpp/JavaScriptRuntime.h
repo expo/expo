@@ -30,13 +30,6 @@ class JSIContext;
  */
 class JavaScriptRuntime : public std::enable_shared_from_this<JavaScriptRuntime> {
 public:
-  /**
-   * Initializes a runtime that is independent from React Native and its runtime initialization.
-   * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
-   * See **JavaScriptRuntime.cpp** for the `SyncCallInvoker` implementation.
-   */
-  JavaScriptRuntime();
-
   JavaScriptRuntime(
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker
