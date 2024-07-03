@@ -204,6 +204,18 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
+      isThirdPartyModule(module) {
+        // Block virtual modules from appearing in the source maps.
+        if (module.path.startsWith('\0')) return true;
+
+        // Generally block node modules
+        if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+          // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+          return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
+        }
+        return false;
+      },
+
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first

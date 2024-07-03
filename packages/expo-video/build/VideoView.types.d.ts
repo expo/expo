@@ -76,5 +76,11 @@ export interface VideoViewProps extends ViewProps {
      * @platform ios 14.2+
      */
     startsPictureInPictureAutomatically?: boolean;
+    /**
+     * Specifies whether to perform video frame analysis (Live Text in videos). Check official [Apple documentation](https://developer.apple.com/documentation/avkit/avplayerviewcontroller/allowsvideoframeanalysis) for more details.
+     * @default true
+     * @platform ios 16.0+
+     */
+    allowsVideoFrameAnalysis?: boolean;
 }
 //# sourceMappingURL=VideoView.types.d.ts.map
