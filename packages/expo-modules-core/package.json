@@ -38,7 +38,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "invariant": "^2.2.4"
+    "invariant": "^2.2.4",
+    "web-streams-polyfill": "^3.3.2"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",

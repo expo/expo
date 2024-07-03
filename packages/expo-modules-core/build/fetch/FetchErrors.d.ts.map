@@ -1,0 +1,1 @@
+{"version":3,"file":"FetchErrors.d.ts","sourceRoot":"","sources":["../../src/fetch/FetchErrors.ts"],"names":[],"mappings":"AAAA,qBAAa,iBAAkB,SAAQ,KAAK;gBAC9B,OAAO,EAAE,MAAM,EAAE,KAAK,CAAC,EAAE,OAAO,EAAE,KAAK,CAAC,EAAE,MAAM;IAM5D,MAAM,CAAC,eAAe,CAAC,KAAK,EAAE,KAAK,GAAG,iBAAiB;CAGxD"}

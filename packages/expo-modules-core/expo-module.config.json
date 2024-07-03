@@ -1,6 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
+    "modules": ["ExpoNetworkFetchModule"],
     "podspecPath": "./ExpoModulesCore.podspec"
   }
 }
