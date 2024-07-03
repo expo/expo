@@ -83,7 +83,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     /**
-     * Remove the player from memory to frees up resources.
+     * Remove the player from memory to free up resources.
      */
     remove(): void;
 }
