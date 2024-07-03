@@ -75,6 +75,8 @@ redirects[clients/installation]=versions/latest/sdk/dev-client
 
 # Expo Modules
 redirects[modules]=modules/overview
+redirects[module-api]=modules/module-api
+redirects[module-config]=modules/module-config
 
 # Development builds
 redirects[development/build]=develop/development-builds/create-a-build
