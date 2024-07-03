@@ -1,4 +1,4 @@
-import { GestureResponderEvent } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 import { StackFrame } from 'stacktrace-parser';
 type Props = {
     frame: StackFrame & {

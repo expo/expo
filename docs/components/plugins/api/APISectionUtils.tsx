@@ -240,7 +240,7 @@ const renderWithLink = ({
 }: {
   name: string;
   type?: string;
-  typePackage: string | undefined;
+  typePackage?: string;
   sdkVersion: string;
 }) => {
   const replacedName = replaceableTypes[name] ?? name;
