@@ -54,11 +54,11 @@ public class ImageManipulatorModule: Module {
 
     Class("Image", ImageRef.self) {
       Property("width") { (image: ImageRef) -> Int in
-        return image.pointer.cgImage?.width ?? 0
+        return image.ref.cgImage?.width ?? 0
       }
 
       Property("height") { (image: ImageRef) -> Int in
-        return image.pointer.cgImage?.height ?? 0
+        return image.ref.cgImage?.height ?? 0
       }
 
       AsyncFunction("saveAsync") { (image: ImageRef, options: ManipulateOptions?) in
@@ -66,15 +66,15 @@ public class ImageManipulatorModule: Module {
           throw Exceptions.AppContextLost()
         }
         let options = options ?? ManipulateOptions()
-        let result = try saveImage(image.pointer, options: options, appContext: appContext)
+        let result = try saveImage(image.ref, options: options, appContext: appContext)
 
         // We're returning a dict instead of a path directly because in the future we'll replace it
         // with a shared ref to the file once this feature gets implemented in expo-file-system.
         // This should be fully backwards-compatible switch.
         return [
           "uri": result.url.absoluteString,
-          "width": image.pointer.cgImage?.width ?? 0,
-          "height": image.pointer.cgImage?.height ?? 0,
+          "width": image.ref.cgImage?.width ?? 0,
+          "height": image.ref.cgImage?.height ?? 0,
           "base64": options.base64 ? result.data.base64EncodedString() : nil
         ]
       }
