@@ -139,7 +139,7 @@ public class AudioModule: Module {
       }.set { (player, volume: Double) in
         player.ref.volume = Float(volume)
       }
-      
+
       Property("currentStatus") { player in
         player.currentStatus()
       }

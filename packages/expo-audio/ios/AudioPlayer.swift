@@ -38,7 +38,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     return true
   }
-  
+
   func currentStatus() -> [String: Any] {
     let time = ref.currentItem?.duration
     let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
