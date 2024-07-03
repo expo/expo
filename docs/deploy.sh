@@ -191,7 +191,7 @@ redirects[eas-update/migrate-to-eas-update]=eas-update/migrate-from-classic-upda
 redirects[distribution/custom-updates-server]=eas-update/custom-updates-server
 redirects[bare/error-recovery]=eas-update/error-recovery
 
-# Redirects after Expo Router docs
+# Redirects for Expo Router docs
 redirects[routing/next-steps]=router/introduction
 redirects[routing/introduction]=router/introduction
 redirects[routing/installation]=router/installation
