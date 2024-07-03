@@ -12,14 +12,13 @@ import { createModuleSystem, moduleSystemCode } from './MetroFastRefreshMockRunt
 
 jest.useFakeTimers();
 jest.unmock('fs');
-jest.unmock('resolve-from');
 
 function createModule(
-  moduleSystem,
-  moduleId,
-  verboseName,
-  factory,
-  dependencyMap = [],
+  moduleSystem: any,
+  moduleId: string | number,
+  verboseName?: string,
+  factory?: (...args: any[]) => any,
+  dependencyMap: (string | number)[] = [],
   globalPrefix = ''
 ) {
   moduleSystem[globalPrefix + '__d'](factory, moduleId, dependencyMap, verboseName);
@@ -920,7 +919,7 @@ describe('require', () => {
     // This tests the legacy module.hot.accept API.
     // We don't use it for Fast Refresh but there might be external consumers.
     it('propagates a hot update to closest accepted module for legacy API', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       createModule(
         moduleSystem,
@@ -977,7 +976,7 @@ describe('require', () => {
     // This tests the legacy module.hot.accept API.
     // We don't use it for Fast Refresh but there might be external consumers.
     it('runs custom accept and dispose handlers for the legacy API', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       createModule(
         moduleSystem,
@@ -1022,7 +1021,7 @@ describe('require', () => {
     });
 
     it('re-runs accepted modules', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1083,7 +1082,7 @@ describe('require', () => {
     });
 
     it('propagates a hot update to closest accepted module', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1172,7 +1171,7 @@ describe('require', () => {
     });
 
     it('propagates hot update to all inverse dependencies', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
 
@@ -1342,7 +1341,7 @@ describe('require', () => {
     });
 
     it('runs dependencies before dependents', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
 
@@ -1436,7 +1435,7 @@ describe('require', () => {
     });
 
     it('provides fresh value for module.exports in parents', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1528,7 +1527,7 @@ describe('require', () => {
     });
 
     it('provides fresh value for exports.* in parents', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1620,7 +1619,7 @@ describe('require', () => {
     });
 
     it('provides fresh value for ES6 named import in parents', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1718,7 +1717,7 @@ describe('require', () => {
     });
 
     it('provides fresh value for ES6 default import in parents', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1816,14 +1815,14 @@ describe('require', () => {
     });
 
     it('stops update propagation after module-level errors', () => {
-      let redboxErrors = [];
+      let redboxErrors: any[] = [];
       moduleSystem.ErrorUtils = {
         reportFatalError(e) {
           redboxErrors.push(e);
         },
       };
 
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -1929,14 +1928,14 @@ describe('require', () => {
     });
 
     it('can continue hot updates after module-level errors with module.exports', () => {
-      let redboxErrors = [];
+      let redboxErrors: any[] = [];
       moduleSystem.ErrorUtils = {
         reportFatalError(e) {
           redboxErrors.push(e);
         },
       };
 
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -2040,14 +2039,14 @@ describe('require', () => {
     });
 
     it('can continue hot updates after module-level errors with ES6 exports', () => {
-      let redboxErrors = [];
+      let redboxErrors: any[] = [];
       moduleSystem.ErrorUtils = {
         reportFatalError(e) {
           redboxErrors.push(e);
         },
       };
 
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -2153,7 +2152,7 @@ describe('require', () => {
     });
 
     it('does not accumulate stale exports over time', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -2250,7 +2249,7 @@ describe('require', () => {
     });
 
     it('bails out if update bubbles to the root via the only path', () => {
-      let log = [];
+      let log: string[] = [];
 
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
@@ -2296,7 +2295,7 @@ describe('require', () => {
     });
 
     it('bails out if the update bubbles to the root via one of the paths', () => {
-      let log = [];
+      let log: string[] = [];
 
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
@@ -2383,7 +2382,7 @@ describe('require', () => {
     });
 
     it('propagates a module that stops accepting in next version', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -2484,7 +2483,7 @@ describe('require', () => {
     });
 
     it('can replace a module before it is loaded', () => {
-      let log = [];
+      let log: string[] = [];
       createModuleSystem(moduleSystem, true, '');
       const Refresh = createReactRefreshMock(moduleSystem);
       createModule(
@@ -2726,7 +2725,7 @@ describe('require', () => {
 });
 
 function toThrowStrictEquals(received, expected) {
-  let thrown = null;
+  let thrown: null | { value: unknown } = null;
   try {
     received();
   } catch (e) {

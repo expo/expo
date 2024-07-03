@@ -12,7 +12,6 @@ import { Runtime } from './MetroFastRefreshMockRuntime';
 
 jest.useFakeTimers();
 jest.unmock('fs');
-jest.unmock('resolve-from');
 
 describe('Fast Refresh integration with require()', () => {
   test('preserves state in a single-module bundle', async () => {

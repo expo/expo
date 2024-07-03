@@ -4,23 +4,18 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- * 
+ *
  * https://github.com/facebook/metro/blob/ebd40efa3bd3363930ffe21120714a4d9e0b7bac/packages/metro-runtime/src/polyfills/__tests__/MetroFastRefreshMockRuntime.js#L1
  */
-
-import type {DefineFn, RequireFn} from '../require';
-import typeof React from 'react';
-import typeof ReactRefreshRuntime from 'react-refresh/runtime';
-import typeof ReactTestRenderer from 'react-test-renderer';
-
-import {transformSync} from '@babel/core';
+import { transformSync } from '@babel/core';
 import fs from 'fs';
+
+import type { DefineFn, RequireFn } from '../require';
 
 jest.unmock('fs');
 jest.unmock('resolve-from');
 
-
-type RuntimeGlobal = Object;
+type RuntimeGlobal = object;
 
 /**
  * A runtime that combines Metro's module system, a React renderer
@@ -50,20 +45,20 @@ export class Runtime {
    * The instance of React running in this runtime. Conceptually equivalent to
    * require('react').
    */
-  React: React;
+  React: typeof import('react');
 
   /**
    * The React renderer running in this runtime. Conceptually equivalent to
    * require('react-test-renderer').
    */
-  renderer: ReactTestRenderer;
+  renderer: typeof import('react-test-renderer');
 
   /**
    * Jest mock functions used as event handlers.
    */
   events: {
-    onFullReload: JestMockFn<[string], void>,
-    onFastRefresh: JestMockFn<[], void>,
+    onFullReload: jest.MockedFunction<(id: string) => void>;
+    onFastRefresh: jest.MockedFunction<() => void>;
   } = {
     /**
      * Called when there is a full reload, with a reason argument.
@@ -76,8 +71,7 @@ export class Runtime {
     onFastRefresh: jest.fn(),
   };
 
-  // $FlowFixMe[value-as-type]: react-refresh/runtime is untyped
-  #reactRefreshRuntime: ReactRefreshRuntime;
+  #reactRefreshRuntime: typeof import('react-refresh/runtime');
   #global: RuntimeGlobal = {};
   #globalPrefix: string = '';
 
@@ -89,8 +83,6 @@ export class Runtime {
 
     // Set up Fast Refresh. Adapted from `setUpReactRefresh.js` in React Native.
     jest.isolateModules(() => {
-      // $FlowFixMe[incompatible-type] Not sure why Flow doesn't approve
-      // $FlowFixMe[prop-missing]
       this.React = require('react');
 
       this.#reactRefreshRuntime = require('react-refresh/runtime');
@@ -98,8 +90,8 @@ export class Runtime {
 
       // Associate the renderer instance with this runtime's global object.
       // NOTE: Strictly speaking, this is an implementation detail of React.
-      global.__REACT_DEVTOOLS_GLOBAL_HOOK__ =
-        this.#global.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+      // @ts-expect-error
+      global.__REACT_DEVTOOLS_GLOBAL_HOOK__ = this.#global.__REACT_DEVTOOLS_GLOBAL_HOOK__;
       this.renderer = require('react-test-renderer');
       delete global.__REACT_DEVTOOLS_GLOBAL_HOOK__;
     });
@@ -142,14 +134,13 @@ export const moduleSystemCode = (() => {
     retainLines: true,
     sourceMaps: 'inline',
     sourceType: 'module',
-  }).code;
+  })!.code!;
 })();
 
-export const createModuleSystem: (RuntimeGlobal, boolean, string) => any =
+export const createModuleSystem =
   // eslint-disable-next-line no-new-func
-  new Function(
-    'global',
-    '__DEV__',
-    '__METRO_GLOBAL_PREFIX__',
-    moduleSystemCode,
-  );
+  new Function('global', '__DEV__', '__METRO_GLOBAL_PREFIX__', moduleSystemCode) as unknown as (
+    RuntimeGlobal,
+    boolean,
+    string
+  ) => any;
