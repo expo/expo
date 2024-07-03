@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Update TypeScript types for Screen options function ([#30074](https://github.com/expo/expo/pull/30074) by [@vilnytskyi](https://github.com/vilnytskyi))
+
 ## 3.5.18 — 2024-07-11
 
 ### 🐛 Bug fixes
