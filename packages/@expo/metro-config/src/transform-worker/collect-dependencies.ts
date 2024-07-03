@@ -101,7 +101,7 @@ export interface DependencyTransformer {
   transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
 }
 
-export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject' | 'warn';
 
 type ImportQualifier = Readonly<{
   name: string;
@@ -184,6 +184,7 @@ function collectDependencies(
 
         if (name != null && state.dependencyCalls.has(name) && !path.scope.getBinding(name)) {
           processRequireCall(path, state);
+
           visited.add(path.node);
         }
       },
@@ -401,6 +402,13 @@ function processImportCall(
   }
 }
 
+function warnAmbiguousImport({ node }: NodePath<CallExpression>, message = '') {
+  const line = node.loc && node.loc.start && node.loc.start.line;
+  console.warn(
+    `Ambiguous import at line ${line || '<unknown>'}: ${generate(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim()
+  );
+}
+
 function processRequireCall(path: NodePath<CallExpression>, state: State): void {
   const name = getModuleNameFromCallArgs(path);
 
@@ -409,9 +417,12 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
   if (name == null) {
     if (state.dynamicRequires === 'reject') {
       throw new InvalidRequireCallError(path);
+    } else if (state.dynamicRequires === 'warn') {
+      warnAmbiguousImport(path);
+      return;
+    } else {
+      transformer.transformIllegalDynamicRequire(path, state);
     }
-
-    transformer.transformIllegalDynamicRequire(path, state);
     return;
   }
 

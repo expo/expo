@@ -67,7 +67,7 @@ export interface DependencyTransformer {
     transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
 }
-export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject' | 'warn';
 type ImportQualifier = Readonly<{
     name: string;
     asyncType: AsyncDependencyType | null;
