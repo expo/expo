@@ -1,5 +1,5 @@
 <p>
-  <a href="https://docs.expo.dev/modules/">
+  <a href="https://docs.expo.dev/modules/overview/">
     <img
       src="../../.github/resources/expo-modules-core.svg"
       alt="expo-modules-core"
