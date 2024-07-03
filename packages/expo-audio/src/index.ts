@@ -17,7 +17,7 @@ import { resolveSource } from './utils/resolveSource';
 
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null
-): [AudioPlayer, AudioStatus] {
+): readonly [AudioPlayer, AudioStatus] {
   const parsedSource = resolveSource(source);
   const player = useReleasingSharedObject(() => {
     return new AudioModule.AudioPlayer(parsedSource);

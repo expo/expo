@@ -42,7 +42,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   func updateStatus(with dict: [String: Any]) {
     let time = ref.currentItem?.duration
     let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
-         
+
     var body: [String: Any] = [
       "id": id,
       "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
