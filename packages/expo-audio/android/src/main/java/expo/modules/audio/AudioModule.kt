@@ -267,6 +267,11 @@ class AudioModule : Module() {
           ref.player.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
       }
+
+      Function("remove") { ref: AudioPlayer ->
+        val id = ref.id
+        players.remove(id)
+      }
     }
 
     Class(AudioRecorder::class) {
