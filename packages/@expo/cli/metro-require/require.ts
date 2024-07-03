@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © Meta Platforms, Inc. and affiliates.
@@ -70,7 +71,7 @@ interface Module {
 interface ModuleDefinition {
   dependencyMap?: DependencyMap;
   error?: any;
-  factory: FactoryFn;
+  factory?: FactoryFn;
   hasError: boolean;
   hot?: HotModuleReloadingData;
   importedAll: any;
@@ -274,7 +275,6 @@ function metroImportAll(
     importedAll.default = exports;
   }
 
-  // $FlowFixMe The metroRequire call above will throw if modules.get(id) is null
   return (modules.get(moduleId)!.importedAll = importedAll);
 }
 
@@ -364,6 +364,9 @@ function unpackModuleId(moduleId: ModuleID): {
   localId: number;
   segmentId: number;
 } {
+  if (typeof moduleId !== 'number') {
+    throw new Error('Module ID must be a number in unpackModuleId.');
+  }
   const segmentId = moduleId >>> ID_MASK_SHIFT;
   const localId = moduleId & LOCAL_ID_MASK;
   return { segmentId, localId };
@@ -448,7 +451,6 @@ function loadModuleImplementation(
   }
   try {
     if (__DEV__) {
-      // $FlowIgnore: we know that __DEV__ is const and `Systrace` exists
       Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
     }
 
@@ -472,7 +474,7 @@ function loadModuleImplementation(
     // keep args in sync with with defineModuleCode in
     // metro/src/Resolver/index.js
     // and metro/src/ModuleGraph/worker.js
-    factory(
+    factory?.(
       global,
       metroRequire,
       metroImportDefault,
@@ -845,6 +847,7 @@ if (__DEV__) {
 
     if (hot._acceptCallback) {
       try {
+        // @ts-expect-error
         hot._acceptCallback();
       } catch (error) {
         console.error(`Error while calling accept handler for module ${id}: `, error);
@@ -861,7 +864,6 @@ if (__DEV__) {
       failed?: ModuleDefinition;
     }
   ) => {
-    /* global window */
     if (
       typeof window !== 'undefined' &&
       window.location != null &&
@@ -929,7 +931,8 @@ if (__DEV__) {
 
   // When this signature changes, it's unsafe to stop at this refresh boundary.
   var getRefreshBoundarySignature = (Refresh: any, moduleExports: Exports): any[] => {
-    const signature = [];
+    const signature: string[] = [];
+
     signature.push(Refresh.getFamilyByType(moduleExports));
     if (moduleExports == null || typeof moduleExports !== 'object') {
       // Exit if we can't iterate over exports.
