@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- On iOS, fix wired ethernet connection being reported as unknown type.
+
 ### 💡 Others
 
 ## 6.0.1 — 2024-04-23
