@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Asset } from 'expo-asset';
-import { ImageResult, FlipType, useImageManipulator } from 'expo-image-manipulator';
+import { ImageResult, FlipType, useImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import {
@@ -43,7 +43,9 @@ export default function ImageManipulatorScreen() {
 
   async function refreshImage() {
     const image = await context.renderAsync();
-    const result = await image.saveAsync();
+    const result = await image.saveAsync({
+      format: SaveFormat.PNG,
+    });
 
     setImage(result);
   }
@@ -81,7 +83,7 @@ export default function ImageManipulatorScreen() {
 
   async function compress(compress: number) {
     const image = await context.renderAsync();
-    const saveResult = await image.saveAsync({ compress });
+    const saveResult = await image.saveAsync({ compress, format: SaveFormat.PNG });
 
     setOriginalImageUri(saveResult.uri);
   }
