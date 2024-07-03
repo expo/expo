@@ -8,6 +8,32 @@ const transform = require('@swc/core').transform;
 
 module.exports = function (task) {
   const ENVIRONMENTS = {
+    metroScript: {
+      output: 'build',
+      options: {
+        module: {
+          type: 'commonjs',
+          strict: true,
+          strictMode: false,
+          // The metro runtime is a standalone JS script that should not have the
+          // `Object.defineProperty(exports, "__esModule", {value: true});` interop.
+          noInterop: true,
+        },
+        env: {
+          targets: {
+            node: '16.8.0',
+          },
+        },
+        sourceMaps: false,
+        jsc: {
+          loose: true,
+          parser: {
+            syntax: 'typescript',
+            dynamicImport: true,
+          },
+        },
+      },
+    },
     // Settings for compiling the CLI code that runs in Node.js environments.
     cli: {
       output: 'build',

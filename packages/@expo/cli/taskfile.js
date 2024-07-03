@@ -11,7 +11,7 @@ export async function bin(task, opts) {
 export async function metroRequire(task, opts) {
   await task
     .source(opts.src || 'metro-require/*')
-    .swc('cli', { dev: opts.dev })
+    .swc('metroScript', { dev: opts.dev })
     .target('build/metro-require');
 }
 
