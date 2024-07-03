@@ -9,6 +9,7 @@ type Props = {
   comment?: CommentData;
   prefix?: string;
   platforms?: CommentTagData[];
+  userProvidedPlatforms?: string[];
   disableFallback?: boolean;
 };
 
@@ -16,6 +17,7 @@ export const APISectionPlatformTags = ({
   comment,
   platforms,
   prefix,
+  userProvidedPlatforms,
   disableFallback = false,
 }: Props) => {
   const { platforms: defaultPlatforms } = usePageMetadata();
@@ -25,8 +27,9 @@ export const APISectionPlatformTags = ({
   const platformsData = platforms || getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
-  const platformNames =
-    platformsData.length > 0
+  const platformNames = userProvidedPlatforms
+    ? userProvidedPlatforms
+    : platformsData.length > 0
       ? platformsData?.map(platformData => getCommentContent(platformData.content))
       : isUnversionedVersion && !disableFallback
         ? defaultPlatforms?.map(platform => platform.replace('*', ''))

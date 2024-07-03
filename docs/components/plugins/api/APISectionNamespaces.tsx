@@ -33,16 +33,16 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
-const renderNamespace = (
-  namespace: ClassDefinitionData,
-  exposeInSidebar: boolean,
-  sdkVersion: string
-): JSX.Element => {
-  const { name, comment, children } = namespace;
-
-  const methods = children
+function getValidMethods(children: PropData[]) {
+  return children
     ?.filter(child => isMethod(child))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
+}
+
+const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JSX.Element => {
+  const { name, comment, children } = namespace;
+
+  const methods = getValidMethods(children);
   const returnComment = getTagData('returns', comment);
 
   return (
@@ -65,8 +65,8 @@ const renderNamespace = (
       )}
       {methods?.length ? (
         <>
-          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
-          {methods.map(method => renderMethod(method, { exposeInSidebar, sdkVersion }))}
+          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={false} />
+          {methods.map(method => renderMethod(method, { sdkVersion, baseNestingLevel: 4 }))}
         </>
       ) : undefined}
     </div>
@@ -75,11 +75,10 @@ const renderNamespace = (
 
 const APISectionNamespaces = ({ data, sdkVersion }: APISectionNamespacesProps) => {
   if (data?.length) {
-    const exposeInSidebar = data.length < 2;
     return (
       <>
         <H2>Namespaces</H2>
-        {data.map(namespace => renderNamespace(namespace, exposeInSidebar, sdkVersion))}
+        {data.map(namespace => renderNamespace(namespace, sdkVersion))}
       </>
     );
   }
