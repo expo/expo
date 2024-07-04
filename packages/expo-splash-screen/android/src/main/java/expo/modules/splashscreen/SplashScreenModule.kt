@@ -1,6 +1,5 @@
 package expo.modules.splashscreen
 
-import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -18,7 +17,7 @@ class HideSplashScreenOptions : Record {
 }
 
 class ModuleOptions : Record {
-    val delay: Float? = 3000.0F
+  val delay: Float? = 3000.0F
 }
 
 class SplashScreenModule : Module() {
