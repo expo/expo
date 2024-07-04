@@ -5,7 +5,8 @@ import expo.modules.kotlin.records.Record
 import java.io.Serializable
 
 class ViewedEventOptions : Record, Serializable {
-	@Field val id: String = ""
-	// presentation options
-	@Field val startNewActivityTask: Boolean = true
+  @Field val id: String = ""
+
+  // presentation options
+  @Field val startNewActivityTask: Boolean = true
 }
