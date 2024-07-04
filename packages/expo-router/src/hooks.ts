@@ -69,8 +69,12 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<TSegments extends Routes = Routes>(): RouteSegments<TSegments> {
-  return useStoreRouteInfo().segments as RouteSegments<TSegments>;
+export function useSegments<
+  TSegments extends Routes | RouteSegments<Routes> = Routes,
+>(): TSegments extends string ? RouteSegments<TSegments> : TSegments {
+  return useStoreRouteInfo().segments as TSegments extends string
+    ? RouteSegments<TSegments>
+    : TSegments;
 }
 
 /** @returns global selected pathname without query parameters. */
