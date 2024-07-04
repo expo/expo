@@ -119,5 +119,5 @@ class SharedObjectTest {
         SharedObjectExampleClass()
       }
     }
-  }, block)
+  }, numberOfReloads = 1, block)
 }

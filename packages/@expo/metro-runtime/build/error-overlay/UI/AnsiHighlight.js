@@ -64,7 +64,7 @@ function Ansi({ text, style }) {
             return content;
         }
     };
-    return (react_1.default.createElement(react_native_1.View, null, parsedLines.map((items, i) => (react_1.default.createElement(react_native_1.View, { style: styles.line, key: i }, items.map((bundle, key) => {
+    return (react_1.default.createElement(react_1.default.Fragment, null, parsedLines.map((items, i) => (react_1.default.createElement(react_native_1.View, { style: styles.line, key: i }, items.map((bundle, key) => {
         const textStyle = bundle.fg && COLORS[bundle.fg]
             ? {
                 backgroundColor: bundle.bg && COLORS[bundle.bg],

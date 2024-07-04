@@ -11,6 +11,9 @@ messageSocket.onmessage = (message) => {
                 case 'reload':
                     window.location.reload();
                     break;
+                case 'rsc-reload':
+                    globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.forEach((l) => l());
+                    break;
             }
             break;
         case 'reload':

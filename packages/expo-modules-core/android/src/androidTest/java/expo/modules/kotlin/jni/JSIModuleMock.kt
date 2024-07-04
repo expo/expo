@@ -32,12 +32,7 @@ import kotlinx.coroutines.test.TestScope
 private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
   val appContextMock = mockk<AppContext>()
   val runtimeContext = mockk<RuntimeContext>()
-  val coreModule = run {
-    val module = CoreModule()
-    module._runtimeContext = runtimeContext
-    ModuleHolder(module)
-  }
-  every { runtimeContext.coreModule } answers { coreModule }
+
   every { runtimeContext.classRegistry } answers { ClassRegistry() }
   every { runtimeContext.appContext } answers { appContextMock }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
@@ -52,8 +47,8 @@ private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
 @OptIn(ExperimentalCoroutinesApi::class, FrameworkAPI::class)
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIContext.(methodQueue: TestScope) -> Unit,
-  afterCleanup: (deallocator: JNIDeallocator) -> Unit
+  numberOfReloads: Int = 1,
+  block: JSIContext.(methodQueue: TestScope) -> Unit
 ) {
   val (appContextMock, runtimeContext) = defaultAppContextMock()
   val methodQueue = TestScope()
@@ -86,36 +81,44 @@ internal inline fun withJSIInterop(
     functionSlot.captured.invoke()
   }
 
-  val registry = ModuleRegistry(appContextMock.hostingRuntimeContext.weak()).apply {
-    modules.forEach {
-      register(it)
+  val jniDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
+  repeat(numberOfReloads) {
+    val coreModule = run {
+      val module = CoreModule()
+      module._runtimeContext = runtimeContext
+      ModuleHolder(module)
     }
-  }
-  val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
-  every { appContextMock.registry } answers { registry }
-  every { runtimeContext.registry } answers { registry }
-  every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
+    every { runtimeContext.coreModule } answers { coreModule }
 
-  // We aim to closely replicate the lifecycle of each part as it functions in the real app.
-  // That’s why the JSIContext outlives the JS runtime.
-  JSIContext().use { jsiContext ->
-    val jniDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
-    every { runtimeContext.jniDeallocator } answers { jniDeallocator }
-    every { runtimeContext.jsiContext } answers { jsiContext }
-
-    RuntimeHolder().use { runtimeHolder ->
-      val runtimePtr = runtimeHolder.createRuntime()
-      val callInvokerHolder = runtimeHolder.createCallInvoker()
-
-      jsiContext.installJSI(runtimeContext, runtimePtr, callInvokerHolder)
-
-      jniDeallocator.use {
-        block(jsiContext, methodQueue)
+    val registry = ModuleRegistry(appContextMock.hostingRuntimeContext.weak()).apply {
+      modules.forEach {
+        register(it)
       }
     }
+    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
+    every { appContextMock.registry } answers { registry }
+    every { runtimeContext.registry } answers { registry }
+    every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
 
-    afterCleanup(jniDeallocator)
+    // We aim to closely replicate the lifecycle of each part as it functions in the real app.
+    // That’s why the JSIContext outlives the JS runtime.
+    JSIContext().use { jsiContext ->
+      every { runtimeContext.jniDeallocator } answers { jniDeallocator }
+      every { runtimeContext.jsiContext } answers { jsiContext }
+
+      RuntimeHolder().use { runtimeHolder ->
+        val runtimePtr = runtimeHolder.createRuntime()
+        val callInvokerHolder = runtimeHolder.createCallInvoker()
+
+        jsiContext.installJSI(runtimeContext, runtimePtr, callInvokerHolder)
+
+        jniDeallocator.use {
+          block(jsiContext, methodQueue)
+        }
+      }
+    }
   }
+  Truth.assertWithMessage("Memory leak detected").that(jniDeallocator.inspectMemory()).isEmpty()
 }
 
 open class TestContext(
@@ -164,6 +167,8 @@ class SingleTestContext(
     "$moduleRef.$functionName($args)"
   )
 
+  fun getLastPromiseResult() = global().getProperty("promiseResult")
+
   fun callClassAsync(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
     if (functionName == null) {
       return jsiInterop.evaluateScript("new $moduleRef.$className()")
@@ -177,13 +182,9 @@ class SingleTestContext(
   }
 }
 
-internal inline fun withJSIInterop(
-  vararg modules: Module,
-  block: JSIContext.(methodQueue: TestScope) -> Unit
-) = withJSIInterop(*modules, block = block, afterCleanup = {})
-
 internal inline fun withSingleModule(
   crossinline definition: ModuleDefinitionBuilder.() -> Unit = {},
+  numberOfReloads: Int = 1,
   block: SingleTestContext.() -> Unit
 ) {
   var moduleName = "TestModule"
@@ -198,6 +199,7 @@ internal inline fun withSingleModule(
         }
       }
     },
+    numberOfReloads = numberOfReloads,
     block = { methodQueue ->
       val testContext = SingleTestContext(moduleName, this, methodQueue)
       block.invoke(testContext)

@@ -57,16 +57,6 @@ JSIContext::JSIContext(jni::alias_ref<jhybridobject> jThis)
       jni::Environment::current()->NewGlobalRef(javaPart_.get())
     )) {}
 
-JSIContext::~JSIContext() {
-  if (runtimeHolder) {
-    unbindJSIContext(runtimeHolder->get());
-    // The runtime would be deallocated automatically.
-    // However, we need to enforce the order of deallocations.
-    // The runtime has to be deallocated before the JNI part.
-    runtimeHolder.reset();
-  }
-}
-
 void JSIContext::installJSI(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
@@ -116,7 +106,6 @@ void JSIContext::prepareJSIContext(
 
 void JSIContext::prepareRuntime() noexcept {
   jsi::Runtime &runtime = runtimeHolder->get();
-
   bindJSIContext(runtime, this);
 
   runtimeHolder->installMainObject();
@@ -302,10 +291,11 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
 
 void JSIContext::prepareForDeallocation() noexcept {
   jsRegistry.reset();
-  runtimeHolder.reset();
+  if (runtimeHolder) {
+    unbindJSIContext(runtimeHolder->get());
+    runtimeHolder.reset();
+  }
   jniDeallocator.reset();
-  threadSafeJThis.reset();
-  javaPart_.reset();
   wasDeallocated_ = true;
 }
 

@@ -6,6 +6,7 @@ import com.facebook.jni.HybridData
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.interfaces.DoNotStrip
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Provides a way to create a new JSI runtime and a dummy call invoker.
@@ -27,13 +28,17 @@ internal class RuntimeHolder : AutoCloseable {
 
   private external fun release()
 
+  private var wasDeallocated = AtomicBoolean(false)
+
   @Throws(Throwable::class)
   protected fun finalize() {
     close()
   }
 
   override fun close() {
-    release()
-    mHybridData.resetNative()
+    if (wasDeallocated.compareAndSet(false, true)) {
+      release()
+      mHybridData.resetNative()
+    }
   }
 }

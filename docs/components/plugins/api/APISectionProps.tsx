@@ -133,7 +133,7 @@ export const renderProp = (
       key={`prop-entry-${name}`}
       css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}
       className="!pb-4 [&>*:last-child]:!mb-0">
-      <APISectionDeprecationNote comment={extractedComment} />
+      <APISectionDeprecationNote comment={extractedComment} sticky />
       <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <MONOSPACE
