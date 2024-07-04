@@ -301,7 +301,7 @@ public class CalendarModule: Module {
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in
       try checkCalendarPermissions()
-      if calendarDialogDelegate != nil {
+      guard calendarDialogDelegate == nil else {
         throw EventDialogInProgressException()
       }
       let calendarEvent = EKEvent(eventStore: eventStore)
@@ -314,9 +314,8 @@ public class CalendarModule: Module {
       try checkCalendarPermissions()
       warnIfDialogInProgress()
       let startDate = parse(date: opts.instanceStartDate)
-      let eventId = opts.id
-      guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
-        throw EventNotFoundException(eventId)
+      guard let calendarEvent = getEvent(with: opts.id, startDate: startDate) else {
+        throw EventNotFoundException(opts.id)
       }
       try presentEventEditViewController(event: calendarEvent, promise: promise)
     }.runOnQueue(.main)
@@ -324,9 +323,8 @@ public class CalendarModule: Module {
     AsyncFunction("openEventInCalendarAsync") { (opts: OpenInCalendarOptions, promise: Promise) in
       try checkCalendarPermissions()
       let startDate = parse(date: opts.instanceStartDate)
-      let eventId = opts.id
-      guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
-        throw EventNotFoundException(eventId)
+      guard let calendarEvent = getEvent(with: opts.id, startDate: startDate) else {
+        throw EventNotFoundException(opts.id)
       }
 
       guard let currentVc = appContext?.utilities?.currentViewController() else {

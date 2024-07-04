@@ -24,8 +24,7 @@ internal class CreateEventContract : AppContextActivityResultContract<CreatedEve
         input.notes?.let { putExtra(CalendarContract.Events.DESCRIPTION, it) }
         input.location?.let { putExtra(CalendarContract.Events.EVENT_LOCATION, it) }
         input.startDate?.let {
-          val timestamp = getTimestamp(it)
-          putExtra(EXTRA_EVENT_BEGIN_TIME, timestamp)
+          putExtra(EXTRA_EVENT_BEGIN_TIME, getTimestamp(it))
         }
         input.endDate?.let {
           val timestamp = getTimestamp(it)
