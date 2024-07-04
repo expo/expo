@@ -32,7 +32,7 @@ export declare function useUnstableGlobalHref(): string;
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export declare function useSegments<TSegments extends string[] | Routes = Routes>(): RouteSegments<TSegments>;
+export declare function useSegments<TSegments extends Routes = Routes>(): RouteSegments<TSegments>;
 /** @returns global selected pathname without query parameters. */
 export declare function usePathname(): string;
 /**

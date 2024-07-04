@@ -69,9 +69,7 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<
-  TSegments extends string[] | Routes = Routes,
->(): RouteSegments<TSegments> {
+export function useSegments<TSegments extends Routes = Routes>(): RouteSegments<TSegments> {
   return useStoreRouteInfo().segments as RouteSegments<TSegments>;
 }
 
