@@ -14,7 +14,7 @@ import expo.modules.devmenu.fab.MovableFloatingActionButton
 private const val enableFAB = false
 
 class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
-  private val fab = MovableFloatingActionButton(context)
+  private val fab by lazy { MovableFloatingActionButton(context) }
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
     DevMenuManager.onTouchEvent(ev)
