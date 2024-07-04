@@ -11,7 +11,7 @@ import Reanimated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import Colors from '../../constants/Colors';
+import Colors from '../../../constants/Colors';
 
 // for some reason, iOS returns much smaller sample values
 // TODO (barthap): Fix the root cause and normalize them between platforms

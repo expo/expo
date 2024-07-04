@@ -2,7 +2,7 @@ import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import VideoPlayer from './VideoPlayer';
-import HeadingText from '../../components/HeadingText';
+import HeadingText from '../../../components/HeadingText';
 
 export default function VideoScreen() {
   return (
@@ -18,8 +18,8 @@ export default function VideoScreen() {
       <HeadingText>Local asset player</HeadingText>
       <VideoPlayer
         sources={[
-          require('../../../assets/videos/ace.mp4'),
-          require('../../../assets/videos/star.mp4'),
+          require('../../../../assets/videos/ace.mp4'),
+          require('../../../../assets/videos/star.mp4'),
         ]}
       />
     </ScrollView>
