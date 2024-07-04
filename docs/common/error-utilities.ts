@@ -414,4 +414,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Temporary redirects
   '/guides/react-compiler/': '/preview/react-compiler/',
+
+  // Troubleshooting section
+  '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
 };

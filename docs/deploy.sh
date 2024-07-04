@@ -286,6 +286,9 @@ redirects[guides/using-flipper]=archive/using-flipper
 # Temporary redirects
 redirects[guides/react-compiler]=preview/react-compiler
 
+# Troubleshooting section
+redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
