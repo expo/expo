@@ -125,14 +125,22 @@ struct OpenInCalendarOptions: Record {
   var instanceStartDate: Either<String, Double>?
 }
 
+enum ResponseAction: String, Enumerable {
+  case done
+  case canceled
+  case deleted
+  case responded
+  case saved
+}
+
 struct CalendarResponse: Record {
   @Field
-  var action: String = "done"
+  var action: ResponseAction = .done
 }
 
 struct CalendarSavedResponse: Record {
   @Field
-  var action: String = "saved"
+  var action: ResponseAction = .saved
   @Field
   var id: String? = ""
 }

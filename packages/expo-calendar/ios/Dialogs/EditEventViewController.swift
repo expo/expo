@@ -18,6 +18,6 @@ class EditEventViewController: EKEventEditViewController, UIAdaptivePresentation
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
     onDismiss()
-    promise.resolve(CalendarResponse(action: "canceled"))
+    promise.resolve(CalendarResponse(action: .canceled))
   }
 }
