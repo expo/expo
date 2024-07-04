@@ -70,12 +70,9 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
+    require('./tests/Fetch'),
     optionalRequire(() => require('./tests/SQLiteLegacy'))
   );
-
-  if (['ios', 'web'].includes(Platform.OS)) {
-    modules.push(require('./tests/Fetch'));
-  }
 
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/SQLite'));

@@ -149,7 +149,11 @@ export function test({ describe, expect, it, ...t }) {
     setupTestTimeout(t);
 
     it('should stream response', async () => {
-      const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2');
+      const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+        headers: {
+          Accept: 'text/event-stream',
+        },
+      });
       const reader = resp.body.getReader();
       const chunks = [];
       while (true) {
@@ -171,9 +175,21 @@ export function test({ describe, expect, it, ...t }) {
     it('should process multiple requests concurrently', async () => {
       const resps = await Promise.all([
         fetch('https://httpbin.org/get'),
-        fetch('https://httpbin.org/post', { method: 'POST' }),
-        fetch('https://httpbin.org/patch', { method: 'PATCH' }),
-        fetch('https://httpbin.org/put', { method: 'PUT' }),
+        fetch('https://httpbin.org/post', {
+          method: 'POST',
+          body: 'test',
+          headers: { 'Content-Type': 'text/plain' },
+        }),
+        fetch('https://httpbin.org/patch', {
+          method: 'PATCH',
+          body: 'test',
+          headers: { 'Content-Type': 'text/plain' },
+        }),
+        fetch('https://httpbin.org/put', {
+          method: 'PUT',
+          body: 'test',
+          headers: { 'Content-Type': 'text/plain' },
+        }),
         fetch('https://httpbin.org/delete', { method: 'DELETE' }),
       ]);
 
