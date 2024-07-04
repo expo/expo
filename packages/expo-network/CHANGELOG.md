@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `java.lang.IllegalArgumentException: NetworkCallback was not registered`.
+- [Android] Fix `java.lang.IllegalArgumentException: NetworkCallback was not registered`. ([#30185](https://github.com/expo/expo/pull/30185) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
