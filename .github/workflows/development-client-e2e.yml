@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/development-client-e2e.yml
+      - .github/actions/expo-caches/action.yml
       - packages/expo-dev-*/**
 
 concurrency:

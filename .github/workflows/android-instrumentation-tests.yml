@@ -19,6 +19,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/android-instrumentation-tests.yml
+      - .github/actions/expo-caches/action.yml
       - apps/expo-go/android/**
       - fastlane/**
       # - packages/**/android/**
