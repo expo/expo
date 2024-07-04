@@ -9,23 +9,23 @@ import {
   type ParamListBase,
   validatePathConfig,
 } from '@react-navigation/core';
-import {
-  DefaultTheme,
-  DocumentTitleOptions,
-  LinkingOptions,
-  LinkingContext,
-  LocaleDirection,
-} from '@react-navigation/native';
-import { LocaleDirContext } from '@react-navigation/native/src/LocaleDirContext';
-import { UnhandledLinkingContext } from '@react-navigation/native/src/UnhandledLinkingContext';
-import { useBackButton } from '@react-navigation/native/src/useBackButton';
-import { useDocumentTitle } from '@react-navigation/native/src/useDocumentTitle';
-import { useThenable } from '@react-navigation/native/src/useThenable';
 import * as React from 'react';
 import { I18nManager } from 'react-native';
 import useLatestCallback from 'use-latest-callback';
 
+import { LinkingContext } from '@react-navigation/native/src/LinkingContext';
+import { LocaleDirContext } from '@react-navigation/native/src/LocaleDirContext';
+import { UnhandledLinkingContext } from '@react-navigation/native/src/UnhandledLinkingContext';
+import { useBackButton } from '@react-navigation/native/src/useBackButton';
+import { useDocumentTitle } from '@react-navigation/native/src/useDocumentTitle';
 import { useLinking } from './useLinking';
+import { useThenable } from '@react-navigation/native/src/useThenable';
+import {
+  DefaultTheme,
+  DocumentTitleOptions,
+  LinkingOptions,
+  LocaleDirection,
+} from '@react-navigation/native';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -35,9 +35,9 @@ declare global {
   >;
 }
 
-global.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
+globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
-type Props<ParamList extends object> = NavigationContainerProps & {
+type Props<ParamList extends {}> = NavigationContainerProps & {
   direction?: LocaleDirection;
   linking?: LinkingOptions<ParamList>;
   fallback?: React.ReactNode;
@@ -178,7 +178,7 @@ function NavigationContainerInner(
 }
 
 export const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
-  RootParamList extends object = ReactNavigation.RootParamList,
+  RootParamList extends {} = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;

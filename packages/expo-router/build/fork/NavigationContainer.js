@@ -28,17 +28,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
 const core_1 = require("@react-navigation/core");
-const native_1 = require("@react-navigation/native");
+const React = __importStar(require("react"));
+const react_native_1 = require("react-native");
+const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const LinkingContext_1 = require("@react-navigation/native/src/LinkingContext");
 const LocaleDirContext_1 = require("@react-navigation/native/src/LocaleDirContext");
 const UnhandledLinkingContext_1 = require("@react-navigation/native/src/UnhandledLinkingContext");
 const useBackButton_1 = require("@react-navigation/native/src/useBackButton");
 const useDocumentTitle_1 = require("@react-navigation/native/src/useDocumentTitle");
-const useThenable_1 = require("@react-navigation/native/src/useThenable");
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 const useLinking_1 = require("./useLinking");
-global.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
+const useThenable_1 = require("@react-navigation/native/src/useThenable");
+const native_1 = require("@react-navigation/native");
+globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 /**
  * Container component which holds the navigation state designed for React Native apps.
  * This should be rendered at the root wrapping the whole app.
@@ -121,9 +122,9 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     }
     return (<LocaleDirContext_1.LocaleDirContext.Provider value={direction}>
       <UnhandledLinkingContext_1.UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
-        <native_1.LinkingContext.Provider value={linkingContext}>
+        <LinkingContext_1.LinkingContext.Provider value={linkingContext}>
           <core_1.BaseNavigationContainer {...rest} theme={theme} onReady={onReadyForLinkingHandling} onStateChange={onStateChangeForLinkingHandling} initialState={rest.initialState == null ? initialState : rest.initialState} ref={refContainer}/>
-        </native_1.LinkingContext.Provider>
+        </LinkingContext_1.LinkingContext.Provider>
       </UnhandledLinkingContext_1.UnhandledLinkingContext.Provider>
     </LocaleDirContext_1.LocaleDirContext.Provider>);
 }

@@ -3179,12 +3179,12 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@7.0.0-alpha.19", "@react-navigation/bottom-tabs@7.0.0-rc.33":
-  version "7.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.0-alpha.19.tgz#47f84fa9acbd8bfa48fc66826dcc40f5e2373171"
-  integrity sha512-nLk4ZC06tfnMGbB3BO9kPKi95kWQBpMAlN3AhJc0vdDZLDTbwJgeCfgHHhG0+uUOROVZdvxjx3M4g85Us1yEsQ==
+"@react-navigation/bottom-tabs@7.0.0-rc.13", "@react-navigation/bottom-tabs@7.0.0-rc.33":
+  version "7.0.0-rc.13"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.0-rc.13.tgz#9099f0acb2efaee71d6c6b30b10687ce99ed8700"
+  integrity sha512-lv5YCGaa8YzS0nfZepN80DvhnnnpGDqZz8978xxfX25zYkAzfMU0saACxoNeSpCAaIxcMHZz7I9Xg8g7XMSi7g==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-alpha.14"
+    "@react-navigation/elements" "^2.0.0-rc.7"
     color "^4.2.3"
 
 "@react-navigation/core@7.0.0-rc.15", "@react-navigation/core@^7.0.0-rc.15":
@@ -3200,32 +3200,32 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/drawer@7.0.0-alpha.17", "@react-navigation/drawer@7.0.0-rc.31":
-  version "7.0.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.0.0-alpha.17.tgz#bc52b0a11ace27848f4e35d48edc912f9df2b9de"
-  integrity sha512-PbZA3/m65vYY92mdjJjuk1+6Se6vC7LPKnC6XclPLT7TSbnX7NdNYM1DOMrOaVYfcfnvzC1qBjMje1AQ0ZvEwg==
+"@react-navigation/drawer@7.0.0-rc.11", "@react-navigation/drawer@7.0.0-rc.31":
+  version "7.0.0-rc.11"
+  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.0.0-rc.11.tgz#04ee2e2e3045da72c7d2dd9fc2d0a9d9a8436863"
+  integrity sha512-DOVgQb+0cCwRge3TTDihuvFivPV3fjPsVsA9FnB8D4/2wghkhqskI+zOz2vr89vRv5E3hAkK0pLSMldzGBWJ0A==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-alpha.14"
+    "@react-navigation/elements" "^2.0.0-rc.7"
     color "^4.2.3"
-    react-native-drawer-layout "^4.0.0-alpha.8"
+    react-native-drawer-layout "^4.0.0-rc.3"
     use-latest-callback "^0.1.9"
 
-"@react-navigation/elements@2.0.0-rc.25", "@react-navigation/elements@^2.0.0-alpha.14", "@react-navigation/elements@^2.0.0-rc.25":
+"@react-navigation/elements@2.0.0-rc.25", "@react-navigation/elements@^2.0.0-rc.25", "@react-navigation/elements@^2.0.0-rc.7":
   version "2.0.0-rc.25"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.0.0-rc.25.tgz#9d82aaf1a161e6eba326ff1440591ea631034fd2"
   integrity sha512-zhqJt3ZZHFFDcqykXNgkIBTKbzKp6xQL7Eo21J9OASnQQBDUTS2mMpeGKmtUfMVdZNYugIyIwq6WPaX2sVFAPw==
   dependencies:
     color "^4.2.3"
 
-"@react-navigation/native-stack@7.0.0-alpha.17":
-  version "7.0.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.0.0-alpha.17.tgz#bc5af72eb6aba8161ef28a6ecf9a704b35da8cb0"
-  integrity sha512-LvPbJuWoGSjF1ZKRwJno14uR1PfPj7cR4WejAzPb7g49Xl+wgIs0DNCjCGRHkHdc06TtR/kR71lB6VdtxBPkkQ==
+"@react-navigation/native-stack@7.0.0-rc.8":
+  version "7.0.0-rc.8"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.0.0-rc.8.tgz#dbebc528dc7e39108a3130dfc99701457d9e1cc4"
+  integrity sha512-Tpr7wjA1MnS26thzJ6wXBJmVSJQ1BNBdJQG2R2ht3LXdEuOjeaJIBHX7FKQlmHAwr+llBZgoIv2mOUDEGA6xfA==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-alpha.14"
+    "@react-navigation/elements" "^2.0.0-rc.7"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.0.0-alpha.16", "@react-navigation/native@7.0.0-rc.20":
+"@react-navigation/native@7.0.0-rc.20", "@react-navigation/native@7.0.0-rc.6":
   version "7.0.0-rc.20"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.0.0-rc.20.tgz#961addf42ce8ca5e9b51f268c07852ef508dd16b"
   integrity sha512-fysM5SXgpyalZBYccuzMmT8Eapr5I8GyRMav8NcBAhs/VLmkTPwCYLno4XRAHatQxdXY1MMavwuwcxmmM5wkHQ==
@@ -3236,10 +3236,10 @@
     nanoid "3.3.7"
     use-latest-callback "^0.2.1"
 
-"@react-navigation/routers@7.0.0-alpha.6", "@react-navigation/routers@^7.0.0-rc.8":
-  version "7.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.0.0-alpha.6.tgz#d10fcbc408d94b9b6904b1e97de88422f69954fb"
-  integrity sha512-0V+/WRbgVmrPXW5TjMLxf8NJAHsUoG9G8X4WWmVIf1ASMF3POZM4CCbhEeudhgUxN4QEvkoSIrzvUpoUplQOMw==
+"@react-navigation/routers@7.0.0-rc.3", "@react-navigation/routers@^7.0.0-rc.8":
+  version "7.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.0.0-rc.3.tgz#25827dbde3baadeddf345135623436d4a84b3fa2"
+  integrity sha512-/baauPKSB1ybyZhyEWUUxugBdubWke5tEg5KwIPQRiApVrGo27m/v4sJqE5jlC1vwMgSPw3tbtJuoAk4ogD2oQ==
   dependencies:
     nanoid "3.3.7"
 
@@ -13568,10 +13568,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-drawer-layout@^4.0.0-alpha.8:
-  version "4.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-4.0.0-alpha.8.tgz#4a725befa50afc17a9120a3d3b1d87fd559db5fe"
-  integrity sha512-HaI+otZWjXXpbn+47GIuT8/bAB6890337LOOwVv5wUWSX+eXdJHKbigG5GU9YpQfyQnLPmth74q7/NaWot914w==
+react-native-drawer-layout@^4.0.0-rc.3:
+  version "4.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-4.0.0-rc.3.tgz#8c0a858768150b710fda9727e905943b6bdf39e2"
+  integrity sha512-pqyKhG54RmKwhqTvbB1vor4NzD7r2hNB1mb0zZ/Sd2Lna63A81U/JAK4U9cF5csWW9aopiB6iQ2ii8PTVNzHNA==
   dependencies:
     use-latest-callback "^0.1.9"
 

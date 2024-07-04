@@ -23,9 +23,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
 const react_1 = __importStar(require("react"));
@@ -33,7 +30,7 @@ const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
-const serverLocationContext_1 = __importDefault(require("./global-state/serverLocationContext"));
+const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const statusbar_1 = require("./utils/statusbar");
 const Splash_1 = require("./views/Splash");
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -126,11 +123,11 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     return (<NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <serverLocationContext_1.default.Provider value={serverContext}>
+      <serverLocationContext_1.ServerContext.Provider value={serverContext}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </serverLocationContext_1.default.Provider>
+      </serverLocationContext_1.ServerContext.Provider>
     </NavigationContainer_1.NavigationContainer>);
 }
 let onUnhandledAction;

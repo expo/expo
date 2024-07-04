@@ -5,6 +5,5 @@ export type ServerContextType = {
         search: string;
     };
 };
-declare const ServerContext: import("react").Context<ServerContextType | undefined>;
-export default ServerContext;
+export declare const ServerContext: import("react").Context<ServerContextType | undefined>;
 //# sourceMappingURL=serverLocationContext.d.ts.map

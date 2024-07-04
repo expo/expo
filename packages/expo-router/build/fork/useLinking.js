@@ -33,7 +33,7 @@ const React = __importStar(require("react"));
 /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
 // createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
 const createMemoryHistory_1 = __importDefault(require("./createMemoryHistory"));
-const serverLocationContext_1 = __importDefault(require("../global-state/serverLocationContext"));
+const serverLocationContext_1 = require("../global-state/serverLocationContext");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -127,7 +127,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
         // Otherwise there's an error in the linking configuration
         return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
     }, [ref]);
-    const serverLocation = React.useContext(serverLocationContext_1.default);
+    const serverLocation = React.useContext(serverLocationContext_1.ServerContext);
     const getInitialState = React.useCallback(() => {
         let value;
         if (enabledRef.current) {

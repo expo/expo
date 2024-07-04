@@ -8,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
-import ServerContext, { ServerContextType } from './global-state/serverLocationContext';
+import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';

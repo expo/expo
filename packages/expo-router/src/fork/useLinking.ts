@@ -15,7 +15,7 @@ import * as React from 'react';
 /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
 // createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
 import createMemoryHistory from './createMemoryHistory';
-import ServerLocationContext from '../global-state/serverLocationContext';
+import { ServerContext } from '../global-state/serverLocationContext';
 
 /* End of fork */
 
@@ -155,7 +155,7 @@ export function useLinking(
     [ref]
   );
 
-  const serverLocation = React.useContext(ServerLocationContext);
+  const serverLocation = React.useContext(ServerContext);
 
   const getInitialState = React.useCallback(() => {
     let value: ResultState | undefined;
