@@ -1,7 +1,7 @@
 import { CodedError } from 'expo-modules-core';
 
-import { ActionExtent } from '../ImageManipulator.types';
-import { getContext } from '../utils/getContext.web';
+import { ActionExtent } from '../../ImageManipulator.types';
+import { getContext } from '../utils.web';
 
 export default (canvas: HTMLCanvasElement, options: ActionExtent['extent']) => {
   // ensure values are defined.

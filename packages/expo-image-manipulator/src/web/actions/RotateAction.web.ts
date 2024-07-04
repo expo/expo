@@ -1,5 +1,5 @@
-import { ActionRotate } from '../ImageManipulator.types';
-import { getContext } from '../utils/getContext.web';
+import { ActionRotate } from '../../ImageManipulator.types';
+import { getContext } from '../utils.web';
 
 function sizeFromAngle(
   width: number,

@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 export const name = 'ImageManipulator';
 
 export async function test(t) {
-  t.describe('ImageManipulator', async () => {
+  t.describe('ImageManipulator', () => {
     let image;
 
     t.beforeAll(async () => {
@@ -14,7 +14,7 @@ export async function test(t) {
       await image.downloadAsync();
     });
 
-    t.describe('manipulateAsync()', async () => {
+    t.describe('manipulateAsync()', () => {
       t.it('returns valid image', async () => {
         const result = await ImageManipulator.manipulateAsync(image.localUri, [
           { resize: { width: 100, height: 100 } },

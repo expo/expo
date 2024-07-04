@@ -1,7 +1,7 @@
 import { CodedError } from 'expo-modules-core';
 
-import { ActionCrop } from '../ImageManipulator.types';
-import { getContext } from '../utils/getContext.web';
+import { ActionCrop } from '../../ImageManipulator.types';
+import { getContext } from '../utils.web';
 
 export default (canvas: HTMLCanvasElement, options: ActionCrop['crop']) => {
   // ensure values are defined.
