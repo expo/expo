@@ -107,10 +107,9 @@ export declare class ImageManipulator extends NativeModule {
      */
     manipulate(uri: string): Context;
     /**
-     * @hidden This was removed from the native code on iOS. See `ImageManipulator.ts`
+     * @hidden This was removed from the native code on iOS and Web. See `ImageManipulator.ts`
      * for the JS implementation that uses the new API under the hood.
      * @platform android
-     * @platform web
      */
     manipulateAsync(uri: string, actions: Action[], saveOptions: SaveOptions): any;
 }
@@ -146,6 +145,13 @@ export declare class Context extends SharedObject {
      */
     crop(rect: ActionCrop['crop']): Context;
     /**
+     * Set the image size and offset. If the image is enlarged, unfilled areas are set to the `backgroundColor`.
+     * To position the image, use `originX` and `originY`.
+     *
+     * @platform web
+     */
+    extent(options: ActionExtent['extent']): Context;
+    /**
      * Resets the manipulator context to the originally loaded image.
      */
     reset(): Context;
@@ -170,6 +176,6 @@ export declare class ImageRef extends SharedObject {
      * Saves the image to the file system in the cache directory.
      * @param options A map defining how modified image should be saved.
      */
-    saveAsync(options?: SaveOptions): ImageResult;
+    saveAsync(options?: SaveOptions): Promise<ImageResult>;
 }
 //# sourceMappingURL=ImageManipulator.types.d.ts.map
