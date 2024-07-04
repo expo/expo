@@ -1,7 +1,6 @@
 package expo.modules.camera.records
 
 import android.hardware.camera2.CameraMetadata
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.video.Quality
