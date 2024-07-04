@@ -248,7 +248,9 @@ export async function test(t) {
       t.it('creates an event via UI', async () => {
         const eventData = createEventData();
         await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData);
+        const result = await Calendar.createEventInCalendarAsync(eventData, {
+          startNewActivityTask: false,
+        });
         if (Platform.OS === 'ios') {
           t.expect(result.action).toBe('saved');
           t.expect(typeof result.id).toBe('string');
@@ -273,7 +275,12 @@ export async function test(t) {
         await alertAndWaitForResponse(
           'Please verify event details are shown and close the dialog.'
         );
-        const result = await Calendar.openEventInCalendarAsync({ id: eventId });
+        const result = await Calendar.openEventInCalendarAsync(
+          { id: eventId },
+          {
+            startNewActivityTask: false,
+          }
+        );
         t.expect(result).toEqual({ action: 'done' });
       });
 

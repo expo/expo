@@ -7,32 +7,32 @@ import java.io.Serializable
 
 class CreatedEventOptions : Record, Serializable {
   @Field
-  var title: String? = null
+  val title: String? = null
 
   @Field
-  var location: String? = null
+  val location: String? = null
 
   @Field
-  var notes: String? = null
+  val notes: String? = null
 
   @Field
-  var timeZone: String? = null
+  val timeZone: String? = null
 
   @Field
-  var availability: String? = null
+  val availability: String? = null
 
   @Field
-  var allDay: Boolean? = null
+  val allDay: Boolean? = null
 
   @Field
-  var startDate: String? = null
+  val startDate: String? = null
 
   @Field
-  var endDate: String? = null
+  val endDate: String? = null
 
   @Field
-  var recurrenceRule: ReadableArguments? = null
+  val recurrenceRule: ReadableArguments? = null
 
   @Field
-  var startNewActivityTask: Boolean = true
+  val startNewActivityTask: Boolean = true
 }
