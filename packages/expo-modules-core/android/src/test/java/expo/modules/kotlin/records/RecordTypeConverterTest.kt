@@ -200,6 +200,7 @@ class RecordTypeConverterTest {
   @Test
   fun `primary constructor default values are ignored if using the 'shorthand' class syntax`() {
     // This is NOT the correct behavior but a limitation of the current implementation.
+    // see https://linear.app/expo/issue/ENG-12724
     class MyRecord(
       @Field
       val int: Int = 42,
