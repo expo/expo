@@ -299,7 +299,7 @@ Terms referred in this section are meant to be used consistently throughout the 
 - **"Bare apps"** refer to React Native.
 - **"Custom clients"** refer to development builds.
 
-_A complete list of [Expo-related glossary terms](https://docs.expo.dev/workflow/glossary-of-terms/) is available for further reference._
+_A complete list of [Expo related glossary terms](https://docs.expo.dev/more/glossary-of-terms/) is available for further reference._
 
 # Writing API documentation
 
