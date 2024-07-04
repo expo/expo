@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Fix and update link for `expo-dev-client` in package's README. ([#30162](https://github.com/expo/expo/pull/30162) by [@amandeepmittal](https://github.com/amandeepmittal)).
 - Fixed broken unit test on iOS 17 where `URL()` without scheme returns nil. ([#30178](https://github.com/expo/expo/pull/30178) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes

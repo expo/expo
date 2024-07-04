@@ -13,7 +13,7 @@ The React Native module API does not provide any mechanism to hook into these me
 
 First, you need to have created an Expo module or integrated the Expo modules API in library using the React Native module API. [Learn more](./overview.mdx#setup).
 
-Create a new public Swift class that extends `ExpoAppDelegateSubscriber` from `ExpoModulesCore` and add its name to the `ios.appDelegateSubscribers` array in the [module config](./module-config.mdx). Run `pod install`, and the subscriber will be generated in the **ExpoModulesProvider.swift** file within the application project.
+Create a new public Swift class that extends `ExpoAppDelegateSubscriber` from `ExpoModulesCore` and add its name to the `ios.appDelegateSubscribers` array in the [module config](/modules/module-config/). Run `pod install`, and the subscriber will be generated in the **ExpoModulesProvider.swift** file within the application project.
 
 Now you can subscribe to events by adding delegate functions to your subscriber class. For the full list of functions that you can subscribe to, see the functions that are overridden in [`ExpoAppDelegate.swift`](https://github.com/expo/expo/tree/main/packages/expo-modules-core/ios/AppDelegates/ExpoAppDelegate.swift). App delegate functions that may cause side effects when provided are not supported yet (for example, [`application(_:viewControllerWithRestorationIdentifierPath:coder:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623062-application)).
 
