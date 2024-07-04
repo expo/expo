@@ -5,32 +5,21 @@
  * These types only becoming invalid AFTER the Typed Routes have been generated
  * This is because Typed Routes narrow the type `string` to a union of strings.
  */
-import {
-  Href,
-  RouteSegments,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useSegments,
-} from 'expo-router';
+import { Href, useGlobalSearchParams, useLocalSearchParams, useSegments, Link } from 'expo-router';
 
-export const SiteMap: Href = '/_sitemap';
-
-export const StaticRouteString: Href = '/about';
-export const StaticRouteObject: Href = {
+const SiteMap: Href = '/_sitemap';
+const StaticRouteString: Href = '/about';
+const StaticRouteObject: Href = {
   pathname: './about',
 };
-export const StaticRouteObjectWithParms: Href = {
+const StaticRouteObjectWithParms: Href = {
   pathname: './about',
   params: { test: 'value' },
 };
 // @ts-expect-error
-export const InvalidStaticRoute: Href = '/invalid';
+const InvalidStaticRoute: Href = '/invalid';
 
-export default function Page() {
-  return null;
-}
-
-export function useLocalSearchParamsTest() {
+function useLocalSearchParamsTest() {
   const anyParams = useLocalSearchParams();
   const aboutParams = useLocalSearchParams<'/about'>();
 
@@ -57,7 +46,7 @@ export function useLocalSearchParamsTest() {
   }>();
 }
 
-export function useGlobalSearchParamsTest() {
+function useGlobalSearchParamsTest() {
   const anyParams = useGlobalSearchParams();
   const aboutParams = useGlobalSearchParams<'/about'>();
 
@@ -109,7 +98,7 @@ export function useGlobalSearchParamsTest() {
   >();
 }
 
-export function useSegmentsTest() {
+function useSegmentsTest() {
   const plainSegements = useSegments();
   const firstUnion: '' | 'about' | 'fruit' | '(a)' | '_sitemap' = plainSegements[0];
   const secondUnion: 'fruit' | '[fruit]' | undefined = plainSegements[1];
@@ -123,4 +112,44 @@ export function useSegmentsTest() {
   const secondAppleUnion: '[fruit]' = appleSegments[1];
   // @ts-expect-error - No extra segments are possible
   appleSegments[2];
+}
+
+const link = (
+  <>
+    <Link href="/about" />
+    <Link href={{ pathname: '/about' }} />
+    {/*  @ts-expect-error */}
+    <Link href={{ pathname: '/invalid' }} />
+    {/*  @ts-expect-error - Missing params */}
+    <Link href={{ pathname: '/(a)/fruit/[fruit]' }} />
+    {/*  @ts-expect-error - Missing fruit param */}
+    <Link href={{ pathname: '/(a)/fruit/[fruit]', params: {} }} />
+    <Link
+      href={{
+        pathname: '/(a)/fruit/[fruit]',
+        params: {
+          // @ts-expect-error - string[] is not assignable to string
+          fruit: ['test'],
+        },
+      }}
+    />
+    <Link
+      href={{
+        pathname: '/(a)/fruit/[fruit]',
+        params: {
+          fruit: 'test',
+          test: 'other',
+          number: 1,
+        },
+      }}
+    />
+    <Link href="/fruit/apple" />
+    <Link href={`/fruit/${'apple'}`} />
+    {/* @ts-expect-error - /fruit2/${string} is not valid */}
+    <Link href={`/fruit2/${'apple'}`} />
+  </>
+);
+
+export default function Page() {
+  return null;
 }
