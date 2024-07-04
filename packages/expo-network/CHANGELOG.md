@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `java.lang.IllegalArgumentException: NetworkCallback was not registered`.
+
 ### 💡 Others
 
 ## 6.0.1 — 2024-04-23
