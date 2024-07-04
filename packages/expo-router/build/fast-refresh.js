@@ -16,6 +16,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *  - While this is a React component, it is imported from 'expo-router'
  *  - 'expo-router' has an inverse dependency on _ctx, which is a require.context object
  *
+ * 'generateStaticParams'
+ *  - This is a function that is not a React Component, so it will break Fast Refresh
+ *
  *
  * To resolve this issue, we extend ReactRefresh to flag these exports as React components
  *
@@ -40,15 +43,20 @@ if (process.env.NODE_ENV === 'development') {
              *   2. With each individual export of a module
              */
             isLikelyComponentType(value) {
-                if (typeof value === 'object' && 'unstable_settings' in value) {
-                    expoRouterExports.add(value.unstable_settings);
-                }
-                if (typeof value === 'object' && 'ErrorBoundary' in value) {
-                    expoRouterExports.add(value.ErrorBoundary);
-                }
-                // When ErrorBoundary is exported, the inverse dependency will also include the _ctx file.
-                if (typeof value === 'object' && 'ctx' in value && value.ctx.name === 'metroContext') {
-                    expoRouterExports.add(value.ctx);
+                if (typeof value === 'object') {
+                    if ('unstable_settings' in value) {
+                        expoRouterExports.add(value.unstable_settings);
+                    }
+                    if ('ErrorBoundary' in value) {
+                        expoRouterExports.add(value.ErrorBoundary);
+                    }
+                    if ('generateStaticParams' in value) {
+                        expoRouterExports.add(value.generateStaticParams);
+                    }
+                    // When ErrorBoundary is exported, the inverse dependency will also include the _ctx file.
+                    if ('ctx' in value && value.ctx.name === 'metroContext') {
+                        expoRouterExports.add(value.ctx);
+                    }
                 }
                 return expoRouterExports.has(value) || isLikelyComponentType(value);
             },
