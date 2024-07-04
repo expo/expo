@@ -88,7 +88,7 @@ internal class EnumNoSuchValueException(
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
-  message = "Cannot find type converter for '$forType'."
+  message = "Cannot find type converter for '$forType'. Make sure the class implements `expo.modules.kotlin.records.Record` (i.e. `class MyObj : Record`)."
 )
 
 @DoNotStrip
