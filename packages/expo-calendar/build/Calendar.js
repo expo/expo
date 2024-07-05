@@ -30,7 +30,8 @@ export { PermissionStatus };
 export var CalendarDialogResultActions;
 (function (CalendarDialogResultActions) {
     /**
-     * On Android, this is the only possible result.
+     * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, modified the event, or deleted it.
      * On iOS, this means the user simply closed the dialog.
      * */
     CalendarDialogResultActions["done"] = "done";

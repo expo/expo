@@ -526,7 +526,8 @@ export type DaysOfTheWeek = {
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare enum CalendarDialogResultActions {
     /**
-     * On Android, this is the only possible result.
+     * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, modified the event, or deleted it.
      * On iOS, this means the user simply closed the dialog.
      * */
     done = "done",
@@ -558,7 +559,10 @@ export type CalendarDialogResult = {
  * */
 export type CalendarDialogCreatedEventResult = {
     /**
-     * How user responded to the dialog. On Android, this is always `done`. On iOS, it can be `saved` or `canceled`.
+     * How user responded to the dialog.
+     * On Android, this is always `done` (Android doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, or saved the event).
+     * On iOS, it can be `saved` or `canceled`.
      * */
     action: 'canceled' | 'done' | 'saved';
     /**
