@@ -23,6 +23,6 @@ class ViewEventViewController: UINavigationController, UIAdaptivePresentationCon
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
     onDismiss()
-    promise.resolve(CalendarResponse(action: .canceled))
+    promise.resolve(DialogViewResponse(action: .canceled))
   }
 }

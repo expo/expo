@@ -214,8 +214,9 @@ class CalendarModule : Module() {
     }
 
     AsyncFunction("editEventInCalendarAsync") Coroutine { params: ViewedEventOptions ->
-      val result = viewEventLauncher.launch(params)
-      return@Coroutine result
+      viewEventLauncher.launch(params)
+      val editResult = CreateEventIntentResult()
+      return@Coroutine editResult
     }
 
     /**

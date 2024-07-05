@@ -137,14 +137,14 @@ enum ResponseAction: String, Enumerable {
   case saved
 }
 
-struct CalendarResponse: Record {
+struct DialogViewResponse: Record {
   @Field
   var action: ResponseAction = .done
 }
 
-struct CalendarSavedResponse: Record {
+struct DialogEditResponse: Record {
   @Field
-  var action: ResponseAction = .saved
+  var action: ResponseAction = .canceled
   @Field
   var id: String? = nil
 }

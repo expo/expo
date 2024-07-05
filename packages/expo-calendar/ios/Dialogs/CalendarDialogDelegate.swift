@@ -12,23 +12,23 @@ class CalendarDialogDelegate: NSObject, EKEventEditViewDelegate, EKEventViewDele
 
   func eventEditViewController(_ controller: EKEventEditViewController, didCompleteWith action: EKEventEditViewAction) {
     switch action {
-    case .canceled: promise.resolve(CalendarResponse(action: .canceled))
-    case .deleted: promise.resolve(CalendarResponse(action: .deleted))
+    case .canceled: promise.resolve(DialogEditResponse(action: .canceled))
+    case .deleted: promise.resolve(DialogEditResponse(action: .deleted))
     case .saved:
       let evt = controller.event
       let id = evt?.calendarItemIdentifier
-      promise.resolve(CalendarSavedResponse(id: id))
-    default: promise.resolve(CalendarResponse())
+      promise.resolve(DialogEditResponse(action: .saved, id: id))
+    default: promise.resolve(DialogEditResponse())
     }
     controller.dismiss(animated: true, completion: onComplete)
   }
 
   func eventViewController(_ controller: EKEventViewController, didCompleteWith action: EKEventViewAction) {
     switch action {
-    case .responded: promise.resolve(CalendarResponse(action: .responded))
-    case .deleted: promise.resolve(CalendarResponse(action: .deleted))
+    case .responded: promise.resolve(DialogViewResponse(action: .responded))
+    case .deleted: promise.resolve(DialogViewResponse(action: .deleted))
     case .done: fallthrough
-    default: promise.resolve(CalendarResponse())
+    default: promise.resolve(DialogViewResponse())
     }
     controller.dismiss(animated: true, completion: onComplete)
   }

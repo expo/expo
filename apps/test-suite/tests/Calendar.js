@@ -294,6 +294,7 @@ export async function test(t) {
         await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
         const result = await Calendar.editEventInCalendarAsync({ id: eventId }, dontStartNewTask);
         t.expect(typeof result.action).toBe('string'); // done or canceled
+        t.expect(result.id).toBe(null);
       });
     });
 
