@@ -565,6 +565,7 @@ export enum CalendarDialogResultActions {
   /**
    * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
    * the user may have canceled the dialog, modified the event, or deleted it.
+   *
    * On iOS, this means the user simply closed the dialog.
    * */
   done = 'done',
@@ -587,7 +588,7 @@ export enum CalendarDialogResultActions {
 
 /**
  * The result of presenting the calendar dialog for viewing or editing. It indicates how user responded to the dialog.
- * On Android, the `action` is always `done`. On iOS, more constants are available.
+ * On Android, the `action` is always `done`. On iOS, more `action` values are possible.
  * */
 export type CalendarDialogResult = {
   action: CalendarDialogResultActions;
@@ -601,6 +602,7 @@ export type CalendarDialogCreatedEventResult = {
    * How user responded to the dialog.
    * On Android, this is always `done` (Android doesn't provide enough information to determine the user's action -
    * the user may have canceled the dialog, or saved the event).
+   *
    * On iOS, it can be `saved` or `canceled`.
    * */
   action: 'canceled' | 'done' | 'saved';
