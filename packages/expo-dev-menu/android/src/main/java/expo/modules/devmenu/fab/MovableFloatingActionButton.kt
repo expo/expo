@@ -1,5 +1,6 @@
 package expo.modules.devmenu.fab
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -19,7 +20,11 @@ private const val CLICK_DRAG_TOLERANCE = 10f
 private const val MARGIN = 24
 private const val SIZE = 150
 
-class MovableFloatingActionButton(context: Context) : FrameLayout(context), View.OnTouchListener {
+@SuppressLint("ViewConstructor")
+class MovableFloatingActionButton(
+  context: Context,
+  private val updateSystemGestureExclusionRects: () -> Unit
+) : FrameLayout(context), View.OnTouchListener {
   private var downRawX = 0f
   private var downRawY = 0f
   private var dX = 0f
@@ -28,6 +33,7 @@ class MovableFloatingActionButton(context: Context) : FrameLayout(context), View
 
   // stencilPath is used to make the view rounded
   private val stencilPath = Path()
+
   // eventRegion is used to add rounded corners to the touch area
   private var eventRegion = Region()
 
@@ -140,6 +146,7 @@ class MovableFloatingActionButton(context: Context) : FrameLayout(context), View
             .setDuration(100)
             .scaleX(1f)
             .scaleY(1f)
+            .withEndAction { updateSystemGestureExclusionRects() }
             .start()
 
           true
