@@ -167,14 +167,20 @@ internal final class Conversions {
     }
     if let appContext {
       if let value = value as? JavaScriptObjectBuilder {
-        return try? value.build(appContext: appContext)
+        // TODO: Handle errors
+        let object = try? value.build(appContext: appContext)
+        return object as Any
       }
 
       // If the returned value is a native shared object, create its JS representation and add the pair to the registry of shared objects.
       if let value = value as? SharedObject, let dynamicType = asDynamicSharedObjectType(dynamicType) {
+        // If the JS object already exists, just return it.
+        if let object = value.getJavaScriptObject() {
+          return object
+        }
         guard let object = try? appContext.newObject(nativeClassId: dynamicType.typeIdentifier) else {
           log.warn("Unable to create a JS object for \(dynamicType.description)")
-          return Optional<Any>.none
+          return Optional<Any>.none as Any
         }
         appContext.sharedObjectRegistry.add(native: value, javaScript: object)
         return object
