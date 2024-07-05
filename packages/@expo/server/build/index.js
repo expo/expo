@@ -63,7 +63,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     if (!node_fs_1.default.existsSync(filePath)) {
         return null;
     }
-    if (/\.[cj]s$/.test(filePath)) {
+    if (/\.c?js$/.test(filePath)) {
         return require(filePath);
     }
     return import(filePath);
