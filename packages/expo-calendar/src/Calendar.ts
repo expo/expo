@@ -1268,7 +1268,7 @@ export async function getSourceAsync(id: string): Promise<Source> {
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
- * @deprecated use `openEventInCalendarAsync` instead
+ * @deprecated Use [`openEventInCalendarAsync`](#openeventincalendarasyncparams-presentationoptions) instead.
  * @header systemProvidedUI
  */
 export function openEventInCalendar(id: string): void {
