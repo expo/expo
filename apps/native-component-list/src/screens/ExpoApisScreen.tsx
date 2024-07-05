@@ -66,7 +66,6 @@ const screens = [
   'NetInfo',
   'Notification',
   'Pedometer',
-  'Permissions',
   'Print',
   'Random',
   'SMS',

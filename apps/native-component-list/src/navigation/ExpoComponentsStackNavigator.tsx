@@ -345,12 +345,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GifScreen'));
-    },
-    name: 'Gif',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/SegmentedControlScreen'));
     },
     name: 'SegmentedControl',
