@@ -16,13 +16,14 @@
 - Align source map behavior with community exports. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
 - Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
+- Include moduleIDs when hashing chunks of JS. ([#29733](https://github.com/expo/expo/pull/30224) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
 - Fork collectDependencies to support customizations for tree shaking and RSC. ([#30140](https://github.com/expo/expo/pull/30140) by [@EvanBacon](https://github.com/EvanBacon))
 - Rework mini-metro tests to support full transformation. ([#29980](https://github.com/expo/expo/pull/29980) by [@EvanBacon](https://github.com/EvanBacon))
 - Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
-- Upgrade `glob@7` to `glob@10`. ([#29929](https://github.com/expo/expo/pull/29929) by [@byCedric](https://github.com/byCedric))
+- Upgrade `glob@7` to `glob@10`. ([#30224](https://github.com/expo/expo/pull/29929) by [@Nsquik](https://github.com/Nsquik))
 
 ## 0.18.4 — 2024-05-16
 
