@@ -31,14 +31,11 @@ export async function test({ describe, expect, it, ...t }) {
       expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
     });
 
-    it('Allows changing the path property', async () => {
+    it("Doesn't allow changing the path property", async () => {
       const file = new File('file:///path/to/file');
-      file.path = 'file:///new/path';
-      if (Platform.OS === 'ios') {
-        expect(file.path).toBe('file:///new/path');
-      } else if (Platform.OS === 'android') {
-        expect(file.path).toBe('file:///new/path');
-      }
+      expect(() => {
+        file.path = 'file:///new/path';
+      }).toThrow();
     });
 
     it('Writes a string to a file reference', async () => {

@@ -45,9 +45,6 @@ class FileSystemNextModule : Module() {
 
       Property("path")
         .get { file: FileSystemNextFile -> return@get Uri.fromFile(file.path) }
-        .set { file: FileSystemNextFile, newPath: String ->
-          file.path = File(URI(newPath).path)
-        }
     }
 
     Class(FileSystemNextDirectory::class) {
@@ -73,9 +70,6 @@ class FileSystemNextModule : Module() {
 
       Property("path")
         .get { directory: FileSystemNextDirectory -> return@get Uri.fromFile(directory.path) }
-        .set { directory: FileSystemNextDirectory, newPath: URI ->
-          directory.path = File(newPath.path)
-        }
     }
   }
 }

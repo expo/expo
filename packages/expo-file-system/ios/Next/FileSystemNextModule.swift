@@ -40,10 +40,6 @@ public final class FileSystemNextModule: Module {
       Property("path") { file in
         return file.url.absoluteString
       }
-      .set { (file, value: URL) in
-        // document this does not copy/move the file, only changes the ref
-        file.url = value
-      }
     }
 
     Class(FileSystemNextDirectory.self) {
@@ -70,10 +66,6 @@ public final class FileSystemNextModule: Module {
 
       Property("path") { directory in
         return directory.url.absoluteString
-      }
-      .set { (directory, value: URL) in
-        // document this does not copy/move the file, only changes the ref
-        directory.url = value
       }
     }
   }
