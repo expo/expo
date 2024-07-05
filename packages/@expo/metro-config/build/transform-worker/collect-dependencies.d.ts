@@ -1,6 +1,5 @@
-import type { ParseResult } from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
-import * as types from '@babel/types';
+import * as t from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
 type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
 type AllowOptionalDependenciesWithOptions = {
@@ -25,17 +24,17 @@ type MutableDependencyData = {
     key: string;
     asyncType: AsyncDependencyType | null;
     isOptional?: boolean;
-    locs: readonly types.SourceLocation[];
+    locs: readonly t.SourceLocation[];
     contextParams?: RequireContextParams;
 };
 type DependencyData = Readonly<MutableDependencyData>;
 type MutableInternalDependency = MutableDependencyData & {
-    locs: types.SourceLocation[];
+    locs: t.SourceLocation[];
     index: number;
     name: string;
 };
-type InternalDependency = Readonly<MutableInternalDependency>;
-type State = {
+export type InternalDependency = Readonly<MutableInternalDependency>;
+export type State = {
     asyncRequireModulePathStringLiteral: StringLiteral | null;
     dependencyCalls: Set<string>;
     dependencyRegistry: DependencyRegistry;
@@ -46,7 +45,7 @@ type State = {
     allowOptionalDependencies: AllowOptionalDependencies;
     unstable_allowRequireContext: boolean;
 };
-type Options = Readonly<{
+export type Options = Readonly<{
     asyncRequireModulePath: string;
     dependencyMapName?: string | null;
     dynamicRequires: DynamicRequiresBehavior;
@@ -56,8 +55,8 @@ type Options = Readonly<{
     dependencyTransformer?: DependencyTransformer;
     unstable_allowRequireContext: boolean;
 }>;
-export type CollectedDependencies = Readonly<{
-    ast: ParseResult<types.File>;
+export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
+    ast: TAst;
     dependencyMapName: string;
     dependencies: readonly Dependency[];
 }>;
@@ -74,7 +73,7 @@ type ImportQualifier = Readonly<{
     optional: boolean;
     contextParams?: RequireContextParams;
 }>;
-declare function collectDependencies(ast: CollectedDependencies['ast'], options: Options): CollectedDependencies;
+declare function collectDependencies<TAst extends t.File>(ast: TAst, options: Options): CollectedDependencies<TAst>;
 declare class DependencyRegistry {
     private _dependencies;
     registerDependency(qualifier: ImportQualifier): InternalDependency;
