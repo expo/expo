@@ -525,7 +525,7 @@ export type DaysOfTheWeek = {
 };
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 /**
- * Enum that indicates how user responded to the dialog for viewing or editing an event.
+ * Enum containing all possible user responses to the calendar UI dialogs.
  * */
 export declare enum CalendarDialogResultActions {
     /**
@@ -549,29 +549,34 @@ export declare enum CalendarDialogResultActions {
      * The user responded to and saved a pending event invitation.
      * @platform ios
      * */
-    responded = "responded"
+    responded = "responded",
+    /**
+     * The user modified an existing event.
+     * @platform ios
+     * */
+    saved = "saved"
 }
 /**
- * The result of presenting the calendar dialog for viewing or editing. It indicates how user responded to the dialog.
+ * The result of presenting the calendar dialog for viewing an event. It indicates how user responded to the dialog.
  * On Android, the `action` is always `done`. On iOS, more `action` values are possible.
  * */
-export type CalendarDialogResult = {
-    action: CalendarDialogResultActions;
+export type ViewEventDialogResult = {
+    action: Extract<CalendarDialogResultActions, 'done' | 'canceled' | 'deleted' | 'responded'>;
 };
 /**
- * The result of presenting a calendar dialog with `createEventInCalendarAsync`.
+ * The result of presenting a calendar dialog for creating or editing an event.
  * */
-export type CalendarDialogCreatedEventResult = {
+export type DialogEventResult = {
     /**
      * How user responded to the dialog.
      * On Android, this is always `done` (Android doesn't provide enough information to determine the user's action -
-     * the user may have canceled the dialog, or saved the event).
+     * the user may have canceled the dialog, saved or deleted the event).
      *
-     * On iOS, it can be `saved` or `canceled`.
+     * On iOS, it can be `saved`, `canceled` or `deleted`.
      * */
-    action: 'canceled' | 'done' | 'saved';
+    action: Extract<CalendarDialogResultActions, 'done' | 'saved' | 'canceled' | 'deleted'>;
     /**
-     * The ID of the newly created event. On Android, this is always `null`. On iOS, this is always a string.
+     * The ID of the event that was created or edited. On Android, this is always `null`. On iOS, this is always a string.
      * */
     id: string | null;
 };
@@ -604,19 +609,19 @@ export type CalendarDialogParams = {
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
-export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Event>, 'id'>, presentationOptions?: PresentationOptions): Promise<CalendarDialogCreatedEventResult>;
+export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Event>, 'id'>, presentationOptions?: PresentationOptions): Promise<DialogEventResult>;
 /**
  * Launches the calendar UI provided by the OS to preview an event.
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
-export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<CalendarDialogResult>;
+export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<ViewEventDialogResult>;
 /**
  * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
-export declare function editEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<CalendarDialogResult>;
+export declare function editEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<DialogEventResult>;
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
  *

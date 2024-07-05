@@ -28,7 +28,7 @@ export var MonthOfTheYear;
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
 /**
- * Enum that indicates how user responded to the dialog for viewing or editing an event.
+ * Enum containing all possible user responses to the calendar UI dialogs.
  * */
 export var CalendarDialogResultActions;
 (function (CalendarDialogResultActions) {
@@ -54,6 +54,11 @@ export var CalendarDialogResultActions;
      * @platform ios
      * */
     CalendarDialogResultActions["responded"] = "responded";
+    /**
+     * The user modified an existing event.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["saved"] = "saved";
 })(CalendarDialogResultActions || (CalendarDialogResultActions = {}));
 /**
  * Launches the calendar UI provided by the OS to create a new event.
