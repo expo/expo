@@ -28,7 +28,7 @@ export var MonthOfTheYear;
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
 /**
- * Enum containing all possible user responses to the calendar UI dialogs.
+ * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
  * */
 export var CalendarDialogResultActions;
 (function (CalendarDialogResultActions) {
