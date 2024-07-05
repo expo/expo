@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for `.cjs` API route files ([#30205](https://github.com/expo/expo/pull/30205) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 ## 0.4.3 — 2024-06-10
