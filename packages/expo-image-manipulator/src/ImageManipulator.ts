@@ -43,11 +43,9 @@ export async function manipulateAsync(
       context.flip(action.flip);
     } else if ('crop' in action) {
       context.crop(action.crop);
+    } else if ('extent' in action && context.extent) {
+      context.extent(action.extent);
     }
-    // TODO: Add support for `extent` action once web is re-implemented.
-    // else if ('extent' in action) {
-    //   context.extent(action.extent);
-    // }
   }
   const image = await context.renderAsync();
   const result = await image.saveAsync({ format, ...rest });

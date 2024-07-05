@@ -1,5 +1,5 @@
-import { ActionFlip, FlipType } from '../ImageManipulator.types';
-import { getContext } from '../utils/getContext.web';
+import { ActionFlip, FlipType } from '../../ImageManipulator.types';
+import { getContext } from '../utils.web';
 
 export default (canvas: HTMLCanvasElement, flip: ActionFlip['flip']) => {
   const xFlip = flip === FlipType.Horizontal;

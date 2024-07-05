@@ -1,5 +1,5 @@
-import { ActionResize } from '../ImageManipulator.types';
-import { getContext } from '../utils/getContext.web';
+import { ActionResize } from '../../ImageManipulator.types';
+import { getContext } from '../utils.web';
 
 /**
  * Hermite resize - fast image resize/resample using Hermite filter. 1 cpu version!

@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Introduce a new API for image manipulation. ([#30135](https://github.com/expo/expo/pull/30135) by [@tsapeta](https://github.com/tsapeta))
+- [iOS][Web] Introduce a new API for image manipulation. ([#30135](https://github.com/expo/expo/pull/30135), [#30194](https://github.com/expo/expo/pull/30194) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

@@ -95,7 +95,7 @@ class SharedObject<TEventsMap extends Record<never, never>>
   implements SharedObjectType
 {
   release(): void {
-    throw new Error('Method not implemented.');
+    // no-op on Web, but subclasses can override it if needed.
   }
 }
 
