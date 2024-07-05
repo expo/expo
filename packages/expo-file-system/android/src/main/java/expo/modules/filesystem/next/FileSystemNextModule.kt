@@ -51,8 +51,8 @@ class FileSystemNextModule : Module() {
     }
 
     Class(FileSystemNextDirectory::class) {
-      Constructor { path: String ->
-        FileSystemNextDirectory(File(URI(path).path))
+      Constructor { path: URI ->
+        FileSystemNextDirectory(File(path.path))
       }
 
       Function("delete") { directory: FileSystemNextDirectory ->
