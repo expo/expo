@@ -53,10 +53,6 @@ jobs:
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
         run: yarn lint-prose
-      - name: ⚠️ Danger check
-        run: yarn danger ci
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 🏗️ Build Docs website
         run: yarn export-preview
         timeout-minutes: 20

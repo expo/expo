@@ -6,6 +6,8 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.google.common.truth.Truth
+import expo.modules.kotlin.EnumWithInt
+import expo.modules.kotlin.EnumWithString
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import org.junit.Test
@@ -154,6 +156,12 @@ class JSTypeConverterTest {
 
       @Field
       val stringList = listOf("s1", "s2")
+
+      @Field
+      val intEnum = EnumWithInt.VALUE1
+
+      @Field
+      val stringEnum = EnumWithString.VALUE1
     }
 
     val record = MyRecord()
@@ -177,5 +185,11 @@ class JSTypeConverterTest {
     val stringList = convertedRecord.getArray("stringList")
     Truth.assertThat(stringList?.getString(0)).isEqualTo("s1")
     Truth.assertThat(stringList?.getString(1)).isEqualTo("s2")
+
+    val intEnum = convertedRecord.getInt("intEnum")
+    Truth.assertThat(intEnum).isEqualTo(1)
+
+    val stringEnum = convertedRecord.getString("stringEnum")
+    Truth.assertThat(stringEnum).isEqualTo("value1")
   }
 }

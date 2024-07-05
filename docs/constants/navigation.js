@@ -284,6 +284,7 @@ const general = [
         makePage('app-signing/existing-credentials.mdx'),
         makePage('app-signing/syncing-credentials.mdx'),
         makePage('app-signing/security.mdx'),
+        makePage('app-signing/apple-developer-program-roles-and-permissions.mdx'),
       ],
       { expanded: false }
     ),
@@ -410,7 +411,6 @@ const general = [
       makePage('eas/webhooks.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/troubleshooting-proxies.mdx'),
         makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
@@ -426,7 +426,6 @@ const general = [
         makePage('guides/facebook-authentication.mdx'),
         makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
-        makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
@@ -449,6 +448,14 @@ const general = [
         makePage('billing/invoices-and-receipts.mdx'),
         makePage('billing/usage-based-pricing.mdx'),
         makePage('billing/faq.mdx'),
+      ]),
+      makeSection('Troubleshooting', [
+        makePage('troubleshooting/overview.mdx'),
+        makePage('troubleshooting/application-has-not-been-registered.mdx'),
+        makePage('troubleshooting/clear-cache-macos-linux.mdx'),
+        makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/react-native-version-mismatch.mdx'),
+        makePage('troubleshooting/proxies.mdx'),
       ]),
     ],
     { expanded: true }
@@ -552,6 +559,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
+    makePage('archive/using-flipper.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

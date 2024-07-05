@@ -15,18 +15,7 @@ import * as babylon from '@babel/parser';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as types from '@babel/types';
-import type { TransformResultDependency } from 'metro/src/DeltaBundler';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import collectDependencies, {
-  InvalidRequireCallError as InternalInvalidRequireCallError,
-  Dependency,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
-import type {
-  DependencyTransformer,
-  DynamicRequiresBehavior,
-  Options as CollectDependenciesOptions,
-  State,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import countLines from 'metro/src/lib/countLines';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
@@ -45,6 +34,15 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import collectDependencies, {
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+  Dependency,
+  DependencyTransformer,
+  DynamicRequiresBehavior,
+  CollectedDependencies,
+  Options as CollectDependenciesOptions,
+  State,
+} from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
@@ -80,7 +78,7 @@ interface TransformationContext {
 }
 
 interface TransformResponse {
-  readonly dependencies: readonly TransformResultDependency[];
+  readonly dependencies: CollectedDependencies['dependencies'];
   readonly output: readonly ExpoJsOutput[];
 }
 
@@ -422,7 +420,12 @@ async function transformJS(
           unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
       }));
       // console.log('>', dependencies);
-      collectDependenciesOptions.dependencyMapName = dependencyMapName;
+
+      // Ensure we use the same name for the second pass of the dependency collection in the serializer.
+      collectDependenciesOptions = {
+        ...collectDependenciesOptions,
+        dependencyMapName,
+      };
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);

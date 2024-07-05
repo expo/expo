@@ -73,7 +73,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
 
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     let view = super.hitTest(point, with: event)
-    if view == self {
+    if view == self && event?.type == .touches {
       bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true)
     }
 

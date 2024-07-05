@@ -15,23 +15,11 @@ export type RecordingInput = {
     type: string;
     uid: string;
 };
-export type AudioPlayerState = {
-    isLoaded: boolean;
-    isLooping: boolean;
-    isMuted: boolean;
-    positionMillis: number;
-    durationMillis: number;
-    rate: number;
-    volume: number;
-    playing: boolean;
-    audioPan: number;
-    shouldCorrectPitch: boolean;
-};
 export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
 export type AudioStatus = {
     id: number;
     currentTime: number;
-    status: string;
+    playbackState: string;
     timeControlStatus: string;
     reasonForWaitingToPlay: string;
     mute: boolean;
