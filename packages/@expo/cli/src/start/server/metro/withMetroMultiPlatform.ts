@@ -333,19 +333,28 @@ export function withExtendedResolver(
   // React Native strict version validates the imported React Native versions against the project's version.
   // Using only this version of React Native prevents multiple versions from being bundled.
   function createReactNativeStrictVersionResolver(enabled = false): ExpoCustomMetroResolver {
+    // Disable this resolver when not enabled
+    if (!enabled) return () => null;
+
     // Load the "correct" version of React Native based on the project's version
-    const reactNativePath = path.dirname(
-      resolveFrom(config.projectRoot, 'react-native/package.json')
-    );
-    const reactNativeVersion = require(path.join(reactNativePath, 'package.json')).version;
+    const reactNativePackage = resolveFrom.silent(config.projectRoot, 'react-native/package.json');
+    const reactNativePath = !reactNativePackage ? null : path.dirname(reactNativePackage);
+    const reactNativeVersion = !reactNativePackage ? null : require(reactNativePackage).version;
+
+    // Disable the resolver when the React Native package can't be resolved
+    if (!reactNativePath) {
+      Log.warn(
+        `React Native strict version validation is enabled but react-native can't be resolved.`
+      );
+      return () => null;
+    }
 
     // Only warn once, put extra information in the debug logs
     let warnedMultipleReactNativeVersions = false;
 
     return (context, moduleName, platform) => {
-      // Only validate when enabled
       // Only validate React Native imports
-      if (!enabled || !(moduleName === 'react-native' || moduleName.startsWith('react-native/'))) {
+      if (!(moduleName === 'react-native' || moduleName.startsWith('react-native/'))) {
         return null;
       }
 
