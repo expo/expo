@@ -666,6 +666,9 @@ export var AttendeeRole;
      * @platform ios
      */
     AttendeeRole["CHAIR"] = "chair";
+    /**
+     * @platform ios
+     */
     AttendeeRole["NON_PARTICIPANT"] = "nonParticipant";
     /**
      * @platform android

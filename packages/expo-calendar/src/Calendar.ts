@@ -1304,6 +1304,9 @@ export enum AttendeeRole {
    * @platform ios
    */
   CHAIR = 'chair',
+  /**
+   * @platform ios
+   */
   NON_PARTICIPANT = 'nonParticipant',
   /**
    * @platform android
