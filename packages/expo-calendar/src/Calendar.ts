@@ -598,7 +598,7 @@ export type OpenEventDialogResult = {
   /**
    * Indicates how user responded to the dialog.
    * On Android, the `action` is always `done`.
-   * On iOS, more `action` values are possible.
+   * On iOS, it can be `done`, `canceled`, `deleted` or `responded`.
    * */
   action: Extract<CalendarDialogResultActions, 'done' | 'canceled' | 'deleted' | 'responded'>;
 };
