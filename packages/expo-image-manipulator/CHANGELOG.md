@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Use the `src` folder as the Metro target. ([#30079](https://github.com/expo/expo/pull/30079) by [@tsapeta](https://github.com/tsapeta))
+- Prefer `UIGraphicsImageRenderer` over `UIGraphicsBeginImageContext`.
 
 ## 12.0.5 — 2024-05-13
 
