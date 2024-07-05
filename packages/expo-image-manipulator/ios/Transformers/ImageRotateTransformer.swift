@@ -11,7 +11,7 @@ internal struct ImageRotateTransformer: ImageTransformer {
     guard let cgImage = image.cgImage else {
       throw ImageNotFoundException()
     }
-    let rads = rotate * Double.pi / 180
+    let rads = rotate * .pi / 180
     let rotatedView = UIView(frame: CGRect(origin: .zero, size: image.size))
 
     rotatedView.transform = CGAffineTransform(rotationAngle: rads)
@@ -19,11 +19,12 @@ internal struct ImageRotateTransformer: ImageTransformer {
     let rotatedSize = CGSize(width: rotatedView.frame.size.width.rounded(.down), height: rotatedView.frame.size.height.rounded(.down))
     let origin = CGPoint(x: -image.size.width / 2, y: -image.size.height / 2)
 
-    return try drawInNewContext(size: rotatedSize) { context in
-      context.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
-      context.rotate(by: rads)
-      context.scaleBy(x: 1.0, y: -1.0)
-      context.draw(cgImage, in: CGRect(origin: origin, size: image.size))
+    return drawInNewContext(size: rotatedSize) { context in
+      let cgContext = context.cgContext
+      cgContext.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
+      cgContext.rotate(by: rads)
+      cgContext.scaleBy(x: 1.0, y: -1.0)
+      cgContext.draw(cgImage, in: CGRect(origin: origin, size: image.size))
     }
   }
 }
