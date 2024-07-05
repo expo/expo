@@ -618,7 +618,7 @@ export type DialogEventResult = {
   /**
    * The ID of the event that was created or edited. On Android, this is always `null`.
    *
-   * On iOS, this is a string when user confirms the creation or editing of the event. Otherwise, it's `null`.
+   * On iOS, this is a string when user confirms the creation or editing of an event. Otherwise, it's `null`.
    * */
   id: string | null;
 };
