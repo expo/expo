@@ -337,6 +337,7 @@ export function withExtendedResolver(
     const reactNativePath = path.dirname(
       resolveFrom(config.projectRoot, 'react-native/package.json')
     );
+    const reactNativeVersion = require(path.join(reactNativePath, 'package.json')).version;
 
     // Only warn once, put extra information in the debug logs
     let warnedMultipleReactNativeVersions = false;
@@ -371,12 +372,14 @@ export function withExtendedResolver(
       // Inform the user of the resolution change
       if (!warnedMultipleReactNativeVersions) {
         warnedMultipleReactNativeVersions = true;
-        Log.warn(`Multiple React Native versions detected, resolving only: ${reactNativePath}`);
+        Log.warn(
+          `\nMultiple React Native versions detected, forcing only: react-native@${reactNativeVersion}`
+        );
       }
 
       // Provide all information in the debug logs
       debug(
-        `Redirecting React Native module "${moduleName}" to "${redirectPath}", imported from: ${context.originModulePath}`
+        `Redirected module "${moduleName}" to "${redirectPath}", imported from: ${context.originModulePath}`
       );
 
       return redirectResolved;
@@ -696,7 +699,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
-    isReactNativeStrictVersionEnabled: boolean,
+    isReactNativeStrictVersionEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -759,6 +762,7 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isReactCanaryEnabled,
+    isReactNativeStrictVersionEnabled,
     getMetroBundler,
   });
 }
