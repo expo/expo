@@ -27,6 +27,9 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
+/**
+ * Enum that indicates how user responded to the dialog for viewing or editing an event.
+ * */
 export var CalendarDialogResultActions;
 (function (CalendarDialogResultActions) {
     /**

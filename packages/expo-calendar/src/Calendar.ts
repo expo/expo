@@ -558,6 +558,9 @@ export type DaysOfTheWeek = {
 
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
+/**
+ * Enum that indicates how user responded to the dialog for viewing or editing an event.
+ * */
 export enum CalendarDialogResultActions {
   /**
    * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
