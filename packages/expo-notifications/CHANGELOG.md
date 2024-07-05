@@ -12,6 +12,12 @@
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
+## 0.28.10 - 2024-07-05
+
+### 🐛 Bug fixes
+
+- [Android] Android 11 crash when click foreground notifications. ([#30207](https://github.com/expo/expo/pull/30207) by [@GrinZero](https://github.com/GrinZero))
+
 ## 0.28.9 - 2024-06-12
 
 _This version does not introduce any user-facing changes._
