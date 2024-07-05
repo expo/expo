@@ -334,6 +334,8 @@ public class CalendarModule: Module {
 
       let controller = EKEventViewController()
       controller.event = calendarEvent
+      controller.allowsEditing = opts.allowsEditing
+      controller.allowsCalendarPreview = opts.allowsCalendarPreview
       self.calendarDialogDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
       controller.delegate = self.calendarDialogDelegate
       let navController = ViewEventViewController(rootViewController: controller, promise: promise, onDismiss: self.unsetDelegate)

@@ -123,6 +123,10 @@ struct OpenInCalendarOptions: Record {
   var id: String
   @Field
   var instanceStartDate: Either<String, Double>?
+  @Field
+  var allowsEditing: Bool = false
+  @Field
+  var allowsCalendarPreview: Bool = false
 }
 
 enum ResponseAction: String, Enumerable {

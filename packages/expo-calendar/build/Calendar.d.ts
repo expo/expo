@@ -551,7 +551,7 @@ export declare enum CalendarDialogResultActions {
      * */
     responded = "responded",
     /**
-     * The user modified an existing event.
+     * The user saved a new event or modified an existing one.
      * @platform ios
      * */
     saved = "saved"
@@ -589,6 +589,27 @@ export type PresentationOptions = {
      */
     startNewActivityTask?: boolean;
 };
+export type OpenEventPresentationOptions = PresentationOptions & {
+    /**
+     * Whether to allow the user to edit the previewed event.
+     * This property applies only to events in calendars created by the user.
+     *
+     * Note that if the user edits the event, the returned action is the one that user performs last.
+     * For example, when user previews the event, confirms some edits and finally dismisses the dialog, the event is edited, but response is `canceled`.
+     *
+     * @default false
+     * @platform ios
+     * */
+    allowsEditing?: boolean;
+    /**
+     * Determines whether event can be shown in calendar day view preview.
+     * This property applies only to invitations.
+     *
+     * @default false
+     * @platform ios
+     * */
+    allowsCalendarPreview?: boolean;
+};
 export type CalendarDialogParams = {
     /**
      * ID of the event to be presented in the calendar UI.
@@ -615,7 +636,7 @@ export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Even
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
-export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<ViewEventDialogResult>;
+export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: OpenEventPresentationOptions): Promise<ViewEventDialogResult>;
 /**
  * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
  * @return A promise which resolves with information about the dialog result.

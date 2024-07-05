@@ -55,7 +55,7 @@ export var CalendarDialogResultActions;
      * */
     CalendarDialogResultActions["responded"] = "responded";
     /**
-     * The user modified an existing event.
+     * The user saved a new event or modified an existing one.
      * @platform ios
      * */
     CalendarDialogResultActions["saved"] = "saved";

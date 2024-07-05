@@ -585,7 +585,7 @@ export enum CalendarDialogResultActions {
    * */
   responded = 'responded',
   /**
-   * The user modified an existing event.
+   * The user saved a new event or modified an existing one.
    * @platform ios
    * */
   saved = 'saved',
@@ -625,6 +625,27 @@ export type PresentationOptions = {
    * @platform android
    */
   startNewActivityTask?: boolean;
+};
+export type OpenEventPresentationOptions = PresentationOptions & {
+  /**
+   * Whether to allow the user to edit the previewed event.
+   * This property applies only to events in calendars created by the user.
+   *
+   * Note that if the user edits the event, the returned action is the one that user performs last.
+   * For example, when user previews the event, confirms some edits and finally dismisses the dialog, the event is edited, but response is `canceled`.
+   *
+   * @default false
+   * @platform ios
+   * */
+  allowsEditing?: boolean;
+  /**
+   * Determines whether event can be shown in calendar day view preview.
+   * This property applies only to invitations.
+   *
+   * @default false
+   * @platform ios
+   * */
+  allowsCalendarPreview?: boolean;
 };
 
 export type CalendarDialogParams = {
@@ -674,7 +695,7 @@ export async function createEventInCalendarAsync(
  */
 export async function openEventInCalendarAsync(
   params: CalendarDialogParams,
-  presentationOptions?: PresentationOptions
+  presentationOptions?: OpenEventPresentationOptions
 ): Promise<ViewEventDialogResult> {
   if (!ExpoCalendar.openEventInCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');

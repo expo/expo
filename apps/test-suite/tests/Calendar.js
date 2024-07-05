@@ -277,7 +277,14 @@ export async function test(t) {
         await alertAndWaitForResponse(
           'Please verify event details are shown and close the dialog.'
         );
-        const result = await Calendar.openEventInCalendarAsync({ id: eventId }, dontStartNewTask);
+        const result = await Calendar.openEventInCalendarAsync(
+          { id: eventId },
+          {
+            ...dontStartNewTask,
+            allowsEditing: true,
+            allowsCalendarPreview: true,
+          }
+        );
         t.expect(result).toEqual({ action: 'done' });
       });
 

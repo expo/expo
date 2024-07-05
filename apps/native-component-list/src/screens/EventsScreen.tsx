@@ -178,6 +178,8 @@ export default class EventsScreen extends React.Component<Props, State> {
       },
       {
         startNewActivityTask: false,
+        allowsEditing: true,
+        allowsCalendarPreview: true,
       }
     );
     setTimeout(() => {
