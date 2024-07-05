@@ -1,8 +1,12 @@
 package expo.modules.systemui.singletons
 
+import android.app.Activity
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.WindowCompat
 
 object SystemUI {
   private const val TAG = "SystemUI"
@@ -35,5 +39,42 @@ object SystemUI {
   @JvmStatic
   fun setUserInterfaceStyle(style: String) {
     setUserInterfaceStyle(style, {}, { m -> Log.e(TAG, m) })
+  }
+
+  @JvmStatic
+  fun enableEdgeToEdge(activity: Activity) {
+    val window = activity.window
+
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+
+    activity.runOnUiThread {
+      window.statusBarColor = Color.TRANSPARENT
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+        window.navigationBarColor = Color.TRANSPARENT
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          window.isStatusBarContrastEnforced = false
+          window.isNavigationBarContrastEnforced = false
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          val attrs = window.attributes
+
+          attrs.layoutInDisplayCutoutMode =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+              WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+            else
+              WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+
+          window.attributes = attrs
+        }
+      } else {
+        // The dark scrim color used in the platform.
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/res/color/system_bar_background_semi_transparent.xml
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/remote_color_resources_res/values/colors.xml;l=67
+        window.navigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+      }
+    }
   }
 }
