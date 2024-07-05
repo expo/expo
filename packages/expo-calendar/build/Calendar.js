@@ -1,6 +1,10 @@
 import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var DayOfTheWeek;
 (function (DayOfTheWeek) {
     DayOfTheWeek[DayOfTheWeek["Sunday"] = 1] = "Sunday";
@@ -11,6 +15,10 @@ export var DayOfTheWeek;
     DayOfTheWeek[DayOfTheWeek["Friday"] = 6] = "Friday";
     DayOfTheWeek[DayOfTheWeek["Saturday"] = 7] = "Saturday";
 })(DayOfTheWeek || (DayOfTheWeek = {}));
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var MonthOfTheYear;
 (function (MonthOfTheYear) {
     MonthOfTheYear[MonthOfTheYear["January"] = 1] = "January";
@@ -574,11 +582,16 @@ export const useRemindersPermissions = createPermissionHook({
     getMethod: getRemindersPermissionsAsync,
     requestMethod: requestRemindersPermissionsAsync,
 });
+// @docsMissing
+/**
+ * platform ios
+ */
 export var EntityTypes;
 (function (EntityTypes) {
     EntityTypes["EVENT"] = "event";
     EntityTypes["REMINDER"] = "reminder";
 })(EntityTypes || (EntityTypes = {}));
+// @docsMissing
 export var Frequency;
 (function (Frequency) {
     Frequency["DAILY"] = "daily";
@@ -586,14 +599,24 @@ export var Frequency;
     Frequency["MONTHLY"] = "monthly";
     Frequency["YEARLY"] = "yearly";
 })(Frequency || (Frequency = {}));
+// @docsMissing
 export var Availability;
 (function (Availability) {
+    /**
+     * @platform ios
+     */
     Availability["NOT_SUPPORTED"] = "notSupported";
     Availability["BUSY"] = "busy";
     Availability["FREE"] = "free";
     Availability["TENTATIVE"] = "tentative";
+    /**
+     * @platform ios
+     */
     Availability["UNAVAILABLE"] = "unavailable";
 })(Availability || (Availability = {}));
+/**
+ * @platform ios
+ */
 export var CalendarType;
 (function (CalendarType) {
     CalendarType["LOCAL"] = "local";
@@ -602,7 +625,8 @@ export var CalendarType;
     CalendarType["SUBSCRIBED"] = "subscribed";
     CalendarType["BIRTHDAYS"] = "birthdays";
     CalendarType["UNKNOWN"] = "unknown";
-})(CalendarType || (CalendarType = {})); // iOS
+})(CalendarType || (CalendarType = {}));
+// @docsMissing
 export var EventStatus;
 (function (EventStatus) {
     EventStatus["NONE"] = "none";
@@ -610,6 +634,10 @@ export var EventStatus;
     EventStatus["TENTATIVE"] = "tentative";
     EventStatus["CANCELED"] = "canceled";
 })(EventStatus || (EventStatus = {}));
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var SourceType;
 (function (SourceType) {
     SourceType["LOCAL"] = "local";
@@ -619,43 +647,119 @@ export var SourceType;
     SourceType["SUBSCRIBED"] = "subscribed";
     SourceType["BIRTHDAYS"] = "birthdays";
 })(SourceType || (SourceType = {}));
+// @docsMissing
 export var AttendeeRole;
 (function (AttendeeRole) {
+    /**
+     * @platform ios
+     */
     AttendeeRole["UNKNOWN"] = "unknown";
+    /**
+     * @platform ios
+     */
     AttendeeRole["REQUIRED"] = "required";
+    /**
+     * @platform ios
+     */
     AttendeeRole["OPTIONAL"] = "optional";
+    /**
+     * @platform ios
+     */
     AttendeeRole["CHAIR"] = "chair";
     AttendeeRole["NON_PARTICIPANT"] = "nonParticipant";
+    /**
+     * @platform android
+     */
     AttendeeRole["ATTENDEE"] = "attendee";
+    /**
+     * @platform android
+     */
     AttendeeRole["ORGANIZER"] = "organizer";
+    /**
+     * @platform android
+     */
     AttendeeRole["PERFORMER"] = "performer";
+    /**
+     * @platform android
+     */
     AttendeeRole["SPEAKER"] = "speaker";
+    /**
+     * @platform android
+     */
     AttendeeRole["NONE"] = "none";
 })(AttendeeRole || (AttendeeRole = {}));
+// @docsMissing
 export var AttendeeStatus;
 (function (AttendeeStatus) {
+    /**
+     * @platform ios
+     */
     AttendeeStatus["UNKNOWN"] = "unknown";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["PENDING"] = "pending";
     AttendeeStatus["ACCEPTED"] = "accepted";
     AttendeeStatus["DECLINED"] = "declined";
     AttendeeStatus["TENTATIVE"] = "tentative";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["DELEGATED"] = "delegated";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["COMPLETED"] = "completed";
+    /**
+     * @platform ios
+     */
     AttendeeStatus["IN_PROCESS"] = "inProcess";
+    /**
+     * @platform android
+     */
     AttendeeStatus["INVITED"] = "invited";
+    /**
+     * @platform android
+     */
     AttendeeStatus["NONE"] = "none";
 })(AttendeeStatus || (AttendeeStatus = {}));
+// @docsMissing
 export var AttendeeType;
 (function (AttendeeType) {
+    /**
+     * @platform ios
+     */
     AttendeeType["UNKNOWN"] = "unknown";
+    /**
+     * @platform ios
+     */
     AttendeeType["PERSON"] = "person";
+    /**
+     * @platform ios
+     */
     AttendeeType["ROOM"] = "room";
+    /**
+     * @platform ios
+     */
     AttendeeType["GROUP"] = "group";
     AttendeeType["RESOURCE"] = "resource";
+    /**
+     * @platform android
+     */
     AttendeeType["OPTIONAL"] = "optional";
+    /**
+     * @platform android
+     */
     AttendeeType["REQUIRED"] = "required";
+    /**
+     * @platform android
+     */
     AttendeeType["NONE"] = "none";
 })(AttendeeType || (AttendeeType = {}));
+// @docsMissing
+/**
+ * @platform android
+ */
 export var AlarmMethod;
 (function (AlarmMethod) {
     AlarmMethod["ALARM"] = "alarm";
@@ -664,6 +768,10 @@ export var AlarmMethod;
     AlarmMethod["SMS"] = "sms";
     AlarmMethod["DEFAULT"] = "default";
 })(AlarmMethod || (AlarmMethod = {}));
+// @docsMissing
+/**
+ * @platform android
+ */
 export var EventAccessLevel;
 (function (EventAccessLevel) {
     EventAccessLevel["CONFIDENTIAL"] = "confidential";
@@ -671,6 +779,10 @@ export var EventAccessLevel;
     EventAccessLevel["PUBLIC"] = "public";
     EventAccessLevel["DEFAULT"] = "default";
 })(EventAccessLevel || (EventAccessLevel = {}));
+// @docsMissing
+/**
+ * @platform android
+ */
 export var CalendarAccessLevel;
 (function (CalendarAccessLevel) {
     CalendarAccessLevel["CONTRIBUTOR"] = "contributor";
@@ -683,6 +795,10 @@ export var CalendarAccessLevel;
     CalendarAccessLevel["ROOT"] = "root";
     CalendarAccessLevel["NONE"] = "none";
 })(CalendarAccessLevel || (CalendarAccessLevel = {}));
+// @docsMissing
+/**
+ * @platform ios
+ */
 export var ReminderStatus;
 (function (ReminderStatus) {
     ReminderStatus["COMPLETED"] = "completed";
