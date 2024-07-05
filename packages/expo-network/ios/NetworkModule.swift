@@ -90,7 +90,6 @@ public final class NetworkModule: Module {
   private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {
     let currentPath = path ?? monitor.currentPath
     let isConnected = currentPath.status == .satisfied
-    var currentNetworkType = NetworkType.unknown
 
     if !isConnected {
       return [
@@ -106,11 +105,14 @@ public final class NetworkModule: Module {
       .filter { currentPath.usesInterfaceType($0) }
       .first
 
+    var currentNetworkType = NetworkType.unknown
     switch connectionType {
     case .wifi:
       currentNetworkType = .wifi
     case .cellular:
       currentNetworkType = .cellular
+    case .wiredEthernet:
+      currentNetworkType = .wiredEthernet
     default:
       currentNetworkType = .unknown
     }

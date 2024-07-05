@@ -90,7 +90,7 @@ dependencies {
     s.static_framework = true
 
     s.dependency 'ExpoModulesCore'
-+   s.dependency 'Charts', '~> 4.1.0'
++   s.dependency 'DGCharts', '~> 5.1.0'
 
     # Swift/Objective-C compatibility
 ```
@@ -259,7 +259,7 @@ Now you can implement the native functionality by editing the placeholder files 
 
 ```swift ios/ExpoRadialChartView.swift
 import ExpoModulesCore
-import Charts
+import DGCharts
 
 struct Series: Record {
   @Field

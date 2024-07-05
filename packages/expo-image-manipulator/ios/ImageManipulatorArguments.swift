@@ -4,23 +4,6 @@ import CoreGraphics
 import ExpoModulesCore
 
 /**
- Represents a single manipulate action. Only one field can be set.
- */
-internal struct ManipulateAction: Record {
-  @Field
-  var resize: ResizeOptions?
-
-  @Field
-  var rotate: Double?
-
-  @Field
-  var flip: FlipType?
-
-  @Field
-  var crop: CropRect?
-}
-
-/**
  Options provided for resize action.
  */
 internal struct ResizeOptions: Record {

@@ -162,6 +162,9 @@ internal final class Conversions {
     if let value = value as? [Record] {
       return value.map { $0.toDictionary() }
     }
+    if let value = value as? any Enumerable {
+      return value.anyRawValue
+    }
     if let appContext {
       if let value = value as? JavaScriptObjectBuilder {
         return try? value.build(appContext: appContext)

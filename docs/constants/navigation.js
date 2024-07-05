@@ -411,7 +411,6 @@ const general = [
       makePage('eas/webhooks.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/troubleshooting-proxies.mdx'),
         makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
@@ -456,6 +455,7 @@ const general = [
         makePage('troubleshooting/clear-cache-macos-linux.mdx'),
         makePage('troubleshooting/clear-cache-windows.mdx'),
         makePage('troubleshooting/react-native-version-mismatch.mdx'),
+        makePage('troubleshooting/proxies.mdx'),
       ]),
     ],
     { expanded: true }
