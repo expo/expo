@@ -21,12 +21,14 @@ export async function test({ describe, expect, it, ...t }) {
   describe('FileSystem (Next)', () => {
     it('Creates a lazy file reference', async () => {
       const file = new File('file:///path/to/file');
-      // The path is normalized by the OS, with both being valid urls (https://stackoverflow.com/a/44725349)
-      if (Platform.OS === 'ios') {
-        expect(file.path).toBe('file:///path/to/file');
-      } else if (Platform.OS === 'android') {
-        expect(file.path).toBe('file:/path/to/file');
-      }
+      expect(file.path).toBe('file:///path/to/file');
+    });
+
+    it('Supports different slash combinations', async () => {
+      expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
+      // FirstDirectory is a host when url parsing.
+      expect(new File('file://firstDirectory/to/file').path).toBe('file:///to/file');
+      expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
     });
 
     it('Allows changing the path property', async () => {
@@ -35,7 +37,7 @@ export async function test({ describe, expect, it, ...t }) {
       if (Platform.OS === 'ios') {
         expect(file.path).toBe('file:///new/path');
       } else if (Platform.OS === 'android') {
-        expect(file.path).toBe('file:/new/path');
+        expect(file.path).toBe('file:///new/path');
       }
     });
 

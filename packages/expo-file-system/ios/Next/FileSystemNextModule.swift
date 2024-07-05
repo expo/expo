@@ -8,7 +8,7 @@ public final class FileSystemNextModule: Module {
 
     Class(FileSystemNextFile.self) {
       Constructor { (url: URL) in
-        return FileSystemNextFile(url: url)
+        return FileSystemNextFile(url: url.standardizedFileURL)
       }
 
       // we can't throw in a constructor, so this is a workaround
@@ -48,7 +48,7 @@ public final class FileSystemNextModule: Module {
 
     Class(FileSystemNextDirectory.self) {
       Constructor { (url: URL) in
-        return FileSystemNextDirectory(url: url)
+        return FileSystemNextDirectory(url: url.standardizedFileURL)
       }
 
       // we can't throw in a constructor, so this is a workaround

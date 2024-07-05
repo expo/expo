@@ -1,5 +1,6 @@
 package expo.modules.filesystem.next
 
+import android.net.Uri
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -15,8 +16,8 @@ class FileSystemNextModule : Module() {
     Name("FileSystemNext")
 
     Class(FileSystemNextFile::class) {
-      Constructor { path: String ->
-        FileSystemNextFile(File(URI(path).path))
+      Constructor { path: URI ->
+        FileSystemNextFile(File(path.path))
       }
 
       Function("delete") { file: FileSystemNextFile ->
@@ -43,7 +44,7 @@ class FileSystemNextModule : Module() {
       }
 
       Property("path")
-        .get { file: FileSystemNextFile -> return@get file.path.toURI() }
+        .get { file: FileSystemNextFile -> return@get Uri.fromFile(file.path) }
         .set { file: FileSystemNextFile, newPath: String ->
           file.path = File(URI(newPath).path)
         }
@@ -71,9 +72,9 @@ class FileSystemNextModule : Module() {
       }
 
       Property("path")
-        .get { directory: FileSystemNextDirectory -> return@get directory.path.toURI() }
-        .set { directory: FileSystemNextDirectory, newPath: String ->
-          directory.path = File(URI(newPath).path)
+        .get { directory: FileSystemNextDirectory -> return@get Uri.fromFile(directory.path) }
+        .set { directory: FileSystemNextDirectory, newPath: URI ->
+          directory.path = File(newPath.path)
         }
     }
   }
