@@ -52,8 +52,17 @@ class FileSystemNextModule : Module() {
         file.exists()
       }
 
-      Property("path")
-        .get { file: FileSystemFile -> return@get Uri.fromFile(file.path) }
+      Function("copy") { file: FileSystemNextFile, destination: FileSystemNextPath ->
+        file.copy(destination)
+      }
+
+
+    Function("move") { file: FileSystemNextFile, destination: FileSystemNextPath ->
+        file.move(destination)
+    }
+
+    Property("path")
+      .get { file: FileSystemFile -> return@get Uri.fromFile(file.path) }
     }
 
     Class(FileSystemDirectory::class) {
@@ -76,6 +85,9 @@ class FileSystemNextModule : Module() {
       Function("validatePath") { directory: FileSystemDirectory ->
         directory.validatePath()
       }
+        Function("copy") { directory: FileSystemNextDirectory, destination: FileSystemNextPath ->
+            directory.copy(destination)
+        }
 
       Property("path")
         .get { directory: FileSystemDirectory -> return@get Uri.fromFile(directory.path) }

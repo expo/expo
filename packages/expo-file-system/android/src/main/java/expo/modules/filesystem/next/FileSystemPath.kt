@@ -15,4 +15,20 @@ open class FileSystemPath(var path: File) : SharedObject() {
   fun exists(): Boolean {
     return path.exists()
   }
+
+    fun copy(to: FileSystemNextPath) {
+        if(to.path.isDirectory) {
+            path.copyTo(File(to.path.path, path.name))
+        } else {
+            path.copyTo(to.path)
+        }
+    }
+
+    fun move(to: FileSystemNextPath) {
+        if(to.path.isDirectory) {
+            path.copyTo(File(to.path.path, path.name))
+        } else {
+            path.copyTo(to.path)
+        }
+    }
 }
