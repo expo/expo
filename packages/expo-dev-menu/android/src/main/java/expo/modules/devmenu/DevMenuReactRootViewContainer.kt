@@ -15,7 +15,7 @@ import expo.modules.devmenu.fab.MovableFloatingActionButton
 /**
  * We want to hide the FAB behind the feature flag for now.
  */
-private const val enableFAB = true
+private const val enableFAB = false
 
 class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
   @RequiresApi(Build.VERSION_CODES.Q)
