@@ -557,10 +557,14 @@ export declare enum CalendarDialogResultActions {
     saved = "saved"
 }
 /**
- * The result of presenting the calendar dialog for viewing an event. It indicates how user responded to the dialog.
- * On Android, the `action` is always `done`. On iOS, more `action` values are possible.
+ * The result of presenting the calendar dialog for opening (viewing) an event.
  * */
-export type ViewEventDialogResult = {
+export type OpenEventDialogResult = {
+    /**
+     * Indicates how user responded to the dialog.
+     * On Android, the `action` is always `done`.
+     * On iOS, more `action` values are possible.
+     * */
     action: Extract<CalendarDialogResultActions, 'done' | 'canceled' | 'deleted' | 'responded'>;
 };
 /**
@@ -636,7 +640,7 @@ export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Even
  * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
-export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: OpenEventPresentationOptions): Promise<ViewEventDialogResult>;
+export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: OpenEventPresentationOptions): Promise<OpenEventDialogResult>;
 /**
  * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
  * @return A promise which resolves with information about the dialog result.

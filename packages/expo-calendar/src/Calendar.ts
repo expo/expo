@@ -592,10 +592,14 @@ export enum CalendarDialogResultActions {
 }
 
 /**
- * The result of presenting the calendar dialog for viewing an event. It indicates how user responded to the dialog.
- * On Android, the `action` is always `done`. On iOS, more `action` values are possible.
+ * The result of presenting the calendar dialog for opening (viewing) an event.
  * */
-export type ViewEventDialogResult = {
+export type OpenEventDialogResult = {
+  /**
+   * Indicates how user responded to the dialog.
+   * On Android, the `action` is always `done`.
+   * On iOS, more `action` values are possible.
+   * */
   action: Extract<CalendarDialogResultActions, 'done' | 'canceled' | 'deleted' | 'responded'>;
 };
 
@@ -696,7 +700,7 @@ export async function createEventInCalendarAsync(
 export async function openEventInCalendarAsync(
   params: CalendarDialogParams,
   presentationOptions?: OpenEventPresentationOptions
-): Promise<ViewEventDialogResult> {
+): Promise<OpenEventDialogResult> {
   if (!ExpoCalendar.openEventInCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');
   }
