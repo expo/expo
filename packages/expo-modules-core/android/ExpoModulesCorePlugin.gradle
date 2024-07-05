@@ -25,7 +25,9 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           "1.8.0": "1.8.0-1.0.9",
           "1.8.10": "1.8.10-1.0.9",
           "1.8.22": "1.8.22-1.0.11",
-          "1.9.23": "1.9.23-1.0.20"
+          "1.9.23": "1.9.23-1.0.20",
+          // 1.9.24-1.0.20 is currently broken and causes NoSuchMethodError
+          "1.9.24": "1.9.23-1.0.20"
         ]
 
         project.rootProject.ext.has("kspVersion")
