@@ -21,13 +21,13 @@ internal struct ImageResizeTransformer: ImageTransformer {
       targetSize.height = height
       targetSize.width = targetSize.width == 0 ? imageRatio * targetSize.height : targetSize.width
     }
-    
+
     let format = UIGraphicsImageRendererFormat()
     format.opaque = false
     format.scale = 1
 
     let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
-    return renderer.image { context in
+    return renderer.image { _ in
       image.draw(in: CGRect(origin: .zero, size: targetSize))
     }
   }
