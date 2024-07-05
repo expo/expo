@@ -15,7 +15,7 @@ import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import dedent from 'dedent';
-import nullthrows from 'nullthrows';
+import assert from 'node:assert';
 
 import type {
   Dependency,
@@ -41,9 +41,15 @@ const opts: Options = {
   unstable_allowRequireContext: false,
 };
 
+// asserts non-null
+function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+  assert(x != null, message);
+  return x;
+}
+
 const originalWarn = console.warn;
 
-beforeEach(() => {
+beforeAll(() => {
   console.warn = jest.fn();
 });
 
@@ -900,6 +906,9 @@ describe('import() prefetching', () => {
 });
 
 describe('Evaluating static arguments', () => {
+  beforeEach(() => {
+    jest.mocked(console.warn).mockReset();
+  });
   it('supports template literals as arguments', () => {
     const ast = astFromCode('require(`left-pad`)');
     const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
@@ -1014,7 +1023,6 @@ describe('Evaluating static arguments', () => {
     );
   });
   it('warns at build-time when requiring non-strings with special option', () => {
-    jest.mocked(console.warn).mockReset();
     const ast = astFromCode('require(someVariable)');
     const opts: Options = {
       asyncRequireModulePath: 'asyncRequire',
@@ -1038,7 +1046,6 @@ describe('Evaluating static arguments', () => {
     );
   });
   it('warns at build-time when async import of non-strings with special option', () => {
-    jest.mocked(console.warn).mockReset();
     const ast = astFromCode('import(someVariable)');
     const opts: Options = {
       asyncRequireModulePath: 'asyncRequire',

@@ -60,9 +60,9 @@ type MutableInternalDependency = MutableDependencyData & {
   name: string;
 };
 
-type InternalDependency = Readonly<MutableInternalDependency>;
+export type InternalDependency = Readonly<MutableInternalDependency>;
 
-type State = {
+export type State = {
   asyncRequireModulePathStringLiteral: StringLiteral | null;
   dependencyCalls: Set<string>;
   dependencyRegistry: DependencyRegistry;
@@ -74,7 +74,7 @@ type State = {
   unstable_allowRequireContext: boolean;
 };
 
-type Options = Readonly<{
+export type Options = Readonly<{
   asyncRequireModulePath: string;
   dependencyMapName?: string | null;
   dynamicRequires: DynamicRequiresBehavior;
@@ -85,8 +85,8 @@ type Options = Readonly<{
   unstable_allowRequireContext: boolean;
 }>;
 
-export type CollectedDependencies = Readonly<{
-  ast: ParseResult<types.File>;
+export type CollectedDependencies<TAst extends types.File = types.File> = Readonly<{
+  ast: TAst;
   dependencyMapName: string;
   dependencies: readonly Dependency[];
 }>;
@@ -111,10 +111,10 @@ type ImportQualifier = Readonly<{
   contextParams?: RequireContextParams;
 }>;
 
-function collectDependencies(
-  ast: CollectedDependencies['ast'],
+function collectDependencies<TAst extends types.File>(
+  ast: TAst,
   options: Options
-): CollectedDependencies {
+): CollectedDependencies<TAst> {
   const visited = new WeakSet<types.CallExpression>();
 
   const state: State = {
