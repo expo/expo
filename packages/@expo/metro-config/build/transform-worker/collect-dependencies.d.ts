@@ -2,7 +2,7 @@ import type { ParseResult } from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import * as types from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
-type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
 type AllowOptionalDependenciesWithOptions = {
     exclude: string[];
 };
@@ -27,8 +27,9 @@ type MutableDependencyData = {
     isOptional?: boolean;
     locs: readonly types.SourceLocation[];
     contextParams?: RequireContextParams;
+    exportNames: string[];
 };
-type DependencyData = Readonly<MutableDependencyData>;
+export type DependencyData = Readonly<MutableDependencyData>;
 type MutableInternalDependency = MutableDependencyData & {
     locs: types.SourceLocation[];
     index: number;
@@ -77,8 +78,10 @@ type ImportQualifier = Readonly<{
     asyncType: AsyncDependencyType | null;
     optional: boolean;
     contextParams?: RequireContextParams;
+    exportNames: string[];
 }>;
 declare function collectDependencies(ast: CollectedDependencies['ast'], options: Options): CollectedDependencies;
+export declare function getExportNamesFromPath(path: NodePath<any>): string[];
 declare class DependencyRegistry {
     private _dependencies;
     registerDependency(qualifier: ImportQualifier): InternalDependency;

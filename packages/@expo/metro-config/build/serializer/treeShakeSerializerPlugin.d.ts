@@ -8,22 +8,6 @@ type AdvancedMixedOutput = {
         ast?: types.File;
         code: string;
         hasCjsExports?: boolean;
-        modules?: {
-            imports: {
-                source: string;
-                key: string | null;
-                specifiers: {
-                    type: string;
-                    importedName: string | null;
-                    localName: string;
-                    exportedName?: string;
-                }[];
-                cjs?: boolean;
-                async?: boolean;
-                weak?: boolean;
-                star?: boolean;
-            }[];
-        };
     };
     readonly type: string;
 };

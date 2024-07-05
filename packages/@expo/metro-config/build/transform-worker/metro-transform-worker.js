@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.renameTopLevelModuleVariables = exports.minifyCode = void 0;
+exports.collectDependenciesForShaking = exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.renameTopLevelModuleVariables = exports.minifyCode = void 0;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -584,4 +584,18 @@ const disabledDependencyTransformer = {
     transformPrefetch: () => { },
     transformIllegalDynamicRequire: () => { },
 };
+function collectDependenciesForShaking(ast, options) {
+    const collectDependenciesOptions = {
+        ...options,
+        // If tree shaking is enabled, then preserve the original require calls.
+        // This ensures require.context calls are not broken.
+        collectOnly: true,
+    };
+    return (0, collect_dependencies_1.default)(ast, {
+        ...collectDependenciesOptions,
+        // This setting shouldn't be shared with the tree shaking transformer.
+        dependencyTransformer: disabledDependencyTransformer,
+    });
+}
+exports.collectDependenciesForShaking = collectDependenciesForShaking;
 //# sourceMappingURL=metro-transform-worker.js.map

@@ -22,6 +22,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exports.isModuleEmptyFor = void 0;
 /**
@@ -32,7 +35,10 @@ exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exp
  */
 const core_1 = require("@babel/core");
 const types = __importStar(require("@babel/types"));
+const assert_1 = __importDefault(require("assert"));
 const sideEffects_1 = require("./sideEffects");
+const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const debug = require('debug')('expo:treeshaking');
 const OPTIMIZE_GRAPH = true;
 function isModuleEmptyFor(ast) {
@@ -117,135 +123,20 @@ function getExportsThatAreNotUsedInModule(ast) {
     return unusedExports;
 }
 function populateModuleWithImportUsage(value) {
-    function getGraphId(moduleId) {
-        const key = [...value.dependencies.values()].find((dep) => {
-            return dep.data.name === moduleId;
-        })?.absolutePath;
-        if (!key) {
-            // This can be nullish with optional dependencies in a try/catch that don't resolve.
-            return null;
-            // throw new Error(
-            //   `Failed to find graph key for import "${moduleId}" in module "${
-            //     value.path
-            //   }". Options: ${[...value.dependencies.values()].map((v) => v.data.name).join(', ')}`
-            // );
-        }
-        return key;
-    }
     for (const index in value.output) {
         const outputItem = value.output[index];
-        if (!outputItem.data.modules) {
-            outputItem.data.modules = {
-                imports: [],
-            };
-        }
-        outputItem.data.modules.imports = [];
         const ast = accessAst(outputItem);
-        (0, core_1.traverse)(ast, {
-            // Traverse and collect import/export statements.
-            ImportDeclaration(path) {
-                const source = path.node.source.value;
-                const specifiers = path.node.specifiers.map((specifier) => {
-                    return {
-                        type: specifier.type,
-                        importedName: types.isImportSpecifier(specifier) && types.isIdentifier(specifier.imported)
-                            ? specifier.imported.name
-                            : null,
-                        localName: specifier.local.name,
-                    };
-                });
-                outputItem.data.modules.imports.push({
-                    source,
-                    key: getGraphId(source),
-                    specifiers,
-                    // path,
-                });
-            },
-            // Track require calls
-            CallExpression(path) {
-                if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
-                    const arg = path.node.arguments[0];
-                    if (arg.type === 'StringLiteral') {
-                        outputItem.data.modules.imports.push({
-                            source: arg.value,
-                            key: getGraphId(arg.value),
-                            specifiers: [],
-                            cjs: true,
-                        });
-                    }
-                }
-                // Async import calls
-                if (path.node.callee.type === 'Import') {
-                    const arg = path.node.arguments[0];
-                    if (arg.type === 'StringLiteral') {
-                        outputItem.data.modules.imports.push({
-                            source: arg.value,
-                            key: getGraphId(arg.value),
-                            specifiers: [],
-                            async: true,
-                        });
-                    }
-                }
-                // require.resolveWeak calls
-                if (path.node.callee.type === 'MemberExpression' &&
-                    path.node.callee.object.type === 'Identifier' &&
-                    path.node.callee.object.name === 'require' &&
-                    path.node.callee.property.type === 'Identifier' &&
-                    path.node.callee.property.name === 'resolveWeak') {
-                    const arg = path.node.arguments[0];
-                    if (arg.type === 'StringLiteral') {
-                        outputItem.data.modules.imports.push({
-                            source: arg.value,
-                            key: getGraphId(arg.value),
-                            specifiers: [],
-                            weak: true,
-                        });
-                    }
-                }
-                // TODO: Maybe also add require.context.
-            },
-            // export { a as b } from 'a'
-            // export { c } from 'a'
-            // export { default } from 'a'
-            ExportNamedDeclaration(path) {
-                if (path.node.source) {
-                    const source = path.node.source.value;
-                    const specifiers = path.node.specifiers.map((specifier) => {
-                        const exportedName = types.isIdentifier(specifier.exported)
-                            ? specifier.exported.name
-                            : specifier.exported.value;
-                        const localName = 'local' in specifier ? specifier.local.name : exportedName;
-                        return {
-                            type: specifier.type,
-                            exportedName,
-                            importedName: localName,
-                            localName,
-                        };
-                    });
-                    outputItem.data.modules.imports.push({
-                        source,
-                        key: getGraphId(source),
-                        specifiers,
-                    });
-                }
-            },
-            // export * from 'a'
-            // TODO: export * as b from 'a'
-            ExportAllDeclaration(path) {
-                if (path.node.source) {
-                    const source = path.node.source.value;
-                    outputItem.data.modules.imports.push({
-                        source,
-                        key: getGraphId(source),
-                        specifiers: [],
-                        star: true,
-                    });
-                }
-            },
-        });
-        outputItem.data.modules.imports = outputItem.data.modules.imports.filter(
-        // Filter out missing optional dependencies.
-        (importItem) => importItem.key != null);
+        // This should be cached by the transform worker for use here to ensure close to consistent
+        // results between the tree-shake and the final transform.
+        // @ts-expect-error: reconcile object is not on the type.
+        const reconcile = outputItem.data.reconcile;
+        (0, assert_1.default)(ast, 'ast must be defined.');
+        (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
+        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(ast, reconcile.collectDependenciesOptions).dependencies;
+        // @ts-expect-error: Mutating the value in place.
+        value.dependencies =
+            //
+            (0, reconcileTransformSerializerPlugin_1.sortDependencies)(deps, value.dependencies);
     }
 }
 const markUnused = (path) => {
@@ -268,10 +159,10 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         getExportsForModule(value);
     }
     // This pass will parse all modules back to AST and include the import/export statements.
-    for (const value of graph.dependencies.values()) {
-        // TODO: Move this to the transformer and combine with collect dependencies.
-        populateModuleWithImportUsage(value);
-    }
+    // for (const value of graph.dependencies.values()) {
+    //   // TODO: Move this to the transformer and combine with collect dependencies.
+    //   populateModuleWithImportUsage(value);
+    // }
     function getExportsForModule(value, checkedModules = new Set()) {
         if (starExportsForModules.has(value.path)) {
             return starExportsForModules.get(value.path);
@@ -339,6 +230,8 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                                 // @ts-expect-error: missing type
                                 types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))), types.stringLiteral(path.node.source.value)),
                             ]);
+                            // TODO: Update deps
+                            populateModuleWithImportUsage(value);
                         }
                         else {
                             console.log('cannot resolve star export:', nextModule.path);
@@ -421,7 +314,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
     const afterList = [...graph.dependencies.keys()];
     // Print the removed modules:
     const removedModules = beforeList.filter((value) => !afterList.includes(value));
-    console.log('Fully removed:', removedModules.sort().join('\n'));
+    if (removedModules.length) {
+        console.log('Fully removed:', removedModules.sort().join('\n'));
+    }
     // console.log('ALL:', JSON.stringify(afterList, null, 2));
     return [entryPoint, preModules, graph, options];
     function disposeOfGraphNode(nodePath) {
@@ -551,36 +446,29 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         });
         const isExportUsed = (importName) => {
             return inverseDeps.some((dep) => {
-                return dep?.output.some((outputItem) => {
-                    if (outputItem.type === 'js/module') {
-                        const imports = outputItem.data.modules?.imports;
-                        if (imports) {
-                            return imports.some((importItem) => {
-                                if (importItem.key !== value.path) {
-                                    return false;
-                                }
-                                // If the import is CommonJS, then we can't tree-shake it.
-                                if (importItem.cjs || importItem.star || importItem.async) {
-                                    return true;
-                                }
-                                return importItem.specifiers.some((specifier) => {
-                                    if (specifier.type === 'ImportDefaultSpecifier') {
-                                        return importName === 'default';
-                                    }
-                                    // Star imports are always used.
-                                    if (specifier.type === 'ImportNamespaceSpecifier') {
-                                        return true;
-                                    }
-                                    // `export { default as add } from './add'`
-                                    if (specifier.type === 'ExportSpecifier') {
-                                        return specifier.localName === importName;
-                                    }
-                                    return (specifier.importedName === importName || specifier.exportedName === importName);
-                                });
-                            });
-                        }
-                    }
+                const isModule = dep?.output.some((outputItem) => {
+                    return outputItem.type === 'js/module';
+                });
+                if (!isModule) {
                     return false;
+                }
+                return [
+                    // @ts-expect-error: Type 'Iterator<string, any, undefined>' must have a '[Symbol.iterator]()' method that returns an iterator.
+                    ...dep?.dependencies.values(),
+                ].some((importItem) => {
+                    if (importItem.absolutePath !== value.path) {
+                        return false;
+                    }
+                    // If the import is async or weak then we can't tree shake it.
+                    if (importItem.asyncType) {
+                        // if (['async', 'prefetch', 'weak'].includes(importItem.asyncType)) {
+                        return true;
+                    }
+                    if (!importItem.data.data.exportNames) {
+                        throw new Error('Missing export names for: ' + importItem.absolutePath);
+                    }
+                    const isUsed = importItem.data.data.exportNames.some((exportName) => exportName === '*' || exportName === importName);
+                    return isUsed;
                 });
             });
         };
@@ -600,6 +488,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     }
                 },
                 ExportNamedDeclaration(path) {
+                    const importModuleId = path.node.source?.value;
                     // Remove specifiers, e.g. `export { Foo, Bar as Bax }`
                     if (types.isExportNamedDeclaration(path.node)) {
                         for (let i = 0; i < path.node.specifiers.length; i++) {
@@ -609,15 +498,14 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                                 types.isIdentifier(specifier.exported) &&
                                 possibleUnusedExports.includes(specifier.exported.name) &&
                                 !isExportUsed(specifier.exported.name)) {
-                                needsImportReindex = true;
                                 // Remove specifier
                                 path.node.specifiers.splice(i, 1);
+                                needsImportReindex = true;
                                 i--;
                             }
                         }
                     }
                     // Remove the entire node if the export has been completely removed.
-                    const importModuleId = path.node.source?.value;
                     const declaration = path.node.declaration;
                     if (types.isVariableDeclaration(declaration)) {
                         declaration.declarations.forEach((decl) => {
@@ -648,11 +536,12 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             shouldRecurseUnusedExports = true;
                         }
                     }
+                    // If export from import then check if we can remove the import.
                     if (importModuleId) {
                         if (path.node.specifiers.length === 0) {
                             const removeRequest = disconnectGraphNode(value, importModuleId);
                             if (removeRequest.removed) {
-                                needsImportReindex = true;
+                                // needsImportReindex = true;
                                 dirtyImports.push(removeRequest.path);
                                 markUnused(path);
                             }
@@ -662,8 +551,29 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             });
         }
         if (needsImportReindex) {
+            // const noLocs = (deps) =>
+            //   deps.map((dep) => ({
+            //     ...dep,
+            //     data: {
+            //       ...dep.data,
+            //       data: {
+            //         ...dep.data.data,
+            //         locs: [],
+            //       },
+            //     },
+            //   }));
+            // const beforeImports = [...value.dependencies.values()];
+            // const og = JSON.stringify(noLocs(beforeImports), null, 2);
+            // console.log('>>', beforeImports);
             // TODO: Do this better with a tracked removal of the import rather than a full reparse.
             populateModuleWithImportUsage(value);
+            // const afterKey = JSON.stringify(noLocs([...value.dependencies.values()]), null, 2);
+            // if (afterKey !== og) {
+            //   console.log('REINDEX:', value.path);
+            //   console.log('Issue with imports ->', og);
+            //   console.log('Issue with imports:', afterKey);
+            //   console.log('Issue AST:', generate(accessAst(value.output[0])!).code);
+            // }
         }
         if (shouldRecurseUnusedExports) {
             return unique(removeUnusedExports(value, depth + 1).concat(dirtyImports));

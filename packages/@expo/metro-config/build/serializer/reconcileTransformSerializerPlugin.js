@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reconcileTransformSerializerPlugin = void 0;
+exports.sortDependencies = exports.reconcileTransformSerializerPlugin = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -36,7 +36,7 @@ exports.reconcileTransformSerializerPlugin = void 0;
 const generator_1 = __importDefault(require("@babel/generator"));
 const assert_1 = __importDefault(require("assert"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const collectDependencies_1 = __importStar(require("metro/src/ModuleGraph/worker/collectDependencies"));
+const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
@@ -126,8 +126,9 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             // console.log(require('@babel/generator').default(ast).code);
             // Rewrite the deps to use Metro runtime, collect the new dep positions.
             // TODO: We could just update the deps in the graph to use the correct positions after we modify the AST. This seems hard and fragile though.
-            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, {
+            ({ ast, dependencies, dependencyMapName } = (0, collect_dependencies_1.default)(ast, {
                 ...reconcile.collectDependenciesOptions,
+                collectOnly: false,
                 // This is here for debugging purposes.
                 keepRequireNames: FORCE_REQUIRE_NAME_HINTS,
                 // This setting shouldn't be shared + it can't be serialized and cached anyways.
@@ -135,7 +136,7 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             }));
         }
         catch (error) {
-            if (error instanceof collectDependencies_1.InvalidRequireCallError) {
+            if (error instanceof collect_dependencies_1.InvalidRequireCallError) {
                 throw new InvalidRequireCallError(error, value.path);
             }
             throw error;
@@ -208,4 +209,5 @@ function sortDependencies(dependencies, accordingTo) {
     });
     return nextDependencies;
 }
+exports.sortDependencies = sortDependencies;
 //# sourceMappingURL=reconcileTransformSerializerPlugin.js.map

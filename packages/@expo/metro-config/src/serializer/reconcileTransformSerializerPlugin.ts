@@ -12,7 +12,7 @@ import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
   type Dependency,
   Options as CollectDependenciesOptions,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
+} from '../transform-worker/collect-dependencies';
 import countLines from 'metro/src/lib/countLines';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
@@ -149,6 +149,7 @@ export async function reconcileTransformSerializerPlugin(
       // TODO: We could just update the deps in the graph to use the correct positions after we modify the AST. This seems hard and fragile though.
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         ...reconcile.collectDependenciesOptions,
+        collectOnly: false,
         // This is here for debugging purposes.
         keepRequireNames: FORCE_REQUIRE_NAME_HINTS,
         // This setting shouldn't be shared + it can't be serialized and cached anyways.
@@ -241,7 +242,7 @@ export async function reconcileTransformSerializerPlugin(
 
 // Some imports may change order during the transform, so we need to resort them.
 // Resort the dependencies to match the current order of the AST.
-function sortDependencies(
+export function sortDependencies(
   dependencies: readonly Dependency[],
   accordingTo: Module['dependencies']
 ): Map<string, Dependency> {

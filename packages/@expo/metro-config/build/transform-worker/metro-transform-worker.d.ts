@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
 import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
 import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
@@ -50,3 +51,25 @@ export declare function applyImportSupport<TFile extends types.File>(ast: TFile,
 }): TFile;
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;
+export declare function collectDependenciesForShaking(ast: babylon.ParseResult<types.File>, options: CollectDependenciesOptions): Readonly<{
+    ast: babylon.ParseResult<types.File>;
+    dependencyMapName: string;
+    dependencies: readonly Readonly<{
+        data: Readonly<{
+            key: string;
+            asyncType: import("./collect-dependencies").AsyncDependencyType | null;
+            isOptional?: boolean | undefined;
+            locs: readonly types.SourceLocation[];
+            contextParams?: Readonly<{
+                recursive: boolean;
+                filter: Readonly<Readonly<{
+                    pattern: string;
+                    flags: string;
+                }>>;
+                mode: "sync" | "eager" | "lazy" | "lazy-once";
+            }> | undefined;
+            exportNames: string[];
+        }>;
+        name: string;
+    }>[];
+}>;

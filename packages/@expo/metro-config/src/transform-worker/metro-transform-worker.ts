@@ -804,3 +804,22 @@ const disabledDependencyTransformer: DependencyTransformer = {
   transformPrefetch: () => {},
   transformIllegalDynamicRequire: () => {},
 };
+
+export function collectDependenciesForShaking(
+  ast: babylon.ParseResult<types.File>,
+  options: CollectDependenciesOptions
+) {
+  const collectDependenciesOptions = {
+    ...options,
+
+    // If tree shaking is enabled, then preserve the original require calls.
+    // This ensures require.context calls are not broken.
+    collectOnly: true,
+  };
+
+  return collectDependencies(ast, {
+    ...collectDependenciesOptions,
+    // This setting shouldn't be shared with the tree shaking transformer.
+    dependencyTransformer: disabledDependencyTransformer,
+  });
+}

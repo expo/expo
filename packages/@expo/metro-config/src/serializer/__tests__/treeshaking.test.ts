@@ -25,7 +25,8 @@ function expectSideEffects(graph, name: string) {
   return expect(graph.dependencies.get(name).sideEffects);
 }
 function expectImports(graph, name: string) {
-  return expect(getModules(graph, name).imports);
+  if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
+  return expect([...graph.dependencies.get(name).dependencies.values()]);
 }
 
 it(`doesn't unlink if a single import chain is removed`, async () => {
@@ -52,7 +53,9 @@ console.log("MARK")
 `,
   });
 
-  expectImports(graph, '/app/b.js').toEqual([expect.objectContaining({ key: '/app/c.js' })]);
+  expectImports(graph, '/app/b.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/c.js' }),
+  ]);
   expect(artifacts[0].source).not.toMatch('DEFAULT_ICON_COLOR');
   expect(artifacts[0].source).toMatch('MARK');
 });
@@ -99,9 +102,15 @@ export const run = () => 'c:' + bar;
             `,
   });
 
-  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
-  expectImports(graph, '/app/b.js').toEqual([expect.objectContaining({ key: '/app/c.js' })]);
-  expectImports(graph, '/app/c.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
+  expectImports(graph, '/app/b.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/c.js' }),
+  ]);
+  expectImports(graph, '/app/c.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
   expect(artifacts[0].source).toMatch('bar');
   expect(artifacts[0].source).toMatch('run');
 
@@ -121,7 +130,9 @@ export const foo = 3;
 `,
   });
 
-  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
   expect(artifacts[0].source).not.toMatch('foo');
   expect(artifacts[0].source).toMatch('run');
 });
@@ -143,7 +154,9 @@ export class Math {
 `,
   });
 
-  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/b.js' }),
+  ]);
   expect(artifacts[0].source).not.toMatch('Math');
   expect(artifacts[0].source).toMatch('gravity');
 });
@@ -166,7 +179,9 @@ describe('side-effecty imports', () => {
   `,
     });
 
-    expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/b.js' }),
+    ]);
   });
   it(`preserves empty non-side-effecty import with no specifiers`, async () => {
     const [[, , graph]] = await serializeShakingAsync({
@@ -184,7 +199,9 @@ describe('side-effecty imports', () => {
     });
 
     // TODO: This is a bug, we should (maybe) remove this import.
-    expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/b.js' })]);
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/b.js' }),
+    ]);
   });
 
   // TODO: Add more tests for striping empty modules.
@@ -287,16 +304,25 @@ it(`supports async import()`, async () => {
 
   expectImports(graph, '/app/index.js').toEqual([
     {
-      async: true,
-      key: '/app/math.js',
-      source: './math',
-      specifiers: [],
+      absolutePath: '/app/math.js',
+      data: expect.objectContaining({
+        data: expect.objectContaining({
+          asyncType: 'async',
+          exportNames: ['*'],
+        }),
+      }),
     },
     {
-      cjs: true,
-      key: '/app/node_modules/expo-mock/async-require/index.js',
-      source: 'expo-mock/async-require',
-      specifiers: [],
+      absolutePath: '/app/node_modules/expo-mock/async-require/index.js',
+      data: expect.objectContaining({
+        data: expect.objectContaining({
+          // exportNames: undefined,
+        }),
+      }),
+      // cjs: true,
+      // exportNames: ['*'],
+      // source: 'expo-mock/async-require',
+      // specifiers: [],
     },
     // TODO: Parse these imports
   ]);
@@ -326,10 +352,10 @@ it(`barrel default as`, async () => {
   });
 
   expectImports(graph, '/app/index.js').toEqual([
-    expect.objectContaining({ key: '/app/barrel.js' }),
+    expect.objectContaining({ absolutePath: '/app/barrel.js' }),
   ]);
   expectImports(graph, '/app/barrel.js').toEqual([
-    expect.objectContaining({ key: '/app/math.js' }),
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
   ]);
   expect(artifacts[0].source).not.toMatch('subtract');
 });
@@ -398,7 +424,7 @@ describe('metro require', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
@@ -447,7 +473,7 @@ describe('cjs', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
@@ -470,7 +496,7 @@ describe('cjs', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
@@ -492,7 +518,7 @@ describe('cjs', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
@@ -515,10 +541,14 @@ describe('cjs', () => {
 
     expectImports(graph, '/app/index.js').toEqual([
       {
-        cjs: true,
-        key: '/app/math.js',
-        source: './math',
-        specifiers: [],
+        data: expect.objectContaining({
+          data: expect.objectContaining({
+            exportNames: ['*'],
+          }),
+        }),
+        absolutePath: '/app/math.js',
+        // source: './math',
+        // specifiers: [],
       },
     ]);
     expect(artifacts[0].source).toMatch('subtract');
@@ -571,13 +601,13 @@ it(`double barrel`, async () => {
   });
 
   expectImports(graph, '/app/index.js').toEqual([
-    expect.objectContaining({ key: '/app/barrel.js' }),
+    expect.objectContaining({ absolutePath: '/app/barrel.js' }),
   ]);
   expectImports(graph, '/app/barrel.js').toEqual([
-    expect.objectContaining({ key: '/app/barrel2.js' }),
+    expect.objectContaining({ absolutePath: '/app/barrel2.js' }),
   ]);
   expectImports(graph, '/app/barrel2.js').toEqual([
-    expect.objectContaining({ key: '/app/math.js' }),
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
   ]);
   expect(artifacts[0].source).not.toMatch('subtract');
 });
@@ -624,7 +654,7 @@ describe('sanity', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
@@ -649,10 +679,10 @@ it(`barrel multiple`, async () => {
   });
 
   expectImports(graph, '/app/index.js').toEqual([
-    expect.objectContaining({ key: '/app/barrel.js' }),
+    expect.objectContaining({ absolutePath: '/app/barrel.js' }),
   ]);
   expectImports(graph, '/app/barrel.js').toEqual([
-    expect.objectContaining({ key: '/app/math.js' }),
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
   ]);
   expect(artifacts[0].source).not.toMatch('subtract');
 });
@@ -677,7 +707,7 @@ describe('Possible optimizations', () => {
     });
 
     expectImports(graph, '/app/index.js').toEqual([
-      expect.objectContaining({ key: '/app/math.js' }),
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
     ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
@@ -708,23 +738,24 @@ describe('Possible optimizations', () => {
         `,
     });
 
-    expect(getModules(graph, '/app/index.js')).toEqual({
-      imports: [expect.objectContaining({ key: '/app/barrel.js' })],
-    });
-    expect(getModules(graph, '/app/barrel.js')).toEqual({
-      imports: [expect.objectContaining({ key: '/app/math.js' })],
-    });
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/barrel.js' }),
+    ]);
+    expectImports(graph, '/app/barrel.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
+    ]);
     expect(artifacts[0].source).toMatch('subtract');
   });
 });
 
 it(`import as`, async () => {
-  const [[, , graph], artifacts] = await serializeShakingAsync({
-    'index.js': `
+  const [[, , graph], artifacts] = await serializeShakingAsync(
+    {
+      'index.js': `
           import { add as other } from './math';
-          console.log('keep', add(1, 2));
+          console.log('keep', other(1, 2));
         `,
-    'math.js': `
+      'math.js': `
           export function add(a, b) {
             return a + b;
           }
@@ -733,11 +764,17 @@ it(`import as`, async () => {
             return a - b;
           }
         `,
-  });
+    },
+    {
+      treeshake: true,
+    }
+  );
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    imports: [expect.objectContaining({ key: '/app/math.js' })],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
+
+  expect(artifacts[0].source).toMatch('add');
   expect(artifacts[0].source).not.toMatch('subtract');
 });
 
@@ -758,9 +795,10 @@ it(`import star`, async () => {
         `,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    imports: [expect.objectContaining({ key: '/app/math.js' })],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
+
   expect(artifacts[0].source).toMatch('subtract');
 });
 
@@ -798,9 +836,11 @@ export { Worm as default };
         `,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    imports: [expect.objectContaining({ key: '/app/lucide.js' })],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/lucide.js',
+    }),
+  ]);
   expect(artifacts[0].source).not.toMatch('icons');
   expect(artifacts[0].source).not.toMatch('Worm');
   expect(artifacts[0].source).toMatchInlineSnapshot(`
@@ -858,10 +898,10 @@ it(`barrel partial`, async () => {
   });
 
   expectImports(graph, '/app/index.js').toEqual([
-    expect.objectContaining({ key: '/app/barrel.js' }),
+    expect.objectContaining({ absolutePath: '/app/barrel.js' }),
   ]);
   expectImports(graph, '/app/barrel.js').toEqual([
-    expect.objectContaining({ key: '/app/math.js' }),
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
   ]);
   expect(artifacts[0].source).not.toMatch('subtract');
 });
@@ -883,7 +923,9 @@ it(`removes unused exports`, async () => {
         `,
   });
 
-  expectImports(graph, '/app/index.js').toEqual([expect.objectContaining({ key: '/app/math.js' })]);
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
   // expect(graph.dependencies.get('/app/math.js').output[0].data.modules).toEqual({
   //   exports: [expect.objectContaining({ key: '/app/math.js' })],
   //   imports: [],
@@ -1248,10 +1290,10 @@ it(`barrel star empty file`, async () => {
       `,
   });
 
-  expect(getModules(graph, '/app/index.js')).toEqual({
-    imports: [expect.objectContaining({ key: '/app/barrel.js' })],
-  });
-  expect(getModules(graph, '/app/barrel.js')).toEqual({
-    imports: [],
-  });
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/barrel.js',
+    }),
+  ]);
+  expectImports(graph, '/app/barrel.js').toEqual([]);
 });

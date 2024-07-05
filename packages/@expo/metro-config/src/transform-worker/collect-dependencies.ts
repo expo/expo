@@ -16,7 +16,7 @@ import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
 import * as crypto from 'crypto';
 import nullthrows from 'nullthrows';
 
-type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -49,9 +49,10 @@ type MutableDependencyData = {
   isOptional?: boolean;
   locs: readonly types.SourceLocation[];
   contextParams?: RequireContextParams;
+  exportNames: string[];
 };
 
-type DependencyData = Readonly<MutableDependencyData>;
+export type DependencyData = Readonly<MutableDependencyData>;
 
 type MutableInternalDependency = MutableDependencyData & {
   locs: types.SourceLocation[];
@@ -112,6 +113,7 @@ type ImportQualifier = Readonly<{
   asyncType: AsyncDependencyType | null;
   optional: boolean;
   contextParams?: RequireContextParams;
+  exportNames: string[];
 }>;
 
 function collectDependencies(
@@ -331,6 +333,7 @@ function processRequireContextCall(path: NodePath<CallExpression>, state: State)
       contextParams,
       asyncType: null,
       optional: isOptionalDependency(directory, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -357,6 +360,7 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
       name,
       asyncType: 'weak',
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -368,6 +372,38 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
   );
 }
 
+export function getExportNamesFromPath(path: NodePath<any>): string[] {
+  if (path.node.source) {
+    if (types.isExportAllDeclaration(path.node)) {
+      return ['*'];
+    } else if (types.isExportNamedDeclaration(path.node)) {
+      return path.node.specifiers.map((specifier) => {
+        const exportedName = types.isIdentifier(specifier.exported)
+          ? specifier.exported.name
+          : specifier.exported.value;
+        const localName = 'local' in specifier ? specifier.local.name : exportedName;
+
+        // `export { default as add } from './add'`
+        return specifier.type === 'ExportSpecifier' ? localName : exportedName;
+      });
+    } else if (types.isImportDeclaration(path.node)) {
+      return path.node.specifiers
+        .map((specifier) => {
+          if (specifier.type === 'ImportDefaultSpecifier') {
+            return 'default';
+          } else if (specifier.type === 'ImportNamespaceSpecifier') {
+            return '*';
+          }
+          return types.isImportSpecifier(specifier) && types.isIdentifier(specifier.imported)
+            ? specifier.imported.name
+            : null;
+        })
+        .filter(Boolean) as string[];
+    }
+  }
+  return [];
+}
+
 function collectImports(path: NodePath<any>, state: State): void {
   if (path.node.source) {
     registerDependency(
@@ -376,6 +412,7 @@ function collectImports(path: NodePath<any>, state: State): void {
         name: path.node.source.value,
         asyncType: null,
         optional: false,
+        exportNames: getExportNamesFromPath(path),
       },
       path
     );
@@ -399,6 +436,7 @@ function processImportCall(
       name,
       asyncType: options.asyncType,
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -432,6 +470,7 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
       name,
       asyncType: null,
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -453,6 +492,7 @@ function registerDependency(
   path: NodePath<any>
 ): InternalDependency {
   const dependency = state.dependencyRegistry.registerDependency(qualifier);
+
   const loc = getNearestLocFromPath(path);
   if (loc != null) {
     dependency.locs.push(loc);
@@ -630,6 +670,7 @@ class DependencyRegistry {
       const newDependency: MutableInternalDependency = {
         name: qualifier.name,
         asyncType: qualifier.asyncType,
+        exportNames: qualifier.exportNames,
         locs: [],
         index: this._dependencies.size,
         key: crypto.createHash('sha1').update(key).digest('base64'),
@@ -647,6 +688,7 @@ class DependencyRegistry {
       if (dependency.isOptional && !qualifier.optional) {
         dependency = {
           ...dependency,
+          exportNames: [...new Set(qualifier.exportNames.concat(dependency.exportNames))],
           isOptional: false,
         };
       }
