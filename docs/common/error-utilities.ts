@@ -366,7 +366,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/known-issues/': '/eas-update/introduction/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
-  '/distribution/custom-updates-server/': '/eas-update/custom-updates-server/',
+  '/eas-update/custom-updates-server/': '/versions/latest/sdk/expo-updates/',
+  '/distribution/custom-updates-server/': '/versions/latest/sdk/expo-updates/',
   '/bare/error-recovery/': '/eas-update/error-recovery/',
 
   // Expo Router Advanced guides
