@@ -2,8 +2,8 @@ import { Audio, AudioMode, InterruptionModeIOS } from 'expo-av';
 import React from 'react';
 import { PixelRatio, Switch, Text, View } from 'react-native';
 
-import Button from '../../components/Button';
-import ListButton from '../../components/ListButton';
+import Button from '../../../components/Button';
+import ListButton from '../../../components/ListButton';
 
 interface State {
   modeToSet: Partial<AudioMode>;

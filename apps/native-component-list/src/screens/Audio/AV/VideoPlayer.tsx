@@ -7,7 +7,7 @@ import { Platform, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { AndroidImplementationSelector } from './AndroidImplementationSelector';
 import Player from './Player';
-import { Colors } from '../../constants';
+import { Colors } from '../../../constants';
 
 type VideoPlayerSource =
   | number

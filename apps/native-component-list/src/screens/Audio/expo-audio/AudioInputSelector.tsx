@@ -1,26 +1,26 @@
-import { Audio } from 'expo-av';
+import { AudioRecorder } from 'expo-audio';
 import { RecordingInput } from 'expo-av/build/Audio/Recording.types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import ListButton from '../../components/ListButton';
+import ListButton from '../../../components/ListButton';
 
 type Props = {
-  recordingObject?: Audio.Recording;
+  recorder?: AudioRecorder;
 };
 
-function AudioInputSelector({ recordingObject }: Props) {
+function AudioInputSelector({ recorder }: Props) {
   const [availableInputs, setAvailableInputs] = useState<RecordingInput[]>([]);
   const [currentInput, setCurrentInput] = useState<RecordingInput | null>(null);
 
   const checkInputs = useCallback(async () => {
-    if (recordingObject) {
-      const availInputs = await recordingObject.getAvailableInputs();
+    if (recorder) {
+      const availInputs = await recorder.getAvailableInputs();
       setAvailableInputs(availInputs);
-      const curtInput = await recordingObject.getCurrentInput();
+      const curtInput = await recorder.getCurrentInput();
       setCurrentInput(curtInput);
     }
-  }, [recordingObject]);
+  }, [recorder]);
 
   useEffect(() => {
     checkInputs();
@@ -38,7 +38,7 @@ function AudioInputSelector({ recordingObject }: Props) {
               key={`input-${input.uid}`}
               title={`${isSelected ? '✓ ' : ''}${title}`}
               onPress={async () => {
-                await recordingObject?.setInput(input.uid);
+                recorder?.setInput(input.uid);
                 checkInputs();
               }}
             />

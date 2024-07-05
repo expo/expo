@@ -59,9 +59,9 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?) -> AudioPlayer in
+      Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(source: source)
-        let player = AudioPlayer(avPlayer)
+        let player = AudioPlayer(avPlayer, interval: updateInterval)
         players[player.id] = player
         // Gets the duration of the item on load
         player.ref
@@ -119,7 +119,11 @@ public class AudioModule: Module {
       }
 
       Property("duration") { player in
-        player.ref.currentItem?.duration.seconds
+        if player.ref.status == .readyToPlay {
+          (player.ref.currentItem?.duration.seconds ?? 0.0) * 1000
+        } else {
+          0.0
+        }
       }
 
       Property("playbackRate") { player in
@@ -134,6 +138,10 @@ public class AudioModule: Module {
         player.ref.volume
       }.set { (player, volume: Double) in
         player.ref.volume = Float(volume)
+      }
+
+      Property("currentStatus") { player in
+        player.currentStatus()
       }
 
       Function("play") { player in
@@ -162,7 +170,7 @@ public class AudioModule: Module {
         player.ref.pause()
       }
 
-      Function("release") { player in
+      Function("remove") { player in
         let id = player.id
         if let token = timeTokens[id] {
           player.ref.removeTimeObserver(token as Any)
@@ -353,7 +361,8 @@ public class AudioModule: Module {
   }
 
   private func registerTimeObserver(player: AudioPlayer) {
-    let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    let updateInterval = player.interval / 1000
+    let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeTokens[player.id] = player.ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
       player.updateStatus(with: [
         "currentPosition": time.seconds * 1000

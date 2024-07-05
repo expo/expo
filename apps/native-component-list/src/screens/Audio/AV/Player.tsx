@@ -15,7 +15,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import Colors from '../../constants/Colors';
+import Colors from '../../../constants/Colors';
 
 interface Props {
   header?: JSX.Element;
