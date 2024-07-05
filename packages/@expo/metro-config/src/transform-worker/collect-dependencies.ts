@@ -59,9 +59,9 @@ type MutableInternalDependency = MutableDependencyData & {
   name: string;
 };
 
-type InternalDependency = Readonly<MutableInternalDependency>;
+export type InternalDependency = Readonly<MutableInternalDependency>;
 
-type State = {
+export type State = {
   asyncRequireModulePathStringLiteral: StringLiteral | null;
   dependencyCalls: Set<string>;
   dependencyRegistry: DependencyRegistry;
@@ -73,7 +73,7 @@ type State = {
   unstable_allowRequireContext: boolean;
 };
 
-type Options = Readonly<{
+export type Options = Readonly<{
   asyncRequireModulePath: string;
   dependencyMapName?: string | null;
   dynamicRequires: DynamicRequiresBehavior;
