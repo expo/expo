@@ -569,15 +569,12 @@ const createNestedStateObject = (path, hash, routes, routeConfigs, initialRoutes
 const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
     const searchParams = new URLSearchParams(query);
-    const params = Object.fromEntries(
-    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
-    searchParams);
-    if (parseConfig) {
-        Object.keys(params).forEach((name) => {
-            if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
-                params[name] = parseConfig[name](params[name]);
-            }
-        });
+    const params = {};
+    for (const name of searchParams.keys()) {
+        const values = parseConfig?.[name]
+            ? searchParams.getAll(name).map(parseConfig[name])
+            : searchParams.getAll(name);
+        params[name] = values.length === 1 ? values[0] : values;
     }
     return Object.keys(params).length ? params : undefined;
 };
