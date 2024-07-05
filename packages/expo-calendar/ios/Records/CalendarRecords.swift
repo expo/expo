@@ -142,5 +142,5 @@ struct CalendarSavedResponse: Record {
   @Field
   var action: ResponseAction = .saved
   @Field
-  var id: String? = ""
+  var id: String? = nil
 }

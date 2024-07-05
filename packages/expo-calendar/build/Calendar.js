@@ -31,7 +31,7 @@ export { PermissionStatus };
  * Launches the calendar UI provided by the OS to create a new event.
  * @param eventData A map of details for the event to be created.
  * @param presentationOptions Configuration that influences how the calendar UI is presented.
- * @return A promise which resolves with information about what action the user took (e.g. saved a new event).
+ * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
 export async function createEventInCalendarAsync(eventData = {}, presentationOptions) {
@@ -48,7 +48,7 @@ export async function createEventInCalendarAsync(eventData = {}, presentationOpt
 }
 /**
  * Launches the calendar UI provided by the OS to preview an event.
- * @return A promise which resolves with information about what action the user took.
+ * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
 export async function openEventInCalendarAsync(params, presentationOptions) {
@@ -63,20 +63,18 @@ export async function openEventInCalendarAsync(params, presentationOptions) {
 }
 /**
  * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
- * @return A promise which resolves with information about what action the user took.
+ * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
 export async function editEventInCalendarAsync(params, presentationOptions) {
-    if (!params.id) {
-        throw new Error('editEventInCalendarAsync must be called with an id (string) of the target event');
-    }
-    if (Platform.OS === 'android') {
-        return openEventInCalendarAsync(params, presentationOptions);
-    }
     if (!ExpoCalendar.editEventInCalendarAsync) {
         throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
     }
-    return ExpoCalendar.editEventInCalendarAsync(params);
+    if (!params.id) {
+        throw new Error('editEventInCalendarAsync must be called with an id (string) of the target event');
+    }
+    const newParams = { ...params, ...presentationOptions };
+    return ExpoCalendar.editEventInCalendarAsync(newParams);
 }
 // @needsAudit
 /**

@@ -559,7 +559,7 @@ export type DaysOfTheWeek = {
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 /**
- * The result of presenting the calendar dialog.
+ * The result of presenting the calendar dialog for viewing or editing.
  * These constants map to [`EKEventEditViewAction`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewaction) and [`EKEventViewAction`](https://developer.apple.com/documentation/eventkitui/ekeventviewaction).
  * @platform ios
  * */
@@ -568,44 +568,32 @@ export type CalendarDialogResultActionsIos = 'done' | 'canceled' | 'deleted' | '
 /**
  * The result of launching the calendar Activity.
  * Android doesn't provide enough information to determine the user's action, so the result is always 'done'.
- * The user may have cancelled the dialog, saved the event, or deleted it.
+ * The user may have canceled the dialog, saved the event, or deleted it.
  * @platform android
  * */
 export type CalendarDialogResultActionsAndroid = 'done';
 
 /**
- * The result of presenting a calendar dialog. It indicates what action the user took (e.g. canceled the dialog).
- * The information made available by Android is less complete compared to iOS.
- * @header systemProvidedUI
+ * The result of presenting the calendar dialog for viewing or editing. It indicates what action the user took (e.g. canceled the dialog).
+ * On Android, this is always `done`. On iOS, more constants are available.
  * */
 export type CalendarDialogResult = {
   action: CalendarDialogResultActionsIos | CalendarDialogResultActionsAndroid;
 };
 
 /**
- * The result of creating an event in the calendar dialog on iOS.
- * @platform ios
+ * The result of presenting a calendar dialog with `createEventInCalendarAsync`.
  * */
-export type CalendarDialogCreatedEventResultIos = {
-  action: 'saved';
+export type CalendarDialogCreatedEventResult = {
   /**
-   * The ID of the newly created event.
+   * The user's action. On Android, this is always `done`. On iOS, it can be any of the values.
    * */
-  id: string;
+  action: 'canceled' | 'done' | 'saved';
+  /**
+   * The ID of the newly created event. On Android, this is always `null`. On iOS, this is always a string.
+   * */
+  id: string | null;
 };
-/**
- * The result of creating an event in the calendar dialog on Android. The Android OS doesn't provide any additional information.
- * @platform android
- * */
-export type CalendarDialogCreatedEventResultAndroid = {
-  action: 'done';
-};
-/**
- * The result of a presenting a calendar dialog with `createEventInCalendarAsync`.
- * */
-export type CalendarDialogCreatedEventResult =
-  | CalendarDialogCreatedEventResultIos
-  | CalendarDialogCreatedEventResultAndroid;
 
 export type PresentationOptions = {
   /**
@@ -635,7 +623,7 @@ export type CalendarDialogParams = {
  * Launches the calendar UI provided by the OS to create a new event.
  * @param eventData A map of details for the event to be created.
  * @param presentationOptions Configuration that influences how the calendar UI is presented.
- * @return A promise which resolves with information about what action the user took (e.g. saved a new event).
+ * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
 export async function createEventInCalendarAsync(
@@ -659,7 +647,7 @@ export async function createEventInCalendarAsync(
 
 /**
  * Launches the calendar UI provided by the OS to preview an event.
- * @return A promise which resolves with information about what action the user took.
+ * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
 export async function openEventInCalendarAsync(
@@ -680,25 +668,23 @@ export async function openEventInCalendarAsync(
 
 /**
  * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
- * @return A promise which resolves with information about what action the user took.
+ * @return A promise which resolves with information about the dialog result.
  * @header systemProvidedUI
  */
 export async function editEventInCalendarAsync(
   params: CalendarDialogParams,
   presentationOptions?: PresentationOptions
 ): Promise<CalendarDialogResult> {
+  if (!ExpoCalendar.editEventInCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
+  }
   if (!params.id) {
     throw new Error(
       'editEventInCalendarAsync must be called with an id (string) of the target event'
     );
   }
-  if (Platform.OS === 'android') {
-    return openEventInCalendarAsync(params, presentationOptions);
-  }
-  if (!ExpoCalendar.editEventInCalendarAsync) {
-    throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
-  }
-  return ExpoCalendar.editEventInCalendarAsync(params);
+  const newParams = { ...params, ...presentationOptions };
+  return ExpoCalendar.editEventInCalendarAsync(newParams);
 }
 
 // @needsAudit

@@ -236,6 +236,9 @@ export async function test(t) {
 
     t.describe('calendar UI', () => {
       let originalTimeout;
+      const dontStartNewTask = {
+        startNewActivityTask: false,
+      };
 
       t.beforeAll(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -248,9 +251,7 @@ export async function test(t) {
       t.it('creates an event via UI', async () => {
         const eventData = createEventData();
         await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, {
-          startNewActivityTask: false,
-        });
+        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
         if (Platform.OS === 'ios') {
           t.expect(result.action).toBe('saved');
           t.expect(typeof result.id).toBe('string');
@@ -266,6 +267,7 @@ export async function test(t) {
           );
         } else {
           t.expect(result.action).toBe('done');
+          t.expect(result.id).toBe(null);
         }
       });
 
@@ -275,28 +277,16 @@ export async function test(t) {
         await alertAndWaitForResponse(
           'Please verify event details are shown and close the dialog.'
         );
-        const result = await Calendar.openEventInCalendarAsync(
-          { id: eventId },
-          {
-            startNewActivityTask: false,
-          }
-        );
+        const result = await Calendar.openEventInCalendarAsync({ id: eventId }, dontStartNewTask);
         t.expect(result).toEqual({ action: 'done' });
       });
 
       t.it('can edit an event', async () => {
-        if (Platform.OS === 'ios') {
-          const calendarId = await createTestCalendarAsync();
-          const eventId = await createTestEventAsync(calendarId);
-          await alertAndWaitForResponse(
-            'Please verify you can see the event and close the dialog.'
-          );
-          const result = await Calendar.editEventInCalendarAsync({ id: eventId });
-          t.expect(typeof result.action).toBe('string'); // done or canceled
-        } else {
-          // on Android, editEventInCalendarAsync is the same as openEventInCalendarAsync
-          t.expect(true).toBe(true);
-        }
+        const calendarId = await createTestCalendarAsync();
+        const eventId = await createTestEventAsync(calendarId);
+        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+        const result = await Calendar.editEventInCalendarAsync({ id: eventId }, dontStartNewTask);
+        t.expect(typeof result.action).toBe('string'); // done or canceled
       });
     });
 

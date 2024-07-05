@@ -11,8 +11,9 @@ import android.util.Log
 import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
 import expo.modules.calendar.EventRecurrenceUtils.extractRecurrence
 import expo.modules.calendar.dialogs.CreateEventContract
+import expo.modules.calendar.dialogs.CreateEventIntentResult
 import expo.modules.calendar.dialogs.CreatedEventOptions
-import expo.modules.calendar.dialogs.EventIntentResult
+import expo.modules.calendar.dialogs.ViewEventIntentResult
 import expo.modules.calendar.dialogs.ViewEventContract
 import expo.modules.calendar.dialogs.ViewedEventOptions
 import expo.modules.core.arguments.ReadableArguments
@@ -37,8 +38,8 @@ class CalendarModule : Module() {
   private val contentResolver
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
-  private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, EventIntentResult>
-  private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, EventIntentResult>
+  private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
+  private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
 
   private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
     timeZone = TimeZone.getTimeZone("GMT")
@@ -208,6 +209,11 @@ class CalendarModule : Module() {
     }
 
     AsyncFunction("openEventInCalendarAsync") Coroutine { params: ViewedEventOptions ->
+      val result = viewEventLauncher.launch(params)
+      return@Coroutine result
+    }
+
+    AsyncFunction("editEventInCalendarAsync") Coroutine { params: ViewedEventOptions ->
       val result = viewEventLauncher.launch(params)
       return@Coroutine result
     }
