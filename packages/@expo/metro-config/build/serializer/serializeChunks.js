@@ -163,9 +163,10 @@ class Chunk {
         return this.options.dev
             ? ''
             : this.serializeToCodeWithTemplates(serializerConfig, {
-                // Disable source maps when creating a sha to reduce the number of possible changes that could
-                // influence the cache hit.
+                skipWrapping: false,
                 serializerOptions: {
+                    // Disable source maps when creating a sha to reduce the number of possible changes that could
+                    // influence the cache hit.
                     includeSourceMaps: false,
                 },
                 sourceMapUrl: undefined,
@@ -276,7 +277,7 @@ class Chunk {
         return value === true || value === 'true';
     }
     async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
-        // Create hash without wrapping to prevent it changing when the wrapping changes.
+        // Create hash with wrapping so it hashes the whole content.
         const outputFile = this.getFilenameForConfig(serializerConfig);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
         const debugId = (0, debugId_1.stringToUUID)(path_1.default.basename(outputFile, path_1.default.extname(outputFile)));
