@@ -145,6 +145,9 @@ export async function loadMetroConfigAsync(
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    // TODO(cedric): add experiment flag to types
+    // @ts-expect-error
+    isReactNativeStrictVersionEnabled: exp?.experiments?.reactNativeStrictVersion ?? false,
     getMetroBundler,
   });
 

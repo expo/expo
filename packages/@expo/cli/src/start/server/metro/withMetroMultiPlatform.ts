@@ -18,6 +18,7 @@ import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } fr
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import {
+  type ExpoCustomMetroResolver,
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
   withMetroResolvers,
@@ -132,6 +133,7 @@ export function withExtendedResolver(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isReactNativeStrictVersionEnabled,
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
@@ -139,6 +141,7 @@ export function withExtendedResolver(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled?: boolean;
+    isReactNativeStrictVersionEnabled?: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -147,6 +150,9 @@ export function withExtendedResolver(
   }
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
+  }
+  if (isReactNativeStrictVersionEnabled) {
+    Log.warn(`Experimental React Native strict version is enabled.`);
   }
 
   let _assetRegistryPath: string | null = null;
@@ -324,6 +330,59 @@ export function withExtendedResolver(
     },
   ];
 
+  // React Native strict version validates the imported React Native versions against the project's version.
+  // Using only this version of React Native prevents multiple versions from being bundled.
+  function createReactNativeStrictVersionResolver(enabled = false): ExpoCustomMetroResolver {
+    // Load the "correct" version of React Native based on the project's version
+    const reactNativePath = path.dirname(
+      resolveFrom(config.projectRoot, 'react-native/package.json')
+    );
+
+    // Only warn once, put extra information in the debug logs
+    let warnedMultipleReactNativeVersions = false;
+
+    return (context, moduleName, platform) => {
+      // Only validate when enabled
+      // Only validate React Native imports
+      if (!enabled || !(moduleName === 'react-native' || moduleName.startsWith('react-native/'))) {
+        return null;
+      }
+
+      const resolver = getStrictResolver(context, platform);
+      const resolved = resolver(moduleName);
+
+      // Ignore non-source files from strict version validation
+      // Ignore correct React Native version imports
+      if (resolved.type !== 'sourceFile' || resolved.filePath.startsWith(reactNativePath)) {
+        return resolved;
+      }
+
+      // Validation failed, redirect to the correct version of React Native
+      const redirectPath = context.redirectModulePath(
+        moduleName.replace('react-native', reactNativePath)
+      );
+
+      // Ignore empty module redirects
+      if (redirectPath === false) return null;
+
+      // Resolve the proper redirected React Native version
+      const redirectResolved = resolver(redirectPath);
+
+      // Inform the user of the resolution change
+      if (!warnedMultipleReactNativeVersions) {
+        warnedMultipleReactNativeVersions = true;
+        Log.warn(`Multiple React Native versions detected, resolving only: ${reactNativePath}`);
+      }
+
+      // Provide all information in the debug logs
+      debug(
+        `Redirecting React Native module "${moduleName}" to "${redirectPath}", imported from: ${context.originModulePath}`
+      );
+
+      return redirectResolved;
+    };
+  }
+
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -474,6 +533,9 @@ export function withExtendedResolver(
       return null;
     },
 
+    // React Native strict version detection for monorepos with possible multiple versions of React Native
+    createReactNativeStrictVersionResolver(isReactNativeStrictVersionEnabled),
+
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -623,6 +685,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isReactNativeStrictVersionEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -633,6 +696,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isReactNativeStrictVersionEnabled: boolean,
     getMetroBundler: () => Bundler;
   }
 ) {
