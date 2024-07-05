@@ -45,6 +45,8 @@ export type State = {
     keepRequireNames: boolean;
     allowOptionalDependencies: AllowOptionalDependencies;
     unstable_allowRequireContext: boolean;
+    /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+    collectOnly?: boolean;
 };
 export type Options = Readonly<{
     asyncRequireModulePath: string;
@@ -55,6 +57,8 @@ export type Options = Readonly<{
     allowOptionalDependencies: AllowOptionalDependencies;
     dependencyTransformer?: DependencyTransformer;
     unstable_allowRequireContext: boolean;
+    /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+    collectOnly?: boolean;
 }>;
 export type CollectedDependencies = Readonly<{
     ast: ParseResult<types.File>;

@@ -53,6 +53,7 @@ function collectDependencies(ast, options) {
         keepRequireNames: options.keepRequireNames,
         allowOptionalDependencies: options.allowOptionalDependencies,
         unstable_allowRequireContext: options.unstable_allowRequireContext,
+        collectOnly: options.collectOnly,
     };
     (0, traverse_1.default)(ast, {
         CallExpression(path, state) {
@@ -205,7 +206,12 @@ function processRequireContextCall(path, state) {
         asyncType: null,
         optional: isOptionalDependency(directory, path, state),
     }, path);
-    path.get('callee').replaceWith(types.identifier('require'));
+    // If the pass is only collecting dependencies then we should avoid mutating the AST,
+    // this enables calling collectDependencies multiple times on the same AST.
+    if (state.collectOnly !== true) {
+        // require() the generated module representing this context
+        path.get('callee').replaceWith(types.identifier('require'));
+    }
     transformer.transformSyncRequire(path, dep, state);
 }
 function processResolveWeakCall(path, state) {

@@ -273,6 +273,36 @@ describe(`require.context`, () => {
     );
   });
 
+  it('can preserve the require.context AST in collection mode', () => {
+    const ast = astFromCode(`
+      const a = require.context('./');
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, {
+      ...optsWithContext,
+      collectOnly: true,
+    });
+    expect(dependencies).toEqual([
+      {
+        name: './',
+        data: objectContaining({
+          contextParams: {
+            filter: {
+              pattern: '.*',
+              flags: '',
+            },
+            mode: 'sync',
+            recursive: true,
+          },
+        }),
+      },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        const a = require.context(${dependencyMapName}[0], "./");
+      `)
+    );
+  });
+
   it('distinguishes require from require.context', () => {
     const ast = astFromCode(`
       const a = require.context('./');

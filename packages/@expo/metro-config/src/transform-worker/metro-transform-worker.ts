@@ -408,6 +408,10 @@ async function transformJS(
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
 
+        // If tree shaking is enabled, then preserve the original require calls.
+        // This ensures require.context calls are not broken.
+        collectOnly: treeshake === true,
+
         // NOTE(EvanBacon): Allow arbitrary imports in server environments.
         // This requires a patch to Metro collectDeps.
         // allowArbitraryImport: isServerEnv,
@@ -776,19 +780,7 @@ const makeShimAsyncRequireTemplate = template.expression(`require(ASYNC_REQUIRE_
 type InternalDependency = any;
 
 const disabledDependencyTransformer: DependencyTransformer = {
-  transformSyncRequire: (path) => {
-    // HACK: Metro breaks require.context by removing the require.context function but not updating it. Here we'll just convert it back.
-    // This doesn't work if the require.context has fewer than 2 arguments.
-
-    // If the path has more than 1 argument, then convert it from `require(...)` to `require.context(...)`.
-    // to essentially undo the `path.get("callee").replaceWith(types.identifier("require"));` line...
-    if (path.node.arguments.length > 1) {
-      path.node.callee = types.memberExpression(
-        types.identifier('require'),
-        types.identifier('context')
-      );
-    }
-  },
+  transformSyncRequire: (path) => {},
   transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
     // HACK: Ensure the async import code is included in the bundle when an import() call is found.
     let topParent = path;

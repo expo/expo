@@ -71,6 +71,8 @@ export type State = {
   keepRequireNames: boolean;
   allowOptionalDependencies: AllowOptionalDependencies;
   unstable_allowRequireContext: boolean;
+  /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+  collectOnly?: boolean;
 };
 
 export type Options = Readonly<{
@@ -82,6 +84,8 @@ export type Options = Readonly<{
   allowOptionalDependencies: AllowOptionalDependencies;
   dependencyTransformer?: DependencyTransformer;
   unstable_allowRequireContext: boolean;
+  /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+  collectOnly?: boolean;
 }>;
 
 export type CollectedDependencies = Readonly<{
@@ -126,6 +130,7 @@ function collectDependencies(
     keepRequireNames: options.keepRequireNames,
     allowOptionalDependencies: options.allowOptionalDependencies,
     unstable_allowRequireContext: options.unstable_allowRequireContext,
+    collectOnly: options.collectOnly,
   };
 
   traverse(
@@ -164,6 +169,7 @@ function collectDependencies(
           !path.scope.getBinding('require')
         ) {
           processRequireContextCall(path, state);
+
           visited.add(path.node);
           return;
         }
@@ -329,7 +335,12 @@ function processRequireContextCall(path: NodePath<CallExpression>, state: State)
     path
   );
 
-  path.get('callee').replaceWith(types.identifier('require'));
+  // If the pass is only collecting dependencies then we should avoid mutating the AST,
+  // this enables calling collectDependencies multiple times on the same AST.
+  if (state.collectOnly !== true) {
+    // require() the generated module representing this context
+    path.get('callee').replaceWith(types.identifier('require'));
+  }
   transformer.transformSyncRequire(path, dep, state);
 }
 
