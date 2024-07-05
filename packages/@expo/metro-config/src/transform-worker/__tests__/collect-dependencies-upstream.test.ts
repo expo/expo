@@ -13,7 +13,6 @@ import { transformFromAstSync } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
-import types from '@babel/types';
 import * as t from '@babel/types';
 import dedent from 'dedent';
 import nullthrows from 'nullthrows';
@@ -1506,14 +1505,14 @@ function adjustPosForCodeFrame(pos: { column: number; line: number }) {
   return pos ? { ...pos, column: pos.column + 1 } : pos;
 }
 
-function adjustLocForCodeFrame(loc: types.SourceLocation) {
+function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
     start: adjustPosForCodeFrame(loc.start),
     end: adjustPosForCodeFrame(loc.end),
   };
 }
 
-function formatLoc(loc: types.SourceLocation, depIndex: number, dep: Dependency, code: any) {
+function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: any) {
   return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
     message: `dep #${depIndex} (${dep.name})`,
     linesAbove: 0,
