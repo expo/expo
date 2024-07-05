@@ -177,7 +177,7 @@ export default class EventsScreen extends React.Component<Props, State> {
         id: event.id,
       },
       {
-        startNewActivityTask: true,
+        startNewActivityTask: false,
       }
     );
     setTimeout(() => {

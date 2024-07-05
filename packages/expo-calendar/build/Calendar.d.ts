@@ -561,7 +561,7 @@ export type PresentationOptions = {
     /**
      * Whether to launch the Activity as a new [task](https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_NEW_TASK).
      * If true, the promise resolves with `done` action immediately after opening the calendar activity.
-     * @default false
+     * @default true
      * @platform android
      * */
     startNewActivityTask?: boolean;
