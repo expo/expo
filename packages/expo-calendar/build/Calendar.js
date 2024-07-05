@@ -27,6 +27,29 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
+export var CalendarDialogResultActions;
+(function (CalendarDialogResultActions) {
+    /**
+     * On Android, this is the only possible result.
+     * On iOS, this means the user simply closed the dialog.
+     * */
+    CalendarDialogResultActions["done"] = "done";
+    /**
+     * The user canceled or dismissed the dialog.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["canceled"] = "canceled";
+    /**
+     * The user deleted the event.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["deleted"] = "deleted";
+    /**
+     * The user responded to and saved a pending event invitation.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["responded"] = "responded";
+})(CalendarDialogResultActions || (CalendarDialogResultActions = {}));
 /**
  * Launches the calendar UI provided by the OS to create a new event.
  * @param eventData A map of details for the event to be created.

@@ -558,27 +558,35 @@ export type DaysOfTheWeek = {
 
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
-/**
- * The result of presenting the calendar dialog for viewing or editing.
- * These constants map to [`EKEventEditViewAction`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewaction) and [`EKEventViewAction`](https://developer.apple.com/documentation/eventkitui/ekeventviewaction).
- * @platform ios
- * */
-export type CalendarDialogResultActionsIos = 'done' | 'canceled' | 'deleted' | 'responded';
+export enum CalendarDialogResultActions {
+  /**
+   * On Android, this is the only possible result.
+   * On iOS, this means the user simply closed the dialog.
+   * */
+  done = 'done',
+  /**
+   * The user canceled or dismissed the dialog.
+   * @platform ios
+   * */
+  canceled = 'canceled',
+  /**
+   * The user deleted the event.
+   * @platform ios
+   * */
+  deleted = 'deleted',
+  /**
+   * The user responded to and saved a pending event invitation.
+   * @platform ios
+   * */
+  responded = 'responded',
+}
 
 /**
- * The result of launching the calendar Activity.
- * Android doesn't provide enough information to determine the user's action, so the result is always 'done'.
- * The user may have canceled the dialog, saved the event, or deleted it.
- * @platform android
- * */
-export type CalendarDialogResultActionsAndroid = 'done';
-
-/**
- * The result of presenting the calendar dialog for viewing or editing. It indicates what action the user took (e.g. canceled the dialog).
- * On Android, this is always `done`. On iOS, more constants are available.
+ * The result of presenting the calendar dialog for viewing or editing. It indicates how user responded to the dialog.
+ * On Android, the `action` is always `done`. On iOS, more constants are available.
  * */
 export type CalendarDialogResult = {
-  action: CalendarDialogResultActionsIos | CalendarDialogResultActionsAndroid;
+  action: CalendarDialogResultActions;
 };
 
 /**
@@ -586,7 +594,7 @@ export type CalendarDialogResult = {
  * */
 export type CalendarDialogCreatedEventResult = {
   /**
-   * The user's action. On Android, this is always `done`. On iOS, it can be any of the values.
+   * How user responded to the dialog. On Android, this is always `done`. On iOS, it can be `saved` or `canceled`.
    * */
   action: 'canceled' | 'done' | 'saved';
   /**
