@@ -39,12 +39,32 @@ describe('iOS Icons', () => {
     ).toMatch('iosIcon');
   });
 
+  it(`uses more specific icon - appearance aware`, () => {
+    expect(
+      getIcons({
+        icon: 'icon',
+      })
+    ).toMatch('icon');
+    expect(
+      getIcons({
+        icon: 'icon',
+        ios: {
+          icon: {
+            dark: 'iosIcon',
+          },
+        },
+      })
+    ).toMatchObject({ dark: 'iosIcon' });
+  });
+
   it(`does not support empty string icons`, () => {
     expect(
       getIcons({
         icon: '',
         ios: {
-          icon: '',
+          icon: {
+            any: '',
+          },
         },
       })
     ).toBe(null);
@@ -53,7 +73,9 @@ describe('iOS Icons', () => {
       getIcons({
         icon: 'icon',
         ios: {
-          icon: '',
+          icon: {
+            any: '',
+          },
         },
       })
     ).toMatch('icon');
@@ -139,7 +161,7 @@ describe('e2e: iOS icons with fallback image', () => {
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(1);
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
       'icon',
-      'No icon is defined in the Expo config.'
+      'No top-level icon or ios-specific icon (any, dark, tinted) is defined in the Expo config.'
     );
     expect(icons.length).toBe(1);
 

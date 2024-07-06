@@ -57,29 +57,78 @@ const withIosIcons = config => {
 };
 exports.withIosIcons = withIosIcons;
 function getIcons(config) {
-  // No support for empty strings.
-  return config.ios?.icon || config.icon || null;
+  const iosSpecificIcons = config.ios?.icon;
+  if (iosSpecificIcons) {
+    // For backwards compatibility
+    if (typeof iosSpecificIcons === 'string') {
+      return iosSpecificIcons || config.icon || null;
+    }
+
+    // iOS 18 introduced the ability to specify dark and tinted icons
+    if (!iosSpecificIcons.any && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
+      return config.icon || null;
+    }
+    return iosSpecificIcons;
+  }
+  if (config.icon) {
+    return config.icon;
+  }
+  return null;
 }
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);
-  if (!icon) {
-    _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
+  if (icon === null) {
+    _configPlugins().WarningAggregator.addWarningIOS('icon', 'No top-level icon or ios-specific icon (any, dark, tinted) is defined in the Expo config.');
+  } else if (typeof icon === 'string') {
+    if (!icon) {
+      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No top-level icon is defined in the Expo config.');
+    }
+  } else if (typeof icon === 'object') {
+    if (!icon?.any && !icon?.dark && !icon?.tinted) {
+      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No ios-specific icon (any, dark, tinted) is defined in the Expo config.');
+    }
   }
+
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
   await fs().ensureDir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH));
+  const imagesJson = [];
+  const baseIconPath = typeof icon === 'string' ? icon : icon?.any || icon?.dark || icon?.tinted;
 
   // Store the image JSON data for assigning via the Contents.json
-  const imagesJson = await generateUniversalIconAsync(projectRoot, {
-    icon,
+  const baseIcon = await generateUniversalIconAsync(projectRoot, {
+    icon: baseIconPath,
     cacheKey: 'universal-icon',
     iosNamedProjectRoot,
     platform: 'ios'
   });
+  imagesJson.push(baseIcon);
+  if (typeof icon === 'object') {
+    if (icon?.dark) {
+      const darkIcon = await generateUniversalIconAsync(projectRoot, {
+        icon: icon.dark,
+        cacheKey: 'universal-icon-dark',
+        iosNamedProjectRoot,
+        platform: 'ios',
+        appearance: 'dark'
+      });
+      imagesJson.push(darkIcon);
+    }
+    if (icon?.tinted) {
+      const tintedIcon = await generateUniversalIconAsync(projectRoot, {
+        icon: icon.tinted,
+        cacheKey: 'universal-icon-tinted',
+        iosNamedProjectRoot,
+        platform: 'ios',
+        appearance: 'tinted'
+      });
+      imagesJson.push(tintedIcon);
+    }
+  }
 
-  // Finally, write the Config.json
+  // Finally, write the Contents.json
   await (0, _AssetContents().writeContentsJsonAsync)((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
     images: imagesJson
   });
@@ -101,7 +150,8 @@ async function generateUniversalIconAsync(projectRoot, {
   icon,
   cacheKey,
   iosNamedProjectRoot,
-  platform
+  platform,
+  appearance
 }) {
   const size = 1024;
   const filename = getAppleIconName(size, 1);
@@ -133,11 +183,17 @@ async function generateUniversalIconAsync(projectRoot, {
   // Write image buffer to the file system.
   const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs().writeFile(assetPath, source);
-  return [{
+  return {
     filename: getAppleIconName(size, 1),
     idiom: 'universal',
     platform,
-    size: `${size}x${size}`
-  }];
+    size: `${size}x${size}`,
+    ...(appearance ? {
+      appearances: [{
+        appearance: 'luminosity',
+        value: appearance
+      }]
+    } : {})
+  };
 }
 //# sourceMappingURL=withIosIcons.js.map
