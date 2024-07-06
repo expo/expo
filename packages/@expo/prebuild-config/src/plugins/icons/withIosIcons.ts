@@ -25,12 +25,12 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
   const iosSpecificIcons = config.ios?.icon;
 
   if (iosSpecificIcons) {
-    // For backwards compatibility
+    // For backwards compatibility, the icon can be a string
     if (typeof iosSpecificIcons === 'string') {
       return iosSpecificIcons || config.icon || null;
     }
 
-    // iOS 18 introduced the ability to specify dark and tinted icons
+    // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
     if (!iosSpecificIcons.any && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
       return config.icon || null;
     }
@@ -68,7 +68,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
 
   const imagesJson: ContentsJson['images'] = [];
 
-  const baseIconPath = typeof icon === 'string' ? icon : icon?.any || icon?.dark || icon?.tinted;
+  const baseIconPath = typeof icon === 'object' ? icon?.any || icon?.dark || icon?.tinted : icon;
 
   // Store the image JSON data for assigning via the Contents.json
   const baseIcon = await generateUniversalIconAsync(projectRoot, {
