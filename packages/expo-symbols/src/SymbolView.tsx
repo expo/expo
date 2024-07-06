@@ -2,11 +2,13 @@ import { Platform, requireNativeViewManager } from 'expo-modules-core';
 
 import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
 
-const NativeView: React.ComponentType<NativeSymbolViewProps> =
-  requireNativeViewManager('SymbolModule');
+let NativeView: React.ComponentType<NativeSymbolViewProps>;
+if (Platform.OS !== 'web') {
+  NativeView = requireNativeViewManager('SymbolModule');
+}
 
 export function SymbolView(props: SymbolViewProps) {
-  if (Platform.OS === 'android') {
+  if (Platform.OS === 'android' || Platform.OS === 'web') {
     return <>{props.fallback}</>;
   }
   const nativeProps = getNativeProps(props);

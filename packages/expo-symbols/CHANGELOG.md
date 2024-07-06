@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix import error when using symbols on web.
+
 ### 💡 Others
 
 ## 0.1.4 — 2024-04-29
