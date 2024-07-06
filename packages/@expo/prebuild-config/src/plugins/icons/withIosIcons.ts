@@ -49,20 +49,14 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const icon = getIcons(config);
 
   if (icon === null) {
-    WarningAggregator.addWarningIOS(
-      'icon',
-      'No top-level icon or ios-specific icon (any, dark, tinted) is defined in the Expo config.'
-    );
+    WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   } else if (typeof icon === 'string') {
     if (!icon) {
-      WarningAggregator.addWarningIOS('icon', 'No top-level icon is defined in the Expo config.');
+      WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
     }
   } else if (typeof icon === 'object') {
     if (!icon?.any && !icon?.dark && !icon?.tinted) {
-      WarningAggregator.addWarningIOS(
-        'icon',
-        'No ios-specific icon (any, dark, tinted) is defined in the Expo config.'
-      );
+      WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
     }
   }
 

@@ -78,14 +78,14 @@ function getIcons(config) {
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);
   if (icon === null) {
-    _configPlugins().WarningAggregator.addWarningIOS('icon', 'No top-level icon or ios-specific icon (any, dark, tinted) is defined in the Expo config.');
+    _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
   } else if (typeof icon === 'string') {
     if (!icon) {
-      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No top-level icon is defined in the Expo config.');
+      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
     }
   } else if (typeof icon === 'object') {
     if (!icon?.any && !icon?.dark && !icon?.tinted) {
-      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No ios-specific icon (any, dark, tinted) is defined in the Expo config.');
+      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
     }
   }
 

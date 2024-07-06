@@ -161,7 +161,7 @@ describe('e2e: iOS icons with fallback image', () => {
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(1);
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
       'icon',
-      'No top-level icon or ios-specific icon (any, dark, tinted) is defined in the Expo config.'
+      'No icon is defined in the Expo config.'
     );
     expect(icons.length).toBe(1);
 
