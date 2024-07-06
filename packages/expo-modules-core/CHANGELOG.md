@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Added `customizeRootView:` support to `EXAppDelegateWrapper.createRCTRootViewFactory`. ([#30245](https://github.com/expo/expo/pull/30245) by [@kudo](https://github.com/kudo))
+
 ## 1.12.18 — 2024-06-28
 
 ### 🐛 Bug fixes
