@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix import error when using symbols on web.
+- Fix import error when using symbols on web. ([#30249](https://github.com/expo/expo/pull/30249) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
