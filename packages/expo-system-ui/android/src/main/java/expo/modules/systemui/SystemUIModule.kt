@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.WindowInsetsControllerCompat
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -56,6 +57,26 @@ class SystemUIModule : Module() {
         colorToHex((background.mutate() as ColorDrawable).color)
       } else {
         null
+      }
+    }
+
+    AsyncFunction("setStatusBarStyle") { darkContentBarsStyle: Boolean ->
+      val window = currentActivity.window
+      val decorView = window.decorView
+
+      currentActivity.runOnUiThread {
+        WindowInsetsControllerCompat(window, decorView)
+          .isAppearanceLightStatusBars = darkContentBarsStyle
+      }
+    }
+
+    AsyncFunction("setNavigationBarStyle") { darkContentBarsStyle: Boolean ->
+      val window = currentActivity.window
+      val decorView = window.decorView
+
+      currentActivity.runOnUiThread {
+        WindowInsetsControllerCompat(window, decorView)
+          .isAppearanceLightNavigationBars = darkContentBarsStyle
       }
     }
   }
