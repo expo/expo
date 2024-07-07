@@ -1,12 +1,14 @@
 package expo.modules.systemui.singletons
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 object SystemUI {
   private const val TAG = "SystemUI"
@@ -44,14 +46,20 @@ object SystemUI {
   @JvmStatic
   fun enableEdgeToEdge(activity: Activity) {
     val window = activity.window
+    val decorView = window.decorView
+    val uiMode = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    val darkMode = uiMode == Configuration.UI_MODE_NIGHT_YES
+    val insetsController = WindowInsetsControllerCompat(window, decorView)
 
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     activity.runOnUiThread {
       window.statusBarColor = Color.TRANSPARENT
+      insetsController.isAppearanceLightStatusBars = !darkMode
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
         window.navigationBarColor = Color.TRANSPARENT
+        insetsController.isAppearanceLightNavigationBars = !darkMode
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           window.isStatusBarContrastEnforced = false
