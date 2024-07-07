@@ -156,18 +156,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
-  '/home/develop/user-interface/safe-areas': '/develop/user-interface/safe-areas/',
-  '/home/develop/development-builds/installation': '/develop/development-builds/create-a-build/',
-  '/home/debugging/tools/': '/debugging/tools/',
-  '/home/navigation/installation': '/routing/introduction/',
-  '/home/authentication': '/develop/authentication/',
-  '/home/get-started/create-a-project': '/get-started/create-a-project/',
-  '/home/core-concepts/': '/core-concepts/',
-  '/home/config-plugins/plugins-and-mods': '/config-plugins/plugins-and-mods/',
-  '/home/unit-testing/': '/develop/unit-testing/',
-  '/home/config-plugins/introduction/': '/config-plugins/introduction/',
-  '/home/develop/user-interface/app-icons': '/develop/user-interface/app-icons/',
-  '/home/develop/development-builds/introduction/': '/develop/development-builds/introduction/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
