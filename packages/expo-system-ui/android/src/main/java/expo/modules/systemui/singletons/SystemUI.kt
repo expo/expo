@@ -46,20 +46,19 @@ object SystemUI {
   @JvmStatic
   fun enableEdgeToEdge(activity: Activity) {
     val window = activity.window
-    val decorView = window.decorView
     val uiMode = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    val darkMode = uiMode == Configuration.UI_MODE_NIGHT_YES
-    val insetsController = WindowInsetsControllerCompat(window, decorView)
+    val darkContentBarsStyle = uiMode != Configuration.UI_MODE_NIGHT_YES
+    val insetsController = WindowInsetsControllerCompat(window, window.decorView)
 
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     activity.runOnUiThread {
       window.statusBarColor = Color.TRANSPARENT
-      insetsController.isAppearanceLightStatusBars = !darkMode
+      insetsController.isAppearanceLightStatusBars = darkContentBarsStyle
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
         window.navigationBarColor = Color.TRANSPARENT
-        insetsController.isAppearanceLightNavigationBars = !darkMode
+        insetsController.isAppearanceLightNavigationBars = darkContentBarsStyle
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           window.isStatusBarContrastEnforced = false
