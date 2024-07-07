@@ -14,7 +14,7 @@ import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
-import * as types from '@babel/types';
+import * as t from '@babel/types';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import countLines from 'metro/src/lib/countLines';
@@ -86,7 +86,7 @@ export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
     readonly hasCjsExports?: boolean;
     readonly reactClientReference?: string;
-    readonly ast?: types.File;
+    readonly ast?: t.File;
     readonly reconcile?: ReconcileTransformSettings;
   };
 };
@@ -203,7 +203,7 @@ export function renameTopLevelModuleVariables() {
   };
 }
 
-function applyUseStrictDirective(ast: babylon.ParseResult<types.File>) {
+function applyUseStrictDirective(ast: babylon.ParseResult<t.File>) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -213,11 +213,11 @@ function applyUseStrictDirective(ast: babylon.ParseResult<types.File>) {
     directives != null &&
     directives.findIndex((d) => d.value.value === 'use strict') === -1
   ) {
-    directives.push(types.directive(types.directiveLiteral('use strict')));
+    directives.push(t.directive(t.directiveLiteral('use strict')));
   }
 }
 
-export function applyImportSupport<TFile extends types.File>(
+export function applyImportSupport<TFile extends t.File>(
   ast: TFile,
   {
     filename,
@@ -301,7 +301,7 @@ export function applyImportSupport<TFile extends types.File>(
 }
 
 function performConstantFolding(
-  ast: babylon.ParseResult<types.File>,
+  ast: babylon.ParseResult<t.File>,
   { filename }: { filename: string }
 ) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
@@ -321,7 +321,7 @@ function performConstantFolding(
   // Run the constant folding plugin in its own pass, avoiding race conditions
   // with other plugins that have exit() visitors on Program (e.g. the ESM
   // transform).
-  ast = nullthrows<babylon.ParseResult<types.File>>(
+  ast = nullthrows<babylon.ParseResult<t.File>>(
     // @ts-expect-error
     transformFromAstSync(ast, '', {
       ast: true,
@@ -344,8 +344,11 @@ function performConstantFolding(
 
 async function transformJS(
   file: JSFile,
-  { config, options }: TransformationContext
+  { config, options, projectRoot }: TransformationContext
 ): Promise<TransformResponse> {
+  const targetEnv = options.customTransformOptions?.environment;
+  const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+
   const treeshake =
     // Ensure we don't enable tree shaking for scripts or assets.
     file.type === 'js/module' &&
@@ -359,7 +362,7 @@ async function transformJS(
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
-  let ast: babylon.ParseResult<types.File> =
+  let ast: babylon.ParseResult<t.File> =
     file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
@@ -387,7 +390,7 @@ async function transformJS(
 
   let dependencyMapName: string = '';
   let dependencies: readonly Dependency[];
-  let wrappedAst: types.File | undefined;
+  let wrappedAst: t.File | undefined;
 
   // If the module to transform is a script (meaning that is not part of the
   // dependency graph and it code will just be prepended to the bundle modules),
@@ -401,7 +404,15 @@ async function transformJS(
     try {
       collectDependenciesOptions = {
         asyncRequireModulePath: config.asyncRequireModulePath,
-        dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
+        dependencyTransformer:
+          config.unstable_disableModuleWrapping === true
+            ? disabledDependencyTransformer
+            : undefined,
+        dynamicRequires: isServerEnv
+          ? // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+            // This requires a patch to Metro collectDeps.
+            'warn'
+          : getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
         inlineableCalls: [importDefault, importAll],
         keepRequireNames: options.dev,
         allowOptionalDependencies: config.allowOptionalDependencies,
@@ -757,7 +768,9 @@ export function getCacheKey(config: JsTransformerConfig): string {
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
     require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
+    require.resolve('./resolveOptions'),
     require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
     require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
@@ -806,7 +819,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
 };
 
 export function collectDependenciesForShaking(
-  ast: babylon.ParseResult<types.File>,
+  ast: babylon.ParseResult<t.File>,
   options: CollectDependenciesOptions
 ) {
   const collectDependenciesOptions = {

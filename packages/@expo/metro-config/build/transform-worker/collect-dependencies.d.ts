@@ -1,8 +1,7 @@
-import type { ParseResult } from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
-import * as types from '@babel/types';
+import * as t from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
-export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
 type AllowOptionalDependenciesWithOptions = {
     exclude: string[];
 };
@@ -25,13 +24,12 @@ type MutableDependencyData = {
     key: string;
     asyncType: AsyncDependencyType | null;
     isOptional?: boolean;
-    locs: readonly types.SourceLocation[];
+    locs: readonly t.SourceLocation[];
     contextParams?: RequireContextParams;
-    exportNames: string[];
 };
-export type DependencyData = Readonly<MutableDependencyData>;
+type DependencyData = Readonly<MutableDependencyData>;
 type MutableInternalDependency = MutableDependencyData & {
-    locs: types.SourceLocation[];
+    locs: t.SourceLocation[];
     index: number;
     name: string;
 };
@@ -46,8 +44,6 @@ export type State = {
     keepRequireNames: boolean;
     allowOptionalDependencies: AllowOptionalDependencies;
     unstable_allowRequireContext: boolean;
-    /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
-    collectOnly?: boolean;
 };
 export type Options = Readonly<{
     asyncRequireModulePath: string;
@@ -58,11 +54,9 @@ export type Options = Readonly<{
     allowOptionalDependencies: AllowOptionalDependencies;
     dependencyTransformer?: DependencyTransformer;
     unstable_allowRequireContext: boolean;
-    /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
-    collectOnly?: boolean;
 }>;
-export type CollectedDependencies = Readonly<{
-    ast: ParseResult<types.File>;
+export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
+    ast: TAst;
     dependencyMapName: string;
     dependencies: readonly Dependency[];
 }>;
@@ -72,16 +66,14 @@ export interface DependencyTransformer {
     transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
 }
-export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject' | 'warn';
 type ImportQualifier = Readonly<{
     name: string;
     asyncType: AsyncDependencyType | null;
     optional: boolean;
     contextParams?: RequireContextParams;
-    exportNames: string[];
 }>;
-declare function collectDependencies(ast: CollectedDependencies['ast'], options: Options): CollectedDependencies;
-export declare function getExportNamesFromPath(path: NodePath<any>): string[];
+declare function collectDependencies<TAst extends t.File>(ast: TAst, options: Options): CollectedDependencies<TAst>;
 declare class DependencyRegistry {
     private _dependencies;
     registerDependency(qualifier: ImportQualifier): InternalDependency;

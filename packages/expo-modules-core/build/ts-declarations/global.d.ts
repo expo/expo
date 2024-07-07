@@ -1,6 +1,7 @@
 import type { EventEmitter } from './EventEmitter';
 import type { NativeModule } from './NativeModule';
 import type { SharedObject } from './SharedObject';
+import type { SharedRef } from './SharedRef';
 export interface ExpoGlobal {
     /**
      * Host object that is used to access native Expo modules.
@@ -14,6 +15,10 @@ export interface ExpoGlobal {
      * @see SharedObject
      */
     SharedObject: typeof SharedObject;
+    /**
+     * @see SharedRef
+     */
+    SharedRef: typeof SharedRef;
     /**
      * @see NativeModule
      */

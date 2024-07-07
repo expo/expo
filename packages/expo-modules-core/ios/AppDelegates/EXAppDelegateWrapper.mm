@@ -17,6 +17,12 @@
 @interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
 @end
 
+@interface RCTRootViewFactoryConfiguration ()
+
+- (void)setCustomizeRootView:(void (^)(UIView *rootView))customizeRootView;
+
+@end
+
 @interface EXAppDelegateWrapper()
 
 @property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
@@ -73,13 +79,18 @@
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
-  RCTRootViewFactoryConfiguration *configuration =
-      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL
-                                                  newArchEnabled:self.fabricEnabled
-                                              turboModuleEnabled:self.turboModuleEnabled
-                                               bridgelessEnabled:self.bridgelessEnabled];
-
   __weak __typeof(self) weakSelf = self;
+  RCTBundleURLBlock bundleUrlBlock = ^{
+    RCTAppDelegate *strongSelf = weakSelf;
+    return strongSelf.bundleURL;
+  };
+
+  RCTRootViewFactoryConfiguration *configuration =
+      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
+                                                       newArchEnabled:self.fabricEnabled
+                                                   turboModuleEnabled:self.turboModuleEnabled
+                                                    bridgelessEnabled:self.bridgelessEnabled];
+
   configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
   {
     return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
@@ -89,6 +100,13 @@
   {
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
   };
+
+  // TODO(kudo,20240706): Remove respondsToSelector and set the property directly when we upgrade to react-native 0.75
+  if ([configuration respondsToSelector:@selector(setCustomizeRootView:)]) {
+    [configuration setCustomizeRootView:^(UIView *_Nonnull rootView) {
+      [weakSelf customizeRootView:(RCTRootView *)rootView];
+    }];
+  }
 
   return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
 }
