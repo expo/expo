@@ -538,10 +538,7 @@ export async function treeShakeSerializer(
   }
 
   function removeUnusedExports(value: Module<MixedOutput>, depth: number = 0): string[] {
-    if (!accessAst(value.output[0])) {
-      return [];
-    }
-    if (!value.inverseDependencies.size) {
+    if (!accessAst(value.output[0]) || !value.inverseDependencies.size) {
       return [];
     }
     if (depth > 5) {
@@ -611,6 +608,7 @@ export async function treeShakeSerializer(
 
       // Collect a list of exports that are not used within the module.
       const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
+
       // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
       traverse(ast, {
         ExportDefaultDeclaration(path) {

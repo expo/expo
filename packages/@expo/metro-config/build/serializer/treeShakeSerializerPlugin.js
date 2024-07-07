@@ -425,10 +425,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         return { path: importInstance.absolutePath, removed: false };
     }
     function removeUnusedExports(value, depth = 0) {
-        if (!accessAst(value.output[0])) {
-            return [];
-        }
-        if (!value.inverseDependencies.size) {
+        if (!accessAst(value.output[0]) || !value.inverseDependencies.size) {
             return [];
         }
         if (depth > 5) {
