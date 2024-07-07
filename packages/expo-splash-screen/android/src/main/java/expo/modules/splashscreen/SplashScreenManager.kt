@@ -1,23 +1,14 @@
 package expo.modules.splashscreen
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.animation.AccelerateInterpolator
-import android.window.SplashScreenView
+import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
-import androidx.core.splashscreen.SplashScreen
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.util.Timer
 import java.util.TimerTask
-import kotlin.math.min
 
 private enum class Status {
   HIDDEN,
@@ -36,31 +27,15 @@ object SplashScreenManager {
 
   private var status = Status.HIDDEN
 
-  private fun configureSplashScreen(splashScreen: SplashScreen) {
-    val duration = (hideSplashScreenOptions.duration).toLong()
-
-    splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
-      splashScreenViewProvider.view.animate()
-        .setDuration(duration)
-        .setStartDelay(min(0, duration))
-        .alpha(0.0f)
-        .setInterpolator(AccelerateInterpolator())
-        .setListener(object : AnimatorListenerAdapter() {
-          override fun onAnimationEnd(animation: Animator) {
-            super.onAnimationEnd(animation)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-              splashScreenViewProvider.remove()
-            } else {
-              val splashScreenView = splashScreenViewProvider.view as SplashScreenView
-              splashScreenView.remove()
-            }
-          }
-        }).start()
+  @RequiresApi(Build.VERSION_CODES.S)
+  private fun configureSplashScreen(activity: Activity) {
+    activity.splashScreen.setOnExitAnimationListener {
+      it.remove()
+      activity.splashScreen.clearOnExitAnimationListener()
     }
   }
 
   fun registerOnActivity(activity: Activity, @StyleRes themeResId: Int) {
-    val splashScreen = activity.installSplashScreen()
     this.themeResId = themeResId
 
     val typedValue = TypedValue()
@@ -73,8 +48,6 @@ object SplashScreenManager {
       }
     }
 
-    configureSplashScreen(splashScreen)
-
     val contentView = activity.findViewById<View>(android.R.id.content)
     contentView.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
       override fun onPreDraw(): Boolean {
@@ -86,6 +59,10 @@ object SplashScreenManager {
         }
       }
     })
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      configureSplashScreen(activity)
+    }
 
     initialDialog = SplashScreenDialog(activity, themeResId, false)
     initialDialog?.show {
