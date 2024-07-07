@@ -69,7 +69,7 @@ export declare function addNetworkStateListener(listener: (event: NetworkStateEv
  * initiates a listener for network state changes and cleans up before unmounting.
  *
  * @example
- * ```typescript
+ * ```ts
  * const networkState = useNetworkState();
  * console.log(`Current network type: ${networkState.type}`);
  * ```
