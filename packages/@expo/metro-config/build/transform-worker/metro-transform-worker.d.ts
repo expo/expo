@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import * as babylon from '@babel/parser';
-import * as types from '@babel/types';
+import * as t from '@babel/types';
 import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
 import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 import { CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
@@ -13,7 +13,7 @@ export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     readonly data: JsOutput['data'] & {
         readonly hasCjsExports?: boolean;
         readonly reactClientReference?: string;
-        readonly ast?: types.File;
+        readonly ast?: t.File;
         readonly reconcile?: ReconcileTransformSettings;
     };
 };
@@ -43,7 +43,7 @@ export declare function renameTopLevelModuleVariables(): {
         Program(path: any): void;
     };
 };
-export declare function applyImportSupport<TFile extends types.File>(ast: TFile, { filename, options, importDefault, importAll, }: {
+export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, }: {
     filename: string;
     options: Pick<JsTransformOptions, 'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'>;
     importDefault: string;
@@ -51,15 +51,15 @@ export declare function applyImportSupport<TFile extends types.File>(ast: TFile,
 }): TFile;
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;
-export declare function collectDependenciesForShaking(ast: babylon.ParseResult<types.File>, options: CollectDependenciesOptions): Readonly<{
-    ast: babylon.ParseResult<types.File>;
+export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t.File>, options: CollectDependenciesOptions): Readonly<{
+    ast: babylon.ParseResult<t.File>;
     dependencyMapName: string;
     dependencies: readonly Readonly<{
         data: Readonly<{
             key: string;
             asyncType: import("./collect-dependencies").AsyncDependencyType | null;
             isOptional?: boolean | undefined;
-            locs: readonly types.SourceLocation[];
+            locs: readonly t.SourceLocation[];
             contextParams?: Readonly<{
                 recursive: boolean;
                 filter: Readonly<Readonly<{

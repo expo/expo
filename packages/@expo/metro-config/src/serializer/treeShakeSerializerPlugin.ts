@@ -5,18 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { NodePath, traverse } from '@babel/core';
+import generate from '@babel/generator';
 import * as types from '@babel/types';
+import assert from 'assert';
 import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import { SerializerConfigT } from 'metro-config';
-import assert from 'assert';
+
+import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
+import { DependencyData } from '../transform-worker/collect-dependencies';
 import {
   ReconcileTransformSettings,
   collectDependenciesForShaking,
 } from '../transform-worker/metro-transform-worker';
-import { sortDependencies } from './reconcileTransformSerializerPlugin';
-import { DependencyData, getExportNamesFromPath } from '../transform-worker/collect-dependencies';
-import generate from '@babel/generator';
 
 const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
@@ -142,6 +143,7 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
     const deps = collectDependenciesForShaking(
+      // @ts-expect-error
       ast,
       reconcile.collectDependenciesOptions
     ).dependencies;

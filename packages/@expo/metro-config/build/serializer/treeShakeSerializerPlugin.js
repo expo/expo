@@ -36,9 +36,9 @@ exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exp
 const core_1 = require("@babel/core");
 const types = __importStar(require("@babel/types"));
 const assert_1 = __importDefault(require("assert"));
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const sideEffects_1 = require("./sideEffects");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
-const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const debug = require('debug')('expo:treeshaking');
 const OPTIMIZE_GRAPH = true;
 function isModuleEmptyFor(ast) {
@@ -132,7 +132,9 @@ function populateModuleWithImportUsage(value) {
         const reconcile = outputItem.data.reconcile;
         (0, assert_1.default)(ast, 'ast must be defined.');
         (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
-        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(ast, reconcile.collectDependenciesOptions).dependencies;
+        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(
+        // @ts-expect-error
+        ast, reconcile.collectDependenciesOptions).dependencies;
         // @ts-expect-error: Mutating the value in place.
         value.dependencies =
             //

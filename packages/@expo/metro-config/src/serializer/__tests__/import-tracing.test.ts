@@ -43,6 +43,7 @@ console.log(run);
       data: {
         data: {
           asyncType: null,
+          exportNames: ['*'],
           key: '7Edr0s96f6qkXN0z9TBRGKmmmmQ=',
           locs: [AnyPosition, AnyPosition],
         },

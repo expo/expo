@@ -1,6 +1,6 @@
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import { type Dependency } from '../transform-worker/collect-dependencies';
 import { SerializerConfigT } from 'metro-config';
+import { type Dependency } from '../transform-worker/collect-dependencies';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 export declare function reconcileTransformSerializerPlugin(entryPoint: string, preModules: readonly Module<MixedOutput>[], graph: ReadOnlyGraph, options: SerializerOptions): Promise<SerializerParameters>;

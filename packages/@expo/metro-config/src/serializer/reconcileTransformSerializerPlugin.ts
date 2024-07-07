@@ -8,11 +8,6 @@ import generate from '@babel/generator';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import collectDependencies, {
-  InvalidRequireCallError as InternalInvalidRequireCallError,
-  type Dependency,
-  Options as CollectDependenciesOptions,
-} from '../transform-worker/collect-dependencies';
 import countLines from 'metro/src/lib/countLines';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
@@ -20,6 +15,11 @@ import metroTransformPlugins from 'metro-transform-plugins';
 
 import { hasSideEffectWithDebugTrace } from './sideEffects';
 import { accessAst, isShakingEnabled } from './treeShakeSerializerPlugin';
+import collectDependencies, {
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+  type Dependency,
+  Options as CollectDependenciesOptions,
+} from '../transform-worker/collect-dependencies';
 import {
   ReconcileTransformSettings,
   applyImportSupport,

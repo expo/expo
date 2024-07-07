@@ -24,6 +24,9 @@ it(`can create a micro Metro graph fixture`, async () => {
                 "data": {
                   "data": {
                     "asyncType": null,
+                    "exportNames": [
+                      "*",
+                    ],
                     "key": "BMmp2IBk5bHEtqZLRWIvwl1M4ck=",
                     "locs": [
                       SourceLocation {

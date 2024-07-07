@@ -16,11 +16,6 @@ jest.mock('../findUpPackageJsonPath', () => ({
   findUpPackageJsonPath: jest.fn(() => null),
 }));
 
-function getModules(graph, name: string) {
-  if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
-  return graph.dependencies.get(name).output[0].data.modules;
-}
-
 function expectSideEffects(graph, name: string) {
   return expect(graph.dependencies.get(name).sideEffects);
 }
