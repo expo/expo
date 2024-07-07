@@ -33,3 +33,13 @@ export async function setBackgroundColorAsync(color: ColorValue | null): Promise
 export async function getBackgroundColorAsync(): Promise<ColorValue | null> {
   return await ExpoSystemUI.getBackgroundColorAsync();
 }
+
+export type SystemBarStyle = 'light-content' | 'dark-content';
+
+export async function setStatusBarStyle(barStyle: SystemBarStyle) {
+  await ExpoSystemUI.setStatusBarStyle(barStyle === 'dark-content');
+}
+
+export async function setNavigationBarStyle(barStyle: SystemBarStyle) {
+  await ExpoSystemUI.setNavigationBarStyle(barStyle === 'dark-content');
+}

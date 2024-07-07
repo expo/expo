@@ -31,4 +31,10 @@ export async function setBackgroundColorAsync(color) {
 export async function getBackgroundColorAsync() {
     return await ExpoSystemUI.getBackgroundColorAsync();
 }
+export async function setStatusBarStyle(barStyle) {
+    await ExpoSystemUI.setStatusBarStyle(barStyle === 'dark-content');
+}
+export async function setNavigationBarStyle(barStyle) {
+    await ExpoSystemUI.setNavigationBarStyle(barStyle === 'dark-content');
+}
 //# sourceMappingURL=SystemUI.js.map

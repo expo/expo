@@ -13,6 +13,12 @@ export default function SystemUIScreen() {
         <Section title="Background Color">
           <BackgroundColorExample />
         </Section>
+        <Section title="Status Bar Style">
+          <StatusBarStyleExample />
+        </Section>
+        <Section title="Navigation Bar Style">
+          <NavigationBarStyleExample />
+        </Section>
       </Page>
     </ScrollView>
   );
@@ -34,6 +40,33 @@ function BackgroundColorExample() {
       <Button
         onPress={async () => setColor(await SystemUI.getBackgroundColorAsync())}
         title={`Get background color: ${color?.toString()}`}
+      />
+    </>
+  );
+}
+
+function StatusBarStyleExample() {
+  return (
+    <>
+      <Button
+        onPress={() => SystemUI.setStatusBarStyle('light-content')}
+        title="Set light-content"
+      />
+      <Button onPress={() => SystemUI.setStatusBarStyle('dark-content')} title="Set dark-content" />
+    </>
+  );
+}
+
+function NavigationBarStyleExample() {
+  return (
+    <>
+      <Button
+        onPress={() => SystemUI.setNavigationBarStyle('light-content')}
+        title="Set light-content"
+      />
+      <Button
+        onPress={() => SystemUI.setNavigationBarStyle('dark-content')}
+        title="Set dark-content"
       />
     </>
   );
