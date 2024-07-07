@@ -13,7 +13,7 @@
   </style>
 
 
-  <style name="Theme.Expo.SplashScreen" parent="Theme.AppCompat.DayNight.NoActionBar">
+  <style name="Theme.Expo.SplashScreen" parent="Theme.SplashScreen">
     <!-- Set the splash screen background, animated icon, and animation duration. -->
     <item name="windowSplashScreenBackground">#000020</item>
     <item name="android:opacity">opaque</item>

@@ -15,7 +15,7 @@ class HideSplashScreenOptions : Record {
   @Field
   val fade: Boolean = false
   @Field
-  val duration: Float = 200.0F
+  val duration: Long = 2000L
 }
 
 class SplashScreenModule : Module() {
@@ -23,14 +23,8 @@ class SplashScreenModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSplashScreen")
 
-    OnCreate {
-      SplashScreenManager.reportWarningToLogBox = { message: String ->
-        appContext.errorManager?.reportWarningToLogBox(message)
-      }
-    }
-
     AsyncFunction("hideAsync") { options: HideSplashScreenOptions? ->
-      SplashScreenManager.hide(options, appContext.currentActivity)
+      SplashScreenManager.hide(options)
     }.runOnQueue(Queues.MAIN)
 
     OnActivityDestroys {
