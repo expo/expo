@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+  <style name="Theme.Expo.SplashScreen" parent="Theme.SplashScreen">
+    <!-- Set the splash screen background, animated icon, and animation duration. -->
     <item name="android:windowSplashScreenBackground">#000020</item>
 
     <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
          animated drawable. One of these is required. -->
-    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splashscreen_image</item>
-    <item name="android:windowSplashScreenBehavior">icon_preferred</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_image</item>
     <!-- Set the theme of the Activity that directly follows your splash screen. -->
     <!-- Required -->
     <item name="postSplashScreenTheme">@style/AppTheme</item>
-
-    <item name="android:windowLayoutInDisplayCutoutMode">always</item>
   </style>
 </resources>

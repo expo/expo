@@ -13,11 +13,8 @@
   </style>
 
 
-  <style name="Theme.Expo.SplashScreen" parent="Theme.SplashScreen">
-    <!-- Set the splash screen background, animated icon, and animation duration. -->
+  <style name="AppTheme.SplashScreen" parent="Theme.SplashScreen">
     <item name="windowSplashScreenBackground">#000020</item>
-    <item name="android:opacity">opaque</item>
-
     <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
          animated drawable. One of these is required. -->
     <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_image</item>

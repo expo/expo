@@ -4,6 +4,8 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.os.Build
+import android.view.View
+import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
 import android.window.SplashScreenView
 import androidx.annotation.StyleRes
@@ -22,14 +24,15 @@ object SplashScreenManager {
   private var hideSplashScreenOptions: HideSplashScreenOptions = HideSplashScreenOptions()
   private var themeResId: Int = -1
   private var keepSplashScreenOnScreen = true
-
-  private var initialDialog: SplashScreenDialog? = null
-  private var fadeOutDialog: SplashScreenDialog? = null
-
   private var status = Status.HIDDEN
+  private var registered = false
 
   private fun configureSplashScreen(splashScreen: SplashScreen) {
     val duration = hideSplashScreenOptions.duration
+//    splashScreen.setKeepOnScreenCondition {
+//      keepSplashScreenOnScreen
+//    }
+
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
       splashScreenViewProvider.view.animate()
         .setDuration(duration)
@@ -50,69 +53,35 @@ object SplashScreenManager {
     }
   }
 
-  fun registerOnActivity(activity: Activity, @StyleRes themeResId: Int) {
-    val splashScreen = activity.installSplashScreen()
-//    this.themeResId = themeResId
-//
-//    val typedValue = TypedValue()
-//    val currentTheme = activity.theme
-//
-//    if (currentTheme.resolveAttribute(R.attr.postSplashScreenTheme, typedValue, true)) {
-//      val finalTheme = typedValue.resourceId
-//      if (finalTheme != 0) {
-//        activity.setTheme(finalTheme)
-//      }
-//    }
-
-
-    splashScreen.setKeepOnScreenCondition {
-      keepSplashScreenOnScreen
+  fun registerOnActivity(activity: Activity) {
+    if (registered) {
+      return
     }
-    configureSplashScreen(splashScreen)
+    registered = true
+    val splashScreen = activity.installSplashScreen()
 
-//    initialDialog = SplashScreenDialog(activity, themeResId, false)
-//    initialDialog?.show {
-//      status = Status.VISIBLE
-//    }
+    val content: View = activity.findViewById(android.R.id.content)
+    content.viewTreeObserver.addOnPreDrawListener(
+      object : ViewTreeObserver.OnPreDrawListener {
+        override fun onPreDraw(): Boolean {
+          return if (!keepSplashScreenOnScreen) {
+            content.viewTreeObserver.removeOnPreDrawListener(this)
+            true
+          } else {
+            false
+          }
+        }
+      }
+    )
+
+    configureSplashScreen(splashScreen)
   }
 
   fun hide(options: HideSplashScreenOptions?) {
     if (options != null) {
       hideSplashScreenOptions = options
     }
-//
-//    if (status == Status.HIDING) {
-//      return
-//    }
-
     keepSplashScreenOnScreen = false
-
-//
-//
-//    if (initialDialog == null || status == Status.HIDDEN) {
-//      return
-//    }
-//
-//    status = Status.HIDING
-//
-//    options?.fade?.let {
-//      fadeOutDialog = SplashScreenDialog(currentActivity, themeResId, true)
-//      fadeOutDialog?.show {
-//        initialDialog?.dismiss {
-//          fadeOutDialog?.dismiss {
-//            status = Status.HIDDEN
-//            initialDialog = null
-//            fadeOutDialog = null
-//          }
-//        }
-//      }
-//      return
-//    }
-//
-//    initialDialog?.dismiss {
-//      status = Status.HIDDEN
-//      initialDialog = null
-//    }
   }
 
   fun clear() {
