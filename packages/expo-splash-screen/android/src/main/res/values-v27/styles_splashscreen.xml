@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">#000020</item>
+
+    <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
+         animated drawable. One of these is required. -->
+    <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_image</item>
+
+    <item name="android:windowLayoutInDisplayCutoutMode">always</item>
+  </style>
+</resources>

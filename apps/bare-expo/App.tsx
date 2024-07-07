@@ -1,4 +1,5 @@
 import { ThemeProvider } from 'ThemeProvider';
+import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
@@ -22,6 +23,7 @@ function useLoaded() {
     loadAssetsAsync()
       .then(() => {
         if (isMounted) setLoaded(true);
+        Splashscreen.hideAsync({ duration: 1500, fade: true });
       })
       .catch((e) => {
         console.warn('Error loading assets: ' + e.message);

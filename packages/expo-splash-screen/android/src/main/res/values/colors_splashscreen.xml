@@ -2,5 +2,5 @@
     Settings in this file should/will be overridden by specific app's resources.
 -->
 <resources>
-  <color name="splashscreen_background">#FFFFFF</color>
+  <color name="splashscreen_background">#000020</color>
 </resources>

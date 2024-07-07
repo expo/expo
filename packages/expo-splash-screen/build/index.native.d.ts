@@ -15,6 +15,9 @@ export declare function _internal_preventAutoHideAsync(): Promise<boolean>;
  * @private
  */
 export declare const _internal_maybeHideAsync: () => void;
-export declare function hideAsync(): Promise<boolean | void>;
+export declare function hideAsync(options?: {
+    duration: number;
+    fade: boolean;
+}): Promise<boolean | void>;
 export declare const preventAutoHideAsync: () => Promise<boolean>;
 //# sourceMappingURL=index.native.d.ts.map

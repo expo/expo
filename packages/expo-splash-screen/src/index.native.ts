@@ -2,7 +2,7 @@ import { requireOptionalNativeModule } from 'expo-modules-core';
 
 const SplashModule = requireOptionalNativeModule('ExpoSplashScreen') as {
   preventAutoHideAsync: () => Promise<boolean>;
-  hideAsync: () => Promise<boolean>;
+  hideAsync: (options?: { duration: number; fade: boolean }) => Promise<boolean>;
 } | null;
 
 let _userControlledAutoHideEnabled = false;
@@ -56,12 +56,12 @@ export const _internal_maybeHideAsync = () => {
   hideAsync();
 };
 
-export function hideAsync() {
+export async function hideAsync(options?: { duration: number; fade: boolean }) {
   if (!SplashModule) {
     return Promise.resolve(false);
   }
 
-  return SplashModule.hideAsync().catch((error: any) => {
+  return SplashModule.hideAsync(options).catch((error: any) => {
     // Hide this very unfortunate error.
     if (
       // Only throw the error is something unexpected happened.

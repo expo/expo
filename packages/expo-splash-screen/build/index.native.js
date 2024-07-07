@@ -45,11 +45,11 @@ export const _internal_maybeHideAsync = () => {
     }
     hideAsync();
 };
-export function hideAsync() {
+export async function hideAsync(options) {
     if (!SplashModule) {
         return Promise.resolve(false);
     }
-    return SplashModule.hideAsync().catch((error) => {
+    return SplashModule.hideAsync(options).catch((error) => {
         // Hide this very unfortunate error.
         if (
         // Only throw the error is something unexpected happened.

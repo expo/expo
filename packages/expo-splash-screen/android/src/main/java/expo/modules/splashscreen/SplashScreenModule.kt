@@ -1,6 +1,6 @@
 package expo.modules.splashscreen
 
-import expo.modules.kotlin.Promise
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -13,11 +13,9 @@ import expo.modules.kotlin.records.Record
 
 class HideSplashScreenOptions : Record {
   @Field
+  val fade: Boolean = false
+  @Field
   val duration: Float = 200.0F
-}
-
-class ModuleOptions : Record {
-  val delay: Float? = 3000.0F
 }
 
 class SplashScreenModule : Module() {
@@ -31,8 +29,12 @@ class SplashScreenModule : Module() {
       }
     }
 
-    AsyncFunction("hideAsync") { options: HideSplashScreenOptions, promise: Promise ->
+    AsyncFunction("hideAsync") { options: HideSplashScreenOptions? ->
       SplashScreenManager.hide(options, appContext.currentActivity)
+    }.runOnQueue(Queues.MAIN)
+
+    OnActivityDestroys {
+      SplashScreenManager.clear()
     }
   }
 }

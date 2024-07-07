@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+<attr name="SplashScreenBackground" format="color" />
+<attr name="SplashScreenLogo" format="reference" />
+<attr name="SplashScreenBrand" format="reference" />
+<attr name="darkContentBarsStyle" format="boolean" />
+<attr name="postSplashScreenTheme" format="reference" />
+</resources>

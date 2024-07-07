@@ -26,7 +26,7 @@ export async function preventAutoHideAsync() {
  * to display when you hide the splash screen, or you may see a blank screen briefly. See the
  * ["Usage"](#usage) section for an example.
  */
-export async function hideAsync() {
+export async function hideAsync(options) {
     return false;
 }
 //# sourceMappingURL=index.js.map
