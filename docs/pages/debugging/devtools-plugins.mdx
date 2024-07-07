@@ -193,12 +193,12 @@ If you're using `@reduxjs/toolkit` then you need to modify your call to `configu
 Your call to `configureStore` will end up looking like this:
 
 ```javascript store.js
-import devToolsEnhancer from "redux-devtools-expo-dev-plugin";
+import devToolsEnhancer from 'redux-devtools-expo-dev-plugin';
 
 const store = configureStore({
   reducer: rootReducer,
   devTools: false,
-  enhancers: (getDefaultEnhancers) => getDefaultEnhancers().concat(devToolsEnhancer()),
+  enhancers: getDefaultEnhancers => getDefaultEnhancers().concat(devToolsEnhancer()),
 });
 ```
 
