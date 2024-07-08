@@ -405,6 +405,7 @@ exports[`built-in plugins compiles mods 1`] = `
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
+      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -1210,6 +1211,7 @@ exports[`built-in plugins introspects mods 1`] = `
       },
       "ios": {
         "entitlements": {
+          "aps-environment": "development",
           "com.apple.developer.associated-domains": [
             "applinks:https://pillarvalley.netlify.app",
           ],
@@ -1680,6 +1682,7 @@ exports[`built-in plugins introspects mods 1`] = `
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
+      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -2216,6 +2219,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       },
       "ios": {
         "entitlements": {
+          "aps-environment": "development",
           "com.apple.developer.associated-domains": [
             "applinks:https://pillarvalley.netlify.app",
           ],
@@ -2643,6 +2647,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
+      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
