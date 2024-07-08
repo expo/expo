@@ -33,9 +33,14 @@ export async function test({ describe, expect, it, ...t }) {
 
     it("Doesn't allow changing the path property", async () => {
       const file = new File('file:///path/to/file');
-      expect(() => {
+      if (Platform.OS === 'ios') {
+        expect(() => {
+          file.path = 'file:///new/path';
+        }).toThrow();
+      } else {
         file.path = 'file:///new/path';
-      }).toThrow();
+        expect(file.path).toBe('file:///path/to/file');
+      }
     });
 
     it('Writes a string to a file reference', async () => {
