@@ -485,7 +485,7 @@ const createStateObject = (route, isEmpty, initialRoute) => {
         if (initialRoute) {
             return {
                 index: 1,
-                routes: [{ name: initialRoute }, route],
+                routes: [{ name: initialRoute, params: route.params }, route],
             };
         }
         return {
@@ -495,7 +495,10 @@ const createStateObject = (route, isEmpty, initialRoute) => {
     if (initialRoute) {
         return {
             index: 1,
-            routes: [{ name: initialRoute }, { ...route, state: { routes: [] } }],
+            routes: [
+                { name: initialRoute, params: route.params },
+                { ...route, state: { routes: [] } },
+            ],
         };
     }
     return {

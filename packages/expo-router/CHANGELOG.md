@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent creating params object with null prototype ([#30009](https://github.com/expo/expo/pull/30009) by [@marklawlor](https://github.com/marklawlor))
+- Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

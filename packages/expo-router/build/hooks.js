@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
+const Route_1 = require("./Route");
 const router_store_1 = require("./global-state/router-store");
 function useRootNavigationState() {
     return (0, router_store_1.useStoreRootState)();
@@ -97,7 +97,7 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(native_1.NavigationRouteContext)?.params ?? {};
+    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [
