@@ -99,7 +99,7 @@ export function updateAndroidBuildProperty(
           oldProp.value = JSON.stringify([...prevValue, ...newValue]);
           return gradleProperties;
         }
-      } catch (_) {}
+      } catch {}
       oldProp.value = value;
       return gradleProperties;
     }
