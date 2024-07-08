@@ -11,6 +11,8 @@ try {
   // do nothing
 }
 
+Splashscreen.installSplashScreen({ duration: 4000 });
+
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
   (async () => null);
@@ -23,7 +25,7 @@ function useLoaded() {
     loadAssetsAsync()
       .then(() => {
         if (isMounted) setLoaded(true);
-        Splashscreen.hideAsync({ duration: 1500, fade: true });
+        Splashscreen.hideAsync();
       })
       .catch((e) => {
         console.warn('Error loading assets: ' + e.message);

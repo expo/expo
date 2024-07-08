@@ -1,5 +1,6 @@
 package expo.modules.splashscreen
 
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -25,6 +26,6 @@ class SplashScreenModule : Module() {
 
     AsyncFunction("hideAsync") {
       SplashScreenManager.hide()
-    }
+    }.runOnQueue(Queues.MAIN)
   }
 }
