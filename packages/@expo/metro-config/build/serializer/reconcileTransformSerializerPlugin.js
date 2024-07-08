@@ -101,6 +101,19 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             return fullDep && (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, fullDep)[0];
         })
             .map((dep) => dep.data.name);
+        // TODO: Support using the legacy approach to import/export.
+        // extraPlugins.push(
+        //   [require('@babel/plugin-proposal-export-default-from')],
+        //   [
+        //     require('@babel/plugin-transform-modules-commonjs'),
+        //     {
+        //       strict: false,
+        //       strictMode: false, // prevent "use strict" injections
+        //       lazy: options.lazyImportExportTransform,
+        //       allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
+        //     },
+        //   ]
+        // );
         ast = (0, metro_transform_worker_1.applyImportSupport)(ast, {
             filename: value.path,
             importAll,
