@@ -70,15 +70,15 @@ function updateAndroidBuildProperty(gradleProperties, name, value, options) {
       try {
         const prevValue = JSON.parse(oldProp.value);
         const newValue = JSON.parse(value);
-        console.log({
-          prevValue,
-          newValue
-        });
         if (Array.isArray(prevValue) && Array.isArray(newValue)) {
           oldProp.value = JSON.stringify([...prevValue, ...newValue]);
           return gradleProperties;
         }
-      } catch (_) {}
+      } catch (err) {
+        console.log({
+          err
+        });
+      }
       oldProp.value = value;
       return gradleProperties;
     }
