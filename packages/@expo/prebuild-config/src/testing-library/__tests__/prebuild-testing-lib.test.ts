@@ -40,7 +40,9 @@ it('runs normally for a single iOS prebuild', async () => {
   expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(true);
 
   expect(config).toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }));
-  expect(config).toMatchAppleEntitlements({});
+  expect(config).toMatchAppleEntitlements({
+    "aps-environment": "development",
+  });
 });
 
 it('runs normally for a single Android prebuild', async () => {
