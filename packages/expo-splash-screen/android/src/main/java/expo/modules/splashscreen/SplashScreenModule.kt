@@ -24,8 +24,8 @@ class SplashScreenModule : Module() {
       SplashScreenManager.setSplashScreenOptions(options)
     }
 
-    AsyncFunction("hideAsync") {
+    Function("hide") {
       SplashScreenManager.hide()
-    }.runOnQueue(Queues.MAIN)
+    }
   }
 }

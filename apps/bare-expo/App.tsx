@@ -25,7 +25,7 @@ function useLoaded() {
     loadAssetsAsync()
       .then(() => {
         if (isMounted) setLoaded(true);
-        Splashscreen.hideAsync();
+        Splashscreen.hide();
       })
       .catch((e) => {
         console.warn('Error loading assets: ' + e.message);

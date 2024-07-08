@@ -17,6 +17,6 @@ export declare function _internal_preventAutoHideAsync(): Promise<boolean>;
  */
 export declare const _internal_maybeHideAsync: () => void;
 export declare function installSplashScreen(options: SplashScreenOptions): void;
-export declare function hideAsync(): Promise<boolean | void>;
+export declare function hide(): void;
 export declare const preventAutoHideAsync: () => Promise<boolean>;
 //# sourceMappingURL=index.native.d.ts.map

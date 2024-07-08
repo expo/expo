@@ -8,6 +8,6 @@ export type SplashScreenOptions = {
 export type SplashScreenNativeModule = {
     installSplashScreen: (options: SplashScreenOptions) => void;
     preventAutoHideAsync: () => Promise<boolean>;
-    hideAsync: () => Promise<boolean>;
+    hide: () => void;
 };
 //# sourceMappingURL=SplashScreen.types.d.ts.map
