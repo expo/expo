@@ -73,7 +73,7 @@ export function canDismiss(this: RouterStore): boolean {
 
 export function setParams(
   this: RouterStore,
-  params: Record<string, string | number | Array<string | number>> = {}
+  params: Record<string, string | number | (string | number)[]> = {}
 ) {
   assertIsReady(this);
   for (const key of Object.keys(params)) {
