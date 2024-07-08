@@ -108,8 +108,6 @@ redirects[debugging]=debugging/runtime-issues
 redirects[debugging/runtime-issue]=debugging/runtime-issues
 redirects[develop/development-builds/installation]=develop/development-builds/create-a-build
 redirects[develop/development-builds/parallel-installation]=build-reference/variants
-redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas
-redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction
 redirects[guides/assets]=develop/user-interface/assets
 
 # Redirects after Guides organization
@@ -144,22 +142,12 @@ redirects[expokit/overview]=archive/glossary
 redirects[eas-update/eas-update-with-local-build]=eas-update/build-locally
 redirects[bare/existing-apps]=bare/installing-expo-modules
 redirects[bare/exploring-bare-workflow]=bare/overview
-redirects[home/develop/development-builds/installation]=develop/development-builds/create-a-build
 redirects[t/cant-upgrade-to-the-lastest-expo-cli-3-19-2]=faq
 redirects[build-reference/custom-build-config]=custom-builds/get-started
-redirects[home/debugging/tools]=debugging/tools
 redirects[workflow/run-on-device]=build/internal-distribution
 redirects[build-reference/how-tos]=build-reference/private-npm-packages
-redirects[home/navigation/installation]=routing/introduction
-redirects[home/authentication]=develop/authentication
-redirects[home/develop/user-interface/app-icons]=develop/user-interface/app-icons
 redirects[eas-update/migrate-codepush-to-eas-update]=eas-update/codepush
-redirects[home/get-started/create-a-project]=get-started/create-a-project
-redirects[home/core-concepts]=core-concepts
 redirects[guides/testing-on-devices]=build/internal-distribution
-redirects[home/config-plugins/plugins-and-mods]=config-plugins/plugins-and-mods
-redirects[home/unit-testing]=develop/unit-testing
-redirects[home/config-plugins/introduction]=config-plugins/introduction
 redirects[technical-specs/latest]=technical-specs/expo-updates-1
 
 # We should change this redirect to a more general EAS guide later
