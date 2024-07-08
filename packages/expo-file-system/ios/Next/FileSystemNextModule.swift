@@ -6,9 +6,9 @@ public final class FileSystemNextModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
-    Class(FileSystemNextFile.self) {
+    Class(FileSystemFile.self) {
       Constructor { (url: URL) in
-        return FileSystemNextFile(url: url.standardizedFileURL)
+        return FileSystemFile(url: url.standardizedFileURL)
       }
 
       // we can't throw in a constructor, so this is a workaround
@@ -42,9 +42,9 @@ public final class FileSystemNextModule: Module {
       }
     }
 
-    Class(FileSystemNextDirectory.self) {
+    Class(FileSystemDirectory.self) {
       Constructor { (url: URL) in
-        return FileSystemNextDirectory(url: url.standardizedFileURL)
+        return FileSystemDirectory(url: url.standardizedFileURL)
       }
 
       // we can't throw in a constructor, so this is a workaround

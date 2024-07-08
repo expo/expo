@@ -1,7 +1,7 @@
 import Foundation
 import ExpoModulesCore
 
-internal final class FileSystemNextDirectory: FileSystemNextPath {
+internal final class FileSystemDirectory: FileSystemPath {
   func create() throws {
     try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
   }

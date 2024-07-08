@@ -1,8 +1,8 @@
 import Foundation
 import ExpoModulesCore
 
-internal class FileSystemNextPath: SharedObject {
-  var url: URL
+internal class FileSystemPath: SharedObject {
+  let url: URL
 
   init(url: URL) {
     self.url = url
