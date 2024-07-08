@@ -1,14 +1,14 @@
 import ExpoFileSystem from './ExpoFileSystem';
 import { Path } from './FileSystem.types';
 
-export class File extends ExpoFileSystem.FileSystemNextFile {
+export class File extends ExpoFileSystem.FileSystemFile {
   constructor(path: Path) {
     super(path);
     this.validatePath();
   }
 }
 
-export class Directory extends ExpoFileSystem.FileSystemNextDirectory {
+export class Directory extends ExpoFileSystem.FileSystemDirectory {
   constructor(path: Path) {
     super(path);
     this.validatePath();
