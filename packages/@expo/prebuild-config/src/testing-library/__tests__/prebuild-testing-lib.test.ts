@@ -41,7 +41,7 @@ it('runs normally for a single iOS prebuild', async () => {
 
   expect(config).toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }));
   expect(config).toMatchAppleEntitlements({
-    "aps-environment": "development",
+    'aps-environment': 'development',
   });
 });
 
