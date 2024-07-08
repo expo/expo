@@ -142,9 +142,7 @@ export function getMatchableRouteConfigs<ParamList extends object>(
   }));
 
   // Sort in order of resolution. This is extremely important for the algorithm to work.
-  const configs = convertedWithInitial.sort((a, b) =>
-    sortConfigs(a, b, previousSegments.slice(0, -1))
-  );
+  const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, previousSegments));
 
   // Assert any duplicates before we start parsing.
   assertConfigDuplicates(configs);
@@ -197,6 +195,9 @@ function assertConfigDuplicates(configs: RouteConfig[]) {
 }
 
 function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] = []): number {
+  if (previousSegments.length) {
+    debugger;
+  }
   // Sort config so that:
   // - the most exhaustive ones are always at the beginning
   // - patterns with wildcard are always at the end
@@ -240,17 +241,18 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
   // When we navigate, we need to stay within groups as close as possible
   // Hence, a route is sorted based upon is similiarity to the current state
   const similarToPreviousA = previousSegments.filter((value, index) => {
-    return value === a.expandedRouteNames[index];
+    return value === a.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
   });
 
   const similarToPreviousB = previousSegments.filter((value, index) => {
-    return value === b.expandedRouteNames[index];
+    return value === b.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
   });
 
   if (
     (similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
     similarToPreviousA.length !== similarToPreviousB.length
   ) {
+    debugger;
     // They both match to some degree, so pick the one that matches more
     return similarToPreviousB.length - similarToPreviousA.length;
   }

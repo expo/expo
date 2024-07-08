@@ -615,22 +615,22 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
-it.only('supports multi-level 404s', async () => {
+it('supports multi-level 404s', async () => {
   renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
     'nested/+not-found': () => <Text>Nested 404</Text>,
   });
 
-  // expect(screen).toHavePathnameWithParams('/');
-  // expect(await screen.findByText('found')).toBeOnTheScreen();
+  expect(screen).toHavePathnameWithParams('/');
+  expect(await screen.findByText('found')).toBeOnTheScreen();
 
-  // act(() => router.push('/123'));
-  // expect(await screen.findByText('404')).toBeOnTheScreen();
-  // expect(screen).toHavePathname('/123');
-  // expect(screen).toHaveSearchParams({
-  //   'not-found': ['123'],
-  // });
+  act(() => router.push('/123'));
+  expect(await screen.findByText('404')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/123');
+  expect(screen).toHaveSearchParams({
+    'not-found': ['123'],
+  });
 
   act(() => router.push('/123/456?test=true'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
@@ -991,10 +991,10 @@ describe('shared routes with tabs', () => {
       expect(screen).toHaveSegments(['(two)', 'two']);
     });
 
-    it('pushes post in tab two with absolute `/post` goes to default tab', async () => {
+    it('pushes post in tab two with absolute `/post` stays within the group', async () => {
       act(() => router.push('/post'));
       expect(screen).toHavePathname('/post');
-      expect(screen).toHaveSegments(['(one)', 'post']);
+      expect(screen).toHaveSegments(['(two)', 'post']);
     });
     it('pushes post in tab two using absolute /(tabs)/(two)/post', async () => {
       act(() => router.push('/(two)/post'));
