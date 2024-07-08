@@ -181,25 +181,23 @@ it(
     );
 
     /*
-     * We need to copy the local `expo-router` to the project, but there's a
-     * catch. When running `npx expo typescript`, Bun will override our inject expo-router
-     * Hence,
-     *  1. Run `npx expo typescript` to get the correct version of TypeScript
-     *  2. Copy the expo-router project
-     *  3. Rerun `npx expo typescript` to regenerate the Typed Routes
+     * Before we can run `expo customize` we need to bundle the local version of Expo Router
+     * So we pack the local package and add it to the E2E test as a dependency
      */
 
+    // `npm pack` on Expo Router
+    const packOutput = await execa('npm', ['pack', '--json', '--pack-destination', projectRoot], {
+      cwd: path.join(__dirname, '../../../../expo-router'),
+    });
+
+    const [{ filename }] = JSON.parse(packOutput.stdout);
+
+    // Add the local version of expo-router
+    await execa('bun', ['add', `expo-router@${filename}`], {
+      cwd: projectRoot,
+    });
+
     // `npx expo typescript`
-    await execa('node', [bin, 'customize', 'tsconfig.json'], {
-      cwd: projectRoot,
-    });
-
-    // Override the expo-router project
-    await execa('cp', ['-rf', path.join(__dirname, '../../../../expo-router'), './node_modules/'], {
-      cwd: projectRoot,
-    });
-
-    // Regenerate the TypedRoutes
     await execa('node', [bin, 'customize', 'tsconfig.json'], {
       cwd: projectRoot,
     });
