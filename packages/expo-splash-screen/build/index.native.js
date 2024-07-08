@@ -45,11 +45,17 @@ export const _internal_maybeHideAsync = () => {
     }
     hideAsync();
 };
-export async function hideAsync(options) {
+export function installSplashScreen(options) {
+    if (!SplashModule) {
+        return;
+    }
+    SplashModule.installSplashScreen(options);
+}
+export async function hideAsync() {
     if (!SplashModule) {
         return Promise.resolve(false);
     }
-    return SplashModule.hideAsync(options).catch((error) => {
+    return SplashModule.hideAsync().catch((error) => {
         // Hide this very unfortunate error.
         if (
         // Only throw the error is something unexpected happened.

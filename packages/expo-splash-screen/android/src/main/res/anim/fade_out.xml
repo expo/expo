@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<alpha xmlns:android="http://schemas.android.com/apk/res/android"
-  android:interpolator="@android:interpolator/accelerate_quad"
-  android:fromAlpha="1.0"
-  android:toAlpha="0.0"
-  android:duration="250" />
