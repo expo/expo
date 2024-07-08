@@ -89,6 +89,12 @@ function canDismiss() {
 exports.canDismiss = canDismiss;
 function setParams(params = {}) {
     assertIsReady(this);
+    for (const key of Object.keys(params)) {
+        const value = params[key];
+        if (key.endsWith('[]') && !Array.isArray(value)) {
+            params = { ...params, [key]: [value] };
+        }
+    }
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;

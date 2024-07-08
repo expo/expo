@@ -290,3 +290,29 @@ it('can handle search params with special characters', async () => {
   expect(screen).toHavePathnameWithParams('/?a=%28param%29');
   expect(screen).toHaveSearchParams({ a: '(param)' });
 });
+
+it('can handle array search params', async () => {
+  renderRouter({
+    index: () => null,
+  });
+
+  act(() => router.push('/?array=1&array=2'));
+
+  expect(screen).toHavePathnameWithParams('/?array=1&array=2');
+  expect(screen).toHaveSearchParams({ array: ['1', '2'] });
+});
+
+it('can handle forced array search params', async () => {
+  renderRouter({
+    index: () => null,
+  });
+
+  act(() => router.push('/?array[]=1'));
+
+  expect(screen).toHavePathnameWithParams('/?array%5B%5D=1');
+  expect(screen).toHaveSearchParams({ 'array[]': ['1'] });
+
+  act(() => router.setParams({ 'second[]': '2' }));
+  expect(screen).toHavePathnameWithParams('/?array%5B%5D=1&second%5B%5D=2');
+  expect(screen).toHaveSearchParams({ 'array[]': ['1'], 'second[]': ['2'] });
+});

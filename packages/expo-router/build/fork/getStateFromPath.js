@@ -569,12 +569,14 @@ const createNestedStateObject = (path, hash, routes, routeConfigs, initialRoutes
 const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
     const searchParams = new URLSearchParams(query);
-    const params = {};
+    const params = Object.create(null);
     for (const name of searchParams.keys()) {
-        const values = parseConfig?.[name]
-            ? searchParams.getAll(name).map(parseConfig[name])
+        const values = parseConfig?.hasOwnProperty(name)
+            ? searchParams.getAll(name).map((value) => parseConfig[name](value))
             : searchParams.getAll(name);
-        params[name] = values.length === 1 ? values[0] : values;
+        // searchParams.getAll returns an array.
+        // if we only have a single value, and its not an array param, we need to extract the value
+        params[name] = !name.endsWith('[]') && values.length === 1 ? values[0] : values;
     }
     return Object.keys(params).length ? params : undefined;
 };

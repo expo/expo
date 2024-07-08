@@ -282,7 +282,10 @@ it(`handles query params`, () => {
 
 it(`handles query params`, () => {
   expect(
-    getStateFromPath('/?test=true&hello=world&array=1&array=2', getMockConfig(['index.tsx']))
+    getStateFromPath(
+      '/?test=true&hello=world&array=1&array=2&forceArray[]=1&forceArrayEncoded%5B%5D=2',
+      getMockConfig(['index.tsx'])
+    )
   ).toEqual({
     routes: [
       {
@@ -291,8 +294,10 @@ it(`handles query params`, () => {
           test: 'true',
           hello: 'world',
           array: ['1', '2'],
+          'forceArray[]': ['1'],
+          'forceArrayEncoded[]': ['2'],
         },
-        path: '/?test=true&hello=world&array=1&array=2',
+        path: '/?test=true&hello=world&array=1&array=2&forceArray[]=1&forceArrayEncoded%5B%5D=2',
       },
     ],
   });
