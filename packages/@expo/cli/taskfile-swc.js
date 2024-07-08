@@ -83,6 +83,9 @@ module.exports = function (task) {
       ...setting.options,
     };
 
+    if (file.data == null) {
+      throw new Error(`File "${file.base}" is empty.`);
+    }
     const output = yield transform(file.data.toString('utf-8'), options);
     const ext = path.extname(file.base);
 

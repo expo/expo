@@ -10,7 +10,9 @@ export async function bin(task, opts) {
 
 export async function metroRequire(task, opts) {
   await task
-    .source(opts.src || 'metro-require/*')
+    .source('metro-require/**/*.+(js|ts)', {
+      ignore: ['**/__tests__/**', '**/__mocks__/**', '**/__typetests__/**'],
+    })
     .swc('metroScript', { dev: opts.dev })
     .target('build/metro-require');
 }
