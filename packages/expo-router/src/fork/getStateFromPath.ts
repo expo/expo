@@ -21,6 +21,7 @@ type RouteConfig = {
   path: string;
   pattern: string;
   routeNames: string[];
+  expandedRouteNames: string[];
   parse?: ParseConfig;
   hasChildren: boolean;
   userReadableName: string;
@@ -92,14 +93,18 @@ export function getUrlWithReactNavigationConcessions(
  */
 export default function getStateFromPath<ParamList extends object>(
   path: string,
-  options?: Options<ParamList>
+  options?: Options<ParamList>,
+  previousSegments: string[] = []
 ): ResultState | undefined {
-  const { initialRoutes, configs } = getMatchableRouteConfigs(options);
+  const { initialRoutes, configs } = getMatchableRouteConfigs(options, previousSegments);
 
   return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
 
-export function getMatchableRouteConfigs<ParamList extends object>(options?: Options<ParamList>) {
+export function getMatchableRouteConfigs<ParamList extends object>(
+  options?: Options<ParamList>,
+  previousSegments: string[] = []
+) {
   if (options) {
     validatePathConfig(options);
   }
@@ -137,7 +142,9 @@ export function getMatchableRouteConfigs<ParamList extends object>(options?: Opt
   }));
 
   // Sort in order of resolution. This is extremely important for the algorithm to work.
-  const configs = convertedWithInitial.sort(sortConfigs);
+  const configs = convertedWithInitial.sort((a, b) =>
+    sortConfigs(a, b, previousSegments.slice(0, -1))
+  );
 
   // Assert any duplicates before we start parsing.
   assertConfigDuplicates(configs);
@@ -189,7 +196,7 @@ function assertConfigDuplicates(configs: RouteConfig[]) {
   }, {});
 }
 
-function sortConfigs(a: RouteConfig, b: RouteConfig): number {
+function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] = []): number {
   // Sort config so that:
   // - the most exhaustive ones are always at the beginning
   // - patterns with wildcard are always at the end
@@ -228,6 +235,24 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
   const bParts = b.pattern.split('/').filter((part) => matchGroupName(part) == null);
   if (b.screen === 'index' || b.screen.match(/\/index$/)) {
     bParts.push('index');
+  }
+
+  // When we navigate, we need to stay within groups as close as possible
+  // Hence, a route is sorted based upon is similiarity to the current state
+  const similarToPreviousA = previousSegments.filter((value, index) => {
+    return value === a.expandedRouteNames[index];
+  });
+
+  const similarToPreviousB = previousSegments.filter((value, index) => {
+    return value === b.expandedRouteNames[index];
+  });
+
+  if (
+    (similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
+    similarToPreviousA.length !== similarToPreviousB.length
+  ) {
+    // They both match to some degree, so pick the one that matches more
+    return similarToPreviousB.length - similarToPreviousA.length;
   }
 
   for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
@@ -647,6 +672,9 @@ const createConfigItem = (
     path,
     // The routeNames array is mutated, so copy it to keep the current state
     routeNames: [...routeNames],
+    expandedRouteNames: screen.includes('/')
+      ? [...routeNames.slice(0, -1), ...screen.split('/')]
+      : [...routeNames],
     parse,
     userReadableName: [...routeNames.slice(0, -1), path || screen].join('/'),
     hasChildren: !!hasChildren,

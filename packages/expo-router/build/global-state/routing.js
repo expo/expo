@@ -138,7 +138,7 @@ function linkTo(href, event) {
         }
         href = (0, path_1.resolve)(base, href);
     }
-    const state = this.linking.getStateFromPath(href, this.linking.config);
+    const state = this.linking.getStateFromPath(href, this.linking.config, this.routeInfo?.segments);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;

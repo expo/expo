@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateCache = exports.getLinkingConfig = exports.getNavigationConfig = void 0;
+exports.getLinkingConfig = exports.getNavigationConfig = void 0;
 const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
@@ -55,7 +55,7 @@ function getLinkingConfig(routes, context, { metaOnly = true, serverUrl } = {}) 
             return initialUrl;
         },
         subscribe: (0, linking_1.addEventListener)(nativeLinking),
-        getStateFromPath: getStateFromPathMemoized,
+        getStateFromPath: linking_1.getStateFromPath,
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {
                 screens: {},
@@ -69,15 +69,4 @@ function getLinkingConfig(routes, context, { metaOnly = true, serverUrl } = {}) 
     };
 }
 exports.getLinkingConfig = getLinkingConfig;
-exports.stateCache = new Map();
-/** We can reduce work by memoizing the state by the pathname. This only works because the options (linking config) theoretically never change.  */
-function getStateFromPathMemoized(path, options) {
-    const cached = exports.stateCache.get(path);
-    if (cached) {
-        return cached;
-    }
-    const result = (0, linking_1.getStateFromPath)(path, options);
-    exports.stateCache.set(path, result);
-    return result;
-}
 //# sourceMappingURL=getLinkingConfig.js.map

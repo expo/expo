@@ -18,6 +18,7 @@ export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true)
 
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
   getPathFromState?: typeof getPathFromState;
+  getStateFromPath?: typeof getStateFromPath;
 };
 
 export type LinkingConfigOptions = {
@@ -77,7 +78,7 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: addEventListener(nativeLinking),
-    getStateFromPath: getStateFromPathMemoized,
+    getStateFromPath,
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
@@ -91,17 +92,4 @@ export function getLinkingConfig(
     // This is a convenience for usage in the package.
     getActionFromState,
   };
-}
-
-export const stateCache = new Map<string, any>();
-
-/** We can reduce work by memoizing the state by the pathname. This only works because the options (linking config) theoretically never change.  */
-function getStateFromPathMemoized(path: string, options: Parameters<typeof getStateFromPath>[1]) {
-  const cached = stateCache.get(path);
-  if (cached) {
-    return cached;
-  }
-  const result = getStateFromPath(path, options);
-  stateCache.set(path, result);
-  return result;
 }
