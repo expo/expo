@@ -10,11 +10,13 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed issue regarding using the "back"-facing on iOS/Android web. ([#30277](https://github.com/expo/expo/pull/30277) by [@entiendoNull](https://github.com/entiendoNull))
 
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Updated docs for the `pictureSize` prop. ([#30195](https://github.com/expo/expo/pull/30195) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.12 - 2024-06-20
 

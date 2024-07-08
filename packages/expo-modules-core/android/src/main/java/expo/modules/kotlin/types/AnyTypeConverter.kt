@@ -13,13 +13,13 @@ import expo.modules.kotlin.jni.ExpectedType
  */
 class AnyTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Any {
-    return when (value.type) {
+    return when (value.getType()) {
       ReadableType.Boolean -> value.asBoolean()
       ReadableType.Number -> value.asDouble()
       ReadableType.String -> value.asString()
       ReadableType.Map -> value.asMap().toHashMap()
       ReadableType.Array -> value.asArray().toArrayList()
-      else -> error("Unknown dynamic type: ${value.type}")
+      else -> error("Unknown dynamic type: ${value.getType()}")
     }
   }
 

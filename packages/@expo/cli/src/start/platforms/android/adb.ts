@@ -37,6 +37,8 @@ export type Device = {
   isBooted: boolean;
   /** Is device authorized for developing. https://expo.fyi/authorize-android-device */
   isAuthorized: boolean;
+  /** The connection type to ADB, only available when `type: device` */
+  connectionType?: 'USB' | 'Network';
 };
 
 type DeviceContext = Pick<Device, 'pid'>;
@@ -247,6 +249,8 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
     props: string[];
     type: Device['type'];
     isAuthorized: Device['isAuthorized'];
+    isBooted: Device['isBooted'];
+    connectionType?: Device['connectionType'];
   }[] = splitItems
     .slice(1, splitItems.length)
     .map((line) => {
@@ -254,10 +258,22 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
       const props = line.split(' ').filter(Boolean);
-
-      const isAuthorized = props[1] !== 'unauthorized';
       const type = line.includes('emulator') ? 'emulator' : 'device';
-      return { props, type, isAuthorized };
+
+      let connectionType;
+      if (type === 'device' && line.includes('usb:')) {
+        connectionType = 'USB';
+      } else if (type === 'device' && line.includes('_adb-tls-connect.')) {
+        connectionType = 'Network';
+      }
+
+      const isBooted = type === 'emulator' || props[1] !== 'offline';
+      const isAuthorized =
+        connectionType === 'Network'
+          ? line.includes('model:') // Network connected devices show `model:<name>` when authorized
+          : props[1] !== 'unauthorized';
+
+      return { props, type, isAuthorized, isBooted, connectionType };
     })
     .filter(({ props: [pid] }) => !!pid);
 
@@ -266,6 +282,7 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       type,
       props: [pid, ...deviceInfo],
       isAuthorized,
+      isBooted,
     } = props;
 
     let name: string | null = null;
@@ -289,13 +306,9 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       name = (await getAdbNameForDeviceIdAsync({ pid })) ?? '';
     }
 
-    return {
-      pid,
-      name,
-      type,
-      isAuthorized,
-      isBooted: true,
-    };
+    return props.connectionType
+      ? { pid, name, type, isAuthorized, isBooted, connectionType: props.connectionType }
+      : { pid, name, type, isAuthorized, isBooted };
   });
 
   return Promise.all(devicePromises);

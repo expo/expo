@@ -89,15 +89,18 @@ function babelPresetExpo(api, options = {}) {
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
         extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
     }
-    else if (!isServerEnv) {
-        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-        // JSX is used in a function body. This is technically not required in production, but we
-        // should retain the same behavior since it's hard to debug the differences.
-        extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    else {
+        if (platform !== 'web' && !isServerEnv) {
+            // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+            // JSX is used in a function body. This is technically not required in production, but we
+            // should retain the same behavior since it's hard to debug the differences.
+            extraPlugins.push(require('@babel/plugin-transform-parameters'));
+        }
     }
     const inlines = {
         'process.env.EXPO_OS': platform,
         // 'typeof document': isServerEnv ? 'undefined' : 'object',
+        'process.env.EXPO_SERVER': !!isServerEnv,
     };
     // `typeof window` is left in place for native + client environments.
     const minifyTypeofWindow = (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';

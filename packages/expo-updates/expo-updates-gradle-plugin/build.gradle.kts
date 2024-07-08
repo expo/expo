@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.9.23"
+  kotlin("jvm") version "1.9.24"
   id("java-gradle-plugin")
 }
 
@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
   implementation(gradleApi())
-  compileOnly("com.android.tools.build:gradle:8.2.1")
+  compileOnly("com.android.tools.build:gradle:8.5.0")
   implementation("com.facebook.react:react-native-gradle-plugin")
 }
 

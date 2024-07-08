@@ -39,8 +39,6 @@ it('loads a bundle', async () => {
   await loadBundleAsync(
     'Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion='
   );
-  expect(LoadingView.showMessage).toBeCalledWith('Downloading...', 'load');
-  expect(LoadingView.hide).toBeCalledWith();
   const url =
     'http://localhost:19000/Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion=';
   expect(HMRClient.registerBundle).toBeCalledWith(url);

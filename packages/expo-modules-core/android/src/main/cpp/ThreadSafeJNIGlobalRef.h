@@ -22,7 +22,7 @@ public:
   ThreadSafeJNIGlobalRef &operator=(const ThreadSafeJNIGlobalRef &other) = delete;
   ThreadSafeJNIGlobalRef &operator=(ThreadSafeJNIGlobalRef &&other) = delete;
 
-  void use(std::function<void(jni::alias_ref<T> globalRef)> &&action) {
+  void use(std::function<void(jni::alias_ref<T> globalRef)> &&action) noexcept {
     if (globalRef == nullptr) {
       __android_log_print(ANDROID_LOG_WARN, "ExpoModulesCore", "ThreadSafeJNIGlobalRef was used after deallocation.");
       return;

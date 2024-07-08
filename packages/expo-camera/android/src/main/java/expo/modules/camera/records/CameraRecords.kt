@@ -1,7 +1,6 @@
 package expo.modules.camera.records
 
 import android.hardware.camera2.CameraMetadata
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.video.Quality
@@ -13,11 +12,6 @@ import expo.modules.kotlin.types.Enumerable
 enum class CameraType(val value: String) : Enumerable {
   FRONT("front"),
   BACK("back");
-
-  fun mapToSelector() = when (this) {
-    FRONT -> CameraSelector.DEFAULT_FRONT_CAMERA
-    BACK -> CameraSelector.DEFAULT_BACK_CAMERA
-  }
 
   fun mapToCharacteristic() = when (this) {
     FRONT -> CameraMetadata.LENS_FACING_FRONT

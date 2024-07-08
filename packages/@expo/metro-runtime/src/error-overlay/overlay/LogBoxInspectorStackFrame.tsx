@@ -6,7 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { GestureResponderEvent, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 import { StackFrame } from 'stacktrace-parser';
 
 import { LogBoxButton } from '../UI/LogBoxButton';

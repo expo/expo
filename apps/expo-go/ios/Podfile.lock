@@ -111,6 +111,8 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (13.0.2):
     - ExpoModulesCore
+  - ExpoLinking (6.3.1):
+    - ExpoModulesCore
   - ExpoLocalAuthentication (14.0.1):
     - ExpoModulesCore
   - ExpoLocalization (15.0.3):
@@ -119,6 +121,10 @@ PODS:
     - ExpoModulesCore
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
+    - React-Core
+  - ExpoMediaLibrary/Tests (16.0.3):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
     - React-Core
   - ExpoModulesCore (1.12.11):
     - DoubleConversion
@@ -1895,10 +1901,12 @@ DEPENDENCIES:
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
+  - ExpoLinking (from `../../../packages/expo-linking/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
+  - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
@@ -2121,6 +2129,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-keep-awake/ios"
   ExpoLinearGradient:
     :path: "../../../packages/expo-linear-gradient/ios"
+  ExpoLinking:
+    :path: "../../../packages/expo-linking/ios"
   ExpoLocalAuthentication:
     :path: "../../../packages/expo-local-authentication/ios"
   ExpoLocalization:
@@ -2374,10 +2384,11 @@ SPEC CHECKSUMS:
   ExpoImagePicker: dc3e6f221ce5717e6e0a771780e6e7d50a790189
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
+  ExpoLinking: 82ccf130af1ebeb4bcdb0e7e101a2be36dbdd335
   ExpoLocalAuthentication: f119167649d0465a06fa7c5b44c6c70f43f477ee
   ExpoLocalization: f04eeec2e35bed01ab61c72ee1768ec04d093d01
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
-  ExpoMediaLibrary: acbb23f74a6047b9b9b5a5ef00ffee28bfe466da
+  ExpoMediaLibrary: d94d530648c1051a09fa906e93b9b6eb225d70db
   ExpoModulesCore: 4eb2165cde325c8c121d495bb8beb0da9b30c92e
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
@@ -2407,12 +2418,12 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
   FirebaseCoreInternal: bca76517fe1ed381e989f5e7d8abb0da8d85bed3
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 7ce5de1ca9c176b95a2134cf880d7759ea2b4cea
+  hermes-engine: 56c453c4b73b7954fb38d24fdb899191dc6470ec
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
