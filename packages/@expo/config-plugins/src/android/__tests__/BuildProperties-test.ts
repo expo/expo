@@ -148,4 +148,17 @@ describe(updateAndroidBuildProperty, () => {
       })
     ).toEqual([{ type: 'property', key: 'foo', value: 'foo' }]);
   });
+
+  it('should merge properties when `value` is an array', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: '[\"name1\"]' },
+    ];
+    expect(
+      updateAndroidBuildProperty(gradleProperties, 'somearray', '[\"name2\"]')
+    ).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: '[\"name1\",\"name2\"]' },
+    ])
+  })
 });

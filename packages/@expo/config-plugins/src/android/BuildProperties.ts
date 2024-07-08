@@ -82,7 +82,7 @@ export function updateAndroidBuildProperty(
   const oldPropIndex = gradleProperties.findIndex(
     (prop) => prop.type === 'property' && prop.key === name
   );
-
+  const oldProp = oldPropIndex >= 0 ? gradleProperties[oldPropIndex] : null;
   if (value) {
     // found the matched value, add or merge new property
     const newProp: PropertiesItem = {
@@ -91,13 +91,27 @@ export function updateAndroidBuildProperty(
       value,
     };
 
-    if (oldPropIndex >= 0) {
-      gradleProperties[oldPropIndex] = newProp;
-    } else {
-      gradleProperties.push(newProp);
+    if (oldProp && oldProp.type === 'property') {
+      try {
+        const prevValue = JSON.parse(oldProp.value);
+        const newValue = JSON.parse(value);
+        if (Array.isArray(prevValue) && Array.isArray(newValue)) {
+          oldProp.value = JSON.stringify([...prevValue, ...newValue]);
+          return gradleProperties;
+        }
+      } catch (err) {
+        console.log({err})
+      }
+      oldProp.value = value;
+      return gradleProperties;
     }
-  } else if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
+
+    gradleProperties.push(newProp);
+    return gradleProperties;
+  }
+  if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
     gradleProperties.splice(oldPropIndex, 1);
+    return gradleProperties;
   }
 
   return gradleProperties;
