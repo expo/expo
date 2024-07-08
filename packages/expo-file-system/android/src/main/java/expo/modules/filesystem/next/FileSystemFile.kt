@@ -7,7 +7,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @OptIn(EitherType::class)
-class FileSystemNextFile(file: File) : FileSystemNextPath(file) {
+class FileSystemFile(file: File) : FileSystemPath(file) {
   fun validatePath() {
     // Kept empty for now, but can be used to validate if the path is a valid file path.
   }

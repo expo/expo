@@ -15,61 +15,61 @@ class FileSystemNextModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
 
-    Class(FileSystemNextFile::class) {
+    Class(FileSystemFile::class) {
       Constructor { path: URI ->
-        FileSystemNextFile(File(path.path))
+        FileSystemFile(File(path.path))
       }
 
-      Function("delete") { file: FileSystemNextFile ->
+      Function("delete") { file: FileSystemFile ->
         file.delete()
       }
-      Function("validatePath") { file: FileSystemNextFile ->
+      Function("validatePath") { file: FileSystemFile ->
         file.validatePath()
       }
 
-      Function("create") { file: FileSystemNextFile ->
+      Function("create") { file: FileSystemFile ->
         file.create()
       }
 
-      Function("write") { file: FileSystemNextFile, content: Either<String, TypedArray> ->
+      Function("write") { file: FileSystemFile, content: Either<String, TypedArray> ->
         file.write(content)
       }
 
-      Function("text") { file: FileSystemNextFile ->
+      Function("text") { file: FileSystemFile ->
         file.text()
       }
 
-      Function("exists") { file: FileSystemNextFile ->
+      Function("exists") { file: FileSystemFile ->
         file.exists()
       }
 
       Property("path")
-        .get { file: FileSystemNextFile -> return@get Uri.fromFile(file.path) }
+        .get { file: FileSystemFile -> return@get Uri.fromFile(file.path) }
     }
 
-    Class(FileSystemNextDirectory::class) {
+    Class(FileSystemDirectory::class) {
       Constructor { path: URI ->
-        FileSystemNextDirectory(File(path.path))
+        FileSystemDirectory(File(path.path))
       }
 
-      Function("delete") { directory: FileSystemNextDirectory ->
+      Function("delete") { directory: FileSystemDirectory ->
         directory.delete()
       }
 
-      Function("create") { directory: FileSystemNextDirectory ->
+      Function("create") { directory: FileSystemDirectory ->
         directory.create()
       }
 
-      Function("exists") { directory: FileSystemNextDirectory ->
+      Function("exists") { directory: FileSystemDirectory ->
         directory.exists()
       }
 
-      Function("validatePath") { directory: FileSystemNextDirectory ->
+      Function("validatePath") { directory: FileSystemDirectory ->
         directory.validatePath()
       }
 
       Property("path")
-        .get { directory: FileSystemNextDirectory -> return@get Uri.fromFile(directory.path) }
+        .get { directory: FileSystemDirectory -> return@get Uri.fromFile(directory.path) }
     }
   }
 }
