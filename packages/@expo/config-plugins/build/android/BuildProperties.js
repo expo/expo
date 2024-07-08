@@ -74,11 +74,7 @@ function updateAndroidBuildProperty(gradleProperties, name, value, options) {
           oldProp.value = JSON.stringify([...prevValue, ...newValue]);
           return gradleProperties;
         }
-      } catch (err) {
-        console.log({
-          err
-        });
-      }
+      } catch (_) {}
       oldProp.value = value;
       return gradleProperties;
     }
