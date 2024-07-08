@@ -13,10 +13,9 @@ import { transformFromAstSync } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
-import types from '@babel/types';
 import * as t from '@babel/types';
 import dedent from 'dedent';
-import nullthrows from 'nullthrows';
+import assert from 'node:assert';
 
 import type {
   Dependency,
@@ -41,6 +40,22 @@ const opts: Options = {
   dependencyMapName: null,
   unstable_allowRequireContext: false,
 };
+
+// asserts non-null
+function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+  assert(x != null, message);
+  return x;
+}
+
+const originalWarn = console.warn;
+
+beforeAll(() => {
+  console.warn = jest.fn();
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+});
 
 describe(`require.context`, () => {
   const optsWithoutContext = { ...opts, unstable_allowRequireContext: false };
@@ -891,6 +906,9 @@ describe('import() prefetching', () => {
 });
 
 describe('Evaluating static arguments', () => {
+  beforeEach(() => {
+    jest.mocked(console.warn).mockReset();
+  });
   it('supports template literals as arguments', () => {
     const ast = astFromCode('require(`left-pad`)');
     const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
@@ -1002,6 +1020,52 @@ describe('Evaluating static arguments', () => {
           throw new Error('Dynamic require defined at line ' + line + '; not supported by Metro');
         })(1);
       `)
+    );
+  });
+  it('warns at build-time when requiring non-strings with special option', () => {
+    const ast = astFromCode('require(someVariable)');
+    const opts: Options = {
+      asyncRequireModulePath: 'asyncRequire',
+      dynamicRequires: 'warn',
+      inlineableCalls: [],
+      keepRequireNames: true,
+      allowOptionalDependencies: false,
+      dependencyMapName: null,
+      unstable_allowRequireContext: false,
+    };
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(someVariable);
+      `)
+    );
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Dynamic import at line 1: require(someVariable). This module may not work as intended when deployed to a runtime.'
+    );
+  });
+  it('warns at build-time when async import of non-strings with special option', () => {
+    const ast = astFromCode('import(someVariable)');
+    const opts: Options = {
+      asyncRequireModulePath: 'asyncRequire',
+      dynamicRequires: 'warn',
+      inlineableCalls: [],
+      keepRequireNames: true,
+      allowOptionalDependencies: false,
+      dependencyMapName: null,
+      unstable_allowRequireContext: false,
+    };
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        import(someVariable);
+      `)
+    );
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Dynamic import at line 1: import(someVariable). This module may not work as intended when deployed to a runtime.'
     );
   });
 });
@@ -1448,14 +1512,14 @@ function adjustPosForCodeFrame(pos: { column: number; line: number }) {
   return pos ? { ...pos, column: pos.column + 1 } : pos;
 }
 
-function adjustLocForCodeFrame(loc: types.SourceLocation) {
+function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
     start: adjustPosForCodeFrame(loc.start),
     end: adjustPosForCodeFrame(loc.end),
   };
 }
 
-function formatLoc(loc: types.SourceLocation, depIndex: number, dep: Dependency, code: any) {
+function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: any) {
   return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
     message: `dep #${depIndex} (${dep.name})`,
     linesAbove: 0,

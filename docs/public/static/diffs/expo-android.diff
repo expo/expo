@@ -44,7 +44,8 @@ index 5189e25..4743f7a 100644
 +      })
 
    override val reactHost: ReactHost
-     get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+-     get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
++     get() = getDefaultReactHost(applicationContext, reactNativeHost)
 @@ -41,5 +44,11 @@ class MainApplication : Application(), ReactApplication {
        load()
      }

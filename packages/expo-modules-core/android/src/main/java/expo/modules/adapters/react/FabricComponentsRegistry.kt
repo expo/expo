@@ -16,7 +16,7 @@ class FabricComponentsRegistry(viewManagerList: List<ViewManager<*, *>>) {
   private val mHybridData: HybridData
 
   init {
-    componentNames = viewManagerList.map { it.name }
+    componentNames = viewManagerList.map { it.getName() }
     mHybridData = initHybrid()
     registerComponentsRegistry(componentNames.toTypedArray())
   }

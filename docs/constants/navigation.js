@@ -362,7 +362,6 @@ const general = [
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
-      makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
     ]),
@@ -560,6 +559,7 @@ const archive = [
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
     makePage('archive/using-flipper.mdx'),
+    makePage('archive/e2e-tests.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

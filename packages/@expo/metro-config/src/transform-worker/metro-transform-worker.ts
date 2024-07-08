@@ -174,8 +174,8 @@ async function transformJS(
   file: JSFile,
   { config, options, projectRoot }: TransformationContext
 ): Promise<TransformResponse> {
-  // const targetEnv = options.customTransformOptions?.environment;
-  // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+  const targetEnv = options.customTransformOptions?.environment;
+  const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
@@ -315,7 +315,11 @@ async function transformJS(
           config.unstable_disableModuleWrapping === true
             ? disabledDependencyTransformer
             : undefined,
-        dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
+        dynamicRequires: isServerEnv
+          ? // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+            // This requires a patch to Metro collectDeps.
+            'warn'
+          : getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
         inlineableCalls: [importDefault, importAll],
         keepRequireNames: options.dev,
         allowOptionalDependencies: config.allowOptionalDependencies,
@@ -614,7 +618,9 @@ export function getCacheKey(config: JsTransformerConfig): string {
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
     require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
+    require.resolve('./resolveOptions'),
     require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
     require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),

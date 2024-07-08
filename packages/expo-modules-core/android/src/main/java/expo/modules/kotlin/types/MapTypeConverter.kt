@@ -52,10 +52,10 @@ class MapTypeConverter(
   private fun convertFromReadableMap(jsMap: ReadableMap): Map<*, *> {
     val result = mutableMapOf<String, Any?>()
 
-    jsMap.entryIterator.forEach { (key, value) ->
+    jsMap.getEntryIterator().forEach { (key, value) ->
       DynamicFromObject(value).recycle {
         exceptionDecorator({ cause ->
-          CollectionElementCastException(mapType, mapType.arguments[1].type!!, type, cause)
+          CollectionElementCastException(mapType, mapType.arguments[1].type!!, getType(), cause)
         }) {
           result[key] = valueConverter.convert(this)
         }

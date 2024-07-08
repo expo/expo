@@ -23,7 +23,7 @@ The `expo-updates` library can be automatically configured using [EAS Update](/e
 
 Alternatively, it is also possible to configure the `expo-updates` library manually in cases where a different remote update service is required or configuration is only specified in native files.
 
-<Collapsible summary="Manual installation and configuration">
+<Collapsible summary="Manual installation, configuration, and custom remote update services">
 
 <APIInstallSection hideBareInstructions />
 
@@ -34,7 +34,7 @@ If using [app config](/workflow/configuration/) for configuration, this library 
 - [`updates.url`](/versions/latest/config/app/#updates): a URL of a remote service implementing the [Expo Updates protocol](/technical-specs/expo-updates-1/)
 - [`runtimeVersion`](/versions/latest/config/app/#runtimeversion): a [runtime version](/eas-update/runtime-versions/)
 
-The remote service must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/). [EAS Update](/eas-update/introduction) implements this protocol for you, and it is also possible to use this library with a custom server.
+The remote service must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/). [EAS Update](/eas-update/introduction) is one such service, but it is also possible to use this library with a custom server.
 
 <BoxLink
   title="Custom Expo Updates Server"
