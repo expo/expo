@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchFetch = exports.patchErrorBox = exports.ReactServerError = exports.MetroServerError = exports.NetworkError = void 0;
+exports.ReactServerError = exports.MetroServerError = exports.NetworkError = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -42,58 +42,4 @@ class ReactServerError extends Error {
     }
 }
 exports.ReactServerError = ReactServerError;
-function patchErrorBox() {
-    if (typeof ErrorUtils === 'undefined') {
-        return;
-    }
-    //// This appears to never be called. Mostly LogBox is presented from an invasive patch on console.error.
-    const globalHandler = ErrorUtils.getGlobalHandler();
-    // @ts-expect-error
-    if (globalHandler?.__router_errors_patched) {
-        return;
-    }
-    const routerHandler = (error) => {
-        if (error instanceof NetworkError ||
-            error instanceof MetroServerError ||
-            error instanceof ReactServerError) {
-            // Use root error boundary.
-            return;
-        }
-        globalHandler?.(error);
-    };
-    routerHandler.__router_errors_patched = true;
-    ErrorUtils.setGlobalHandler(routerHandler);
-}
-exports.patchErrorBox = patchErrorBox;
-// Add error handling that is used in the ErrorBoundary
-function patchFetch() {
-    patchErrorBox();
-    // @ts-expect-error
-    if (globalThis.fetch.__router_errors_patched) {
-        return;
-    }
-    const originalFetch = globalThis.fetch;
-    Object.defineProperty(global, 'fetch', {
-        // value: fetch,
-        value: async function fetch(input, init) {
-            //   throw new NetworkError('test error', input as string);
-            try {
-                return await originalFetch(input, init);
-            }
-            catch (error) {
-                const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
-                if (error instanceof Error) {
-                    // Based on community fetch polyfill error message.
-                    if (error.message.match(/Network request failed: (The network connection was lost|Could not connect to the server)/)) {
-                        throw new NetworkError(error.message, url);
-                    }
-                }
-                throw error;
-            }
-        },
-    });
-    // @ts-expect-error
-    globalThis.fetch.__router_errors_patched = true;
-}
-exports.patchFetch = patchFetch;
 //# sourceMappingURL=patchFetch.js.map

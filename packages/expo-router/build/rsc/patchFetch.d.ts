@@ -22,6 +22,4 @@ export declare class ReactServerError extends Error {
     code: string;
     constructor(message: string, url: string, statusCode: number);
 }
-export declare function patchErrorBox(): void;
-export declare function patchFetch(): void;
 //# sourceMappingURL=patchFetch.d.ts.map

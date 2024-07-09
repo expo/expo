@@ -24,8 +24,8 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
-import { patchFetch, MetroServerError, ReactServerError } from './patchFetch';
-import { getDevServer } from '../getDevServer';
+import { MetroServerError, ReactServerError } from '../patchFetch';
+import { getDevServer } from '../../getDevServer';
 
 const { createFromFetch, encodeReply } = RSDWClient;
 
@@ -109,9 +109,6 @@ type CacheEntry = [
 const fetchCache: [CacheEntry?] = [];
 
 const RSC_CONTENT_TYPE = 'text/x-component';
-
-// Add error handling
-patchFetch();
 
 export const fetchRSC = (
   input: string,

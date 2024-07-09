@@ -11,7 +11,7 @@ exports.unstable_redirect = exports.unstable_defineRouter = void 0;
 const react_1 = require("react");
 const client_1 = require("./client");
 const common_1 = require("./common");
-const client_2 = require("../client");
+const host_1 = require("./host");
 const path_1 = require("../path");
 const server_1 = require("../server");
 function unstable_defineRouter(getPathConfig, getComponent) {
@@ -64,7 +64,7 @@ function unstable_defineRouter(getPathConfig, getComponent) {
             if (!component) {
                 return [];
             }
-            const element = (0, react_1.createElement)(component, id.endsWith('/layout') ? { path: pathname } : { path: pathname, searchParams }, (0, react_1.createElement)(client_2.Children));
+            const element = (0, react_1.createElement)(component, id.endsWith('/layout') ? { path: pathname } : { path: pathname, searchParams }, (0, react_1.createElement)(host_1.Children));
             return [[id, element]];
         }))).flat();
         entries.push([common_1.SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
@@ -118,7 +118,7 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
         }
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const input = (0, common_1.getInputString)(pathname);
-        const body = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, searchParams } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(client_2.Slot, { id, fallback: acc }, acc), null));
+        const body = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, searchParams } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
         return { input, body };
     };
     return { renderEntries, getBuildConfig, getSsrConfig };

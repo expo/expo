@@ -15,7 +15,7 @@ import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common';
 import type { RouteProps } from './common';
-import { Root, Slot, useRefetch } from '../client';
+import { Root, Slot, useRefetch } from './host';
 
 const parseRoute = (url: URL): RouteProps => {
   const { pathname, searchParams } = url;

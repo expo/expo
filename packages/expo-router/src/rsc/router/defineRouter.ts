@@ -19,7 +19,7 @@ import {
   LOCATION_ID,
 } from './common';
 import type { RouteProps, ShouldSkip } from './common';
-import { Children, Slot } from '../client';
+import { Children, Slot } from './host';
 import { getPathMapping } from '../path';
 import type { PathSpec } from '../path';
 import { defineEntries, rerender } from '../server';
