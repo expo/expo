@@ -25,4 +25,5 @@ export declare function setOptions(options: SplashScreenOptions): void;
  * ["Usage"](#usage) section for an example.
  */
 export declare function hide(): void;
+export declare function hideAsync(): Promise<void>;
 //# sourceMappingURL=index.d.ts.map

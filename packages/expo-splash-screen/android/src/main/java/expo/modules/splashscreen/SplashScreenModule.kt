@@ -21,12 +21,18 @@ class SplashScreenModule : Module() {
     Name("ExpoSplashScreen")
 
     Function("setOptions") { options: SplashScreenOptions ->
+      // Needs to run on the main thread on apis below 33
       appContext.mainQueue.launch {
         SplashScreenManager.setSplashScreenOptions(options)
       }
     }
 
     Function("hide") {
+      SplashScreenManager.hide()
+    }
+
+    // For backwards compatibility
+    AsyncFunction("hideAsync") {
       SplashScreenManager.hide()
     }
   }

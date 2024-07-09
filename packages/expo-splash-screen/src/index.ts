@@ -33,3 +33,5 @@ export function setOptions(options: SplashScreenOptions): void {}
  * ["Usage"](#usage) section for an example.
  */
 export function hide(): void {}
+
+export async function hideAsync(): Promise<void> {}

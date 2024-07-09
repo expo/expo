@@ -71,6 +71,10 @@ export function hide() {
   SplashModule.hide();
 }
 
+export async function hideAsync(): Promise<void> {
+  hide();
+}
+
 export const preventAutoHideAsync = () => {
   // Indicate that the user is controlling the auto hide behavior.
   _userControlledAutoHideEnabled = true;

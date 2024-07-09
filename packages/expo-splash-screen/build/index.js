@@ -28,4 +28,5 @@ export function setOptions(options) { }
  * ["Usage"](#usage) section for an example.
  */
 export function hide() { }
+export async function hideAsync() { }
 //# sourceMappingURL=index.js.map
