@@ -306,8 +306,7 @@ export async function getBuildConfig(opts: {
     return Array.from(idSet);
   };
 
-  const output = await getBuildConfig(unstable_collectClientModules);
-  return output;
+  return getBuildConfig(unstable_collectClientModules);
 }
 
 export type GetSsrConfigArgs = {

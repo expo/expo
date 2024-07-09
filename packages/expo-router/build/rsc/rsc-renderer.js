@@ -219,8 +219,7 @@ async function getBuildConfig(opts) {
         });
         return Array.from(idSet);
     };
-    const output = await getBuildConfig(unstable_collectClientModules);
-    return output;
+    return getBuildConfig(unstable_collectClientModules);
 }
 exports.getBuildConfig = getBuildConfig;
 async function getSsrConfig(args, opts) {

@@ -30,7 +30,6 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 
 import { getPlatformBundlers } from '../platformBundlers';
-import { createDevServerMiddleware } from './createCommunityDevServerMiddleware';
 import MetroHmrServer from 'metro/src/HmrServer';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -193,18 +192,14 @@ export async function instantiateMetroAsync(
     }
   );
 
-  // const { securityHeadersMiddleware } =
-  //   require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
+  const { securityHeadersMiddleware, createDevServerMiddleware } =
+    require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
 
   const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
-    createDevServerMiddleware(
-      projectRoot,
-      {
-        port: metroConfig.server.port,
-        watchFolders: metroConfig.watchFolders,
-      },
-      exp
-    );
+    createDevServerMiddleware({
+      port: metroConfig.server.port,
+      watchFolders: metroConfig.watchFolders,
+    });
 
   let debugWebsocketEndpoints: {
     [path: string]: import('ws').WebSocketServer;
@@ -213,11 +208,11 @@ export async function instantiateMetroAsync(
   if (!isExporting) {
     // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
     // TODO: This causes issues with RSC previews
-    // replaceMiddlewareWith(
-    //   middleware as ConnectServer,
-    //   securityHeadersMiddleware,
-    //   createCorsMiddleware(exp)
-    // );
+    replaceMiddlewareWith(
+      middleware as ConnectServer,
+      securityHeadersMiddleware,
+      createCorsMiddleware(exp)
+    );
 
     // TODO: This causes issues with RSC previews
     prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);

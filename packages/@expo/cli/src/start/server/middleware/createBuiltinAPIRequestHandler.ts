@@ -1,5 +1,6 @@
-import { RequestHandler, convertRequest, respond } from '@expo/server/build/vendor/http';
-import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { convertRequest, RequestHandler, respond } from '@expo/server/build/vendor/http';
+
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 export function createBuiltinAPIRequestHandler(
   matchRequest: (request: Request) => boolean,
@@ -35,9 +36,7 @@ export function createRequestHandler(
 
     try {
       const request = convertRequest(req, res);
-
       const response = await handleRequest(request);
-
       return await respond(res, response);
     } catch (error: unknown) {
       if (error instanceof Error) {
