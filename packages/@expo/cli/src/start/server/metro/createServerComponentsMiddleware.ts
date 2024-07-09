@@ -162,7 +162,7 @@ export function createServerComponentsMiddleware(
       }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
-      const id = clientReferenceUrl.pathname + clientReferenceUrl.search; // + clientReferenceUrl.hash;
+      const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
       return { id: relativeFilePath, chunks: [id] };
     };
@@ -182,9 +182,6 @@ export function createServerComponentsMiddleware(
       {
         environment: 'react-server',
         platform,
-      },
-      {
-        // hot: true,
       }
     );
 
@@ -272,11 +269,8 @@ export function createServerComponentsMiddleware(
 const getFullUrl = (url: string) => {
   try {
     return new URL(url);
-  } catch (error: any) {
-    if (error.code === 'ERR_INVALID_URL') {
-      return new URL(url, 'http://localhost:0');
-    }
-    throw error;
+  } catch {
+    return new URL(url, 'http://localhost:0');
   }
 };
 
