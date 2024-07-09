@@ -4,7 +4,6 @@ const path = require('path');
 
 const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
-  unstable_runtime: true,
 });
 
 const root = path.join(__dirname, '../..');
