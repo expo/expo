@@ -1608,7 +1608,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context (4.10.1):
+  - react-native-safe-area-context (4.10.7):
     - React-Core
   - react-native-segmented-control (2.5.2):
     - React-Core
@@ -2535,8 +2535,8 @@ SPEC CHECKSUMS:
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
   EXNotifications: a01203397855862df7e4ac3bcf9fc7bc6914893e
   Expo: c99f14ca53381d5399b88684c88e20ff7928d3c7
-  expo-dev-client: 5a76dfdc64875a076212f9d3ee9a897bdd735105
-  expo-dev-launcher: 752312abcf346045aac32cf1bde006f45faf4a04
+  expo-dev-client: 5fabdda30d7494ed2110775479864463171e9a0e
+  expo-dev-launcher: 83e5b141c512a1fae37bc0cced8c9ac4e8144eb9
   expo-dev-menu: 8559d77f4037c6105b21a424dec68f235496c391
   expo-dev-menu-interface: 3e97a7c7d79caff5f62acb00d053d4ec86d0ca1f
   ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
@@ -2592,11 +2592,11 @@ SPEC CHECKSUMS:
   EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
-  EXUpdates: 176cb01319512d5188e21538d7ff6f943de8bcda
+  EXUpdates: de58bdc4a62ccd959f6c99e2d75f25aa83cd2365
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 4bc164e5b5e6cfc288d2b5ff28643ea15fa1a589
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 01d3e052018c2a13937aca1860fbedbccd4a41b7
@@ -2606,7 +2606,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
+  RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
   RCTDeprecation: b03c35057846b685b3ccadc9bfe43e349989cdb2
   RCTRequired: 194626909cfa8d39ca6663138c417bc6c431648c
   RCTTypeSafety: 552aff5b8e8341660594db00e53ac889682bc120
@@ -2633,7 +2633,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: bf56147c9775491e53122a94c423ac201417e326
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: c1e29e1a6105a02807392ba822ad322447a72f55
-  react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
+  react-native-safe-area-context: 422017db8bcabbada9ad607d010996c56713234c
   react-native-segmented-control: b92809e9111013dfa266e1168ba366d62898d9a4
   react-native-slider: ce295d2bf830a7990af05b0bd70ab28c133e230c
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
