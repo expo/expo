@@ -35,10 +35,10 @@ export function createCorsMiddleware(exp: ExpoConfig) {
 
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
       maybePreventMetroResetCorsHeader(req, res);
+    } else {
+      // Block MIME-type sniffing.
+      res.setHeader('X-Content-Type-Options', 'nosniff');
     }
-
-    // Block MIME-type sniffing.
-    res.setHeader('X-Content-Type-Options', 'nosniff');
 
     next();
   };

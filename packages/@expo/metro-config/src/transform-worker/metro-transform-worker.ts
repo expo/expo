@@ -325,10 +325,6 @@ async function transformJS(
         allowOptionalDependencies: config.allowOptionalDependencies,
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
-
-        // NOTE(EvanBacon): Allow arbitrary imports in server environments.
-        // This requires a patch to Metro collectDeps.
-        // allowArbitraryImport: isServerEnv,
       }));
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
