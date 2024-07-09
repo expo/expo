@@ -21,24 +21,6 @@ import { getServerReference, getDebugDescription } from '../server-actions';
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 globalThis._REACT_registerServerReference = registerServerReference;
 
-const streamToString = async (stream: ReadableStream): Promise<string> => {
-  const decoder = new TextDecoder();
-  const reader = stream.getReader();
-  const outs: string[] = [];
-  let result: ReadableStreamReadResult<unknown>;
-  do {
-    result = await reader.read();
-    if (result.value) {
-      if (!(result.value instanceof Uint8Array)) {
-        throw new Error('Unexepected buffer type');
-      }
-      outs.push(decoder.decode(result.value, { stream: true }));
-    }
-  } while (!result.done);
-  outs.push(decoder.decode());
-  return outs.join('');
-};
-
 export interface RenderContext<T = unknown> {
   rerender: (input: string, searchParams?: URLSearchParams) => void;
   context: T;
@@ -65,7 +47,7 @@ export type RenderRscArgs = {
   }) => void;
 };
 
-type ResolveClientEntry = (id: string) => { id: string; url: string[] };
+type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
 
 type RenderRscOpts =
   | {
@@ -112,7 +94,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
         // This is similar to how we handle lazy bundling.
         if (resolveClientEntry) {
           const resolved = resolveClientEntry(filePath);
-          return { id: resolved.id, chunks: resolved.url, name, async: true };
+          return { id: resolved.id, chunks: resolved.chunks, name, async: true };
         }
 
         return {
@@ -256,105 +238,27 @@ const parseFormData = (body: string, contentType: string) => {
   return formData;
 };
 
-// TODO: Implement this in production exports.
-export async function getBuildConfig(opts: {
-  config: ResolvedConfig;
-  entries: EntriesPrd;
-  resolveClientEntry: ResolveClientEntry;
-}) {
-  const { config, entries } = opts;
-
-  const {
-    default: { getBuildConfig },
-  } = entries;
-  if (!getBuildConfig) {
-    console.warn(
-      "getBuildConfig is undefined. It's recommended for optimization and sometimes required."
-    );
-    return [];
-  }
-
-  const unstable_collectClientModules = async (input: string): Promise<string[]> => {
-    const idSet = new Set<string>();
-    const readable = await renderRsc(
-      {
-        config,
-        input,
-        searchParams: new URLSearchParams(),
-        method: 'GET',
-        context: undefined,
-        moduleIdCallback: ({ id }) => idSet.add(id),
-      },
-      {
-        isExporting: true,
-        entries,
-      }
-    );
-    await new Promise<void>((resolve, reject) => {
-      const writable = new WritableStream({
-        close() {
-          resolve();
-        },
-        abort(reason) {
-          reject(reason);
-        },
-      });
-      readable.pipeTo(writable);
-    });
-    return Array.from(idSet);
-  };
-
-  return getBuildConfig(unstable_collectClientModules);
-}
-
-export type GetSsrConfigArgs = {
-  config: ResolvedConfig;
-  pathname: string;
-  searchParams: URLSearchParams;
-};
-
-type GetSsrConfigOpts =
-  | { isDev: false; entries: EntriesPrd; resolveClientEntry: ResolveClientEntry }
-  | {
-      isDev: true;
-      entries: EntriesDev;
-      resolveClientEntry: ResolveClientEntry;
-    };
-
-export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpts) {
-  const { pathname, searchParams } = args;
-  const { entries } = opts;
-
-  const resolveClientEntry = opts.resolveClientEntry;
-
-  const {
-    default: { getSsrConfig },
-  } = entries as (EntriesDev & { loadModule: undefined }) | EntriesPrd;
-
-  const ssrConfig = await getSsrConfig?.(pathname, { searchParams });
-  if (!ssrConfig) {
-    return null;
-  }
-  const bundlerConfig = new Proxy(
-    {},
-    {
-      get(_target, encodedId: string) {
-        const [file, name = ''] = encodedId.split('#') as [string, string];
-        console.warn('TODO: SSR Config');
-        const id = resolveClientEntry(file);
-        return { id, chunks: [id], name, async: true };
-      },
-    }
-  );
-  return {
-    ...ssrConfig,
-    body: renderToReadableStream(ssrConfig.body, bundlerConfig),
-  };
-}
-
 const fileURLToFilePath = (fileURL: string) => {
   if (!fileURL.startsWith('file://')) {
     throw new Error('Not a file URL');
   }
   return decodeURI(fileURL.slice('file://'.length));
+};
+
+const streamToString = async (stream: ReadableStream): Promise<string> => {
+  const decoder = new TextDecoder();
+  const reader = stream.getReader();
+  const outs: string[] = [];
+  let result: ReadableStreamReadResult<unknown>;
+  do {
+    result = await reader.read();
+    if (result.value) {
+      if (!(result.value instanceof Uint8Array)) {
+        throw new Error('Unexepected buffer type');
+      }
+      outs.push(decoder.decode(result.value, { stream: true }));
+    }
+  } while (!result.done);
+  outs.push(decoder.decode());
+  return outs.join('');
 };

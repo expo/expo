@@ -30,7 +30,7 @@ export type RenderRscArgs = {
 };
 type ResolveClientEntry = (id: string) => {
     id: string;
-    url: string[];
+    chunks: string[];
 };
 type RenderRscOpts = {
     isExporting: true;
@@ -42,29 +42,5 @@ type RenderRscOpts = {
     resolveClientEntry: ResolveClientEntry;
 };
 export declare function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream>;
-export declare function getBuildConfig(opts: {
-    config: ResolvedConfig;
-    entries: EntriesPrd;
-    resolveClientEntry: ResolveClientEntry;
-}): Promise<import("./server").BuildConfig>;
-export type GetSsrConfigArgs = {
-    config: ResolvedConfig;
-    pathname: string;
-    searchParams: URLSearchParams;
-};
-type GetSsrConfigOpts = {
-    isDev: false;
-    entries: EntriesPrd;
-    resolveClientEntry: ResolveClientEntry;
-} | {
-    isDev: true;
-    entries: EntriesDev;
-    resolveClientEntry: ResolveClientEntry;
-};
-export declare function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpts): Promise<{
-    body: any;
-    input: string;
-    searchParams?: URLSearchParams | undefined;
-} | null>;
 export {};
 //# sourceMappingURL=rsc-renderer.d.ts.map

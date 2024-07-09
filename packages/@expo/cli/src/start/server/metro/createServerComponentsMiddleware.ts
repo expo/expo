@@ -164,7 +164,7 @@ export function createServerComponentsMiddleware(
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const id = clientReferenceUrl.pathname + clientReferenceUrl.search; // + clientReferenceUrl.hash;
 
-      return { id: relativeFilePath, url: [id] };
+      return { id: relativeFilePath, chunks: [id] };
     };
   }
 

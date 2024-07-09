@@ -9,29 +9,12 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSsrConfig = exports.getBuildConfig = exports.renderRsc = void 0;
+exports.renderRsc = void 0;
 const server_1 = require("react-server-dom-webpack/server");
 const server_2 = require("./server");
 const server_actions_1 = require("../server-actions");
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 globalThis._REACT_registerServerReference = server_1.registerServerReference;
-const streamToString = async (stream) => {
-    const decoder = new TextDecoder();
-    const reader = stream.getReader();
-    const outs = [];
-    let result;
-    do {
-        result = await reader.read();
-        if (result.value) {
-            if (!(result.value instanceof Uint8Array)) {
-                throw new Error('Unexepected buffer type');
-            }
-            outs.push(decoder.decode(result.value, { stream: true }));
-        }
-    } while (!result.done);
-    outs.push(decoder.decode());
-    return outs.join('');
-};
 async function renderRsc(args, opts) {
     const { searchParams, method, input, body, contentType, context } = args;
     const { resolveClientEntry, entries } = opts;
@@ -55,7 +38,7 @@ async function renderRsc(args, opts) {
             // This is similar to how we handle lazy bundling.
             if (resolveClientEntry) {
                 const resolved = resolveClientEntry(filePath);
-                return { id: resolved.id, chunks: resolved.url, name, async: true };
+                return { id: resolved.id, chunks: resolved.chunks, name, async: true };
             }
             return {
                 // TODO: Make relative to server root
@@ -183,70 +166,27 @@ const parseFormData = (body, contentType) => {
     }
     return formData;
 };
-// TODO: Implement this in production exports.
-async function getBuildConfig(opts) {
-    const { config, entries } = opts;
-    const { default: { getBuildConfig }, } = entries;
-    if (!getBuildConfig) {
-        console.warn("getBuildConfig is undefined. It's recommended for optimization and sometimes required.");
-        return [];
-    }
-    const unstable_collectClientModules = async (input) => {
-        const idSet = new Set();
-        const readable = await renderRsc({
-            config,
-            input,
-            searchParams: new URLSearchParams(),
-            method: 'GET',
-            context: undefined,
-            moduleIdCallback: ({ id }) => idSet.add(id),
-        }, {
-            isExporting: true,
-            entries,
-        });
-        await new Promise((resolve, reject) => {
-            const writable = new WritableStream({
-                close() {
-                    resolve();
-                },
-                abort(reason) {
-                    reject(reason);
-                },
-            });
-            readable.pipeTo(writable);
-        });
-        return Array.from(idSet);
-    };
-    return getBuildConfig(unstable_collectClientModules);
-}
-exports.getBuildConfig = getBuildConfig;
-async function getSsrConfig(args, opts) {
-    const { pathname, searchParams } = args;
-    const { entries } = opts;
-    const resolveClientEntry = opts.resolveClientEntry;
-    const { default: { getSsrConfig }, } = entries;
-    const ssrConfig = await getSsrConfig?.(pathname, { searchParams });
-    if (!ssrConfig) {
-        return null;
-    }
-    const bundlerConfig = new Proxy({}, {
-        get(_target, encodedId) {
-            const [file, name = ''] = encodedId.split('#');
-            console.warn('TODO: SSR Config');
-            const id = resolveClientEntry(file);
-            return { id, chunks: [id], name, async: true };
-        },
-    });
-    return {
-        ...ssrConfig,
-        body: (0, server_1.renderToReadableStream)(ssrConfig.body, bundlerConfig),
-    };
-}
-exports.getSsrConfig = getSsrConfig;
 const fileURLToFilePath = (fileURL) => {
     if (!fileURL.startsWith('file://')) {
         throw new Error('Not a file URL');
     }
     return decodeURI(fileURL.slice('file://'.length));
+};
+const streamToString = async (stream) => {
+    const decoder = new TextDecoder();
+    const reader = stream.getReader();
+    const outs = [];
+    let result;
+    do {
+        result = await reader.read();
+        if (result.value) {
+            if (!(result.value instanceof Uint8Array)) {
+                throw new Error('Unexepected buffer type');
+            }
+            outs.push(decoder.decode(result.value, { stream: true }));
+        }
+    } while (!result.done);
+    outs.push(decoder.decode());
+    return outs.join('');
 };
 //# sourceMappingURL=rsc-renderer.js.map
