@@ -4,7 +4,7 @@
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "types": "build",
-  "main": "build",
+  "main": "src",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
   "keywords": [],
   "author": "650 Industries, Inc.",
