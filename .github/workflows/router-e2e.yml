@@ -32,7 +32,7 @@ jobs:
           arch -arm64 brew tap facebook/fb
           arch -arm64 brew install facebook/fb/idb-companion
           arch -arm64 brew install jq
-          export PATH="$PATH:$HOME/.maestro/bin"
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Start iOS Simulator
         run: |
