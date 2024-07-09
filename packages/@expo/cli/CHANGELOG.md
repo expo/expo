@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix app crashing when hitting debugger breakpoint through VSCode. ([#30287](https://github.com/expo/expo/pull/30287) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.18.22 — 2024-07-03
