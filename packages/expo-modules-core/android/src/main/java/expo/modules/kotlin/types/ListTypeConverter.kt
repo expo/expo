@@ -49,7 +49,7 @@ class ListTypeConverter(
           CollectionElementCastException(
             listType,
             listType.arguments.first().type!!,
-            type,
+            getType(),
             cause
           )
         }) {

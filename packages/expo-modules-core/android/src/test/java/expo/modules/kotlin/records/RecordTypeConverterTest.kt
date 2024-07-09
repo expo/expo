@@ -198,9 +198,7 @@ class RecordTypeConverterTest {
   }
 
   @Test
-  fun `primary constructor default values are ignored if using the 'shorthand' class syntax`() {
-    // This is NOT the correct behavior but a limitation of the current implementation.
-    // see https://linear.app/expo/issue/ENG-12724
+  fun `primary constructor default values shouldn't be ignored if using the 'shorthand' class syntax`() {
     class MyRecord(
       @Field
       val int: Int = 42,
@@ -216,9 +214,9 @@ class RecordTypeConverterTest {
 
     val myRecord = convert<MyRecord>(map)
 
-    Truth.assertThat(myRecord.int).isEqualTo(0)
-    Truth.assertThat(myRecord.string).isEqualTo(null)
-    Truth.assertThat(myRecord.boolean).isEqualTo(false)
+    Truth.assertThat(myRecord.int).isEqualTo(42)
+    Truth.assertThat(myRecord.string).isEqualTo("string")
+    Truth.assertThat(myRecord.boolean).isEqualTo(true)
   }
 
   @Test

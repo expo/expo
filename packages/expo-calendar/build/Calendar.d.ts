@@ -42,7 +42,6 @@ export type Calendar = {
     source: Source;
     /**
      * Type of calendar this object represents.
-     * Possible values: [`CalendarType`](#calendarcalendartype).
      * @platform ios
      */
     type?: CalendarType;
@@ -52,7 +51,6 @@ export type Calendar = {
     color: string;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
-     * Possible values: [`EntityTypes`](#calendarentitytypes).
      * @platform ios
      */
     entityType?: EntityTypes;
@@ -62,7 +60,6 @@ export type Calendar = {
     allowsModifications: boolean;
     /**
      * Availability types that this calendar supports.
-     * Possible values: Array of [`Availability`](#calendaravailability).
      */
     allowedAvailabilities: Availability[];
     /**
@@ -87,13 +84,11 @@ export type Calendar = {
     timeZone?: string;
     /**
      * Alarm methods that this calendar supports.
-     * Possible values: Array of [`AlarmMethod`](#calendaralarmmethod).
      * @platform android
      */
     allowedReminders?: AlarmMethod[];
     /**
      * Attendee types that this calendar supports.
-     * Possible values: Array of [`AttendeeType`](#calendarattendeetype).
      * @platform android
      */
     allowedAttendeeTypes?: AttendeeType[];
@@ -110,7 +105,6 @@ export type Calendar = {
     isSynced?: boolean;
     /**
      * Level of access that the user has for the calendar.
-     * Possible values: [`CalendarAccessLevel`](#calendarcalendaraccesslevel).
      * @platform android
      */
     accessLevel?: CalendarAccessLevel;
@@ -196,7 +190,7 @@ export type Event = {
     /**
      * Object representing rules for recurring or repeating events. Set to `null` for one-time events.
      */
-    recurrenceRule: RecurrenceRule;
+    recurrenceRule: RecurrenceRule | null;
     /**
      * Date object or string representing the time when the event starts.
      */
@@ -221,12 +215,10 @@ export type Event = {
     allDay: boolean;
     /**
      * The availability setting for the event.
-     * Possible values: [`Availability`](#calendaravailability).
      */
     availability: Availability;
     /**
      * Status of the event.
-     * Possible values: [`EventStatus`](#calendareventstatus).
      */
     status: EventStatus;
     /**
@@ -241,7 +233,6 @@ export type Event = {
     organizerEmail?: string;
     /**
      * User's access level for the event.
-     * Possible values: [`EventAccessLevel`](#calendareventaccesslevel).
      * @platform android
      */
     accessLevel?: EventAccessLevel;
@@ -318,9 +309,9 @@ export type Reminder = {
      */
     alarms?: Alarm[];
     /**
-     * Object representing rules for recurring or repeated reminders. Null for one-time tasks.
+     * Object representing rules for recurring or repeated reminders. `null` for one-time tasks.
      */
-    recurrenceRule?: RecurrenceRule;
+    recurrenceRule?: RecurrenceRule | null;
     /**
      * Date object or string representing the start date of the reminder task.
      */
@@ -359,17 +350,14 @@ export type Attendee = {
     name: string;
     /**
      * Role of the attendee at the event.
-     * Possible values: [`AttendeeRole`](#calendarattendeerole).
      */
     role: AttendeeRole;
     /**
      * Status of the attendee in relation to the event.
-     * Possible values: [`AttendeeStatus`](#calendarattendeestatus).
      */
     status: AttendeeStatus;
     /**
      * Type of the attendee.
-     * Possible values: [`AttendeeType`](#calendarattendeetype).
      */
     type: AttendeeType;
     /**
@@ -384,7 +372,7 @@ export type Attendee = {
     email?: string;
 };
 /**
- * A method for having the OS automatically remind the user about an calendar item.
+ * A method for having the OS automatically remind the user about a calendar item.
  */
 export type Alarm = {
     /**
@@ -400,8 +388,7 @@ export type Alarm = {
     relativeOffset?: number;
     structuredLocation?: AlarmLocation;
     /**
-     * Method of alerting the user that this alarm should use; on iOS this is always a notification.
-     * Possible values: [`AlarmMethod`](#calendaralarmmethod).
+     * Method of alerting the user that this alarm should use. On iOS this is always a notification.
      * @platform android
      */
     method?: AlarmMethod;
@@ -418,6 +405,9 @@ export type AlarmLocation = {
         longitude?: number;
     };
 };
+/**
+ * @platform ios
+ */
 export declare enum DayOfTheWeek {
     Sunday = 1,
     Monday = 2,
@@ -427,6 +417,9 @@ export declare enum DayOfTheWeek {
     Friday = 6,
     Saturday = 7
 }
+/**
+ * @platform ios
+ */
 export declare enum MonthOfTheYear {
     January = 1,
     February = 2,
@@ -447,12 +440,11 @@ export declare enum MonthOfTheYear {
  * which is in turn based on [the iCal RFC](https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
  * so you can refer to those to learn more about this potentially complex interface.
  *
- * Not all of the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
+ * Not all the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
  */
 export type RecurrenceRule = {
     /**
      * How often the calendar item should recur.
-     * Possible values: [`Frequency`](#calendarfrequency).
      */
     frequency: Frequency;
     /**
@@ -872,6 +864,9 @@ export declare const useCalendarPermissions: (options?: PermissionHookOptions<ob
  * ```
  */
 export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+/**
+ * platform ios
+ */
 export declare enum EntityTypes {
     EVENT = "event",
     REMINDER = "reminder"
@@ -883,12 +878,21 @@ export declare enum Frequency {
     YEARLY = "yearly"
 }
 export declare enum Availability {
+    /**
+     * @platform ios
+     */
     NOT_SUPPORTED = "notSupported",
     BUSY = "busy",
     FREE = "free",
     TENTATIVE = "tentative",
+    /**
+     * @platform ios
+     */
     UNAVAILABLE = "unavailable"
 }
+/**
+ * @platform ios
+ */
 export declare enum CalendarType {
     LOCAL = "local",
     CALDAV = "caldav",
@@ -903,6 +907,9 @@ export declare enum EventStatus {
     TENTATIVE = "tentative",
     CANCELED = "canceled"
 }
+/**
+ * @platform ios
+ */
 export declare enum SourceType {
     LOCAL = "local",
     EXCHANGE = "exchange",
@@ -912,39 +919,114 @@ export declare enum SourceType {
     BIRTHDAYS = "birthdays"
 }
 export declare enum AttendeeRole {
+    /**
+     * @platform ios
+     */
     UNKNOWN = "unknown",
+    /**
+     * @platform ios
+     */
     REQUIRED = "required",
+    /**
+     * @platform ios
+     */
     OPTIONAL = "optional",
+    /**
+     * @platform ios
+     */
     CHAIR = "chair",
+    /**
+     * @platform ios
+     */
     NON_PARTICIPANT = "nonParticipant",
+    /**
+     * @platform android
+     */
     ATTENDEE = "attendee",
+    /**
+     * @platform android
+     */
     ORGANIZER = "organizer",
+    /**
+     * @platform android
+     */
     PERFORMER = "performer",
+    /**
+     * @platform android
+     */
     SPEAKER = "speaker",
+    /**
+     * @platform android
+     */
     NONE = "none"
 }
 export declare enum AttendeeStatus {
+    /**
+     * @platform ios
+     */
     UNKNOWN = "unknown",
+    /**
+     * @platform ios
+     */
     PENDING = "pending",
     ACCEPTED = "accepted",
     DECLINED = "declined",
     TENTATIVE = "tentative",
+    /**
+     * @platform ios
+     */
     DELEGATED = "delegated",
+    /**
+     * @platform ios
+     */
     COMPLETED = "completed",
+    /**
+     * @platform ios
+     */
     IN_PROCESS = "inProcess",
+    /**
+     * @platform android
+     */
     INVITED = "invited",
+    /**
+     * @platform android
+     */
     NONE = "none"
 }
 export declare enum AttendeeType {
+    /**
+     * @platform ios
+     */
     UNKNOWN = "unknown",
+    /**
+     * @platform ios
+     */
     PERSON = "person",
+    /**
+     * @platform ios
+     */
     ROOM = "room",
+    /**
+     * @platform ios
+     */
     GROUP = "group",
     RESOURCE = "resource",
+    /**
+     * @platform android
+     */
     OPTIONAL = "optional",
+    /**
+     * @platform android
+     */
     REQUIRED = "required",
+    /**
+     * @platform android
+     */
     NONE = "none"
 }
+/**
+ * @platform android
+ */
 export declare enum AlarmMethod {
     ALARM = "alarm",
     ALERT = "alert",
@@ -952,12 +1034,18 @@ export declare enum AlarmMethod {
     SMS = "sms",
     DEFAULT = "default"
 }
+/**
+ * @platform android
+ */
 export declare enum EventAccessLevel {
     CONFIDENTIAL = "confidential",
     PRIVATE = "private",
     PUBLIC = "public",
     DEFAULT = "default"
 }
+/**
+ * @platform android
+ */
 export declare enum CalendarAccessLevel {
     CONTRIBUTOR = "contributor",
     EDITOR = "editor",
@@ -969,6 +1057,9 @@ export declare enum CalendarAccessLevel {
     ROOT = "root",
     NONE = "none"
 }
+/**
+ * @platform ios
+ */
 export declare enum ReminderStatus {
     COMPLETED = "completed",
     INCOMPLETE = "incomplete"

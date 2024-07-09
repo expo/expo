@@ -6,7 +6,7 @@
 internal struct ImageResizeTransformer: ImageTransformer {
   let options: ResizeOptions
 
-  func transform(image: UIImage) async throws -> UIImage {
+  func transform(image: UIImage) async -> UIImage {
     let imageWidth = image.size.width
     let imageHeight = image.size.height
     let imageRatio = imageWidth / imageHeight
@@ -22,15 +22,13 @@ internal struct ImageResizeTransformer: ImageTransformer {
       targetSize.width = targetSize.width == 0 ? imageRatio * targetSize.height : targetSize.width
     }
 
-    UIGraphicsBeginImageContextWithOptions(targetSize, false, 1.0)
-    image.draw(in: CGRect(origin: .zero, size: targetSize))
+    let format = UIGraphicsImageRendererFormat()
+    format.opaque = false
+    format.scale = 1
 
-    guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else {
-      UIGraphicsEndImageContext()
-      throw NoImageInContextException()
+    let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
+    return renderer.image { _ in
+      image.draw(in: CGRect(origin: .zero, size: targetSize))
     }
-
-    UIGraphicsEndImageContext()
-    return newImage
   }
 }
