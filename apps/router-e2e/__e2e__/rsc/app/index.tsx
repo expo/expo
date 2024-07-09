@@ -1,4 +1,4 @@
-import { View, Text } from '@/lib/react-native';
+import { View, Text } from '../lib/react-native';
 
 export default function Page() {
   return (
