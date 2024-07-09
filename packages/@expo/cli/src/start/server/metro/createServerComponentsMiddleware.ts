@@ -154,13 +154,15 @@ export function createServerComponentsMiddleware(
       const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
       const relativeFilePath = path.relative(serverRoot, filePath);
 
+      clientReferenceUrl.pathname = relativeFilePath;
+
       // Ensure url.pathname ends with '.bundle'
       if (!clientReferenceUrl.pathname.endsWith('.bundle')) {
         clientReferenceUrl.pathname += '.bundle';
       }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
-      const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
+      const id = clientReferenceUrl.pathname + clientReferenceUrl.search; // + clientReferenceUrl.hash;
 
       return { id: relativeFilePath, url: [id] };
     };
