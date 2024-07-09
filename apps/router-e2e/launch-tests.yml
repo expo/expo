@@ -1,0 +1,27 @@
+appId: host.exp.Exponent
+---
+- stopApp: host.exp.Exponent
+- openLink:
+    link: exp://192.168.1.174:8081/--/?_TEST_URL=1
+# - assertVisible: 'URL:(tabs)/explore'
+# - tapOn: DISMISS_URL
+# # - assertVisible:
+# #     id: "EXPO_ROUTER_URL"
+# #     text: (tabs)/explore
+# # `/`
+# - openLink:
+#     link: exp://192.168.1.174:8081/--/?_TEST_URL=1
+# - assertVisible: "URL:(tabs)"
+# - tapOn: DISMISS_URL
+# # - assertVisible:
+# #     id: "EXPO_ROUTER_URL"
+# #     text: (tabs)
+
+# # `/modal`
+# - openLink:
+#     link: exp://192.168.1.174:8081/--/modal?_TEST_URL=1
+# - assertVisible: "URL:modal"
+# - tapOn: DISMISS_URL
+# # - assertVisible:
+# #     id: "EXPO_ROUTER_URL"
+# #     text: modal

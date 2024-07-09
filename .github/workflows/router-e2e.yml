@@ -1,0 +1,65 @@
+name: Router Maestro E2E
+
+on:
+  pull_request:
+    paths:
+      - packages/@expo/cli/**
+      - packages/expo-router/**
+
+jobs:
+  router-maestro:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Install dependencies and Maestro
+        run: |
+          export MAESTRO_VERSION=1.36.0
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          arch -arm64 brew tap facebook/fb
+          arch -arm64 brew install facebook/fb/idb-companion
+          arch -arm64 brew install jq
+          export PATH="$PATH:$HOME/.maestro/bin"
+
+      - name: Start iOS Simulator
+        run: |
+          # Find a simulator by name (e.g., iPhone 15)
+          DEVICE_NAME="iPhone 15 Pro"
+          DEVICE_ID=$(xcrun simctl list devices available --json | jq -r --arg DEVICE_NAME "$DEVICE_NAME" '.devices[] | .[] | select(.name == $DEVICE_NAME) | .udid' | head -n 1)
+          DEVICE_STATE=$(xcrun simctl list devices available --json | jq -r --arg DEVICE_ID "$DEVICE_ID" '.devices[] | .[] | select(.udid == $DEVICE_ID) | .state')
+
+          if [ -z "$DEVICE_ID" ]; then
+            echo "No available simulator found for the criteria."
+            exit 1
+          fi
+
+          echo "IOS_DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+
+          if [ "$DEVICE_STATE" != "Booted" ]; then
+            # Boot the simulator if it's not already booted
+            xcrun simctl boot "$DEVICE_ID"
+            # Wait a bit for the simulator to boot
+            sleep 30
+          else
+            echo "Simulator with DEVICE_ID=$DEVICE_ID is already booted."
+          fi
+
+      - name: Install node modules in root dir
+        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
+
+      - name: Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+
+      - name: Run Maestro iOS tests
+        working-directory: apps/router-e2e
+        env:
+          E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
+        run: |
+          # Run the Expo Dev Server in the background
+          node ../../packages/@expo/cli/build/bin/cli start --ios &
+          # Wait a bit for the dev server to boot
+          sleep 10
+          maestro  --device=$IOS_DEVICE_ID test launch-tests.yml --no-ansi --format=junit
