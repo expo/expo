@@ -196,6 +196,7 @@ export const fetchRSC = (
   const response =
     prefetched[url] ||
     fetch(reqPath, {
+      // @ts-expect-error: TODO: Add expo streaming fetch
       reactNative: { textStreaming: true },
       headers: {
         'expo-platform': process.env.EXPO_OS,
