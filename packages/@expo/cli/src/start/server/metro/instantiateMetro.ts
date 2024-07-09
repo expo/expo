@@ -5,6 +5,7 @@ import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
+import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -28,9 +29,7 @@ import { createJsInspectorMiddleware } from '../middleware/inspector/createJsIns
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
-
 import { getPlatformBundlers } from '../platformBundlers';
-import MetroHmrServer from 'metro/src/HmrServer';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {

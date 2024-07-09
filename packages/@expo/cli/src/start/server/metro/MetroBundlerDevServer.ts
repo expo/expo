@@ -13,17 +13,21 @@ import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
-  type SourceMapGeneratorOptions,
+  SourceMapGeneratorOptions,
+  type,
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+import MetroHmrServer from 'metro/src/HmrServer';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
-import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
+
+import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
+import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
-import { MetroPrivateServer, assertMetroPrivateServer } from './metroPrivateServer';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { MetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
@@ -32,11 +36,9 @@ import {
   warnInvalidWebOutput,
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
-import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
-import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
@@ -44,7 +46,6 @@ import { logEventAsync } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   cachedSourceMaps,
-  // evalMetroNoHandling,
   evalMetroAndWrapFunctions,
   evalMetroNoHandling,
 } from '../getStaticRenderFunctions';
@@ -55,35 +56,28 @@ import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import {
+  convertPathToModuleSpecifier,
+  createBundleUrlPath,
+  ExpoMetroOptions,
+  getAsyncRoutesFromExpoConfig,
+  getBaseUrlFromExpoConfig,
+  getMetroDirectBundleOptions,
+  shouldEnableAsyncImports,
+} from '../middleware/metroOptions';
+import { prependMiddleware } from '../middleware/mutations';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
-import {
-  ExpoMetroOptions,
-  convertPathToModuleSpecifier,
-  createBundleUrlPath,
-  getAsyncRoutesFromExpoConfig,
-  getBaseUrlFromExpoConfig,
-  getMetroDirectBundleOptions,
-  shouldEnableAsyncImports,
-  createBundleUrlSearchParams,
-} from '../middleware/metroOptions';
-import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
-import { EntriesPrd } from 'expo-router/build/rsc/server';
-import resolveFrom from 'resolve-from';
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
 >;
-import MetroHmrServer from 'metro/src/HmrServer';
-import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
-import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
-
 type MetroOnProgress = NonNullable<
   import('metro/src/DeltaBundler/types').Options<void>['onProgress']
 >;
