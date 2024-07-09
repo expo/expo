@@ -245,7 +245,7 @@ export function getDefaultConfig(
       },
 
       createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
-        ? createStableModuleIdFactory.bind(null, projectRoot)
+        ? createStableModuleIdFactory.bind(null, serverRoot)
         : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {

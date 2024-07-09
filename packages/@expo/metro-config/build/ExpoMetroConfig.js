@@ -203,7 +203,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 return false;
             },
             createModuleIdFactory: env_1.env.EXPO_USE_METRO_REQUIRE
-                ? createStableModuleIdFactory.bind(null, projectRoot)
+                ? createStableModuleIdFactory.bind(null, serverRoot)
                 : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
                 const preModules = [

@@ -14238,6 +14238,11 @@ react-native-reanimated@~3.10.1:
     convert-source-map "^2.0.0"
     invariant "^2.2.4"
 
+react-native-safe-area-context@*:
+  version "4.10.8"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.10.8.tgz#038bd6a4853a38189c186d119302943c8d13f56f"
+  integrity sha512-Jx1lovhvIdYygg0UsMCBUJN0Wvj9GlA5bbcBLzjZf93uJpNHzaiHC4hR280+sNVK1+/pMHEyEkXVHDZE5JWn0w==
+
 react-native-safe-area-context@4.10.7:
   version "4.10.7"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.10.7.tgz#91d04e510bf96e3c38bec2beb7ae37347522a503"
