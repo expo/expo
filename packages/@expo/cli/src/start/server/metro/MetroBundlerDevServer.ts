@@ -1535,15 +1535,20 @@ function createRscDevMiddleware(
         inlineSourceMap: false,
       });
 
-      const clientReferenceUrl = new URL(getServerUrl());
+      searchParams.set('dev', String(__DEV__));
+      // searchParams.set('transform.rscPath', process.env.EXPO_RSC_PATH);
+      searchParams.set('resolver.clientboundary', String(true));
+      searchParams.set('modulesOnly', String(true));
+      searchParams.set('runModule', String(false));
 
-      [...searchParams.keys()].forEach((key) => {
-        if (
-          !['minify', 'transform.engine', 'transform.routerRoot', 'transform.baseUrl'].includes(key)
-        ) {
-          searchParams.delete(key);
-        }
-      });
+      const clientReferenceUrl = new URL(getServerUrl());
+      // [...searchParams.keys()].forEach((key) => {
+      //   if (
+      //     !['minify', 'transform.engine', 'transform.routerRoot', 'transform.baseUrl'].includes(key)
+      //   ) {
+      //     searchParams.delete(key);
+      //   }
+      // });
       // TICKLE: Handshake 1
       searchParams.set('xRSC', '1');
 
@@ -1553,6 +1558,11 @@ function createRscDevMiddleware(
       const relativeFilePath = path.relative(serverRoot, filePath);
       // TODO: May need to remove the original extension.
       clientReferenceUrl.pathname = relativeFilePath; //+ '.bundle';
+
+      // Ensure url.pathname ends with '.bundle'
+      if (!clientReferenceUrl.pathname.endsWith('.bundle')) {
+        clientReferenceUrl.pathname += '.bundle';
+      }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const id = clientReferenceUrl.pathname + clientReferenceUrl.search; // + clientReferenceUrl.hash;
@@ -1607,7 +1617,6 @@ function createRscDevMiddleware(
       platform,
       body,
       engine,
-      entries,
       contentType,
     }: {
       input: string;
@@ -1616,7 +1625,6 @@ function createRscDevMiddleware(
       platform: string;
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
-      entries?: EntriesPrd;
       contentType?: string;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting

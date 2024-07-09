@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/utils/stream.ts#L1
+ * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 import { type EntriesDev, type EntriesPrd } from './server';
 export interface RenderContext<T = unknown> {
@@ -22,14 +22,14 @@ export type RenderRscArgs = {
     body?: ReadableStream | undefined;
     contentType?: string | undefined;
     moduleIdCallback?: (module: {
-        id: string | number;
+        id: string;
         chunks: string[];
         name: string;
         async: boolean;
     }) => void;
 };
-type ResolveClientEntry = (id: string | number) => {
-    id: string | number;
+type ResolveClientEntry = (id: string) => {
+    id: string;
     url: string[];
 };
 type RenderRscOpts = {
@@ -39,7 +39,6 @@ type RenderRscOpts = {
 } | {
     isExporting: false;
     entries: EntriesDev;
-    loadServerFile: (fileURL: string) => Promise<unknown>;
     resolveClientEntry: ResolveClientEntry;
 };
 export declare function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream>;

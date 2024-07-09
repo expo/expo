@@ -55,10 +55,10 @@ function LocationContext({ children }) {
     React.useEffect(() => {
         (async () => {
             const v = await (0, linking_1.getInitialURL)();
-            setUrl((0, extractPathFromURL_1.extractExpoPathFromURL)(v));
+            setUrl((0, extractPathFromURL_1.extractExpoPathFromURL)(v ?? undefined));
             setLoaded(true);
         })();
-        return (0, linking_1.addEventListener)((url) => {
+        return (0, linking_1.addEventListener)({})((url) => {
             setUrl((0, extractPathFromURL_1.extractExpoPathFromURL)(url));
         });
     }, []);
@@ -68,7 +68,7 @@ function LocationContext({ children }) {
     return (<Location.Provider value={{
             setHistory(method, url) {
                 if (method === 'pushState') {
-                    setUrl(url);
+                    setUrl(url.toString());
                 }
                 else {
                     console.warn('Only pushState is supported atm');

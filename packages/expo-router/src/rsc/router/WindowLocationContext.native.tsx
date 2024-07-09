@@ -37,12 +37,12 @@ export function LocationContext({ children }: { children: React.ReactElement }) 
     (async () => {
       const v = await getInitialURL();
 
-      setUrl(extractExpoPathFromURL(v));
+      setUrl(extractExpoPathFromURL(v ?? undefined));
 
       setLoaded(true);
     })();
 
-    return addEventListener((url) => {
+    return addEventListener({})((url) => {
       setUrl(extractExpoPathFromURL(url));
     });
   }, []);
@@ -56,7 +56,7 @@ export function LocationContext({ children }: { children: React.ReactElement }) 
       value={{
         setHistory(method, url) {
           if (method === 'pushState') {
-            setUrl(url);
+            setUrl(url.toString());
           } else {
             console.warn('Only pushState is supported atm');
           }

@@ -211,16 +211,10 @@ function getAdjustedFilePath(path) {
     }
     if ((0, getDevServer_1.getDevServer)().bundleLoadedFromServer) {
         return getAdjustedRemoteFilePath(path);
-        // if (path.startsWith('/')) {
-        //   return new URL(path, getDevServer().url).toString();
-        // }
-        // return path;
     }
     if (process.env.EXPO_OS === 'android') {
         return 'file:///android_asset' + path;
     }
-    console.log('FS.bundleDirectory', FS.bundleDirectory);
-    // return new URL(path, window.location.href).toString();
     return 'file://' + FS.bundleDirectory + path;
 }
 const prefetchRSC = (input, searchParamsString) => {

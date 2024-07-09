@@ -48,6 +48,7 @@ function patchErrorBox() {
     }
     //// This appears to never be called. Mostly LogBox is presented from an invasive patch on console.error.
     const globalHandler = ErrorUtils.getGlobalHandler();
+    // @ts-expect-error
     if (globalHandler?.__router_errors_patched) {
         return;
     }
