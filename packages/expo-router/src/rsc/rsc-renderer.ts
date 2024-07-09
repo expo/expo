@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/utils/stream.ts#L1
+ * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 
 import type { ReactNode } from 'react';
@@ -58,14 +58,14 @@ export type RenderRscArgs = {
   body?: ReadableStream | undefined;
   contentType?: string | undefined;
   moduleIdCallback?: (module: {
-    id: string | number;
+    id: string;
     chunks: string[];
     name: string;
     async: boolean;
   }) => void;
 };
 
-type ResolveClientEntry = (id: string | number) => { id: string | number; url: string[] };
+type ResolveClientEntry = (id: string) => { id: string; url: string[] };
 
 type RenderRscOpts =
   | {
@@ -76,31 +76,11 @@ type RenderRscOpts =
   | {
       isExporting: false;
       entries: EntriesDev;
-
-      // customImport: (fileURL: string) => Promise<unknown>;
-
-      loadServerFile: (fileURL: string) => Promise<unknown>;
-      // loadServerModule: (id: string) => Promise<unknown>;
       resolveClientEntry: ResolveClientEntry;
     };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
-  const {
-    // elements,
-    searchParams,
-    // isExporting,
-    // url,
-    // serverRoot,
-    method,
-    input,
-    body,
-    contentType,
-
-    // serverUrl,
-    // onReload,
-    moduleIdCallback,
-    context,
-  } = args;
+  const { searchParams, method, input, body, contentType, context } = args;
   const { isExporting, resolveClientEntry, entries } = opts;
 
   const {
@@ -113,7 +93,6 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     {},
     {
       get(_target, encodedId: string) {
-        // console.log('Get manifest entry:', encodedId);
         const [
           // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
           file,
@@ -128,36 +107,25 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
         }
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-        // TODO: Make relative to server root
-        const metroOpaqueId = filePath;
+
         // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
         // This is similar to how we handle lazy bundling.
-
         if (resolveClientEntry) {
           const resolved = resolveClientEntry(filePath);
-          const clientReference = { id: resolved.id, chunks: resolved.url, name, async: true };
-          // const id = resolveClientEntry(file, args.config);
-
-          // console.log('Returning server module:', id, 'for', encodedId);
-          moduleIdCallback?.(resolved);
-          return clientReference;
+          return { id: resolved.id, chunks: resolved.url, name, async: true };
         }
 
         if (isExporting) {
-          const clientReference = {
-            id: metroOpaqueId,
+          return {
+            // TODO: Make relative to server root
+            id: filePath,
             chunks: [
               // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-              'chunk:' + metroOpaqueId,
+              'chunk:' + filePath,
             ],
             name,
             async: true,
           };
-          // const id = resolveClientEntry(file, args.config);
-
-          // console.log('Returning server module:', id, 'for', encodedId);
-          moduleIdCallback?.({ id: filePath });
-          return clientReference;
         }
       },
     }
@@ -181,10 +149,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       });
       if (elements === null) {
         const err = new Error('No function component found at: ' + input);
-        (err as any).statusCode = 404; // HACK our convention for NotFound
+        (err as any).statusCode = 404;
         throw err;
       }
-      // console.log('[RSC] elements:', elements, { input, searchParams, buildConfig });
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
@@ -242,17 +209,13 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       args = await decodeReply(bodyStr, bundlerConfig);
     }
     const [, name] = rsfId.split('#') as [string, string];
-    let mod: any;
-    if (opts.isExporting === false) {
-      mod = await opts.loadServerFile(rsfId);
-    } else {
-      // xxxx#greet
-      console.log('[SSR]: Get server action:', rsfId, getServerReference(rsfId));
-      if (!getServerReference(rsfId)) {
-        throw new Error(`Server action not found: "${rsfId}". ${getDebugDescription()}`);
-      }
-      mod = getServerReference(rsfId);
+    // xxxx#greet
+    console.log('[SSR]: Get server action:', rsfId, getServerReference(rsfId));
+    if (!getServerReference(rsfId)) {
+      throw new Error(`Server action not found: "${rsfId}". ${getDebugDescription()}`);
     }
+    const mod: any = getServerReference(rsfId);
+
     const fn = name ? mod[name] || mod : mod;
     return renderWithContextWithAction(context, fn, args);
   }

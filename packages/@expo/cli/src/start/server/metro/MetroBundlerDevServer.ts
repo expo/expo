@@ -750,58 +750,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
         });
 
-        // const rscMiddleware = getRscMiddleware({
-        //   config: {},
-        //   // Disabled in development
-        //   baseUrl: '',
-        //   rscPath,
-        //   renderRsc: async (args) => {
-        //     // Dev server-only implementation.
-        //     try {
-        //       console.log('renderRsc:', args);
-        //       return await this.renderRscToReadableStream({
-        //         ...args,
-        //         body: args.body!,
-        //       });
-        //     } catch (error: any) {
-        //       // If you get a codeFrame error during SSR like when using a Class component in React Server Components, then this
-        //       // will throw with:
-        //       // {
-        //       //   rawObject: {
-        //       //     type: 'TransformError',
-        //       //     lineNumber: 0,
-        //       //     errors: [ [Object] ],
-        //       //     name: 'SyntaxError',
-        //       //     message: '...',
-        //       //   }
-        //       // }
-
-        //       // TODO: Revisit all error handling now that we do direct metro bundling...
-
-        //       await logMetroError(this.projectRoot, { error });
-
-        //       const sanitizedServerMessage = stripAnsi(error.message) ?? error.message;
-        //       throw new Response(sanitizedServerMessage, {
-        //         status: 500,
-        //         headers: {
-        //           'Content-Type': 'text/plain',
-        //         },
-        //       });
-        //     }
-        //   },
-        // });
-
         this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
-        middleware.use(
-          rscMiddleware.middleware
-          // createBuiltinAPIRequestHandler(
-          //   // Match `/_flight/[...path]`
-          //   (req) => {
-          //     return getFullUrl(req.url).pathname.startsWith(rscPathPrefix);
-          //   },
-          //   rscMiddleware
-          // )
-        );
+        middleware.use(rscMiddleware.middleware);
 
         if (useServerRendering) {
           middleware.use(
@@ -1527,8 +1477,7 @@ function createRscDevMiddleware(
   }
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
-    // NOTE: In waku, this would be user-defined via entries.js
-    return await ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
+    return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
       resolveFrom(projectRoot, 'expo-router/src/rsc/router/expo-definedRouter.ts'),
       {
         environment: 'react-server',
@@ -1703,21 +1652,6 @@ function createRscDevMiddleware(
         isExporting: false,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine }),
-        // resolveClientEntry,
-        loadServerFile: (fileURL) => {
-          const { getServerReference } =
-            require('expo-router/build/server-actions') as typeof import('expo-router/build/server-actions');
-
-          // xxxx#greet
-          const filePath = fileURL;
-
-          console.log('[CLI]: Get server action:', filePath, getServerReference(filePath));
-          if (!getServerReference(filePath)) {
-            throw new Error('Server action not found: ' + filePath);
-          }
-          return getServerReference(filePath);
-          // return this.ssrImportServerActionAsync(filePath, platform);
-        },
       }
     );
 
