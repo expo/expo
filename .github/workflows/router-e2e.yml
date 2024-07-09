@@ -31,7 +31,6 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           arch -arm64 brew tap facebook/fb
           arch -arm64 brew install facebook/fb/idb-companion
-          arch -arm64 brew install jq
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Start iOS Simulator
@@ -67,6 +66,5 @@ jobs:
         run: |
           # Run the Expo Dev Server in the background
           node ../../packages/@expo/cli/build/bin/cli start --ios &
-          # Wait a bit for the dev server to boot
-          sleep 10
+          echo 'Starting Maestro'
           maestro  --device=$IOS_DEVICE_ID test launch-tests.yml --no-ansi --format=junit
