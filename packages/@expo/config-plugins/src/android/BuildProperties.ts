@@ -96,7 +96,12 @@ export function updateAndroidBuildProperty(
         const prevValue = JSON.parse(oldProp.value);
         const newValue = JSON.parse(value);
         if (Array.isArray(prevValue) && Array.isArray(newValue)) {
-          oldProp.value = JSON.stringify([...prevValue, ...newValue]);
+          const prevArrayWithStringifiedValues = prevValue.map((v) => JSON.stringify(v));
+          const newArrayWithStringifiedValues = newValue.map((v) => JSON.stringify(v));
+          const mergedValues = [
+            ...new Set([...prevArrayWithStringifiedValues, ...newArrayWithStringifiedValues]),
+          ].map((v) => JSON.parse(v));
+          oldProp.value = JSON.stringify(mergedValues);
           return gradleProperties;
         }
       } catch {}
