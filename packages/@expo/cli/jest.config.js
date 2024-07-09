@@ -1,6 +1,6 @@
 const path = require('path');
 
-const roots = ['__mocks__', 'src'];
+const roots = ['__mocks__', 'src', 'metro-require'];
 
 module.exports = {
   watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
