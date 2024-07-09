@@ -1,4 +1,5 @@
-import { ExpoRouter } from '../types/expo-router';
+import { Router } from './imperative-api';
+import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
 type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
@@ -6,7 +7,7 @@ export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
 export declare function useRootNavigation(): import("@react-navigation/core").NavigationContainerRef<ReactNavigation.RootParamList> | null;
 /** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
 export declare function useNavigationContainerRef(): import("@react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
-export declare function useRouter(): ExpoRouter.Router;
+export declare function useRouter(): Router;
 /**
  * @private
  * @returns the current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link, i.e. `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`
@@ -31,7 +32,7 @@ export declare function useUnstableGlobalHref(): string;
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export declare function useSegments<TSegments extends string[] = string[]>(): TSegments;
+export declare function useSegments<TSegments extends Routes | RouteSegments<Routes> = Routes>(): TSegments extends string ? RouteSegments<TSegments> : TSegments;
 /** @returns global selected pathname without query parameters. */
 export declare function usePathname(): string;
 /**
@@ -43,14 +44,18 @@ export declare function usePathname(): string;
  *
  * @see `useLocalSearchParams`
  */
-export declare function useGlobalSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams>;
+export declare function useGlobalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
+export declare function useGlobalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
 /**
  * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
  * For dynamic routes, both the route parameters and the search parameters are returned.
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
+ *
+ * @see `useGlobalSearchParams`
  */
-export declare function useLocalSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams>;
+export declare function useLocalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
+export declare function useLocalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
 export {};
 //# sourceMappingURL=hooks.d.ts.map
