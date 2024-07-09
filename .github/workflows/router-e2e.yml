@@ -11,11 +11,21 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Install dependencies and Maestro
+
+      - name: Install Maestro
         run: |
           export MAESTRO_VERSION=1.36.0
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -46,9 +56,6 @@ jobs:
           else
             echo "Simulator with DEVICE_ID=$DEVICE_ID is already booted."
           fi
-
-      - name: Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
 
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
