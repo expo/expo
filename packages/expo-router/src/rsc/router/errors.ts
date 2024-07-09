@@ -4,17 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-export class NetworkError extends Error {
-  code = 'NETWORK_ERROR';
-
-  constructor(
-    message: string,
-    public url: string
-  ) {
-    super(message);
-    this.name = 'NetworkError';
-  }
-}
 
 export class MetroServerError extends Error {
   code = 'METRO_SERVER_ERROR';

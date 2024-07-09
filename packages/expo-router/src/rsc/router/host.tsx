@@ -24,7 +24,7 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
-import { MetroServerError, ReactServerError } from '../patchFetch';
+import { MetroServerError, ReactServerError } from './errors';
 import { getDevServer } from '../../getDevServer';
 
 const { createFromFetch, encodeReply } = RSDWClient;
@@ -49,8 +49,6 @@ if (BASE_PATH === '/') {
     }`
   );
 }
-
-console.log('[Router]: Base path:', BASE_PATH, { BASE_URL: process.env.EXPO_BASE_URL, RSC_PATH });
 
 const checkStatus = async (responsePromise: Promise<Response>): Promise<Response> => {
   const response = await responsePromise;
@@ -214,13 +212,6 @@ function getAdjustedRemoteFilePath(path: string): string {
   if (process.env.EXPO_OS === 'web') {
     return path;
   }
-
-  // if (getDevServer().bundleLoadedFromServer) {
-  //   if (path.startsWith('/')) {
-  //     return new URL(path, getDevServer().url).toString();
-  //   }
-  //   return path;
-  // }
 
   return new URL(path, window.location.href).toString();
 }

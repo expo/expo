@@ -41,7 +41,7 @@ exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = expo
 const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
-const patchFetch_1 = require("../patchFetch");
+const errors_1 = require("./errors");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;
 // NOTE: Ensured to start with `/`.
@@ -56,7 +56,6 @@ if (!BASE_PATH.endsWith('/')) {
 if (BASE_PATH === '/') {
     throw new Error(`Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${(0, getDevServer_1.getDevServer)().fullBundleUrl}`);
 }
-console.log('[Router]: Base path:', BASE_PATH, { BASE_URL: process.env.EXPO_BASE_URL, RSC_PATH });
 const checkStatus = async (responsePromise) => {
     const response = await responsePromise;
     if (!response.ok) {
@@ -69,19 +68,19 @@ const checkStatus = async (responsePromise) => {
                 errorJson = JSON.parse(errorText);
             }
             catch {
-                throw new patchFetch_1.ReactServerError(errorText, response.url, response.status);
+                throw new errors_1.ReactServerError(errorText, response.url, response.status);
             }
             // TODO: This should be a dev-only error. Add handling for production equivalent.
-            throw new patchFetch_1.MetroServerError(errorJson, response.url);
+            throw new errors_1.MetroServerError(errorJson, response.url);
         }
         let responseText;
         try {
             responseText = await response.text();
         }
         catch {
-            throw new patchFetch_1.ReactServerError(response.statusText, response.url, response.status);
+            throw new errors_1.ReactServerError(response.statusText, response.url, response.status);
         }
-        throw new patchFetch_1.ReactServerError(responseText, response.url, response.status);
+        throw new errors_1.ReactServerError(responseText, response.url, response.status);
     }
     console.log('[Router] Fetched', response.url, response.status);
     return response;
@@ -192,12 +191,6 @@ function getAdjustedRemoteFilePath(path) {
     if (process.env.EXPO_OS === 'web') {
         return path;
     }
-    // if (getDevServer().bundleLoadedFromServer) {
-    //   if (path.startsWith('/')) {
-    //     return new URL(path, getDevServer().url).toString();
-    //   }
-    //   return path;
-    // }
     return new URL(path, window.location.href).toString();
 }
 function getAdjustedFilePath(path) {
