@@ -63,7 +63,7 @@ jobs:
         working-directory: apps/router-e2e
         env:
           E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 60000
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
         run: |
           # Run the Expo Dev Server in the background
           node ../../packages/@expo/cli/build/bin/cli start --ios &
