@@ -65,7 +65,7 @@ export async function transform(
           config,
           projectRoot,
           filename,
-          Buffer.from('/* RSC client boundaries */\nconsole.log("DEBUG_MARKER")\n' + src),
+          Buffer.from('/* RSC client boundaries */\n' + src),
           options
         );
       } else if (!options.dev) {

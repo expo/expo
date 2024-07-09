@@ -230,28 +230,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
-  async getServerManifestAsync(): Promise<{
-    serverManifest: ExpoRouterServerManifestV1;
-  }> {
-    const { mode, minify, isExporting } = this.instanceMetroOptions;
-    assert(
-      mode != null && isExporting != null,
-      'The server must be started before calling ssrLoadModule.'
-    );
-
-    const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
-      typeof import('expo-router/build/static/server-manifest')
-    >('expo-router/build/static/server-manifest.js', {
-      minify,
-      environment: 'react-server',
-      isExporting,
-    });
-
-    return {
-      serverManifest: await getBuildTimeServerManifestAsync(),
-    };
-  }
-
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
     manifest: ExpoRouterRuntimeManifest;

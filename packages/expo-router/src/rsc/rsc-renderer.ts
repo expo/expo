@@ -81,7 +81,7 @@ type RenderRscOpts =
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
   const { searchParams, method, input, body, contentType, context } = args;
-  const { isExporting, resolveClientEntry, entries } = opts;
+  const { resolveClientEntry, entries } = opts;
 
   const {
     default: { renderEntries },
@@ -115,18 +115,16 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
           return { id: resolved.id, chunks: resolved.url, name, async: true };
         }
 
-        if (isExporting) {
-          return {
-            // TODO: Make relative to server root
-            id: filePath,
-            chunks: [
-              // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-              'chunk:' + filePath,
-            ],
-            name,
-            async: true,
-          };
-        }
+        return {
+          // TODO: Make relative to server root
+          id: filePath,
+          chunks: [
+            // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+            'chunk:' + filePath,
+          ],
+          name,
+          async: true,
+        };
       },
     }
   );

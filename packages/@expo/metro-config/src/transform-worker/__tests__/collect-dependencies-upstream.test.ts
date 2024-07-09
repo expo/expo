@@ -1022,7 +1022,6 @@ describe('Evaluating static arguments', () => {
       `)
     );
   });
-
   it('warns at build-time when requiring non-strings with special option', () => {
     const ast = astFromCode('require(someVariable)');
     const opts: Options = {
