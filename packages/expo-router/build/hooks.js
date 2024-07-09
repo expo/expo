@@ -76,26 +76,10 @@ function usePathname() {
     return (0, router_store_1.useStoreRouteInfo)().pathname;
 }
 exports.usePathname = usePathname;
-/**
- * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
- * Useful for analytics or other background operations that don't draw to the screen.
- *
- * When querying search params in a stack, opt-towards using `useLocalSearchParams` as these will only
- * update when the route is focused.
- *
- * @see `useLocalSearchParams`
- */
 function useGlobalSearchParams() {
     return (0, router_store_1.useStoreRouteInfo)().params;
 }
 exports.useGlobalSearchParams = useGlobalSearchParams;
-/**
- * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
- * This is useful for stacks where you may push a new screen that changes the query parameters.
- * For dynamic routes, both the route parameters and the search parameters are returned.
- *
- * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
- */
 function useLocalSearchParams() {
     const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
