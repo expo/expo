@@ -1,4 +1,4 @@
-import { mockConnection } from './testUtilts';
+import { mockConnection } from '../../__tests__/mockConnection';
 import { PageReloadHandler } from '../PageReload';
 
 it('broadcasts reload message', () => {
@@ -14,6 +14,8 @@ it('broadcasts reload message', () => {
     })
   ).toBe(true);
 
-  expect(bundler.broadcastMessage).toBeCalledWith('reload');
-  expect(connection.debugger.sendMessage).toBeCalledWith(expect.objectContaining({ id: 420 }));
+  expect(bundler.broadcastMessage).toHaveBeenCalledWith('reload');
+  expect(connection.debugger.sendMessage).toHaveBeenCalledWith(
+    expect.objectContaining({ id: 420 })
+  );
 });
