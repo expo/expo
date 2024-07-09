@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix deep linking to Expo Go. ([#30283](https://github.com/expo/expo/pull/30283) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 3.5.18 — 2024-07-11
