@@ -94,6 +94,8 @@ export async function getLastNotificationResponseAsync() {
     if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
     }
-    return await NotificationsEmitterModule.getLastNotificationResponseAsync();
+    const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
+    const mappedResponse = response ? mapNotificationResponse(response) : response;
+    return mappedResponse;
 }
 //# sourceMappingURL=NotificationsEmitter.js.map
