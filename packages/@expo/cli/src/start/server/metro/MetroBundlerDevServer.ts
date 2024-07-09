@@ -13,9 +13,10 @@ import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
-  SourceMapGeneratorOptions,
+  type SourceMapGeneratorOptions,
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-import MetroHmrServer from 'metro/src/HmrServer';
+import type MetroHmrServer from 'metro/src/HmrServer';
+import { type Client as MetroHmrClient } from 'metro/src/HmrServer';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
@@ -35,6 +36,7 @@ import {
   warnInvalidWebOutput,
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
+import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -55,6 +57,12 @@ import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
+import {
+  DeepLinkHandler,
+  RuntimeRedirectMiddleware,
+} from '../middleware/RuntimeRedirectMiddleware';
+import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
@@ -65,14 +73,7 @@ import {
   shouldEnableAsyncImports,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
-import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
-import {
-  DeepLinkHandler,
-  RuntimeRedirectMiddleware,
-} from '../middleware/RuntimeRedirectMiddleware';
-import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -80,6 +81,11 @@ export type ExpoRouterRuntimeManifest = Awaited<
 type MetroOnProgress = NonNullable<
   import('metro/src/DeltaBundler/types').Options<void>['onProgress']
 >;
+type SSRLoadModuleFunc = <T extends Record<string, any>>(
+  filePath: string,
+  specificOptions?: Partial<ExpoMetroOptions>,
+  extras?: { hot?: boolean }
+) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -103,6 +109,7 @@ const DEV_CLIENT_METRO_PORT = 8081;
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
   private hmrServer: MetroHmrServer | null = null;
+  private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
 
   get name(): string {
     return 'metro';
@@ -337,7 +344,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
       this.getStaticResourcesAsync({
-        // TODO(Bacon): Check this
         clientBoundaries: [],
       }),
       bundleStaticHtml(),
@@ -625,7 +631,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
-    const rscPath = '/_flight';
     const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
@@ -707,24 +712,24 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
         middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
+      }
 
-        let rscPathPrefix = rscPath;
-        if (rscPathPrefix !== '/') {
-          rscPathPrefix += '/';
-        }
-
+      // If React 19 is enabled, then add RSC middleware to the dev server.
+      if (exp.experiments?.reactCanary) {
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           getServerUrl: () => {
             return this.getDevServerUrlOrAssert();
           },
           instanceMetroOptions: this.instanceMetroOptions,
-          rscPath,
+          rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
         });
-
-        this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
         middleware.use(rscMiddleware.middleware);
+        this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
+      }
 
+      // Append support for redirecting unhandled requests to the index.html page on web.
+      if (this.isTargetingWeb()) {
         if (useServerRendering) {
           middleware.use(
             createRouteHandlerMiddleware(this.projectRoot, {
@@ -816,7 +821,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
-    console.log('Register SSR HMR:', url);
+    debug('[SSR] Register HMR:', url);
 
     const sendFn = (message: string) => {
       const data = JSON.parse(String(message)) as { type: string; body: any };
@@ -827,31 +832,39 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         case 'update-start':
           break;
         case 'update':
-          const update = data.body;
-          const {
-            isInitialUpdate,
-            added,
-            modified,
-            deleted,
-          }: {
-            isInitialUpdate?: boolean;
-            added: unknown[];
-            modified: unknown[];
-            deleted: unknown[];
-          } = update;
+          {
+            const update = data.body;
+            const {
+              isInitialUpdate,
+              added,
+              modified,
+              deleted,
+            }: {
+              isInitialUpdate?: boolean;
+              added: unknown[];
+              modified: unknown[];
+              deleted: unknown[];
+            } = update;
 
-          const hasUpdate = added.length || modified.length || deleted.length;
+            const hasUpdate = added.length || modified.length || deleted.length;
 
-          // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
-          if (!isInitialUpdate && hasUpdate) {
-            onReload();
+            // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
+            if (!isInitialUpdate && hasUpdate) {
+              onReload();
+            }
           }
           break;
         case 'error':
           // GraphNotFound can mean that we have an issue in metroOptions where the URL doesn't match the object props.
-          console.log('HMR Error:', data);
-          // @ts-expect-error
-          console.log('Available keys:', (this.metro?._bundler._revisionsByGraphId as Map).keys());
+          Log.error('[SSR] HMR Error: ' + JSON.stringify(data, null, 2));
+
+          if (data.body?.type === 'GraphNotFoundError') {
+            debug(
+              'Available SSR HMR keys:',
+              // @ts-expect-error
+              (this.metro?._bundler._revisionsByGraphId as Map).keys()
+            );
+          }
           break;
         default:
           debug('Unknown HMR message:', data);
@@ -865,8 +878,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     client.optedIntoHMR = true;
     await this.hmrServer!._registerEntryPoint(client, url, sendFn);
   }
-
-  private ssrHmrClients: Map<string, import('metro/src/HmrServer').Client> = new Map();
 
   public async waitForTypeScriptAsync(): Promise<boolean> {
     if (!this.instance) {
@@ -946,8 +957,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
-          // TODO: This isn't right!
-          environment: 'react-server',
           isExporting: true,
           platform,
         });
@@ -1027,10 +1036,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private setupHmr(url: URL) {
     const onReload = () => {
       // Send reload command to client from Fast Refresh code.
-      console.log('[CLI]: Reload RSC');
+      debug('[SSR]: Reload requested.');
 
       this.onReloadRscEvent?.();
-      // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
       this.broadcastMessage('sendDevCommand', {
         name: 'rsc-reload',
@@ -1375,9 +1383,3 @@ async function sourceMapStringAsync(
     excludeSource: options.excludeSource,
   });
 }
-
-type SSRLoadModuleFunc = <T extends Record<string, any>>(
-  filePath: string,
-  specificOptions?: Partial<ExpoMetroOptions>,
-  extras?: { hot?: boolean }
-) => Promise<T>;
