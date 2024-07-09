@@ -1,6 +1,5 @@
 <resources>
   <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-   <item name="android:windowBackground">#ffffff</item>
     <item name="android:textColor">@android:color/black</item>
     <item name="android:editTextStyle">@style/ResetEditText</item>
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
@@ -14,7 +13,7 @@
   </style>
   <style name="Theme.Expo.SplashScreen" parent="Theme.SplashScreen">
     <item name="windowSplashScreenBackground">@color/splashscreen_background</item>
-    <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_image</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_logo</item>
     <item name="postSplashScreenTheme">@style/AppTheme</item>
   </style>
 </resources>

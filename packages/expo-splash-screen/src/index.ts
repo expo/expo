@@ -24,7 +24,7 @@ export async function preventAutoHideAsync(): Promise<boolean> {
   return false;
 }
 
-export function installSplashScreen(options: SplashScreenOptions): void {}
+export function setOptions(options: SplashScreenOptions): void {}
 
 // @needsAudit
 /**

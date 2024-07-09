@@ -6,7 +6,7 @@ export type SplashScreenOptions = {
     duration?: number;
 };
 export type SplashScreenNativeModule = {
-    installSplashScreen: (options: SplashScreenOptions) => void;
+    setOptions: (options: SplashScreenOptions) => void;
     preventAutoHideAsync: () => Promise<boolean>;
     hide: () => void;
 };

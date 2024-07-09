@@ -55,12 +55,12 @@ export const _internal_maybeHideAsync = () => {
   hide();
 };
 
-export function installSplashScreen(options: SplashScreenOptions) {
+export function setOptions(options: SplashScreenOptions) {
   if (!SplashModule) {
     return;
   }
 
-  SplashModule.installSplashScreen(options);
+  SplashModule.setOptions(options);
 }
 
 export function hide() {

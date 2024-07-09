@@ -18,7 +18,7 @@ import { SplashScreenOptions } from './SplashScreen.types';
  * ```
  */
 export declare function preventAutoHideAsync(): Promise<boolean>;
-export declare function installSplashScreen(options: SplashScreenOptions): void;
+export declare function setOptions(options: SplashScreenOptions): void;
 /**
  * Hides the native splash screen immediately. Be careful to ensure that your app has content ready
  * to display when you hide the splash screen, or you may see a blank screen briefly. See the

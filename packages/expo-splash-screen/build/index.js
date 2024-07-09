@@ -20,7 +20,7 @@
 export async function preventAutoHideAsync() {
     return false;
 }
-export function installSplashScreen(options) { }
+export function setOptions(options) { }
 // @needsAudit
 /**
  * Hides the native splash screen immediately. Be careful to ensure that your app has content ready
