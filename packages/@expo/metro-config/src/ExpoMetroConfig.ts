@@ -53,12 +53,6 @@ export interface DefaultConfigOptions {
     premodules: Module[];
     debugId?: string;
   }) => Module[])[];
-
-  /**
-   * Enable support for the experimental runtime that supports SSR, stable module IDs, and React Server Components.
-   * This does not support legacy RAM bundles.
-   */
-  unstable_runtime?: boolean;
 }
 
 function getAssetPlugins(projectRoot: string): string[] {
@@ -107,7 +101,7 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
-function fastCreateModuleIdFactory(): (path: string) => number {
+function createNumericModuleIdFactory(): (path: string) => number {
   const fileToIdMap = new Map();
   let nextId = 0;
   return (modulePath: string) => {
@@ -120,10 +114,11 @@ function fastCreateModuleIdFactory(): (path: string) => number {
   };
 }
 
-function stableCreateModuleIdFactory(root: string): (path: string) => number {
+function createStableModuleIdFactory(root: string): (path: string) => number {
   const fileToIdMap = new Map<string, string>();
   // This is an absolute file path.
   return (modulePath: string): number => {
+    // TODO: We may want a hashed version for production builds in the future.
     let id = fileToIdMap.get(modulePath);
     if (id == null) {
       id = path.relative(root, modulePath);
@@ -136,20 +131,8 @@ function stableCreateModuleIdFactory(root: string): (path: string) => number {
 
 export function getDefaultConfig(
   projectRoot: string,
-  {
-    mode,
-    isCSSEnabled = true,
-    unstable_beforeAssetSerializationPlugins,
-    unstable_runtime,
-  }: DefaultConfigOptions = {}
+  { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ): InputConfigT {
-  if (unstable_runtime) {
-    // Change the default metro-runtime to a custom one that supports bundle splitting.
-    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
-      '@expo/metro-config/require'
-    );
-  }
-
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
   if (isCSSEnabled) {
@@ -249,10 +232,6 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
-      createModuleIdFactory: unstable_runtime
-        ? stableCreateModuleIdFactory.bind(null, serverRoot)
-        : fastCreateModuleIdFactory,
-
       isThirdPartyModule(module) {
         // Block virtual modules from appearing in the source maps.
         if (module.path.startsWith('\0')) return true;
@@ -264,6 +243,10 @@ export function getDefaultConfig(
         }
         return false;
       },
+
+      createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
+        ? createStableModuleIdFactory.bind(null, projectRoot)
+        : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [

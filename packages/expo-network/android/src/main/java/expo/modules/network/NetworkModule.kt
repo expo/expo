@@ -29,6 +29,16 @@ class NetworkModule : Module() {
   private val connectivityManager: ConnectivityManager
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+  private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+    override fun onAvailable(network: android.net.Network) {
+      emitNetworkState()
+    }
+
+    override fun onLost(network: android.net.Network) {
+      emitNetworkState()
+    }
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoNetwork")
 
@@ -38,20 +48,12 @@ class NetworkModule : Module() {
       val networkRequest = NetworkRequest.Builder().build()
       connectivityManager.registerNetworkCallback(
         networkRequest,
-        object : ConnectivityManager.NetworkCallback() {
-          override fun onAvailable(network: android.net.Network) {
-            emitNetworkState()
-          }
-
-          override fun onLost(network: android.net.Network) {
-            emitNetworkState()
-          }
-        }
+        networkCallback
       )
     }
 
     OnDestroy {
-      connectivityManager.unregisterNetworkCallback(ConnectivityManager.NetworkCallback())
+      connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
     AsyncFunction("getNetworkStateAsync") {

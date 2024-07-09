@@ -1,4 +1,8 @@
-import { extractExpoPathFromURL, parsePathFromExpoGoLink } from '../extractPathFromURL';
+import {
+  extractExpoPathFromURL,
+  parsePathAndParamsFromExpoGoLink,
+  parsePathFromExpoGoLink,
+} from '../extractPathFromURL';
 
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
@@ -141,5 +145,34 @@ describe(parsePathFromExpoGoLink, () => {
     'exp://exp.host/@test/test/--/test/path/--/foobar',
   ])(`parses %p`, (url) => {
     expect(parsePathFromExpoGoLink(url)).toMatchSnapshot();
+  });
+});
+
+describe(parsePathAndParamsFromExpoGoLink, () => {
+  it(`parses Expo Go link with no path or query params`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/')).toEqual({
+      pathname: '',
+      queryString: '',
+    });
+  });
+  it(`parses Expo Go link with path`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/explore')).toEqual({
+      pathname: 'explore',
+      queryString: '',
+    });
+  });
+  it(`parses Expo Go link with query params and no path`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/?foo=bar')).toEqual({
+      pathname: '',
+      queryString: '?foo=bar',
+    });
+  });
+  it(`parses Expo Go link with path and query params`, () => {
+    expect(parsePathAndParamsFromExpoGoLink('exp://192.168.1.174:8081/--/explore?foo=bar')).toEqual(
+      {
+        pathname: 'explore',
+        queryString: '?foo=bar',
+      }
+    );
   });
 });

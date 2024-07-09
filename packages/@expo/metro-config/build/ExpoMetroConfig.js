@@ -84,7 +84,7 @@ function patchMetroGraphToSupportUncachedModules() {
         Graph.prototype.traverseDependencies.__patched = true;
     }
 }
-function fastCreateModuleIdFactory() {
+function createNumericModuleIdFactory() {
     const fileToIdMap = new Map();
     let nextId = 0;
     return (modulePath) => {
@@ -96,10 +96,11 @@ function fastCreateModuleIdFactory() {
         return id;
     };
 }
-function stableCreateModuleIdFactory(root) {
+function createStableModuleIdFactory(root) {
     const fileToIdMap = new Map();
     // This is an absolute file path.
     return (modulePath) => {
+        // TODO: We may want a hashed version for production builds in the future.
         let id = fileToIdMap.get(modulePath);
         if (id == null) {
             id = path_1.default.relative(root, modulePath);
@@ -109,11 +110,7 @@ function stableCreateModuleIdFactory(root) {
         return id;
     };
 }
-function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins, unstable_runtime, } = {}) {
-    if (unstable_runtime) {
-        // Change the default metro-runtime to a custom one that supports bundle splitting.
-        require('metro-config/src/defaults/defaults').moduleSystem = require.resolve('@expo/metro-config/require');
-    }
+function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
@@ -194,9 +191,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             additionalExts: envFiles.map((file) => file.replace(/^\./, '')),
         },
         serializer: {
-            createModuleIdFactory: unstable_runtime
-                ? stableCreateModuleIdFactory.bind(null, serverRoot)
-                : fastCreateModuleIdFactory,
             isThirdPartyModule(module) {
                 // Block virtual modules from appearing in the source maps.
                 if (module.path.startsWith('\0'))
@@ -208,6 +202,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return false;
             },
+            createModuleIdFactory: env_1.env.EXPO_USE_METRO_REQUIRE
+                ? createStableModuleIdFactory.bind(null, projectRoot)
+                : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
                 const preModules = [
                     // MUST be first

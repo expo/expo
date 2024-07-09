@@ -296,6 +296,7 @@ export type CameraProps = ViewProps & {
     /**
      * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
      * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasync).
+     * Setting this prop will cause the `ratio` prop to be ignored as the aspect ratio is determined by the selected size.
      */
     pictureSize?: string;
     /**

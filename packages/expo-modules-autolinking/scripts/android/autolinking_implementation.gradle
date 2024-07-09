@@ -246,14 +246,18 @@ if (rootProject instanceof ProjectDescriptor) {
             maven {
               url "${mavenRepo.url}"
               if (mavenRepo.credentials != null) {
-                credentials {
-                  if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                  credentials {
                     username mavenRepo.credentials.username
                     password mavenRepo.credentials.password
-                  } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                  }
+                } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                  credentials(HttpHeaderCredentials) {
                     name mavenRepo.credentials.name
                     value mavenRepo.credentials.value
-                  } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                  }
+                } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                  credentials(AwsCredentials) {
                     accessKey mavenRepo.credentials.accessKey
                     secretKey mavenRepo.credentials.secretKey
                     sessionToken mavenRepo.credentials.sessionToken

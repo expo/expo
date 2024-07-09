@@ -21,25 +21,25 @@ It provides a set of APIs and utilities to improve the process of developing nat
 <BoxLink
   title="Native Modules"
   description="Create native modules using Swift and Kotlin."
-  href="./module-api"
+  href="/modules/module-api/"
   Icon={Grid01Icon}
 />
 <BoxLink
   title="Android Lifecycle Listeners"
   description="Hook into Android Activity and Application lifecycle events."
-  href="./android-lifecycle-listeners"
+  href="/modules/android-lifecycle-listeners/"
   Icon={AndroidIcon}
 />
 <BoxLink
   title="iOS AppDelegate Subscribers"
   description="Respond to iOS AppDelegate events."
-  href="./appdelegate-subscribers"
+  href="/modules/appdelegate-subscribers/"
   Icon={AppleIcon}
 />
 <BoxLink
   title="expo-module.config.json"
   description="Configure and opt in to features."
-  href="./module-config"
+  href="/modules/module-config/"
   Icon={Settings01Icon}
 />
 
@@ -63,8 +63,8 @@ This is one of the reasons why the Expo Modules ecosystem was designed from the 
 
 Another big pain point we have encountered is the validation of arguments passed from JavaScript to native functions.
 This is especially error-prone, time-consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
-A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](./module-api/#records).
-Knowing the argument types, it is also possible to [automatically convert arguments](./module-api/#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
+A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](/modules/module-api/#records).
+Knowing the argument types, it is also possible to [automatically convert arguments](/modules/module-api/#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
 
 ### React Native New Architecture
 

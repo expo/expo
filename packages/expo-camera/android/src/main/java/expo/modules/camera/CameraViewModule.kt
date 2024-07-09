@@ -180,8 +180,11 @@ class CameraViewModule : Module() {
         pictureSize?.let {
           if (view.pictureSize != pictureSize) {
             view.pictureSize = it
+            return@Prop
           }
         }
+
+        view.pictureSize = ""
       }
 
       Prop("autoFocus") { view, autoFocus: FocusMode? ->

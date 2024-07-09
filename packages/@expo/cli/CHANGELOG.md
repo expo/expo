@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added `EXPO_USE_METRO_REQUIRE` to enable stable string module IDs. ([#30176](https://github.com/expo/expo/pull/30176) by [@EvanBacon](https://github.com/EvanBacon))
 - Print the selected app IDs in prebuild when they change. ([#30044](https://github.com/expo/expo/pull/30044) by [@EvanBacon](https://github.com/EvanBacon))
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
 - Automatically use valid default app identifiers in prebuild. ([#30023](https://github.com/expo/expo/pull/30023) by [@EvanBacon](https://github.com/EvanBacon))
@@ -32,6 +33,7 @@
 - Reduce unused server code in exports. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 - Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
+- Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.18.19 - 2024-06-13
 
@@ -62,6 +64,8 @@ _This version does not introduce any user-facing changes._
 ## 0.18.16 - 2024-06-06
 
 _This version does not introduce any user-facing changes._
+
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 
 ## 0.18.15 — 2024-06-05
 

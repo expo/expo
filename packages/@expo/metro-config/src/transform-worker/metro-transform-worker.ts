@@ -175,7 +175,6 @@ async function transformJS(
   { config, options, projectRoot }: TransformationContext
 ): Promise<TransformResponse> {
   const targetEnv = options.customTransformOptions?.environment;
-
   const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
 
   // Transformers can output null ASTs (if they ignore the file). In that case
@@ -615,7 +614,9 @@ export function getCacheKey(config: JsTransformerConfig): string {
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
     require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
+    require.resolve('./resolveOptions'),
     require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
     require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
