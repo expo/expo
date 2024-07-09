@@ -4,24 +4,39 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
 
 'use client';
 
-import { createElement, useState, Fragment } from 'react';
+import { createElement, createContext, useState, Fragment } from 'react';
 import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 
-import { getComponentIds, getInputString } from './common';
+import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common';
 import type { RouteProps } from './common';
-import { parseRoute, RouterContext } from './router-context';
 import { Root, Slot, useRefetch } from '../client';
 
+const parseRoute = (url: URL): RouteProps => {
+  const { pathname, searchParams } = url;
+  if (searchParams.has(PARAM_KEY_SKIP)) {
+    console.warn(`The search param "${PARAM_KEY_SKIP}" is reserved`);
+  }
+  return { path: pathname, searchParams };
+};
+
 const getHref = () =>
-  process.env.EXPO_OS === 'web' ? window.location.href : globalThis.expoVirtualLocation.href;
+  process.env.EXPO_OS === 'web'
+    ? window.location.href
+    : // TODO: This is hardcoded on native to simplify the initial PR.
+      'http://localhost:8081/';
+
+const RouterContext = createContext<{
+  route: RouteProps;
+} | null>(null);
 
 function InnerRouter() {
   const refetch = useRefetch();
-
   const [route] = useState(() => parseRoute(new URL(getHref())));
   const componentIds = getComponentIds(route.path);
 
@@ -44,29 +59,27 @@ function InnerRouter() {
     globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
   }
 
-  const children = componentIds.reduceRight(
-    (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
-    null
+  return createElement(
+    RouterContext.Provider,
+    { value: { route } },
+    componentIds.reduceRight(
+      (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
+      null
+    )
   );
-
-  return createElement(RouterContext.Provider, { value: { route } }, children);
 }
 
 export function Router() {
   const route = parseRoute(new URL(getHref()));
   const initialInput = getInputString(route.path);
   const initialSearchParamsString = route.searchParams.toString();
-  const unstable_onFetchData = (data: unknown) => {};
+  const unstable_onFetchData = () => {};
   return createElement(
     Root as FunctionComponent<Omit<ComponentProps<typeof Root>, 'children'>>,
     { initialInput, initialSearchParamsString, unstable_onFetchData },
     createElement(InnerRouter)
   );
 }
-
-const notAvailableInServer = (name: string) => () => {
-  throw new Error(`${name} is not in the server`);
-};
 
 /**
  * ServerRouter for SSR
@@ -81,8 +94,6 @@ export function ServerRouter({ children, route }: { children: ReactNode; route: 
       {
         value: {
           route,
-          changeRoute: notAvailableInServer('changeRoute'),
-          prefetchRoute: notAvailableInServer('prefetchRoute'),
         },
       },
       children

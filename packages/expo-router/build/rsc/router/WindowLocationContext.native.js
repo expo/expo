@@ -42,7 +42,7 @@ function coerceUrl(url) {
     try {
         return new URL(url);
     }
-    catch (e) {
+    catch {
         return new URL(url, 'http://localhost:8081');
     }
 }

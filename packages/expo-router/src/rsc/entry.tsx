@@ -10,7 +10,6 @@
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { LocationContext } from './router/WindowLocationContext';
 import { Router } from './router/client';
 import { ErrorBoundary } from '../views/ErrorBoundary';
 import { ErrorBoundaryProps, Try } from '../views/Try';
@@ -45,11 +44,9 @@ function RootErrorBoundary(props: ErrorBoundaryProps) {
 export function App() {
   return (
     <SafeAreaProvider>
-      <LocationContext>
-        <Try catch={RootErrorBoundary}>
-          <Router />
-        </Try>
-      </LocationContext>
+      <Try catch={RootErrorBoundary}>
+        <Router />
+      </Try>
     </SafeAreaProvider>
   );
 }

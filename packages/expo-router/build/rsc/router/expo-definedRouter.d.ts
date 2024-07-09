@@ -1,4 +1,3 @@
-import '../runtime';
 declare const _default: {
     renderEntries: import("../server").RenderEntries;
     getBuildConfig: import("../server").GetBuildConfig | undefined;

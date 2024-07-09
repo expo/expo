@@ -22,13 +22,10 @@ function unstable_defineRouter(getPathConfig, getComponent) {
         }
         if (!cachedPathConfig) {
             cachedPathConfig = Array.from(await getPathConfig()).map((item) => {
-                const is404 = item.path.length === 1 &&
-                    item.path[0].type === 'literal' &&
-                    item.path[0].name === '404';
                 return {
                     pathname: item.path,
                     isStatic: item.isStatic,
-                    customData: { is404, noSsr: !!item.noSsr, data: item.data },
+                    customData: { noSsr: !!item.noSsr, data: item.data },
                 };
             });
         }
@@ -37,13 +34,7 @@ function unstable_defineRouter(getPathConfig, getComponent) {
     const existsPath = async (pathname, buildConfig) => {
         const pathConfig = await getMyPathConfig(buildConfig);
         const found = pathConfig.find(({ pathname: pathSpec }) => (0, path_1.getPathMapping)(pathSpec, pathname));
-        return found
-            ? found.customData.noSsr
-                ? ['FOUND', 'NO_SSR']
-                : ['FOUND']
-            : pathConfig.some(({ customData: { is404 } }) => is404) // FIXMEs should avoid re-computation
-                ? ['NOT_FOUND', 'HAS_404']
-                : ['NOT_FOUND'];
+        return found ? (found.customData.noSsr ? ['FOUND', 'NO_SSR'] : ['FOUND']) : ['NOT_FOUND'];
     };
     const shouldSkipObj = {};
     const renderEntries = async (input, { searchParams, buildConfig }) => {
@@ -111,7 +102,7 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
                 pathname: pathSpec,
                 isStatic,
                 entries,
-                customCode: customCode + (customData.is404 ? 'globalThis.__EXPO_ROUTER_404__ = true;' : ''),
+                customCode,
                 customData,
             });
         }
@@ -123,12 +114,7 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
             return null;
         }
         if (pathStatus[0] === 'NOT_FOUND') {
-            if (pathStatus[1] === 'HAS_404') {
-                pathname = '/404';
-            }
-            else {
-                return null;
-            }
+            return null;
         }
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const input = (0, common_1.getInputString)(pathname);

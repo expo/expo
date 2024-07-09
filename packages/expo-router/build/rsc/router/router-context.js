@@ -12,9 +12,6 @@ exports.RouterContext = exports.parseRoute = void 0;
 const react_1 = require("react");
 const common_1 = require("./common");
 const parseRoute = (url) => {
-    if (globalThis.__EXPO_ROUTER_404__) {
-        return { path: '/404', searchParams: new URLSearchParams() };
-    }
     const { pathname, searchParams } = url;
     if (searchParams.has(common_1.PARAM_KEY_SKIP)) {
         console.warn(`The search param "${common_1.PARAM_KEY_SKIP}" is reserved`);

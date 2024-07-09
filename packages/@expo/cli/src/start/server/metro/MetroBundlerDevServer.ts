@@ -14,7 +14,6 @@ import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
   SourceMapGeneratorOptions,
-  type,
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
 import MetroHmrServer from 'metro/src/HmrServer';
 import bundleToString from 'metro/src/lib/bundleToString';
@@ -27,7 +26,7 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
-import { MetroPrivateServer } from './metroPrivateServer';
+import { assertMetroPrivateServer, MetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,

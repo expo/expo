@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const react_1 = __importDefault(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const WindowLocationContext_1 = require("./router/WindowLocationContext");
 const client_1 = require("./router/client");
 const ErrorBoundary_1 = require("../views/ErrorBoundary");
 const Try_1 = require("../views/Try");
@@ -43,11 +42,9 @@ function RootErrorBoundary(props) {
 // Must be exported or Fast Refresh won't update the context
 function App() {
     return (<react_native_safe_area_context_1.SafeAreaProvider>
-      <WindowLocationContext_1.LocationContext>
-        <Try_1.Try catch={RootErrorBoundary}>
-          <client_1.Router />
-        </Try_1.Try>
-      </WindowLocationContext_1.LocationContext>
+      <Try_1.Try catch={RootErrorBoundary}>
+        <client_1.Router />
+      </Try_1.Try>
     </react_native_safe_area_context_1.SafeAreaProvider>);
 }
 exports.App = App;
