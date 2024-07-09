@@ -18,5 +18,8 @@
   ],
   "experiments": {
     "reactCanary": true
+  },
+  "android": {
+    "package": "app.expo.rsc"
   }
 }
