@@ -1,0 +1,2 @@
+// This file is a mock just for testing template renaming.
+// Let's see whether the following gets renamed: com.helloworld
