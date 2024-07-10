@@ -181,9 +181,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
     }
 
-    return await withCheckedContinuation { continuation in
-      return continuation.resume(returning: mediaItem.asset.metadata)
-    }
+    return mediaItem.asset.metadata
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress

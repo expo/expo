@@ -87,6 +87,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
 
+    // The current item has to be replaced with nil from the main thread. When replacing from the SharedObjectRegistry queue
+    // sometimes the KVOs used by AVPlayerViewController would try to deliver updates about the item being changed to nil after the
+    // player was deallocated, which caused crashes.
     DispatchQueue.main.async { [pointer] in
       pointer.replaceCurrentItem(with: nil)
     }
