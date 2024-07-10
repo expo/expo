@@ -54,7 +54,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('When a wrong class already exists', () => {
-      it('Doesn\t allow operations when a file is used with an existing folder path', () => {
+      it("Doesn't allow operations when a file is used with an existing folder path", () => {
         const directory = new Directory(testDirectory + 'test');
         directory.create();
         const file = new File(testDirectory + 'test');
@@ -63,7 +63,7 @@ export async function test({ describe, expect, it, ...t }) {
         }).toThrow();
       });
 
-      it('Doesn\t allow operations when a folder is used with an existing file path', () => {
+      it("Doesn't allow operations when a folder is used with an existing file path", () => {
         const file = new File(testDirectory + 'test');
         file.create();
         const directory = new Directory(testDirectory + 'test');
