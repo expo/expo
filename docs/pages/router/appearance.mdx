@@ -70,8 +70,6 @@ We recommend you use Expo Image for the best cross-platform experience:
 
 ## Splash screen
 
-> In Expo Router v3 and greater, you can import SplashScreen from `expo-splash-screen` directly.
-
 Splash screens are required on native platforms. Expo Router automatically orchestrates the native splash screen to keep it visible until the first route is rendered, this applies to any route that the user deep links into. To enable this functionality, [install `expo-splash-screen`](/versions/latest/sdk/splash-screen/#installation) in your project.
 
 The default behavior is to hide the splash screen when the first route is rendered, this is optimal for the majority of routes. For some routes, you may want to prolong the splash screen until additional data or asset loading has concluded. This can be achieved with the `SplashScreen` module from `expo-router`. If `SplashScreen.preventAutoHideAsync` is called before the splash screen is hidden, then the splash screen will remain visible until the `SplashScreen.hideAsync()` function has been invoked.

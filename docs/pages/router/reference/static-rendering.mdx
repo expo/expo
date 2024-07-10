@@ -62,7 +62,7 @@ You can also [learn more](/guides/customizing-metro/) about customizing Metro.
     </Tab>
     <Tab label="Expo Router v2">
 
-    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 and Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
 
     <Tabs>
       <Tab label="Yarn">
@@ -361,7 +361,7 @@ This generates the following static HTML:
 
 ### How do I add a custom server?
 
-As of Expo Router v2 there is no prescriptive way to add a custom server. You can use any server you want. However, you will need to handle dynamic routes yourself. You can use the `generateStaticParams` function to generate static HTML files for known routes.
+There is no prescriptive way to add a custom server. You can use any server you want. However, you will need to handle dynamic routes yourself. You can use the `generateStaticParams` function to generate static HTML files for known routes.
 
 In the future, there will be a server API, and a new `web.output` mode which will generate a project that will (amongst other things) support dynamic routes.
 
