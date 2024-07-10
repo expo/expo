@@ -82,32 +82,56 @@ test.describe(inputDir, () => {
 
     console.time('Open page');
 
-    // NOTE: Start this test before navigating to the page to ensure we don't miss any events.
-    // Ensure the hot socket connects
-    const sockets = Promise.all([
-      raceOrFail(
-        waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
-        // Should be really fast
-        2000,
-        'HMR websocket on client took too long to connect.'
-      ),
-      // Order matters, message socket is set first.
-      raceOrFail(
-        waitForSocket(page, (ws) => ws.url().endsWith('/message')),
-        2000,
-        'Message socket on client took too long to connect.'
-      ),
-    ]);
+    const allSockets: WebSocket[] = [];
+
+    page.on('websocket', (ws) => {
+      allSockets.push(ws);
+    });
+
+    function waitForSocket(page: Page, matcher: (ws: WebSocket) => boolean) {
+      return new Promise<WebSocket>((res) => {
+        for (const ws of allSockets) {
+          if (matcher(ws)) {
+            res(ws);
+            return;
+          }
+        }
+
+        page.on('websocket', (ws) => {
+          console.log('Socket connected:', ws.url());
+          if (matcher(ws)) {
+            res(ws);
+          }
+        });
+      });
+    }
 
     // Navigate to the app
     await page.goto(expo.url);
+
     console.timeEnd('Open page');
 
     // Ensure the message socket connects (not related to HMR).
 
     console.log('Waiting for /hot socket');
 
-    const [hotSocket] = await sockets;
+    // NOTE: Start this test before navigating to the page to ensure we don't miss any events.
+    // Ensure the hot socket connects
+    const [hotSocket] = await Promise.all([
+      raceOrFail(
+        waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
+        // Should be really fast
+        500,
+        'HMR websocket on client took too long to connect.'
+      ),
+      // Order matters, message socket is set first.
+      raceOrFail(
+        waitForSocket(page, (ws) => ws.url().endsWith('/message')),
+        500,
+        'Message socket on client took too long to connect.'
+      ),
+    ]);
+
     console.log('Found /hot socket');
 
     // Ensure the entry point is registered
@@ -192,17 +216,6 @@ function makeHotPredicate(predicate: (data: Record<string, any>) => boolean) {
     const event = JSON.parse(typeof payload === 'string' ? payload : payload.toString());
     return predicate(event);
   };
-}
-
-function waitForSocket(page: Page, matcher: (ws: WebSocket) => boolean) {
-  return new Promise<WebSocket>((res) => {
-    page.on('websocket', (ws) => {
-      console.log('Socket connected:', ws.url());
-      if (matcher(ws)) {
-        res(ws);
-      }
-    });
-  });
 }
 
 export const raceOrFail = (promise: Promise<any>, timeout: number, message: string) =>
