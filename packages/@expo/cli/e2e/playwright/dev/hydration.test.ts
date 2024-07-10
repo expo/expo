@@ -20,6 +20,7 @@ test.describe(inputDir, () => {
   let serveCmd: ServeStaticCommand;
 
   test.beforeEach('bundle and serve', async (options, testInfo) => {
+    console.time('hydration setup');
     testInfo.setTimeout(testInfo.timeout + 30000);
 
     console.time('expo export');
@@ -36,6 +37,7 @@ test.describe(inputDir, () => {
     serveCmd = new ServeStaticCommand(projectRoot, {
       NODE_ENV: 'production',
     });
+    console.timeEnd('hydration setup');
   });
 
   // This test generally ensures no errors are thrown during an export loading.
