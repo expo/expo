@@ -14,7 +14,7 @@ type DRAWABLE_SIZE = 'default' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi
 type THEME = 'light' | 'dark';
 
 const IMAGE_CACHE_NAME = 'splash-android';
-const SPLASH_SCREEN_FILENAME = 'splashscreen_image.png';
+const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const DRAWABLES_CONFIGS: {
   [key in DRAWABLE_SIZE]: {
     modes: {

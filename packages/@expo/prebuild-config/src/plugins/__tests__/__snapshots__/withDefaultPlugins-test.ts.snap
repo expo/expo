@@ -1194,14 +1194,26 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "AppTheme",
+                  "parent": "Theme.SplashScreen",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "android:windowBackground",
+                      "name": "windowSplashScreenBackground",
                     },
-                    "_": "@drawable/splashscreen",
+                    "_": "@color/splashscreen_background",
+                  },
+                  {
+                    "$": {
+                      "name": "windowSplashScreenAnimatedIcon",
+                    },
+                    "_": "@drawable/splashscreen_logo",
+                  },
+                  {
+                    "$": {
+                      "name": "postSplashScreenTheme",
+                    },
+                    "_": "@style/AppTheme",
                   },
                 ],
               },
@@ -2206,14 +2218,26 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "AppTheme",
+                  "parent": "Theme.SplashScreen",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "android:windowBackground",
+                      "name": "windowSplashScreenBackground",
                     },
-                    "_": "@drawable/splashscreen",
+                    "_": "@color/splashscreen_background",
+                  },
+                  {
+                    "$": {
+                      "name": "windowSplashScreenAnimatedIcon",
+                    },
+                    "_": "@drawable/splashscreen_logo",
+                  },
+                  {
+                    "$": {
+                      "name": "postSplashScreenTheme",
+                    },
+                    "_": "@style/AppTheme",
                   },
                 ],
               },

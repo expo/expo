@@ -12,7 +12,7 @@ import { getAndroidDarkSplashConfig, getAndroidSplashConfig } from './getAndroid
 
 const styleResourceGroup = {
   name: 'Theme.App.SplashScreen',
-  parent: 'AppTheme',
+  parent: 'Theme.SplashScreen',
 };
 
 const SPLASH_COLOR_NAME = 'splashscreen_background';
@@ -36,11 +36,44 @@ export const withAndroidSplashStyles: ConfigPlugin = (config) => {
   });
   config = withAndroidStyles(config, (config) => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = setSplashStylesForTheme(config.modResults);
+    config.modResults = addSplashScreenStyle(config.modResults);
     return config;
   });
   return config;
 };
+
+// Add the style that extends Theme.SplashScreen
+function addSplashScreenStyle(styles: AndroidConfig.Resources.ResourceXML) {
+  const { resources } = styles;
+  const { style = [] } = resources;
+
+  const item = [
+    {
+      $: { name: 'windowSplashScreenBackground' },
+      _: '@color/splashscreen_background',
+    },
+    {
+      $: { name: 'windowSplashScreenAnimatedIcon' },
+      _: '@drawable/splashscreen_logo',
+    },
+    {
+      $: { name: 'postSplashScreenTheme' },
+      _: '@style/AppTheme',
+    },
+  ];
+
+  styles.resources.style = [
+    ...style.filter(({ $ }) => $.name !== 'Theme.App.SplashScreen'),
+    {
+      $: {
+        ...styleResourceGroup,
+      },
+      item,
+    },
+  ];
+
+  return styles;
+}
 
 // Remove the old style group which didn't extend the base theme properly.
 export function removeOldSplashStyleGroup(styles: AndroidConfig.Resources.ResourceXML) {

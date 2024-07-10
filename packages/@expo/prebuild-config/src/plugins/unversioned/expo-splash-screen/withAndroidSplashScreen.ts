@@ -8,6 +8,7 @@ import { getAndroidSplashConfig } from './getAndroidSplashConfig';
 import { withAndroidSplashDrawables } from './withAndroidSplashDrawables';
 import { withAndroidSplashImages } from './withAndroidSplashImages';
 import { withAndroidSplashLegacyMainActivity } from './withAndroidSplashLegacyMainActivity';
+import { withAndroidSplashMainActivity } from './withAndroidSplashMainActivity';
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 
@@ -32,6 +33,7 @@ export const withAndroidSplashScreen: ConfigPlugin = (config) => {
   }
 
   return withPlugins(config, [
+    withAndroidSplashMainActivity,
     withAndroidSplashImages,
     [withAndroidSplashDrawables, splashConfig],
     ...(shouldUpdateLegacyMainActivity(config) ? [withAndroidSplashLegacyMainActivity] : []),

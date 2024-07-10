@@ -48,17 +48,17 @@ describe(setSplashImageDrawablesAsync, () => {
     );
 
     const images = [
-      '/android/app/src/main/res/drawable-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png',
       // Dark images
-      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png',
     ];
     const results = vol.toJSON();
     // expect(results).toBe({});
@@ -85,17 +85,17 @@ describe(setSplashImageDrawablesAsync, () => {
     );
 
     const images = [
-      '/android/app/src/main/res/drawable-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_image.png',
-      // Dark images
-      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png',
+      // Dark logos
+      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png',
     ];
     const results = vol.toJSON();
     // expect(results).toBe({});
@@ -117,17 +117,17 @@ describe(setSplashImageDrawablesAsync, () => {
     );
 
     const images = [
-      '/android/app/src/main/res/drawable-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_image.png',
-      // Dark images
-      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png',
+      // Dark logos
+      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png',
     ];
     const results = vol.toJSON();
     for (const image of images) {

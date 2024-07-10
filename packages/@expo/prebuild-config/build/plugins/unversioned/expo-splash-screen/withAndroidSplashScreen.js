@@ -60,6 +60,13 @@ function _withAndroidSplashLegacyMainActivity() {
   };
   return data;
 }
+function _withAndroidSplashMainActivity() {
+  const data = require("./withAndroidSplashMainActivity");
+  _withAndroidSplashMainActivity = function () {
+    return data;
+  };
+  return data;
+}
 function _withAndroidSplashStrings() {
   const data = require("./withAndroidSplashStrings");
   _withAndroidSplashStrings = function () {
@@ -89,7 +96,7 @@ const withAndroidSplashScreen = config => {
     if (!config.androidStatusBar) config.androidStatusBar = {};
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
-  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], ...(shouldUpdateLegacyMainActivity(config) ? [_withAndroidSplashLegacyMainActivity().withAndroidSplashLegacyMainActivity] : []), _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
+  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashMainActivity().withAndroidSplashMainActivity, _withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], ...(shouldUpdateLegacyMainActivity(config) ? [_withAndroidSplashLegacyMainActivity().withAndroidSplashLegacyMainActivity] : []), _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
 };
 exports.withAndroidSplashScreen = withAndroidSplashScreen;
 function shouldUpdateLegacyMainActivity(config) {
