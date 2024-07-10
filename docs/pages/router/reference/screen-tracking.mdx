@@ -11,9 +11,9 @@ Unlike React Navigation, Expo Router always has access to a URL. This means scre
 1. Create a higher-order component that observes the currently selected URL
 2. Track the URL in your analytics provider
 
-<FileTree files={['app/_layout.js']} />
+<FileTree files={['app/_layout.tsx']} />
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { useEffect } from 'react';
 import { usePathname, useGlobalSearchParams, Slot } from 'expo-router';
 

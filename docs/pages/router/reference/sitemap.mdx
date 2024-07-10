@@ -27,9 +27,9 @@ You can also search for links directly in a browser like Safari or Chrome to tes
 
 Expo Router currently injects a **/\_sitemap** automatically that provides a list of all routes in the app. This is useful for debugging.
 
-To remove it, add a **app/\_sitemap.js** and return a null component:
+To remove it, add a **app/\_sitemap.tsx** and return a null component:
 
-```jsx app/_sitemap.js
+```tsx app/_sitemap.tsx
 export default function Sitemap() {
   return null;
 }
