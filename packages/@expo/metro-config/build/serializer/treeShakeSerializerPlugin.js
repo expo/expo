@@ -115,7 +115,6 @@ function getExportsThatAreNotUsedInModule(ast) {
             }
         },
     });
-    // console.log('exported:', exportedIdentifiers, 'used:', usedIdentifiers);
     // Determine which exports are unused
     exportedIdentifiers.forEach((exported) => {
         if (!usedIdentifiers.has(exported)) {

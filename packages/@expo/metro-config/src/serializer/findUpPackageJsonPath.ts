@@ -7,13 +7,14 @@
 import fs from 'fs';
 import path from 'path';
 
-export const findUpPackageJsonPath = (projectRoot: string, dir: string): string | null => {
-  if (dir === path.sep || dir.length < projectRoot.length) {
-    return null;
+export const findUpPackageJsonPath = (dir: string): string => {
+  if (dir === path.sep) {
+    // All files should have `package.json`.
+    throw new Error(`Cannot find package.json from ${dir}`);
   }
   const packageJsonPath = path.join(dir, 'package.json');
   if (fs.existsSync(packageJsonPath)) {
     return packageJsonPath;
   }
-  return findUpPackageJsonPath(projectRoot, path.dirname(dir));
+  return findUpPackageJsonPath(path.dirname(dir));
 };

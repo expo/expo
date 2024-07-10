@@ -14,6 +14,7 @@ const fs_1 = __importDefault(require("fs"));
 const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));
 const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
+const debug = require('debug')('expo:side-effects');
 function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value.path], checked = new Set()) {
     const currentModuleHasSideEffect = getShallowSideEffect(options, value);
     if (currentModuleHasSideEffect) {
@@ -51,10 +52,7 @@ const getPackageJsonMatcher = (options, dir) => {
         if (cached) {
             return cached;
         }
-        packageJsonPath = (0, findUpPackageJsonPath_1.findUpPackageJsonPath)(options.projectRoot, dir);
-        if (!packageJsonPath) {
-            return null;
-        }
+        packageJsonPath = (0, findUpPackageJsonPath_1.findUpPackageJsonPath)(dir);
         packageJson = JSON.parse(fs_1.default.readFileSync(packageJsonPath, 'utf-8'));
     }
     if (!packageJsonPath) {
@@ -81,7 +79,8 @@ const getPackageJsonMatcher = (options, dir) => {
                 return false;
             });
         }
-        return false;
+        debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
+        return null;
     };
     pkgJsonCache.set(dir, isSideEffect);
     return isSideEffect;

@@ -11,6 +11,8 @@ import path from 'path';
 
 import { findUpPackageJsonPath } from './findUpPackageJsonPath';
 
+const debug = require('debug')('expo:side-effects') as typeof console.log;
+
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 
 type AdvancedModule = Module<MixedOutput> & {
@@ -60,7 +62,7 @@ export function hasSideEffectWithDebugTrace(
 const pkgJsonCache = new Map<string, any>();
 
 const getPackageJsonMatcher = (
-  options: Pick<SerializerOptions, 'projectRoot'> & {
+  options: Pick<SerializerOptions, 'projectRoot' | 'serverRoot'> & {
     _test_getPackageJson?: (dir: string) => [any, string | null];
   },
   dir: string
@@ -74,12 +76,11 @@ const getPackageJsonMatcher = (
     if (cached) {
       return cached;
     }
-    packageJsonPath = findUpPackageJsonPath(options.projectRoot, dir);
-    if (!packageJsonPath) {
-      return null;
-    }
+
+    packageJsonPath = findUpPackageJsonPath(dir);
     packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
   }
+
   if (!packageJsonPath) {
     return null;
   }
@@ -105,7 +106,8 @@ const getPackageJsonMatcher = (
         return false;
       });
     }
-    return false;
+    debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
+    return null;
   };
 
   pkgJsonCache.set(dir, isSideEffect);
@@ -135,6 +137,7 @@ function detectHasSideEffectInPackageJson(
 
   if (value.output.some((output) => output.type === 'js/module')) {
     const isSideEffect = getPackageJsonMatcher(options, value.path);
+
     if (isSideEffect == null) {
       return null;
     }
