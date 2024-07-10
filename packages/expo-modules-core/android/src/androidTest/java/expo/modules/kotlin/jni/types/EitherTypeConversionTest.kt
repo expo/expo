@@ -6,6 +6,7 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
+import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import org.junit.Test
 import java.net.URL
@@ -51,4 +52,13 @@ class EitherTypeConversionTest {
       jsValue = "123",
       map = { false }
     )
+  @Test
+  fun either_with_non_overlapping_types_should_not_throw_on_getter() = conversionTest(
+    jsValue = "123",
+    nativeAssertion = { either: Either<Int, TypedArray> ->
+      Truth.assertThat(either.`get`(Int::class)).isEqualTo(123)
+      Truth.assertThat(either.`get`(TypedArray::class)).isNull()
+    },
+    map = { false }
+  )
 }
