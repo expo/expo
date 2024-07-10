@@ -240,6 +240,10 @@ async function transformJS(file, { config, options, projectRoot }) {
         // Disable tree shaking on JSON files.
         !file.filename.endsWith('.json');
     const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
+    // if (treeshake && !options.experimentalImportSupport) {
+    //   // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
+    //   throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.')
+    // }
     // const targetEnv = options.customTransformOptions?.environment;
     // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
