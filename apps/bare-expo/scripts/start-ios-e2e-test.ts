@@ -1,6 +1,6 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
-import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild';
+import * as XcodeBuild from '@expo/cli/build/src/run/apple/XcodeBuild';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
