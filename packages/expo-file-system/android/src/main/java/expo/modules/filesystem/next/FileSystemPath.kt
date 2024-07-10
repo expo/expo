@@ -17,56 +17,55 @@ abstract class FileSystemPath(var path: File) : SharedObject() {
 
   abstract fun exists(): Boolean
 
+  fun copy(to: FileSystemPath) {
+    validateType()
+    to.validateType()
 
-    fun copy(to: FileSystemPath) {
-      validateType()
-      to.validateType()
+    // If the destination folder does not exist, we should throw an exception.
+    // If the file's parent folder does not exist, we should throw an exception.
+    // Does not allow copying a folder to a file.
 
-      // If the destination folder does not exist, we should throw an exception.
-      // If the file's parent folder does not exist, we should throw an exception.
-      // Does not allow copying a folder to a file.
-
-      if(to is FileSystemDirectory && !to.path.exists()) {
-          throw DestinationDoesNotExistException()
-      }
-
-      if(to is FileSystemFile && to.path.parentFile?.exists() != true) {
-          throw DestinationDoesNotExistException()
-      }
-      // The above guards can be conditional if we want to allow creating the destination folder(s).
-
-      if(this is FileSystemDirectory && to is FileSystemFile) {
-        throw CopyFolderToFileException()
-      }
-
-      // do the copying
-        if(to.path.isDirectory) {
-            path.copyRecursively(File(to.path.path, path.name))
-        } else {
-            path.copyRecursively(to.path)
-        }
+    if (to is FileSystemDirectory && !to.path.exists()) {
+      throw DestinationDoesNotExistException()
     }
 
-    fun move(to: FileSystemPath) {
-      validateType()
-      to.validateType()
-
-      if(to is FileSystemDirectory && !to.path.exists()) {
-        throw DestinationDoesNotExistException()
-      }
-
-      if(to is FileSystemFile && to.path.parentFile?.exists() != true) {
-        throw DestinationDoesNotExistException()
-      }
-
-      if(this is FileSystemDirectory && to is FileSystemFile) {
-        throw MoveFolderToFileException()
-      }
-
-        if(to is FileSystemDirectory) {
-          path.toPath().moveTo(File(to.path.path, path.name).toPath())
-        } else {
-          path.toPath().moveTo(to.path.toPath())
-        }
+    if (to is FileSystemFile && to.path.parentFile?.exists() != true) {
+      throw DestinationDoesNotExistException()
     }
+    // The above guards can be conditional if we want to allow creating the destination folder(s).
+
+    if (this is FileSystemDirectory && to is FileSystemFile) {
+      throw CopyFolderToFileException()
+    }
+
+    // do the copying
+    if (to.path.isDirectory) {
+      path.copyRecursively(File(to.path.path, path.name))
+    } else {
+      path.copyRecursively(to.path)
+    }
+  }
+
+  fun move(to: FileSystemPath) {
+    validateType()
+    to.validateType()
+
+    if (to is FileSystemDirectory && !to.path.exists()) {
+      throw DestinationDoesNotExistException()
+    }
+
+    if (to is FileSystemFile && to.path.parentFile?.exists() != true) {
+      throw DestinationDoesNotExistException()
+    }
+
+    if (this is FileSystemDirectory && to is FileSystemFile) {
+      throw MoveFolderToFileException()
+    }
+
+    if (to is FileSystemDirectory) {
+      path.toPath().moveTo(File(to.path.path, path.name).toPath())
+    } else {
+      path.toPath().moveTo(to.path.toPath())
+    }
+  }
 }

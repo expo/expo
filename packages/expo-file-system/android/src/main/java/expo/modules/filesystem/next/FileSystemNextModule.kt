@@ -1,6 +1,5 @@
 package expo.modules.filesystem.next
 
-import android.net.Uri
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -57,10 +56,10 @@ class FileSystemNextModule : Module() {
       }
 
       Function("move") { file: FileSystemFile, destination: FileSystemPath ->
-          file.move(destination)
+        file.move(destination)
       }
 
-    Property("path")
+      Property("path")
         .get { file: FileSystemFile -> return@get file.asString() }
     }
 

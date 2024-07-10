@@ -18,8 +18,6 @@ class FileSystemDirectory(path: File) : FileSystemPath(path) {
     return path.isDirectory
   }
 
-
-
   fun create() {
     validateType()
     path.mkdir()
@@ -27,6 +25,6 @@ class FileSystemDirectory(path: File) : FileSystemPath(path) {
 
   fun asString(): String? {
     val uriString = Uri.fromFile(path).toString()
-    return if (uriString.endsWith("/"))  uriString else "$uriString/"
+    return if (uriString.endsWith("/")) uriString else "$uriString/"
   }
 }

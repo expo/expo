@@ -1,7 +1,6 @@
 package expo.modules.filesystem.next
 import expo.modules.kotlin.exception.CodedException
 
-
 internal class CopyFolderToFileException :
   CodedException("Unable to copy a folder to a file")
 

@@ -3,7 +3,7 @@ import ExpoModulesCore
 
 internal final class FileSystemFile: FileSystemPath {
   override init(url: URL) {
-    if(!url.hasDirectoryPath) {
+    if !url.hasDirectoryPath {
       super.init(url: url)
       return
     }
