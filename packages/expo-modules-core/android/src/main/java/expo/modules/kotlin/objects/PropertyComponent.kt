@@ -41,7 +41,9 @@ class PropertyComponent(
         return@JNIFunctionBody null
       }
     } else {
-      null
+      JNIFunctionBody {
+        throw Exception("Cannot assign to property $name which has only a getter")
+      }
     }
 
     jsObject.registerProperty(

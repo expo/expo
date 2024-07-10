@@ -1,6 +1,8 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
+import org.junit.Assert
 import org.junit.Test
 
 internal class JSIPropertiesTest {
@@ -47,6 +49,19 @@ internal class JSIPropertiesTest {
 
     Truth.assertThat(p1).isEqualTo(987)
     Truth.assertThat(p2).isEqualTo(123)
+  }
+
+  @Test
+  fun should_throw_if_setting_a_getter_only_property() = withSingleModule({
+    var innerValue = 567
+    Property("p")
+      .get { innerValue }
+  }) {
+    Assert.assertThrows(JavaScriptEvaluateException::class.java) {
+      evaluateScript("$moduleRef.p = 1")
+    }
+    val p1 = property("p").getInt()
+    Truth.assertThat(p1).isEqualTo(567)
   }
 
   @Test
