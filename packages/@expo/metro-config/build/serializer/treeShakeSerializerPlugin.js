@@ -40,8 +40,8 @@ const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerial
 const sideEffects_1 = require("./sideEffects");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
 const generator_1 = __importDefault(require("@babel/generator"));
-const debug = require('debug')('expo:treeshaking');
-const isDebugEnabled = require('debug').enabled('expo:treeshaking');
+const debug = require('debug')('expo:treeshake');
+const isDebugEnabled = require('debug').enabled('expo:treeshake');
 const OPTIMIZE_GRAPH = true;
 function isModuleEmptyFor(ast) {
     if (!ast?.program.body.length) {
@@ -699,7 +699,9 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         }
         if (isDebugEnabled) {
             // Print if any dependencies weren't checked (this shouldn't happen)
-            const unchecked = [...graph.dependencies.keys()].filter((key) => !checked.has(key));
+            const unchecked = [...graph.dependencies.entries()]
+                .filter(([key, value]) => !checked.has(key) && accessAst(value.output[0]))
+                .map(([key]) => key);
             if (unchecked.length) {
                 debug('[ISSUE]: Unchecked modules:', unchecked);
             }

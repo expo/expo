@@ -19,8 +19,8 @@ import {
 } from '../transform-worker/metro-transform-worker';
 import generate from '@babel/generator';
 
-const debug = require('debug')('expo:treeshaking') as typeof console.log;
-const isDebugEnabled = require('debug').enabled('expo:treeshaking');
+const debug = require('debug')('expo:treeshake') as typeof console.log;
+const isDebugEnabled = require('debug').enabled('expo:treeshake');
 
 const OPTIMIZE_GRAPH = true;
 
@@ -878,7 +878,9 @@ export async function treeShakeSerializer(
 
     if (isDebugEnabled) {
       // Print if any dependencies weren't checked (this shouldn't happen)
-      const unchecked = [...graph.dependencies.keys()].filter((key) => !checked.has(key));
+      const unchecked = [...graph.dependencies.entries()]
+        .filter(([key, value]) => !checked.has(key) && accessAst(value.output[0]))
+        .map(([key]) => key);
       if (unchecked.length) {
         debug('[ISSUE]: Unchecked modules:', unchecked);
       }
