@@ -6,19 +6,43 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
+- [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Fix and update link for `expo-dev-client` in package's README. ([#30162](https://github.com/expo/expo/pull/30162) by [@amandeepmittal](https://github.com/amandeepmittal)).
+- Fixed broken unit test on iOS 17 where `URL()` without scheme returns nil. ([#30178](https://github.com/expo/expo/pull/30178) by [@kudo](https://github.com/kudo))
+- Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.20 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.19 - 2024-06-12
+
+### 🎉 New features
+
 - [Android] Automatically detect dev servers running on localhost with adb reverse. ([#29625](https://github.com/expo/expo/pull/29625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 - Fixed empty screen after reloading on Android. ([#29400](https://github.com/expo/expo/pull/29400) by [@kudo](https://github.com/kudo))
 
-### 💡 Others
+## 4.0.18 - 2024-06-10
 
-- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+_This version does not introduce any user-facing changes._
 
-### 🐛 Bug fixes
+## 4.0.17 - 2024-06-06
 
-- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+_This version does not introduce any user-facing changes._
 
 ## 4.0.15 — 2024-05-15
 

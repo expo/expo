@@ -54,7 +54,7 @@
     "@apollo/client": "^3.4.10",
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^8.0.0",
+    "@testing-library/react-native": "^12.5.1",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~11.0.0",
     "expo-dev-client-components": "1.8.1",

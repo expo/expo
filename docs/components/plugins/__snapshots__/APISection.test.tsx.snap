@@ -3,11 +3,11 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#component"
       id="component"
     >
@@ -43,14 +43,14 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="!shadow-none css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationbutton"
         id="appleauthenticationbutton"
       >
@@ -225,11 +225,11 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -251,7 +251,7 @@ not appear on the screen.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -279,7 +279,7 @@ for more details.
     </blockquote>
     <div>
       <p
-        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        class="!text-secondary !font-medium css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -287,7 +287,7 @@ for more details.
           data-text="true"
         >
           <a
-            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
+            class="relative decoration-0 scroll-m-6 text-inherit flex flex-row gap-2 items-center"
             href="#appleauthenticationbuttonprops"
             id="appleauthenticationbuttonprops"
           >
@@ -328,14 +328,14 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#buttonstyle"
             id="buttonstyle"
           >
@@ -405,14 +405,14 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#buttontype"
             id="buttontype"
           >
@@ -482,14 +482,14 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#cornerradius"
             id="cornerradius"
           >
@@ -567,14 +567,14 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#onpress"
             id="onpress"
           >
@@ -663,14 +663,14 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#style"
             id="style"
           >
@@ -813,11 +813,11 @@ properties.
         </p>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#inherited-props"
           id="inherited-props"
         >
@@ -877,11 +877,11 @@ properties.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#methods"
       id="methods"
     >
@@ -917,14 +917,14 @@ properties.
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#getcredentialstateasyncuser"
         id="getcredentialstateasyncuser"
       >
@@ -965,7 +965,7 @@ properties.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -1053,11 +1053,11 @@ This should come from the user field of an
     
 
     <blockquote
-      class="css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -1079,7 +1079,7 @@ This should come from the user field of an
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         
 
@@ -1193,14 +1193,14 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#isavailableasync"
         id="isavailableasync"
       >
@@ -1337,14 +1337,14 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#refreshasyncoptions"
         id="refreshasyncoptions"
       >
@@ -1385,7 +1385,7 @@ value depending on the state of the credential.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -1578,14 +1578,14 @@ refresh operation.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#signinasyncoptions"
         id="signinasyncoptions"
       >
@@ -1626,7 +1626,7 @@ refresh operation.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -1866,14 +1866,14 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#signoutasyncoptions"
         id="signoutasyncoptions"
       >
@@ -1914,7 +1914,7 @@ sign-in operation.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -2141,11 +2141,11 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#event-subscriptions"
       id="event-subscriptions"
     >
@@ -2181,14 +2181,14 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#addrevokelistenerlistener"
         id="addrevokelistenerlistener"
       >
@@ -2229,7 +2229,7 @@ sign-out operation.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -2333,11 +2333,11 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#types"
       id="types"
     >
@@ -2373,14 +2373,14 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationcredential"
         id="appleauthenticationcredential"
       >
@@ -2465,11 +2465,11 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -2491,7 +2491,7 @@ which contains all of the pertinent user and credential information.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2518,7 +2518,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -2911,14 +2911,14 @@ developers.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationfullname"
         id="appleauthenticationfullname"
       >
@@ -2973,7 +2973,7 @@ may be
       . Only applicable fields that the user has allowed your app to access will be nonnull.
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -3259,14 +3259,14 @@ may be
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationrefreshoptions"
         id="appleauthenticationrefreshoptions"
       >
@@ -3326,11 +3326,11 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3352,7 +3352,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3379,7 +3379,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -3566,14 +3566,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationsigninoptions"
         id="appleauthenticationsigninoptions"
       >
@@ -3633,11 +3633,11 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3659,7 +3659,7 @@ None of these options are required.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3686,7 +3686,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -3890,14 +3890,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#appleauthenticationsignoutoptions"
         id="appleauthenticationsignoutoptions"
       >
@@ -3957,11 +3957,11 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="!mb-3.5 css-zknray-Callout"
+      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-7jywx8-Callout"
+        class="select-none mt-[5px] [table_&]:mt-[3px]"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3983,7 +3983,7 @@ You must include the ID string of the user to sign out.
         </svg>
       </div>
       <div
-        class="css-1ohc0ia-Callout"
+        class="text-default w-full last:mb-0 css-mt3buo-Callout"
       >
         <p
           class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -4010,7 +4010,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -4127,14 +4127,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#subscription"
         id="subscription"
       >
@@ -4181,7 +4181,7 @@ OAuth 2.0 protocol
       A subscription object that allows to conveniently remove an event listener from the emitter.
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -4260,11 +4260,11 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#enums"
       id="enums"
     >
@@ -4300,17 +4300,17 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationbuttonstyle"
           id="appleauthenticationbuttonstyle"
         >
@@ -4369,7 +4369,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -4384,11 +4384,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#white"
           id="white"
         >
@@ -4445,11 +4445,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#white_outline"
           id="white_outline"
         >
@@ -4506,11 +4506,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#black"
           id="black"
         >
@@ -4565,17 +4565,17 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationbuttontype"
           id="appleauthenticationbuttontype"
         >
@@ -4634,7 +4634,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -4649,11 +4649,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#sign_in"
           id="sign_in"
         >
@@ -4710,11 +4710,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#continue"
           id="continue"
         >
@@ -4785,10 +4785,10 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
+            class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none css-1e5tu91-PlatformTag"
           >
             <svg
-              class="icon-xs text-palette-blue12"
+              class="opacity-80 icon-xs text-palette-blue12"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -4805,7 +4805,7 @@ After calling this function, the listener will no longer receive any events from
               </g>
             </svg>
             <span
-              class="css-1q9zso2-PlatformTag"
+              class="css-103dp5g-PlatformTag"
             >
               iOS 13.2+
             </span>
@@ -4814,11 +4814,11 @@ After calling this function, the listener will no longer receive any events from
         </span>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#sign_up"
           id="sign_up"
         >
@@ -4873,17 +4873,17 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationcredentialstate"
           id="appleauthenticationcredentialstate"
         >
@@ -4942,11 +4942,11 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <blockquote
-        class="!mb-3.5 css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -4968,7 +4968,7 @@ After calling this function, the listener will no longer receive any events from
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -4995,7 +4995,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5010,11 +5010,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#revoked"
           id="revoked"
         >
@@ -5065,11 +5065,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#authorized"
           id="authorized"
         >
@@ -5120,11 +5120,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#not_found"
           id="not_found"
         >
@@ -5175,11 +5175,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#transferred"
           id="transferred"
         >
@@ -5228,17 +5228,17 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationoperation"
           id="appleauthenticationoperation"
         >
@@ -5279,7 +5279,7 @@ for more details.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5294,11 +5294,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#implicit"
           id="implicit"
         >
@@ -5355,11 +5355,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#login"
           id="login"
         >
@@ -5410,11 +5410,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#refresh"
           id="refresh"
         >
@@ -5465,11 +5465,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#logout"
           id="logout"
         >
@@ -5518,17 +5518,17 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationscope"
           id="appleauthenticationscope"
         >
@@ -5589,11 +5589,11 @@ for more details.
       
 
       <blockquote
-        class="css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5615,7 +5615,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           
 
@@ -5631,11 +5631,11 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="!mb-3.5 css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5657,7 +5657,7 @@ You will still need to handle null values for any fields you request.
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -5684,7 +5684,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5699,11 +5699,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#full_name"
           id="full_name"
         >
@@ -5754,11 +5754,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#email"
           id="email"
         >
@@ -5807,17 +5807,17 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#appleauthenticationuserdetectionstatus"
           id="appleauthenticationuserdetectionstatus"
         >
@@ -5864,11 +5864,11 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="!mb-3.5 css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5890,7 +5890,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -5917,7 +5917,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -5932,11 +5932,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#unsupported"
           id="unsupported"
         >
@@ -5993,11 +5993,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#unknown"
           id="unknown"
         >
@@ -6054,11 +6054,11 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#likely_real"
           id="likely_real"
         >
@@ -6118,11 +6118,11 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#component"
       id="component"
     >
@@ -6158,17 +6158,17 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="!shadow-none css-7sex76"
   >
     <div
-      class="css-1avgxs7-APISectionDeprecationNote"
+      class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-md-gutters:mx-[-17px]"
     >
       <blockquote
-        class="css-dmb9uy-Callout"
+        class="flex gap-2 rounded-md py-3 px-4 mb-4 [&_p]:!mb-0 [table_&]:last-of-type:mb-2.5 pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4 css-16xozm6-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-warning"
@@ -6190,7 +6190,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           <p
             class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -6199,7 +6199,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             <strong
               class="css-bvflvn-TextComponent"
             >
-              Deprecated.
+              Deprecated
             </strong>
              BarCodeScanner has been deprecated and will be removed in a future SDK version. Use 
             <code
@@ -6238,11 +6238,11 @@ for more details.
       </blockquote>
     </div>
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescanner"
         id="barcodescanner"
       >
@@ -6321,7 +6321,7 @@ for more details.
     </p>
     <div>
       <p
-        class="!text-secondary !font-medium css-1xg9efr-BoxSectionHeader"
+        class="!text-secondary !font-medium css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -6329,7 +6329,7 @@ for more details.
           data-text="true"
         >
           <a
-            class="scroll-m-5 relative decoration-0 text-inherit flex flex-row gap-2 items-center"
+            class="relative decoration-0 scroll-m-6 text-inherit flex flex-row gap-2 items-center"
             href="#barcodescannerprops"
             id="barcodescannerprops"
           >
@@ -6370,14 +6370,14 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#barcodetypes"
             id="barcodetypes"
           >
@@ -6486,14 +6486,14 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#onbarcodescanned"
             id="onbarcodescanned"
           >
@@ -6577,11 +6577,11 @@ provided with an
         
 
         <blockquote
-          class="css-zknray-Callout"
+          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
           data-testid="callout-container"
         >
           <div
-            class="css-7jywx8-Callout"
+            class="select-none mt-[5px] [table_&]:mt-[3px]"
           >
             <svg
               class="icon-sm text-icon-default"
@@ -6603,7 +6603,7 @@ provided with an
             </svg>
           </div>
           <div
-            class="css-1ohc0ia-Callout"
+            class="text-default w-full last:mb-0 css-mt3buo-Callout"
           >
             
 
@@ -6640,14 +6640,14 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-1vwg38e"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
       >
         <h3
-          class="group css-nikr5x-TextComponent"
+          class="group css-eynke-TextComponent"
           data-heading="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
             href="#type"
             id="type"
           >
@@ -6778,11 +6778,11 @@ Same as
         </p>
       </div>
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#inherited-props"
           id="inherited-props"
         >
@@ -6842,11 +6842,11 @@ Same as
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#hooks"
       id="hooks"
     >
@@ -6882,14 +6882,14 @@ Same as
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#usepermissionsoptions"
         id="usepermissionsoptions"
       >
@@ -6930,7 +6930,7 @@ Same as
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -7135,10 +7135,10 @@ This uses both
       </p>
     </div>
     <div
-      class="mb-3.5"
+      class="mb-3.5 last:[&>*]:mb-0"
     >
       <p
-        class="!mt-1 css-1xg9efr-BoxSectionHeader"
+        class="!mt-1 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -7237,11 +7237,11 @@ This uses both
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#methods"
       id="methods"
     >
@@ -7277,14 +7277,14 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannergetpermissionsasync"
         id="barcodescannergetpermissionsasync"
       >
@@ -7424,14 +7424,14 @@ This uses both
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannerrequestpermissionsasync"
         id="barcodescannerrequestpermissionsasync"
       >
@@ -7593,14 +7593,14 @@ This uses both
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannerscanfromurlasyncurl-barcodetypes"
         id="barcodescannerscanfromurlasyncurl-barcodetypes"
       >
@@ -7641,7 +7641,7 @@ This uses both
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -7744,11 +7744,11 @@ the platform.
               
 
               <blockquote
-                class="css-zknray-Callout"
+                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
                 data-testid="callout-container"
               >
                 <div
-                  class="css-7jywx8-Callout"
+                  class="select-none mt-[5px] [table_&]:mt-[3px]"
                 >
                   <svg
                     class="icon-sm text-icon-default"
@@ -7770,7 +7770,7 @@ the platform.
                   </svg>
                 </div>
                 <div
-                  class="css-1ohc0ia-Callout"
+                  class="text-default w-full last:mb-0 css-mt3buo-Callout"
                 >
                   
 
@@ -7893,11 +7893,11 @@ code.
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#interfaces"
       id="interfaces"
     >
@@ -7933,14 +7933,14 @@ code.
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionresponse"
         id="permissionresponse"
       >
@@ -7987,7 +7987,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="css-1xg9efr-BoxSectionHeader"
+      class="css-19qci8h-BoxSectionHeader"
       data-text="true"
     >
       <span
@@ -7998,7 +7998,7 @@ code.
       </span>
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8177,11 +8177,11 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#types"
       id="types"
     >
@@ -8217,14 +8217,14 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodebounds"
         id="barcodebounds"
       >
@@ -8265,7 +8265,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8375,14 +8375,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodeevent"
         id="barcodeevent"
       >
@@ -8455,7 +8455,7 @@ in order to enable/disable the permission.
     </p>
     <br />
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8527,14 +8527,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodeeventcallbackarguments"
         id="barcodeeventcallbackarguments"
       >
@@ -8575,7 +8575,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8646,14 +8646,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodepoint"
         id="barcodepoint"
       >
@@ -8701,7 +8701,7 @@ in order to enable/disable the permission.
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -8815,14 +8815,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannedcallback"
         id="barcodescannedcallback"
       >
@@ -8865,7 +8865,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </h3>
     <div>
       <div
-        class="css-1uyflf8-Table"
+        class="table-wrapper css-1uyflf8-Table"
       >
         <table
           class="css-e41t9x-Table"
@@ -8923,14 +8923,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodescannerresult"
         id="barcodescannerresult"
       >
@@ -8971,7 +8971,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -9195,14 +9195,14 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#barcodesize"
         id="barcodesize"
       >
@@ -9243,7 +9243,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -9343,14 +9343,14 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionhookoptions"
         id="permissionhookoptions"
       >
@@ -9439,11 +9439,11 @@ you don't get this value.
     </p>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#enums"
       id="enums"
     >
@@ -9479,17 +9479,17 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#permissionstatus"
           id="permissionstatus"
         >
@@ -9530,7 +9530,7 @@ you don't get this value.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -9545,11 +9545,11 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#denied"
           id="denied"
         >
@@ -9606,11 +9606,11 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#granted"
           id="granted"
         >
@@ -9667,11 +9667,11 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#undetermined"
           id="undetermined"
         >
@@ -9731,11 +9731,11 @@ you don't get this value.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#methods"
       id="methods"
     >
@@ -9771,14 +9771,14 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#getpermissionsasync"
         id="getpermissionsasync"
       >
@@ -9896,7 +9896,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <div
       class="flex flex-row items-center mb-2"
@@ -9913,10 +9913,10 @@ exports[`APISection expo-pedometer 1`] = `
            
         </span>
         <div
-          class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 select-none css-7sgr13-PlatformTag"
+          class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none css-1e5tu91-PlatformTag"
         >
           <svg
-            class="icon-xs text-palette-blue12"
+            class="opacity-80 icon-xs text-palette-blue12"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -9933,7 +9933,7 @@ exports[`APISection expo-pedometer 1`] = `
             </g>
           </svg>
           <span
-            class="css-1q9zso2-PlatformTag"
+            class="css-103dp5g-PlatformTag"
           >
             iOS
           </span>
@@ -9942,11 +9942,11 @@ exports[`APISection expo-pedometer 1`] = `
       </span>
     </div>
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#getstepcountasyncstart-end"
         id="getstepcountasyncstart-end"
       >
@@ -9987,7 +9987,7 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -10217,11 +10217,11 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10243,7 +10243,7 @@ exports[`APISection expo-pedometer 1`] = `
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           
 
@@ -10261,14 +10261,14 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#isavailableasync"
         id="isavailableasync"
       >
@@ -10399,14 +10399,14 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#requestpermissionsasync"
         id="requestpermissionsasync"
       >
@@ -10524,14 +10524,14 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#watchstepcountcallback"
         id="watchstepcountcallback"
       >
@@ -10572,7 +10572,7 @@ available on this device.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -10739,11 +10739,11 @@ provided with a single argument that is
       
 
       <blockquote
-        class="css-zknray-Callout"
+        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 css-18a3llt-Callout"
         data-testid="callout-container"
       >
         <div
-          class="css-7jywx8-Callout"
+          class="select-none mt-[5px] [table_&]:mt-[3px]"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10765,7 +10765,7 @@ provided with a single argument that is
           </svg>
         </div>
         <div
-          class="css-1ohc0ia-Callout"
+          class="text-default w-full last:mb-0 css-mt3buo-Callout"
         >
           
 
@@ -10805,11 +10805,11 @@ On iOS, the
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#interfaces"
       id="interfaces"
     >
@@ -10845,14 +10845,14 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="css-1vwg38e"
+    class="css-17cktl8"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionresponse"
         id="permissionresponse"
       >
@@ -10899,7 +10899,7 @@ On iOS, the
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="css-1xg9efr-BoxSectionHeader"
+      class="css-19qci8h-BoxSectionHeader"
       data-text="true"
     >
       <span
@@ -10910,7 +10910,7 @@ On iOS, the
       </span>
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -11089,11 +11089,11 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#types"
       id="types"
     >
@@ -11129,14 +11129,14 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#pedometerresult"
         id="pedometerresult"
       >
@@ -11177,7 +11177,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -11244,14 +11244,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#pedometerupdatecallback"
         id="pedometerupdatecallback"
       >
@@ -11300,7 +11300,7 @@ in order to enable/disable the permission.
     </p>
     <div>
       <div
-        class="css-1uyflf8-Table"
+        class="table-wrapper css-1uyflf8-Table"
       >
         <table
           class="css-e41t9x-Table"
@@ -11358,14 +11358,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#permissionexpiration"
         id="permissionexpiration"
       >
@@ -11460,14 +11460,14 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-15gi84a"
+    class="css-7sex76"
   >
     <h3
-      class="group css-nikr5x-TextComponent"
+      class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
         href="#subscription"
         id="subscription"
       >
@@ -11514,7 +11514,7 @@ in order to enable/disable the permission.
       A subscription object that allows to conveniently remove an event listener from the emitter.
     </p>
     <div
-      class="css-1uyflf8-Table"
+      class="table-wrapper css-1uyflf8-Table"
     >
       <table
         class="css-e41t9x-Table"
@@ -11593,11 +11593,11 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="group css-13sdfl0-TextComponent"
+    class="group css-5ipfcq-TextComponent"
     data-heading="true"
   >
     <a
-      class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+      class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
       href="#enums"
       id="enums"
     >
@@ -11633,17 +11633,17 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-15gi84a"
+    class="!p-0 css-gz86c1-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
     >
       <h3
-        class="group css-nikr5x-TextComponent"
+        class="group css-eynke-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
           href="#permissionstatus"
           id="permissionstatus"
         >
@@ -11684,7 +11684,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 css-1xg9efr-BoxSectionHeader"
+        class="!mb-0 !border-b-0 css-19qci8h-BoxSectionHeader"
         data-text="true"
       >
         <span
@@ -11699,11 +11699,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#denied"
           id="denied"
         >
@@ -11760,11 +11760,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#granted"
           id="granted"
         >
@@ -11821,11 +11821,11 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group css-1725pab-TextComponent"
+        class="group css-iu1hy2-TextComponent"
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center scroll-m-5 relative text-[inherit] decoration-0 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
           href="#undetermined"
           id="undetermined"
         >

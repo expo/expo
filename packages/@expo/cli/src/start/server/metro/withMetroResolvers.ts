@@ -86,7 +86,7 @@ export function withMetroResolvers(
                   throw error;
                 }
                 debug(
-                  `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform})`
+                  `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform}, env: ${ctx.customResolverOptions?.environment}, origin: ${ctx.originModulePath})`
                 );
               }
             }
@@ -153,13 +153,10 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
     moduleName: string,
     platform: string | null
   ) {
-    if (!platform) {
-      debug('Cannot mutate resolution error');
-      return error;
-    }
+    const inputPlatform = platform ?? 'null';
 
     const mapByOrigin = depGraph.get(optionsKeyForContext(context));
-    const mapByPlatform = mapByOrigin?.get(platform);
+    const mapByPlatform = mapByOrigin?.get(inputPlatform);
 
     if (!mapByPlatform) {
       return error;
@@ -250,7 +247,7 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
           if (
             // If bundling for web and the import is pulling internals from outside of react-native
             // then mark it as an invalid import.
-            platform === 'web' &&
+            inputPlatform === 'web' &&
             !/^(node_modules\/)?react-native\//.test(filename) &&
             tree.request.match(/^react-native\/.*/)
           ) {
@@ -316,13 +313,13 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
         const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
-          if (!platform) return;
+          const inputPlatform = platform ?? 'null';
 
           const key = optionsKeyForContext(context);
           if (!depGraph.has(key)) depGraph.set(key, new Map());
           const mapByTarget = depGraph.get(key);
-          if (!mapByTarget!.has(platform)) mapByTarget!.set(platform, new Map());
-          const mapByPlatform = mapByTarget!.get(platform);
+          if (!mapByTarget!.has(inputPlatform)) mapByTarget!.set(inputPlatform, new Map());
+          const mapByPlatform = mapByTarget!.get(inputPlatform);
           if (!mapByPlatform!.has(context.originModulePath))
             mapByPlatform!.set(context.originModulePath, new Set());
           const setForModule = mapByPlatform!.get(context.originModulePath)!;

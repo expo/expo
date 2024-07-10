@@ -1,5 +1,6 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
-import { ArrowLeftIcon, ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 
 import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
@@ -36,12 +37,7 @@ export const Footer = ({
   const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
 
   return (
-    <footer
-      className={mergeClasses(
-        'flex flex-col gap-8',
-        title && 'pt-10 mt-10 border-t border-default',
-        !title && 'pt-5'
-      )}>
+    <footer className={mergeClasses('flex flex-col gap-10', title && 'pt-10', !title && 'pt-6')}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(

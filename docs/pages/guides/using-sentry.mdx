@@ -6,9 +6,9 @@ description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -47,7 +47,7 @@ them later:
 
 <Step label="1.2">
 
-Go to the [Developer Settings > Auth Tokens](https://sentry.io/settings/) page and create a new token. The token is automatically scoped for Source Map Upload and Release Creation. Save it.
+Go to the [Developer Settings > Auth Tokens](https://sentry.io/settings/auth-tokens/) page and create a new [Organization Auth Token](https://docs.sentry.io/account/auth-tokens/#organization-auth-tokens). The token is automatically scoped for Source Map Upload and Release Creation. Save it.
 
 </Step>
 

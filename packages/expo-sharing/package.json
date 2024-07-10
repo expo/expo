@@ -1,7 +1,7 @@
 {
   "name": "expo-sharing",
   "version": "12.0.1",
-  "description": "ExpoSharing standalone module",
+  "description": "Provides a way to share files directly with other compatible applications.",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
   "sideEffects": false,
@@ -17,7 +17,10 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-sharing"
+    "expo-sharing",
+    "android",
+    "ios",
+    "web"
   ],
   "repository": {
     "type": "git",

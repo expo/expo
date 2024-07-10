@@ -65,7 +65,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
 
     AsyncFunction("presentPermissionsPickerAsync") {
-      if #available(iOS 15.0, *) {
+      if #available(iOS 14.0, *) {
         guard let vc = appContext?.utilities?.currentViewController() else {
           return
         }
@@ -183,7 +183,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           }
           let assets = getAssetsBy(assetIds: assetIds)
 
-          let collectionAssets = PHAsset.fetchAssets(in: collection, options: nil)
           let albumChangeRequest = PHAssetCollectionChangeRequest(for: collection, assets: assets)
           albumChangeRequest?.removeAssets(assets)
         } completionHandler: { success, _ in
@@ -456,9 +455,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         self.allAssetsFetchResult = changeDetails.fetchResultAfterChanges
 
         if changeDetails.hasIncrementalChanges && !changeDetails.insertedObjects.isEmpty || !changeDetails.removedObjects.isEmpty {
-          var insertedAssets = [[String: Any]?]()
-          var deletedAssets = [[String: Any]?]()
-          var updatedAssets = [[String: Any]?]()
+          var insertedAssets = [[String: Any?]?]()
+          var deletedAssets = [[String: Any?]?]()
+          var updatedAssets = [[String: Any?]?]()
           let body: [String: Any] = [
             "hasIncrementalChanges": true,
             "insertedAssets": insertedAssets,

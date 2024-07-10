@@ -210,9 +210,14 @@ export class WebSocketWithReconnect implements WebSocket {
     try {
       ws.removeEventListener('message', this.handleMessage);
       ws.removeEventListener('open', this.handleOpen);
-      // @ts-ignore: TypeScript expects (e: Event) => any, but we want (e: WebSocketErrorEvent) => any
-      ws.removeEventListener('error', this.handleError);
       ws.removeEventListener('close', this.handleClose);
+
+      // WebSocket throws errors if we don't handle the error event.
+      // Specifically when closing a ws in CONNECTING readyState,
+      // WebSocket will have `WebSocket was closed before the connection was established` error.
+      // We won't like to have the exception, so set a noop error handler.
+      ws.onerror = () => {};
+
       ws.close();
     } catch {}
   }

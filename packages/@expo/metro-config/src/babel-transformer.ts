@@ -31,6 +31,8 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   projectRoot: string;
 };
 
+const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
+
 function isCustomTruthy(value: any): boolean {
   return value === true || value === 'true';
 }
@@ -49,7 +51,7 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 }
 
 const memoizeWarning = memoize((message: string) => {
-  console.warn(message);
+  debug(message);
 });
 
 function getBabelCaller({
@@ -68,7 +70,7 @@ function getBabelCaller({
 
   if (routerRoot == null) {
     memoizeWarning(
-      'Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory.'
+      'Warning: Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory. This can occur if you bundle without Expo CLI or expo/metro-config.'
     );
   }
 

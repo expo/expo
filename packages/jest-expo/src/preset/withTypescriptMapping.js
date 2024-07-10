@@ -12,6 +12,9 @@ function jestMappingFromTypescriptPaths(paths, prefix = '<rootDir>') {
   const mapping = {};
 
   for (const path in paths) {
+    // Abort when path is just a wildcard
+    if (path === '*') continue;
+
     if (!paths[path].length) {
       console.warn(`Skipping empty typescript path map: ${path}`);
       continue;

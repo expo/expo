@@ -1,7 +1,7 @@
 import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 /**
  * Used to transform font family names to the scoped name. This does not need to
- * be called in standalone or bare apps but it will return unscoped font family
+ * be called in standalone or bare apps, but it will return unscoped font family
  * names if it is called in those contexts.
  *
  * @param fontFamily Name of font to process.
@@ -28,9 +28,9 @@ export declare function isLoading(fontFamily: string): boolean;
  * with the platform's native text elements. In the browser this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
  *
- * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://reactnative.dev/docs/text#style)
- * style prop with React Native Text elements.
- * @param source the font asset that should be loaded into the `fontFamily` namespace.
+ * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
+ * with React Native `Text` elements.
+ * @param source The font asset that should be loaded into the `fontFamily` namespace.
  *
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.

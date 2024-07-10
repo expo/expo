@@ -101,6 +101,34 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function createNumericModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+function createStableModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+  // This is an absolute file path.
+  return (modulePath: string): number => {
+    // TODO: We may want a hashed version for production builds in the future.
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      id = path.relative(root, modulePath);
+      fileToIdMap.set(modulePath, id);
+    }
+    // @ts-expect-error: we patch this to support being a string.
+    return id;
+  };
+}
+
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
@@ -204,13 +232,29 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
+      isThirdPartyModule(module) {
+        // Block virtual modules from appearing in the source maps.
+        if (module.path.startsWith('\0')) return true;
+
+        // Generally block node modules
+        if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+          // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+          return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
+        }
+        return false;
+      },
+
+      createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
+        ? createStableModuleIdFactory.bind(null, projectRoot)
+        : createNumericModuleIdFactory,
+
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter');
         if (stdRuntime) {
           preModules.push(stdRuntime);
         }
@@ -266,7 +310,7 @@ export function getDefaultConfig(
       reanimatedVersion,
       // Ensure invalidation when using identical projects in monorepos
       _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
-
+      unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

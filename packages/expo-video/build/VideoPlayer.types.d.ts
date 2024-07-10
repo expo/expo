@@ -107,7 +107,7 @@ export type VideoPlayerEvents = {
     /**
      * Handler for an event emitted when the status of the player changes.
      */
-    statusChange(newStatus: VideoPlayerStatus, oldStatus: VideoPlayerStatus, error: PlayerError): void;
+    statusChange(newStatus: VideoPlayerStatus, oldStatus: VideoPlayerStatus, error?: PlayerError): void;
     /**
      * Handler for an event emitted when the player starts or stops playback.
      */
@@ -151,6 +151,13 @@ export type VideoSource = string | {
      * When undefined the player will display information contained in the video metadata.
      */
     metadata?: VideoMetadata;
+    /**
+     * Specifies headers sent with the video request.
+     * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+     * @platform android
+     * @platform ios
+     */
+    headers?: Record<string, string>;
 } | null;
 /**
  * Contains information about any errors that the player encountered during the playback

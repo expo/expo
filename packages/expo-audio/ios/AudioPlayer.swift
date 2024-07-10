@@ -9,13 +9,19 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
+  let interval: Double
 
-  var isLoaded: Bool {
-    pointer.currentItem?.status == .readyToPlay
+  init(_ ref: AVPlayer, interval: Double) {
+    self.interval = interval
+    super.init(ref)
   }
 
-  var isPlaying: Bool {
-    pointer.timeControlStatus == .playing
+  var isLoaded: Bool {
+    ref.currentItem?.status == .readyToPlay
+  }
+
+  var playing: Bool {
+    ref.timeControlStatus == .playing
   }
 
   var isBuffering: Bool {
@@ -23,40 +29,44 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func playerIsBuffering() -> Bool {
-    let avPlayer = pointer
-    let isPlaying = avPlayer.timeControlStatus == .playing
+    let isPlaying = ref.timeControlStatus == .playing
 
     if isPlaying {
       return false
     }
 
-    if avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
       return true
     }
 
-    if let currentItem = avPlayer.currentItem {
+    if let currentItem = ref.currentItem {
       return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
     }
     return true
   }
 
-  func updateStatus(with dict: [String: Any]) {
-    var body: [String: Any] = [
+  func currentStatus() -> [String: Any] {
+    let time = ref.currentItem?.duration
+    let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
+    return [
       "id": id,
-      "currentTime": (pointer.currentItem?.currentTime().seconds ?? 0) * 1000,
-      "status": statusToString(status: pointer.status),
-      "timeControlStatus": timeControlStatusString(status: pointer.timeControlStatus),
-      "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: pointer.reasonForWaitingToPlay),
-      "mute": pointer.isMuted,
-      "duration": (pointer.currentItem?.duration.seconds ?? 0) * 1000,
-      "isPlaying": pointer.timeControlStatus == .playing,
+      "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
+      "playbackState": statusToString(status: ref.status),
+      "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
+      "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
+      "mute": ref.isMuted,
+      "duration": duration * 1000,
+      "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
-      "isLoaded": pointer.currentItem?.status == .readyToPlay,
-      "playbackRate": pointer.rate,
+      "isLoaded": ref.currentItem?.status == .readyToPlay,
+      "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
       "isBuffering": isBuffering
     ]
+  }
 
+  func updateStatus(with dict: [String: Any]) {
+    var body = currentStatus()
     body.merge(dict) { _, new in
       new
     }

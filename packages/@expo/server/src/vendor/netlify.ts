@@ -109,7 +109,6 @@ export function convertRequest(event: HandlerEvent): Request {
         ? Buffer.from(event.body, 'base64')
         : Buffer.from(event.body, 'base64').toString()
       : event.body;
-    // @ts-expect-error
     init.duplex = 'half';
   }
 

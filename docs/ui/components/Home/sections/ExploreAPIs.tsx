@@ -1,10 +1,8 @@
 import { mergeClasses, DocsLogo } from '@expo/styleguide';
-import {
-  Image03DuotoneIcon,
-  CameraPlusDuotoneIcon,
-  NotificationMessageDuotoneIcon,
-  ArrowRightIcon,
-} from '@expo/styleguide-icons';
+import { CameraPlusDuotoneIcon } from '@expo/styleguide-icons/duotone/CameraPlusDuotoneIcon';
+import { Image03DuotoneIcon } from '@expo/styleguide-icons/duotone/Image03DuotoneIcon';
+import { NotificationMessageDuotoneIcon } from '@expo/styleguide-icons/duotone/NotificationMessageDuotoneIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';
@@ -62,7 +60,7 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
     <A
       href={link}
       className={mergeClasses(
-        'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition group',
+        'min-h-[200px] overflow-hidden relative border border-default rounded-lg block bg-subtle transition group shadow-xs',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className

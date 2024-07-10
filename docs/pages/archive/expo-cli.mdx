@@ -315,7 +315,7 @@ Alias: `expo update`
 | ------------------------------------ | --------------------------------------------------------------------- |
 | `--no-install`                       | Skip installing npm packages and CocoaPods.                           |
 | `--npm`                              | Use npm to install dependencies. (default when Yarn is not installed) |
-| `-p, --platform [all\|android\|ios]` | Platforms to sync: ios, android, all. Default: all                    |
+| `-p, --platform [all\|android\|ios]` | Platforms to sync: Android, iOS, all. Default: all                    |
 | `--config [file]`                    | Deprecated: Use app.config.js to switch config files instead.         |
 
 </Collapsible>
@@ -328,7 +328,7 @@ Alias: `expo update`
 | `--clean`                                 | Delete the native folders and regenerate them before applying changes                   |
 | `--npm`                                   | Use npm to install dependencies. (default when Yarn is not installed)                   |
 | `--template [template]`                   | Project template to clone from. File path pointing to a local tar file or a github repo |
-| `-p, --platform [all\|android\|ios]`      | Platforms to sync: ios, android, all. Default: all                                      |
+| `-p, --platform [all\|android\|ios]`      | Platforms to sync: Android, iOS, all. Default: all                                      |
 | `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list)            |
 | `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                           |
 
@@ -338,7 +338,7 @@ Alias: `expo update`
 
 ### Publish
 
-> SDK 49 will be the last version to support Classic Updates. To continue using the deprecated `expo publish` command, set [`updates.useClassicUpdates`](/versions/latest/config/app/#useclassicupdates) in your app config.
+> SDK 49 was the last version to support Classic Updates. To continue using the deprecated `expo publish` command, set [`updates.useClassicUpdates`](/versions/latest/config/app/#useclassicupdates) in your app config.
 
 <Collapsible summary={<><h4>expo publish</h4>Deploy a project to Expo hosting</>}>
 

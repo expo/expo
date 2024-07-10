@@ -27,7 +27,7 @@ module.exports = {
         'default-fade-down': `linear-gradient(to bottom, transparent, ${theme('backgroundColor.default')})`,
         'cell-quickstart-fade': `linear-gradient(${theme('backgroundColor.subtle')} 15%, #21262d00 100%)`,
         'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
-        'cell-tutorial-fade': `linear-gradient(var(--blue4) 15%, #201d5200 100%)`,
+        'cell-tutorial-fade': `linear-gradient(var(--blue3) 15%, #201d5200 100%)`,
         'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
         appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
       }),

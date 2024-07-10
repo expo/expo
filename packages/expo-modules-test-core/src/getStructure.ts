@@ -11,7 +11,6 @@ import {
   FileType,
   FullyAnnotatedDecl,
   OutputModuleDefinition,
-  OutputViewDefinition,
   Structure,
 } from './types';
 
@@ -187,27 +186,36 @@ function findGroupedDefinitionsOfType(type: string, moduleDefinition: Structure[
     return definitionParams.map((d) => ({ name: getIdentifierFromOffsetObject(d, file) }));
   });
 }
-
-function findAndParseView(
+function findAndParseNestedClassesOfType(
   moduleDefinition: Structure[],
-  file: FileType
-): null | OutputViewDefinition {
-  const viewDefinition = moduleDefinition.find((md) => md['key.name'] === 'View');
-  if (!viewDefinition) {
-    return null;
-  }
-  // we support reading view definitions from closure only
-  const viewModuleDefinition =
-    viewDefinition['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.[
-      'key.substructure'
-    ];
-  if (!viewModuleDefinition) {
-    console.warn('Could not parse view definition');
-    return null;
-  }
-  // let's drop nested view field (is null anyways)
-  const { view: _, ...definition } = parseModuleDefinition(viewModuleDefinition, file);
-  return definition;
+  file: FileType,
+  type: string
+) {
+  // we support reading definitions from closure only
+  const definitionsOfType = moduleDefinition.filter((md) => md['key.name'] === type);
+  return definitionsOfType
+    .map((df) => {
+      const nestedModuleDefinition =
+        df['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.[
+          'key.substructure'
+        ];
+      if (!nestedModuleDefinition) {
+        console.warn('Could not parse definition');
+        return null;
+      }
+      const name = getIdentifierFromOffsetObject(df['key.substructure']?.[0], file).replace(
+        '.self',
+        ''
+      );
+      // let's drop nested view field and classes (are null anyways)
+      const {
+        views: _,
+        classes: _2,
+        ...definition
+      } = parseModuleDefinition(nestedModuleDefinition, file);
+      return { ...definition, name };
+    })
+    .flatMap((f) => (f ? [f] : []));
 }
 
 function omitParamsFromClosureArguments<T extends Closure>(
@@ -218,8 +226,7 @@ function omitParamsFromClosureArguments<T extends Closure>(
     ...d,
     types: {
       ...d.types,
-      parameters:
-        d.types?.parameters?.filter((t, idx) => idx !== 0 && !paramsToOmit.includes(t.name)) ?? [],
+      parameters: d.types?.parameters?.filter((t, idx) => !paramsToOmit.includes(t.name)) ?? [],
     },
   }));
 }
@@ -250,7 +257,8 @@ function parseModuleDefinition(
       findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file),
       ['view']
     ),
-    view: findAndParseView(preparedModuleDefinition, file),
+    views: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View'),
+    classes: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'Class'),
   };
   return parsedDefinition;
 }

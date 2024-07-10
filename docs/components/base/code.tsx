@@ -1,7 +1,9 @@
 import { css } from '@emotion/react';
 import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
+import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
+import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import {

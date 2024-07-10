@@ -1,5 +1,7 @@
 import { SnackLogo } from '@expo/styleguide';
-import { ChangelogIcon, DiscordIcon, Mail01Icon } from '@expo/styleguide-icons';
+import { ChangelogIcon } from '@expo/styleguide-icons/custom/ChangelogIcon';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useRouter } from 'next/compat/router';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';

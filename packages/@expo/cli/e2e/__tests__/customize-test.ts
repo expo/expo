@@ -72,14 +72,10 @@ it(
     const projectRoot = await setupTestProjectWithOptionsAsync('basic-customize', 'with-blank', {
       reuseExisting: false,
     });
-    // `npx expo customize index.html serve.json babel.config.js`
-    await execa(
-      'node',
-      [bin, 'customize', 'public/index.html', 'public/serve.json', 'babel.config.js'],
-      {
-        cwd: projectRoot,
-      }
-    );
+    // `npx expo customize index.html babel.config.js`
+    await execa('node', [bin, 'customize', 'public/index.html', 'babel.config.js'], {
+      cwd: projectRoot,
+    });
 
     const files = klawSync(projectRoot)
       .map((entry) => {
@@ -98,7 +94,6 @@ it(
       'metro.config.js',
       'package.json',
       'public/index.html',
-      'public/serve.json',
     ]);
   },
   // Could take 45s depending on how fast npm installs
@@ -171,6 +166,47 @@ it(
       ...existingTsConfig,
       include: ['custom', '.expo/types/**/*.ts', 'expo-env.d.ts'],
     });
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo customize tsconfig.json` sets up typed routes',
+  async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-customize-typed-routes',
+      'with-router-typed-routes',
+      { reuseExisting: false }
+    );
+
+    /*
+     * Before we can run `expo customize` we need to bundle the local version of Expo Router
+     * So we pack the local package and add it to the E2E test as a dependency
+     */
+
+    // `npm pack` on Expo Router
+    const packOutput = await execa('npm', ['pack', '--json', '--pack-destination', projectRoot], {
+      cwd: path.join(__dirname, '../../../../expo-router'),
+    });
+
+    const [{ filename }] = JSON.parse(packOutput.stdout);
+
+    // Add the local version of expo-router
+    await execa('bun', ['add', `expo-router@${filename}`], {
+      cwd: projectRoot,
+    });
+
+    // `npx expo typescript`
+    await execa('node', [bin, 'customize', 'tsconfig.json'], {
+      cwd: projectRoot,
+    });
+
+    await expect(
+      execa('node', [require.resolve('typescript/bin/tsc')], {
+        cwd: projectRoot,
+      })
+    ).resolves.toBeTruthy();
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000

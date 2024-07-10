@@ -42,7 +42,6 @@ const generator_1 = __importDefault(require("@babel/generator"));
 const babylon = __importStar(require("@babel/parser"));
 const types = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const collectDependencies_1 = __importStar(require("metro/src/ModuleGraph/worker/collectDependencies"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_cache_1 = require("metro-cache");
@@ -52,6 +51,7 @@ const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugi
 const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
+const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const resolveOptions_1 = require("./resolveOptions");
 // asserts non-null
 function nullthrows(x, message) {
@@ -118,8 +118,8 @@ class InvalidRequireCallError extends Error {
     }
 }
 async function transformJS(file, { config, options, projectRoot }) {
-    // const targetEnv = options.customTransformOptions?.environment;
-    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+    const targetEnv = options.customTransformOptions?.environment;
+    const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
@@ -234,12 +234,16 @@ async function transformJS(file, { config, options, projectRoot }) {
     }
     else {
         try {
-            const opts = {
+            ({ ast, dependencies, dependencyMapName } = (0, collect_dependencies_1.default)(ast, {
                 asyncRequireModulePath: config.asyncRequireModulePath,
                 dependencyTransformer: config.unstable_disableModuleWrapping === true
                     ? disabledDependencyTransformer
                     : undefined,
-                dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
+                dynamicRequires: isServerEnv
+                    ? // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+                        // This requires a patch to Metro collectDeps.
+                        'warn'
+                    : getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
                 inlineableCalls: [importDefault, importAll],
                 keepRequireNames: options.dev,
                 allowOptionalDependencies: config.allowOptionalDependencies,
@@ -248,11 +252,10 @@ async function transformJS(file, { config, options, projectRoot }) {
                 // NOTE(EvanBacon): Allow arbitrary imports in server environments.
                 // This requires a patch to Metro collectDeps.
                 // allowArbitraryImport: isServerEnv,
-            };
-            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, opts));
+            }));
         }
         catch (error) {
-            if (error instanceof collectDependencies_1.InvalidRequireCallError) {
+            if (error instanceof collect_dependencies_1.InvalidRequireCallError) {
                 throw new InvalidRequireCallError(error, file.filename);
             }
             throw error;
@@ -458,7 +461,9 @@ function getCacheKey(config) {
         require.resolve(babelTransformerPath),
         require.resolve(minifierPath),
         require.resolve('metro-transform-worker/src/utils/getMinifier'),
+        require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),
+        require.resolve('./resolveOptions'),
         require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
         require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
         ...metro_transform_plugins_1.default.getTransformPluginCacheKeyFiles(),

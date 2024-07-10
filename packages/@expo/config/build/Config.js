@@ -355,39 +355,37 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
       message: `Cannot automatically write to dynamic config at: ${_path().default.relative(projectRoot, config.dynamicConfigPath)}`,
       config: null
     };
-  } else if (config.staticConfigPath) {
-    // Static with no dynamic config, this means we can append to the config automatically.
-    let outputConfig;
-    // If the config has an expo object (app.json) then append the options to that object.
-    if (config.rootConfig.expo) {
-      outputConfig = {
-        ...config.rootConfig,
-        expo: {
-          ...config.rootConfig.expo,
-          ...modifications
-        }
-      };
-    } else {
-      // Otherwise (app.config.json) just add the config modification to the top most level.
-      outputConfig = {
-        ...config.rootConfig,
+  } else if (config.staticConfigPath == null) {
+    // No config in the project, use a default location.
+    config.staticConfigPath = _path().default.join(projectRoot, 'app.json');
+  }
+
+  // Static with no dynamic config, this means we can append to the config automatically.
+  let outputConfig;
+  // If the config has an expo object (app.json) then append the options to that object.
+  if (config.rootConfig.expo) {
+    outputConfig = {
+      ...config.rootConfig,
+      expo: {
+        ...config.rootConfig.expo,
         ...modifications
-      };
-    }
-    if (!writeOptions.dryRun) {
-      await _jsonFile().default.writeAsync(config.staticConfigPath, outputConfig, {
-        json5: false
-      });
-    }
-    return {
-      type: 'success',
-      config: outputConfig
+      }
+    };
+  } else {
+    // Otherwise (app.config.json) just add the config modification to the top most level.
+    outputConfig = {
+      ...config.rootConfig,
+      ...modifications
     };
   }
+  if (!writeOptions.dryRun) {
+    await _jsonFile().default.writeAsync(config.staticConfigPath, outputConfig, {
+      json5: false
+    });
+  }
   return {
-    type: 'fail',
-    message: 'No config exists',
-    config: null
+    type: 'success',
+    config: outputConfig
   };
 }
 function ensureConfigHasDefaultValues({

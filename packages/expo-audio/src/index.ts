@@ -1,5 +1,6 @@
+import { useEvent } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import {
   AudioMode,
@@ -11,34 +12,36 @@ import {
 } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
-  statusListener?: (status: AudioStatus) => void
+  updateInterval: number = 500
 ): AudioPlayer {
   const parsedSource = resolveSource(source);
-  const player = useReleasingSharedObject(() => {
-    return new AudioModule.AudioPlayer(parsedSource);
-  }, [JSON.stringify(parsedSource)]);
-
-  useEffect(() => {
-    const subscription = player.addListener('onPlaybackStatusUpdate', (status) => {
-      statusListener?.(status);
-    });
-    return () => subscription.remove();
-  }, [player.id]);
+  const player = useReleasingSharedObject(
+    () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
+    [JSON.stringify(parsedSource)]
+  );
 
   return player;
+}
+
+export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
+  const currentStatus = useMemo(() => player.currentStatus, [player.id]);
+  return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
 }
 
 export function useAudioRecorder(
   options: RecordingOptions,
   statusListener?: (status: RecordingStatus) => void
 ): [AudioRecorder, RecorderState] {
+  const platformOptions = createRecordingOptions(options);
   const recorder = useReleasingSharedObject(() => {
-    return new AudioModule.AudioRecorder(options);
-  }, [JSON.stringify(options)]);
+    return new AudioModule.AudioRecorder(platformOptions);
+  }, [JSON.stringify(platformOptions)]);
+
   const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {

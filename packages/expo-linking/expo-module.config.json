@@ -1,0 +1,21 @@
+{
+  "platforms": [
+    "ios",
+    "tvos",
+    "android",
+    "web"
+  ],
+  "ios": {
+    "modules": [
+      "ExpoLinkingModule"
+    ],
+    "appDelegateSubscribers": [
+      "LinkingAppDelegateSubscriber"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.linking.ExpoLinkingModule"
+    ]
+  }
+}

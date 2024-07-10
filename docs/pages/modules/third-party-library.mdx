@@ -3,13 +3,11 @@ title: Wrap third-party native libraries
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
 ---
 
-import { CODE } from '~/ui/components/Text';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
+import { CODE } from '~/ui/components/Text';
 
 Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects.
 This tutorial focuses on utilizing the Expo Modules API to create radial charts using two similar libraries accessible on both native platforms.
@@ -92,7 +90,7 @@ dependencies {
     s.static_framework = true
 
     s.dependency 'ExpoModulesCore'
-+   s.dependency 'Charts', '~> 4.1.0'
++   s.dependency 'DGCharts', '~> 5.1.0'
 
     # Swift/Objective-C compatibility
 ```
@@ -261,7 +259,7 @@ Now you can implement the native functionality by editing the placeholder files 
 
 ```swift ios/ExpoRadialChartView.swift
 import ExpoModulesCore
-import Charts
+import DGCharts
 
 struct Series: Record {
   @Field

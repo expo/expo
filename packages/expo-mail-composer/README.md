@@ -11,8 +11,8 @@ Provides an API to compose mails using OS specific UI
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/mail-composer.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/mail-composer/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/mail-composer/)
 
 # Installation in managed Expo projects
 
@@ -28,13 +28,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-mail-composer
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 
