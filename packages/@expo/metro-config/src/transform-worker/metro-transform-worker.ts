@@ -427,10 +427,6 @@ async function transformJS(
         // If tree shaking is enabled, then preserve the original require calls.
         // This ensures require.context calls are not broken.
         collectOnly: treeshake === true,
-
-        // NOTE(EvanBacon): Allow arbitrary imports in server environments.
-        // This requires a patch to Metro collectDeps.
-        // allowArbitraryImport: isServerEnv,
       };
 
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
@@ -439,7 +435,6 @@ async function transformJS(
         dependencyTransformer:
           unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
       }));
-      // console.log('>', dependencies);
 
       // Ensure we use the same name for the second pass of the dependency collection in the serializer.
       collectDependenciesOptions = {

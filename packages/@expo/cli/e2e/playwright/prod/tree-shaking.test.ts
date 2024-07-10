@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 import execa from 'execa';
+import fs from 'fs';
+import path from 'path';
+import klawSync from 'klaw-sync';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -9,7 +12,7 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
-const inputDir = 'dist-hydration-treeshaking';
+const inputDir = 'dist-tree-shaking';
 
 test.describe(inputDir, () => {
   test.beforeAll(async () => {
@@ -26,8 +29,9 @@ test.describe(inputDir, () => {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'hydration',
+        E2E_ROUTER_SRC: 'tree-shaking',
         EXPO_UNSTABLE_TREE_SHAKING: 'true',
+        EXPO_USE_METRO_REQUIRE: 'true',
       },
     });
     console.timeEnd('expo export');
@@ -39,6 +43,32 @@ test.describe(inputDir, () => {
 
   // This test generally ensures no errors are thrown during an export loading.
   test('loads without hydration errors', async ({ page }) => {
+    // Ensure the JS code has string module IDs
+    const jsFile = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      nodir: true,
+    });
+
+    const largest = [...jsFile].sort((a, b) => b.stats.size - a.stats.size)[0].path;
+    const largestFile = fs.readFileSync(largest, 'utf8');
+
+    // Sanity
+    expect(largestFile).toMatch(/__r\("index.js"\);/);
+    // This icon has been removed.
+    expect(largestFile).not.toMatch(/test-icon-apple/);
+    // This icon remains.
+    expect(largestFile).toMatch(/test-icon-banana/);
+
+    largestFile.split('\n').forEach((line, i) => {
+      if (line.startsWith('__d(')) {
+        const contents = line.match(/__d\(\(function\([^)]+\){(.*)}\),"/)?.[1];
+        // Ensure no empty modules are included
+        if (contents!.length < 5) {
+          console.log(contents);
+          throw new Error(`Module is empty: ${line} at line ${i}`);
+        }
+      }
+    });
+
     console.time('npx serve');
     await serveCmd.startAsync([inputDir]);
     console.timeEnd('npx serve');
@@ -64,13 +94,10 @@ test.describe(inputDir, () => {
       errors.push(error.message);
     });
 
-    console.time('hydrate');
     // Wait for the app to load
-    await page.waitForSelector('[data-testid="index-text"]');
-
-    // Wait for the app to hydrate
-    await page.waitForSelector('[data-testid="index-mounted"]');
-    console.timeEnd('hydrate');
+    await page.waitForSelector('[data-testid="async-chunk"]');
+    await page.waitForSelector('[data-testid="test-icon-banana"]');
+    // await page.waitForSelector('[data-testid="optional-existing"]');
 
     expect(errorLogs).toEqual([]);
     expect(errors).toEqual([]);
