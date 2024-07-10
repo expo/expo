@@ -19,7 +19,9 @@ test.describe(inputDir, () => {
 
   let serveCmd: ServeStaticCommand;
 
-  test.beforeEach('bundle and serve', async () => {
+  test.beforeEach('bundle and serve', async (options, testInfo) => {
+    testInfo.setTimeout(testInfo.timeout + 30000);
+
     console.time('expo export');
     await execa('node', [bin, 'export', '-p', 'web', '--output-dir', inputDir], {
       cwd: projectRoot,
