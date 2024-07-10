@@ -3,6 +3,9 @@ export interface NativeDevicePushToken {
     type: 'ios' | 'android';
     data: string;
 }
+/**
+ * @hidden
+ */
 export interface WebDevicePushToken {
     type: 'web';
     data: {
@@ -10,33 +13,27 @@ export interface WebDevicePushToken {
         keys: WebDevicePushTokenKeys;
     };
 }
+/**
+ * @hidden
+ */
 export type WebDevicePushTokenKeys = {
     p256dh: string;
     auth: string;
 };
-export type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+export type ExplicitlySupportedDevicePushToken = NativeDevicePushToken;
 export type ImplicitlySupportedDevicePushToken = {
     /**
-     * Either `android`, `ios` or `web`.
+     * Either `android` or `ios`.
      */
     type: Exclude<typeof Platform.OS, ExplicitlySupportedDevicePushToken['type']>;
     /**
-     * Either the push token as a string (when for native platforms), or an object conforming to the type below (for web):
-     * ```ts
-     * {
-     *   endpoint: string;
-     *   keys: {
-     *     p256dh: string;
-     *     auth: string;
-     *   }
-     * }
-     * ```
+     * The push token as a string for a native platform.
      */
     data: any;
 };
 /**
  * In simple terms, an object of `type: Platform.OS` and `data: any`. The `data` type depends on the environment - on a native device it will be a string,
- * which you can then use to send notifications via Firebase Cloud Messaging (Android) or APNs (iOS); on web it will be a registration object (VAPID).
+ * which you can then use to send notifications via Firebase Cloud Messaging (Android) or APNs (iOS).
  */
 export type DevicePushToken = ExplicitlySupportedDevicePushToken | ImplicitlySupportedDevicePushToken;
 /**

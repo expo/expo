@@ -636,6 +636,14 @@ export async function withMetroMultiPlatformAsync(
     getMetroBundler: () => Bundler;
   }
 ) {
+  if (env.EXPO_USE_METRO_REQUIRE) {
+    debug('Using Expo metro require runtime.');
+    // Change the default metro-runtime to a custom one that supports bundle splitting.
+    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+      '@expo/cli/build/metro-require/require'
+    );
+  }
+
   if (!config.projectRoot) {
     // @ts-expect-error: read-only types
     config.projectRoot = projectRoot;
