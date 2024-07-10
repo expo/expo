@@ -22,7 +22,12 @@ public final class FileSystemNextModule: Module {
       }
 
       Function("write") { (file, content: Either<String, TypedArray>) in
-        try file.write(content)
+        if let content: String = content.get() {
+          try file.write(content)
+        }
+        if let content: TypedArray = content.get() {
+          try file.write(content)
+        }
       }
 
       Function("delete") { file in

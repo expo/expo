@@ -32,7 +32,16 @@ class FileSystemNextModule : Module() {
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray> ->
-        file.write(content)
+        if (content.`is`(String::class)) {
+          content.get(String::class).let {
+            file.write(it)
+          }
+        }
+        if (content.`is`(TypedArray::class)) {
+          content.get(TypedArray::class).let {
+            file.write(it)
+          }
+        }
       }
 
       Function("text") { file: FileSystemFile ->

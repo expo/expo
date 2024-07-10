@@ -2,7 +2,6 @@ package expo.modules.filesystem.next
 
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
-import expo.modules.kotlin.types.Either
 import java.io.File
 import java.io.FileOutputStream
 
@@ -16,15 +15,21 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     path.createNewFile()
   }
 
-  fun write(content: Either<String, TypedArray>) {
+  fun write(content: String) {
     if (!exists()) {
       create()
     }
-    content.get(String::class).let { text ->
-//     TODO: Maybe it be better to use: appContext?.reactContext?.applicationContext?.contentResolver?.openOutputStream
-      FileOutputStream(path).use {
-        it.write(text.toByteArray())
-      }
+    FileOutputStream(path).use {
+      it.write(content.toByteArray())
+    }
+  }
+
+  fun write(content: TypedArray) {
+    if (!exists()) {
+      create()
+    }
+    FileOutputStream(path).use {
+      it.write(content.toDirectBuffer().array())
     }
   }
 
