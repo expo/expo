@@ -48,6 +48,10 @@ export declare class Directory {
    * Copies a directory.
    */
   copy(to: Directory | File);
+  /**
+   * Moves a directory.
+   */
+  move(to: Directory | File);
 }
 
 /**
@@ -104,4 +108,9 @@ export declare class File {
    * Copies a directory.
    */
   copy(to: Directory | File);
+
+  /**
+   * Moves a directory.
+   */
+  move(to: Directory | File);
 }

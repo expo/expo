@@ -11,16 +11,27 @@ internal class FileSystemPath: SharedObject {
   func delete() throws {
     try FileManager.default.removeItem(at: url)
   }
-
-  func exists() -> Bool {
-    return FileManager.default.fileExists(atPath: url.path)
-  }
-  func copy(to: FileSystemNextPath) throws {
-    if(to is FileSystemNextDirectory) {
+  func copy(to: FileSystemPath) throws {
+    if(to is FileSystemDirectory) {
       try FileManager.default.copyItem(at: url, to: to.url.appendingPathComponent(url.lastPathComponent))
     }
-    if(to is FileSystemNextFile) {
+    if(to is FileSystemFile) {
+      guard !url.hasDirectoryPath else {
+        throw CopyFolderToFileException()
+      }
       try FileManager.default.copyItem(at: url, to: to.url)
+    }
+  }
+  
+  func move(to: FileSystemPath) throws {
+    if(to is FileSystemDirectory) {
+      try FileManager.default.moveItem(at: url, to: to.url.appendingPathComponent(url.lastPathComponent))
+    }
+    if(to is FileSystemFile) {
+      guard !url.hasDirectoryPath else {
+        throw MoveFolderToFileException()
+      }
+      try FileManager.default.moveItem(at: url, to: to.url)
     }
   }
 }
