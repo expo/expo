@@ -164,8 +164,16 @@ export async function microBundle({
           throw new Error(`mini-metro runner doesn't support require context (yet)`);
         }
 
-        const resolved = resolve(id, dep.data.name);
-        await recurseWith([resolved], module);
+        try {
+          const resolved = resolve(id, dep.data.name);
+          await recurseWith([resolved], module);
+        } catch (error) {
+          if (dep.data.data.isOptional) {
+            // Skip optional modules that cannot be found.
+            continue;
+          }
+          throw error;
+        }
       }
     }
   }

@@ -1173,9 +1173,9 @@ it('collects export from', () => {
 
   const { dependencies } = collectDependencies(ast, opts);
   expect(dependencies).toEqual([
-    { name: 'Apple', data: objectContaining({ asyncType: null }) },
-    { name: 'Banana', data: objectContaining({ asyncType: null }) },
-    { name: 'Kiwi', data: objectContaining({ asyncType: null }) },
+    { name: 'Apple', data: objectContaining({ asyncType: null, exportNames: ['Apple'] }) },
+    { name: 'Banana', data: objectContaining({ asyncType: null, exportNames: ['Banana'] }) },
+    { name: 'Kiwi', data: objectContaining({ asyncType: null, exportNames: ['*'] }) },
   ]);
 });
 
@@ -1523,6 +1523,21 @@ it('collects require.resolveWeak calls', () => {
       ${dependencyMapName}[0];
     `)
   );
+});
+
+describe('export names', () => {
+  it('collects export names from multiple imports', () => {
+    const ast = astFromCode(`
+    import {A} from 'Apple';
+    export { A }
+    export { B, C } from 'Apple';
+  `);
+
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: 'Apple', data: objectContaining({ asyncType: null, exportNames: ['A', 'B', 'C'] }) },
+    ]);
+  });
 });
 
 function formatDependencyLocs(dependencies: readonly Dependency[], code: any) {

@@ -710,10 +710,14 @@ class DependencyRegistry {
       if (dependency.isOptional && !qualifier.optional) {
         dependency = {
           ...dependency,
-          exportNames: [...new Set(qualifier.exportNames.concat(dependency.exportNames))],
           isOptional: false,
         };
       }
+
+      dependency = {
+        ...dependency,
+        exportNames: [...new Set(dependency.exportNames.concat(qualifier.exportNames))],
+      };
     }
 
     this._dependencies.set(key, dependency);

@@ -132,6 +132,44 @@ export const foo = 3;
   expect(artifacts[0].source).toMatch('run');
 });
 
+it(`supports multiple imports to the same module`, async () => {
+  // Based on expo-linking
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+import * as Linking from "./a";
+console.log('keep', Linking.parse());
+            `,
+    'a.js': `
+    import { parse } from './b';
+    console.log(parse);
+    export { parse, createURL } from './b';
+`,
+    'b.js': `
+    export function createURL() {
+      // keep.createURL
+    }
+    export function parse() {
+      // keep.parse
+    }
+`,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/a.js',
+    }),
+  ]);
+  expectImports(graph, '/app/a.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/b.js',
+    }),
+  ]);
+  expect(artifacts[0].source).toMatch('createURL');
+  expect(artifacts[0].source).toMatch('parse');
+  expect(artifacts[0].source).toMatch('keep.createURL');
+  expect(artifacts[0].source).toMatch('keep.parse');
+});
+
 it(`removes unused classes`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
@@ -390,14 +428,25 @@ describe(isModuleEmptyFor, () => {
 });
 
 describe('metro require', () => {
-  xit(`uses missing optional require`, async () => {
-    // const [[, , graph], artifacts] = await serializeShakingAsync({
-    //   'index.js': `
-    //       try {
-    //         require('@dotlottie/react-player').DotLottiePlayer;
-    //       } catch (e) {}
-    //     `,
-    // });
+  it(`uses missing optional require`, async () => {
+    const [[, , graph]] = await serializeShakingAsync({
+      'index.js': `
+          try {
+            require('@dotlottie/react-player').DotLottiePlayer;
+          } catch (e) {}
+        `,
+    });
+
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({
+        absolutePath: '/app/node_modules/@dotlottie/react-player/index.js',
+        data: expect.objectContaining({
+          data: expect.objectContaining({
+            isOptional: true,
+          }),
+        }),
+      }),
+    ]);
   });
 
   // Not supported in the mini runner
