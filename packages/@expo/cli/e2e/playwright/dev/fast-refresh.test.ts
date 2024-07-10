@@ -22,7 +22,7 @@ test.describe(inputDir, () => {
 
   test.beforeEach(async () => {
     expo = new ExpoStartCommand(projectRoot, {
-      NODE_ENV: 'production',
+      NODE_ENV: 'development',
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
@@ -65,7 +65,9 @@ test.describe(inputDir, () => {
     console.timeEnd('expo start');
     console.log('Server running:', expo.url);
     console.time('Eagerly bundled JS');
-    await expo.fetchAsync('/');
+    const indexRes = await expo.fetchAsync('/');
+    expect(indexRes.ok).toBe(true);
+    console.log(await indexRes.text());
     console.timeEnd('Eagerly bundled JS');
 
     console.time('Open page');
@@ -181,6 +183,7 @@ function makeHotPredicate(predicate: (data: Record<string, any>) => boolean) {
 function waitForSocket(page: Page, matcher: (ws: WebSocket) => boolean) {
   return new Promise<WebSocket>((res) => {
     page.on('websocket', (ws) => {
+      console.log('Socket connected:', ws.url());
       if (matcher(ws)) {
         res(ws);
       }
