@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
 require("react-native/Libraries/Core/InitializeCore");
+// This MUST be imported to ensure URL is installed.
+require("expo");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const Location_1 = require("./Location");
 const getDevServer_1 = __importDefault(require("../getDevServer"));

@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Improve error message for `window.location` polyfill.
+
 ### 💡 Others
 
 - Remove downloading indicator for split bundles. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))

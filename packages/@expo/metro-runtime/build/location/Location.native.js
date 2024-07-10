@@ -19,7 +19,12 @@ class Location {
         const url = new URL(
         // @ts-expect-error
         href);
-        url.username = '';
+        try {
+            url.username = '';
+        }
+        catch {
+            throw new Error('Attempting to use the window.location polyfill before the URL built-in has been polyfilled.');
+        }
         url.password = '';
         Object.defineProperties(this, {
             hash: {
