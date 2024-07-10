@@ -15,7 +15,7 @@ internal final class FileSystemDirectory: FileSystemPath {
   func exists() -> Bool {
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-        return isDirectory.boolValue
+      return isDirectory.boolValue
     }
     return false
   }
