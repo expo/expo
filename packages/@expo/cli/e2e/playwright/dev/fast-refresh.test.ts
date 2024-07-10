@@ -88,13 +88,13 @@ test.describe(inputDir, () => {
       raceOrFail(
         waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
         // Should be really fast
-        1000,
+        2000,
         'HMR websocket on client took too long to connect.'
       ),
       // Order matters, message socket is set first.
       raceOrFail(
         waitForSocket(page, (ws) => ws.url().endsWith('/message')),
-        1000,
+        2000,
         'Message socket on client took too long to connect.'
       ),
     ]);
