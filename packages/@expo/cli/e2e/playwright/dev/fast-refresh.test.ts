@@ -61,14 +61,14 @@ test.describe(inputDir, () => {
 
   test('updates with fast refresh', async ({ page }) => {
     console.time('expo start');
+    // expo.addListener('stdout', (chunk) => {
+    //   console.log('[CLI]: stdout:', ...chunk);
+    // });
+    // expo.addListener('stderr', (chunk) => {
+    //   console.log('[CLI]: stderr:', ...chunk);
+    // });
     await expo.startAsync();
-    expo.addListener('stdout', (chunk) => {
-      console.log('[CLI]: stdout:', ...chunk);
-    });
-    expo.addListener('stderr', (chunk) => {
-      console.log('[CLI]: stderr:', ...chunk);
-    });
-    page.on('console', (msg) => console.log('[PAGE]:', msg.text()));
+    // page.on('console', (msg) => console.log('[PAGE]:', msg.text()));
 
     console.timeEnd('expo start');
 
@@ -81,6 +81,24 @@ test.describe(inputDir, () => {
     console.timeEnd('Eagerly bundled JS');
 
     console.time('Open page');
+
+    // NOTE: Start this test before navigating to the page to ensure we don't miss any events.
+    // Ensure the hot socket connects
+    const sockets = Promise.all([
+      raceOrFail(
+        waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
+        // Should be really fast
+        1000,
+        'HMR websocket on client took too long to connect.'
+      ),
+      // Order matters, message socket is set first.
+      raceOrFail(
+        waitForSocket(page, (ws) => ws.url().endsWith('/message')),
+        1000,
+        'Message socket on client took too long to connect.'
+      ),
+    ]);
+
     // Navigate to the app
     await page.goto(expo.url);
     console.timeEnd('Open page');
@@ -89,22 +107,8 @@ test.describe(inputDir, () => {
 
     console.log('Waiting for /hot socket');
 
-    // Ensure the hot socket connects
-    const hotSocket = await raceOrFail(
-      waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
-      // Should be really fast
-      500,
-      'HMR websocket on client took too long to connect.'
-    );
-
+    const [hotSocket] = await sockets;
     console.log('Found /hot socket');
-
-    // Order matters, message socket is set second.
-    await raceOrFail(
-      waitForSocket(page, (ws) => ws.url().endsWith('/message')),
-      500,
-      'Message socket on client took too long to connect.'
-    );
 
     // Ensure the entry point is registered
     await hotSocket.waitForEvent('framesent', {
