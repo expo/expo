@@ -222,7 +222,7 @@ export default function Page() {
       value={search}
       onChangeText={search => {
         setSearch(search);
-        /* @info Set the search parameter <b>q</b> to the text input <b>search</b> */
+        /* @info Set the search parameter <b>query</b> to the text input <b>search</b> */
         router.setParams({ query: search });
         /* @end */
       }}
