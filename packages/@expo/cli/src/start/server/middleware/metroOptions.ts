@@ -178,7 +178,7 @@ export function getMetroDirectBundleOptions(
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
-      treeshake: treeshake ?? undefined,
+      treeshake: treeshake || undefined,
       engine,
       preserveEnvVars,
       asyncRoutes,
