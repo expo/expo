@@ -143,8 +143,6 @@ export async function reconcileTransformSerializerPlugin(
 
     // This pass converts the modules to use the generated import names.
     try {
-      // console.log(require('@babel/generator').default(ast).code);
-
       // Rewrite the deps to use Metro runtime, collect the new dep positions.
       // TODO: We could just update the deps in the graph to use the correct positions after we modify the AST. This seems hard and fragile though.
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
