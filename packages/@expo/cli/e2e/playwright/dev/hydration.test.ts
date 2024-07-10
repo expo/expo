@@ -19,7 +19,7 @@ test.describe(inputDir, () => {
 
   let serveCmd: ServeStaticCommand;
 
-  test.beforeEach('bundle and serve', async (options, testInfo) => {
+  test.beforeEach('bundle and serve', async ({}, testInfo) => {
     console.time('hydration setup');
     testInfo.setTimeout(testInfo.timeout + 30000);
 
