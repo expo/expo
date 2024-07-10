@@ -62,12 +62,22 @@ test.describe(inputDir, () => {
   test('updates with fast refresh', async ({ page }) => {
     console.time('expo start');
     await expo.startAsync();
+    expo.addListener('stdout', (chunk) => {
+      console.log('[CLI]: stdout:', ...chunk);
+    });
+    expo.addListener('stderr', (chunk) => {
+      console.log('[CLI]: stderr:', ...chunk);
+    });
+    page.on('console', (msg) => console.log('[PAGE]:', msg.text()));
+
     console.timeEnd('expo start');
+
     console.log('Server running:', expo.url);
+
     console.time('Eagerly bundled JS');
     const indexRes = await expo.fetchAsync('/');
     expect(indexRes.ok).toBe(true);
-    console.log(await indexRes.text());
+    await indexRes.text();
     console.timeEnd('Eagerly bundled JS');
 
     console.time('Open page');
