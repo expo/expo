@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, Build settings related to gradle.properties will now be **merged** (*and deduped*) if they are `Arrays` instead of overwritten. For now the only array value is `extraMavenRepos`. This allow library plugins to use `extraMavenRepos` even if they are not the last plugin called.
 - On `Android`, fix setting `translucent` on the status bar. ([#29803](https://github.com/expo/expo/pull/29803) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
