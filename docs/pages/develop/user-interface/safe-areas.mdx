@@ -87,7 +87,7 @@ export default function HomeScreen() {
 
 ## Alternate: `useSafeAreaInsets` hook
 
-Alternate to `<SafeAreaView>`, you can use [`useSafeAreaInsets`](https://github.com/th3rdwave/react-native-safe-area-context#usesafeareainsets) hook in your screen component. It gives direct access to the safe area insets. It offers more flexibility and gives you more control. You can apply padding for each edge using an inset from this hook directly to the `<View>`.
+Alternate to `SafeAreaView`, you can use [`useSafeAreaInsets`](https://github.com/th3rdwave/react-native-safe-area-context#usesafeareainsets) hook in your screen component. It gives direct access to the safe area insets. It offers more flexibility and gives you more control. You can apply padding for each edge using an inset from this hook directly to the `<View>`.
 
 The example below uses the `useSafeAreaInsets` hook. It applies top padding to a `<View>` using `insets.top`.
 
@@ -155,4 +155,4 @@ By default, React Navigation supports safe areas and uses `react-native-safe-are
 
 ### Usage with web
 
-If you are targeting the web, set up `<SafeAreaProvider>` as described in the [usage section](#usage). If you are doing server-side rendering (SSR), see the [Web SSR section](https://github.com/th3rdwave/react-native-safe-area-context#web-ssr) in the library's documentation.
+If you are targeting the web, set up `SafeAreaProvider` as described in the [usage section](#usage). If you are doing server-side rendering (SSR), see the [Web SSR section](https://github.com/th3rdwave/react-native-safe-area-context#web-ssr) in the library's documentation.
