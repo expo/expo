@@ -60,7 +60,9 @@ async function askMailAppChoiceAsync({
   if (availableMailApps.length === 0) {
     return null;
   }
-  if (availableMailApps.length === 1) return availableMailApps[0];
+  if (availableMailApps.length === 1) {
+    return availableMailApps[0];
+  }
 
   return new Promise((resolve) => {
     ActionSheetIOS.showActionSheetWithOptions(
