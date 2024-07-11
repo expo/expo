@@ -61,11 +61,11 @@ describe(getPackageJsonScriptSourcesAsync, () => {
     });
   });
 
-  it('by default, should not touch pacakge.json scripts if items contain "run"', async () => {
+  it('by default, should not touch pacakge.json scripts if items contain "run" with custom scripts', async () => {
     await jest.isolateModulesAsync(async () => {
       const scripts = {
-        android: 'expo run:android',
-        ios: 'expo run:ios',
+        android: 'test-cli run:android',
+        ios: 'test-cli run:ios',
         web: 'expo start --web',
       };
       jest.doMock(
