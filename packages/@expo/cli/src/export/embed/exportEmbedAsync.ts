@@ -116,7 +116,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     const bundles = await devServer.legacySinglePageExportBundleAsync(
       {
         splitChunks: false,
-        mainModuleName: options.entryFile,
+        mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,
         mode: options.dev ? 'development' : 'production',

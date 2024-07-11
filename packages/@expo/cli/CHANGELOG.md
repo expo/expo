@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve real locations of file paths when using `eas build --local`. ([#30340](https://github.com/expo/expo/pull/30340) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.18.23 — 2024-07-11
