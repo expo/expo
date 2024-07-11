@@ -20,7 +20,12 @@ export declare function setBackgroundColorAsync(color: ColorValue | null): Promi
  * @returns Current root view background color in hex format. Returns `null` if the background color is not set.
  */
 export declare function getBackgroundColorAsync(): Promise<ColorValue | null>;
-export type SystemBarStyle = 'light-content' | 'dark-content';
-export declare function setStatusBarStyle(barStyle: SystemBarStyle): Promise<void>;
-export declare function setNavigationBarStyle(barStyle: SystemBarStyle): Promise<void>;
+export type SystemBarStyle = 'auto' | 'light' | 'dark';
+export type SystemBarsConfig = {
+    statusBarStyle?: SystemBarStyle;
+    navigationBarStyle?: SystemBarStyle;
+    statusBarHidden?: boolean;
+    navigationBarHidden?: boolean;
+};
+export declare function setSystemBarsConfig(config: SystemBarsConfig): void;
 //# sourceMappingURL=SystemUI.d.ts.map

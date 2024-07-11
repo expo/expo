@@ -1,4 +1,4 @@
-import { ColorValue, Platform, processColor } from 'react-native';
+import { ColorValue, Platform, processColor, Appearance } from 'react-native';
 
 import ExpoSystemUI from './ExpoSystemUI';
 
@@ -34,12 +34,24 @@ export async function getBackgroundColorAsync(): Promise<ColorValue | null> {
   return await ExpoSystemUI.getBackgroundColorAsync();
 }
 
-export type SystemBarStyle = 'light-content' | 'dark-content';
+export type SystemBarStyle = 'auto' | 'light' | 'dark';
 
-export async function setStatusBarStyle(barStyle: SystemBarStyle) {
-  await ExpoSystemUI.setStatusBarStyle(barStyle === 'dark-content');
-}
+export type SystemBarsConfig = {
+  statusBarStyle?: SystemBarStyle;
+  navigationBarStyle?: SystemBarStyle;
+  statusBarHidden?: boolean;
+  navigationBarHidden?: boolean;
+};
 
-export async function setNavigationBarStyle(barStyle: SystemBarStyle) {
-  await ExpoSystemUI.setNavigationBarStyle(barStyle === 'dark-content');
+export function setSystemBarsConfig(config: SystemBarsConfig) {
+  const { statusBarStyle, navigationBarStyle } = config;
+  const colorScheme = Appearance.getColorScheme() ?? 'light';
+  const autoBarStyle = colorScheme === 'light' ? 'dark' : 'light';
+
+  ExpoSystemUI.setSystemBarsConfig({
+    statusBarStyle: statusBarStyle === 'auto' ? autoBarStyle : statusBarStyle,
+    navigationBarStyle: navigationBarStyle === 'auto' ? autoBarStyle : navigationBarStyle,
+    statusBarHidden: config.statusBarHidden,
+    navigationBarHidden: config.navigationBarHidden,
+  });
 }

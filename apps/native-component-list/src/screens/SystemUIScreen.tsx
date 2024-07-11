@@ -19,6 +19,9 @@ export default function SystemUIScreen() {
         <Section title="Navigation Bar Style">
           <NavigationBarStyleExample />
         </Section>
+        <Section title="Hiding Bars">
+          <HidingBarsExample />
+        </Section>
       </Page>
     </ScrollView>
   );
@@ -49,10 +52,13 @@ function StatusBarStyleExample() {
   return (
     <>
       <Button
-        onPress={() => SystemUI.setStatusBarStyle('light-content')}
+        onPress={() => SystemUI.setSystemBarsConfig({ statusBarStyle: 'light' })}
         title="Set light-content"
       />
-      <Button onPress={() => SystemUI.setStatusBarStyle('dark-content')} title="Set dark-content" />
+      <Button
+        onPress={() => SystemUI.setSystemBarsConfig({ statusBarStyle: 'dark' })}
+        title="Set dark-content"
+      />
     </>
   );
 }
@@ -61,12 +67,31 @@ function NavigationBarStyleExample() {
   return (
     <>
       <Button
-        onPress={() => SystemUI.setNavigationBarStyle('light-content')}
+        onPress={() => SystemUI.setSystemBarsConfig({ navigationBarStyle: 'light' })}
         title="Set light-content"
       />
       <Button
-        onPress={() => SystemUI.setNavigationBarStyle('dark-content')}
+        onPress={() => SystemUI.setSystemBarsConfig({ navigationBarStyle: 'dark' })}
         title="Set dark-content"
+      />
+    </>
+  );
+}
+
+function HidingBarsExample() {
+  return (
+    <>
+      <Button
+        onPress={() => {
+          SystemUI.setSystemBarsConfig({ statusBarHidden: true, navigationBarHidden: true });
+        }}
+        title="Set hidden"
+      />
+      <Button
+        onPress={() => {
+          SystemUI.setSystemBarsConfig({ statusBarHidden: false, navigationBarHidden: false });
+        }}
+        title="Set visible"
       />
     </>
   );

@@ -6,13 +6,29 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 
 const val PREFERENCE_KEY = "expoRootBackgroundColor"
+
+enum class SystemBarStyle(val value: String) : Enumerable {
+  light("light"),
+  dark("dark")
+}
+
+class SystemBarsConfig : Record {
+  @Field val statusBarStyle: SystemBarStyle? = null
+  @Field val navigationBarStyle: SystemBarStyle? = null
+  @Field val statusBarHidden: Boolean? = null
+  @Field val navigationBarHidden: Boolean? = null
+}
 
 class SystemUIModule : Module() {
   private val currentActivity
@@ -60,23 +76,41 @@ class SystemUIModule : Module() {
       }
     }
 
-    AsyncFunction("setStatusBarStyle") { darkContentBarsStyle: Boolean ->
+    Function("setSystemBarsConfig") { config: SystemBarsConfig ->
       val window = currentActivity.window
-      val decorView = window.decorView
+      val insetsController = WindowInsetsControllerCompat(window, window.decorView)
 
       currentActivity.runOnUiThread {
-        WindowInsetsControllerCompat(window, decorView)
-          .isAppearanceLightStatusBars = darkContentBarsStyle
-      }
-    }
+        if (config.statusBarStyle != null) {
+          insetsController.isAppearanceLightStatusBars =
+            config.statusBarStyle == SystemBarStyle.dark
+        }
 
-    AsyncFunction("setNavigationBarStyle") { darkContentBarsStyle: Boolean ->
-      val window = currentActivity.window
-      val decorView = window.decorView
+        if (config.navigationBarStyle != null) {
+          insetsController.isAppearanceLightNavigationBars =
+            config.navigationBarStyle == SystemBarStyle.dark
+        }
 
-      currentActivity.runOnUiThread {
-        WindowInsetsControllerCompat(window, decorView)
-          .isAppearanceLightNavigationBars = darkContentBarsStyle
+        if (config.statusBarHidden != null || config.navigationBarHidden != null) {
+          insetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+          if (config.statusBarHidden != null) {
+            if (config.statusBarHidden) {
+              insetsController.hide(WindowInsetsCompat.Type.statusBars())
+            } else {
+              insetsController.show(WindowInsetsCompat.Type.statusBars())
+            }
+          }
+
+          if (config.navigationBarHidden != null) {
+            if (config.navigationBarHidden) {
+              insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+            } else {
+              insetsController.show(WindowInsetsCompat.Type.navigationBars())
+            }
+          }
+        }
       }
     }
   }

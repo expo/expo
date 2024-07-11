@@ -11,4 +11,5 @@ export default {
       document.body.style.backgroundColor = color ?? 'white';
     }
   },
+  setSystemBarsConfig() {},
 };

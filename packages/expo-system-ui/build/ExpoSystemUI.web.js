@@ -11,5 +11,6 @@ export default {
             document.body.style.backgroundColor = color ?? 'white';
         }
     },
+    setSystemBarsConfig() { },
 };
 //# sourceMappingURL=ExpoSystemUI.web.js.map
