@@ -674,7 +674,6 @@ export async function treeShakeSerializer(
             if (path.node.specifiers.length === 0) {
               const removeRequest = disconnectGraphNode(value, importModuleId);
               if (removeRequest.removed) {
-                // needsImportReindex = true;
                 dirtyImports.push(removeRequest.path);
                 markUnused(path);
               }
@@ -800,7 +799,6 @@ export async function treeShakeSerializer(
       // If no specifiers are left after filtering, remove the whole import declaration
       // e.g. `import './unused'` or `import {} from './unused'` -> remove.
       if (path.node.specifiers.length === 0) {
-        // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
         const removeRequest = disconnectGraphNode(value, importModuleId, {
           isSideEffectyImport: absoluteOriginalSize === 0 ? true : undefined,
         });
@@ -858,7 +856,6 @@ export async function treeShakeSerializer(
       const dep = graph.dependencies.get(absolutePath);
       if (!dep) continue;
 
-      // debug('Optimize:', absolutePath);
       checked.add(absolutePath);
 
       markDirty(

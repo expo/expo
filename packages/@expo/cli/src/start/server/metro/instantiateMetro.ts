@@ -140,6 +140,7 @@ export async function loadMetroConfigAsync(
     config,
     exp,
     platformBundlers,
+    isTreeShakingEnabled: env.EXPO_UNSTABLE_TREE_SHAKING,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,

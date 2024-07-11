@@ -525,7 +525,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                         if (path.node.specifiers.length === 0) {
                             const removeRequest = disconnectGraphNode(value, importModuleId);
                             if (removeRequest.removed) {
-                                // needsImportReindex = true;
                                 dirtyImports.push(removeRequest.path);
                                 markUnused(path);
                             }
@@ -631,7 +630,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             // If no specifiers are left after filtering, remove the whole import declaration
             // e.g. `import './unused'` or `import {} from './unused'` -> remove.
             if (path.node.specifiers.length === 0) {
-                // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
                 const removeRequest = disconnectGraphNode(value, importModuleId, {
                     isSideEffectyImport: absoluteOriginalSize === 0 ? true : undefined,
                 });
@@ -683,7 +681,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             const dep = graph.dependencies.get(absolutePath);
             if (!dep)
                 continue;
-            // debug('Optimize:', absolutePath);
             checked.add(absolutePath);
             markDirty(
             // Order is important (not sure why though)

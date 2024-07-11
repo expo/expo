@@ -132,11 +132,13 @@ export function withExtendedResolver(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isTreeShakingEnabled,
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
+    isTreeShakingEnabled: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled?: boolean;
     getMetroBundler: () => Bundler;
@@ -145,8 +147,8 @@ export function withExtendedResolver(
   if (isFastResolverEnabled) {
     Log.warn(`Experimental module resolution is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
-    Log.warn(`Experimental Expo tree shaking is enabled.`);
+  if (isTreeShakingEnabled) {
+    Log.warn(`Experimental tree shaking is enabled.`);
   }
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
@@ -622,6 +624,7 @@ export async function withMetroMultiPlatformAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled,
+    isTreeShakingEnabled,
     webOutput,
     isFastResolverEnabled,
     isExporting,
@@ -631,6 +634,7 @@ export async function withMetroMultiPlatformAsync(
     config: ConfigT;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
+    isTreeShakingEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
     isFastResolverEnabled?: boolean;
@@ -703,6 +707,7 @@ export async function withMetroMultiPlatformAsync(
   return withExtendedResolver(config, {
     tsconfig,
     isExporting,
+    isTreeShakingEnabled,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isReactCanaryEnabled,
