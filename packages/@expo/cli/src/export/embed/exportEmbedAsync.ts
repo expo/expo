@@ -153,7 +153,6 @@ export async function exportEmbedBundleAndAssetsAsync(
 
     await Promise.all(
       bundles.artifacts.map(async (artifact) => {
-        console.log('Bundle artifact:', artifact.metadata);
         if (Array.isArray(artifact.metadata.webviewReferences)) {
           for (const ref of artifact.metadata.webviewReferences) {
             console.log('Bundle www entry:', ref);
@@ -161,9 +160,10 @@ export async function exportEmbedBundleAndAssetsAsync(
 
             // MUST MATCH THE BABEL PLUGIN!
             const hash = crypto.createHash('sha1').update(ref).digest('hex');
-            const outputName = `www/${hash}/index.html`;
+            const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
+            const outputName = `${rootDir}/${hash}/index.html`;
             const generatedEntryPath = devServer.getWebviewProxyEntry(ref);
-            const baseUrl = `/www/${hash}`;
+            const baseUrl = `/${rootDir}/${hash}`;
             // Run metro bundler and create the JS bundles/source maps.
             const bundle = await devServer.legacySinglePageExportBundleAsync({
               platform: 'web',
@@ -174,25 +174,29 @@ export async function exportEmbedBundleAndAssetsAsync(
               serializerIncludeMaps: !!sourceMapUrl,
               bytecode: false,
               reactCompiler: !!exp.experiments?.reactCompiler,
-              baseUrl,
-            });
-
-            bundle.artifacts.map((a) => {
-              a.filename = path.join(baseUrl, a.filename);
-            });
-
-            getFilesFromSerialAssets(bundle.artifacts, {
-              includeSourceMaps: !!sourceMapUrl,
-              files,
-              platform: 'web',
+              // baseUrl,
             });
 
             const html = await serializeHtmlWithAssets({
               isExporting: true,
               resources: bundle.artifacts,
               template: getWebviewProxyHtml(),
-              baseUrl,
+              baseUrl: './',
             });
+
+            getFilesFromSerialAssets(
+              bundle.artifacts.map((a) => {
+                return {
+                  ...a,
+                  filename: path.join(baseUrl, a.filename),
+                };
+              }),
+              {
+                includeSourceMaps: !!sourceMapUrl,
+                files,
+                platform: 'web',
+              }
+            );
 
             files.set(outputName, {
               contents: html,

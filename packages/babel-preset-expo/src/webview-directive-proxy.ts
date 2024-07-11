@@ -46,14 +46,12 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
         if (isProduction) {
           // MUST MATCH THE EXPORT COMMAND!
           const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
-          const outputName = `www/${hash}/index.html`;
 
           if (platform === 'ios') {
-            proxyModule = [
-              `import * as FS from 'expo-file-system';`,
-              `const proxy = { uri: FS.bundleDirectory + ${JSON.stringify(outputName)} };`,
-            ];
+            const outputName = `www.bundle/${hash}/index.html`;
+            proxyModule = [`const proxy = { uri: ${JSON.stringify(outputName)} };`];
           } else if (platform === 'android') {
+            const outputName = `www/${hash}/index.html`;
             proxyModule = [
               `const proxy = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`,
             ];
@@ -74,7 +72,7 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
                 import React from 'react';
               import { WebView } from 'react-native-webview';
               export default function WebviewProxy(props) {
-                return React.createElement(WebView, { ...props, source: proxy });
+                return React.createElement(WebView, { originWhitelist: ['file://'], webviewDebuggingEnabled: ${isProduction ? 'false' : 'true'}, ...props, source: proxy });
               }
               `
             : `export default proxy`
