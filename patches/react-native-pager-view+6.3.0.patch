@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml b/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml
+index ee757d6..068070f 100644
+--- a/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml
++++ b/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml
+@@ -1,4 +1,4 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-          package="com.reactnativepagerview">
++          >
+ 
+ </manifest>
+diff --git a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
+index 4d0adff..d3d99a2 100644
+--- a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
++++ b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
+@@ -69,7 +69,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
+         return host
+     }
+ 
+-    override fun addView(host: NestedScrollableHost, child: View?, index: Int) {
++    fun addView(host: NestedScrollableHost, child: View?, index: Int) {
+         PagerViewViewManagerImpl.addView(host, child, index)
+     }
+ 

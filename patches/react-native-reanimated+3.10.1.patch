@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java
+index b15ef95..34d27f8 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java
+@@ -14,7 +14,7 @@ public class ReactNativeUtils {
+     if (view.getBackground() != null) {
+       Drawable background = view.getBackground();
+       if (background instanceof ReactViewBackgroundDrawable) {
+-        return ((ReactViewBackgroundDrawable) background).getFullBorderRadius();
++        return 0;
+       }
+     } else if (view instanceof ReactImageView) {
+       try {
