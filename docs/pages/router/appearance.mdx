@@ -16,8 +16,6 @@ There are various major elements that you can use to customize the appearance of
 - Fonts
 - Images
 - Supporting safe areas
-- React Navigation themes
-- React Navigation Elements
 
 ## Splash screen
 
@@ -86,7 +84,9 @@ Expo Router comes with the `react-native-safe-area-context` library installed. T
   Icon={BookOpen02Icon}
 />
 
-## React Navigation themes
+## Additional information
+
+### React Navigation themes
 
 React Navigation navigators `<Stack>`, `<Drawer>`, and `<Tabs>` use a shared appearance provider. In React Navigation, you set the theme for the entire app using the `<NavigationContainer />` component. Expo Router manages the root container so that you can set the theme using the `ThemeProvider` directly.
 
@@ -109,7 +109,7 @@ export default function RootLayout() {
 
 You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed with `useTheme` from `@react-navigation/native`.
 
-## React Navigation Elements
+### React Navigation Elements
 
 The [`@react-navigation/elements`](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
 
