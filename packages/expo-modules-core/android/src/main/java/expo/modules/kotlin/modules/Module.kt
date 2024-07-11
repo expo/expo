@@ -22,7 +22,10 @@ abstract class Module : AppContextProvider {
   // region AppContextProvider
 
   override val appContext: AppContext
-    get() = requireNotNull(_runtimeContext?.appContext) { "The module wasn't created! You can't access the app context." }
+    get() = requireNotNull(_runtimeContext?.appContext) {
+      "You attempted to access the app context before the module was created. " +
+      "Defer accessing the context until after the module initializes."
+    }
 
   // endregion
 
