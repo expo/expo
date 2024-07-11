@@ -8,6 +8,7 @@ import { getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
+import crypto from 'crypto';
 import { sync as globSync } from 'glob';
 import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
@@ -19,7 +20,10 @@ import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import {
+  getWebviewProxyHtml,
+  MetroBundlerDevServer,
+} from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
@@ -28,7 +32,14 @@ import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { BundleAssetWithFileHashes } from '../saveAssets';
+import {
+  BundleAssetWithFileHashes,
+  ExportAssetMap,
+  getFilesFromSerialAssets,
+  persistMetroFilesAsync,
+} from '../saveAssets';
+import { env } from '../../utils/env';
+import { serializeHtmlWithAssets } from '../../start/server/metro/serializeHtml';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -65,13 +76,16 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     }
   }
 
-  const { bundle, assets } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
+  const { bundle, assets, files } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
 
   fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
 
   // Persist bundle and source maps.
   await Promise.all([
     output.save(bundle, options, Log.log),
+
+    // Write webview proxy files.
+    options.assetsDest ? persistMetroFilesAsync(files, options.assetsDest) : null,
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
     options.assetsDest
@@ -90,6 +104,7 @@ export async function exportEmbedBundleAndAssetsAsync(
 ): Promise<{
   bundle: Awaited<ReturnType<Server['build']>>;
   assets: readonly BundleAssetWithFileHashes[];
+  files: ExportAssetMap;
 }> {
   const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
     minify: options.minify,
@@ -134,7 +149,61 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
+    const files: ExportAssetMap = new Map();
+
+    await Promise.all(
+      bundles.artifacts.map(async (artifact) => {
+        console.log('Bundle artifact:', artifact.metadata);
+        if (Array.isArray(artifact.metadata.webviewReferences)) {
+          for (const ref of artifact.metadata.webviewReferences) {
+            console.log('Bundle www entry:', ref);
+            // file path
+
+            // MUST MATCH THE BABEL PLUGIN!
+            const hash = crypto.createHash('sha1').update(ref).digest('hex');
+            const outputName = `www/${hash}/index.html`;
+            const generatedEntryPath = devServer.getWebviewProxyEntry(ref);
+            const baseUrl = `/www/${hash}`;
+            // Run metro bundler and create the JS bundles/source maps.
+            const bundle = await devServer.legacySinglePageExportBundleAsync({
+              platform: 'web',
+              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
+              mainModuleName: resolveRealEntryFilePath(projectRoot, generatedEntryPath),
+              mode: options.dev ? 'development' : 'production',
+              engine: isHermes ? 'hermes' : undefined,
+              serializerIncludeMaps: !!sourceMapUrl,
+              bytecode: false,
+              reactCompiler: !!exp.experiments?.reactCompiler,
+              baseUrl,
+            });
+
+            bundle.artifacts.map((a) => {
+              a.filename = path.join(baseUrl, a.filename);
+            });
+
+            getFilesFromSerialAssets(bundle.artifacts, {
+              includeSourceMaps: !!sourceMapUrl,
+              files,
+              platform: 'web',
+            });
+
+            const html = await serializeHtmlWithAssets({
+              isExporting: true,
+              resources: bundle.artifacts,
+              template: getWebviewProxyHtml(),
+              baseUrl,
+            });
+
+            files.set(outputName, {
+              contents: html,
+            });
+          }
+        }
+      })
+    );
+
     return {
+      files,
       bundle: {
         code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source.toString(),
         // Can be optional when source maps aren't enabled.

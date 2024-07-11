@@ -9,6 +9,7 @@ interface TransformResponse {
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
     readonly data: JsOutput['data'] & {
         readonly reactClientReference?: string;
+        readonly webviewReference?: string;
     };
 };
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;

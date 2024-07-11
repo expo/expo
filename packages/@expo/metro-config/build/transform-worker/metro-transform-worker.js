@@ -308,6 +308,7 @@ async function transformJS(file, { config, options, projectRoot }) {
                 map,
                 functionMap: file.functionMap,
                 reactClientReference: file.reactClientReference,
+                webviewReference: file.webviewReference,
             },
             type: file.type,
         },
@@ -359,6 +360,7 @@ async function transformJSWithBabel(file, context) {
             transformResult.functionMap ??
             null,
         reactClientReference: transformResult.metadata?.reactClientReference,
+        webviewReference: transformResult.metadata?.webviewReference,
     };
     return await transformJS(jsFile, context);
 }

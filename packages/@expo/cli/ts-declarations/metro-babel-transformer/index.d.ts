@@ -40,6 +40,7 @@ declare module 'metro-babel-transformer' {
       ast: Ast;
       metadata?: BabelFileMetadata & {
         reactClientReference?: string;
+        webviewReference?: string;
         metro?: {
           functionMap?: FBSourceFunctionMap | null;
         };

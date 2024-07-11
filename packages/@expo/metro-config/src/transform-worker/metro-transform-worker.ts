@@ -60,6 +60,7 @@ interface JSFile extends BaseFile {
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
   readonly reactClientReference?: string;
+  readonly webviewReference?: string;
 }
 
 interface JSONFile extends BaseFile {
@@ -80,6 +81,7 @@ interface TransformResponse {
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
     readonly reactClientReference?: string;
+    readonly webviewReference?: string;
   };
 };
 
@@ -412,6 +414,7 @@ async function transformJS(
         map,
         functionMap: file.functionMap,
         reactClientReference: file.reactClientReference,
+        webviewReference: file.webviewReference,
       },
       type: file.type,
     },
@@ -484,6 +487,7 @@ async function transformJSWithBabel(
       transformResult.functionMap ??
       null,
     reactClientReference: transformResult.metadata?.reactClientReference,
+    webviewReference: transformResult.metadata?.webviewReference,
   };
 
   return await transformJS(jsFile, context);

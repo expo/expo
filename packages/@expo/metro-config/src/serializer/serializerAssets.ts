@@ -14,6 +14,7 @@ export type SerialAsset = {
     paths?: Record<string, Record<string, string>>;
     // React client reference from the static babel pass.
     reactClientReferences?: string[];
+    webviewReferences?: string[];
     requires?: string[];
   };
 };

@@ -8,6 +8,8 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
+import fs from 'fs';
+
 import chalk from 'chalk';
 import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
@@ -19,6 +21,7 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
+import crypto from 'crypto';
 
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
@@ -71,6 +74,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -538,7 +542,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async legacySinglePageExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     extraOptions: {
       sourceMapUrl?: string;
@@ -605,6 +609,47 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
+  getWebviewProxyEntry(file: string) {
+    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
+    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+
+    const generatedEntry = path.join(this.projectRoot, '.expo/@iframe', hash + '.js');
+    // filePath relative to the generated entry
+    let relativeFilePath = path.relative(path.dirname(generatedEntry), filePath);
+
+    if (!relativeFilePath.startsWith('.')) {
+      relativeFilePath = './' + relativeFilePath;
+    }
+
+    const entryFile = getWebviewProxyForFilepath(this.projectRoot, file);
+
+    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
+
+    // TODO: Assert no default export at runtime.
+    fs.writeFileSync(entryFile.filePath, entryFile.contents);
+
+    return generatedEntry;
+
+    // const serverRoot = getMetroServerRoot(this.projectRoot);
+
+    // const metroUrl = new URL(
+    //   createBundleUrlPath({
+    //     ...instanceMetroOptions,
+    //     mainModuleName: path.relative(serverRoot, generatedEntry),
+    //     bytecode: false,
+    //     platform: 'web',
+    //     isExporting: false,
+    //   }),
+    //   this.getDevServerUrlOrAssert()
+    // ).toString();
+
+    // res.statusCode = 200;
+    // // Return HTML file
+    // res.setHeader('Content-Type', 'text/html');
+    // res.end(getWebviewProxyHtml(metroUrl));
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -621,7 +666,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
-    this.instanceMetroOptions = {
+    const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
       mode,
@@ -631,6 +676,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
     };
+    this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {
       port: options.port,
@@ -688,6 +734,40 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         },
       });
       middleware.use(deepLinkMiddleware.getHandler());
+
+      middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        if (!req.url) return next();
+        const url = coreceUrl(req.url);
+        // Match `/_expo/@iframe`
+        if (!url.pathname.startsWith('/_expo/@iframe')) {
+          return next();
+        }
+        const file = url.searchParams.get('file');
+        if (!file || !file.startsWith('file://')) {
+          res.statusCode = 400;
+          res.statusMessage = 'Invalid file path';
+          return res.end();
+        }
+        const generatedEntry = this.getWebviewProxyEntry(file);
+
+        const serverRoot = getMetroServerRoot(this.projectRoot);
+
+        const metroUrl = new URL(
+          createBundleUrlPath({
+            ...instanceMetroOptions,
+            mainModuleName: path.relative(serverRoot, generatedEntry),
+            bytecode: false,
+            platform: 'web',
+            isExporting: false,
+          }),
+          this.getDevServerUrlOrAssert()
+        ).toString();
+
+        res.statusCode = 200;
+        // Return HTML file
+        res.setHeader('Content-Type', 'text/html');
+        res.end(getWebviewProxyHtml(metroUrl));
+      });
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
@@ -1271,4 +1351,94 @@ async function sourceMapStringAsync(
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
     excludeSource: options.excludeSource,
   });
+}
+
+function coreceUrl(url: string) {
+  try {
+    return new URL(url);
+  } catch {
+    return new URL(url, 'https://localhost:0');
+  }
+}
+
+const fileURLToFilePath = (fileURL: string) => {
+  if (!fileURL.startsWith('file://')) {
+    throw new Error('Not a file URL');
+  }
+  return decodeURI(fileURL.slice('file://'.length));
+};
+
+function getWebviewProxyForFilepath(projectRoot: string, file: string) {
+  const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
+  const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+
+  const generatedEntry = path.join(projectRoot, '.expo/@iframe', hash + '.js');
+  // filePath relative to the generated entry
+  let relativeFilePath = path.relative(path.dirname(generatedEntry), filePath);
+
+  if (!relativeFilePath.startsWith('.')) {
+    relativeFilePath = './' + relativeFilePath;
+  }
+
+  return {
+    filePath: generatedEntry,
+    contents: `
+// Generated by Expo CLI
+import "@expo/metro-runtime";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+
+import App from "${relativeFilePath}";
+
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+
+root.render(
+<StrictMode>
+<App />
+</StrictMode>
+);`,
+  };
+}
+
+export function getWebviewProxyHtml(src?: string) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <style id="expo-reset">
+    /* These styles make the body full-height */
+    html,
+    body {
+      height: 100%;
+    }
+    /* These styles disable body scrolling if you are using <ScrollView> */
+    body {
+      overflow: hidden;
+    }
+    /* These styles make the root element full-height */
+    #root {
+      display: flex;
+      height: 100%;
+      flex: 1;
+    }
+    </style>
+    </head>
+    
+    <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+    You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+    ${src ? `<script src="${src}"></script>` : ''}
+    </body>
+    </html>
+    
+    `;
 }
