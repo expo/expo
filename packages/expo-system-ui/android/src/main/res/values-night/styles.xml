@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.EdgeToEdge.BarsStyle" parent="Theme.EdgeToEdge.Common">
+        <item name="darkContentBarsStyle">false</item>
+    </style>
+</resources>
