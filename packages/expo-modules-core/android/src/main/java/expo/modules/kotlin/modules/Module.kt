@@ -24,7 +24,7 @@ abstract class Module : AppContextProvider {
   override val appContext: AppContext
     get() = requireNotNull(_runtimeContext?.appContext) {
       "You attempted to access the app context before the module was created. " +
-      "Defer accessing the context until after the module initializes."
+        "Defer accessing the context until after the module initializes."
     }
 
   // endregion
