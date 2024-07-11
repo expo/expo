@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Allow woff and woff2 format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.8 — 2024-07-11
+
+### 🎉 New features
+
+- Allow woff and woff2 format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
 
 ## 12.0.7 — 2024-06-06
 
