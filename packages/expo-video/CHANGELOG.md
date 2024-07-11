@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android][iOS] Now Picture in Picture has to be enabled via the config plugin to work. ([#30068](https://github.com/expo/expo/pull/30068) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 - [Web] Add support for events. ([#29742](https://github.com/expo/expo/pull/29742) by [@behenate](https://github.com/behenate))
