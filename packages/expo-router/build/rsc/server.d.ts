@@ -48,7 +48,6 @@ export type EntriesPrd = EntriesDev & {
     dynamicHtmlPaths: [pathSpec: PathSpec, htmlHead: string][];
     publicIndexHtml: string;
 };
-export declare function getEnv(key: string): string | undefined;
 type RenderStore<RscContext extends Record<string, unknown> = Record<string, unknown>> = {
     rerender: (input: string, searchParams?: URLSearchParams) => void;
     context: RscContext;

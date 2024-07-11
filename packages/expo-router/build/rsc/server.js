@@ -7,16 +7,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getContext = exports.rerender = exports.runWithRenderStore = exports.getEnv = exports.defineEntries = void 0;
+exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = void 0;
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
 exports.defineEntries = defineEntries;
-function getEnv(key) {
-    // HACK we may want to use a server-side context or something
-    return globalThis.__EXPO_PRIVATE_ENV__[key];
-}
-exports.getEnv = getEnv;
 // TODO(EvanBacon): This can leak between platforms and runs.
 // We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
 function getGlobalCacheForPlatform() {
@@ -24,10 +19,8 @@ function getGlobalCacheForPlatform() {
         globalThis.__EXPO_RSC_CACHE__ = new Map();
     }
     if (globalThis.__EXPO_RSC_CACHE__.has(process.env.EXPO_OS)) {
-        // console.log('[RSC]: REUSE:', globalThis.__EXPO_RSC_CACHE__.get(OS));
         return globalThis.__EXPO_RSC_CACHE__.get(process.env.EXPO_OS);
     }
-    // console.log('[RSC]: NEW:', AsyncLocalStorage);
     try {
         const { AsyncLocalStorage } = require('node:async_hooks');
         // @ts-expect-error: This is a Node.js feature.

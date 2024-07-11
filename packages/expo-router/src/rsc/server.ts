@@ -71,17 +71,7 @@ export type EntriesPrd = EntriesDev & {
   publicIndexHtml: string;
 };
 
-export function getEnv(key: string): string | undefined {
-  // HACK we may want to use a server-side context or something
-  return (globalThis as any).__EXPO_PRIVATE_ENV__[key];
-}
-
 type RenderStore<RscContext extends Record<string, unknown> = Record<string, unknown>> = {
-  rerender: (input: string, searchParams?: URLSearchParams) => void;
-  context: RscContext;
-};
-
-type RenderContext<RscContext extends Record<string, unknown> = Record<string, unknown>> = {
   rerender: (input: string, searchParams?: URLSearchParams) => void;
   context: RscContext;
 };
@@ -94,10 +84,8 @@ function getGlobalCacheForPlatform(): Pick<AsyncLocalStorage<RenderStore>, 'getS
   }
 
   if (globalThis.__EXPO_RSC_CACHE__.has(process.env.EXPO_OS)) {
-    // console.log('[RSC]: REUSE:', globalThis.__EXPO_RSC_CACHE__.get(OS));
     return globalThis.__EXPO_RSC_CACHE__.get(process.env.EXPO_OS)!;
   }
-  // console.log('[RSC]: NEW:', AsyncLocalStorage);
   try {
     const { AsyncLocalStorage } = require('node:async_hooks');
     // @ts-expect-error: This is a Node.js feature.
