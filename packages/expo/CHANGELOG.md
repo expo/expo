@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 51.0.19 — 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
 ## 51.0.18 — 2024-07-03
 
 ### 📚 3rd party library updates
