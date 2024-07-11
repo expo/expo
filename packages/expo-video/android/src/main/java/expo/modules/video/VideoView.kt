@@ -403,7 +403,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       }
       Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
       if (shouldThrow) {
-        throw PictureInPictureUnsupportedException("Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
+        throw PictureInPictureConfigurationException()
       }
     }
   }
