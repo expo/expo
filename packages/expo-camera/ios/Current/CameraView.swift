@@ -141,9 +141,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   private func setupPreview() {
-    previewLayer.videoPreviewLayer.session = session
-    previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
-    previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+    DispatchQueue.main.async {
+      self.previewLayer.videoPreviewLayer.session = self.session
+      self.previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
+      self.previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+      self.addSubview(self.previewLayer)
+    }
   }
 
   func initCamera() {
