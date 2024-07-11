@@ -57,7 +57,9 @@ async function askMailAppChoiceAsync({
 }: MailClientOptions): Promise<TMailClient | null> {
   const availableMailApps = await getAvailableMailAppsAsync();
 
-  if (availableMailApps.length === 0) return null;
+  if (availableMailApps.length === 0) {
+    return null;
+  }
   if (availableMailApps.length === 1) return availableMailApps[0];
 
   return new Promise((resolve) => {
