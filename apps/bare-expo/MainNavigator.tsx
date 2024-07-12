@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { registerDevMenuItems } from 'expo-dev-menu';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { Platform } from 'react-native';
+import { ToastAndroid, Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
 
 import Colors from './src/constants/Colors';
@@ -125,14 +125,27 @@ export default () => {
       const key = 'PERSIST_NAV_STATE';
       const persistenceEnabled = !!(await AsyncStorage.getItem(key));
 
-      const label = persistenceEnabled
-        ? 'Disable navigation state persistence'
-        : 'Enable navigation state persistence';
+      // on Android, we need to keep the title of the item the same
+      // because updating dev menu items currently doesn't work
+      const label = Platform.select({
+        ios: persistenceEnabled
+          ? '✗  Disable navigation state persistence'
+          : '✓  Enable navigation state persistence',
+        default: 'Toggle navigation state persistence',
+      });
       const devMenuItems = [
         {
           shouldCollapse: true,
           name: label,
           callback: async () => {
+            if (Platform.OS === 'android') {
+              // because the label is always the same, we show a toast to inform
+              // whether the persistence is going to be enabled or disabled
+              const message = persistenceEnabled
+                ? 'Navigation state persistence disabled'
+                : 'Navigation state persistence enabled';
+              ToastAndroid.show(message, ToastAndroid.LONG);
+            }
             try {
               if (persistenceEnabled) {
                 await AsyncStorage.removeItem(key);
