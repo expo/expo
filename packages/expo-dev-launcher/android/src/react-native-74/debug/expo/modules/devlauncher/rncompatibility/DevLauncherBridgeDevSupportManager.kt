@@ -14,6 +14,7 @@ import expo.modules.devlauncher.koin.optInject
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
+import java.lang.reflect.InvocationTargetException
 
 class DevLauncherBridgeDevSupportManager(
   applicationContext: Context,
@@ -60,7 +61,8 @@ class DevLauncherBridgeDevSupportManager(
     }
 
     controller?.onAppLoadedWithError()
-    DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
+    val cause: Throwable = if (e is InvocationTargetException) e.cause ?: e else e
+    DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, cause))
   }
 
   override fun getUniqueTag() = "DevLauncherApp-Bridge"

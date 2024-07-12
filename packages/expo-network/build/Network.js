@@ -76,7 +76,7 @@ export async function isAirplaneModeEnabledAsync() {
  * a single argument that is an object containing information about the network state.
  *
  * @example
- * ```typescript
+ * ```ts
  * const subscription = addNetworkStateListener(({ type, isConnected, isInternetReachable }) => {
  *   console.log(`Network type: ${type}, Connected: ${isConnected}, Internet Reachable: ${isInternetReachable}`);
  * });
@@ -93,7 +93,7 @@ export function addNetworkStateListener(listener) {
  * initiates a listener for network state changes and cleans up before unmounting.
  *
  * @example
- * ```typescript
+ * ```ts
  * const networkState = useNetworkState();
  * console.log(`Current network type: ${networkState.type}`);
  * ```

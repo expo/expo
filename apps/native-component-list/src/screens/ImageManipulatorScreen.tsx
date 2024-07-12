@@ -83,7 +83,7 @@ export default function ImageManipulatorScreen() {
 
   async function compress(compress: number) {
     const image = await context.renderAsync();
-    const saveResult = await image.saveAsync({ compress, format: SaveFormat.PNG });
+    const saveResult = await image.saveAsync({ compress, format: SaveFormat.JPEG });
 
     setOriginalImageUri(saveResult.uri);
   }

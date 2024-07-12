@@ -67,7 +67,23 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ### Android server images
 
-#### `ubuntu-22.04-jdk-17-ndk-r25b` (`latest`, `sdk-51`, `sdk-50`)
+#### `ubuntu-22.04-jdk-17-ndk-r26b` (`latest`, `sdk-51`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-v20240614`
+- NDK 26.1.10909125
+- Node.js 18.18.0
+- Bun 1.1.13
+- Yarn 1.22.21
+- pnpm 9.3.0
+- npm 9.8.1
+- Java 17
+- node-gyp 10.1.0
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-17-ndk-r25b` (`sdk-50`)
 
 <Collapsible summary="Details">
 
@@ -83,7 +99,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-11-ndk-r23b`
+#### `ubuntu-22.04-jdk-11-ndk-r23b` (`sdk-49`)
 
 <Collapsible summary="Details">
 
@@ -131,7 +147,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-8-ndk-r21e`
+#### `ubuntu-22.04-jdk-8-ndk-r21e` (deprecated)
 
 <Collapsible summary="Details">
 
@@ -147,7 +163,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r23b` (`sdk-49`)
+#### `ubuntu-20.04-jdk-11-ndk-r23b` (deprecated)
 
 <Collapsible summary="Details">
 
@@ -163,7 +179,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r21e`
+#### `ubuntu-20.04-jdk-11-ndk-r21e` (deprecated)
 
 <Collapsible summary="Details">
 
@@ -179,7 +195,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-8-ndk-r21e`
+#### `ubuntu-20.04-jdk-8-ndk-r21e` (deprecated)
 
 <Collapsible summary="Details">
 
@@ -195,7 +211,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r19c`
+#### `ubuntu-20.04-jdk-11-ndk-r19c` (deprecated)
 
 <Collapsible summary="Details">
 
@@ -211,7 +227,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-8-ndk-r19c`
+#### `ubuntu-20.04-jdk-8-ndk-r19c` (deprecated)
 
 <Collapsible summary="Details">
 
@@ -261,7 +277,25 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### `macos-sonoma-14.4-xcode-15.3` (`latest`, `sdk-51`, `sdk-50`, `sdk-49`)
+#### `macos-sonoma-14.5-xcode-15.4` (`latest`, `sdk-51`, `sdk-50`, `sdk-49`)
+
+<Collapsible summary="Details">
+
+- macOS Sonoma 14.5
+- Xcode 15.4 (15F31d)
+- Node.js 18.18.0
+- Bun 1.1.13
+- Yarn 1.22.21
+- pnpm 9.3.0
+- npm 9.8.1
+- fastlane 2.220.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.1.0
+
+</Collapsible>
+
+#### `macos-sonoma-14.4-xcode-15.3`
 
 <Collapsible summary="Details">
 
@@ -328,150 +362,6 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - npm 9.8.1
 - fastlane 2.216.0
 - CocoaPods 1.13.0
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-ventura-13.4-xcode-14.3.1` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Ventura 13.4
-- Xcode 14.3.1 (14E300c)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 8.6.5
-- npm 9.8.1
-- fastlane 2.213.0
-- CocoaPods 1.12.1
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-ventura-13.3-xcode-14.3` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Ventura 13.3
-- Xcode 14.3 (14E222b)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 8.2.0
-- npm 9.8.1
-- fastlane 2.212.2
-- CocoaPods 1.12.0
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-monterey-12.6-xcode-14.2` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.6
-- Xcode 14.2 (14C18)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 7.27.0
-- npm 9.8.1
-- fastlane 2.211.0
-- CocoaPods 1.11.3
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-monterey-12.6-xcode-14.1` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.6
-- Xcode 14.1 (14B47b)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 7.15.0
-- npm 9.8.1
-- fastlane 2.210.1
-- CocoaPods 1.11.3
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-monterey-12.6-xcode-14.0` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.6
-- Xcode 14.0 (14A309)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 7.11.0
-- npm 9.8.1
-- fastlane 2.210.0
-- CocoaPods 1.11.3
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-monterey-12.4-xcode-13.4` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.4
-- Xcode 13.4 (13F17a)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 7.0.0
-- npm 9.8.1
-- fastlane 2.205.2
-- CocoaPods 1.11.3
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-monterey-12.3-xcode-13.3` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.3.1
-- Xcode 13.3.1 (13E500a)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 7.0.0
-- npm 9.8.1
-- fastlane 2.205.2
-- CocoaPods 1.11.3
-- Ruby 2.7
-- node-gyp 10.0.1
-
-</Collapsible>
-
-#### `macos-monterey-12.1-xcode-13.2` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.1
-- Xcode 13.2.1 (13C100)
-- Node.js 18.18.0
-- Bun 1.0.14
-- Yarn 1.22.19
-- pnpm 7.0.0
-- npm 9.8.1
-- fastlane 2.201.0
-- CocoaPods 1.11.2
 - Ruby 2.7
 - node-gyp 10.0.1
 

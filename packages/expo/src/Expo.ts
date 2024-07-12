@@ -9,6 +9,7 @@ export {
   // Core classes
   EventEmitter,
   SharedObject,
+  SharedRef,
   NativeModule,
 
   // Methods

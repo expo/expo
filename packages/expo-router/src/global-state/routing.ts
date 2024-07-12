@@ -3,11 +3,11 @@ import * as Linking from 'expo-linking';
 import { nanoid } from 'nanoid/non-secure';
 
 import { type RouterStore } from './router-store';
-import { ExpoRouter } from '../../types/expo-router';
 import { ResultState } from '../fork/getStateFromPath';
 import { resolveHref } from '../link/href';
 import { resolve } from '../link/path';
 import { matchDynamicName } from '../matchers';
+import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -18,11 +18,11 @@ function assertIsReady(store: RouterStore) {
   }
 }
 
-export function navigate(this: RouterStore, url: ExpoRouter.Href) {
+export function navigate(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'NAVIGATE');
 }
 
-export function push(this: RouterStore, url: ExpoRouter.Href) {
+export function push(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'PUSH');
 }
 
@@ -30,7 +30,7 @@ export function dismiss(this: RouterStore, count?: number) {
   this.navigationRef?.dispatch(StackActions.pop(count));
 }
 
-export function replace(this: RouterStore, url: ExpoRouter.Href) {
+export function replace(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'REPLACE');
 }
 

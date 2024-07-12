@@ -84,6 +84,32 @@ function patchMetroGraphToSupportUncachedModules() {
         Graph.prototype.traverseDependencies.__patched = true;
     }
 }
+function createNumericModuleIdFactory() {
+    const fileToIdMap = new Map();
+    let nextId = 0;
+    return (modulePath) => {
+        let id = fileToIdMap.get(modulePath);
+        if (typeof id !== 'number') {
+            id = nextId++;
+            fileToIdMap.set(modulePath, id);
+        }
+        return id;
+    };
+}
+function createStableModuleIdFactory(root) {
+    const fileToIdMap = new Map();
+    // This is an absolute file path.
+    return (modulePath) => {
+        // TODO: We may want a hashed version for production builds in the future.
+        let id = fileToIdMap.get(modulePath);
+        if (id == null) {
+            id = path_1.default.relative(root, modulePath);
+            fileToIdMap.set(modulePath, id);
+        }
+        // @ts-expect-error: we patch this to support being a string.
+        return id;
+    };
+}
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
@@ -176,6 +202,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 }
                 return false;
             },
+            createModuleIdFactory: env_1.env.EXPO_USE_METRO_REQUIRE
+                ? createStableModuleIdFactory.bind(null, projectRoot)
+                : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
                 const preModules = [
                     // MUST be first
