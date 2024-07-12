@@ -344,7 +344,7 @@ function performConstantFolding(
 
 async function transformJS(
   file: JSFile,
-  { config, options, projectRoot }: TransformationContext
+  { config, options }: TransformationContext
 ): Promise<TransformResponse> {
   const targetEnv = options.customTransformOptions?.environment;
   const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
@@ -357,13 +357,12 @@ async function transformJS(
     !file.filename.endsWith('.json');
   const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
 
-  // if (treeshake && !options.experimentalImportSupport) {
-  //   // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
-  //   throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.')
-  // }
-
-  // const targetEnv = options.customTransformOptions?.environment;
-  // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+  if (treeshake && !options.experimentalImportSupport) {
+    // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
+    throw new Error(
+      'Experimental tree shaking support only works with experimentalImportSupport enabled.'
+    );
+  }
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
@@ -379,10 +378,6 @@ async function transformJS(
 
   // @ts-expect-error: Not on types yet (Metro 0.80).
   const unstable_renameRequire = config.unstable_renameRequire;
-
-  // Perform the import-export transform (in case it's still needed), then
-  // fold requires and perform constant folding (if in dev).
-  // const plugins: PluginItem[] = [];
 
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!treeshake) {

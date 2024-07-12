@@ -230,7 +230,7 @@ function performConstantFolding(ast, { filename }) {
     }).ast);
     return ast;
 }
-async function transformJS(file, { config, options, projectRoot }) {
+async function transformJS(file, { config, options }) {
     const targetEnv = options.customTransformOptions?.environment;
     const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     const treeshake = 
@@ -240,12 +240,10 @@ async function transformJS(file, { config, options, projectRoot }) {
         // Disable tree shaking on JSON files.
         !file.filename.endsWith('.json');
     const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
-    // if (treeshake && !options.experimentalImportSupport) {
-    //   // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
-    //   throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.')
-    // }
-    // const targetEnv = options.customTransformOptions?.environment;
-    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+    if (treeshake && !options.experimentalImportSupport) {
+        // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
+        throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.');
+    }
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
@@ -256,9 +254,6 @@ async function transformJS(file, { config, options, projectRoot }) {
     applyUseStrictDirective(ast);
     // @ts-expect-error: Not on types yet (Metro 0.80).
     const unstable_renameRequire = config.unstable_renameRequire;
-    // Perform the import-export transform (in case it's still needed), then
-    // fold requires and perform constant folding (if in dev).
-    // const plugins: PluginItem[] = [];
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!treeshake) {
         ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
