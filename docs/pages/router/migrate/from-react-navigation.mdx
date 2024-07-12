@@ -6,6 +6,8 @@ description: Learn how to migrate a project using React Navigation to Expo Route
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 
 Both React Navigation and Expo Router are Expo frameworks for routing and navigation. Expo Router is a wrapper around React Navigation and many of the concepts are the same.
 
@@ -499,3 +501,52 @@ export default function Screen() {
 ### Migrate TypeScript types
 
 Expo Router can automatically generate [statically typed routes](/router/reference/typed-routes), this will ensure you can only navigate to valid routes.
+
+## Additional information
+
+### React Navigation themes
+
+React Navigation navigators `<Stack>`, `<Drawer>`, and `<Tabs>` use a shared appearance provider. In React Navigation, you set the theme for the entire app using the `<NavigationContainer />` component. Expo Router manages the root container so that you can set the theme using the `ThemeProvider` directly.
+
+```tsx app/_layout.tsx
+/* @info Import theme APIs from React Navigation directly. */
+import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from '@react-navigation/native';
+/* @end */
+import { Slot } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    /* @info All layouts inside this provider will use the dark theme. */
+    <ThemeProvider value={DarkTheme}>
+      /* @end */
+      <Slot />
+    </ThemeProvider>
+  );
+}
+```
+
+You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed with `useTheme` from `@react-navigation/native`.
+
+### React Navigation Elements
+
+The [`@react-navigation/elements`](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
+
+To use it with Expo Router, you need to install the library:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm install @react-navigation/elements']} />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add @react-navigation/elements']} />
+
+</Tab>
+
+</Tabs>
+
+To learn more about the components and utilities the library provides, see [Elements library](https://reactnavigation.org/docs/elements/) documentation.
