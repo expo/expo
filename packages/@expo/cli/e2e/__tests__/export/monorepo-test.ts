@@ -55,11 +55,10 @@ async function exportApp(monorepoRoot: string, workspacePath: string) {
 
 function findFilesInPath(outputDir: string) {
   return klawSync(outputDir)
-    .map((entry) => {
-      if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-        return null;
-      }
-      return path.posix.relative(outputDir, entry.path);
-    })
+    .map((entry) =>
+      entry.path.includes('node_modules') || !entry.stats.isFile()
+        ? null
+        : path.posix.relative(outputDir, entry.path)
+    )
     .filter(Boolean);
 }
