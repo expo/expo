@@ -59,7 +59,7 @@ export async function checkPackagesAsync(
       chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
         pkg.expo.install.exclude
       )}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${learnMore(
-        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+        'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
       )}`
     );
   }

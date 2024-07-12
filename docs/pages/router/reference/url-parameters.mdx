@@ -29,13 +29,13 @@ Both hooks are typed and accessed the same way. However, the only difference is 
 
 The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
 
-<FileTree files={['app/_layout.js', 'app/index.js', 'app/[user].js']} />
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/[user].tsx']} />
 
 <Step label="1">
 
     The Root Layout is a stack navigator:
 
-    ```jsx app/_layout.js
+    ```tsx app/_layout.tsx
     import { Stack } from 'expo-router';
 
     export default function Layout() {
@@ -47,9 +47,9 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="2">
 
-    The initial route redirects to the dynamic route **app/[user].js**, with **user=evanbacon**:
+    The initial route redirects to the dynamic route **app/[user].tsx**, with **user=evanbacon**:
 
-    ```jsx app/index.js
+    ```tsx app/index.tsx
     import { Redirect } from 'expo-router';
 
     export default function Route() {
@@ -63,7 +63,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
     The dynamic route **app/[user]** prints out the global and local URL parameters (route parameters, in this case). It also allows for pushing new instances of the same route with different **route parameters**:
 
-    ```jsx app/[user].js
+    ```tsx app/[user].tsx
     import { Text, View } from 'react-native';
     import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
 

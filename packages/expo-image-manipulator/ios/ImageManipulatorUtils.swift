@@ -91,23 +91,15 @@ func retrieveAsset(from url: URL) -> PHAsset? {
  Helper function for drawing the image in graphics context.
  Throws appropriate exceptions when the context is missing or the image couldn't be rendered.
  */
-internal func drawInNewContext(size: CGSize, drawing: (CGContext) -> Void) throws -> UIImage {
-  UIGraphicsBeginImageContext(size)
+internal func drawInNewContext(size: CGSize, drawing: (UIGraphicsImageRendererContext) -> Void) -> UIImage {
+  let format = UIGraphicsImageRendererFormat()
+  format.scale = 1
 
-  guard let context = UIGraphicsGetCurrentContext() else {
-    UIGraphicsEndImageContext()
-    throw ImageContextLostException()
+  let renderer = UIGraphicsImageRenderer(size: size, format: format)
+
+  return renderer.image { context in
+    drawing(context)
   }
-
-  drawing(context)
-
-  guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else {
-    UIGraphicsEndImageContext()
-    throw NoImageInContextException()
-  }
-
-  UIGraphicsEndImageContext()
-  return newImage
 }
 
 /**

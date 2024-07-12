@@ -23,6 +23,10 @@ class Env {
     get EXPO_NO_CLIENT_ENV_VARS() {
         return (0, getenv_1.boolish)('EXPO_NO_CLIENT_ENV_VARS', false);
     }
+    /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
+    get EXPO_USE_METRO_REQUIRE() {
+        return (0, getenv_1.boolish)('EXPO_USE_METRO_REQUIRE', false);
+    }
 }
 exports.env = new Env();
 //# sourceMappingURL=env.js.map

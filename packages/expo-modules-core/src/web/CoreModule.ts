@@ -5,6 +5,7 @@ import type {
 } from '../ts-declarations/EventEmitter';
 import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
 import type { SharedObject as SharedObjectType } from '../ts-declarations/SharedObject';
+import type { SharedRef as SharedRefType } from '../ts-declarations/SharedRef';
 import uuid from '../uuid';
 
 class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
@@ -95,14 +96,19 @@ class SharedObject<TEventsMap extends Record<never, never>>
   implements SharedObjectType
 {
   release(): void {
-    throw new Error('Method not implemented.');
+    // no-op on Web, but subclasses can override it if needed.
   }
 }
+
+class SharedRef<TEventsMap extends Record<never, never>>
+  extends SharedObject<TEventsMap>
+  implements SharedRefType {}
 
 globalThis.expo = {
   EventEmitter,
   NativeModule,
   SharedObject,
+  SharedRef,
   modules: {},
   uuidv4: uuid.v4,
   uuidv5: uuid.v5,

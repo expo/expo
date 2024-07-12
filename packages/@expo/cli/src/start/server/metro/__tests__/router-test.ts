@@ -52,7 +52,7 @@ describe(getApiRoutesForDirectory, () => {
       },
       '/project'
     );
-    expect(getApiRoutesForDirectory('/project/app')).toEqual([
+    expect(getApiRoutesForDirectory('/project/app').sort()).toEqual([
       '/project/app/.well-known/test+api.tsx',
       '/project/app/nested/route+api.tsx',
       '/project/app/test+api.tsx',

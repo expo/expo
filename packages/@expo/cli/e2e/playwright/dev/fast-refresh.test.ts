@@ -22,7 +22,7 @@ test.describe(inputDir, () => {
 
   test.beforeEach(async () => {
     expo = new ExpoStartCommand(projectRoot, {
-      NODE_ENV: 'production',
+      NODE_ENV: 'development',
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
@@ -61,38 +61,78 @@ test.describe(inputDir, () => {
 
   test('updates with fast refresh', async ({ page }) => {
     console.time('expo start');
+    // expo.addListener('stdout', (chunk) => {
+    //   console.log('[CLI]: stdout:', ...chunk);
+    // });
+    // expo.addListener('stderr', (chunk) => {
+    //   console.log('[CLI]: stderr:', ...chunk);
+    // });
     await expo.startAsync();
+    // page.on('console', (msg) => console.log('[PAGE]:', msg.text()));
+
     console.timeEnd('expo start');
+
     console.log('Server running:', expo.url);
+
     console.time('Eagerly bundled JS');
-    await expo.fetchAsync('/');
+    const indexRes = await expo.fetchAsync('/');
+    expect(indexRes.ok).toBe(true);
+    await indexRes.text();
     console.timeEnd('Eagerly bundled JS');
 
     console.time('Open page');
+
+    const allSockets: WebSocket[] = [];
+
+    page.on('websocket', (ws) => {
+      allSockets.push(ws);
+    });
+
+    function waitForSocket(page: Page, matcher: (ws: WebSocket) => boolean) {
+      return new Promise<WebSocket>((res) => {
+        for (const ws of allSockets) {
+          if (matcher(ws)) {
+            res(ws);
+            return;
+          }
+        }
+
+        page.on('websocket', (ws) => {
+          console.log('Socket connected:', ws.url());
+          if (matcher(ws)) {
+            res(ws);
+          }
+        });
+      });
+    }
+
     // Navigate to the app
     await page.goto(expo.url);
+
     console.timeEnd('Open page');
 
     // Ensure the message socket connects (not related to HMR).
 
     console.log('Waiting for /hot socket');
 
+    // NOTE: Start this test before navigating to the page to ensure we don't miss any events.
     // Ensure the hot socket connects
-    const hotSocket = await raceOrFail(
-      waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
-      // Should be really fast
-      500,
-      'HMR websocket on client took too long to connect.'
-    );
+    const [hotSocket] = await Promise.all([
+      raceOrFail(
+        waitForSocket(page, (ws) => ws.url().endsWith('/hot')),
+        // Should be really fast
+        500,
+        'HMR websocket on client took too long to connect.'
+      ),
+      // Order matters, message socket is set first.
+      raceOrFail(
+        waitForSocket(page, (ws) => ws.url().endsWith('/message')),
+        500,
+        'Message socket on client took too long to connect.'
+      ),
+    ]);
 
     console.log('Found /hot socket');
-
-    // Order matters, message socket is set second.
-    await raceOrFail(
-      waitForSocket(page, (ws) => ws.url().endsWith('/message')),
-      500,
-      'Message socket on client took too long to connect.'
-    );
 
     // Ensure the entry point is registered
     await hotSocket.waitForEvent('framesent', {
@@ -176,16 +216,6 @@ function makeHotPredicate(predicate: (data: Record<string, any>) => boolean) {
     const event = JSON.parse(typeof payload === 'string' ? payload : payload.toString());
     return predicate(event);
   };
-}
-
-function waitForSocket(page: Page, matcher: (ws: WebSocket) => boolean) {
-  return new Promise<WebSocket>((res) => {
-    page.on('websocket', (ws) => {
-      if (matcher(ws)) {
-        res(ws);
-      }
-    });
-  });
 }
 
 export const raceOrFail = (promise: Promise<any>, timeout: number, message: string) =>

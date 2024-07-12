@@ -77,7 +77,7 @@ export function createRequestHandler(
         return null;
       }
 
-      if (/\.[cj]s$/.test(filePath)) {
+      if (/\.c?js$/.test(filePath)) {
         return require(filePath);
       }
       return import(filePath);

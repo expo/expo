@@ -55,6 +55,10 @@ describe('updates managed support', () => {
     const fingerprintHash1 = await createProjectHashAsync(projectRoot, {
       ignorePaths: ['android/**/*', 'ios/**/*'],
     });
+
+    // Reset modules to prevent cached `require(projectRoot/package.json)`
+    jest.resetModules();
+
     await spawnAsync('npx', ['expo', 'prebuild'], {
       stdio: 'ignore',
       cwd: projectRoot,
