@@ -25,4 +25,11 @@ config.resolver.blockList = [
 // Copied from expo-yarn-workspaces
 config.transformer.enableBabelRCLookup = false;
 
+config.transformer.getTransformOptions = () => ({
+  transform: {
+    experimentalImportSupport: require('getenv').boolish('EXPO_UNSTABLE_TREE_SHAKING', false),
+    inlineRequires: false,
+  },
+});
+
 module.exports = config;
