@@ -1432,7 +1432,7 @@ export function getWebviewProxyHtml(src?: string) {
     <body>
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
     <noscript>
-    You need to enable JavaScript to run this app.
+    WebView requires <code>javaScriptEnabled</code>
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>

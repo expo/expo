@@ -71,9 +71,9 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
             ? `
                 import React from 'react';
               import { WebView } from 'react-native-webview';
-              export default function WebviewProxy(props) {
-                return React.createElement(WebView, { originWhitelist: ['*'], webviewDebuggingEnabled: ${isProduction ? 'false' : 'true'}, ...props, source: proxy });
-              }
+              export default React.forwardRef((props, ref) => {
+                return React.createElement(WebView, { ref, style: { flex: 1 }, originWhitelist: ['*'], webviewDebuggingEnabled: ${isProduction ? 'false' : 'true'}, ...props, source: proxy });
+            });
               `
             : `export default proxy`
         );

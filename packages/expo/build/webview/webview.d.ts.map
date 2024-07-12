@@ -1,0 +1,1 @@
+{"version":3,"file":"webview.d.ts","sourceRoot":"","sources":["../../src/webview/webview.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,OAAO,MAAM,sBAAsB,CAAC;AAChD,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,sBAAsB,CAAC;AAEhE,KAAK,aAAa,CAAC,CAAC,IAAI;IACtB,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,CAAC,CAAC;CACT,CAAC;AAEF,eAAO,MAAM,IAAI,yCAIhB,CAAC;AAEF,eAAO,MAAM,SAAS,kDAAmD,IAAI;;;EAsB5E,CAAC"}

@@ -24,6 +24,7 @@
     "expo-module.config.json",
     "metro-config.js",
     "metro-config.d.ts",
+    "webview",
     "config.js",
     "config.d.ts",
     "config-plugins.js",
