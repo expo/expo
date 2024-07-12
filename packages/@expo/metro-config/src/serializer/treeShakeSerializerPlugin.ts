@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { NodePath, traverse } from '@babel/core';
+import generate from '@babel/generator';
 import * as types from '@babel/types';
 import assert from 'assert';
 import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
@@ -17,7 +18,6 @@ import {
   ReconcileTransformSettings,
   collectDependenciesForShaking,
 } from '../transform-worker/metro-transform-worker';
-import generate from '@babel/generator';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
 const isDebugEnabled = require('debug').enabled('expo:treeshake');

@@ -34,12 +34,12 @@ exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exp
  * LICENSE file in the root directory of this source tree.
  */
 const core_1 = require("@babel/core");
+const generator_1 = __importDefault(require("@babel/generator"));
 const types = __importStar(require("@babel/types"));
 const assert_1 = __importDefault(require("assert"));
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const sideEffects_1 = require("./sideEffects");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
-const generator_1 = __importDefault(require("@babel/generator"));
 const debug = require('debug')('expo:treeshake');
 const isDebugEnabled = require('debug').enabled('expo:treeshake');
 const OPTIMIZE_GRAPH = true;
