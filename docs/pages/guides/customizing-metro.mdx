@@ -58,6 +58,57 @@ config.resolver.assetExts.push(
 module.exports = config;
 ```
 
+## Aliases
+
+Sometimes you want an import to be redirected to another module or file. This is called an alias. Due to the way Metro bundles for multiple platforms simultaneously, we recommend using a custom resolver to handle aliases.
+
+In the following example, we'll add an alias for `old-module` to `new-module`:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+const ALIASES = {
+  'old-module': 'new-module',
+};
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  // Ensure you call the default resolver.
+  return context.resolveRequest(
+    context,
+    // Use an alias if one exists.
+    ALIASES[moduleName] ?? moduleName,
+    platform
+  );
+};
+
+module.exports = config;
+```
+
+If you want to only apply the alias on a certain platform, you can check the `platform` argument:
+
+```js metro.config.js
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (platform === 'web') {
+    // The alias will only be used when bundling for the web.
+    return context.resolveRequest(context, ALIASES[moduleName] ?? moduleName, platform);
+  }
+  // Ensure you call the default resolver.
+  return context.resolveRequest(context, moduleName, platform);
+};
+```
+
+You will see the changes the next time you restart the dev server. Resolutions are never cached and do not need the `--clear` flag to update. If you use a transform-based system like `babel-plugin-module-resolver`, you will need to clear the cache to see changes applied.
+
+<BoxLink
+  title="Customizing Metro resolution"
+  description="Learn more about advanced Metro resolving in your project."
+  href="/versions/latest/config/metro/#custom-resolving"
+  Icon={BookOpen02Icon}
+/>
+
 ## Bundle splitting
 
 From SDK 50, Expo CLI automatically splits bundles based on async imports (web-only).

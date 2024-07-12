@@ -93,6 +93,38 @@ describe('serializes', () => {
     });
   });
 
+  describe('metro-transform-worker', () => {
+    it(`supports top-level variables that match iife names with experimentalImportSupport`, async () => {
+      const serializer = createSerializerFromSerialProcessors(
+        {
+          projectRoot,
+        },
+        [],
+        null // originalSerializer
+      );
+
+      const fs = {
+        'index.js': `
+        let module = {};
+        let require = {};
+        let global = {};
+        let exports = {};
+      `,
+      };
+
+      // This will fail if the `module` -> `_module` transform doesn't work.
+      expect((await serializer(...(await microBundle({ fs })))).code).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        let _module = {};
+        let _require = {};
+        let _global = {};
+        let _exports = {};
+      },"/app/index.js",[],"index.js");
+      TEST_RUN_MODULE("/app/index.js");"
+    `);
+    });
+  });
+
   describe('debugId', () => {
     describe('legacy serializer', () => {
       it(`serializes with debugId annotation`, async () => {

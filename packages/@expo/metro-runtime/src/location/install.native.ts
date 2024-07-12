@@ -1,5 +1,7 @@
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
 import 'react-native/Libraries/Core/InitializeCore';
+// This MUST be imported to ensure URL is installed.
+import 'expo';
 
 import Constants from 'expo-constants';
 
