@@ -51,7 +51,7 @@
     "lightningcss": "~1.19.0",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0",
-    "minimatch": "^10.0.1"
+    "minimatch": "^3.0.4"
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
