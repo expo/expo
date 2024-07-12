@@ -2,19 +2,9 @@
 
 import '../global.css';
 
-import { useBridge, _getActionsObject } from 'expo/webview';
+import { useBridge } from 'expo/webview';
 
-// TODO: Magically make this a prop of the component in the root HTML.
-// const actions = _getActionsObject();
-
-export default function Page({
-  actions,
-}: {
-  actions: {
-    showAlert: (time: number) => void;
-  };
-}) {
-  console.log('WEB.start');
+export default function Page() {
   const [emit] = useBridge((msg) => {
     console.log('WEB:', msg);
   });
@@ -24,7 +14,6 @@ export default function Page({
       <p
         className="text-lg text-blue-900 font-medium"
         onClick={() => {
-          actions.showAlert(Date.now());
           emit({ type: 'hello', data: 'world' });
         }}>
         Welcome to Tailwind

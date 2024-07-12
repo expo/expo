@@ -27,9 +27,9 @@ export const useBridge = <TData extends JSONValue>(
   const ref = useRef<WebView>(null);
 
   const emit = useCallback(
-    (message: BridgeMessage<TData>) => {
+    (detail: BridgeMessage<TData>) => {
       const msg = `(function() {
-  try { window.dispatchEvent(new CustomEvent("iframe-event",${JSON.stringify(message)})); } catch {}
+  try { window.dispatchEvent(new CustomEvent("iframe-event",${JSON.stringify({ detail })})); } catch {}
   return true;
   })()`;
       ref.current?.injectJavaScript(msg);
@@ -39,12 +39,23 @@ export const useBridge = <TData extends JSONValue>(
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       try {
-        onSubscribe(JSON.parse(event.nativeEvent.data));
+        const { isTrusted, ...json } = JSON.parse(event.nativeEvent.data);
+        onSubscribe(json);
       } catch {}
     },
     [onSubscribe]
   );
   return [emit, { ref, onMessage }] as const;
 };
+
+export function _invokeNativeAction(actionId: string, args: any[]): Promise<any> {
+  throw new Error('internal method for webviews');
+}
+
+export function _getActionsObject(): Record<string, (...args: any[]) => void | Promise<any>> {
+  throw new Error('internal method for webviews');
+}
+
+export { default as WebView } from './webview-wrapper';
 
 export * from './www-types';
