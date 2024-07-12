@@ -1,8 +1,6 @@
 package expo.modules.imagemanipulator
 
 import android.content.Context
-import android.graphics.Bitmap.CompressFormat
-import android.os.Build
 import java.io.File
 import java.io.IOException
 import java.util.*

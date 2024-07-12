@@ -33,15 +33,18 @@ class ImageManipulatorModule : Module() {
                         ?: throw ImageLoaderNotFoundException()
 
       suspendCancellableCoroutine { continuation ->
-        imageLoader.loadImageForManipulationFromURL(url.toString(), object : ResultListener {
-          override fun onSuccess(bitmap: Bitmap) {
-            continuation.resume(bitmap)
-          }
+        imageLoader.loadImageForManipulationFromURL(
+          url.toString(),
+          object : ResultListener {
+            override fun onSuccess(bitmap: Bitmap) {
+              continuation.resume(bitmap)
+            }
 
-          override fun onFailure(cause: Throwable?) {
-            continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+            override fun onFailure(cause: Throwable?) {
+              continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+            }
           }
-        })
+        )
       }
     }
 
@@ -92,14 +95,11 @@ class ImageManipulatorModule : Module() {
       Property("height") { image: ImageRef -> image.ref.height }
 
       AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions ->
-
         val path = FileUtils.generateRandomOutputPath(context, options.format)
         val compression = (options.compress * 100).toInt()
-
-        var base64String: String? = null
-
         val resultBitmap = image.ref
 
+        var base64String: String? = null
         appContext.backgroundCoroutineScope.async {
           FileOutputStream(path).use { fileOut ->
             val compressFormat = options.format.compressFormat

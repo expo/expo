@@ -9,9 +9,9 @@ class CropTransformer(
 ) : ImageTransformer {
   override fun transform(bitmap: Bitmap): Bitmap {
     val isInBounds = rect.originX <= bitmap.width &&
-                     rect.originY <= bitmap.height &&
-                     rect.width <= bitmap.width &&
-                     rect.height <= bitmap.height
+      rect.originY <= bitmap.height &&
+      rect.width <= bitmap.width &&
+      rect.height <= bitmap.height
     if (!isInBounds) {
       throw ImageInvalidCropException()
     }

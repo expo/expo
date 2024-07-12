@@ -20,9 +20,12 @@ data class ManipulatorResult(
     }
 
     return try {
-      ManipulatorResult(transformer.transform(
-        requireNotNull(value) { "The result doesn't have a value or error" }
-      ), null)
+      ManipulatorResult(
+        transformer.transform(
+          requireNotNull(value) { "The result doesn't have a value or error" }
+        ),
+        null
+      )
     } catch (e: Throwable) {
       ManipulatorResult(null, e.toCodedException())
     }
@@ -38,7 +41,7 @@ data class ManipulatorResult(
 
 class ManipulatorTask(
   private val coroutineScope: CoroutineScope,
-  private val loader: suspend () -> Bitmap,
+  private val loader: suspend () -> Bitmap
 ) {
   private var task: Deferred<ManipulatorResult> = launchLoader()
 

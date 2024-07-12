@@ -51,14 +51,18 @@ class ManipulateOptions : Record {
  * Possible options for flip action.
  */
 enum class FlipType(val value: String) : Enumerable {
-  VERTICAL("vertical"), HORIZONTAL("horizontal")
+  VERTICAL("vertical"),
+  HORIZONTAL("horizontal")
 }
 
 /**
  * Enum with supported image formats.
  */
 enum class ImageFormat(val value: String) : Enumerable {
-  JPEG("jpeg"), JPG("jpg"), PNG("png"), WEBP("webp");
+  JPEG("jpeg"),
+  JPG("jpg"),
+  PNG("png"),
+  WEBP("webp");
 
   val fileExtension: String
     get() = when (this) {
