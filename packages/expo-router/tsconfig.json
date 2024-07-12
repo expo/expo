@@ -4,15 +4,12 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ],
+    "types": ["jest", "jest-require", "node"]
   },
   "include": [
     "./src",
     "./types/expect.d.ts",
+    "../@expo/cli/ts-declarations",
     "../expo/src/ts-declarations"
   ],
   "exclude": [

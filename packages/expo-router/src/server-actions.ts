@@ -1,3 +1,8 @@
+declare let globalThis: {
+  _REACT_registerServerReference: Function;
+  _knownServerReferences: Map<string, Map<string, Function>>;
+};
+
 // HACK: This wrapper has shared state that we can use to access the server actions lazily in development without needing
 // an extra pass to generate and extract modules.
 // This is used as a drop-in replacement for `react-server-dom-webpack/server` in `babel-preset-expo`, but it exposes the server
@@ -12,20 +17,20 @@ function getKnownServerReferences(): Map<string, Function> {
   if (!globalThis._knownServerReferences) {
     globalThis._knownServerReferences = new Map();
   }
-  if (!globalThis._knownServerReferences.get(process.env.EXPO_OS)) {
-    globalThis._knownServerReferences.set(process.env.EXPO_OS, new Map());
+  if (!globalThis._knownServerReferences.get(process.env.EXPO_OS!)) {
+    globalThis._knownServerReferences.set(process.env.EXPO_OS!, new Map());
   }
 
-  return globalThis._knownServerReferences.get(process.env.EXPO_OS);
+  return globalThis._knownServerReferences.get(process.env.EXPO_OS!)!;
 }
 
 export function registerServerReferenceDEV(
   // Function
   proxy: typeof Proxy,
   // ID sent to the server from the client
-  reference,
+  reference: string,
   // etc. (used for forms which we don't currently support on native)
-  encodeFormAction
+  encodeFormAction: string
 ) {
   const res = globalThis._REACT_registerServerReference(proxy, reference, encodeFormAction);
   console.log('[SSR] registerServerReferenceDEV:', reference + '#' + encodeFormAction, res);

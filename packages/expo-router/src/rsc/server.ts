@@ -11,6 +11,10 @@ import type { ReactNode } from 'react';
 
 import type { PathSpec } from './path';
 
+declare let globalThis: {
+  __EXPO_RSC_CACHE__?: Map<string, any>;
+};
+
 type Config = any;
 
 type Elements = Record<string, ReactNode>;
@@ -83,14 +87,14 @@ function getGlobalCacheForPlatform(): Pick<AsyncLocalStorage<RenderStore>, 'getS
     globalThis.__EXPO_RSC_CACHE__ = new Map();
   }
 
-  if (globalThis.__EXPO_RSC_CACHE__.has(process.env.EXPO_OS)) {
-    return globalThis.__EXPO_RSC_CACHE__.get(process.env.EXPO_OS)!;
+  if (globalThis.__EXPO_RSC_CACHE__.has(process.env.EXPO_OS!)) {
+    return globalThis.__EXPO_RSC_CACHE__.get(process.env.EXPO_OS!)!;
   }
   try {
     const { AsyncLocalStorage } = require('node:async_hooks');
     // @ts-expect-error: This is a Node.js feature.
     const serverCache = new AsyncLocalStorage<RenderStore>();
-    globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS, serverCache);
+    globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS!, serverCache);
     return serverCache;
   } catch (error) {
     console.log('[RSC]: Failed to create cache:', error);
@@ -108,7 +112,7 @@ function getGlobalCacheForPlatform(): Pick<AsyncLocalStorage<RenderStore>, 'getS
         }
       },
     };
-    globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS, serverCache);
+    globalThis.__EXPO_RSC_CACHE__.set(process.env.EXPO_OS!, serverCache);
     return serverCache;
   }
 }

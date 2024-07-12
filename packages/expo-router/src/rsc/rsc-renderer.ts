@@ -19,6 +19,7 @@ import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 import { getServerReference, getDebugDescription } from '../server-actions';
 
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
+// @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = registerServerReference;
 
 export interface RenderContext<T = unknown> {
@@ -190,7 +191,6 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     }
     const [, name] = rsfId.split('#') as [string, string];
     // xxxx#greet
-    console.log('[SSR]: Get server action:', rsfId, getServerReference(rsfId));
     if (!getServerReference(rsfId)) {
       throw new Error(`Server action not found: "${rsfId}". ${getDebugDescription()}`);
     }

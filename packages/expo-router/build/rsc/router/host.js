@@ -167,22 +167,23 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
             return fullRes._value;
         },
     };
+    // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     const url = BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '');
     const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
     console.log('fetch', reqPath);
     const response = prefetched[url] ||
         fetch(reqPath, {
-            // @ts-expect-error: TODO: Add expo streaming fetch
-            reactNative: { textStreaming: true },
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
+            // @ts-expect-error: TODO: Add expo streaming fetch
+            reactNative: { textStreaming: true },
         });
     delete prefetched[url];
     const data = createFromFetch(checkStatus(response), options);
     unstable_onFetchData?.(data);
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // eslint-disable-next-line no-multi-assign
     cache[0] = entry = [input, searchParamsString, setElements, data];
     return data;
 };
@@ -210,6 +211,7 @@ function getAdjustedFilePath(path) {
     return 'file://' + FS.bundleDirectory + path;
 }
 const prefetchRSC = (input, searchParamsString) => {
+    // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     const url = getAdjustedFilePath(BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : ''));
     if (!(url in prefetched)) {

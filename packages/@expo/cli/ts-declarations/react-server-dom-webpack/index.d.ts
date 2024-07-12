@@ -45,7 +45,13 @@ declare module 'react-server-dom-webpack/server.edge' {
     webpackMap: ClientManifest,
     options?: Options
   ): ReadableStream;
+
   export function decodeReply<T>(body: string | FormData, webpackMap?: ServerManifest): Promise<T>;
+
+  export function registerServerReference(id: string, value: ReactServerValue): void;
+}
+declare module 'react-server-dom-webpack/server' {
+  export * from 'react-server-dom-webpack/server.edge';
 }
 
 declare module 'react-server-dom-webpack/client' {

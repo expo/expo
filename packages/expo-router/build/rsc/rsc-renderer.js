@@ -14,6 +14,7 @@ const server_1 = require("react-server-dom-webpack/server");
 const server_2 = require("./server");
 const server_actions_1 = require("../server-actions");
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
+// @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = server_1.registerServerReference;
 async function renderRsc(args, opts) {
     const { searchParams, method, input, body, contentType, context } = args;
@@ -122,7 +123,6 @@ async function renderRsc(args, opts) {
         }
         const [, name] = rsfId.split('#');
         // xxxx#greet
-        console.log('[SSR]: Get server action:', rsfId, (0, server_actions_1.getServerReference)(rsfId));
         if (!(0, server_actions_1.getServerReference)(rsfId)) {
             throw new Error(`Server action not found: "${rsfId}". ${(0, server_actions_1.getDebugDescription)()}`);
         }

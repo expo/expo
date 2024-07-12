@@ -8,7 +8,7 @@
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
  */
 
-/// <reference types="react/canary" />
+//// <reference types="react/canary" />
 'use client';
 
 import * as FS from 'expo-file-system';
@@ -171,7 +171,7 @@ export const fetchRSC = (
         ...requestOpts,
         headers: {
           ...requestOpts.headers,
-          'expo-platform': process.env.EXPO_OS,
+          'expo-platform': process.env.EXPO_OS!,
         },
       });
       const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
@@ -187,6 +187,7 @@ export const fetchRSC = (
       return fullRes._value;
     },
   };
+  // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
   const url = BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '');
   const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
@@ -194,16 +195,17 @@ export const fetchRSC = (
   const response =
     prefetched[url] ||
     fetch(reqPath, {
+      headers: {
+        'expo-platform': process.env.EXPO_OS!,
+      },
       // @ts-expect-error: TODO: Add expo streaming fetch
       reactNative: { textStreaming: true },
-      headers: {
-        'expo-platform': process.env.EXPO_OS,
-      },
     });
   delete prefetched[url];
   const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
   unstable_onFetchData?.(data);
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+  // eslint-disable-next-line no-multi-assign
   cache[0] = entry = [input, searchParamsString, setElements, data];
   return data;
 };
@@ -238,6 +240,7 @@ function getAdjustedFilePath(path: string): string {
 }
 
 export const prefetchRSC = (input: string, searchParamsString: string): void => {
+  // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
   const url = getAdjustedFilePath(
     BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '')
@@ -245,7 +248,7 @@ export const prefetchRSC = (input: string, searchParamsString: string): void => 
   if (!(url in prefetched)) {
     prefetched[url] = fetch(url, {
       headers: {
-        'expo-platform': process.env.EXPO_OS,
+        'expo-platform': process.env.EXPO_OS!,
       },
       // @ts-expect-error: non-standard feature for streaming.
       reactNative: { textStreaming: true },

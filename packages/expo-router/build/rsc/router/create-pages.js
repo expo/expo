@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
