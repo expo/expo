@@ -271,7 +271,7 @@ describe(getVersionedPackagesAsync, () => {
         name: '@expo/vector-icons',
         bundledNativeVersion: '3.0.0',
         isExcludedFromValidation: true,
-        specifiedVersion: '',
+        specifiedVersion: '*',
       },
     ]);
   });
