@@ -48,30 +48,33 @@ export default function App() {
 - Embedded exports for offline support.
 - Assets are handled the same way as in the native app.
 - WebView bundles can be introspected in Expo Atlas for debugging.
+- Access to all web functionality without needing a native rebuild.
 
 ## Communication
 
-You can send and receive messages between your native app and webviews using the `useBridge` API from `expo/webview`:
+You can send and receive serializable data between your native app and webviews using the `useBridge` API from `expo/webview`:
 
 ```js App.js (native)
 import MyComponent from './my-component';
 import { useBridge } from 'expo/webview';
 
 export default function App() {
-    const [emit, bridge] = useBridge((data) => {
-        console.log('Message from webview:', data);
-    })
+  const [emit, bridge] = useBridge(data => {
+    console.log('Message from webview:', data);
+  });
   return (
     <>
-    <MyComponent {...bridge} />
-    <Text onPress={() => emit({ type: 'hello', data: 'world' })}>Send message</Text>
-    </Text>
+      <MyComponent {...bridge} />
+      <Text onPress={() => emit({ type: 'hello', data: 'world' })}>Send message</Text>
+    </>
   );
 }
 ```
 
 ```js my-component.js (web)
 'use webview';
+
+import { useBridge } from 'expo/webview';
 
 export default function MyComponent() {
   const [emit] = useBridge(data => {
@@ -85,6 +88,26 @@ export default function MyComponent() {
   );
 }
 ```
+
+Data cannot contain functions or circular references. On the web-side you can use the imperative APIs `emit` and `addEventListener` without having to go through React. The native side is more limited since it can host multiple webviews and therefore needs to attach different instances of the event emitters.
+
+```js my-api.js (web)
+import { emit, addEventListener } from 'expo/webview';
+
+export function sendData() {
+  emit({ type: 'hello', data: 'world' });
+}
+
+// Observe any data from the native side.
+const remove = addEventListener('hello', data => {
+  console.log('Message from native:', data);
+});
+
+// unsubscribe from events:
+remove();
+```
+
+All communication is currently global and not scoped to a single webview. This could be changed in the future if needed.
 
 ## Feature detection
 
@@ -126,15 +149,27 @@ Built-in webview support only renders content as single-page applications (e.g. 
 
 When a module is marked with `"use webview"`, the module is replaced with a proxy reference which is imported at runtime. This feature is primarily just a number of bundler and CLI magic tricks. You can always use a webview with the stnadard approach by passing raw HTML to a webview component if you'd like.
 
+If you import a webview component from another webview, the component will just be one large webview. This is because web content is passed directly through and not wrapped in an iframe.
+
+Overall, this system shares a lot of similarities with Expo's React Server Components implementation.
+
 ## Considerations
 
 We recommend always building truly native apps using universal primitives such as `View`, `Image`, and `Text`. WebViews only support standard JavaScript which is slower to parse and startup than Hermes bytecode.
 
 Data can only be sent between webviews and your native app via an async JSON transport system. Avoid depending on data across JS engines. Also avoid deep linking to nested URLs in webviews.
 
+If you have a global state for sharing data this won't be available across JS engines.
+
+While native modules in the Expo SDK can be optimized to support webviews, we haven't done this yet.
+
 While you should avoid using WebViews for your main app, there are some reasonable uses for them. For example, WebViews are conceptually the best way to render rich text and markdown. WebViews also have very good WebGL support.
 
 Many large apps also use WebViews for auxiliary routes such as settings pages, help pages, and other less frequently visited parts of the app.
+
+## Embedding vs Hosting
+
+Webviews support both fetching from a server and reading from disk. By default, Expo's webview support embeds the web content and assets on disk to reduce version conflicts and improve performance. This can be extended in the future to support conditionally hosting components as part of our larger universal React Server Components work.
 
 ## Direction
 

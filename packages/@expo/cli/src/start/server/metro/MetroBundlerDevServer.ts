@@ -630,24 +630,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     fs.writeFileSync(entryFile.filePath, entryFile.contents);
 
     return generatedEntry;
-
-    // const serverRoot = getMetroServerRoot(this.projectRoot);
-
-    // const metroUrl = new URL(
-    //   createBundleUrlPath({
-    //     ...instanceMetroOptions,
-    //     mainModuleName: path.relative(serverRoot, generatedEntry),
-    //     bytecode: false,
-    //     platform: 'web',
-    //     isExporting: false,
-    //   }),
-    //   this.getDevServerUrlOrAssert()
-    // ).toString();
-
-    // res.statusCode = 200;
-    // // Return HTML file
-    // res.setHeader('Content-Type', 'text/html');
-    // res.end(getWebviewProxyHtml(metroUrl));
   }
 
   protected async startImplementationAsync(
