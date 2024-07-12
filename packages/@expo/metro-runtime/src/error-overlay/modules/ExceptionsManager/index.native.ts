@@ -1,4 +1,2 @@
-// @ts-expect-error
-import ExceptionsManager from 'react-native/Library/Core/ExceptionsManager';
-
+import ExceptionsManager from 'react-native/Libraries/Core/ExceptionsManager';
 export default ExceptionsManager;
