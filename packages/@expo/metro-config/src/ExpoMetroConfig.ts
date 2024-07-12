@@ -320,7 +320,7 @@ export function getDefaultConfig(
         reactNativePath,
         metroDefaultValues.transformer.asyncRequireModulePath
       ),
-      assetRegistryPath: '@react-native/assets-registry/registry',
+      assetRegistryPath: resolveFrom(reactNativePath, '@react-native/assets-registry/registry'),
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
         transform: {
