@@ -1,1 +1,0 @@
-{"version":3,"file":"index.native.js","sourceRoot":"","sources":["../../../../src/error-overlay/modules/ExceptionsManager/index.native.ts"],"names":[],"mappings":";;;;;AAAA,mBAAmB;AACnB,oGAA4E;AAE5E,kBAAe,2BAAiB,CAAC","sourcesContent":["// @ts-expect-error\nimport ExceptionsManager from 'react-native/Library/Core/ExceptionsManager';\n\nexport default ExceptionsManager;\n"]}

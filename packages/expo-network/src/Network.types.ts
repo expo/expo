@@ -76,7 +76,7 @@ export enum NetworkStateType {
 // @needsAudit
 /**
  * Represents an event that provides the updated network state when there is a change in the network status.
- * This is passed as the argument to listeners registered with addNetworkStateListener.
+ * This is passed as the argument to listeners registered with [`addNetworkStateListener()`](#networkaddnetworkstatelistenerlistener).
  */
 export type NetworkStateEvent = NetworkState;
 

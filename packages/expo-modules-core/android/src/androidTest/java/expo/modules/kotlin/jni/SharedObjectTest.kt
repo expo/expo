@@ -3,6 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
 import expo.modules.kotlin.sharedobjects.sharedObjectIdPropertyName
@@ -107,6 +108,32 @@ class SharedObjectTest {
 
     Truth.assertThat(total.isNumber()).isTrue()
     Truth.assertThat(total.getInt()).isEqualTo(6)
+  }
+
+  @Test
+  fun should_be_able_to_throw_from_constructor() = withSingleModule({
+    Class("ThrowingSharedObject") {
+      Constructor {
+        throw CodedException("Code", "This is a test exception", null)
+      }
+    }
+  }) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        new $moduleRef.ThrowingSharedObject()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("Code")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("This is a test exception")
   }
 
   private class SharedObjectExampleClass : SharedObject()
