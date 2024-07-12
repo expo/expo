@@ -32,8 +32,9 @@ export default function InstallSection({
           If you are installing this in an <A href="/bare/overview/">existing React Native app</A>,
           you have to <A href="/bare/installing-expo-modules/">prepare your existing project</A> to
           use this Expo library. Then, follow the{' '}
-          <A href={sourceCodeUrl ?? href}>additional configuration instructions</A> as mentioned by
-          library's README <DEMI>under installation in bare React Native projects section</DEMI>.
+          <A href={sourceCodeUrl ?? href}>additional configuration instructions</A> to configure
+          native projects (Android and iOS) as mentioned by library's README{' '}
+          <DEMI>under installation in bare React Native projects section</DEMI>.
         </P>
       )}
     </>
