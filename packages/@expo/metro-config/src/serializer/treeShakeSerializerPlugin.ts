@@ -594,6 +594,7 @@ export async function treeShakeSerializer(
       traverse(ast, {
         ExportDefaultDeclaration(path) {
           if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
+            // TODO: Update source maps
             markUnused(path);
           }
         },
@@ -629,6 +630,7 @@ export async function treeShakeSerializer(
             declaration.declarations.forEach((decl) => {
               if (decl.id.type === 'Identifier') {
                 if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
+                  // TODO: Update source maps
                   markUnused(path);
 
                   debug(
@@ -655,6 +657,7 @@ export async function treeShakeSerializer(
                 'from:',
                 value.path
               );
+              // TODO: Update source maps
               markUnused(path);
 
               // Code inside of an unused export may affect other exports in the module.
@@ -675,6 +678,7 @@ export async function treeShakeSerializer(
               const removeRequest = disconnectGraphNode(value, importModuleId);
               if (removeRequest.removed) {
                 dirtyImports.push(removeRequest.path);
+                // TODO: Update source maps
                 markUnused(path);
               }
             }
@@ -804,6 +808,7 @@ export async function treeShakeSerializer(
         });
         if (removeRequest.removed) {
           debug('Disconnect import:', importModuleId, 'from:', value.path);
+          // TODO: Update source maps
           // Delete the import AST
           markUnused(path);
           dirtyImports.push(removeRequest.path);

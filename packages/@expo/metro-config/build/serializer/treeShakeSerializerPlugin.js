@@ -468,6 +468,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             (0, core_1.traverse)(ast, {
                 ExportDefaultDeclaration(path) {
                     if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
+                        // TODO: Update source maps
                         markUnused(path);
                     }
                 },
@@ -495,6 +496,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                         declaration.declarations.forEach((decl) => {
                             if (decl.id.type === 'Identifier') {
                                 if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
+                                    // TODO: Update source maps
                                     markUnused(path);
                                     debug(`mark remove (type: var, depth: ${depth}):`, decl.id.name, 'from:', value.path);
                                     // Account for variables, and classes which may contain references to other exports.
@@ -508,6 +510,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                         if (possibleUnusedExports.includes(declaration.id.name) &&
                             !isExportUsed(declaration.id.name)) {
                             debug(`mark remove (type: function, depth: ${depth}):`, declaration.id.name, 'from:', value.path);
+                            // TODO: Update source maps
                             markUnused(path);
                             // Code inside of an unused export may affect other exports in the module.
                             // e.g.
@@ -526,6 +529,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             const removeRequest = disconnectGraphNode(value, importModuleId);
                             if (removeRequest.removed) {
                                 dirtyImports.push(removeRequest.path);
+                                // TODO: Update source maps
                                 markUnused(path);
                             }
                         }
@@ -635,6 +639,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 });
                 if (removeRequest.removed) {
                     debug('Disconnect import:', importModuleId, 'from:', value.path);
+                    // TODO: Update source maps
                     // Delete the import AST
                     markUnused(path);
                     dirtyImports.push(removeRequest.path);

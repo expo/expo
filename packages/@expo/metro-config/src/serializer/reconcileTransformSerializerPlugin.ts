@@ -232,6 +232,8 @@ export async function reconcileTransformSerializerPlugin(
           ast.metadata?.metro?.functionMap ??
           // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
           ast.functionMap ??
+          // @ts-expect-error
+          outputItem.data.functionMap ??
           null,
       },
     };
