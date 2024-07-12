@@ -20,6 +20,7 @@ if (
       };
     }
   );
+  HMRClient.log('log', [`[webview] Logs will also appear in the Safari/Chrome debug console`]);
 } else {
   HMRClient.log('log', [`[web] Logs will appear in the browser console`]);
 }

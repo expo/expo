@@ -24,7 +24,7 @@ export default function Page({
         onClick={() => {
           actions.showAlert(Date.now());
         }}>
-        Show alert!!
+        Show alert
       </p>
       <p
         className="text-lg text-blue-900 font-medium"

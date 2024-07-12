@@ -31,11 +31,10 @@ const RawWebView = React.forwardRef(({ actions, ...props }, ref) => {
     [webviewRef]
   );
 
-  // Inject a JSON object into the webview to represent the initial props.
-
+  // TODO: Inject a JSON object into the webview to represent the initial props.
   return (
     <WebView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: 'transparent' }}
       webviewDebuggingEnabled={__DEV__}
       originWhitelist={['*']}
       {...props}
