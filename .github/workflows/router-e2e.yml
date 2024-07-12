@@ -17,6 +17,12 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+
       - name: Install dependencies
         run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
 
@@ -45,8 +51,6 @@ jobs:
             exit 1
           fi
 
-          echo "IOS_DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
-
           if [ "$DEVICE_STATE" != "Booted" ]; then
             # Boot the simulator if it's not already booted
             xcrun simctl boot "$DEVICE_ID"
@@ -59,13 +63,20 @@ jobs:
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
-      - name: Run Maestro iOS tests
+      - name: Start Expo CLI
         working-directory: apps/router-e2e
         env:
           E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
         run: |
           # Run the Expo Dev Server in the background
           node ../../packages/@expo/cli/build/bin/cli start --ios &
-          echo 'Starting Maestro'
-          maestro  --device=$IOS_DEVICE_ID test launch-tests.yml --no-ansi --format=junit
+          # Start the build early
+          curl  -H "Content-Type: multipart/mixed" -H "expo-platform: ios" http://localhost:8081
+
+      - name: Run Maestro iOS tests
+        working-directory: apps/router-e2e
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
+        run: |
+          # Run the Expo Dev Server in the background
+          maestro test launch-tests.yml --no-ansi --format=junit
