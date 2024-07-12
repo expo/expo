@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.renameTopLevelModuleVariables = exports.minifyCode = void 0;
+exports.collectDependenciesForShaking = exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.renameTopLevelModuleVariables = exports.minifyCode = void 0;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -40,6 +40,7 @@ exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.r
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
 const babylon = __importStar(require("@babel/parser"));
+const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
@@ -229,10 +230,22 @@ function performConstantFolding(ast, { filename }) {
     }).ast);
     return ast;
 }
-async function transformJS(file, { config, options }) {
+async function transformJS(file, { config, options, projectRoot }) {
     const targetEnv = options.customTransformOptions?.environment;
     const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
-    const unstable_disableModuleWrapping = config.unstable_disableModuleWrapping;
+    const treeshake = 
+    // Ensure we don't enable tree shaking for scripts or assets.
+    file.type === 'js/module' &&
+        String(options.customTransformOptions?.treeshake) === 'true' &&
+        // Disable tree shaking on JSON files.
+        !file.filename.endsWith('.json');
+    const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
+    // if (treeshake && !options.experimentalImportSupport) {
+    //   // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
+    //   throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.')
+    // }
+    // const targetEnv = options.customTransformOptions?.environment;
+    // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
@@ -245,7 +258,11 @@ async function transformJS(file, { config, options }) {
     const unstable_renameRequire = config.unstable_renameRequire;
     // Perform the import-export transform (in case it's still needed), then
     // fold requires and perform constant folding (if in dev).
-    ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+    // const plugins: PluginItem[] = [];
+    // Disable all Metro single-file optimizations when full-graph optimization will be used.
+    if (!treeshake) {
+        ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+    }
     if (!options.dev) {
         ast = performConstantFolding(ast, { filename: file.filename });
     }
@@ -278,6 +295,9 @@ async function transformJS(file, { config, options }) {
                 allowOptionalDependencies: config.allowOptionalDependencies,
                 dependencyMapName: config.unstable_dependencyMapReservedName,
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
+                // If tree shaking is enabled, then preserve the original require calls.
+                // This ensures require.context calls are not broken.
+                collectOnly: treeshake === true,
             };
             ({ ast, dependencies, dependencyMapName } = (0, collect_dependencies_1.default)(ast, {
                 ...collectDependenciesOptions,
@@ -340,6 +360,27 @@ async function transformJS(file, { config, options }) {
     if (minify) {
         ({ map, code } = await (0, exports.minifyCode)(config, file.filename, result.code, file.code, map, reserved));
     }
+    const possibleReconcile = treeshake
+        ? {
+            inlineRequires: options.inlineRequires,
+            importDefault,
+            importAll,
+            normalizePseudoGlobals: shouldNormalizePseudoGlobals,
+            globalPrefix: config.globalPrefix,
+            unstable_compactOutput: config.unstable_compactOutput,
+            collectDependenciesOptions,
+            minify: minify
+                ? {
+                    minifierPath: config.minifierPath,
+                    minifierConfig: config.minifierConfig,
+                }
+                : undefined,
+            unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+            optimizationSizeLimit: config.optimizationSizeLimit,
+            unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+            unstable_renameRequire,
+        }
+        : undefined;
     const output = [
         {
             data: {
@@ -349,6 +390,14 @@ async function transformJS(file, { config, options }) {
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
+                ...(possibleReconcile
+                    ? {
+                        ast: wrappedAst,
+                        // Store settings for the module that will be used to finish transformation after graph-based optimizations
+                        // have finished.
+                        reconcile: possibleReconcile,
+                    }
+                    : {}),
             },
             type: file.type,
         },
@@ -390,6 +439,7 @@ async function transformJSWithBabel(file, context) {
             context.options.experimentalImportSupport = true;
         }
     }
+    // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
     const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));
@@ -519,10 +569,44 @@ function getCacheKey(config) {
     ].join('$');
 }
 exports.getCacheKey = getCacheKey;
+/**
+ * Produces a Babel template that transforms an "import(...)" call into a
+ * "require(...)" call to the asyncRequire specified.
+ */
+const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
-    transformSyncRequire: () => { },
-    transformImportCall: () => { },
+    transformSyncRequire: (path) => { },
+    transformImportCall: (path, dependency, state) => {
+        // HACK: Ensure the async import code is included in the bundle when an import() call is found.
+        let topParent = path;
+        while (topParent.parentPath) {
+            topParent = topParent.parentPath;
+        }
+        // @ts-expect-error
+        if (topParent._handled) {
+            return;
+        }
+        path.insertAfter(makeShimAsyncRequireTemplate({
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+        }));
+        // @ts-expect-error: Prevent recursive loop
+        topParent._handled = true;
+    },
     transformPrefetch: () => { },
     transformIllegalDynamicRequire: () => { },
 };
+function collectDependenciesForShaking(ast, options) {
+    const collectDependenciesOptions = {
+        ...options,
+        // If tree shaking is enabled, then preserve the original require calls.
+        // This ensures require.context calls are not broken.
+        collectOnly: true,
+    };
+    return (0, collect_dependencies_1.default)(ast, {
+        ...collectDependenciesOptions,
+        // This setting shouldn't be shared with the tree shaking transformer.
+        dependencyTransformer: disabledDependencyTransformer,
+    });
+}
+exports.collectDependenciesForShaking = collectDependenciesForShaking;
 //# sourceMappingURL=metro-transform-worker.js.map
