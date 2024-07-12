@@ -1,6 +1,5 @@
-import React from 'react';
 import { Text } from 'react-native';
 
 export default function Page() {
-  return <Text>App B: Index</Text>;
+  return <Text>Hello from App A</Text>;
 }
