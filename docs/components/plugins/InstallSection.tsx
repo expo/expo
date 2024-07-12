@@ -16,12 +16,12 @@ const getPackageLink = (packageNames: string) =>
 
 const getInstallCmd = (packageName: string) => `$ npx expo install ${packageName}`;
 
-const InstallSection = ({
+export default function InstallSection({
   packageName,
   hideBareInstructions = false,
   cmd = [getInstallCmd(packageName)],
   href = getPackageLink(packageName),
-}: InstallSectionProps) => {
+}: InstallSectionProps) {
   const { sourceCodeUrl } = usePageMetadata();
 
   return (
@@ -29,19 +29,16 @@ const InstallSection = ({
       <Terminal cmd={cmd} />
       {hideBareInstructions ? null : (
         <P>
-          If you're installing this in a <A href="/bare/overview/">bare React Native app</A>, you
-          should also follow{' '}
-          <A href={sourceCodeUrl ?? href}>
-            <DEMI>these additional installation instructions</DEMI>
-          </A>
-          .
+          If you are installing this in an <A href="/bare/overview/">existing React Native app</A>,
+          you have to <A href="/bare/installing-expo-modules/">prepare your existing project</A> to
+          use this Expo library. Then, follow the{' '}
+          <A href={sourceCodeUrl ?? href}>additional configuration instructions</A> as mentioned by
+          library's README <DEMI>under installation in bare React Native projects section</DEMI>.
         </P>
       )}
     </>
   );
-};
-
-export default InstallSection;
+}
 
 export const APIInstallSection = (props: InstallSectionProps) => {
   const { packageName } = usePageMetadata();
