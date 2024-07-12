@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add experimental support for server rendering middleware wrapper in development.
+- Add experimental support for server rendering middleware wrapper in development. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

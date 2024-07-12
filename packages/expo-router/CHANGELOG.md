@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added experimental server renderer.
+- Added experimental server renderer. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `client-only` and `server-only` dependencies. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
