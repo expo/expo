@@ -272,7 +272,7 @@ export function applyImportSupport<TFile extends t.File>(
   // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
-  if (plugins.length && ast) {
+  if (plugins.length) {
     ast = nullthrows<TFile>(
       // @ts-expect-error
       transformFromAstSync(ast, '', {
@@ -423,7 +423,6 @@ async function transformJS(
         allowOptionalDependencies: config.allowOptionalDependencies,
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
-
         // If tree shaking is enabled, then preserve the original require calls.
         // This ensures require.context calls are not broken.
         collectOnly: treeshake === true,

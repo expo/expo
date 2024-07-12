@@ -126,10 +126,10 @@ function normalizePackageJsonScriptSources(
 ): string {
   if (options.sourceSkips & SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun) {
     // Replicate the behavior of `expo prebuild`
-    if (!scripts.android?.includes('run')) {
+    if (!scripts.android?.includes('run') || scripts.android === 'expo run:android') {
       delete scripts.android;
     }
-    if (!scripts.ios?.includes('run')) {
+    if (!scripts.ios?.includes('run') || scripts.ios === 'expo run:ios') {
       delete scripts.ios;
     }
   }

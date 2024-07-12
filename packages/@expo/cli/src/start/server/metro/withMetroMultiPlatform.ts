@@ -217,7 +217,6 @@ export function withExtendedResolver(
       debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
-
     return _universalAliases;
   }
 
@@ -559,6 +558,17 @@ export function withExtendedResolver(
         ...immutableContext,
         preferNativePlatform: platform !== 'web',
       };
+
+      // TODO: Remove this when we have React 19 in the expo/expo monorepo.
+      if (
+        isReactCanaryEnabled &&
+        // Change the node modules path for react and react-dom to use the vendor in Expo CLI.
+        /^(react|react\/.*|react-dom|react-dom\/.*)$/.test(moduleName)
+      ) {
+        context.nodeModulesPaths = [
+          path.join(require.resolve('@expo/cli/package.json'), '../static/canary-full'),
+        ];
+      }
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
