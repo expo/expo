@@ -65,10 +65,28 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const babelConfigPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
-      let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
-      contents = updateBabelConfig(contents);
-      await fs.promises.writeFile(babelConfigPath, contents);
+      const babelConfigJsPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
+
+      if (await fs.promises.exists(babelConfigJsPath)) {
+        let contents = await fs.promises.readFile(babelConfigJsPath, 'utf8');
+        contents = updateBabelConfig(contents);
+        await fs.promises.writeFile(babelConfigJsPath, contents);
+        return config;
+      }
+      
+      const babelConfigJsonPath = path.join(config.modRequest.projectRoot, 'babel.config.json');
+
+      if (await fs.promises.exists(babelConfigJsonPath)) {
+        let contents = await fs.promises.readFile(babelConfigJsonPath, 'utf8');
+        contents = updateBabelConfig(contents);
+        await fs.promises.writeFile(babelConfigJsonPath, contents);
+        return config;
+      }
+
+      console.warn(
+        '⚠️  Could not find `babel.config.js` or `babel.config.json` in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
+      );
+
       return config;
     },
   ]);
