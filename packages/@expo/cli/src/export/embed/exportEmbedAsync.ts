@@ -162,7 +162,7 @@ export async function exportEmbedBundleAndAssetsAsync(
             const hash = crypto.createHash('sha1').update(ref).digest('hex');
             const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
             const outputName = `${rootDir}/${hash}/index.html`;
-            const generatedEntryPath = devServer.getWebviewProxyEntry(ref);
+            const generatedEntryPath = await devServer.getWebviewProxyEntry(ref);
             const baseUrl = `/${rootDir}/${hash}`;
             // Run metro bundler and create the JS bundles/source maps.
             const bundle = await devServer.legacySinglePageExportBundleAsync({

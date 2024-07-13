@@ -35,10 +35,15 @@ const RawWebView = React.forwardRef(({ actions, ...props }, ref) => {
   // TODO: Inject a JSON object into the webview to represent the initial props.
   return (
     <WebView
-      style={{ flex: 1, backgroundColor: 'transparent' }}
       webviewDebuggingEnabled={__DEV__}
       originWhitelist={['*']}
       {...props}
+      style={[
+        props.style
+          ? { flex: 1, backgroundColor: 'transparent' }
+          : { backgroundColor: 'transparent' },
+        props.style,
+      ]}
       onMessage={(event) => {
         const { type, data } = JSON.parse(event.nativeEvent.data);
         if (type === '$$native_action') {

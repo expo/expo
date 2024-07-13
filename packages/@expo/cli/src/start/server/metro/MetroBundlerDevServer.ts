@@ -551,6 +551,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } = {}
   ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(options.mainModuleName != null, 'mainModuleName must be provided in options.');
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
       'The server must be started before calling legacySinglePageExportBundleAsync.'
@@ -1424,10 +1425,7 @@ export function getWebviewProxyHtml(src?: string) {
     body {
       height: 100%;
     }
-    /* These styles disable body scrolling if you are using <ScrollView> */
-    body {
-      overflow: hidden;
-    }
+    
     /* These styles make the root element full-height */
     #root {
       display: flex;
@@ -1438,7 +1436,6 @@ export function getWebviewProxyHtml(src?: string) {
     </head>
     
     <body>
-    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
     <noscript>
     WebView requires <code>javaScriptEnabled</code>
     </noscript>
