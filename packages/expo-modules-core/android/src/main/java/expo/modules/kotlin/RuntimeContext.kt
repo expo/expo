@@ -79,13 +79,13 @@ class RuntimeContext(
           jsiContext.installJSIForBridgeless(
             this,
             jsRuntimePointer,
-            reactContext.runtimeExecutor!!
+            reactContext.catalystInstance.runtimeExecutor!!
           )
         } else {
           jsiContext.installJSI(
             this,
             jsRuntimePointer,
-            reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl
+            reactContext.catalystInstance.jSCallInvokerHolder as CallInvokerHolderImpl
           )
         }
 
