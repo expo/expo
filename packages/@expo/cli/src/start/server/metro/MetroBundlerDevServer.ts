@@ -1417,7 +1417,7 @@ export function getWebviewProxyHtml(src?: string) {
     <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <style id="expo-reset">
     /* These styles make the body full-height */
     html,

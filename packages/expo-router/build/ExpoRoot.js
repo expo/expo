@@ -37,6 +37,7 @@ const router_store_1 = require("./global-state/router-store");
 const serverContext_1 = __importDefault(require("./global-state/serverContext"));
 const statusbar_1 = require("./utils/statusbar");
 const Splash_1 = require("./views/Splash");
+const webview_1 = require("expo/webview");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -92,6 +93,18 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
             };
         }
         return contextType;
+    }, []);
+    react_1.default.useEffect(() => {
+        if (!(0, webview_1.isWebview)() && process.env.EXPO_OS !== 'web') {
+            console.log('add global listener');
+            return (0, webview_1.addEventListener)((msg) => {
+                const { type, data } = msg;
+                console.log('Linking to', data.href, data.event);
+                if (type === '$$router_link') {
+                    store.linkTo(data.href, data.event);
+                }
+            });
+        }
     }, []);
     /*
      * The serverUrl is an initial URL used in server rendering environments.

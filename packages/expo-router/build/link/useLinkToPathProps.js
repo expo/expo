@@ -4,6 +4,7 @@ const react_native_1 = require("react-native");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
+const webview_1 = require("expo/webview");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -35,6 +36,11 @@ function useLinkToPathProps(props) {
             shouldHandle = true;
         }
         if (shouldHandle) {
+            if ((0, webview_1.isWebview)()) {
+                console.log('[webview] Linking to', props.href, props.event);
+                (0, webview_1.emit)({ type: '$$router_link', data: props });
+                return;
+            }
             linkTo(props.href, props.event);
         }
     };

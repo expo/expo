@@ -13,6 +13,7 @@ import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
+import { addEventListener, isWebview } from 'expo/webview';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -97,6 +98,19 @@ function ContextNavigator({
     }
 
     return contextType;
+  }, []);
+
+  React.useEffect(() => {
+    if (!isWebview() && process.env.EXPO_OS !== 'web') {
+      console.log('add global listener');
+      return addEventListener((msg) => {
+        const { type, data } = msg;
+        console.log('Linking to', data.href, data.event);
+        if (type === '$$router_link') {
+          store.linkTo(data.href, data.event);
+        }
+      });
+    }
   }, []);
 
   /*

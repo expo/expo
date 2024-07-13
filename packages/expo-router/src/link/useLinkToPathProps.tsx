@@ -4,6 +4,7 @@ import { GestureResponderEvent, Platform } from 'react-native';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
 import { stripGroupSegmentsFromPath } from '../matchers';
+import { emit, isWebview } from 'expo/webview';
 
 function eventShouldPreventDefault(
   e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
@@ -43,6 +44,11 @@ export default function useLinkToPathProps(props: { href: string; event?: string
     }
 
     if (shouldHandle) {
+      if (isWebview()) {
+        console.log('[webview] Linking to', props.href, props.event);
+        emit({ type: '$$router_link', data: props });
+        return;
+      }
       linkTo(props.href, props.event);
     }
   };

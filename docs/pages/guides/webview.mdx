@@ -51,9 +51,51 @@ export default function App() {
 - Access to all web functionality without needing a native rebuild.
 - Runtime error overlay in development.
 
+## Native Actions
+
+You can send type-safe native functions to webview components using the `actions` prop:
+
+```ts App.tsx (native)
+import MyWebView from './my-component';
+
+export default function App() {
+  return (
+    <MyWebView
+      actions={{
+        hello(data: string) {
+          console.log('Hello', data)
+        },
+      }}
+    />
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use webview';
+
+export default function MyComponent({ actions }: { actions: { hello: (data: string) => void } }) {
+  return <p onClick={() => actions.hello('world')}>Click me</p>;
+}
+```
+
+Native actions are always asynchronous and only accept serializable arguments (i.e. no functions). This is because the data is sent over a bridge to the webview.
+
+Native actions can return serializable data to the webview, this is useful for getting data back from the native side.
+
+```tsx
+actions={{
+    getDeviceName(): Promise<string> {
+        return DeviceInfo.getDeviceName();
+    }
+}}
+```
+
+Think of these functions like React Server Actions, but instead of living on the server they live locally in the native app and communicate with the webview. This is a powerful way to inject truly native functionality into your webviews.
+
 ## Communication
 
-You can send and receive serializable data between your native app and webviews using the `useBridge` API from `expo/webview`:
+You can also send and receive serializable data between your native app and webviews using the `useBridge` API from `expo/webview`:
 
 ```js App.js (native)
 import MyComponent from './my-component';
