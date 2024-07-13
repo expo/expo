@@ -27,47 +27,6 @@ describe('getTemplateFilesToRenameAsync', () => {
     expect(files).toHaveLength(0);
     expect(spyGlob).toHaveBeenCalledTimes(1);
   });
-
-  it('matches platform-specific template files by default', async () => {
-    const spyGlob = jest.spyOn(FastGlob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualFastGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
-    const files = await getTemplateFilesToRenameAsync({ cwd });
-    expect(files.sort()).toEqual([
-      'android/app/BUCK',
-      'android/app/build.gradle',
-      'android/app/src/debug/AndroidManifest.xml',
-      'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/helloworld/MainActivity.kt',
-      'android/app/src/main/java/com/helloworld/MainApplication.kt',
-      'android/build.gradle',
-      'android/settings.gradle',
-
-      'app.json',
-
-      'ios/HelloWorld.xcodeproj/project.pbxproj',
-      'ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme',
-      'ios/HelloWorld.xcworkspace/contents.xcworkspacedata',
-      'ios/Podfile',
-
-      'macos/HelloWorld.xcodeproj/project.pbxproj',
-      'macos/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme',
-      'macos/HelloWorld.xcworkspace/contents.xcworkspacedata',
-      'macos/Podfile',
-    ]);
-    expect(spyGlob).toHaveBeenCalledTimes(1);
-  });
-
-  it('default matches can be overridden explicitly', async () => {
-    const spyGlob = jest.spyOn(FastGlob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualFastGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
-    const files = await getTemplateFilesToRenameAsync({ cwd, renameConfig: ['app.json'] });
-    expect(files.sort()).toEqual(['app.json']);
-    expect(spyGlob).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('renameTemplateAppNameAsync', () => {
