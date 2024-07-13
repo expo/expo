@@ -4,6 +4,7 @@ import React from 'react';
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
 
 import { WebView } from 'react-native-webview';
+import { _emitGlobalEvent } from './webview';
 
 // const outputKey =
 //   'file://' + process.env.EXPO_PROJECT_ROOT + '/__e2e__/tailwind-postcss/components/thing.tsx';
@@ -98,6 +99,7 @@ const RawWebView = React.forwardRef(({ actions, ...props }, ref) => {
         } else {
           props.onMessage?.(event);
         }
+        _emitGlobalEvent({ type, data });
       }}
     />
   );
