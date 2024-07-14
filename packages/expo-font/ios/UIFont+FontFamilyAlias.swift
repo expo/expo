@@ -11,16 +11,21 @@ public extension UIFont {
     let fontNames = UIFont._expo_fontNames(forFamilyName: familyName)
 
     // If no font names were found, let's try with the alias.
-    if fontNames.isEmpty, let aliasedFamilyName = FontFamilyAliasManager.familyName(forAlias: familyName) {
-      let fontNames = UIFont._expo_fontNames(forFamilyName: aliasedFamilyName)
+    if fontNames.isEmpty, let font = FontFamilyAliasManager.familyName(forAlias: familyName) {
+      var fontNames = UIFont._expo_fontNames(forFamilyName: font.fullName)
+
+      if fontNames.isEmpty {
+        fontNames = UIFont._expo_fontNames(forFamilyName: font.postScriptName)
+      }
 
       // If we still don't find any font names, we can assume it was not a family name but a font name.
       // In that case we can safely return the original font name.
       if fontNames.isEmpty {
-        return [aliasedFamilyName]
+        return [font.postScriptName]
       }
       return fontNames
     }
+
     return fontNames
   }
 }

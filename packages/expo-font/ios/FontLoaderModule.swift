@@ -9,24 +9,27 @@ public final class FontLoaderModule: Module {
     }
 
     AsyncFunction("loadAsync") { (fontFamilyAlias: String, localUri: URL) in
-      // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterGraphicsFont
+      // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
       // would fail because of a duplicated font name when the app reloads or someone wants to override a font.
-      if let familyName = FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) {
-        guard try unregisterFont(named: familyName) else {
+      if FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) != nil {
+        guard try unregisterFont(url: localUri as CFURL) else {
           return
         }
       }
 
-      // Create a font object from the given file
-      let font = try loadFont(fromPath: localUri.path, alias: fontFamilyAlias)
+      let fontUrl = localUri as CFURL
 
       // Register the font
-      try registerFont(font)
+      try registerFont(fontUrl)
 
-      // The real font name might be different than it's been requested by the user,
-      // so we save the provided name as an alias.
-      if let postScriptName = font.postScriptName as? String {
-        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFamilyName: postScriptName)
+      // Create a font object from the given URL
+      let font = try loadFont(fromUrl: fontUrl, alias: fontFamilyAlias)
+
+      if let fullName = font.fullName as? String, let postScriptName = font.postScriptName as? String {
+        FontFamilyAliasManager.setAlias(
+          fontFamilyAlias,
+          forFont: CustomFont(fullName: fullName, postScriptName: postScriptName)
+        )
       }
     }
   }

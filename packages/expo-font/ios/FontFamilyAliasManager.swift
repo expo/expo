@@ -1,9 +1,17 @@
 import ExpoModulesCore
 
 /**
+ Data structure to hold information about the loaded CGFont
+ */
+struct CustomFont {
+  let fullName: String
+  let postScriptName: String
+}
+
+/**
  A registry of font family aliases mapped to their real font family names.
  */
-private var fontFamilyAliases = [String: String]()
+private var fontFamilyAliases = [String: CustomFont]()
 
 /**
  A flag that is set to `true` when the ``UIFont.fontNames(forFamilyName:)`` is already swizzled.
@@ -25,15 +33,15 @@ internal struct FontFamilyAliasManager {
    Sets the alias for the given family name.
    If the alias has already been set, its family name will be overriden.
    */
-  internal static func setAlias(_ familyNameAlias: String, forFamilyName familyName: String) {
+  internal static func setAlias(_ familyNameAlias: String, forFont font: CustomFont) {
     maybeSwizzleUIFont()
-    fontFamilyAliases[familyNameAlias] = familyName
+    fontFamilyAliases[familyNameAlias] = font
   }
 
   /**
    Returns the family name for the given alias or `nil` when it's not set yet.
    */
-  internal static func familyName(forAlias familyNameAlias: String) -> String? {
+  internal static func familyName(forAlias familyNameAlias: String) -> CustomFont? {
     return fontFamilyAliases[familyNameAlias]
   }
 }
