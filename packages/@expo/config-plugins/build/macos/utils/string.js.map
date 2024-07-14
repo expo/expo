@@ -1,0 +1,1 @@
+{"version":3,"file":"string.js","names":["_string","data","require"],"sources":["../../../src/macos/utils/string.ts"],"sourcesContent":["export { trimQuotes } from '../../apple/utils/string';"],"mappings":";;;;;;;;;;;AAAA,SAAAA,QAAA;EAAA,MAAAC,IAAA,GAAAC,OAAA;EAAAF,OAAA,YAAAA,CAAA;IAAA,OAAAC,IAAA;EAAA;EAAA,OAAAA,IAAA;AAAA"}

@@ -4,6 +4,7 @@
 import * as AndroidConfig from './android';
 import * as AppleConfig from './apple';
 import * as IOSConfig from './ios';
+import * as MacOSConfig from './macos';
 import { provider, withGeneratedBaseMods } from './plugins/createBaseMod';
 import { getAndroidModFileProviders, withAndroidBaseMods } from './plugins/withAndroidBaseMods';
 import { getIosModFileProviders, withIosBaseMods } from './plugins/withIosBaseMods';

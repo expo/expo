@@ -7,7 +7,10 @@ import { buildAsync } from '../XcodeBuild';
 import { launchAppAsync } from '../launchApp';
 import { isSimulatorDevice, resolveDeviceAsync } from '../options/resolveDevice';
 import { resolveOptionsAsync } from '../options/resolveOptions';
-import { runIosAsync } from '../runIosAsync';
+import { runAppleAsync } from '../runAppleAsync';
+
+// We'll use runIosAsync() to represent the behaviour of runAppleAsync().
+const runIosAsync = runAppleAsync('ios');
 
 jest.mock('../../hints', () => ({
   logProjectLogsLocation: jest.fn(),
