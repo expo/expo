@@ -26,10 +26,7 @@ public final class FontLoaderModule: Module {
       let font = try loadFont(fromUrl: fontUrl, alias: fontFamilyAlias)
 
       if let fullName = font.fullName as? String, let postScriptName = font.postScriptName as? String {
-        FontFamilyAliasManager.setAlias(
-          fontFamilyAlias,
-          forFont: CustomFont(fullName: fullName, postScriptName: postScriptName)
-        )
+        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFont: postScriptName)
       }
     }
   }

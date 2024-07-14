@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fix issues where fonts were removed when the app is backgrounded.
+- On `iOS`, fix issues where fonts were removed when the app is backgrounded. ([#30400](https://github.com/expo/expo/pull/30400) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
