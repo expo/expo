@@ -172,6 +172,40 @@ export interface ModConfig {
          */
         podfileProperties?: Mod<Record<string, string>>;
     };
+    macos?: {
+        /**
+         * Dangerously make a modification before any other platform mods have been run.
+         */
+        dangerous?: Mod<unknown>;
+        /**
+         * Dangerously make a modification after all the other platform mods have been run.
+         */
+        finalized?: Mod<unknown>;
+        /**
+         * Modify the `macos/<name>/Info.plist` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
+         */
+        infoPlist?: Mod<InfoPlist>;
+        /**
+         * Modify the `macos/<name>/<product-name>.entitlements` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
+         */
+        entitlements?: Mod<Plist>;
+        /**
+         * Modify the `macos/<name>/Expo.plist` as JSON (Expo updates config for macOS) (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
+         */
+        expoPlist?: Mod<Plist>;
+        /**
+         * Modify the `macos/<name>.xcodeproj` as an `XcodeProject` (parsed with [`xcode`](https://www.npmjs.com/package/xcode))
+         */
+        xcodeproj?: Mod<XcodeProject>;
+        /**
+         * Modify the `macos/<name>/AppDelegate.m` as a string (dangerous)
+         */
+        appDelegate?: Mod<AppDelegateProjectFile>;
+        /**
+         * Modify the `macos/Podfile.properties.json` as key-value pairs
+         */
+        podfileProperties?: Mod<Record<string, string>>;
+    };
 }
 export type ModPlatform = keyof ModConfig;
 export { XcodeProject, InfoPlist, ExpoPlist, AndroidManifest };

@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { AndroidConfig, AppleConfig } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
 import plist from '@expo/plist';
 import fs from 'fs';
@@ -10,7 +10,7 @@ import { intersecting } from './array';
 import * as Log from '../log';
 import {
   hasRequiredAndroidFilesAsync,
-  hasRequiredIOSFilesAsync,
+  hasRequiredAppleFilesAsync,
 } from '../prebuild/clearNativeFolder';
 
 const debug = require('debug')('expo:utils:scheme') as typeof console.log;
@@ -32,23 +32,32 @@ function resolveExpoOrLongestScheme(schemes: string[]): string[] {
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getSchemesForIosAsync(projectRoot: string): Promise<string[]> {
-  try {
-    const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
-    debug(`ios application Info.plist path:`, infoPlistBuildProperty);
-    if (infoPlistBuildProperty) {
-      const configPath = path.join(projectRoot, 'ios', infoPlistBuildProperty);
-      const rawPlist = fs.readFileSync(configPath, 'utf8');
-      const plistObject = plist.parse(rawPlist);
-      const schemes = IOSConfig.Scheme.getSchemesFromPlist(plistObject);
-      debug(`ios application schemes:`, schemes);
-      return resolveExpoOrLongestScheme(schemes);
+export const getSchemesForAppleAsync =
+  (applePlatform: 'ios' | 'macos') =>
+  async (projectRoot: string): Promise<string[]> => {
+    try {
+      const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
+      debug(`${applePlatform} application Info.plist path:`, infoPlistBuildProperty);
+      if (infoPlistBuildProperty) {
+        const configPath = path.join(projectRoot, applePlatform, infoPlistBuildProperty);
+        const rawPlist = fs.readFileSync(configPath, 'utf8');
+        const plistObject = plist.parse(rawPlist);
+        const schemes = AppleConfig.Scheme.getSchemesFromPlist(plistObject);
+        debug(`${applePlatform} application schemes:`, schemes);
+        return resolveExpoOrLongestScheme(schemes);
+      }
+    } catch (error) {
+      debug(`expected error collecting ios application schemes for the main target:`, error);
     }
-  } catch (error) {
-    debug(`expected error collecting ios application schemes for the main target:`, error);
-  }
-  // No ios folder or some other error
-  return [];
+    // No ios folder or some other error
+    return [];
+  };
+
+export function getSchemesForIosAsync(projectRoot: string) {
+  return getSchemesForAppleAsync('ios')(projectRoot);
+}
+export function getSchemesForMacosAsync(projectRoot: string) {
+  return getSchemesForAppleAsync('macos')(projectRoot);
 }
 
 // TODO: Revisit and test after run code is merged.
@@ -82,30 +91,36 @@ async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<stri
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getOptionalDevClientSchemeAsync(
-  projectRoot: string
-): Promise<{ scheme: string | null; resolution: 'config' | 'shared' | 'android' | 'ios' }> {
-  const [hasIos, hasAndroid] = await Promise.all([
-    hasRequiredIOSFilesAsync(projectRoot),
+export async function getOptionalDevClientSchemeAsync(projectRoot: string): Promise<{
+  scheme: string | null;
+  resolution: 'config' | 'shared' | 'android' | 'ios' | 'macos';
+}> {
+  const [hasIos, hasMacos, hasAndroid] = await Promise.all([
+    hasRequiredAppleFilesAsync('ios')(projectRoot),
+    hasRequiredAppleFilesAsync('macos')(projectRoot),
     hasRequiredAndroidFilesAsync(projectRoot),
   ]);
 
-  const [ios, android] = await Promise.all([
-    getSchemesForIosAsync(projectRoot),
+  const [ios, macos, android] = await Promise.all([
+    getSchemesForAppleAsync('ios')(projectRoot),
+    getSchemesForAppleAsync('macos')(projectRoot),
     getSchemesForAndroidAsync(projectRoot),
   ]);
 
   // Allow managed projects
-  if (!hasIos && !hasAndroid) {
+  if (!hasIos && !hasMacos && !hasAndroid) {
     return { scheme: await getManagedDevClientSchemeAsync(projectRoot), resolution: 'config' };
   }
 
   // Allow for only one native project to exist.
-  if (!hasIos) {
+  if (!hasIos && !hasMacos) {
     return { scheme: android[0], resolution: 'android' };
   } else if (!hasAndroid) {
-    return { scheme: ios[0], resolution: 'ios' };
+    if (ios[0]) {
+      return { scheme: ios[0], resolution: 'ios' };
+    }
+    return { scheme: macos[0], resolution: 'macos' };
   } else {
-    return { scheme: intersecting(ios, android)[0], resolution: 'shared' };
+    return { scheme: intersecting([...ios, ...macos], android)[0], resolution: 'shared' };
   }
 }

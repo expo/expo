@@ -9,7 +9,10 @@ import { PluginError } from '../utils/errors';
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
 
 export type BaseModOptions = {
-  /** Officially supports `'ios' | 'android'` (`ModPlatform`). Arbitrary strings are supported for adding out-of-tree platforms. */
+  /**
+   * Officially supports `'ios' | 'macos' | 'android'` (`ModPlatform`), although support for macOS is experimental.
+   * Arbitrary strings are supported for adding out-of-tree platforms.
+   */
   platform: ModPlatform & string;
   mod: string;
   isProvider?: boolean;
@@ -31,7 +34,7 @@ export type BaseModOptions = {
  * `nextMod` will be an identity function.
  *
  * @param config exported config
- * @param platform platform to target (ios or android)
+ * @param platform platform to target (ios, macos, or android)
  * @param mod name of the platform function to intercept
  * @param skipEmptyMod should skip running the action if there is no existing mod to intercept
  * @param saveToInternal should save the results to `_internal.modResults`, only enable this when the results are pure JSON.

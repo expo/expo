@@ -3,84 +3,30 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createEntitlementsPlugin = createEntitlementsPlugin;
-exports.createInfoPlistPlugin = createInfoPlistPlugin;
-exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
-exports.withXcodeProject = exports.withPodfileProperties = exports.withPodfile = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
-function _withMod() {
-  const data = require("./withMod");
-  _withMod = function () {
+exports.withXcodeProject = exports.withPodfileProperties = exports.withPodfile = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = exports.createInfoPlistPluginWithPropertyGuard = exports.createInfoPlistPlugin = exports.createEntitlementsPlugin = void 0;
+function ApplePlugins() {
+  const data = _interopRequireWildcard(require("./apple-plugins"));
+  ApplePlugins = function () {
     return data;
   };
   return data;
 }
-function _obj() {
-  const data = require("../utils/obj");
-  _obj = function () {
-    return data;
-  };
-  return data;
-}
-function _warnings() {
-  const data = require("../utils/warnings");
-  _warnings = function () {
-    return data;
-  };
-  return data;
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**
  * Helper method for creating mods from existing config functions.
  *
  * @param action
  */
-function createInfoPlistPlugin(action, name) {
-  const withUnknown = config => withInfoPlist(config, async config => {
-    config.modResults = await action(config, config.modResults);
-    return config;
-  });
-  if (name) {
-    Object.defineProperty(withUnknown, 'name', {
-      value: name
-    });
-  }
-  return withUnknown;
-}
-function createInfoPlistPluginWithPropertyGuard(action, settings, name) {
-  const withUnknown = config => withInfoPlist(config, async config => {
-    const existingProperty = settings.expoPropertyGetter ? settings.expoPropertyGetter(config) : (0, _obj().get)(config, settings.expoConfigProperty);
-    // If the user explicitly sets a value in the infoPlist, we should respect that.
-    if (config.modRawConfig.ios?.infoPlist?.[settings.infoPlistProperty] === undefined) {
-      config.modResults = await action(config, config.modResults);
-    } else if (existingProperty !== undefined) {
-      // Only warn if there is a conflict.
-      (0, _warnings().addWarningIOS)(settings.expoConfigProperty, `"ios.infoPlist.${settings.infoPlistProperty}" is set in the config. Ignoring abstract property "${settings.expoConfigProperty}": ${existingProperty}`);
-    }
-    return config;
-  });
-  if (name) {
-    Object.defineProperty(withUnknown, 'name', {
-      value: name
-    });
-  }
-  return withUnknown;
-}
+const createInfoPlistPlugin = exports.createInfoPlistPlugin = ApplePlugins().createInfoPlistPlugin('ios');
+
 /**
  * Helper method for creating mods from existing config functions.
  *
  * @param action
  */
-function createEntitlementsPlugin(action, name) {
-  const withUnknown = config => withEntitlementsPlist(config, async config => {
-    config.modResults = await action(config, config.modResults);
-    return config;
-  });
-  if (name) {
-    Object.defineProperty(withUnknown, 'name', {
-      value: name
-    });
-  }
-  return withUnknown;
-}
+const createEntitlementsPlugin = exports.createEntitlementsPlugin = ApplePlugins().createEntitlementsPlugin('ios');
+const createInfoPlistPluginWithPropertyGuard = exports.createInfoPlistPluginWithPropertyGuard = ApplePlugins().createInfoPlistPluginWithPropertyGuard('ios');
 
 /**
  * Provides the AppDelegate file for modification.
@@ -88,13 +34,7 @@ function createEntitlementsPlugin(action, name) {
  * @param config
  * @param action
  */
-const withAppDelegate = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'appDelegate',
-    action
-  });
-};
+const withAppDelegate = exports.withAppDelegate = ApplePlugins().withAppDelegate('ios');
 
 /**
  * Provides the Info.plist file for modification.
@@ -103,21 +43,7 @@ const withAppDelegate = (config, action) => {
  * @param config
  * @param action
  */
-exports.withAppDelegate = withAppDelegate;
-const withInfoPlist = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'infoPlist',
-    async action(config) {
-      config = await action(config);
-      if (!config.ios) {
-        config.ios = {};
-      }
-      config.ios.infoPlist = config.modResults;
-      return config;
-    }
-  });
-};
+const withInfoPlist = exports.withInfoPlist = ApplePlugins().withInfoPlist('ios');
 
 /**
  * Provides the main .entitlements file for modification.
@@ -126,21 +52,7 @@ const withInfoPlist = (config, action) => {
  * @param config
  * @param action
  */
-exports.withInfoPlist = withInfoPlist;
-const withEntitlementsPlist = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'entitlements',
-    async action(config) {
-      config = await action(config);
-      if (!config.ios) {
-        config.ios = {};
-      }
-      config.ios.entitlements = config.modResults;
-      return config;
-    }
-  });
-};
+const withEntitlementsPlist = exports.withEntitlementsPlist = ApplePlugins().withEntitlementsPlist('ios');
 
 /**
  * Provides the Expo.plist for modification.
@@ -148,14 +60,7 @@ const withEntitlementsPlist = (config, action) => {
  * @param config
  * @param action
  */
-exports.withEntitlementsPlist = withEntitlementsPlist;
-const withExpoPlist = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'expoPlist',
-    action
-  });
-};
+const withExpoPlist = exports.withExpoPlist = ApplePlugins().withExpoPlist('ios');
 
 /**
  * Provides the main .xcodeproj for modification.
@@ -163,14 +68,7 @@ const withExpoPlist = (config, action) => {
  * @param config
  * @param action
  */
-exports.withExpoPlist = withExpoPlist;
-const withXcodeProject = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'xcodeproj',
-    action
-  });
-};
+const withXcodeProject = exports.withXcodeProject = ApplePlugins().withXcodeProject('ios');
 
 /**
  * Provides the Podfile for modification.
@@ -178,14 +76,7 @@ const withXcodeProject = (config, action) => {
  * @param config
  * @param action
  */
-exports.withXcodeProject = withXcodeProject;
-const withPodfile = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'podfile',
-    action
-  });
-};
+const withPodfile = exports.withPodfile = ApplePlugins().withPodfile('ios');
 
 /**
  * Provides the Podfile.properties.json for modification.
@@ -193,13 +84,5 @@ const withPodfile = (config, action) => {
  * @param config
  * @param action
  */
-exports.withPodfile = withPodfile;
-const withPodfileProperties = (config, action) => {
-  return (0, _withMod().withMod)(config, {
-    platform: 'ios',
-    mod: 'podfileProperties',
-    action
-  });
-};
-exports.withPodfileProperties = withPodfileProperties;
+const withPodfileProperties = exports.withPodfileProperties = ApplePlugins().withPodfileProperties('ios');
 //# sourceMappingURL=ios-plugins.js.map

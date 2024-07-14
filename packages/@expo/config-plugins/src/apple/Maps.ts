@@ -1,0 +1,235 @@
+import { ExpoConfig } from '@expo/config-types';
+import path from 'path';
+import resolveFrom from 'resolve-from';
+
+import { ConfigPlugin, InfoPlist } from '../Plugin.types';
+import { createInfoPlistPlugin, withAppDelegate, withPodfile } from '../plugins/apple-plugins';
+import { mergeContents, MergeResults, removeContents } from '../utils/generateCode';
+
+const debug = require('debug')('expo:config-plugins:apple:maps') as typeof console.log;
+
+export const MATCH_INIT =
+  /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
+
+const withGoogleMapsKey = (applePlatform: 'ios' | 'macos') =>
+  createInfoPlistPlugin(applePlatform)(
+    (config: Pick<ExpoConfig, 'ios'>, infoPlist: InfoPlist) =>
+      setGoogleMapsApiKey(applePlatform, config, infoPlist),
+    'withGoogleMapsKey'
+  );
+
+export const withMaps: (applePlatform: 'ios' | 'macos') => ConfigPlugin =
+  (applePlatform: 'ios' | 'macos') => (config) => {
+    config = withGoogleMapsKey(applePlatform)(config);
+
+    const apiKey = getGoogleMapsApiKey(applePlatform, config);
+    // Technically adds react-native-maps (Apple maps) and google maps.
+
+    debug('Google Maps API Key:', apiKey);
+    config = withMapsCocoaPods(applePlatform)(config, { useGoogleMaps: !!apiKey });
+
+    // Adds/Removes AppDelegate setup for Google Maps API on iOS
+    config = withGoogleMapsAppDelegate(applePlatform)(config, { apiKey });
+
+    return config;
+  };
+
+export function getGoogleMapsApiKey(
+  applePlatform: 'ios' | 'macos',
+  config: Pick<ExpoConfig, typeof applePlatform>
+) {
+  return config[applePlatform]?.config?.googleMapsApiKey ?? null;
+}
+
+export function setGoogleMapsApiKey(
+  applePlatform: 'ios' | 'macos',
+  config: Pick<ExpoConfig, typeof applePlatform>,
+  { GMSApiKey, ...infoPlist }: InfoPlist
+): InfoPlist {
+  const apiKey = getGoogleMapsApiKey(applePlatform, config);
+
+  if (apiKey === null) {
+    return infoPlist;
+  }
+
+  return {
+    ...infoPlist,
+    GMSApiKey: apiKey,
+  };
+}
+
+export function addGoogleMapsAppDelegateImport(src: string): MergeResults {
+  const newSrc = [];
+  newSrc.push(
+    '#if __has_include(<GoogleMaps/GoogleMaps.h>)',
+    '#import <GoogleMaps/GoogleMaps.h>',
+    '#endif'
+  );
+
+  return mergeContents({
+    tag: 'react-native-maps-import',
+    src,
+    newSrc: newSrc.join('\n'),
+    anchor: /#import "AppDelegate\.h"/,
+    offset: 1,
+    comment: '//',
+  });
+}
+
+export function removeGoogleMapsAppDelegateImport(src: string): MergeResults {
+  return removeContents({
+    tag: 'react-native-maps-import',
+    src,
+  });
+}
+
+export function addGoogleMapsAppDelegateInit(src: string, apiKey: string): MergeResults {
+  const newSrc = [];
+  newSrc.push(
+    '#if __has_include(<GoogleMaps/GoogleMaps.h>)',
+    `  [GMSServices provideAPIKey:@"${apiKey}"];`,
+    '#endif'
+  );
+
+  return mergeContents({
+    tag: 'react-native-maps-init',
+    src,
+    newSrc: newSrc.join('\n'),
+    anchor: MATCH_INIT,
+    offset: 2,
+    comment: '//',
+  });
+}
+
+export function removeGoogleMapsAppDelegateInit(src: string): MergeResults {
+  return removeContents({
+    tag: 'react-native-maps-init',
+    src,
+  });
+}
+
+/**
+ * @param src The contents of the Podfile.
+ * @returns Podfile with Google Maps added.
+ */
+export function addMapsCocoaPods(src: string): MergeResults {
+  return mergeContents({
+    tag: 'react-native-maps',
+    src,
+    newSrc: `  pod 'react-native-google-maps', path: File.dirname(\`node --print "require.resolve('react-native-maps/package.json')"\`)`,
+    anchor: /use_native_modules/,
+    offset: 0,
+    comment: '#',
+  });
+}
+
+export function removeMapsCocoaPods(src: string): MergeResults {
+  return removeContents({
+    tag: 'react-native-maps',
+    src,
+  });
+}
+
+function isReactNativeMapsInstalled(projectRoot: string): string | null {
+  const resolved = resolveFrom.silent(projectRoot, 'react-native-maps/package.json');
+  return resolved ? path.dirname(resolved) : null;
+}
+
+function isReactNativeMapsAutolinked(config: Pick<ExpoConfig, '_internal'>): boolean {
+  // Only add the native code changes if we know that the package is going to be linked natively.
+  // This is specifically for monorepo support where one app might have react-native-maps (adding it to the node_modules)
+  // but another app will not have it installed in the package.json, causing it to not be linked natively.
+  // This workaround only exists because react-native-maps doesn't have a config plugin vendored in the package.
+
+  // TODO: `react-native-maps` doesn't use Expo autolinking so we cannot safely disable the module.
+  return true;
+
+  // return (
+  //   !config._internal?.autolinkedModules ||
+  //   config._internal.autolinkedModules.includes('react-native-maps')
+  // );
+}
+
+const withMapsCocoaPods: (
+  applePlatform: 'ios' | 'macos'
+) => ConfigPlugin<{ useGoogleMaps: boolean }> =
+  (applePlatform: 'ios' | 'macos') =>
+  (config, { useGoogleMaps }) => {
+    return withPodfile(applePlatform)(config, async (config) => {
+      // Only add the block if react-native-maps is installed in the project (best effort).
+      // Generally prebuild runs after a yarn install so this should always work as expected.
+      const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
+      const isLinked = isReactNativeMapsAutolinked(config);
+      debug('Is Expo Autolinked:', isLinked);
+      debug('react-native-maps path:', googleMapsPath);
+
+      let results: MergeResults;
+
+      if (isLinked && googleMapsPath && useGoogleMaps) {
+        try {
+          results = addMapsCocoaPods(config.modResults.contents);
+        } catch (error: any) {
+          if (error.code === 'ERR_NO_MATCH') {
+            throw new Error(
+              `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`
+            );
+          }
+          throw error;
+        }
+      } else {
+        // If the package is no longer installed, then remove the block.
+        results = removeMapsCocoaPods(config.modResults.contents);
+      }
+
+      if (results.didMerge || results.didClear) {
+        config.modResults.contents = results.contents;
+      }
+
+      return config;
+    });
+  };
+
+const withGoogleMapsAppDelegate: (
+  applePlatform: 'ios' | 'macos'
+) => ConfigPlugin<{ apiKey: string | null }> =
+  (applePlatform: 'ios' | 'macos') =>
+  (config, { apiKey }) => {
+    return withAppDelegate(applePlatform)(config, (config) => {
+      if (['objc', 'objcpp'].includes(config.modResults.language)) {
+        if (
+          apiKey &&
+          isReactNativeMapsAutolinked(config) &&
+          isReactNativeMapsInstalled(config.modRequest.projectRoot)
+        ) {
+          try {
+            config.modResults.contents = addGoogleMapsAppDelegateImport(
+              config.modResults.contents
+            ).contents;
+            config.modResults.contents = addGoogleMapsAppDelegateInit(
+              config.modResults.contents,
+              apiKey
+            ).contents;
+          } catch (error: any) {
+            if (error.code === 'ERR_NO_MATCH') {
+              throw new Error(
+                `Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`
+              );
+            }
+            throw error;
+          }
+        } else {
+          config.modResults.contents = removeGoogleMapsAppDelegateImport(
+            config.modResults.contents
+          ).contents;
+          config.modResults.contents = removeGoogleMapsAppDelegateInit(
+            config.modResults.contents
+          ).contents;
+        }
+      } else {
+        throw new Error(
+          `Cannot setup Google Maps because the project AppDelegate is not a supported language: ${config.modResults.language}`
+        );
+      }
+      return config;
+    });
+  };

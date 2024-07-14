@@ -12,7 +12,8 @@ export type PluginErrorCode =
   | 'PLUGIN_NOT_FOUND'
   | 'CONFLICTING_PROVIDER'
   | 'INVALID_MOD_ORDER'
-  | 'MISSING_PROVIDER';
+  | 'MISSING_PROVIDER'
+  | 'UNSUPPORTED_PLATFORM';
 
 /**
  * Based on `JsonFileError` from `@expo/json-file`

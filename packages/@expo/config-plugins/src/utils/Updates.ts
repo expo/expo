@@ -1,4 +1,4 @@
-import { Android, ExpoConfig, IOS } from '@expo/config-types';
+import { Android, ExpoConfig, IOS, MacOS } from '@expo/config-types';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';
@@ -6,7 +6,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { AndroidConfig, IOSConfig } from '..';
+import { AndroidConfig, AppleConfig } from '..';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
@@ -36,13 +36,15 @@ export function getNativeVersion(
   config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
     ios?: Pick<IOS, 'buildNumber'>;
+    macos?: Pick<MacOS, 'buildNumber'>;
   },
-  platform: 'android' | 'ios'
+  platform: 'android' | 'ios' | 'macos'
 ): string {
-  const version = IOSConfig.Version.getVersion(config);
+  const version = AppleConfig.Version.getVersion(config);
   switch (platform) {
-    case 'ios': {
-      const buildNumber = IOSConfig.Version.getBuildNumber(config);
+    case 'ios':
+    case 'macos': {
+      const buildNumber = AppleConfig.Version.getBuildNumber(platform, config);
       return `${version}(${buildNumber})`;
     }
     case 'android': {
@@ -51,7 +53,7 @@ export function getNativeVersion(
     }
     default: {
       throw new Error(
-        `"${platform}" is not a supported platform. Choose either "ios" or "android".`
+        `"${platform}" is not a supported platform. Choose either "ios", "macos", or "android".`
       );
     }
   }
@@ -75,8 +77,9 @@ export async function getRuntimeVersionAsync(
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
+    macos?: Pick<MacOS, 'buildNumber' | 'runtimeVersion'>;
   },
-  platform: 'android' | 'ios'
+  platform: 'android' | 'ios' | 'macos'
 ): Promise<string | null> {
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion) {
@@ -106,8 +109,9 @@ export async function resolveRuntimeVersionPolicyAsync(
   config: Pick<ExpoConfig, 'version' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode'>;
     ios?: Pick<IOS, 'buildNumber'>;
+    macos?: Pick<MacOS, 'buildNumber'>;
   },
-  platform: 'android' | 'ios'
+  platform: 'android' | 'ios' | 'macos'
 ): Promise<string> {
   if (policy === 'appVersion') {
     return getAppVersion(config);

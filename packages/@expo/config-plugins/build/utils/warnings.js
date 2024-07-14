@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.addWarningAndroid = addWarningAndroid;
 exports.addWarningForPlatform = addWarningForPlatform;
 exports.addWarningIOS = addWarningIOS;
+exports.addWarningMacOS = addWarningMacOS;
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
@@ -26,7 +27,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param link Useful link to resources related to the warning
  */
 function addWarningAndroid(property, text, link) {
-  console.warn(formatWarning('android', property, text, link));
+  addWarningForPlatform('android', property, text, link);
 }
 
 /**
@@ -41,7 +42,22 @@ function addWarningAndroid(property, text, link) {
  * @param link Useful link to resources related to the warning
  */
 function addWarningIOS(property, text, link) {
-  console.warn(formatWarning('ios', property, text, link));
+  addWarningForPlatform('ios', property, text, link);
+}
+
+/**
+ * Log a warning that doesn't disrupt the spinners.
+ *
+ * ```sh
+ * » macos: macos.bundleIdentifier: property is invalid https://expo.fyi/bundle-identifier
+ * ```
+ *
+ * @param property Name of the config property that triggered the warning (best-effort)
+ * @param text Main warning message
+ * @param link Useful link to resources related to the warning
+ */
+function addWarningMacOS(property, text, link) {
+  addWarningForPlatform('macos', property, text, link);
 }
 function addWarningForPlatform(platform, property, text, link) {
   console.warn(formatWarning(platform, property, text, link));

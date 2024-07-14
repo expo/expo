@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 var _exportNames = {
   BaseMods: true,
   AndroidConfig: true,
+  AppleConfig: true,
   IOSConfig: true,
   XML: true,
   History: true,
@@ -42,7 +43,7 @@ var _exportNames = {
   evalModsAsync: true,
   PluginError: true
 };
-exports.IOSConfig = exports.History = exports.BaseMods = exports.AndroidConfig = void 0;
+exports.IOSConfig = exports.History = exports.BaseMods = exports.AppleConfig = exports.AndroidConfig = void 0;
 Object.defineProperty(exports, "PluginError", {
   enumerable: true,
   get: function () {
@@ -235,6 +236,19 @@ Object.defineProperty(exports, "AndroidConfig", {
   enumerable: true,
   get: function () {
     return AndroidConfig();
+  }
+});
+function AppleConfig() {
+  const data = _interopRequireWildcard(require("./apple"));
+  AppleConfig = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "AppleConfig", {
+  enumerable: true,
+  get: function () {
+    return AppleConfig();
   }
 });
 function IOSConfig() {

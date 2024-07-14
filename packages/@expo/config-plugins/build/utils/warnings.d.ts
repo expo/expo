@@ -23,4 +23,16 @@ export declare function addWarningAndroid(property: string, text: string, link?:
  * @param link Useful link to resources related to the warning
  */
 export declare function addWarningIOS(property: string, text: string, link?: string): void;
+/**
+ * Log a warning that doesn't disrupt the spinners.
+ *
+ * ```sh
+ * » macos: macos.bundleIdentifier: property is invalid https://expo.fyi/bundle-identifier
+ * ```
+ *
+ * @param property Name of the config property that triggered the warning (best-effort)
+ * @param text Main warning message
+ * @param link Useful link to resources related to the warning
+ */
+export declare function addWarningMacOS(property: string, text: string, link?: string): void;
 export declare function addWarningForPlatform(platform: ModPlatform & string, property: string, text: string, link?: string): void;

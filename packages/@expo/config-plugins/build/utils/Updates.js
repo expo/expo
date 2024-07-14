@@ -86,11 +86,12 @@ function getAppVersion(config) {
   return config.version ?? '1.0.0';
 }
 function getNativeVersion(config, platform) {
-  const version = _().IOSConfig.Version.getVersion(config);
+  const version = _().AppleConfig.Version.getVersion(config);
   switch (platform) {
     case 'ios':
+    case 'macos':
       {
-        const buildNumber = _().IOSConfig.Version.getBuildNumber(config);
+        const buildNumber = _().AppleConfig.Version.getBuildNumber(platform, config);
         return `${version}(${buildNumber})`;
       }
     case 'android':
@@ -100,7 +101,7 @@ function getNativeVersion(config, platform) {
       }
     default:
       {
-        throw new Error(`"${platform}" is not a supported platform. Choose either "ios" or "android".`);
+        throw new Error(`"${platform}" is not a supported platform. Choose either "ios", "macos", or "android".`);
       }
   }
 }

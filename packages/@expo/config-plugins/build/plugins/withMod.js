@@ -35,7 +35,7 @@ const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
  * `nextMod` will be an identity function.
  *
  * @param config exported config
- * @param platform platform to target (ios or android)
+ * @param platform platform to target (ios, macos, or android)
  * @param mod name of the platform function to intercept
  * @param skipEmptyMod should skip running the action if there is no existing mod to intercept
  * @param saveToInternal should save the results to `_internal.modResults`, only enable this when the results are pure JSON.

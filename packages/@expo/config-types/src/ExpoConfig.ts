@@ -299,9 +299,9 @@ export interface Splash {
   [k: string]: any;
 }
 /**
- * Configuration that is specific to the iOS platform.
+ * Configuration that is common across Apple platforms.
  */
-export interface IOS {
+export interface Apple {
   /**
    * The manifest for the iOS version of your app will be written to this path during publish.
    */
@@ -472,23 +472,7 @@ export interface IOS {
     /**
      * Configuration for loading and splash screen for standalone iOS apps in dark mode.
      */
-    dark?: {
-      /**
-       * Color to fill the loading screen background
-       */
-      backgroundColor?: string;
-      /**
-       * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
-       */
-      resizeMode?: 'cover' | 'contain';
-      /**
-       * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-       */
-      image?: string;
-      /**
-       * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-       */
-      tabletImage?: string;
+    dark?: Splash & {
       [k: string]: any;
     };
     [k: string]: any;
@@ -502,8 +486,39 @@ export interface IOS {
    */
   runtimeVersion?:
     | string
-    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+    | {
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
+      };
 }
+/**
+ * Configuration that is specific to the iOS platform.
+ */
+export interface IOS extends Apple {
+  /**
+   * Configuration for loading and splash screen for standalone iOS apps.
+   */
+  splash?: Apple['splash'] & {
+    /**
+     * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+     */
+    tabletImage?: string;
+    /**
+     * Configuration for loading and splash screen for standalone iOS apps in dark mode.
+     */
+    dark?: Splash & {
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+       */
+      tabletImage?: string;
+      [k: string]: any;
+    };
+    [k: string]: any;
+  };
+}
+/**
+ * Configuration that is specific to the macOS platform.
+ */
+export interface MacOS extends Apple {}
 /**
  * Configuration that is specific to the Android platform.
  */
