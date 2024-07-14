@@ -3,22 +3,15 @@ title: Animation
 description: Learn how to integrate the react-native-reanimated library and use it in your Expo project.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
 
 Animations are a great way to enhance and provide a better user experience. In your Expo projects, you can use the [Animated API](https://reactnative.dev/docs/next/animations) from React Native. However, if you want to use more advanced animations with better performance, you can use the [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) library. It provides an API that simplifies the process of creating smooth, powerful, and maintainable animations.
 
 ## Installation
 
-The [`default`](https://github.com/expo/expo/tree/main/templates/expo-template-default) Expo template comes with `react-native-reanimated` installed as a peer dependency.
-
-<Collapsible summary="Manual installation instruction when using a different Expo template">
-
-If you're using a different [Expo template](/more/create-expo/#--template), install `react-native-reanimated` by running following command:
+You can skip installing `react-native-reanimated` if you have created a project using [the default template](/get-started/create-a-project/). This library is already installed. Otherwise, install it by running the following command:
 
 <Terminal cmd={['$ npx expo install react-native-reanimated']} />
-
-</Collapsible>
 
 ## Usage
 
