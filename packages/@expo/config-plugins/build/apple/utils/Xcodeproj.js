@@ -3,24 +3,22 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.addBuildSourceFileToGroup = addBuildSourceFileToGroup;
-exports.addFileToGroupAndLink = addFileToGroupAndLink;
+exports.addFileToGroupAndLink = exports.addBuildSourceFileToGroup = void 0;
 exports.addFramework = addFramework;
-exports.addResourceFileToGroup = addResourceFileToGroup;
+exports.addResourceFileToGroup = void 0;
 exports.ensureGroupRecursively = ensureGroupRecursively;
 exports.getApplicationNativeTarget = getApplicationNativeTarget;
 exports.getBuildConfigurationForListIdAndName = getBuildConfigurationForListIdAndName;
 exports.getBuildConfigurationsForListId = getBuildConfigurationsForListId;
-exports.getHackyProjectName = getHackyProjectName;
-exports.getPbxproj = getPbxproj;
+exports.getPbxproj = exports.getHackyProjectName = void 0;
 exports.getProductName = getProductName;
-exports.getProjectName = getProjectName;
+exports.getProjectName = void 0;
 exports.getProjectSection = getProjectSection;
 exports.getXCConfigurationListEntries = getXCConfigurationListEntries;
 exports.isBuildConfig = isBuildConfig;
 exports.isNotComment = isNotComment;
 exports.isNotTestHost = isNotTestHost;
-exports.resolvePathOrProject = resolvePathOrProject;
+exports.resolvePathOrProject = void 0;
 exports.resolveXcodeBuildSetting = resolveXcodeBuildSetting;
 exports.sanitizedName = sanitizedName;
 exports.unquote = unquote;
@@ -90,22 +88,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 
-function getProjectName(projectRoot, applePlatform) {
-  const sourceRoot = Paths().getSourceRoot(projectRoot, applePlatform);
+const getProjectName = applePlatform => projectRoot => {
+  const sourceRoot = Paths().getSourceRoot(applePlatform)(projectRoot);
   return _path().default.basename(sourceRoot);
-}
-function resolvePathOrProject(projectRootOrProject, applePlatform) {
+};
+exports.getProjectName = getProjectName;
+const resolvePathOrProject = applePlatform => projectRootOrProject => {
   if (typeof projectRootOrProject === 'string') {
     try {
-      return getPbxproj(projectRootOrProject, applePlatform);
+      return getPbxproj(applePlatform)(projectRootOrProject);
     } catch {
       return null;
     }
   }
   return projectRootOrProject;
-}
+};
 
 // TODO: come up with a better solution for using app.json expo.name in various places
+exports.resolvePathOrProject = resolvePathOrProject;
 function sanitizedName(name) {
   // Default to the name `app` when every safe character has been sanitized
   return sanitizedNameForProjects(name) || sanitizedNameForProjects((0, _slugify().default)(name)) || 'app';
@@ -118,17 +118,18 @@ function sanitizedNameForProjects(name) {
 // the ios/macos project paths. Overall this function needs to be revamped, just
 // a placeholder for now! Make this more robust when we support applying config
 // at any time (currently it's only applied on eject).
-function getHackyProjectName(projectRoot, applePlatform, config) {
+const getHackyProjectName = applePlatform => (projectRoot, config) => {
   // Attempt to get the current ios/macos folder name (apply).
   try {
-    return getProjectName(projectRoot, applePlatform);
+    return getProjectName(applePlatform)(projectRoot);
   } catch {
     // If no iOS/macOS project exists then create a new one (eject).
     const projectName = config.name;
     (0, _assert().default)(projectName, 'Your project needs a name in app.json/app.config.js.');
     return sanitizedName(projectName);
   }
-}
+};
+exports.getHackyProjectName = getHackyProjectName;
 function createProjectFileForGroup({
   filepath,
   group
@@ -147,21 +148,19 @@ function createProjectFileForGroup({
  * Add a resource file (ex: `SplashScreen.storyboard`, `Images.xcassets`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
-function addResourceFileToGroup({
+const addResourceFileToGroup = applePlatform => ({
   filepath,
   groupName,
   // Should add to `PBXBuildFile Section`
   isBuildFile,
   project,
-  applePlatform,
   verbose,
   targetUuid
-}) {
-  return addFileToGroupAndLink({
+}) => {
+  return addFileToGroupAndLink(applePlatform)({
     filepath,
     groupName,
     project,
-    applePlatform,
     verbose,
     targetUuid,
     addFileToProject({
@@ -175,25 +174,24 @@ function addResourceFileToGroup({
       project.addToPbxResourcesBuildPhase(file);
     }
   });
-}
+};
 
 /**
  * Add a build source file (ex: `AppDelegate.m`, `ViewController.swift`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
-function addBuildSourceFileToGroup({
+exports.addResourceFileToGroup = addResourceFileToGroup;
+const addBuildSourceFileToGroup = applePlatform => ({
   filepath,
   groupName,
   project,
-  applePlatform,
   verbose,
   targetUuid
-}) {
-  return addFileToGroupAndLink({
+}) => {
+  return addFileToGroupAndLink(applePlatform)({
     filepath,
     groupName,
     project,
-    applePlatform,
     verbose,
     targetUuid,
     addFileToProject({
@@ -205,20 +203,20 @@ function addBuildSourceFileToGroup({
       project.addToPbxSourcesBuildPhase(file);
     }
   });
-}
+};
 
 // TODO(brentvatne): I couldn't figure out how to do this with an existing
 // higher level function exposed by the xcode library, but we should find out how to do
 // that and replace this with it
-function addFileToGroupAndLink({
+exports.addBuildSourceFileToGroup = addBuildSourceFileToGroup;
+const addFileToGroupAndLink = applePlatform => ({
   filepath,
   groupName,
   project,
-  applePlatform,
   verbose,
   addFileToProject,
   targetUuid
-}) {
+}) => {
   const group = pbxGroupByPathOrAssert(project, groupName);
   const file = createProjectFileForGroup({
     filepath,
@@ -249,7 +247,8 @@ function addFileToGroupAndLink({
     comment: file.basename
   });
   return project;
-}
+};
+exports.addFileToGroupAndLink = addFileToGroupAndLink;
 function getApplicationNativeTarget({
   project,
   projectName
@@ -339,18 +338,19 @@ function ensureGroupRecursively(project, filepath) {
 /**
  * Get the pbxproj for the given path
  */
-function getPbxproj(projectRoot, applePlatform) {
-  const projectPath = Paths().getPBXProjectPath(projectRoot, applePlatform);
+const getPbxproj = applePlatform => projectRoot => {
+  const projectPath = Paths().getPBXProjectPath(applePlatform)(projectRoot);
   const project = _xcode().default.project(projectPath);
   project.parseSync();
   return project;
-}
+};
 
 /**
  * Get the productName for a project, if the name is using a variable `$(TARGET_NAME)`, then attempt to get the value of that variable.
  *
  * @param project
  */
+exports.getPbxproj = getPbxproj;
 function getProductName(project) {
   let productName = '$(TARGET_NAME)';
   try {

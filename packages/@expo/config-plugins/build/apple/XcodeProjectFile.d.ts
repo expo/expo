@@ -1,4 +1,3 @@
-/// <reference types="xcode" />
 import { ConfigPlugin, XcodeProject } from '../Plugin.types';
 /**
  * Create a build source file and link it to Xcode.
@@ -22,11 +21,10 @@ export declare const withBuildSourceFile: (applePlatform: 'ios' | 'macos') => Co
  * @param fileContents string file contents to write to the `filePath`
  * @param overwrite should write file even if one already exists
  */
-export declare function createBuildSourceFile({ project, applePlatform, nativeProjectRoot, filePath, fileContents, overwrite, }: {
+export declare const createBuildSourceFile: (applePlatform: 'ios' | 'macos') => ({ project, nativeProjectRoot, filePath, fileContents, overwrite, }: {
     project: XcodeProject;
-    applePlatform: 'ios' | 'macos';
     nativeProjectRoot: string;
     filePath: string;
     fileContents: string;
-    overwrite?: boolean;
-}): XcodeProject;
+    overwrite?: boolean | undefined;
+}) => XcodeProject;

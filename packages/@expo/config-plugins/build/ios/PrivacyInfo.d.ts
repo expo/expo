@@ -1,20 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
-import type { XcodeProject } from 'xcode';
-import { ExportedConfigWithProps } from '..';
-export type PrivacyInfo = {
-    NSPrivacyAccessedAPITypes: {
-        NSPrivacyAccessedAPIType: string;
-        NSPrivacyAccessedAPITypeReasons: string[];
-    }[];
-    NSPrivacyCollectedDataTypes: {
-        NSPrivacyCollectedDataType: string;
-        NSPrivacyCollectedDataTypeLinked: boolean;
-        NSPrivacyCollectedDataTypeTracking: boolean;
-        NSPrivacyCollectedDataTypePurposes: string[];
-    }[];
-    NSPrivacyTracking: boolean;
-    NSPrivacyTrackingDomains: string[];
-};
-export declare function withPrivacyInfo(config: ExpoConfig): ExpoConfig;
-export declare function setPrivacyInfo(projectConfig: ExportedConfigWithProps<XcodeProject>, privacyManifests: Partial<PrivacyInfo>): ExportedConfigWithProps<XcodeProject>;
-export declare function mergePrivacyInfo(existing: Partial<PrivacyInfo>, privacyManifests: Partial<PrivacyInfo>): PrivacyInfo;
+/// <reference types="xcode" />
+import * as AppleImpl from '../apple/PrivacyInfo';
+export declare const withPrivacyInfo: (config: import("@expo/config-types").ExpoConfig) => import("@expo/config-types").ExpoConfig;
+export declare const setPrivacyInfo: (projectConfig: import("..").ExportedConfigWithProps<import("xcode").XcodeProject>, privacyManifests: Partial<AppleImpl.PrivacyInfo>) => import("..").ExportedConfigWithProps<import("xcode").XcodeProject>;
+export type { PrivacyInfo } from '../apple/PrivacyInfo';
+export { mergePrivacyInfo } from '../apple/PrivacyInfo';

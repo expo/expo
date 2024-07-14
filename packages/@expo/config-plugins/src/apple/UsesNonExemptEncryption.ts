@@ -8,7 +8,7 @@ export const withUsesNonExemptEncryption = (applePlatform: 'ios' | 'macos') =>
     (
       config: Pick<ExpoConfig, typeof applePlatform>,
       { ITSAppUsesNonExemptEncryption, ...infoPlist }: InfoPlist
-    ) => setUsesNonExemptEncryption(applePlatform, config, infoPlist),
+    ) => setUsesNonExemptEncryption(applePlatform)(config, infoPlist),
     {
       infoPlistProperty: 'ITSAppUsesNonExemptEncryption',
       expoConfigProperty: `${applePlatform}.config.usesNonExemptEncryption`,
@@ -16,27 +16,25 @@ export const withUsesNonExemptEncryption = (applePlatform: 'ios' | 'macos') =>
     'withUsesNonExemptEncryption'
   );
 
-export function getUsesNonExemptEncryption(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>
-) {
-  return config?.[applePlatform]?.config?.usesNonExemptEncryption ?? null;
-}
+export const getUsesNonExemptEncryption =
+  (applePlatform: 'ios' | 'macos') => (config: Pick<ExpoConfig, typeof applePlatform>) =>
+    config?.[applePlatform]?.config?.usesNonExemptEncryption ?? null;
 
-export function setUsesNonExemptEncryption(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>,
-  { ITSAppUsesNonExemptEncryption, ...infoPlist }: InfoPlist
-): InfoPlist {
-  const usesNonExemptEncryption = getUsesNonExemptEncryption(applePlatform, config);
+export const setUsesNonExemptEncryption =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Pick<ExpoConfig, typeof applePlatform>,
+    { ITSAppUsesNonExemptEncryption, ...infoPlist }: InfoPlist
+  ): InfoPlist => {
+    const usesNonExemptEncryption = getUsesNonExemptEncryption(applePlatform)(config);
 
-  // Make no changes if the key is left blank
-  if (usesNonExemptEncryption === null) {
-    return infoPlist;
-  }
+    // Make no changes if the key is left blank
+    if (usesNonExemptEncryption === null) {
+      return infoPlist;
+    }
 
-  return {
-    ...infoPlist,
-    ITSAppUsesNonExemptEncryption: usesNonExemptEncryption,
+    return {
+      ...infoPlist,
+      ITSAppUsesNonExemptEncryption: usesNonExemptEncryption,
+    };
   };
-}

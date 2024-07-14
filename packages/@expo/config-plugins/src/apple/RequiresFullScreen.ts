@@ -10,32 +10,31 @@ import { addWarningForPlatform } from '../utils/warnings';
 export const withRequiresFullScreen = (applePlatform: 'ios' | 'macos') =>
   createInfoPlistPlugin(applePlatform)(
     (config: Pick<ExpoConfig, typeof applePlatform>, infoPlist: InfoPlist) =>
-      setRequiresFullScreen(applePlatform, config, infoPlist),
+      setRequiresFullScreen(applePlatform)(config, infoPlist),
     'withRequiresFullScreen'
   );
 
 // NOTES: This is defaulted to `true` for now to match the behavior prior to SDK
 // 34, but will change to `false` in SDK +43.
-export function getRequiresFullScreen(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform | 'sdkVersion'>
-) {
-  // Yes, the property is called `${applePlatform}.requireFullScreen`, without the s - not "requires"
-  // This is confusing indeed because the actual property name does have the s
-  if (config[applePlatform]?.hasOwnProperty('requireFullScreen')) {
-    return !!config[applePlatform]!.requireFullScreen;
-  } else {
-    // In SDK 43, the `requireFullScreen` default has been changed to false.
-    if (
-      gteSdkVersion(config, '43.0.0')
-      // TODO: Uncomment after SDK 43 is released.
-      // || !config.sdkVersion
-    ) {
-      return false;
+export const getRequiresFullScreen =
+  (applePlatform: 'ios' | 'macos') =>
+  (config: Pick<ExpoConfig, typeof applePlatform | 'sdkVersion'>) => {
+    // Yes, the property is called `${applePlatform}.requireFullScreen`, without the s - not "requires"
+    // This is confusing indeed because the actual property name does have the s
+    if (config[applePlatform]?.hasOwnProperty('requireFullScreen')) {
+      return !!config[applePlatform]!.requireFullScreen;
+    } else {
+      // In SDK 43, the `requireFullScreen` default has been changed to false.
+      if (
+        gteSdkVersion(config, '43.0.0')
+        // TODO: Uncomment after SDK 43 is released.
+        // || !config.sdkVersion
+      ) {
+        return false;
+      }
+      return true;
     }
-    return true;
-  }
-}
+  };
 
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
 
@@ -87,28 +86,26 @@ function resolveExistingIpadInterfaceOrientations(
 }
 
 // Whether requires full screen on iPad
-export function setRequiresFullScreen(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>,
-  infoPlist: InfoPlist
-): InfoPlist {
-  const requiresFullScreen = getRequiresFullScreen(applePlatform, config);
-  if (!requiresFullScreen) {
-    const existing = resolveExistingIpadInterfaceOrientations(
-      applePlatform,
-      infoPlist[iPadInterfaceKey]
-    );
+export const setRequiresFullScreen =
+  (applePlatform: 'ios' | 'macos') =>
+  (config: Pick<ExpoConfig, typeof applePlatform>, infoPlist: InfoPlist): InfoPlist => {
+    const requiresFullScreen = getRequiresFullScreen(applePlatform)(config);
+    if (!requiresFullScreen) {
+      const existing = resolveExistingIpadInterfaceOrientations(
+        applePlatform,
+        infoPlist[iPadInterfaceKey]
+      );
 
-    // There currently exists no mechanism to safely undo this feature besides `npx expo prebuild --clear`,
-    // this seems ok though because anyone using `UISupportedInterfaceOrientations~ipad` probably
-    // wants them to be defined to this value anyways. This is also the default value used in the Xcode iOS template.
+      // There currently exists no mechanism to safely undo this feature besides `npx expo prebuild --clear`,
+      // this seems ok though because anyone using `UISupportedInterfaceOrientations~ipad` probably
+      // wants them to be defined to this value anyways. This is also the default value used in the Xcode iOS template.
 
-    // Merge any previous interfaces with the required interfaces.
-    infoPlist[iPadInterfaceKey] = [...new Set(existing.concat(requiredIPadInterface))];
-  }
+      // Merge any previous interfaces with the required interfaces.
+      infoPlist[iPadInterfaceKey] = [...new Set(existing.concat(requiredIPadInterface))];
+    }
 
-  return {
-    ...infoPlist,
-    UIRequiresFullScreen: requiresFullScreen,
+    return {
+      ...infoPlist,
+      UIRequiresFullScreen: requiresFullScreen,
+    };
   };
-}

@@ -3,65 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setProvisioningProfileForPbxproj = setProvisioningProfileForPbxproj;
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
+exports.setProvisioningProfileForPbxproj = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/ProvisioningProfile"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _Target() {
-  const data = require("./Target");
-  _Target = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _string() {
-  const data = require("./utils/string");
-  _string = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function setProvisioningProfileForPbxproj(projectRoot, {
-  targetName,
-  profileName,
-  appleTeamId,
-  buildConfiguration = 'Release'
-}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const nativeTargetEntry = targetName ? (0, _Target().findNativeTargetByName)(project, targetName) : (0, _Target().findFirstNativeTarget)(project);
-  const [nativeTargetId, nativeTarget] = nativeTargetEntry;
-  const quotedAppleTeamId = ensureQuotes(appleTeamId);
-  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).filter(([, item]) => (0, _string().trimQuotes)(item.name) === buildConfiguration).forEach(([, item]) => {
-    item.buildSettings.PROVISIONING_PROFILE_SPECIFIER = `"${profileName}"`;
-    item.buildSettings.DEVELOPMENT_TEAM = quotedAppleTeamId;
-    item.buildSettings.CODE_SIGN_IDENTITY = '"iPhone Distribution"';
-    item.buildSettings.CODE_SIGN_STYLE = 'Manual';
-  });
-  Object.entries((0, _Xcodeproj().getProjectSection)(project)).filter(_Xcodeproj().isNotComment).forEach(([, item]) => {
-    if (!item.attributes.TargetAttributes[nativeTargetId]) {
-      item.attributes.TargetAttributes[nativeTargetId] = {};
-    }
-    item.attributes.TargetAttributes[nativeTargetId].DevelopmentTeam = quotedAppleTeamId;
-    item.attributes.TargetAttributes[nativeTargetId].ProvisioningStyle = 'Manual';
-  });
-  _fs().default.writeFileSync(project.filepath, project.writeSync());
-}
-const ensureQuotes = value => {
-  if (!value.match(/^['"]/)) {
-    return `"${value}"`;
-  }
-  return value;
-};
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const setProvisioningProfileForPbxproj = exports.setProvisioningProfileForPbxproj = AppleImpl().setProvisioningProfileForPbxproj('ios');
 //# sourceMappingURL=ProvisioningProfile.js.map

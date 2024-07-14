@@ -4,5 +4,5 @@ type ProvisioningProfileSettings = {
     profileName: string;
     buildConfiguration?: string;
 };
-export declare function setProvisioningProfileForPbxproj(projectRoot: string, applePlatform: 'ios' | 'macos', { targetName, profileName, appleTeamId, buildConfiguration, }: ProvisioningProfileSettings): void;
+export declare const setProvisioningProfileForPbxproj: (applePlatform: 'ios' | 'macos') => (projectRoot: string, { targetName, profileName, appleTeamId, buildConfiguration, }: ProvisioningProfileSettings) => void;
 export {};

@@ -3,8 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createBuildSourceFile = createBuildSourceFile;
-exports.withBuildSourceFile = void 0;
+exports.withBuildSourceFile = exports.createBuildSourceFile = void 0;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -49,10 +48,9 @@ const withBuildSourceFile = applePlatform => (config, {
   overwrite
 }) => {
   return (0, _applePlugins().withXcodeProject)(applePlatform)(config, config => {
-    const projectName = (0, _Xcodeproj().getProjectName)(config.modRequest.projectRoot, applePlatform);
-    config.modResults = createBuildSourceFile({
+    const projectName = (0, _Xcodeproj().getProjectName)(applePlatform)(config.modRequest.projectRoot);
+    config.modResults = createBuildSourceFile(applePlatform)({
       project: config.modResults,
-      applePlatform,
       nativeProjectRoot: config.modRequest.platformProjectRoot,
       fileContents: contents,
       filePath: _path().default.join(projectName, filePath),
@@ -71,14 +69,13 @@ const withBuildSourceFile = applePlatform => (config, {
  * @param overwrite should write file even if one already exists
  */
 exports.withBuildSourceFile = withBuildSourceFile;
-function createBuildSourceFile({
+const createBuildSourceFile = applePlatform => ({
   project,
-  applePlatform,
   nativeProjectRoot,
   filePath,
   fileContents,
   overwrite
-}) {
+}) => {
   const absoluteFilePath = _path().default.join(nativeProjectRoot, filePath);
   if (overwrite || !_fs().default.existsSync(absoluteFilePath)) {
     // Create the file
@@ -90,13 +87,13 @@ function createBuildSourceFile({
 
   // Ensure the file is linked with Xcode resource files
   if (!project.hasFile(filePath)) {
-    project = (0, _Xcodeproj().addBuildSourceFileToGroup)({
+    project = (0, _Xcodeproj().addBuildSourceFileToGroup)(applePlatform)({
       filepath: filePath,
       groupName,
-      project,
-      applePlatform
+      project
     });
   }
   return project;
-}
+};
+exports.createBuildSourceFile = createBuildSourceFile;
 //# sourceMappingURL=XcodeProjectFile.js.map

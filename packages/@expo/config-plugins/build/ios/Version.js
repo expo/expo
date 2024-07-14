@@ -3,42 +3,32 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBuildNumber = getBuildNumber;
-exports.getVersion = getVersion;
-exports.setBuildNumber = setBuildNumber;
-exports.setVersion = setVersion;
+exports.getBuildNumber = void 0;
+Object.defineProperty(exports, "getVersion", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().getVersion;
+  }
+});
+exports.setBuildNumber = void 0;
+Object.defineProperty(exports, "setVersion", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().setVersion;
+  }
+});
 exports.withVersion = exports.withBuildNumber = void 0;
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Version"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-const withVersion = exports.withVersion = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setVersion, {
-  infoPlistProperty: 'CFBundleShortVersionString',
-  expoConfigProperty: 'version'
-}, 'withVersion');
-const withBuildNumber = exports.withBuildNumber = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setBuildNumber, {
-  infoPlistProperty: 'CFBundleVersion',
-  expoConfigProperty: 'ios.buildNumber'
-}, 'withBuildNumber');
-function getVersion(config) {
-  return config.version || '1.0.0';
-}
-function setVersion(config, infoPlist) {
-  return {
-    ...infoPlist,
-    CFBundleShortVersionString: getVersion(config)
-  };
-}
-function getBuildNumber(config) {
-  return config.ios?.buildNumber ? config.ios.buildNumber : '1';
-}
-function setBuildNumber(config, infoPlist) {
-  return {
-    ...infoPlist,
-    CFBundleVersion: getBuildNumber(config)
-  };
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const withVersion = exports.withVersion = AppleImpl().withVersion('ios');
+const withBuildNumber = exports.withBuildNumber = AppleImpl().withBuildNumber('ios');
+const getBuildNumber = exports.getBuildNumber = AppleImpl().getBuildNumber('ios');
+const setBuildNumber = exports.setBuildNumber = AppleImpl().setBuildNumber('ios');
 //# sourceMappingURL=Version.js.map

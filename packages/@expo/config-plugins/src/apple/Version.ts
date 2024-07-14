@@ -16,7 +16,7 @@ export const withVersion = (applePlatform: 'ios' | 'macos') =>
 export const withBuildNumber = (applePlatform: 'ios' | 'macos') =>
   createInfoPlistPluginWithPropertyGuard(applePlatform)(
     (config: Pick<ExpoConfig, typeof applePlatform>, infoPlist: InfoPlist) =>
-      setBuildNumber(applePlatform, config, infoPlist),
+      setBuildNumber(applePlatform)(config, infoPlist),
     {
       infoPlistProperty: 'CFBundleVersion',
       expoConfigProperty: `${applePlatform}.buildNumber`,
@@ -35,20 +35,15 @@ export function setVersion(config: Pick<ExpoConfig, 'version'>, infoPlist: InfoP
   };
 }
 
-export function getBuildNumber(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>
-) {
-  return config[applePlatform]?.buildNumber ? config[applePlatform]!.buildNumber : '1';
-}
+export const getBuildNumber =
+  (applePlatform: 'ios' | 'macos') => (config: Pick<ExpoConfig, typeof applePlatform>) =>
+    config[applePlatform]?.buildNumber ? config[applePlatform]!.buildNumber : '1';
 
-export function setBuildNumber(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>,
-  infoPlist: InfoPlist
-): InfoPlist {
-  return {
-    ...infoPlist,
-    CFBundleVersion: getBuildNumber(applePlatform, config),
+export const setBuildNumber =
+  (applePlatform: 'ios' | 'macos') =>
+  (config: Pick<ExpoConfig, typeof applePlatform>, infoPlist: InfoPlist): InfoPlist => {
+    return {
+      ...infoPlist,
+      CFBundleVersion: getBuildNumber(applePlatform)(config),
+    };
   };
-}

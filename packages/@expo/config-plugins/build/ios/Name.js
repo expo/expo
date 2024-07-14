@@ -3,109 +3,43 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getName = getName;
-exports.setDisplayName = setDisplayName;
-exports.setName = setName;
-exports.setProductName = setProductName;
+Object.defineProperty(exports, "getName", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().getName;
+  }
+});
+Object.defineProperty(exports, "setDisplayName", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().setDisplayName;
+  }
+});
+Object.defineProperty(exports, "setName", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().setName;
+  }
+});
+Object.defineProperty(exports, "setProductName", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().setProductName;
+  }
+});
 exports.withProductName = exports.withName = exports.withDisplayName = void 0;
-function _Target() {
-  const data = require("./Target");
-  _Target = function () {
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Name"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-const withDisplayName = exports.withDisplayName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setDisplayName, {
-  infoPlistProperty: 'CFBundleDisplayName',
-  expoConfigProperty: 'name'
-}, 'withDisplayName');
-const withName = exports.withName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setName, {
-  infoPlistProperty: 'CFBundleName',
-  expoConfigProperty: 'name'
-}, 'withName');
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const withDisplayName = exports.withDisplayName = AppleImpl().withDisplayName('ios');
+const withName = exports.withName = AppleImpl().withName('ios');
 
 /** Set the PRODUCT_NAME variable in the xcproj file based on the app.json name property. */
-const withProductName = config => {
-  return (0, _iosPlugins().withXcodeProject)(config, config => {
-    config.modResults = setProductName(config, config.modResults);
-    return config;
-  });
-};
-exports.withProductName = withProductName;
-function getName(config) {
-  return typeof config.name === 'string' ? config.name : null;
-}
-
-/**
- * CFBundleDisplayName is used for most things: the name on the home screen, in
- * notifications, and others.
- */
-function setDisplayName(configOrName, {
-  CFBundleDisplayName,
-  ...infoPlist
-}) {
-  let name = null;
-  if (typeof configOrName === 'string') {
-    name = configOrName;
-  } else {
-    name = getName(configOrName);
-  }
-  if (!name) {
-    return infoPlist;
-  }
-  return {
-    ...infoPlist,
-    CFBundleDisplayName: name
-  };
-}
-
-/**
- * CFBundleName is recommended to be 16 chars or less and is used in lists, eg:
- * sometimes on the App Store
- */
-function setName(config, {
-  CFBundleName,
-  ...infoPlist
-}) {
-  const name = getName(config);
-  if (!name) {
-    return infoPlist;
-  }
-  return {
-    ...infoPlist,
-    CFBundleName: name
-  };
-}
-function setProductName(config, project) {
-  const name = (0, _Xcodeproj().sanitizedName)(getName(config) ?? '');
-  if (!name) {
-    return project;
-  }
-  const quotedName = ensureQuotes(name);
-  const [, nativeTarget] = (0, _Target().findFirstNativeTarget)(project);
-  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, item]) => {
-    item.buildSettings.PRODUCT_NAME = quotedName;
-  });
-  return project;
-}
-const ensureQuotes = value => {
-  if (!value.match(/^['"]/)) {
-    return `"${value}"`;
-  }
-  return value;
-};
+const withProductName = exports.withProductName = AppleImpl().withProductName('ios');
 //# sourceMappingURL=Name.js.map

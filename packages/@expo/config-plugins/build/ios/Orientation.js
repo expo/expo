@@ -3,40 +3,39 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PORTRAIT_ORIENTATIONS = exports.LANDSCAPE_ORIENTATIONS = void 0;
-exports.getOrientation = getOrientation;
-exports.setOrientation = setOrientation;
+Object.defineProperty(exports, "LANDSCAPE_ORIENTATIONS", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().LANDSCAPE_ORIENTATIONS;
+  }
+});
+Object.defineProperty(exports, "PORTRAIT_ORIENTATIONS", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().PORTRAIT_ORIENTATIONS;
+  }
+});
+Object.defineProperty(exports, "getOrientation", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().getOrientation;
+  }
+});
+Object.defineProperty(exports, "setOrientation", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().setOrientation;
+  }
+});
 exports.withOrientation = void 0;
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Orientation"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-const withOrientation = exports.withOrientation = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setOrientation, {
-  infoPlistProperty: 'UISupportedInterfaceOrientations',
-  expoConfigProperty: 'orientation'
-}, 'withOrientation');
-function getOrientation(config) {
-  return config.orientation ?? null;
-}
-const PORTRAIT_ORIENTATIONS = exports.PORTRAIT_ORIENTATIONS = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown'];
-const LANDSCAPE_ORIENTATIONS = exports.LANDSCAPE_ORIENTATIONS = ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
-function getUISupportedInterfaceOrientations(orientation) {
-  if (orientation === 'portrait') {
-    return PORTRAIT_ORIENTATIONS;
-  } else if (orientation === 'landscape') {
-    return LANDSCAPE_ORIENTATIONS;
-  } else {
-    return [...PORTRAIT_ORIENTATIONS, ...LANDSCAPE_ORIENTATIONS];
-  }
-}
-function setOrientation(config, infoPlist) {
-  const orientation = getOrientation(config);
-  return {
-    ...infoPlist,
-    UISupportedInterfaceOrientations: getUISupportedInterfaceOrientations(orientation)
-  };
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const withOrientation = exports.withOrientation = AppleImpl().withOrientation('ios');
 //# sourceMappingURL=Orientation.js.map

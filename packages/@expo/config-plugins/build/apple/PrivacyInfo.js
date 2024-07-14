@@ -4,8 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.mergePrivacyInfo = mergePrivacyInfo;
-exports.setPrivacyInfo = setPrivacyInfo;
-exports.withPrivacyInfo = withPrivacyInfo;
+exports.withPrivacyInfo = exports.setPrivacyInfo = void 0;
 function _plist() {
   const data = _interopRequireDefault(require("@expo/plist"));
   _plist = function () {
@@ -42,21 +41,22 @@ function _() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function withPrivacyInfo(applePlatform, config) {
+const withPrivacyInfo = applePlatform => config => {
   const privacyManifests = config.ios?.privacyManifests;
   if (!privacyManifests) {
     return config;
   }
   return (0, _().withXcodeProject)(config, projectConfig => {
-    return setPrivacyInfo(applePlatform, projectConfig, privacyManifests);
+    return setPrivacyInfo(applePlatform)(projectConfig, privacyManifests);
   });
-}
-function setPrivacyInfo(applePlatform, projectConfig, privacyManifests) {
+};
+exports.withPrivacyInfo = withPrivacyInfo;
+const setPrivacyInfo = applePlatform => (projectConfig, privacyManifests) => {
   const {
     projectRoot,
     platformProjectRoot
   } = projectConfig.modRequest;
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, applePlatform);
+  const projectName = (0, _Xcodeproj().getProjectName)(applePlatform)(projectRoot);
   const privacyFilePath = _path().default.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
   const existingFileContent = getFileContents(privacyFilePath);
   const parsedContent = existingFileContent ? _plist().default.parse(existingFileContent) : {};
@@ -64,17 +64,17 @@ function setPrivacyInfo(applePlatform, projectConfig, privacyManifests) {
   const contents = _plist().default.build(mergedContent);
   ensureFileExists(privacyFilePath, contents);
   if (!projectConfig.modResults.hasFile(privacyFilePath)) {
-    projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
+    projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)(applePlatform)({
       filepath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
       groupName: projectName,
       project: projectConfig.modResults,
-      applePlatform,
       isBuildFile: true,
       verbose: true
     });
   }
   return projectConfig;
-}
+};
+exports.setPrivacyInfo = setPrivacyInfo;
 function getFileContents(filePath) {
   if (!_fs().default.existsSync(filePath)) {
     return null;

@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getRequiresFullScreen = getRequiresFullScreen;
-exports.setRequiresFullScreen = setRequiresFullScreen;
-exports.withRequiresFullScreen = void 0;
+exports.withRequiresFullScreen = exports.setRequiresFullScreen = exports.getRequiresFullScreen = void 0;
 function _applePlugins() {
   const data = require("../plugins/apple-plugins");
   _applePlugins = function () {
@@ -29,12 +27,12 @@ function _warnings() {
 }
 // TODO: check if this plugin is only relevant to iOS
 
-const withRequiresFullScreen = applePlatform => (0, _applePlugins().createInfoPlistPlugin)(applePlatform)((config, infoPlist) => setRequiresFullScreen(applePlatform, config, infoPlist), 'withRequiresFullScreen');
+const withRequiresFullScreen = applePlatform => (0, _applePlugins().createInfoPlistPlugin)(applePlatform)((config, infoPlist) => setRequiresFullScreen(applePlatform)(config, infoPlist), 'withRequiresFullScreen');
 
 // NOTES: This is defaulted to `true` for now to match the behavior prior to SDK
 // 34, but will change to `false` in SDK +43.
 exports.withRequiresFullScreen = withRequiresFullScreen;
-function getRequiresFullScreen(applePlatform, config) {
+const getRequiresFullScreen = applePlatform => config => {
   // Yes, the property is called `${applePlatform}.requireFullScreen`, without the s - not "requires"
   // This is confusing indeed because the actual property name does have the s
   if (config[applePlatform]?.hasOwnProperty('requireFullScreen')) {
@@ -49,7 +47,8 @@ function getRequiresFullScreen(applePlatform, config) {
     }
     return true;
   }
-}
+};
+exports.getRequiresFullScreen = getRequiresFullScreen;
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
 const requiredIPadInterface = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown', 'UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
 function isStringArray(value) {
@@ -84,8 +83,8 @@ function resolveExistingIpadInterfaceOrientations(applePlatform, interfaceOrient
 }
 
 // Whether requires full screen on iPad
-function setRequiresFullScreen(applePlatform, config, infoPlist) {
-  const requiresFullScreen = getRequiresFullScreen(applePlatform, config);
+const setRequiresFullScreen = applePlatform => (config, infoPlist) => {
+  const requiresFullScreen = getRequiresFullScreen(applePlatform)(config);
   if (!requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(applePlatform, infoPlist[iPadInterfaceKey]);
 
@@ -100,5 +99,6 @@ function setRequiresFullScreen(applePlatform, config, infoPlist) {
     ...infoPlist,
     UIRequiresFullScreen: requiresFullScreen
   };
-}
+};
+exports.setRequiresFullScreen = setRequiresFullScreen;
 //# sourceMappingURL=RequiresFullScreen.js.map

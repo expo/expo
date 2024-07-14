@@ -22,49 +22,51 @@ export type PrivacyInfo = {
   NSPrivacyTrackingDomains: string[];
 };
 
-export function withPrivacyInfo(applePlatform: 'ios' | 'macos', config: ExpoConfig): ExpoConfig {
-  const privacyManifests = config.ios?.privacyManifests;
-  if (!privacyManifests) {
-    return config;
-  }
+export const withPrivacyInfo =
+  (applePlatform: 'ios' | 'macos') =>
+  (config: ExpoConfig): ExpoConfig => {
+    const privacyManifests = config.ios?.privacyManifests;
+    if (!privacyManifests) {
+      return config;
+    }
 
-  return withXcodeProject(config, (projectConfig: ExportedConfigWithProps<XcodeProject>) => {
-    return setPrivacyInfo(applePlatform, projectConfig, privacyManifests);
-  });
-}
-
-export function setPrivacyInfo(
-  applePlatform: 'ios' | 'macos',
-  projectConfig: ExportedConfigWithProps<XcodeProject>,
-  privacyManifests: Partial<PrivacyInfo>
-) {
-  const { projectRoot, platformProjectRoot } = projectConfig.modRequest;
-
-  const projectName = getProjectName(projectRoot, applePlatform);
-
-  const privacyFilePath = path.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
-
-  const existingFileContent = getFileContents(privacyFilePath);
-
-  const parsedContent = existingFileContent ? plist.parse(existingFileContent) : {};
-  const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
-  const contents = plist.build(mergedContent);
-
-  ensureFileExists(privacyFilePath, contents);
-
-  if (!projectConfig.modResults.hasFile(privacyFilePath)) {
-    projectConfig.modResults = addResourceFileToGroup({
-      filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
-      groupName: projectName,
-      project: projectConfig.modResults,
-      applePlatform,
-      isBuildFile: true,
-      verbose: true,
+    return withXcodeProject(config, (projectConfig: ExportedConfigWithProps<XcodeProject>) => {
+      return setPrivacyInfo(applePlatform)(projectConfig, privacyManifests);
     });
-  }
+  };
 
-  return projectConfig;
-}
+export const setPrivacyInfo =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    projectConfig: ExportedConfigWithProps<XcodeProject>,
+    privacyManifests: Partial<PrivacyInfo>
+  ) => {
+    const { projectRoot, platformProjectRoot } = projectConfig.modRequest;
+
+    const projectName = getProjectName(applePlatform)(projectRoot);
+
+    const privacyFilePath = path.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
+
+    const existingFileContent = getFileContents(privacyFilePath);
+
+    const parsedContent = existingFileContent ? plist.parse(existingFileContent) : {};
+    const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
+    const contents = plist.build(mergedContent);
+
+    ensureFileExists(privacyFilePath, contents);
+
+    if (!projectConfig.modResults.hasFile(privacyFilePath)) {
+      projectConfig.modResults = addResourceFileToGroup(applePlatform)({
+        filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
+        groupName: projectName,
+        project: projectConfig.modResults,
+        isBuildFile: true,
+        verbose: true,
+      });
+    }
+
+    return projectConfig;
+  };
 
 function getFileContents(filePath: string): string | null {
   if (!fs.existsSync(filePath)) {

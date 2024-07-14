@@ -1,14 +1,17 @@
-import { ExpoConfig } from '@expo/config-types';
-import { XcodeProject } from 'xcode';
-import { ConfigPlugin } from '../Plugin.types';
-type LocaleJson = Record<string, string>;
-type ResolvedLocalesJson = Record<string, LocaleJson>;
-type ExpoConfigLocales = NonNullable<ExpoConfig['locales']>;
-export declare const withLocales: ConfigPlugin;
-export declare function getLocales(config: Pick<ExpoConfig, 'locales'>): Record<string, string | LocaleJson> | null;
-export declare function setLocalesAsync(config: Pick<ExpoConfig, 'locales'>, { projectRoot, project }: {
+/// <reference types="xcode" />
+import * as AppleImpl from '../apple/Locales';
+export declare const withLocales: import("..").ConfigPlugin;
+export declare const getLocales: typeof AppleImpl.getLocales;
+export declare const setLocalesAsync: (config: Pick<import("@expo/config-types").ExpoConfig, "locales">, { projectRoot, project }: {
     projectRoot: string;
-    project: XcodeProject;
-}): Promise<XcodeProject>;
-export declare function getResolvedLocalesAsync(projectRoot: string, input: ExpoConfigLocales): Promise<ResolvedLocalesJson>;
-export {};
+    project: import("xcode").XcodeProject;
+}) => Promise<import("xcode").XcodeProject>;
+export declare const getResolvedLocalesAsync: (projectRoot: string, input: {
+    [k: string]: string | {
+        [k: string]: any;
+    };
+}) => Promise<{
+    [x: string]: {
+        [x: string]: string;
+    };
+}>;

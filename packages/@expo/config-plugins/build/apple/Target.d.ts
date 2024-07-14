@@ -19,7 +19,7 @@ export declare function getXCBuildConfigurationFromPbxproj(project: XcodeProject
     targetName?: string;
     buildConfiguration?: string;
 }): XCBuildConfiguration | null;
-export declare function findApplicationTargetWithDependenciesAsync(projectRoot: string, applePlatform: 'ios' | 'macos', scheme: string): Promise<Target>;
+export declare const findApplicationTargetWithDependenciesAsync: (applePlatform: 'ios' | 'macos') => (projectRoot: string, scheme: string) => Promise<Target>;
 export declare function isTargetOfType(target: PBXNativeTarget, targetType: TargetType): boolean;
 export declare function getNativeTargets(project: XcodeProject): NativeTargetSectionEntry[];
 export declare function findSignableTargets(project: XcodeProject): NativeTargetSectionEntry[];

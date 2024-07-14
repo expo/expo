@@ -4,11 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.formatDeviceFamilies = formatDeviceFamilies;
-exports.getDeviceFamilies = getDeviceFamilies;
-exports.getIsTabletOnly = getIsTabletOnly;
-exports.getSupportsTablet = getSupportsTablet;
-exports.setDeviceFamily = setDeviceFamily;
-exports.withDeviceFamily = void 0;
+exports.withDeviceFamily = exports.setDeviceFamily = exports.getSupportsTablet = exports.getIsTabletOnly = exports.getDeviceFamilies = void 0;
 function _applePlugins() {
   const data = require("../plugins/apple-plugins");
   _applePlugins = function () {
@@ -25,22 +21,20 @@ function _warnings() {
 }
 const withDeviceFamily = applePlatform => config => {
   return (0, _applePlugins().withXcodeProject)(applePlatform)(config, async config => {
-    config.modResults = await setDeviceFamily(applePlatform, config, {
+    config.modResults = await setDeviceFamily(applePlatform)(config, {
       project: config.modResults
     });
     return config;
   });
 };
 exports.withDeviceFamily = withDeviceFamily;
-function getSupportsTablet(applePlatform, config) {
-  return !!config[applePlatform]?.supportsTablet;
-}
-function getIsTabletOnly(applePlatform, config) {
-  return !!config?.[applePlatform]?.isTabletOnly;
-}
-function getDeviceFamilies(applePlatform, config) {
-  const supportsTablet = getSupportsTablet(applePlatform, config);
-  const isTabletOnly = getIsTabletOnly(applePlatform, config);
+const getSupportsTablet = applePlatform => config => !!config[applePlatform]?.supportsTablet;
+exports.getSupportsTablet = getSupportsTablet;
+const getIsTabletOnly = applePlatform => config => !!config?.[applePlatform]?.isTabletOnly;
+exports.getIsTabletOnly = getIsTabletOnly;
+const getDeviceFamilies = applePlatform => config => {
+  const supportsTablet = getSupportsTablet(applePlatform)(config);
+  const isTabletOnly = getIsTabletOnly(applePlatform)(config);
   if (isTabletOnly && config[applePlatform]?.supportsTablet === false) {
     (0, _warnings().addWarningForPlatform)(applePlatform, `${applePlatform}.supportsTablet`, `Found contradictory values: \`{ ${applePlatform}: { isTabletOnly: true, supportsTablet: false } }\`. Using \`{ isTabletOnly: true }\`.`);
   }
@@ -54,13 +48,14 @@ function getDeviceFamilies(applePlatform, config) {
     // is iPhone only
     return [1];
   }
-}
+};
 
 /**
  * Wrapping the families in double quotes is the only way to set a value with a comma in it.
  *
  * @param deviceFamilies
  */
+exports.getDeviceFamilies = getDeviceFamilies;
 function formatDeviceFamilies(deviceFamilies) {
   return `"${deviceFamilies.join(',')}"`;
 }
@@ -68,10 +63,10 @@ function formatDeviceFamilies(deviceFamilies) {
 /**
  * Add to pbxproj under TARGETED_DEVICE_FAMILY
  */
-function setDeviceFamily(applePlatform, config, {
+const setDeviceFamily = applePlatform => (config, {
   project
-}) {
-  const deviceFamilies = formatDeviceFamilies(getDeviceFamilies(applePlatform, config));
+}) => {
+  const deviceFamilies = formatDeviceFamilies(getDeviceFamilies(applePlatform)(config));
   const configurations = project.pbxXCBuildConfigurationSection();
   // @ts-ignore
   for (const {
@@ -88,5 +83,6 @@ function setDeviceFamily(applePlatform, config, {
     }
   }
   return project;
-}
+};
+exports.setDeviceFamily = setDeviceFamily;
 //# sourceMappingURL=DeviceFamily.js.map

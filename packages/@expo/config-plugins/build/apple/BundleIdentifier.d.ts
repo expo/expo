@@ -4,12 +4,12 @@ import { ConfigPlugin } from '../Plugin.types';
 export declare const withBundleIdentifier: (applePlatform: 'ios' | 'macos') => ConfigPlugin<{
     bundleIdentifier?: string;
 }>;
-declare function getBundleIdentifier(applePlatform: 'ios' | 'macos', config: Pick<ExpoConfig, typeof applePlatform>): string | null;
+declare const getBundleIdentifier: (applePlatform: 'ios' | 'macos') => (config: Pick<ExpoConfig, "ios" | "macos">) => string | null;
 /**
  * In Turtle v1 we set the bundleIdentifier directly on Info.plist rather
  * than in pbxproj
  */
-declare function setBundleIdentifier(applePlatform: 'ios' | 'macos', config: ExpoConfig, infoPlist: InfoPlist): InfoPlist;
+declare const setBundleIdentifier: (applePlatform: 'ios' | 'macos') => (config: ExpoConfig, infoPlist: InfoPlist) => InfoPlist;
 /**
  * Gets the bundle identifier defined in the Xcode project found in the project directory.
  *
@@ -21,16 +21,15 @@ declare function setBundleIdentifier(applePlatform: 'ios' | 'macos', config: Exp
  * Defaults to 'Release'.
  *
  * @param {string} projectRoot Path to project root containing the ios (or macos) directory
- * @param {string} applePlatform The Apple platform (ios or macos)
  * @param {Object} options
  * @param {string} options.targetName Target name
  * @param {string} options.buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
-declare function getBundleIdentifierFromPbxproj(projectRoot: string, applePlatform: 'ios' | 'macos', options?: {
+declare const getBundleIdentifierFromPbxproj: (applePlatform: 'ios' | 'macos') => (projectRoot: string, options?: {
     targetName?: string;
     buildConfiguration?: string;
-}): string | null;
+}) => string | null;
 /**
  * Updates the bundle identifier for a given pbxproj
  *
@@ -44,10 +43,9 @@ declare function updateBundleIdentifierForPbxproj(pbxprojPath: string, bundleIde
  *
  * @param {string} projectRoot Path to project root containing the ios directory
  * @param {string} bundleIdentifier Desired bundle identifier
- * @param {string} applePlatform The Apple platform (ios or macos)
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-declare function setBundleIdentifierForPbxproj(projectRoot: string, bundleIdentifier: string, applePlatform: 'ios' | 'macos', updateProductName?: boolean): void;
-declare function resetAllPlistBundleIdentifiers(projectRoot: string, applePlatform: 'ios' | 'macos'): void;
+declare const setBundleIdentifierForPbxproj: (applePlatform: 'ios' | 'macos') => (projectRoot: string, bundleIdentifier: string, updateProductName?: boolean) => void;
+declare const resetAllPlistBundleIdentifiers: (applePlatform: 'ios' | 'macos') => (projectRoot: string) => void;
 declare function resetPlistBundleIdentifier(plistPath: string): void;
 export { getBundleIdentifier, setBundleIdentifier, getBundleIdentifierFromPbxproj, updateBundleIdentifierForPbxproj, setBundleIdentifierForPbxproj, resetAllPlistBundleIdentifiers, resetPlistBundleIdentifier, };

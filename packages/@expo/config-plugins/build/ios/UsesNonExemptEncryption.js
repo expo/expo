@@ -3,36 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUsesNonExemptEncryption = getUsesNonExemptEncryption;
-exports.setUsesNonExemptEncryption = setUsesNonExemptEncryption;
-exports.withUsesNonExemptEncryption = void 0;
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
+exports.withUsesNonExemptEncryption = exports.setUsesNonExemptEncryption = exports.getUsesNonExemptEncryption = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/UsesNonExemptEncryption"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-const withUsesNonExemptEncryption = exports.withUsesNonExemptEncryption = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setUsesNonExemptEncryption, {
-  infoPlistProperty: 'ITSAppUsesNonExemptEncryption',
-  expoConfigProperty: 'ios.config.usesNonExemptEncryption'
-}, 'withUsesNonExemptEncryption');
-function getUsesNonExemptEncryption(config) {
-  return config?.ios?.config?.usesNonExemptEncryption ?? null;
-}
-function setUsesNonExemptEncryption(config, {
-  ITSAppUsesNonExemptEncryption,
-  ...infoPlist
-}) {
-  const usesNonExemptEncryption = getUsesNonExemptEncryption(config);
-
-  // Make no changes if the key is left blank
-  if (usesNonExemptEncryption === null) {
-    return infoPlist;
-  }
-  return {
-    ...infoPlist,
-    ITSAppUsesNonExemptEncryption: usesNonExemptEncryption
-  };
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const withUsesNonExemptEncryption = exports.withUsesNonExemptEncryption = AppleImpl().withUsesNonExemptEncryption('ios');
+const getUsesNonExemptEncryption = exports.getUsesNonExemptEncryption = AppleImpl().getUsesNonExemptEncryption('ios');
+const setUsesNonExemptEncryption = exports.setUsesNonExemptEncryption = AppleImpl().setUsesNonExemptEncryption('ios');
 //# sourceMappingURL=UsesNonExemptEncryption.js.map

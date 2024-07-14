@@ -3,8 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.trimQuotes = trimQuotes;
-function trimQuotes(s) {
-  return s && s[0] === '"' && s[s.length - 1] === '"' ? s.slice(1, -1) : s;
+Object.defineProperty(exports, "trimQuotes", {
+  enumerable: true,
+  get: function () {
+    return _string().trimQuotes;
+  }
+});
+function _string() {
+  const data = require("../../apple/utils/string");
+  _string = function () {
+    return data;
+  };
+  return data;
 }
 //# sourceMappingURL=string.js.map

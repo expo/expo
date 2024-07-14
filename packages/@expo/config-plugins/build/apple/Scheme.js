@@ -8,8 +8,7 @@ exports.getScheme = getScheme;
 exports.getSchemesFromPlist = getSchemesFromPlist;
 exports.hasScheme = hasScheme;
 exports.removeScheme = removeScheme;
-exports.setScheme = setScheme;
-exports.withScheme = void 0;
+exports.withScheme = exports.setScheme = void 0;
 function _applePlugins() {
   const data = require("../plugins/apple-plugins");
   _applePlugins = function () {
@@ -17,7 +16,7 @@ function _applePlugins() {
   };
   return data;
 }
-const withScheme = applePlatform => (0, _applePlugins().createInfoPlistPluginWithPropertyGuard)(applePlatform)((config, infoPlist) => setScheme(applePlatform, config, infoPlist), {
+const withScheme = applePlatform => (0, _applePlugins().createInfoPlistPluginWithPropertyGuard)(applePlatform)((config, infoPlist) => setScheme(applePlatform)(config, infoPlist), {
   infoPlistProperty: 'CFBundleURLTypes',
   expoConfigProperty: 'scheme'
 }, 'withScheme');
@@ -33,7 +32,7 @@ function getScheme(config) {
   }
   return [];
 }
-function setScheme(applePlatform, config, infoPlist) {
+const setScheme = applePlatform => (config, infoPlist) => {
   const scheme = [...getScheme(config),
   // @ts-ignore: TODO: `ios.scheme` / `macos.scheme` is an unreleased -- harder to add to turtle v1.
   ...getScheme(config[applePlatform] ?? {})];
@@ -50,7 +49,8 @@ function setScheme(applePlatform, config, infoPlist) {
       CFBundleURLSchemes: scheme
     }]
   };
-}
+};
+exports.setScheme = setScheme;
 function appendScheme(scheme, infoPlist) {
   if (!scheme) {
     return infoPlist;

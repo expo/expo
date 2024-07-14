@@ -43,26 +43,23 @@ export function getXCBuildConfigurationFromPbxproj(
   return xcBuildConfiguration ?? null;
 }
 
-export async function findApplicationTargetWithDependenciesAsync(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos',
-  scheme: string
-): Promise<Target> {
-  const applicationTargetName = await getApplicationTargetNameForSchemeAsync(
-    projectRoot,
-    applePlatform,
-    scheme
-  );
-  const project = getPbxproj(projectRoot, applePlatform);
-  const [, applicationTarget] = findNativeTargetByName(project, applicationTargetName);
-  const dependencies = getTargetDependencies(project, applicationTarget);
-  return {
-    name: trimQuotes(applicationTarget.name),
-    type: TargetType.APPLICATION,
-    signable: true,
-    dependencies,
+export const findApplicationTargetWithDependenciesAsync =
+  (applePlatform: 'ios' | 'macos') =>
+  async (projectRoot: string, scheme: string): Promise<Target> => {
+    const applicationTargetName = await getApplicationTargetNameForSchemeAsync(applePlatform)(
+      projectRoot,
+      scheme
+    );
+    const project = getPbxproj(applePlatform)(projectRoot);
+    const [, applicationTarget] = findNativeTargetByName(project, applicationTargetName);
+    const dependencies = getTargetDependencies(project, applicationTarget);
+    return {
+      name: trimQuotes(applicationTarget.name),
+      type: TargetType.APPLICATION,
+      signable: true,
+      dependencies,
+    };
   };
-}
 
 function getTargetDependencies(
   project: XcodeProject,

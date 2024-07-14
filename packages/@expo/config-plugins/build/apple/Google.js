@@ -3,12 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getGoogleServicesFile = getGoogleServicesFile;
-exports.getGoogleSignInReversedClientId = getGoogleSignInReversedClientId;
-exports.setGoogleConfig = setGoogleConfig;
-exports.setGoogleServicesFile = void 0;
-exports.setGoogleSignInReversedClientId = setGoogleSignInReversedClientId;
-exports.withGoogleServicesFile = exports.withGoogle = void 0;
+exports.withGoogleServicesFile = exports.withGoogle = exports.setGoogleSignInReversedClientId = exports.setGoogleServicesFile = exports.setGoogleConfig = exports.getGoogleSignInReversedClientId = exports.getGoogleServicesFile = void 0;
 function _plist() {
   const data = _interopRequireDefault(require("@expo/plist"));
   _plist = function () {
@@ -68,7 +63,7 @@ function _applePlugins() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const withGoogle = applePlatform => config => {
   return (0, _applePlugins().withInfoPlist)(applePlatform)(config, config => {
-    config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);
+    config.modResults = setGoogleConfig(applePlatform)(config, config.modResults, config.modRequest);
     return config;
   });
 };
@@ -91,46 +86,49 @@ function readGoogleServicesInfoPlist(relativePath, {
   (0, _assert().default)(contents, 'GoogleService-Info.plist is empty');
   return _plist().default.parse(contents);
 }
-function getGoogleSignInReversedClientId(config, modRequest) {
-  const googleServicesFileRelativePath = getGoogleServicesFile(config);
+const getGoogleSignInReversedClientId = applePlatform => (config, modRequest) => {
+  const googleServicesFileRelativePath = getGoogleServicesFile(applePlatform)(config);
   if (googleServicesFileRelativePath === null) {
     return null;
   }
   const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
   return infoPlist.REVERSED_CLIENT_ID ?? null;
-}
-function getGoogleServicesFile(config) {
-  return config.ios?.googleServicesFile ?? null;
-}
-function setGoogleSignInReversedClientId(config, infoPlist, modRequest) {
-  const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);
+};
+exports.getGoogleSignInReversedClientId = getGoogleSignInReversedClientId;
+const getGoogleServicesFile = applePlatform => config => {
+  return config[applePlatform]?.googleServicesFile ?? null;
+};
+exports.getGoogleServicesFile = getGoogleServicesFile;
+const setGoogleSignInReversedClientId = applePlatform => (config, infoPlist, modRequest) => {
+  const reversedClientId = getGoogleSignInReversedClientId(applePlatform)(config, modRequest);
   if (reversedClientId === null) {
     return infoPlist;
   }
   return (0, _Scheme().appendScheme)(reversedClientId, infoPlist);
-}
-function setGoogleConfig(config, infoPlist, modRequest) {
-  infoPlist = setGoogleSignInReversedClientId(config, infoPlist, modRequest);
+};
+exports.setGoogleSignInReversedClientId = setGoogleSignInReversedClientId;
+const setGoogleConfig = applePlatform => (config, infoPlist, modRequest) => {
+  infoPlist = setGoogleSignInReversedClientId(applePlatform)(config, infoPlist, modRequest);
   return infoPlist;
-}
+};
+exports.setGoogleConfig = setGoogleConfig;
 const setGoogleServicesFile = applePlatform => (config, {
   projectRoot,
   project
 }) => {
-  const googleServicesFileRelativePath = getGoogleServicesFile(config);
+  const googleServicesFileRelativePath = getGoogleServicesFile(applePlatform)(config);
   if (googleServicesFileRelativePath === null) {
     return project;
   }
   const googleServiceFilePath = _path().default.resolve(projectRoot, googleServicesFileRelativePath);
-  _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(projectRoot, applePlatform), 'GoogleService-Info.plist'));
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, applePlatform);
+  _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(applePlatform)(projectRoot), 'GoogleService-Info.plist'));
+  const projectName = (0, _Xcodeproj().getProjectName)(applePlatform)(projectRoot);
   const plistFilePath = `${projectName}/GoogleService-Info.plist`;
   if (!project.hasFile(plistFilePath)) {
-    project = (0, _Xcodeproj().addResourceFileToGroup)({
+    project = (0, _Xcodeproj().addResourceFileToGroup)(applePlatform)({
       filepath: plistFilePath,
       groupName: projectName,
       project,
-      applePlatform,
       isBuildFile: true,
       verbose: true
     });

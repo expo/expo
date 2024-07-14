@@ -6,7 +6,7 @@ import { ConfigPlugin } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/apple-plugins';
 import { addWarningForPlatform } from '../utils/warnings';
 
-type Bitcode = NonNullable<ExpoConfig['ios' | 'macos']>['bitcode'];
+export type Bitcode = NonNullable<ExpoConfig['ios' | 'macos']>['bitcode'];
 
 /**
  * Plugin to set a bitcode preference for the Xcode project
@@ -15,7 +15,7 @@ type Bitcode = NonNullable<ExpoConfig['ios' | 'macos']>['bitcode'];
 export const withBitcode: (applePlatform: 'ios' | 'macos') => ConfigPlugin =
   (applePlatform: 'ios' | 'macos') => (config) => {
     return withXcodeProject(applePlatform)(config, async (config) => {
-      config.modResults = await setBitcodeWithConfig(applePlatform, config, {
+      config.modResults = await setBitcodeWithConfig(applePlatform)(config, {
         project: config.modResults,
       });
       return config;
@@ -41,24 +41,23 @@ export const withCustomBitcode: (applePlatform: 'ios' | 'macos') => ConfigPlugin
 /**
  * Get the bitcode preference from the Expo config.
  */
-export function getBitcode(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>
-): Bitcode {
-  return config[applePlatform]?.bitcode;
-}
+export const getBitcode =
+  (applePlatform: 'ios' | 'macos') =>
+  (config: Pick<ExpoConfig, typeof applePlatform>): Bitcode =>
+    config[applePlatform]?.bitcode;
 
 /**
  * Enable or disable the `ENABLE_BITCODE` property of the project configurations.
  */
-export function setBitcodeWithConfig(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>,
-  { project }: { project: XcodeProject }
-): XcodeProject {
-  const bitcode = getBitcode(applePlatform, config);
-  return setBitcode(applePlatform)(bitcode, { project });
-}
+export const setBitcodeWithConfig =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Pick<ExpoConfig, typeof applePlatform>,
+    { project }: { project: XcodeProject }
+  ): XcodeProject => {
+    const bitcode = getBitcode(applePlatform)(config);
+    return setBitcode(applePlatform)(bitcode, { project });
+  };
 
 /**
  * Enable or disable the `ENABLE_BITCODE` property.

@@ -37,24 +37,23 @@ export type ConfigurationListEntry = [string, XCConfigurationList];
 
 export type ConfigurationSectionEntry = [string, XCBuildConfiguration];
 
-export function getProjectName(projectRoot: string, applePlatform: 'ios' | 'macos') {
-  const sourceRoot = Paths.getSourceRoot(projectRoot, applePlatform);
+export const getProjectName = (applePlatform: 'ios' | 'macos') => (projectRoot: string) => {
+  const sourceRoot = Paths.getSourceRoot(applePlatform)(projectRoot);
   return path.basename(sourceRoot);
-}
+};
 
-export function resolvePathOrProject(
-  projectRootOrProject: string | XcodeProject,
-  applePlatform: 'ios' | 'macos'
-): XcodeProject | null {
-  if (typeof projectRootOrProject === 'string') {
-    try {
-      return getPbxproj(projectRootOrProject, applePlatform);
-    } catch {
-      return null;
+export const resolvePathOrProject =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRootOrProject: string | XcodeProject): XcodeProject | null => {
+    if (typeof projectRootOrProject === 'string') {
+      try {
+        return getPbxproj(applePlatform)(projectRootOrProject);
+      } catch {
+        return null;
+      }
     }
-  }
-  return projectRootOrProject;
-}
+    return projectRootOrProject;
+  };
 
 // TODO: come up with a better solution for using app.json expo.name in various places
 export function sanitizedName(name: string) {
@@ -73,21 +72,19 @@ function sanitizedNameForProjects(name: string) {
 // the ios/macos project paths. Overall this function needs to be revamped, just
 // a placeholder for now! Make this more robust when we support applying config
 // at any time (currently it's only applied on eject).
-export function getHackyProjectName(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos',
-  config: ExpoConfig
-): string {
-  // Attempt to get the current ios/macos folder name (apply).
-  try {
-    return getProjectName(projectRoot, applePlatform);
-  } catch {
-    // If no iOS/macOS project exists then create a new one (eject).
-    const projectName = config.name;
-    assert(projectName, 'Your project needs a name in app.json/app.config.js.');
-    return sanitizedName(projectName);
-  }
-}
+export const getHackyProjectName =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string, config: ExpoConfig): string => {
+    // Attempt to get the current ios/macos folder name (apply).
+    try {
+      return getProjectName(applePlatform)(projectRoot);
+    } catch {
+      // If no iOS/macOS project exists then create a new one (eject).
+      const projectName = config.name;
+      assert(projectName, 'Your project needs a name in app.json/app.config.js.');
+      return sanitizedName(projectName);
+    }
+  };
 
 function createProjectFileForGroup({ filepath, group }: { filepath: string; group: PBXGroup }) {
   const file = new pbxFile(filepath);
@@ -105,130 +102,128 @@ function createProjectFileForGroup({ filepath, group }: { filepath: string; grou
  * Add a resource file (ex: `SplashScreen.storyboard`, `Images.xcassets`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
-export function addResourceFileToGroup({
-  filepath,
-  groupName,
-  // Should add to `PBXBuildFile Section`
-  isBuildFile,
-  project,
-  applePlatform,
-  verbose,
-  targetUuid,
-}: {
-  filepath: string;
-  groupName: string;
-  isBuildFile?: boolean;
-  project: XcodeProject;
-  applePlatform: 'ios' | 'macos';
-  verbose?: boolean;
-  targetUuid?: string;
-}): XcodeProject {
-  return addFileToGroupAndLink({
+export const addResourceFileToGroup =
+  (applePlatform: 'ios' | 'macos') =>
+  ({
     filepath,
     groupName,
+    // Should add to `PBXBuildFile Section`
+    isBuildFile,
     project,
-    applePlatform,
     verbose,
     targetUuid,
-    addFileToProject({ project, file }) {
-      project.addToPbxFileReferenceSection(file);
-      if (isBuildFile) {
-        project.addToPbxBuildFileSection(file);
-      }
-      project.addToPbxResourcesBuildPhase(file);
-    },
-  });
-}
+  }: {
+    filepath: string;
+    groupName: string;
+    isBuildFile?: boolean;
+    project: XcodeProject;
+    verbose?: boolean;
+    targetUuid?: string;
+  }): XcodeProject => {
+    return addFileToGroupAndLink(applePlatform)({
+      filepath,
+      groupName,
+      project,
+      verbose,
+      targetUuid,
+      addFileToProject({ project, file }) {
+        project.addToPbxFileReferenceSection(file);
+        if (isBuildFile) {
+          project.addToPbxBuildFileSection(file);
+        }
+        project.addToPbxResourcesBuildPhase(file);
+      },
+    });
+  };
 
 /**
  * Add a build source file (ex: `AppDelegate.m`, `ViewController.swift`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
-export function addBuildSourceFileToGroup({
-  filepath,
-  groupName,
-  project,
-  applePlatform,
-  verbose,
-  targetUuid,
-}: {
-  filepath: string;
-  groupName: string;
-  project: XcodeProject;
-  applePlatform: 'ios' | 'macos';
-  verbose?: boolean;
-  targetUuid?: string;
-}): XcodeProject {
-  return addFileToGroupAndLink({
+export const addBuildSourceFileToGroup =
+  (applePlatform: 'ios' | 'macos') =>
+  ({
     filepath,
     groupName,
     project,
-    applePlatform,
     verbose,
     targetUuid,
-    addFileToProject({ project, file }) {
-      project.addToPbxFileReferenceSection(file);
-      project.addToPbxBuildFileSection(file);
-      project.addToPbxSourcesBuildPhase(file);
-    },
-  });
-}
+  }: {
+    filepath: string;
+    groupName: string;
+    project: XcodeProject;
+    verbose?: boolean;
+    targetUuid?: string;
+  }): XcodeProject => {
+    return addFileToGroupAndLink(applePlatform)({
+      filepath,
+      groupName,
+      project,
+      verbose,
+      targetUuid,
+      addFileToProject({ project, file }) {
+        project.addToPbxFileReferenceSection(file);
+        project.addToPbxBuildFileSection(file);
+        project.addToPbxSourcesBuildPhase(file);
+      },
+    });
+  };
 
 // TODO(brentvatne): I couldn't figure out how to do this with an existing
 // higher level function exposed by the xcode library, but we should find out how to do
 // that and replace this with it
-export function addFileToGroupAndLink({
-  filepath,
-  groupName,
-  project,
-  applePlatform,
-  verbose,
-  addFileToProject,
-  targetUuid,
-}: {
-  filepath: string;
-  groupName: string;
-  project: XcodeProject;
-  applePlatform: 'ios' | 'macos';
-  verbose?: boolean;
-  targetUuid?: string;
-  addFileToProject: (props: { file: PBXFile; project: XcodeProject }) => void;
-}): XcodeProject {
-  const group = pbxGroupByPathOrAssert(project, groupName);
+export const addFileToGroupAndLink =
+  (applePlatform: 'ios' | 'macos') =>
+  ({
+    filepath,
+    groupName,
+    project,
+    verbose,
+    addFileToProject,
+    targetUuid,
+  }: {
+    filepath: string;
+    groupName: string;
+    project: XcodeProject;
+    verbose?: boolean;
+    targetUuid?: string;
+    addFileToProject: (props: { file: PBXFile; project: XcodeProject }) => void;
+  }): XcodeProject => {
+    const group = pbxGroupByPathOrAssert(project, groupName);
 
-  const file = createProjectFileForGroup({ filepath, group });
+    const file = createProjectFileForGroup({ filepath, group });
 
-  if (!file) {
-    if (verbose) {
-      // This can happen when a file like the GoogleService-Info.plist needs to be added and the eject command is run twice.
-      // Not much we can do here since it might be a conflicting file.
-      addWarningForPlatform(
-        applePlatform,
-        `${applePlatform}-xcode-project`,
-        `Skipped adding duplicate file "${filepath}" to PBXGroup named "${groupName}"`
-      );
+    if (!file) {
+      if (verbose) {
+        // This can happen when a file like the GoogleService-Info.plist needs to be added and the eject command is run twice.
+        // Not much we can do here since it might be a conflicting file.
+        addWarningForPlatform(
+          applePlatform,
+          `${applePlatform}-xcode-project`,
+          `Skipped adding duplicate file "${filepath}" to PBXGroup named "${groupName}"`
+        );
+      }
+      return project;
     }
+
+    if (targetUuid != null) {
+      file.target = targetUuid;
+    } else {
+      const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
+      file.target = applicationNativeTarget?.uuid;
+    }
+
+    file.uuid = project.generateUuid();
+    file.fileRef = project.generateUuid();
+
+    addFileToProject({ project, file });
+
+    group.children.push({
+      value: file.fileRef,
+      comment: file.basename,
+    });
     return project;
-  }
-
-  if (targetUuid != null) {
-    file.target = targetUuid;
-  } else {
-    const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
-    file.target = applicationNativeTarget?.uuid;
-  }
-
-  file.uuid = project.generateUuid();
-  file.fileRef = project.generateUuid();
-
-  addFileToProject({ project, file });
-
-  group.children.push({
-    value: file.fileRef,
-    comment: file.basename,
-  });
-  return project;
-}
+  };
 
 export function getApplicationNativeTarget({
   project,
@@ -346,12 +341,14 @@ export function ensureGroupRecursively(project: XcodeProject, filepath: string):
 /**
  * Get the pbxproj for the given path
  */
-export function getPbxproj(projectRoot: string, applePlatform: 'ios' | 'macos'): XcodeProject {
-  const projectPath = Paths.getPBXProjectPath(projectRoot, applePlatform);
-  const project = xcode.project(projectPath);
-  project.parseSync();
-  return project;
-}
+export const getPbxproj =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): XcodeProject => {
+    const projectPath = Paths.getPBXProjectPath(applePlatform)(projectRoot);
+    const project = xcode.project(projectPath);
+    project.parseSync();
+    return project;
+  };
 
 /**
  * Get the productName for a project, if the name is using a variable `$(TARGET_NAME)`, then attempt to get the value of that variable.

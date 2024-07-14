@@ -3,130 +3,18 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ensureApplicationTargetEntitlementsFileConfigured = ensureApplicationTargetEntitlementsFileConfigured;
-exports.getEntitlementsPath = getEntitlementsPath;
-exports.setAssociatedDomains = setAssociatedDomains;
-exports.withAssociatedDomains = void 0;
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
+exports.withAssociatedDomains = exports.setAssociatedDomains = exports.getEntitlementsPath = exports.ensureApplicationTargetEntitlementsFileConfigured = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Entitlements"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _slash() {
-  const data = _interopRequireDefault(require("slash"));
-  _slash = function () {
-    return data;
-  };
-  return data;
-}
-function _Target() {
-  const data = require("./Target");
-  _Target = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _string() {
-  const data = require("./utils/string");
-  _string = function () {
-    return data;
-  };
-  return data;
-}
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withAssociatedDomains = exports.withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
-function setAssociatedDomains(config, {
-  'com.apple.developer.associated-domains': _,
-  ...entitlementsPlist
-}) {
-  if (config.ios?.associatedDomains) {
-    return {
-      ...entitlementsPlist,
-      'com.apple.developer.associated-domains': config.ios.associatedDomains
-    };
-  }
-  return entitlementsPlist;
-}
-function getEntitlementsPath(projectRoot, {
-  targetName,
-  buildConfiguration = 'Release'
-} = {}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
-    targetName,
-    buildConfiguration
-  });
-  if (!xcBuildConfiguration) {
-    return null;
-  }
-  const entitlementsPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
-  return entitlementsPath && _fs().default.existsSync(entitlementsPath) ? entitlementsPath : null;
-}
-function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration) {
-  const entitlementsPathRaw = xcBuildConfiguration?.buildSettings?.CODE_SIGN_ENTITLEMENTS;
-  if (entitlementsPathRaw) {
-    return _path().default.normalize(_path().default.join(projectRoot, 'ios', (0, _string().trimQuotes)(entitlementsPathRaw)));
-  } else {
-    return null;
-  }
-}
-function ensureApplicationTargetEntitlementsFileConfigured(projectRoot) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
-  const productName = (0, _Xcodeproj().getProductName)(project);
-  const [, applicationTarget] = (0, _Target().findFirstNativeTarget)(project);
-  const buildConfigurations = (0, _Xcodeproj().getBuildConfigurationsForListId)(project, applicationTarget.buildConfigurationList);
-  let hasChangesToWrite = false;
-  for (const [, xcBuildConfiguration] of buildConfigurations) {
-    const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
-    if (oldEntitlementPath && _fs().default.existsSync(oldEntitlementPath)) {
-      return;
-    }
-    hasChangesToWrite = true;
-    // Use posix formatted path, even on Windows
-    const entitlementsRelativePath = (0, _slash().default)(_path().default.join(projectName, `${productName}.entitlements`));
-    const entitlementsPath = _path().default.normalize(_path().default.join(projectRoot, 'ios', entitlementsRelativePath));
-    _fs().default.mkdirSync(_path().default.dirname(entitlementsPath), {
-      recursive: true
-    });
-    if (!_fs().default.existsSync(entitlementsPath)) {
-      _fs().default.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);
-    }
-    xcBuildConfiguration.buildSettings.CODE_SIGN_ENTITLEMENTS = entitlementsRelativePath;
-  }
-  if (hasChangesToWrite) {
-    _fs().default.writeFileSync(project.filepath, project.writeSync());
-  }
-}
-const ENTITLEMENTS_TEMPLATE = `
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-</dict>
-</plist>
-`;
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const withAssociatedDomains = exports.withAssociatedDomains = AppleImpl().withAssociatedDomains('ios');
+const setAssociatedDomains = exports.setAssociatedDomains = AppleImpl().setAssociatedDomains('ios');
+const getEntitlementsPath = exports.getEntitlementsPath = AppleImpl().getEntitlementsPath('ios');
+const ensureApplicationTargetEntitlementsFileConfigured = exports.ensureApplicationTargetEntitlementsFileConfigured = AppleImpl().ensureApplicationTargetEntitlementsFileConfigured('ios');
 //# sourceMappingURL=Entitlements.js.map

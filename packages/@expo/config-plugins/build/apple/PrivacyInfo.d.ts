@@ -15,6 +15,6 @@ export type PrivacyInfo = {
     NSPrivacyTracking: boolean;
     NSPrivacyTrackingDomains: string[];
 };
-export declare function withPrivacyInfo(applePlatform: 'ios' | 'macos', config: ExpoConfig): ExpoConfig;
-export declare function setPrivacyInfo(applePlatform: 'ios' | 'macos', projectConfig: ExportedConfigWithProps<XcodeProject>, privacyManifests: Partial<PrivacyInfo>): ExportedConfigWithProps<XcodeProject>;
+export declare const withPrivacyInfo: (applePlatform: 'ios' | 'macos') => (config: ExpoConfig) => ExpoConfig;
+export declare const setPrivacyInfo: (applePlatform: 'ios' | 'macos') => (projectConfig: ExportedConfigWithProps<XcodeProject>, privacyManifests: Partial<PrivacyInfo>) => ExportedConfigWithProps<XcodeProject>;
 export declare function mergePrivacyInfo(existing: Partial<PrivacyInfo>, privacyManifests: Partial<PrivacyInfo>): PrivacyInfo;

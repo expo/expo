@@ -1,1 +1,1 @@
-export declare function trimQuotes(s: string): string;
+export { trimQuotes } from '../../apple/utils/string';

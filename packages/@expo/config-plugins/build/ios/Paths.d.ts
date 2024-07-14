@@ -1,38 +1,21 @@
-interface ProjectFile<L extends string = string> {
-    path: string;
-    language: L;
-    contents: string;
-}
-type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
-export type PodfileProjectFile = ProjectFile<'rb'>;
-export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
-export declare function getAppDelegateHeaderFilePath(projectRoot: string): string;
-export declare function getAppDelegateFilePath(projectRoot: string): string;
-export declare function getAppDelegateObjcHeaderFilePath(projectRoot: string): string;
-export declare function getPodfilePath(projectRoot: string): string;
-export declare function getFileInfo(filePath: string): {
-    path: string;
-    contents: string;
-    language: AppleLanguage;
-};
-export declare function getAppDelegate(projectRoot: string): AppDelegateProjectFile;
-export declare function getSourceRoot(projectRoot: string): string;
-export declare function findSchemePaths(projectRoot: string): string[];
-export declare function findSchemeNames(projectRoot: string): string[];
-export declare function getAllXcodeProjectPaths(projectRoot: string): string[];
-/**
- * Get the pbxproj for the given path
- */
-export declare function getXcodeProjectPath(projectRoot: string): string;
-export declare function getAllPBXProjectPaths(projectRoot: string): string[];
-export declare function getPBXProjectPath(projectRoot: string): string;
-export declare function getAllInfoPlistPaths(projectRoot: string): string[];
-export declare function getInfoPlistPath(projectRoot: string): string;
-export declare function getAllEntitlementsPaths(projectRoot: string): string[];
-/**
- * @deprecated: use Entitlements.getEntitlementsPath instead
- */
-export declare function getEntitlementsPath(projectRoot: string): string | null;
-export declare function getSupportingPath(projectRoot: string): string;
-export declare function getExpoPlistPath(projectRoot: string): string;
-export {};
+import * as AppleImpl from '../apple/Paths';
+export declare const getAppDelegateHeaderFilePath: (projectRoot: string) => string;
+export declare const getAppDelegateFilePath: (projectRoot: string) => string;
+export declare const getAppDelegateObjcHeaderFilePath: (projectRoot: string) => string;
+export declare const getPodfilePath: (projectRoot: string) => string;
+export declare const getAppDelegate: (projectRoot: string) => AppleImpl.AppDelegateProjectFile;
+export declare const getSourceRoot: (projectRoot: string) => string;
+export declare const findSchemePaths: (projectRoot: string) => string[];
+export declare const findSchemeNames: (projectRoot: string) => string[];
+export declare const getAllXcodeProjectPaths: (projectRoot: string) => string[];
+export declare const getXcodeProjectPath: (projectRoot: string) => string;
+export declare const getAllPBXProjectPaths: (projectRoot: string) => string[];
+export declare const getPBXProjectPath: (projectRoot: string) => string;
+export declare const getAllInfoPlistPaths: (projectRoot: string) => string[];
+export declare const getInfoPlistPath: (projectRoot: string) => string;
+export declare const getAllEntitlementsPaths: (projectRoot: string) => string[];
+export declare const getEntitlementsPath: (projectRoot: string) => string | null;
+export declare const getSupportingPath: (projectRoot: string) => string;
+export declare const getExpoPlistPath: (projectRoot: string) => string;
+export type { PodfileProjectFile, AppDelegateProjectFile } from '../apple/Paths';
+export { getFileInfo } from '../apple/Paths';

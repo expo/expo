@@ -3,137 +3,21 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getGoogleServicesFile = getGoogleServicesFile;
-exports.getGoogleSignInReversedClientId = getGoogleSignInReversedClientId;
-exports.setGoogleConfig = setGoogleConfig;
-exports.setGoogleServicesFile = setGoogleServicesFile;
-exports.setGoogleSignInReversedClientId = setGoogleSignInReversedClientId;
-exports.withGoogleServicesFile = exports.withGoogle = void 0;
-function _plist() {
-  const data = _interopRequireDefault(require("@expo/plist"));
-  _plist = function () {
+exports.withGoogleServicesFile = exports.withGoogle = exports.setGoogleSignInReversedClientId = exports.setGoogleServicesFile = exports.setGoogleConfig = exports.getGoogleSignInReversedClientId = exports.getGoogleServicesFile = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Google"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _assert() {
-  const data = _interopRequireDefault(require("assert"));
-  _assert = function () {
-    return data;
-  };
-  return data;
-}
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
-    return data;
-  };
-  return data;
-}
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _Paths() {
-  const data = require("./Paths");
-  _Paths = function () {
-    return data;
-  };
-  return data;
-}
-function _Scheme() {
-  const data = require("./Scheme");
-  _Scheme = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withGoogle = config => {
-  return (0, _iosPlugins().withInfoPlist)(config, config => {
-    config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);
-    return config;
-  });
-};
-exports.withGoogle = withGoogle;
-const withGoogleServicesFile = config => {
-  return (0, _iosPlugins().withXcodeProject)(config, config => {
-    config.modResults = setGoogleServicesFile(config, {
-      projectRoot: config.modRequest.projectRoot,
-      project: config.modResults
-    });
-    return config;
-  });
-};
-exports.withGoogleServicesFile = withGoogleServicesFile;
-function readGoogleServicesInfoPlist(relativePath, {
-  projectRoot
-}) {
-  const googleServiceFilePath = _path().default.resolve(projectRoot, relativePath);
-  const contents = _fs().default.readFileSync(googleServiceFilePath, 'utf8');
-  (0, _assert().default)(contents, 'GoogleService-Info.plist is empty');
-  return _plist().default.parse(contents);
-}
-function getGoogleSignInReversedClientId(config, modRequest) {
-  const googleServicesFileRelativePath = getGoogleServicesFile(config);
-  if (googleServicesFileRelativePath === null) {
-    return null;
-  }
-  const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
-  return infoPlist.REVERSED_CLIENT_ID ?? null;
-}
-function getGoogleServicesFile(config) {
-  return config.ios?.googleServicesFile ?? null;
-}
-function setGoogleSignInReversedClientId(config, infoPlist, modRequest) {
-  const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);
-  if (reversedClientId === null) {
-    return infoPlist;
-  }
-  return (0, _Scheme().appendScheme)(reversedClientId, infoPlist);
-}
-function setGoogleConfig(config, infoPlist, modRequest) {
-  infoPlist = setGoogleSignInReversedClientId(config, infoPlist, modRequest);
-  return infoPlist;
-}
-function setGoogleServicesFile(config, {
-  projectRoot,
-  project
-}) {
-  const googleServicesFileRelativePath = getGoogleServicesFile(config);
-  if (googleServicesFileRelativePath === null) {
-    return project;
-  }
-  const googleServiceFilePath = _path().default.resolve(projectRoot, googleServicesFileRelativePath);
-  _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(projectRoot), 'GoogleService-Info.plist'));
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
-  const plistFilePath = `${projectName}/GoogleService-Info.plist`;
-  if (!project.hasFile(plistFilePath)) {
-    project = (0, _Xcodeproj().addResourceFileToGroup)({
-      filepath: plistFilePath,
-      groupName: projectName,
-      project,
-      isBuildFile: true,
-      verbose: true
-    });
-  }
-  return project;
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const withGoogle = exports.withGoogle = AppleImpl().withGoogle('ios');
+const withGoogleServicesFile = exports.withGoogleServicesFile = AppleImpl().withGoogleServicesFile('ios');
+const getGoogleSignInReversedClientId = exports.getGoogleSignInReversedClientId = AppleImpl().getGoogleSignInReversedClientId('ios');
+const getGoogleServicesFile = exports.getGoogleServicesFile = AppleImpl().getGoogleServicesFile('ios');
+const setGoogleSignInReversedClientId = exports.setGoogleSignInReversedClientId = AppleImpl().setGoogleSignInReversedClientId('ios');
+const setGoogleConfig = exports.setGoogleConfig = AppleImpl().setGoogleConfig('ios');
+const setGoogleServicesFile = exports.setGoogleServicesFile = AppleImpl().setGoogleServicesFile('ios');
 //# sourceMappingURL=Google.js.map

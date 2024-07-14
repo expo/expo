@@ -1,14 +1,11 @@
-import { ExpoConfig } from '@expo/config-types';
-import { XcodeProject } from 'xcode';
-import { InfoPlist } from './IosConfig.types';
-import { ConfigPlugin, ModProps } from '../Plugin.types';
-export declare const withGoogle: ConfigPlugin;
-export declare const withGoogleServicesFile: ConfigPlugin;
-export declare function getGoogleSignInReversedClientId(config: Pick<ExpoConfig, 'ios'>, modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>): string | null;
-export declare function getGoogleServicesFile(config: Pick<ExpoConfig, 'ios'>): string | null;
-export declare function setGoogleSignInReversedClientId(config: Pick<ExpoConfig, 'ios'>, infoPlist: InfoPlist, modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>): InfoPlist;
-export declare function setGoogleConfig(config: Pick<ExpoConfig, 'ios'>, infoPlist: InfoPlist, modRequest: ModProps<InfoPlist>): InfoPlist;
-export declare function setGoogleServicesFile(config: Pick<ExpoConfig, 'ios'>, { projectRoot, project }: {
-    project: XcodeProject;
+/// <reference types="xcode" />
+export declare const withGoogle: import("..").ConfigPlugin;
+export declare const withGoogleServicesFile: import("..").ConfigPlugin;
+export declare const getGoogleSignInReversedClientId: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">, modRequest: Pick<import("..").ModProps<import("./IosConfig.types").InfoPlist>, "projectRoot">) => string | null;
+export declare const getGoogleServicesFile: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">) => string | null;
+export declare const setGoogleSignInReversedClientId: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">, infoPlist: import("./IosConfig.types").InfoPlist, modRequest: Pick<import("..").ModProps<import("./IosConfig.types").InfoPlist>, "projectRoot">) => import("./IosConfig.types").InfoPlist;
+export declare const setGoogleConfig: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">, infoPlist: import("./IosConfig.types").InfoPlist, modRequest: import("..").ModProps<import("./IosConfig.types").InfoPlist>) => import("./IosConfig.types").InfoPlist;
+export declare const setGoogleServicesFile: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">, { projectRoot, project }: {
+    project: import("xcode").XcodeProject;
     projectRoot: string;
-}): XcodeProject;
+}) => import("xcode").XcodeProject;

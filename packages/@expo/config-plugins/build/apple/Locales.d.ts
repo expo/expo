@@ -6,9 +6,9 @@ type ResolvedLocalesJson = Record<string, LocaleJson>;
 type ExpoConfigLocales = NonNullable<ExpoConfig['locales']>;
 export declare const withLocales: (applePlatform: 'ios' | 'macos') => ConfigPlugin;
 export declare function getLocales(config: Pick<ExpoConfig, 'locales'>): Record<string, string | LocaleJson> | null;
-export declare function setLocalesAsync(config: Pick<ExpoConfig, 'locales'>, applePlatform: 'ios' | 'macos', { projectRoot, project }: {
+export declare const setLocalesAsync: (applePlatform: 'ios' | 'macos') => (config: Pick<ExpoConfig, 'locales'>, { projectRoot, project }: {
     projectRoot: string;
     project: XcodeProject;
-}): Promise<XcodeProject>;
-export declare function getResolvedLocalesAsync(projectRoot: string, applePlatform: 'ios' | 'macos', input: ExpoConfigLocales): Promise<ResolvedLocalesJson>;
+}) => Promise<XcodeProject>;
+export declare const getResolvedLocalesAsync: (applePlatform: 'ios' | 'macos') => (projectRoot: string, input: ExpoConfigLocales) => Promise<ResolvedLocalesJson>;
 export {};

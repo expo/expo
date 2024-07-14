@@ -110,6 +110,8 @@ const {
   readFile,
   writeFile
 } = _fs().promises;
+// TODO: support macOS
+const applePlatform = 'ios';
 function getEntitlementsPlistTemplate() {
   // TODO: Fetch the versioned template file if possible
   return {};
@@ -167,7 +169,7 @@ const defaultProviders = {
       }
     }) {
       // TODO: Get application AppDelegate file from pbxproj.
-      return _ios().Paths.getAppDelegateFilePath(projectRoot);
+      return _ios().Paths.getAppDelegateFilePath(applePlatform)(projectRoot);
     },
     async read(filePath) {
       return _ios().Paths.getFileInfo(filePath);
@@ -225,7 +227,7 @@ const defaultProviders = {
         projectRoot
       }
     }) {
-      return _ios().Paths.getPBXProjectPath(projectRoot);
+      return _ios().Paths.getPBXProjectPath(applePlatform)(projectRoot);
     },
     async read(filePath) {
       const project = _xcode().default.project(filePath);
@@ -270,7 +272,7 @@ const defaultProviders = {
       }
       try {
         // Fallback on glob...
-        return await _ios().Paths.getInfoPlistPath(config.modRequest.projectRoot);
+        return await _ios().Paths.getInfoPlistPath(applePlatform)(config.modRequest.projectRoot);
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -323,7 +325,7 @@ const defaultProviders = {
     async getFilePath(config) {
       try {
         (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(config.modRequest.projectRoot);
-        return _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot) ?? '';
+        return _ios().Entitlements.getEntitlementsPath(applePlatform)(config.modRequest.projectRoot) ?? '';
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -381,7 +383,7 @@ const defaultProviders = {
         projectRoot
       }
     }) {
-      return _ios().Paths.getPodfilePath(projectRoot);
+      return _ios().Paths.getPodfilePath(applePlatform)(projectRoot);
     },
     // @ts-expect-error
     async read(filePath) {

@@ -3,43 +3,21 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBitcode = getBitcode;
-exports.setBitcode = setBitcode;
-exports.setBitcodeWithConfig = setBitcodeWithConfig;
-exports.withCustomBitcode = exports.withBitcode = void 0;
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
+exports.withCustomBitcode = exports.withBitcode = exports.setBitcodeWithConfig = exports.setBitcode = exports.getBitcode = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Bitcode"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _warnings() {
-  const data = require("../utils/warnings");
-  _warnings = function () {
-    return data;
-  };
-  return data;
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**
  * Plugin to set a bitcode preference for the Xcode project
  * based on the project's Expo config `ios.bitcode` value.
  */
-const withBitcode = config => {
-  return (0, _iosPlugins().withXcodeProject)(config, async config => {
-    config.modResults = await setBitcodeWithConfig(config, {
-      project: config.modResults
-    });
-    return config;
-  });
-};
+const withBitcode = exports.withBitcode = AppleImpl().withBitcode('ios');
 
 /**
  * Plugin to set a custom bitcode preference for the Xcode project.
@@ -47,64 +25,20 @@ const withBitcode = config => {
  *
  * @param bitcode custom bitcode setting.
  */
-exports.withBitcode = withBitcode;
-const withCustomBitcode = (config, bitcode) => {
-  return (0, _iosPlugins().withXcodeProject)(config, async config => {
-    config.modResults = await setBitcode(bitcode, {
-      project: config.modResults
-    });
-    return config;
-  });
-};
+const withCustomBitcode = exports.withCustomBitcode = AppleImpl().withCustomBitcode('ios');
 
 /**
  * Get the bitcode preference from the Expo config.
  */
-exports.withCustomBitcode = withCustomBitcode;
-function getBitcode(config) {
-  return config.ios?.bitcode;
-}
+const getBitcode = exports.getBitcode = AppleImpl().getBitcode('ios');
 
 /**
  * Enable or disable the `ENABLE_BITCODE` property of the project configurations.
  */
-function setBitcodeWithConfig(config, {
-  project
-}) {
-  const bitcode = getBitcode(config);
-  return setBitcode(bitcode, {
-    project
-  });
-}
+const setBitcodeWithConfig = exports.setBitcodeWithConfig = AppleImpl().setBitcodeWithConfig('ios');
 
 /**
  * Enable or disable the `ENABLE_BITCODE` property.
  */
-function setBitcode(bitcode, {
-  project
-}) {
-  const isDefaultBehavior = bitcode == null;
-  // If the value is undefined, then do nothing.
-  if (isDefaultBehavior) {
-    return project;
-  }
-  const targetName = typeof bitcode === 'string' ? bitcode : undefined;
-  const isBitcodeEnabled = !!bitcode;
-  if (targetName) {
-    // Assert if missing
-    const configs = Object.entries(project.pbxXCBuildConfigurationSection()).filter(_Xcodeproj().isNotComment);
-    const hasConfiguration = configs.find(([, configuration]) => configuration.name === targetName);
-    if (hasConfiguration) {
-      // If targetName is defined then disable bitcode everywhere.
-      project.addBuildProperty('ENABLE_BITCODE', 'NO');
-    } else {
-      const names = [
-      // Remove duplicates, wrap in double quotes, and sort alphabetically.
-      ...new Set(configs.map(([, configuration]) => `"${configuration.name}"`))].sort();
-      (0, _warnings().addWarningIOS)('ios.bitcode', `No configuration named "${targetName}". Expected one of: ${names.join(', ')}.`);
-    }
-  }
-  project.addBuildProperty('ENABLE_BITCODE', isBitcodeEnabled ? 'YES' : 'NO', targetName);
-  return project;
-}
+const setBitcode = exports.setBitcode = AppleImpl().setBitcode('ios');
 //# sourceMappingURL=Bitcode.js.map

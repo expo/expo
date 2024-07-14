@@ -22,11 +22,10 @@ export const withBuildSourceFile: (applePlatform: 'ios' | 'macos') => ConfigPlug
   (applePlatform: 'ios' | 'macos') =>
   (config, { filePath, contents, overwrite }) => {
     return withXcodeProject(applePlatform)(config, (config) => {
-      const projectName = getProjectName(config.modRequest.projectRoot, applePlatform);
+      const projectName = getProjectName(applePlatform)(config.modRequest.projectRoot);
 
-      config.modResults = createBuildSourceFile({
+      config.modResults = createBuildSourceFile(applePlatform)({
         project: config.modResults,
-        applePlatform,
         nativeProjectRoot: config.modRequest.platformProjectRoot,
         fileContents: contents,
         filePath: path.join(projectName, filePath),
@@ -44,38 +43,37 @@ export const withBuildSourceFile: (applePlatform: 'ios' | 'macos') => ConfigPlug
  * @param fileContents string file contents to write to the `filePath`
  * @param overwrite should write file even if one already exists
  */
-export function createBuildSourceFile({
-  project,
-  applePlatform,
-  nativeProjectRoot,
-  filePath,
-  fileContents,
-  overwrite,
-}: {
-  project: XcodeProject;
-  applePlatform: 'ios' | 'macos';
-  nativeProjectRoot: string;
-  filePath: string;
-  fileContents: string;
-  overwrite?: boolean;
-}): XcodeProject {
-  const absoluteFilePath = path.join(nativeProjectRoot, filePath);
-  if (overwrite || !fs.existsSync(absoluteFilePath)) {
-    // Create the file
-    fs.writeFileSync(absoluteFilePath, fileContents, 'utf8');
-  }
+export const createBuildSourceFile =
+  (applePlatform: 'ios' | 'macos') =>
+  ({
+    project,
+    nativeProjectRoot,
+    filePath,
+    fileContents,
+    overwrite,
+  }: {
+    project: XcodeProject;
+    nativeProjectRoot: string;
+    filePath: string;
+    fileContents: string;
+    overwrite?: boolean;
+  }): XcodeProject => {
+    const absoluteFilePath = path.join(nativeProjectRoot, filePath);
+    if (overwrite || !fs.existsSync(absoluteFilePath)) {
+      // Create the file
+      fs.writeFileSync(absoluteFilePath, fileContents, 'utf8');
+    }
 
-  // `myapp`
-  const groupName = path.dirname(filePath);
+    // `myapp`
+    const groupName = path.dirname(filePath);
 
-  // Ensure the file is linked with Xcode resource files
-  if (!project.hasFile(filePath)) {
-    project = addBuildSourceFileToGroup({
-      filepath: filePath,
-      groupName,
-      project,
-      applePlatform,
-    });
-  }
-  return project;
-}
+    // Ensure the file is linked with Xcode resource files
+    if (!project.hasFile(filePath)) {
+      project = addBuildSourceFileToGroup(applePlatform)({
+        filepath: filePath,
+        groupName,
+        project,
+      });
+    }
+    return project;
+  };

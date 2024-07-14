@@ -14,7 +14,7 @@ export const MATCH_INIT =
 const withGoogleMapsKey = (applePlatform: 'ios' | 'macos') =>
   createInfoPlistPlugin(applePlatform)(
     (config: Pick<ExpoConfig, 'ios'>, infoPlist: InfoPlist) =>
-      setGoogleMapsApiKey(applePlatform, config, infoPlist),
+      setGoogleMapsApiKey(applePlatform)(config, infoPlist),
     'withGoogleMapsKey'
   );
 
@@ -22,7 +22,7 @@ export const withMaps: (applePlatform: 'ios' | 'macos') => ConfigPlugin =
   (applePlatform: 'ios' | 'macos') => (config) => {
     config = withGoogleMapsKey(applePlatform)(config);
 
-    const apiKey = getGoogleMapsApiKey(applePlatform, config);
+    const apiKey = getGoogleMapsApiKey(applePlatform)(config);
     // Technically adds react-native-maps (Apple maps) and google maps.
 
     debug('Google Maps API Key:', apiKey);
@@ -34,29 +34,28 @@ export const withMaps: (applePlatform: 'ios' | 'macos') => ConfigPlugin =
     return config;
   };
 
-export function getGoogleMapsApiKey(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>
-) {
-  return config[applePlatform]?.config?.googleMapsApiKey ?? null;
-}
-
-export function setGoogleMapsApiKey(
-  applePlatform: 'ios' | 'macos',
-  config: Pick<ExpoConfig, typeof applePlatform>,
-  { GMSApiKey, ...infoPlist }: InfoPlist
-): InfoPlist {
-  const apiKey = getGoogleMapsApiKey(applePlatform, config);
-
-  if (apiKey === null) {
-    return infoPlist;
-  }
-
-  return {
-    ...infoPlist,
-    GMSApiKey: apiKey,
+export const getGoogleMapsApiKey =
+  (applePlatform: 'ios' | 'macos') => (config: Pick<ExpoConfig, typeof applePlatform>) => {
+    return config[applePlatform]?.config?.googleMapsApiKey ?? null;
   };
-}
+
+export const setGoogleMapsApiKey =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Pick<ExpoConfig, typeof applePlatform>,
+    { GMSApiKey, ...infoPlist }: InfoPlist
+  ): InfoPlist => {
+    const apiKey = getGoogleMapsApiKey(applePlatform)(config);
+
+    if (apiKey === null) {
+      return infoPlist;
+    }
+
+    return {
+      ...infoPlist,
+      GMSApiKey: apiKey,
+    };
+  };
 
 export function addGoogleMapsAppDelegateImport(src: string): MergeResults {
   const newSrc = [];

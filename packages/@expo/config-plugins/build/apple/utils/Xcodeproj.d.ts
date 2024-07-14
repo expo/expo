@@ -12,47 +12,44 @@ export type NativeTargetSectionEntry = [string, PBXNativeTarget];
 export type ConfigurationLists = Record<string, XCConfigurationList>;
 export type ConfigurationListEntry = [string, XCConfigurationList];
 export type ConfigurationSectionEntry = [string, XCBuildConfiguration];
-export declare function getProjectName(projectRoot: string, applePlatform: 'ios' | 'macos'): string;
-export declare function resolvePathOrProject(projectRootOrProject: string | XcodeProject, applePlatform: 'ios' | 'macos'): XcodeProject | null;
+export declare const getProjectName: (applePlatform: 'ios' | 'macos') => (projectRoot: string) => string;
+export declare const resolvePathOrProject: (applePlatform: 'ios' | 'macos') => (projectRootOrProject: string | XcodeProject) => XcodeProject | null;
 export declare function sanitizedName(name: string): string;
-export declare function getHackyProjectName(projectRoot: string, applePlatform: 'ios' | 'macos', config: ExpoConfig): string;
+export declare const getHackyProjectName: (applePlatform: 'ios' | 'macos') => (projectRoot: string, config: ExpoConfig) => string;
 /**
  * Add a resource file (ex: `SplashScreen.storyboard`, `Images.xcassets`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
-export declare function addResourceFileToGroup({ filepath, groupName, isBuildFile, project, applePlatform, verbose, targetUuid, }: {
+export declare const addResourceFileToGroup: (applePlatform: 'ios' | 'macos') => ({ filepath, groupName, isBuildFile, project, verbose, targetUuid, }: {
     filepath: string;
     groupName: string;
-    isBuildFile?: boolean;
+    isBuildFile?: boolean | undefined;
     project: XcodeProject;
-    applePlatform: 'ios' | 'macos';
-    verbose?: boolean;
-    targetUuid?: string;
-}): XcodeProject;
+    verbose?: boolean | undefined;
+    targetUuid?: string | undefined;
+}) => XcodeProject;
 /**
  * Add a build source file (ex: `AppDelegate.m`, `ViewController.swift`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
-export declare function addBuildSourceFileToGroup({ filepath, groupName, project, applePlatform, verbose, targetUuid, }: {
+export declare const addBuildSourceFileToGroup: (applePlatform: 'ios' | 'macos') => ({ filepath, groupName, project, verbose, targetUuid, }: {
     filepath: string;
     groupName: string;
     project: XcodeProject;
-    applePlatform: 'ios' | 'macos';
-    verbose?: boolean;
-    targetUuid?: string;
-}): XcodeProject;
-export declare function addFileToGroupAndLink({ filepath, groupName, project, applePlatform, verbose, addFileToProject, targetUuid, }: {
+    verbose?: boolean | undefined;
+    targetUuid?: string | undefined;
+}) => XcodeProject;
+export declare const addFileToGroupAndLink: (applePlatform: 'ios' | 'macos') => ({ filepath, groupName, project, verbose, addFileToProject, targetUuid, }: {
     filepath: string;
     groupName: string;
     project: XcodeProject;
-    applePlatform: 'ios' | 'macos';
-    verbose?: boolean;
-    targetUuid?: string;
+    verbose?: boolean | undefined;
+    targetUuid?: string | undefined;
     addFileToProject: (props: {
         file: PBXFile;
         project: XcodeProject;
     }) => void;
-}): XcodeProject;
+}) => XcodeProject;
 export declare function getApplicationNativeTarget({ project, projectName, }: {
     project: XcodeProject;
     projectName: string;
@@ -75,7 +72,7 @@ export declare function ensureGroupRecursively(project: XcodeProject, filepath: 
 /**
  * Get the pbxproj for the given path
  */
-export declare function getPbxproj(projectRoot: string, applePlatform: 'ios' | 'macos'): XcodeProject;
+export declare const getPbxproj: (applePlatform: 'ios' | 'macos') => (projectRoot: string) => XcodeProject;
 /**
  * Get the productName for a project, if the name is using a variable `$(TARGET_NAME)`, then attempt to get the value of that variable.
  *

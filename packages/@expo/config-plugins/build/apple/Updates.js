@@ -3,10 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Config = void 0;
-exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
-exports.setVersionsConfigAsync = setVersionsConfigAsync;
-exports.withUpdates = void 0;
+exports.withUpdates = exports.setVersionsConfigAsync = exports.setUpdatesConfigAsync = exports.Config = void 0;
 function _applePlugins() {
   const data = require("../plugins/apple-plugins");
   _applePlugins = function () {
@@ -37,12 +34,12 @@ const withUpdates = applePlatform => config => {
   return (0, _applePlugins().withExpoPlist)(applePlatform)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
-    config.modResults = await setUpdatesConfigAsync(projectRoot, applePlatform, config, config.modResults, expoUpdatesPackageVersion);
+    config.modResults = await setUpdatesConfigAsync(applePlatform)(projectRoot, config, config.modResults, expoUpdatesPackageVersion);
     return config;
   });
 };
 exports.withUpdates = withUpdates;
-async function setUpdatesConfigAsync(projectRoot, applePlatform, config, expoPlist, expoUpdatesPackageVersion) {
+const setUpdatesConfigAsync = applePlatform => async (projectRoot, config, expoPlist, expoUpdatesPackageVersion) => {
   const newExpoPlist = {
     ...expoPlist,
     [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
@@ -73,9 +70,10 @@ async function setUpdatesConfigAsync(projectRoot, applePlatform, config, expoPli
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
-  return await setVersionsConfigAsync(projectRoot, applePlatform, config, newExpoPlist);
-}
-async function setVersionsConfigAsync(projectRoot, applePlatform, config, expoPlist) {
+  return await setVersionsConfigAsync(applePlatform)(projectRoot, config, newExpoPlist);
+};
+exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
+const setVersionsConfigAsync = applePlatform => async (projectRoot, config, expoPlist) => {
   const newExpoPlist = {
     ...expoPlist
   };
@@ -91,5 +89,6 @@ async function setVersionsConfigAsync(projectRoot, applePlatform, config, expoPl
     delete newExpoPlist[Config.RUNTIME_VERSION];
   }
   return newExpoPlist;
-}
+};
+exports.setVersionsConfigAsync = setVersionsConfigAsync;
 //# sourceMappingURL=Updates.js.map

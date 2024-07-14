@@ -91,7 +91,7 @@ function getNativeVersion(config, platform) {
     case 'ios':
     case 'macos':
       {
-        const buildNumber = _().AppleConfig.Version.getBuildNumber(platform, config);
+        const buildNumber = _().AppleConfig.Version.getBuildNumber(platform)(config);
         return `${version}(${buildNumber})`;
       }
     case 'android':

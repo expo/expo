@@ -18,47 +18,49 @@ import { createEntitlementsPlugin } from '../plugins/apple-plugins';
 export const withAssociatedDomains = (applePlatform: 'ios' | 'macos') =>
   createEntitlementsPlugin(applePlatform)(
     (config: ExpoConfig, jsonObject: JSONObject) =>
-      setAssociatedDomains(applePlatform, config, jsonObject),
+      setAssociatedDomains(applePlatform)(config, jsonObject),
     'withAssociatedDomains'
   );
 
-export function setAssociatedDomains(
-  applePlatform: 'ios' | 'macos',
-  config: ExpoConfig,
-  { 'com.apple.developer.associated-domains': _, ...entitlementsPlist }: JSONObject
-): JSONObject {
-  if (config[applePlatform]?.associatedDomains) {
-    return {
-      ...entitlementsPlist,
-      'com.apple.developer.associated-domains': config[applePlatform]!.associatedDomains,
-    };
-  }
+export const setAssociatedDomains =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: ExpoConfig,
+    { 'com.apple.developer.associated-domains': _, ...entitlementsPlist }: JSONObject
+  ): JSONObject => {
+    if (config[applePlatform]?.associatedDomains) {
+      return {
+        ...entitlementsPlist,
+        'com.apple.developer.associated-domains': config[applePlatform]!.associatedDomains,
+      };
+    }
 
-  return entitlementsPlist;
-}
+    return entitlementsPlist;
+  };
 
-export function getEntitlementsPath(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos',
-  {
-    targetName,
-    buildConfiguration = 'Release',
-  }: { targetName?: string; buildConfiguration?: string } = {}
-): string | null {
-  const project = getPbxproj(projectRoot, applePlatform);
-  const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
-    targetName,
-    buildConfiguration,
-  });
-  if (!xcBuildConfiguration) {
-    return null;
-  }
-  const entitlementsPath = getEntitlementsPathFromBuildConfiguration(
-    projectRoot,
-    xcBuildConfiguration
-  );
-  return entitlementsPath && fs.existsSync(entitlementsPath) ? entitlementsPath : null;
-}
+export const getEntitlementsPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    projectRoot: string,
+    {
+      targetName,
+      buildConfiguration = 'Release',
+    }: { targetName?: string; buildConfiguration?: string } = {}
+  ): string | null => {
+    const project = getPbxproj(applePlatform)(projectRoot);
+    const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
+      targetName,
+      buildConfiguration,
+    });
+    if (!xcBuildConfiguration) {
+      return null;
+    }
+    const entitlementsPath = getEntitlementsPathFromBuildConfiguration(
+      projectRoot,
+      xcBuildConfiguration
+    );
+    return entitlementsPath && fs.existsSync(entitlementsPath) ? entitlementsPath : null;
+  };
 
 function getEntitlementsPathFromBuildConfiguration(
   projectRoot: string,
@@ -74,44 +76,43 @@ function getEntitlementsPathFromBuildConfiguration(
   }
 }
 
-export function ensureApplicationTargetEntitlementsFileConfigured(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): void {
-  const project = getPbxproj(projectRoot, applePlatform);
-  const projectName = getProjectName(projectRoot, applePlatform);
-  const productName = getProductName(project);
+export const ensureApplicationTargetEntitlementsFileConfigured =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): void => {
+    const project = getPbxproj(applePlatform)(projectRoot);
+    const projectName = getProjectName(applePlatform)(projectRoot);
+    const productName = getProductName(project);
 
-  const [, applicationTarget] = findFirstNativeTarget(project);
-  const buildConfigurations = getBuildConfigurationsForListId(
-    project,
-    applicationTarget.buildConfigurationList
-  );
-  let hasChangesToWrite = false;
-  for (const [, xcBuildConfiguration] of buildConfigurations) {
-    const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(
-      projectRoot,
-      xcBuildConfiguration
+    const [, applicationTarget] = findFirstNativeTarget(project);
+    const buildConfigurations = getBuildConfigurationsForListId(
+      project,
+      applicationTarget.buildConfigurationList
     );
-    if (oldEntitlementPath && fs.existsSync(oldEntitlementPath)) {
-      return;
+    let hasChangesToWrite = false;
+    for (const [, xcBuildConfiguration] of buildConfigurations) {
+      const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(
+        projectRoot,
+        xcBuildConfiguration
+      );
+      if (oldEntitlementPath && fs.existsSync(oldEntitlementPath)) {
+        return;
+      }
+      hasChangesToWrite = true;
+      // Use posix formatted path, even on Windows
+      const entitlementsRelativePath = slash(path.join(projectName, `${productName}.entitlements`));
+      const entitlementsPath = path.normalize(
+        path.join(projectRoot, 'ios', entitlementsRelativePath)
+      );
+      fs.mkdirSync(path.dirname(entitlementsPath), { recursive: true });
+      if (!fs.existsSync(entitlementsPath)) {
+        fs.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);
+      }
+      xcBuildConfiguration.buildSettings.CODE_SIGN_ENTITLEMENTS = entitlementsRelativePath;
     }
-    hasChangesToWrite = true;
-    // Use posix formatted path, even on Windows
-    const entitlementsRelativePath = slash(path.join(projectName, `${productName}.entitlements`));
-    const entitlementsPath = path.normalize(
-      path.join(projectRoot, 'ios', entitlementsRelativePath)
-    );
-    fs.mkdirSync(path.dirname(entitlementsPath), { recursive: true });
-    if (!fs.existsSync(entitlementsPath)) {
-      fs.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);
+    if (hasChangesToWrite) {
+      fs.writeFileSync(project.filepath, project.writeSync());
     }
-    xcBuildConfiguration.buildSettings.CODE_SIGN_ENTITLEMENTS = entitlementsRelativePath;
-  }
-  if (hasChangesToWrite) {
-    fs.writeFileSync(project.filepath, project.writeSync());
-  }
-}
+  };
 
 const ENTITLEMENTS_TEMPLATE = `
 <?xml version="1.0" encoding="UTF-8"?>

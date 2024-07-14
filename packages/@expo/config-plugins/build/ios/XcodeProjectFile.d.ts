@@ -1,5 +1,4 @@
 /// <reference types="xcode" />
-import { ConfigPlugin, XcodeProject } from '../Plugin.types';
 /**
  * Create a build source file and link it to Xcode.
  *
@@ -9,23 +8,23 @@ import { ConfigPlugin, XcodeProject } from '../Plugin.types';
  * @param props.overwrite should the contents overwrite any existing file in the same location on disk.
  * @returns
  */
-export declare const withBuildSourceFile: ConfigPlugin<{
+export declare const withBuildSourceFile: import("..").ConfigPlugin<{
     filePath: string;
     contents: string;
-    overwrite?: boolean;
+    overwrite?: boolean | undefined;
 }>;
 /**
  * Add a source file to the Xcode project and write it to the file system.
  *
- * @param nativeProjectRoot absolute path to the native app root `user/app/ios`
- * @param filePath path relative to the `nativeProjectRoot` for the file to create `user/app/ios/myapp/foobar.swift`
+ * @param nativeProjectRoot absolute path to the native app root `user/app/ios` or `user/app/macos`
+ * @param filePath path relative to the `nativeProjectRoot` for the file to create `user/app/ios/myapp/foobar.swift` or `user/app/macos/myapp/foobar.swift`
  * @param fileContents string file contents to write to the `filePath`
  * @param overwrite should write file even if one already exists
  */
-export declare function createBuildSourceFile({ project, nativeProjectRoot, filePath, fileContents, overwrite, }: {
-    project: XcodeProject;
+export declare const createBuildSourceFile: ({ project, nativeProjectRoot, filePath, fileContents, overwrite, }: {
+    project: import("xcode").XcodeProject;
     nativeProjectRoot: string;
     filePath: string;
     fileContents: string;
-    overwrite?: boolean;
-}): XcodeProject;
+    overwrite?: boolean | undefined;
+}) => import("xcode").XcodeProject;

@@ -10,29 +10,30 @@ import { getXCBuildConfigurationFromPbxproj } from '../Target';
  * @param param1
  * @returns
  */
-export function getInfoPlistPathFromPbxproj(
-  projectRootOrProject: string | XcodeProject,
-  applePlatform: 'ios' | 'macos',
-  {
-    targetName,
-    buildConfiguration = 'Release',
-  }: { targetName?: string; buildConfiguration?: string | 'Release' | 'Debug' } = {}
-): string | null {
-  const project = resolvePathOrProject(projectRootOrProject, applePlatform);
-  if (!project) {
-    return null;
-  }
+export const getInfoPlistPathFromPbxproj =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    projectRootOrProject: string | XcodeProject,
+    {
+      targetName,
+      buildConfiguration = 'Release',
+    }: { targetName?: string; buildConfiguration?: string | 'Release' | 'Debug' } = {}
+  ): string | null => {
+    const project = resolvePathOrProject(applePlatform)(projectRootOrProject);
+    if (!project) {
+      return null;
+    }
 
-  const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
-    targetName,
-    buildConfiguration,
-  });
-  if (!xcBuildConfiguration) {
-    return null;
-  }
-  // The `INFOPLIST_FILE` is relative to the project folder, ex: app/Info.plist.
-  return sanitizeInfoPlistBuildProperty(xcBuildConfiguration.buildSettings.INFOPLIST_FILE);
-}
+    const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
+      targetName,
+      buildConfiguration,
+    });
+    if (!xcBuildConfiguration) {
+      return null;
+    }
+    // The `INFOPLIST_FILE` is relative to the project folder, ex: app/Info.plist.
+    return sanitizeInfoPlistBuildProperty(xcBuildConfiguration.buildSettings.INFOPLIST_FILE);
+  };
 
 function sanitizeInfoPlistBuildProperty(infoPlist?: string): string | null {
   return infoPlist?.replace(/"/g, '').replace('$(SRCROOT)', '') ?? null;

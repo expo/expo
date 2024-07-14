@@ -3,47 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInfoPlistPathFromPbxproj = getInfoPlistPathFromPbxproj;
-function _Xcodeproj() {
-  const data = require("./Xcodeproj");
-  _Xcodeproj = function () {
+exports.getInfoPlistPathFromPbxproj = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../../apple/utils/getInfoPlistPath"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _Target() {
-  const data = require("../Target");
-  _Target = function () {
-    return data;
-  };
-  return data;
-}
-/**
- * Find the Info.plist path linked to a specific build configuration.
- *
- * @param projectRoot
- * @param param1
- * @returns
- */
-function getInfoPlistPathFromPbxproj(projectRootOrProject, {
-  targetName,
-  buildConfiguration = 'Release'
-} = {}) {
-  const project = (0, _Xcodeproj().resolvePathOrProject)(projectRootOrProject);
-  if (!project) {
-    return null;
-  }
-  const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
-    targetName,
-    buildConfiguration
-  });
-  if (!xcBuildConfiguration) {
-    return null;
-  }
-  // The `INFOPLIST_FILE` is relative to the project folder, ex: app/Info.plist.
-  return sanitizeInfoPlistBuildProperty(xcBuildConfiguration.buildSettings.INFOPLIST_FILE);
-}
-function sanitizeInfoPlistBuildProperty(infoPlist) {
-  return infoPlist?.replace(/"/g, '').replace('$(SRCROOT)', '') ?? null;
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const getInfoPlistPathFromPbxproj = exports.getInfoPlistPathFromPbxproj = AppleImpl().getInfoPlistPathFromPbxproj('ios');
 //# sourceMappingURL=getInfoPlistPath.js.map

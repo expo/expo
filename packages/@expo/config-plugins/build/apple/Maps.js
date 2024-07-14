@@ -7,12 +7,11 @@ exports.MATCH_INIT = void 0;
 exports.addGoogleMapsAppDelegateImport = addGoogleMapsAppDelegateImport;
 exports.addGoogleMapsAppDelegateInit = addGoogleMapsAppDelegateInit;
 exports.addMapsCocoaPods = addMapsCocoaPods;
-exports.getGoogleMapsApiKey = getGoogleMapsApiKey;
+exports.getGoogleMapsApiKey = void 0;
 exports.removeGoogleMapsAppDelegateImport = removeGoogleMapsAppDelegateImport;
 exports.removeGoogleMapsAppDelegateInit = removeGoogleMapsAppDelegateInit;
 exports.removeMapsCocoaPods = removeMapsCocoaPods;
-exports.setGoogleMapsApiKey = setGoogleMapsApiKey;
-exports.withMaps = void 0;
+exports.withMaps = exports.setGoogleMapsApiKey = void 0;
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -44,10 +43,10 @@ function _generateCode() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = require('debug')('expo:config-plugins:apple:maps');
 const MATCH_INIT = exports.MATCH_INIT = /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
-const withGoogleMapsKey = applePlatform => (0, _applePlugins().createInfoPlistPlugin)(applePlatform)((config, infoPlist) => setGoogleMapsApiKey(applePlatform, config, infoPlist), 'withGoogleMapsKey');
+const withGoogleMapsKey = applePlatform => (0, _applePlugins().createInfoPlistPlugin)(applePlatform)((config, infoPlist) => setGoogleMapsApiKey(applePlatform)(config, infoPlist), 'withGoogleMapsKey');
 const withMaps = applePlatform => config => {
   config = withGoogleMapsKey(applePlatform)(config);
-  const apiKey = getGoogleMapsApiKey(applePlatform, config);
+  const apiKey = getGoogleMapsApiKey(applePlatform)(config);
   // Technically adds react-native-maps (Apple maps) and google maps.
 
   debug('Google Maps API Key:', apiKey);
@@ -62,14 +61,15 @@ const withMaps = applePlatform => config => {
   return config;
 };
 exports.withMaps = withMaps;
-function getGoogleMapsApiKey(applePlatform, config) {
+const getGoogleMapsApiKey = applePlatform => config => {
   return config[applePlatform]?.config?.googleMapsApiKey ?? null;
-}
-function setGoogleMapsApiKey(applePlatform, config, {
+};
+exports.getGoogleMapsApiKey = getGoogleMapsApiKey;
+const setGoogleMapsApiKey = applePlatform => (config, {
   GMSApiKey,
   ...infoPlist
-}) {
-  const apiKey = getGoogleMapsApiKey(applePlatform, config);
+}) => {
+  const apiKey = getGoogleMapsApiKey(applePlatform)(config);
   if (apiKey === null) {
     return infoPlist;
   }
@@ -77,7 +77,8 @@ function setGoogleMapsApiKey(applePlatform, config, {
     ...infoPlist,
     GMSApiKey: apiKey
   };
-}
+};
+exports.setGoogleMapsApiKey = setGoogleMapsApiKey;
 function addGoogleMapsAppDelegateImport(src) {
   const newSrc = [];
   newSrc.push('#if __has_include(<GoogleMaps/GoogleMaps.h>)', '#import <GoogleMaps/GoogleMaps.h>', '#endif');

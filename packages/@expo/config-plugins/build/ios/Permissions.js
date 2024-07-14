@@ -3,56 +3,21 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.applyPermissions = applyPermissions;
-exports.createPermissionsPlugin = createPermissionsPlugin;
-function _debug() {
-  const data = _interopRequireDefault(require("debug"));
-  _debug = function () {
+Object.defineProperty(exports, "applyPermissions", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().applyPermissions;
+  }
+});
+exports.createPermissionsPlugin = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Permissions"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const debug = (0, _debug().default)('expo:config-plugins:ios:permissions');
-function applyPermissions(defaults, permissions, infoPlist) {
-  const entries = Object.entries(defaults);
-  if (entries.length === 0) {
-    debug(`No defaults provided: ${JSON.stringify(permissions)}`);
-  }
-  for (const [permission, description] of entries) {
-    if (permissions[permission] === false) {
-      debug(`Deleting "${permission}"`);
-      delete infoPlist[permission];
-    } else {
-      infoPlist[permission] = permissions[permission] || infoPlist[permission] || description;
-      debug(`Setting "${permission}" to "${infoPlist[permission]}"`);
-    }
-  }
-  return infoPlist;
-}
-
-/**
- * Helper method for creating mods to apply default permissions.
- *
- * @param action
- */
-function createPermissionsPlugin(defaults, name) {
-  const withIosPermissions = (config, permissions) => (0, _iosPlugins().withInfoPlist)(config, async config => {
-    config.modResults = applyPermissions(defaults, permissions, config.modResults);
-    return config;
-  });
-  if (name) {
-    Object.defineProperty(withIosPermissions, 'name', {
-      value: name
-    });
-  }
-  return withIosPermissions;
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const createPermissionsPlugin = exports.createPermissionsPlugin = AppleImpl().createPermissionsPlugin('ios');
 //# sourceMappingURL=Permissions.js.map

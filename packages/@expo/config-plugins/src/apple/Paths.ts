@@ -20,128 +20,127 @@ type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
 export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 
-export function getAppDelegateHeaderFilePath(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string {
-  const applePlatformDir = applePlatform;
-  const [using, ...extra] = withSortedGlobResult(
-    globSync(`${applePlatformDir}/*/AppDelegate.h`, {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    })
-  );
-
-  if (!using) {
-    throw new UnexpectedError(
-      `Could not locate a valid AppDelegate header at root: "${projectRoot}"`
+export const getAppDelegateHeaderFilePath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const applePlatformDir = applePlatform;
+    const [using, ...extra] = withSortedGlobResult(
+      globSync(`${applePlatformDir}/*/AppDelegate.h`, {
+        absolute: true,
+        cwd: projectRoot,
+        ignore: ignoredPaths,
+      })
     );
-  }
 
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'app-delegate-header',
-      fileName: 'AppDelegate',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
+    if (!using) {
+      throw new UnexpectedError(
+        `Could not locate a valid AppDelegate header at root: "${projectRoot}"`
+      );
+    }
 
-  return using;
-}
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'app-delegate-header',
+        fileName: 'AppDelegate',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
 
-export function getAppDelegateFilePath(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string {
-  const applePlatformDir = applePlatform;
-  const [using, ...extra] = withSortedGlobResult(
-    globSync(`${applePlatformDir}/*/AppDelegate.@(m|mm|swift)`, {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    })
-  );
+    return using;
+  };
 
-  if (!using) {
-    throw new UnexpectedError(`Could not locate a valid AppDelegate at root: "${projectRoot}"`);
-  }
+export const getAppDelegateFilePath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const applePlatformDir = applePlatform;
+    const [using, ...extra] = withSortedGlobResult(
+      globSync(`${applePlatformDir}/*/AppDelegate.@(m|mm|swift)`, {
+        absolute: true,
+        cwd: projectRoot,
+        ignore: ignoredPaths,
+      })
+    );
 
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'app-delegate',
-      fileName: 'AppDelegate',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
+    if (!using) {
+      throw new UnexpectedError(`Could not locate a valid AppDelegate at root: "${projectRoot}"`);
+    }
 
-  return using;
-}
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'app-delegate',
+        fileName: 'AppDelegate',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
 
-export function getAppDelegateObjcHeaderFilePath(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string {
-  const applePlatformDir = applePlatform;
-  const [using, ...extra] = withSortedGlobResult(
-    globSync(`${applePlatformDir}/*/AppDelegate.h`, {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    })
-  );
+    return using;
+  };
 
-  if (!using) {
-    throw new UnexpectedError(`Could not locate a valid AppDelegate.h at root: "${projectRoot}"`);
-  }
+export const getAppDelegateObjcHeaderFilePath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const applePlatformDir = applePlatform;
+    const [using, ...extra] = withSortedGlobResult(
+      globSync(`${applePlatformDir}/*/AppDelegate.h`, {
+        absolute: true,
+        cwd: projectRoot,
+        ignore: ignoredPaths,
+      })
+    );
 
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'app-delegate-objc-header',
-      fileName: 'AppDelegate.h',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
+    if (!using) {
+      throw new UnexpectedError(`Could not locate a valid AppDelegate.h at root: "${projectRoot}"`);
+    }
 
-  return using;
-}
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'app-delegate-objc-header',
+        fileName: 'AppDelegate.h',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
 
-export function getPodfilePath(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const applePlatformDir = applePlatform;
-  const [using, ...extra] = withSortedGlobResult(
-    globSync(`${applePlatformDir}/Podfile`, {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    })
-  );
+    return using;
+  };
 
-  if (!using) {
-    throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
-  }
+export const getPodfilePath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const applePlatformDir = applePlatform;
+    const [using, ...extra] = withSortedGlobResult(
+      globSync(`${applePlatformDir}/Podfile`, {
+        absolute: true,
+        cwd: projectRoot,
+        ignore: ignoredPaths,
+      })
+    );
 
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'podfile',
-      fileName: 'Podfile',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
+    if (!using) {
+      throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
+    }
 
-  return using;
-}
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'podfile',
+        fileName: 'Podfile',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
+
+    return using;
+  };
 
 function getLanguage(filePath: string): AppleLanguage {
   const extension = path.extname(filePath);
@@ -169,200 +168,210 @@ export function getFileInfo(filePath: string) {
   };
 }
 
-export function getAppDelegate(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): AppDelegateProjectFile {
-  const filePath = getAppDelegateFilePath(projectRoot, applePlatform);
-  return getFileInfo(filePath);
-}
+export const getAppDelegate =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): AppDelegateProjectFile => {
+    const filePath = getAppDelegateFilePath(applePlatform)(projectRoot);
+    return getFileInfo(filePath);
+  };
 
-export function getSourceRoot(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const appDelegate = getAppDelegate(projectRoot, applePlatform);
-  return path.dirname(appDelegate.path);
-}
+export const getSourceRoot =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const appDelegate = getAppDelegate(applePlatform)(projectRoot);
+    return path.dirname(appDelegate.path);
+  };
 
-export function findSchemePaths(projectRoot: string, applePlatform: 'ios' | 'macos'): string[] {
-  const applePlatformDir = applePlatform;
-  return withSortedGlobResult(
-    globSync(`${applePlatformDir}/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme`, {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    })
-  );
-}
-
-export function findSchemeNames(projectRoot: string, applePlatform: 'ios' | 'macos'): string[] {
-  const schemePaths = findSchemePaths(projectRoot, applePlatform);
-  return schemePaths.map((schemePath) => path.parse(schemePath).name);
-}
-
-export function getAllXcodeProjectPaths(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string[] {
-  const applePlatformDir = applePlatform;
-  const pbxprojPaths = withSortedGlobResult(
-    globSync(`${applePlatformDir}/**/*.xcodeproj`, { cwd: projectRoot, ignore: ignoredPaths })
-      // Drop leading `/` from glob results to mimick glob@<9 behavior
-      .map((filePath) => filePath.replace(/^\//, ''))
-      .filter(
-        (project) =>
-          !/test|example|sample/i.test(project) || path.dirname(project) === applePlatformDir
-      )
-  ).sort((a, b) => {
-    const isAInApplePlatformDir = path.dirname(a) === applePlatformDir;
-    const isBInApplePlatformDir = path.dirname(b) === applePlatformDir;
-    // preserve previous sort order
-    if (
-      (isAInApplePlatformDir && isBInApplePlatformDir) ||
-      (!isAInApplePlatformDir && !isBInApplePlatformDir)
-    ) {
-      return 0;
-    }
-    return isAInApplePlatformDir ? -1 : 1;
-  });
-
-  if (!pbxprojPaths.length) {
-    throw new UnexpectedError(
-      `Failed to locate the ${applePlatformDir}/*.xcodeproj files relative to path "${projectRoot}".`
+export const findSchemePaths =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string[] => {
+    const applePlatformDir = applePlatform;
+    return withSortedGlobResult(
+      globSync(`${applePlatformDir}/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme`, {
+        absolute: true,
+        cwd: projectRoot,
+        ignore: ignoredPaths,
+      })
     );
-  }
-  return pbxprojPaths.map((value) => path.join(projectRoot, value));
-}
+  };
+
+export const findSchemeNames =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string[] => {
+    const schemePaths = findSchemePaths(applePlatform)(projectRoot);
+    return schemePaths.map((schemePath) => path.parse(schemePath).name);
+  };
+
+export const getAllXcodeProjectPaths =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string[] => {
+    const applePlatformDir = applePlatform;
+    const pbxprojPaths = withSortedGlobResult(
+      globSync(`${applePlatformDir}/**/*.xcodeproj`, { cwd: projectRoot, ignore: ignoredPaths })
+        // Drop leading `/` from glob results to mimick glob@<9 behavior
+        .map((filePath) => filePath.replace(/^\//, ''))
+        .filter(
+          (project) =>
+            !/test|example|sample/i.test(project) || path.dirname(project) === applePlatformDir
+        )
+    ).sort((a, b) => {
+      const isAInApplePlatformDir = path.dirname(a) === applePlatformDir;
+      const isBInApplePlatformDir = path.dirname(b) === applePlatformDir;
+      // preserve previous sort order
+      if (
+        (isAInApplePlatformDir && isBInApplePlatformDir) ||
+        (!isAInApplePlatformDir && !isBInApplePlatformDir)
+      ) {
+        return 0;
+      }
+      return isAInApplePlatformDir ? -1 : 1;
+    });
+
+    if (!pbxprojPaths.length) {
+      throw new UnexpectedError(
+        `Failed to locate the ${applePlatformDir}/*.xcodeproj files relative to path "${projectRoot}".`
+      );
+    }
+    return pbxprojPaths.map((value) => path.join(projectRoot, value));
+  };
 
 /**
  * Get the pbxproj for the given path
  */
-export function getXcodeProjectPath(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const [using, ...extra] = getAllXcodeProjectPaths(projectRoot, applePlatform);
+export const getXcodeProjectPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const [using, ...extra] = getAllXcodeProjectPaths(applePlatform)(projectRoot);
 
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'xcodeproj',
-      fileName: '*.xcodeproj',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'xcodeproj',
+        fileName: '*.xcodeproj',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
 
-  return using;
-}
+    return using;
+  };
 
-export function getAllPBXProjectPaths(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string[] {
-  const applePlatformDir = applePlatform;
-  const projectPaths = getAllXcodeProjectPaths(projectRoot, applePlatform);
-  const paths = projectPaths
-    .map((value) => path.join(value, 'project.pbxproj'))
-    .filter((value) => existsSync(value));
+export const getAllPBXProjectPaths =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string[] => {
+    const applePlatformDir = applePlatform;
+    const projectPaths = getAllXcodeProjectPaths(applePlatform)(projectRoot);
+    const paths = projectPaths
+      .map((value) => path.join(value, 'project.pbxproj'))
+      .filter((value) => existsSync(value));
 
-  if (!paths.length) {
-    throw new UnexpectedError(
-      `Failed to locate the ${applePlatformDir}/*.xcodeproj/project.pbxproj files relative to path "${projectRoot}".`
+    if (!paths.length) {
+      throw new UnexpectedError(
+        `Failed to locate the ${applePlatformDir}/*.xcodeproj/project.pbxproj files relative to path "${projectRoot}".`
+      );
+    }
+    return paths;
+  };
+
+export const getPBXProjectPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const [using, ...extra] = getAllPBXProjectPaths(applePlatform)(projectRoot);
+
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'project-pbxproj',
+        fileName: 'project.pbxproj',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
+
+    return using;
+  };
+
+export const getAllInfoPlistPaths =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string[] => {
+    const applePlatformDir = applePlatform;
+    const paths = globSync(`${applePlatformDir}/*/Info.plist`, {
+      absolute: true,
+      cwd: projectRoot,
+      ignore: ignoredPaths,
+    }).sort(
+      // longer name means more suffixes, we want the shortest possible one to be first.
+      (a, b) => a.length - b.length
     );
-  }
-  return paths;
-}
 
-export function getPBXProjectPath(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const [using, ...extra] = getAllPBXProjectPaths(projectRoot, applePlatform);
+    if (!paths.length) {
+      throw new UnexpectedError(
+        `Failed to locate Info.plist files relative to path "${projectRoot}".`
+      );
+    }
+    return paths;
+  };
 
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'project-pbxproj',
-      fileName: 'project.pbxproj',
-      projectRoot,
-      using,
-      extra,
+export const getInfoPlistPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const [using, ...extra] = getAllInfoPlistPaths(applePlatform)(projectRoot);
+
+    if (extra.length) {
+      warnMultipleFiles({
+        applePlatform,
+        tag: 'info-plist',
+        fileName: 'Info.plist',
+        projectRoot,
+        using,
+        extra,
+      });
+    }
+
+    return using;
+  };
+
+export const getAllEntitlementsPaths =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string[] => {
+    const applePlatformDir = applePlatform;
+    const paths = globSync(`${applePlatformDir}/*/*.entitlements`, {
+      absolute: true,
+      cwd: projectRoot,
+      ignore: ignoredPaths,
     });
-  }
-
-  return using;
-}
-
-export function getAllInfoPlistPaths(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string[] {
-  const applePlatformDir = applePlatform;
-  const paths = globSync(`${applePlatformDir}/*/Info.plist`, {
-    absolute: true,
-    cwd: projectRoot,
-    ignore: ignoredPaths,
-  }).sort(
-    // longer name means more suffixes, we want the shortest possible one to be first.
-    (a, b) => a.length - b.length
-  );
-
-  if (!paths.length) {
-    throw new UnexpectedError(
-      `Failed to locate Info.plist files relative to path "${projectRoot}".`
-    );
-  }
-  return paths;
-}
-
-export function getInfoPlistPath(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const [using, ...extra] = getAllInfoPlistPaths(projectRoot, applePlatform);
-
-  if (extra.length) {
-    warnMultipleFiles({
-      applePlatform,
-      tag: 'info-plist',
-      fileName: 'Info.plist',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
-
-  return using;
-}
-
-export function getAllEntitlementsPaths(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string[] {
-  const applePlatformDir = applePlatform;
-  const paths = globSync(`${applePlatformDir}/*/*.entitlements`, {
-    absolute: true,
-    cwd: projectRoot,
-    ignore: ignoredPaths,
-  });
-  return paths;
-}
+    return paths;
+  };
 
 /**
  * @deprecated: use Entitlements.getEntitlementsPath instead
  */
-export function getEntitlementsPath(
-  projectRoot: string,
-  applePlatform: 'ios' | 'macos'
-): string | null {
-  return Entitlements.getEntitlementsPath(projectRoot, applePlatform);
-}
+export const getEntitlementsPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string | null => {
+    return Entitlements.getEntitlementsPath(applePlatform)(projectRoot);
+  };
 
-export function getSupportingPath(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const applePlatformDir = applePlatform;
-  return path.resolve(
-    projectRoot,
-    applePlatformDir,
-    path.basename(getSourceRoot(projectRoot, applePlatform)),
-    'Supporting'
-  );
-}
+export const getSupportingPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const applePlatformDir = applePlatform;
+    return path.resolve(
+      projectRoot,
+      applePlatformDir,
+      path.basename(getSourceRoot(applePlatform)(projectRoot)),
+      'Supporting'
+    );
+  };
 
-export function getExpoPlistPath(projectRoot: string, applePlatform: 'ios' | 'macos'): string {
-  const supportingPath = getSupportingPath(projectRoot, applePlatform);
-  return path.join(supportingPath, 'Expo.plist');
-}
+export const getExpoPlistPath =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): string => {
+    const supportingPath = getSupportingPath(applePlatform)(projectRoot);
+    return path.join(supportingPath, 'Expo.plist');
+  };
 
 function warnMultipleFiles({
   applePlatform,

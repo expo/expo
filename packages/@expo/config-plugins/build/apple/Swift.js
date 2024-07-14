@@ -3,8 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createBridgingHeaderFile = createBridgingHeaderFile;
-exports.ensureSwiftBridgingHeaderSetup = ensureSwiftBridgingHeaderSetup;
+exports.ensureSwiftBridgingHeaderSetup = exports.createBridgingHeaderFile = void 0;
 exports.getDesignatedSwiftBridgingHeaderFileReference = getDesignatedSwiftBridgingHeaderFileReference;
 exports.linkBridgingHeaderFile = linkBridgingHeaderFile;
 exports.withSwiftBridgingHeader = exports.withNoopSwiftFile = void 0;
@@ -66,31 +65,27 @@ const templateBridgingHeader = `//
  */
 const withSwiftBridgingHeader = applePlatform => config => {
   return (0, _applePlugins().withXcodeProject)(applePlatform)(config, config => {
-    config.modResults = ensureSwiftBridgingHeaderSetup({
+    config.modResults = ensureSwiftBridgingHeaderSetup(applePlatform)({
       project: config.modResults,
-      projectRoot: config.modRequest.projectRoot,
-      applePlatform
+      projectRoot: config.modRequest.projectRoot
     });
     return config;
   });
 };
 exports.withSwiftBridgingHeader = withSwiftBridgingHeader;
-function ensureSwiftBridgingHeaderSetup({
+const ensureSwiftBridgingHeaderSetup = applePlatform => ({
   projectRoot,
-  applePlatform,
   project
-}) {
+}) => {
   // Only create a bridging header if using objective-c
-  if (shouldCreateSwiftBridgingHeader({
+  if (shouldCreateSwiftBridgingHeader(applePlatform)({
     projectRoot,
-    applePlatform,
     project
   })) {
-    const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, applePlatform);
+    const projectName = (0, _Xcodeproj().getProjectName)(applePlatform)(projectRoot);
     const bridgingHeader = createBridgingHeaderFileName(projectName);
     // Ensure a bridging header is created in the Xcode project.
-    project = createBridgingHeaderFile({
-      applePlatform,
+    project = createBridgingHeaderFile(applePlatform)({
       project,
       projectName,
       projectRoot,
@@ -103,18 +98,18 @@ function ensureSwiftBridgingHeaderSetup({
     });
   }
   return project;
-}
-function shouldCreateSwiftBridgingHeader({
+};
+exports.ensureSwiftBridgingHeaderSetup = ensureSwiftBridgingHeaderSetup;
+const shouldCreateSwiftBridgingHeader = applePlatform => ({
   projectRoot,
-  applePlatform,
   project
-}) {
+}) => {
   // Only create a bridging header if the project is using in Objective C (AppDelegate is written in Objc).
-  const isObjc = (0, _Paths().getAppDelegate)(projectRoot, applePlatform).language !== 'swift';
+  const isObjc = (0, _Paths().getAppDelegate)(applePlatform)(projectRoot).language !== 'swift';
   return isObjc && !getDesignatedSwiftBridgingHeaderFileReference({
     project
   });
-}
+};
 
 /**
  * @returns String matching the default name used when Xcode automatically creates a bridging header file.
@@ -163,14 +158,13 @@ function linkBridgingHeaderFile({
   }
   return project;
 }
-function createBridgingHeaderFile({
-  applePlatform,
+const createBridgingHeaderFile = applePlatform => ({
   projectRoot,
   projectName,
   project,
   bridgingHeader
-}) {
-  const bridgingHeaderProjectPath = _path().default.join((0, _Paths().getSourceRoot)(projectRoot, applePlatform), bridgingHeader);
+}) => {
+  const bridgingHeaderProjectPath = _path().default.join((0, _Paths().getSourceRoot)(applePlatform)(projectRoot), bridgingHeader);
   if (!_fs().default.existsSync(bridgingHeaderProjectPath)) {
     // Create the file
     _fs().default.writeFileSync(bridgingHeaderProjectPath, templateBridgingHeader, 'utf8');
@@ -181,18 +175,18 @@ function createBridgingHeaderFile({
   const filePath = `${projectName}/${bridgingHeader}`;
   // Ensure the file is linked with Xcode resource files
   if (!project.hasFile(filePath)) {
-    project = (0, _Xcodeproj().addResourceFileToGroup)({
+    project = (0, _Xcodeproj().addResourceFileToGroup)(applePlatform)({
       filepath: filePath,
       groupName: projectName,
       project,
-      applePlatform,
       // Not sure why, but this is how Xcode generates it.
       isBuildFile: false,
       verbose: false
     });
   }
   return project;
-}
+};
+exports.createBridgingHeaderFile = createBridgingHeaderFile;
 const withNoopSwiftFile = applePlatform => config => {
   return (0, _XcodeProjectFile().withBuildSourceFile)(applePlatform)(config, {
     filePath: 'noop-file.swift',

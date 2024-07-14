@@ -12,5 +12,5 @@ export declare enum Config {
     CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata"
 }
 export declare const withUpdates: (applePlatform: 'ios' | 'macos') => ConfigPlugin;
-export declare function setUpdatesConfigAsync(projectRoot: string, applePlatform: 'ios' | 'macos', config: ExpoConfigUpdates, expoPlist: ExpoPlist, expoUpdatesPackageVersion?: string | null): Promise<ExpoPlist>;
-export declare function setVersionsConfigAsync(projectRoot: string, applePlatform: 'ios' | 'macos', config: ExpoConfigUpdates, expoPlist: ExpoPlist): Promise<ExpoPlist>;
+export declare const setUpdatesConfigAsync: (applePlatform: 'ios' | 'macos') => (projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist, expoUpdatesPackageVersion?: string | null) => Promise<ExpoPlist>;
+export declare const setVersionsConfigAsync: (applePlatform: 'ios' | 'macos') => (projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist) => Promise<ExpoPlist>;

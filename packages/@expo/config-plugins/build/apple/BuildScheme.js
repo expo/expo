@@ -3,10 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getApplicationTargetNameForSchemeAsync = getApplicationTargetNameForSchemeAsync;
-exports.getArchiveBuildConfigurationForSchemeAsync = getArchiveBuildConfigurationForSchemeAsync;
-exports.getRunnableSchemesFromXcodeproj = getRunnableSchemesFromXcodeproj;
-exports.getSchemesFromXcodeproj = getSchemesFromXcodeproj;
+exports.getSchemesFromXcodeproj = exports.getRunnableSchemesFromXcodeproj = exports.getArchiveBuildConfigurationForSchemeAsync = exports.getApplicationTargetNameForSchemeAsync = void 0;
 function _Paths() {
   const data = require("./Paths");
   _Paths = function () {
@@ -35,13 +32,12 @@ function _XML() {
   };
   return data;
 }
-function getSchemesFromXcodeproj(projectRoot, applePlatform) {
-  return (0, _Paths().findSchemeNames)(projectRoot, applePlatform);
-}
-function getRunnableSchemesFromXcodeproj(projectRoot, applePlatform, {
+const getSchemesFromXcodeproj = applePlatform => projectRoot => (0, _Paths().findSchemeNames)(applePlatform)(projectRoot);
+exports.getSchemesFromXcodeproj = getSchemesFromXcodeproj;
+const getRunnableSchemesFromXcodeproj = applePlatform => (projectRoot, {
   configuration = 'Debug'
-} = {}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, applePlatform);
+} = {}) => {
+  const project = (0, _Xcodeproj().getPbxproj)(applePlatform)(projectRoot);
   return (0, _Target().findSignableTargets)(project).map(([, target]) => {
     let osType = applePlatform === 'ios' ? 'iOS' : 'macOS';
     const type = (0, _Xcodeproj().unquote)(target.productType);
@@ -76,9 +72,10 @@ function getRunnableSchemesFromXcodeproj(projectRoot, applePlatform, {
       type: (0, _Xcodeproj().unquote)(target.productType)
     };
   });
-}
-async function readSchemeAsync(projectRoot, applePlatform, scheme) {
-  const allSchemePaths = (0, _Paths().findSchemePaths)(projectRoot, applePlatform);
+};
+exports.getRunnableSchemesFromXcodeproj = getRunnableSchemesFromXcodeproj;
+const readSchemeAsync = applePlatform => async (projectRoot, scheme) => {
+  const allSchemePaths = (0, _Paths().findSchemePaths)(applePlatform)(projectRoot);
   const re = new RegExp(`/${scheme}.xcscheme`, 'i');
   const schemePath = allSchemePaths.find(i => re.exec(i));
   if (schemePath) {
@@ -88,9 +85,9 @@ async function readSchemeAsync(projectRoot, applePlatform, scheme) {
   } else {
     throw new Error(`scheme '${scheme}' does not exist, make sure it's marked as shared`);
   }
-}
-async function getApplicationTargetNameForSchemeAsync(projectRoot, applePlatform, scheme) {
-  const schemeXML = await readSchemeAsync(projectRoot, applePlatform, scheme);
+};
+const getApplicationTargetNameForSchemeAsync = applePlatform => async (projectRoot, scheme) => {
+  const schemeXML = await readSchemeAsync(applePlatform)(projectRoot, scheme);
   const buildActionEntry = schemeXML?.Scheme?.BuildAction?.[0]?.BuildActionEntries?.[0]?.BuildActionEntry;
   const targetName = buildActionEntry?.length === 1 ? getBlueprintName(buildActionEntry[0]) : getBlueprintName(buildActionEntry?.find(entry => {
     return entry.BuildableReference?.[0]?.['$']?.BuildableName?.endsWith('.app');
@@ -99,15 +96,17 @@ async function getApplicationTargetNameForSchemeAsync(projectRoot, applePlatform
     throw new Error(`${scheme}.xcscheme seems to be corrupted`);
   }
   return targetName;
-}
-async function getArchiveBuildConfigurationForSchemeAsync(projectRoot, applePlatform, scheme) {
-  const schemeXML = await readSchemeAsync(projectRoot, applePlatform, scheme);
+};
+exports.getApplicationTargetNameForSchemeAsync = getApplicationTargetNameForSchemeAsync;
+const getArchiveBuildConfigurationForSchemeAsync = applePlatform => async (projectRoot, scheme) => {
+  const schemeXML = await readSchemeAsync(applePlatform)(projectRoot, scheme);
   const buildConfiguration = schemeXML?.Scheme?.ArchiveAction?.[0]?.['$']?.buildConfiguration;
   if (!buildConfiguration) {
     throw new Error(`${scheme}.xcscheme seems to be corrupted`);
   }
   return buildConfiguration;
-}
+};
+exports.getArchiveBuildConfigurationForSchemeAsync = getArchiveBuildConfigurationForSchemeAsync;
 function getBlueprintName(entry) {
   return entry?.BuildableReference?.[0]?.['$']?.BlueprintName;
 }

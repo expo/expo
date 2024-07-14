@@ -3,134 +3,57 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TargetType = void 0;
-exports.findApplicationTargetWithDependenciesAsync = findApplicationTargetWithDependenciesAsync;
-exports.findFirstNativeTarget = findFirstNativeTarget;
-exports.findNativeTargetByName = findNativeTargetByName;
-exports.findSignableTargets = findSignableTargets;
-exports.getNativeTargets = getNativeTargets;
-exports.getXCBuildConfigurationFromPbxproj = getXCBuildConfigurationFromPbxproj;
-exports.isTargetOfType = isTargetOfType;
-function _BuildScheme() {
-  const data = require("./BuildScheme");
-  _BuildScheme = function () {
+Object.defineProperty(exports, "TargetType", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().TargetType;
+  }
+});
+exports.findApplicationTargetWithDependenciesAsync = void 0;
+Object.defineProperty(exports, "findFirstNativeTarget", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().findFirstNativeTarget;
+  }
+});
+Object.defineProperty(exports, "findNativeTargetByName", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().findNativeTargetByName;
+  }
+});
+Object.defineProperty(exports, "findSignableTargets", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().findSignableTargets;
+  }
+});
+Object.defineProperty(exports, "getNativeTargets", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().getNativeTargets;
+  }
+});
+Object.defineProperty(exports, "getXCBuildConfigurationFromPbxproj", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().getXCBuildConfigurationFromPbxproj;
+  }
+});
+Object.defineProperty(exports, "isTargetOfType", {
+  enumerable: true,
+  get: function () {
+    return AppleImpl().isTargetOfType;
+  }
+});
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/Target"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _string() {
-  const data = require("./utils/string");
-  _string = function () {
-    return data;
-  };
-  return data;
-}
-let TargetType = exports.TargetType = /*#__PURE__*/function (TargetType) {
-  TargetType["APPLICATION"] = "com.apple.product-type.application";
-  TargetType["EXTENSION"] = "com.apple.product-type.app-extension";
-  TargetType["WATCH"] = "com.apple.product-type.application.watchapp";
-  TargetType["APP_CLIP"] = "com.apple.product-type.application.on-demand-install-capable";
-  TargetType["STICKER_PACK_EXTENSION"] = "com.apple.product-type.app-extension.messages-sticker-pack";
-  TargetType["FRAMEWORK"] = "com.apple.product-type.framework";
-  TargetType["OTHER"] = "other";
-  return TargetType;
-}({});
-function getXCBuildConfigurationFromPbxproj(project, {
-  targetName,
-  buildConfiguration = 'Release'
-} = {}) {
-  const [, nativeTarget] = targetName ? findNativeTargetByName(project, targetName) : findFirstNativeTarget(project);
-  const [, xcBuildConfiguration] = (0, _Xcodeproj().getBuildConfigurationForListIdAndName)(project, {
-    configurationListId: nativeTarget.buildConfigurationList,
-    buildConfiguration
-  });
-  return xcBuildConfiguration ?? null;
-}
-async function findApplicationTargetWithDependenciesAsync(projectRoot, scheme) {
-  const applicationTargetName = await (0, _BuildScheme().getApplicationTargetNameForSchemeAsync)(projectRoot, scheme);
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const [, applicationTarget] = findNativeTargetByName(project, applicationTargetName);
-  const dependencies = getTargetDependencies(project, applicationTarget);
-  return {
-    name: (0, _string().trimQuotes)(applicationTarget.name),
-    type: TargetType.APPLICATION,
-    signable: true,
-    dependencies
-  };
-}
-function getTargetDependencies(project, parentTarget) {
-  if (!parentTarget.dependencies || parentTarget.dependencies.length === 0) {
-    return undefined;
-  }
-  const nonSignableTargetTypes = [TargetType.FRAMEWORK];
-  return parentTarget.dependencies.map(({
-    value
-  }) => {
-    const {
-      target: targetId
-    } = project.getPBXGroupByKeyAndType(value, 'PBXTargetDependency');
-    const [, target] = findNativeTargetById(project, targetId);
-    const type = isTargetOfType(target, TargetType.EXTENSION) ? TargetType.EXTENSION : TargetType.OTHER;
-    return {
-      name: (0, _string().trimQuotes)(target.name),
-      type,
-      signable: !nonSignableTargetTypes.some(signableTargetType => isTargetOfType(target, signableTargetType)),
-      dependencies: getTargetDependencies(project, target)
-    };
-  });
-}
-function isTargetOfType(target, targetType) {
-  return (0, _string().trimQuotes)(target.productType) === targetType;
-}
-function getNativeTargets(project) {
-  const section = project.pbxNativeTargetSection();
-  return Object.entries(section).filter(_Xcodeproj().isNotComment);
-}
-function findSignableTargets(project) {
-  const targets = getNativeTargets(project);
-  const signableTargetTypes = [TargetType.APPLICATION, TargetType.APP_CLIP, TargetType.EXTENSION, TargetType.WATCH, TargetType.STICKER_PACK_EXTENSION];
-  const applicationTargets = targets.filter(([, target]) => {
-    for (const targetType of signableTargetTypes) {
-      if (isTargetOfType(target, targetType)) {
-        return true;
-      }
-    }
-    return false;
-  });
-  if (applicationTargets.length === 0) {
-    throw new Error(`Could not find any signable targets in project.pbxproj`);
-  }
-  return applicationTargets;
-}
-function findFirstNativeTarget(project) {
-  const targets = getNativeTargets(project);
-  const applicationTargets = targets.filter(([, target]) => isTargetOfType(target, TargetType.APPLICATION));
-  if (applicationTargets.length === 0) {
-    throw new Error(`Could not find any application target in project.pbxproj`);
-  }
-  return applicationTargets[0];
-}
-function findNativeTargetByName(project, targetName) {
-  const nativeTargets = getNativeTargets(project);
-  const nativeTargetEntry = nativeTargets.find(([, i]) => (0, _string().trimQuotes)(i.name) === targetName);
-  if (!nativeTargetEntry) {
-    throw new Error(`Could not find target '${targetName}' in project.pbxproj`);
-  }
-  return nativeTargetEntry;
-}
-function findNativeTargetById(project, targetId) {
-  const nativeTargets = getNativeTargets(project);
-  const nativeTargetEntry = nativeTargets.find(([key]) => key === targetId);
-  if (!nativeTargetEntry) {
-    throw new Error(`Could not find target with id '${targetId}' in project.pbxproj`);
-  }
-  return nativeTargetEntry;
-}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const findApplicationTargetWithDependenciesAsync = exports.findApplicationTargetWithDependenciesAsync = AppleImpl().findApplicationTargetWithDependenciesAsync('ios');
 //# sourceMappingURL=Target.js.map

@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUsesNonExemptEncryption = getUsesNonExemptEncryption;
-exports.setUsesNonExemptEncryption = setUsesNonExemptEncryption;
-exports.withUsesNonExemptEncryption = void 0;
+exports.withUsesNonExemptEncryption = exports.setUsesNonExemptEncryption = exports.getUsesNonExemptEncryption = void 0;
 function _applePlugins() {
   const data = require("../plugins/apple-plugins");
   _applePlugins = function () {
@@ -16,19 +14,18 @@ function _applePlugins() {
 const withUsesNonExemptEncryption = applePlatform => (0, _applePlugins().createInfoPlistPluginWithPropertyGuard)(applePlatform)((config, {
   ITSAppUsesNonExemptEncryption,
   ...infoPlist
-}) => setUsesNonExemptEncryption(applePlatform, config, infoPlist), {
+}) => setUsesNonExemptEncryption(applePlatform)(config, infoPlist), {
   infoPlistProperty: 'ITSAppUsesNonExemptEncryption',
   expoConfigProperty: `${applePlatform}.config.usesNonExemptEncryption`
 }, 'withUsesNonExemptEncryption');
 exports.withUsesNonExemptEncryption = withUsesNonExemptEncryption;
-function getUsesNonExemptEncryption(applePlatform, config) {
-  return config?.[applePlatform]?.config?.usesNonExemptEncryption ?? null;
-}
-function setUsesNonExemptEncryption(applePlatform, config, {
+const getUsesNonExemptEncryption = applePlatform => config => config?.[applePlatform]?.config?.usesNonExemptEncryption ?? null;
+exports.getUsesNonExemptEncryption = getUsesNonExemptEncryption;
+const setUsesNonExemptEncryption = applePlatform => (config, {
   ITSAppUsesNonExemptEncryption,
   ...infoPlist
-}) {
-  const usesNonExemptEncryption = getUsesNonExemptEncryption(applePlatform, config);
+}) => {
+  const usesNonExemptEncryption = getUsesNonExemptEncryption(applePlatform)(config);
 
   // Make no changes if the key is left blank
   if (usesNonExemptEncryption === null) {
@@ -38,5 +35,6 @@ function setUsesNonExemptEncryption(applePlatform, config, {
     ...infoPlist,
     ITSAppUsesNonExemptEncryption: usesNonExemptEncryption
   };
-}
+};
+exports.setUsesNonExemptEncryption = setUsesNonExemptEncryption;
 //# sourceMappingURL=UsesNonExemptEncryption.js.map

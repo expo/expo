@@ -3,10 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ensureApplicationTargetEntitlementsFileConfigured = ensureApplicationTargetEntitlementsFileConfigured;
-exports.getEntitlementsPath = getEntitlementsPath;
-exports.setAssociatedDomains = setAssociatedDomains;
-exports.withAssociatedDomains = void 0;
+exports.withAssociatedDomains = exports.setAssociatedDomains = exports.getEntitlementsPath = exports.ensureApplicationTargetEntitlementsFileConfigured = void 0;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -57,12 +54,12 @@ function _applePlugins() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withAssociatedDomains = applePlatform => (0, _applePlugins().createEntitlementsPlugin)(applePlatform)((config, jsonObject) => setAssociatedDomains(applePlatform, config, jsonObject), 'withAssociatedDomains');
+const withAssociatedDomains = applePlatform => (0, _applePlugins().createEntitlementsPlugin)(applePlatform)((config, jsonObject) => setAssociatedDomains(applePlatform)(config, jsonObject), 'withAssociatedDomains');
 exports.withAssociatedDomains = withAssociatedDomains;
-function setAssociatedDomains(applePlatform, config, {
+const setAssociatedDomains = applePlatform => (config, {
   'com.apple.developer.associated-domains': _,
   ...entitlementsPlist
-}) {
+}) => {
   if (config[applePlatform]?.associatedDomains) {
     return {
       ...entitlementsPlist,
@@ -70,12 +67,13 @@ function setAssociatedDomains(applePlatform, config, {
     };
   }
   return entitlementsPlist;
-}
-function getEntitlementsPath(projectRoot, applePlatform, {
+};
+exports.setAssociatedDomains = setAssociatedDomains;
+const getEntitlementsPath = applePlatform => (projectRoot, {
   targetName,
   buildConfiguration = 'Release'
-} = {}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, applePlatform);
+} = {}) => {
+  const project = (0, _Xcodeproj().getPbxproj)(applePlatform)(projectRoot);
   const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
     targetName,
     buildConfiguration
@@ -85,7 +83,8 @@ function getEntitlementsPath(projectRoot, applePlatform, {
   }
   const entitlementsPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
   return entitlementsPath && _fs().default.existsSync(entitlementsPath) ? entitlementsPath : null;
-}
+};
+exports.getEntitlementsPath = getEntitlementsPath;
 function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration) {
   const entitlementsPathRaw = xcBuildConfiguration?.buildSettings?.CODE_SIGN_ENTITLEMENTS;
   if (entitlementsPathRaw) {
@@ -94,9 +93,9 @@ function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfigura
     return null;
   }
 }
-function ensureApplicationTargetEntitlementsFileConfigured(projectRoot, applePlatform) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, applePlatform);
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, applePlatform);
+const ensureApplicationTargetEntitlementsFileConfigured = applePlatform => projectRoot => {
+  const project = (0, _Xcodeproj().getPbxproj)(applePlatform)(projectRoot);
+  const projectName = (0, _Xcodeproj().getProjectName)(applePlatform)(projectRoot);
   const productName = (0, _Xcodeproj().getProductName)(project);
   const [, applicationTarget] = (0, _Target().findFirstNativeTarget)(project);
   const buildConfigurations = (0, _Xcodeproj().getBuildConfigurationsForListId)(project, applicationTarget.buildConfigurationList);
@@ -121,7 +120,8 @@ function ensureApplicationTargetEntitlementsFileConfigured(projectRoot, applePla
   if (hasChangesToWrite) {
     _fs().default.writeFileSync(project.filepath, project.writeSync());
   }
-}
+};
+exports.ensureApplicationTargetEntitlementsFileConfigured = ensureApplicationTargetEntitlementsFileConfigured;
 const ENTITLEMENTS_TEMPLATE = `
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

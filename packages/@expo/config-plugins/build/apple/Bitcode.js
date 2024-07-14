@@ -3,10 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBitcode = getBitcode;
-exports.setBitcode = void 0;
-exports.setBitcodeWithConfig = setBitcodeWithConfig;
-exports.withCustomBitcode = exports.withBitcode = void 0;
+exports.withCustomBitcode = exports.withBitcode = exports.setBitcodeWithConfig = exports.setBitcode = exports.getBitcode = void 0;
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
   _Xcodeproj = function () {
@@ -34,7 +31,7 @@ function _warnings() {
  */
 const withBitcode = applePlatform => config => {
   return (0, _applePlugins().withXcodeProject)(applePlatform)(config, async config => {
-    config.modResults = await setBitcodeWithConfig(applePlatform, config, {
+    config.modResults = await setBitcodeWithConfig(applePlatform)(config, {
       project: config.modResults
     });
     return config;
@@ -61,25 +58,25 @@ const withCustomBitcode = applePlatform => (config, bitcode) => {
  * Get the bitcode preference from the Expo config.
  */
 exports.withCustomBitcode = withCustomBitcode;
-function getBitcode(applePlatform, config) {
-  return config[applePlatform]?.bitcode;
-}
+const getBitcode = applePlatform => config => config[applePlatform]?.bitcode;
 
 /**
  * Enable or disable the `ENABLE_BITCODE` property of the project configurations.
  */
-function setBitcodeWithConfig(applePlatform, config, {
+exports.getBitcode = getBitcode;
+const setBitcodeWithConfig = applePlatform => (config, {
   project
-}) {
-  const bitcode = getBitcode(applePlatform, config);
+}) => {
+  const bitcode = getBitcode(applePlatform)(config);
   return setBitcode(applePlatform)(bitcode, {
     project
   });
-}
+};
 
 /**
  * Enable or disable the `ENABLE_BITCODE` property.
  */
+exports.setBitcodeWithConfig = setBitcodeWithConfig;
 const setBitcode = applePlatform => (bitcode, {
   project
 }) => {

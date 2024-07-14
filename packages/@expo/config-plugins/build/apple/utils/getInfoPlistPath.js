@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getInfoPlistPathFromPbxproj = getInfoPlistPathFromPbxproj;
+exports.getInfoPlistPathFromPbxproj = void 0;
 function _Xcodeproj() {
   const data = require("./Xcodeproj");
   _Xcodeproj = function () {
@@ -25,11 +25,11 @@ function _Target() {
  * @param param1
  * @returns
  */
-function getInfoPlistPathFromPbxproj(projectRootOrProject, applePlatform, {
+const getInfoPlistPathFromPbxproj = applePlatform => (projectRootOrProject, {
   targetName,
   buildConfiguration = 'Release'
-} = {}) {
-  const project = (0, _Xcodeproj().resolvePathOrProject)(projectRootOrProject, applePlatform);
+} = {}) => {
+  const project = (0, _Xcodeproj().resolvePathOrProject)(applePlatform)(projectRootOrProject);
   if (!project) {
     return null;
   }
@@ -42,7 +42,8 @@ function getInfoPlistPathFromPbxproj(projectRootOrProject, applePlatform, {
   }
   // The `INFOPLIST_FILE` is relative to the project folder, ex: app/Info.plist.
   return sanitizeInfoPlistBuildProperty(xcBuildConfiguration.buildSettings.INFOPLIST_FILE);
-}
+};
+exports.getInfoPlistPathFromPbxproj = getInfoPlistPathFromPbxproj;
 function sanitizeInfoPlistBuildProperty(infoPlist) {
   return infoPlist?.replace(/"/g, '').replace('$(SRCROOT)', '') ?? null;
 }

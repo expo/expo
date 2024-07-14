@@ -3,8 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TargetType = void 0;
-exports.findApplicationTargetWithDependenciesAsync = findApplicationTargetWithDependenciesAsync;
+exports.findApplicationTargetWithDependenciesAsync = exports.TargetType = void 0;
 exports.findFirstNativeTarget = findFirstNativeTarget;
 exports.findNativeTargetByName = findNativeTargetByName;
 exports.findSignableTargets = findSignableTargets;
@@ -53,9 +52,9 @@ function getXCBuildConfigurationFromPbxproj(project, {
   });
   return xcBuildConfiguration ?? null;
 }
-async function findApplicationTargetWithDependenciesAsync(projectRoot, applePlatform, scheme) {
-  const applicationTargetName = await (0, _BuildScheme().getApplicationTargetNameForSchemeAsync)(projectRoot, applePlatform, scheme);
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, applePlatform);
+const findApplicationTargetWithDependenciesAsync = applePlatform => async (projectRoot, scheme) => {
+  const applicationTargetName = await (0, _BuildScheme().getApplicationTargetNameForSchemeAsync)(applePlatform)(projectRoot, scheme);
+  const project = (0, _Xcodeproj().getPbxproj)(applePlatform)(projectRoot);
   const [, applicationTarget] = findNativeTargetByName(project, applicationTargetName);
   const dependencies = getTargetDependencies(project, applicationTarget);
   return {
@@ -64,7 +63,8 @@ async function findApplicationTargetWithDependenciesAsync(projectRoot, applePlat
     signable: true,
     dependencies
   };
-}
+};
+exports.findApplicationTargetWithDependenciesAsync = findApplicationTargetWithDependenciesAsync;
 function getTargetDependencies(project, parentTarget) {
   if (!parentTarget.dependencies || parentTarget.dependencies.length === 0) {
     return undefined;

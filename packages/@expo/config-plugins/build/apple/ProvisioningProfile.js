@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setProvisioningProfileForPbxproj = setProvisioningProfileForPbxproj;
+exports.setProvisioningProfileForPbxproj = void 0;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -33,13 +33,13 @@ function _string() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function setProvisioningProfileForPbxproj(projectRoot, applePlatform, {
+const setProvisioningProfileForPbxproj = applePlatform => (projectRoot, {
   targetName,
   profileName,
   appleTeamId,
   buildConfiguration = 'Release'
-}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot, applePlatform);
+}) => {
+  const project = (0, _Xcodeproj().getPbxproj)(applePlatform)(projectRoot);
   const nativeTargetEntry = targetName ? (0, _Target().findNativeTargetByName)(project, targetName) : (0, _Target().findFirstNativeTarget)(project);
   const [nativeTargetId, nativeTarget] = nativeTargetEntry;
   const quotedAppleTeamId = ensureQuotes(appleTeamId);
@@ -57,7 +57,8 @@ function setProvisioningProfileForPbxproj(projectRoot, applePlatform, {
     item.attributes.TargetAttributes[nativeTargetId].ProvisioningStyle = 'Manual';
   });
   _fs().default.writeFileSync(project.filepath, project.writeSync());
-}
+};
+exports.setProvisioningProfileForPbxproj = setProvisioningProfileForPbxproj;
 const ensureQuotes = value => {
   if (!value.match(/^['"]/)) {
     return `"${value}"`;

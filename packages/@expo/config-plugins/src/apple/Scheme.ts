@@ -6,7 +6,7 @@ import { createInfoPlistPluginWithPropertyGuard } from '../plugins/apple-plugins
 export const withScheme = (applePlatform: 'ios' | 'macos') =>
   createInfoPlistPluginWithPropertyGuard(applePlatform)(
     (config: Partial<Pick<ExpoConfig, 'scheme' | typeof applePlatform>>, infoPlist: InfoPlist) =>
-      setScheme(applePlatform, config, infoPlist),
+      setScheme(applePlatform)(config, infoPlist),
     {
       infoPlistProperty: 'CFBundleURLTypes',
       expoConfigProperty: 'scheme',
@@ -26,29 +26,30 @@ export function getScheme(config: { scheme?: string | string[] }): string[] {
   return [];
 }
 
-export function setScheme(
-  applePlatform: 'ios' | 'macos',
-  config: Partial<Pick<ExpoConfig, 'scheme' | typeof applePlatform>>,
-  infoPlist: InfoPlist
-): InfoPlist {
-  const scheme = [
-    ...getScheme(config),
-    // @ts-ignore: TODO: `ios.scheme` / `macos.scheme` is an unreleased -- harder to add to turtle v1.
-    ...getScheme(config[applePlatform] ?? {}),
-  ];
-  // Add the bundle identifier to the list of schemes for easier Google auth and parity with Turtle v1.
-  if (config[applePlatform]?.bundleIdentifier) {
-    scheme.push(config[applePlatform]!.bundleIdentifier!);
-  }
-  if (scheme.length === 0) {
-    return infoPlist;
-  }
+export const setScheme =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Partial<Pick<ExpoConfig, 'scheme' | typeof applePlatform>>,
+    infoPlist: InfoPlist
+  ): InfoPlist => {
+    const scheme = [
+      ...getScheme(config),
+      // @ts-ignore: TODO: `ios.scheme` / `macos.scheme` is an unreleased -- harder to add to turtle v1.
+      ...getScheme(config[applePlatform] ?? {}),
+    ];
+    // Add the bundle identifier to the list of schemes for easier Google auth and parity with Turtle v1.
+    if (config[applePlatform]?.bundleIdentifier) {
+      scheme.push(config[applePlatform]!.bundleIdentifier!);
+    }
+    if (scheme.length === 0) {
+      return infoPlist;
+    }
 
-  return {
-    ...infoPlist,
-    CFBundleURLTypes: [{ CFBundleURLSchemes: scheme }],
+    return {
+      ...infoPlist,
+      CFBundleURLTypes: [{ CFBundleURLSchemes: scheme }],
+    };
   };
-}
 
 export function appendScheme(scheme: string | null, infoPlist: InfoPlist): InfoPlist {
   if (!scheme) {

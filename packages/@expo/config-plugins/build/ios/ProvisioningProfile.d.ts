@@ -1,8 +1,6 @@
-type ProvisioningProfileSettings = {
-    targetName?: string;
+export declare const setProvisioningProfileForPbxproj: (projectRoot: string, { targetName, profileName, appleTeamId, buildConfiguration, }: {
+    targetName?: string | undefined;
     appleTeamId: string;
     profileName: string;
-    buildConfiguration?: string;
-};
-export declare function setProvisioningProfileForPbxproj(projectRoot: string, { targetName, profileName, appleTeamId, buildConfiguration, }: ProvisioningProfileSettings): void;
-export {};
+    buildConfiguration?: string | undefined;
+}) => void;

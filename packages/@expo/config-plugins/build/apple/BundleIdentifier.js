@@ -3,12 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBundleIdentifier = getBundleIdentifier;
-exports.getBundleIdentifierFromPbxproj = getBundleIdentifierFromPbxproj;
-exports.resetAllPlistBundleIdentifiers = resetAllPlistBundleIdentifiers;
+exports.resetAllPlistBundleIdentifiers = exports.getBundleIdentifierFromPbxproj = exports.getBundleIdentifier = void 0;
 exports.resetPlistBundleIdentifier = resetPlistBundleIdentifier;
-exports.setBundleIdentifier = setBundleIdentifier;
-exports.setBundleIdentifierForPbxproj = setBundleIdentifierForPbxproj;
+exports.setBundleIdentifierForPbxproj = exports.setBundleIdentifier = void 0;
 exports.updateBundleIdentifierForPbxproj = updateBundleIdentifierForPbxproj;
 exports.withBundleIdentifier = void 0;
 function _plist() {
@@ -87,16 +84,15 @@ const withBundleIdentifier = applePlatform => (config, {
   });
 };
 exports.withBundleIdentifier = withBundleIdentifier;
-function getBundleIdentifier(applePlatform, config) {
-  return config[applePlatform]?.bundleIdentifier ?? null;
-}
+const getBundleIdentifier = applePlatform => config => config[applePlatform]?.bundleIdentifier ?? null;
 
 /**
  * In Turtle v1 we set the bundleIdentifier directly on Info.plist rather
  * than in pbxproj
  */
-function setBundleIdentifier(applePlatform, config, infoPlist) {
-  const bundleIdentifier = getBundleIdentifier(applePlatform, config);
+exports.getBundleIdentifier = getBundleIdentifier;
+const setBundleIdentifier = applePlatform => (config, infoPlist) => {
+  const bundleIdentifier = getBundleIdentifier(applePlatform)(config);
   if (!bundleIdentifier) {
     return infoPlist;
   }
@@ -104,7 +100,7 @@ function setBundleIdentifier(applePlatform, config, infoPlist) {
     ...infoPlist,
     CFBundleIdentifier: bundleIdentifier
   };
-}
+};
 
 /**
  * Gets the bundle identifier defined in the Xcode project found in the project directory.
@@ -117,20 +113,20 @@ function setBundleIdentifier(applePlatform, config, infoPlist) {
  * Defaults to 'Release'.
  *
  * @param {string} projectRoot Path to project root containing the ios (or macos) directory
- * @param {string} applePlatform The Apple platform (ios or macos)
  * @param {Object} options
  * @param {string} options.targetName Target name
  * @param {string} options.buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
-function getBundleIdentifierFromPbxproj(projectRoot, applePlatform, options = {}) {
+exports.setBundleIdentifier = setBundleIdentifier;
+const getBundleIdentifierFromPbxproj = applePlatform => (projectRoot, options = {}) => {
   const {
     targetName,
     buildConfiguration = 'Release'
   } = options;
   let pbxprojPath;
   try {
-    pbxprojPath = (0, _Paths().getPBXProjectPath)(projectRoot, applePlatform);
+    pbxprojPath = (0, _Paths().getPBXProjectPath)(applePlatform)(projectRoot);
   } catch {
     return null;
   }
@@ -144,7 +140,8 @@ function getBundleIdentifierFromPbxproj(projectRoot, applePlatform, options = {}
     return null;
   }
   return getProductBundleIdentifierFromBuildConfiguration(xcBuildConfiguration);
-}
+};
+exports.getBundleIdentifierFromPbxproj = getBundleIdentifierFromPbxproj;
 function getProductBundleIdentifierFromBuildConfiguration(xcBuildConfiguration) {
   const bundleIdentifierRaw = xcBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
   if (bundleIdentifierRaw) {
@@ -197,31 +194,31 @@ function updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updat
  *
  * @param {string} projectRoot Path to project root containing the ios directory
  * @param {string} bundleIdentifier Desired bundle identifier
- * @param {string} applePlatform The Apple platform (ios or macos)
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-function setBundleIdentifierForPbxproj(projectRoot, bundleIdentifier, applePlatform, updateProductName = true) {
+const setBundleIdentifierForPbxproj = applePlatform => (projectRoot, bundleIdentifier, updateProductName = true) => {
   // Get all pbx projects in the ${projectRoot}/ios directory
   let pbxprojPaths = [];
   try {
-    pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(projectRoot, applePlatform);
+    pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(applePlatform)(projectRoot);
   } catch {}
   for (const pbxprojPath of pbxprojPaths) {
     updateBundleIdentifierForPbxproj(pbxprojPath, bundleIdentifier, updateProductName);
   }
-}
+};
 
 /**
  * Reset bundle identifier field in Info.plist to use PRODUCT_BUNDLE_IDENTIFIER, as recommended by Apple.
  */
-
+exports.setBundleIdentifierForPbxproj = setBundleIdentifierForPbxproj;
 const defaultBundleId = '$(PRODUCT_BUNDLE_IDENTIFIER)';
-function resetAllPlistBundleIdentifiers(projectRoot, applePlatform) {
-  const infoPlistPaths = (0, _Paths().getAllInfoPlistPaths)(projectRoot, applePlatform);
+const resetAllPlistBundleIdentifiers = applePlatform => projectRoot => {
+  const infoPlistPaths = (0, _Paths().getAllInfoPlistPaths)(applePlatform)(projectRoot);
   for (const plistPath of infoPlistPaths) {
     resetPlistBundleIdentifier(plistPath);
   }
-}
+};
+exports.resetAllPlistBundleIdentifiers = resetAllPlistBundleIdentifiers;
 function resetPlistBundleIdentifier(plistPath) {
   const rawPlist = _fs().default.readFileSync(plistPath, 'utf8');
   const plistObject = _plist().default.parse(rawPlist);

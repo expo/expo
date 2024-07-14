@@ -6,7 +6,7 @@ import { XcodeProject } from 'xcode';
  * @param param1
  * @returns
  */
-export declare function getInfoPlistPathFromPbxproj(projectRootOrProject: string | XcodeProject, applePlatform: 'ios' | 'macos', { targetName, buildConfiguration, }?: {
-    targetName?: string;
-    buildConfiguration?: string | 'Release' | 'Debug';
-}): string | null;
+export declare const getInfoPlistPathFromPbxproj: (applePlatform: 'ios' | 'macos') => (projectRootOrProject: string | XcodeProject, { targetName, buildConfiguration, }?: {
+    targetName?: string | undefined;
+    buildConfiguration?: string | undefined;
+}) => string | null;

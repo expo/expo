@@ -15,7 +15,11 @@ import { withInfoPlist, withXcodeProject } from '../plugins/apple-plugins';
 export const withGoogle: (applePlatform: 'ios' | 'macos') => ConfigPlugin =
   (applePlatform: 'ios' | 'macos') => (config) => {
     return withInfoPlist(applePlatform)(config, (config) => {
-      config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);
+      config.modResults = setGoogleConfig(applePlatform)(
+        config,
+        config.modResults,
+        config.modRequest
+      );
       return config;
     });
   };
@@ -41,54 +45,61 @@ function readGoogleServicesInfoPlist(
   return plist.parse(contents);
 }
 
-export function getGoogleSignInReversedClientId(
-  config: Pick<ExpoConfig, 'ios'>,
-  modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
-): string | null {
-  const googleServicesFileRelativePath = getGoogleServicesFile(config);
-  if (googleServicesFileRelativePath === null) {
-    return null;
-  }
+export const getGoogleSignInReversedClientId =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Pick<ExpoConfig, typeof applePlatform>,
+    modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
+  ): string | null => {
+    const googleServicesFileRelativePath = getGoogleServicesFile(applePlatform)(config);
+    if (googleServicesFileRelativePath === null) {
+      return null;
+    }
 
-  const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
+    const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
 
-  return infoPlist.REVERSED_CLIENT_ID ?? null;
-}
+    return infoPlist.REVERSED_CLIENT_ID ?? null;
+  };
 
-export function getGoogleServicesFile(config: Pick<ExpoConfig, 'ios'>) {
-  return config.ios?.googleServicesFile ?? null;
-}
+export const getGoogleServicesFile =
+  (applePlatform: 'ios' | 'macos') => (config: Pick<ExpoConfig, typeof applePlatform>) => {
+    return config[applePlatform]?.googleServicesFile ?? null;
+  };
 
-export function setGoogleSignInReversedClientId(
-  config: Pick<ExpoConfig, 'ios'>,
-  infoPlist: InfoPlist,
-  modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
-): InfoPlist {
-  const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);
+export const setGoogleSignInReversedClientId =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Pick<ExpoConfig, typeof applePlatform>,
+    infoPlist: InfoPlist,
+    modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
+  ): InfoPlist => {
+    const reversedClientId = getGoogleSignInReversedClientId(applePlatform)(config, modRequest);
 
-  if (reversedClientId === null) {
+    if (reversedClientId === null) {
+      return infoPlist;
+    }
+
+    return appendScheme(reversedClientId, infoPlist);
+  };
+
+export const setGoogleConfig =
+  (applePlatform: 'ios' | 'macos') =>
+  (
+    config: Pick<ExpoConfig, typeof applePlatform>,
+    infoPlist: InfoPlist,
+    modRequest: ModProps<InfoPlist>
+  ): InfoPlist => {
+    infoPlist = setGoogleSignInReversedClientId(applePlatform)(config, infoPlist, modRequest);
     return infoPlist;
-  }
-
-  return appendScheme(reversedClientId, infoPlist);
-}
-
-export function setGoogleConfig(
-  config: Pick<ExpoConfig, 'ios'>,
-  infoPlist: InfoPlist,
-  modRequest: ModProps<InfoPlist>
-): InfoPlist {
-  infoPlist = setGoogleSignInReversedClientId(config, infoPlist, modRequest);
-  return infoPlist;
-}
+  };
 
 export const setGoogleServicesFile =
   (applePlatform: 'ios' | 'macos') =>
   (
-    config: Pick<ExpoConfig, 'ios'>,
+    config: Pick<ExpoConfig, typeof applePlatform>,
     { projectRoot, project }: { project: XcodeProject; projectRoot: string }
   ): XcodeProject => {
-    const googleServicesFileRelativePath = getGoogleServicesFile(config);
+    const googleServicesFileRelativePath = getGoogleServicesFile(applePlatform)(config);
     if (googleServicesFileRelativePath === null) {
       return project;
     }
@@ -96,17 +107,16 @@ export const setGoogleServicesFile =
     const googleServiceFilePath = path.resolve(projectRoot, googleServicesFileRelativePath);
     fs.copyFileSync(
       googleServiceFilePath,
-      path.join(getSourceRoot(projectRoot, applePlatform), 'GoogleService-Info.plist')
+      path.join(getSourceRoot(applePlatform)(projectRoot), 'GoogleService-Info.plist')
     );
 
-    const projectName = getProjectName(projectRoot, applePlatform);
+    const projectName = getProjectName(applePlatform)(projectRoot);
     const plistFilePath = `${projectName}/GoogleService-Info.plist`;
     if (!project.hasFile(plistFilePath)) {
-      project = addResourceFileToGroup({
+      project = addResourceFileToGroup(applePlatform)({
         filepath: plistFilePath,
         groupName: projectName,
         project,
-        applePlatform,
         isBuildFile: true,
         verbose: true,
       });

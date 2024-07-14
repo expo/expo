@@ -19,6 +19,8 @@ import { addWarningIOS } from '../utils/warnings';
 const { readFile, writeFile } = promises;
 
 type IosModName = keyof Required<ModConfig>['ios'];
+// TODO: support macOS
+const applePlatform = 'ios';
 
 function getEntitlementsPlistTemplate() {
   // TODO: Fetch the versioned template file if possible
@@ -75,7 +77,7 @@ const defaultProviders = {
   appDelegate: provider<Paths.AppDelegateProjectFile>({
     getFilePath({ modRequest: { projectRoot } }) {
       // TODO: Get application AppDelegate file from pbxproj.
-      return Paths.getAppDelegateFilePath(projectRoot);
+      return Paths.getAppDelegateFilePath(applePlatform)(projectRoot);
     },
     async read(filePath) {
       return Paths.getFileInfo(filePath);
@@ -111,7 +113,7 @@ const defaultProviders = {
   // Append a rule to supply .xcodeproj data to mods on `mods.ios.xcodeproj`
   xcodeproj: provider<XcodeProject>({
     getFilePath({ modRequest: { projectRoot } }) {
-      return Paths.getPBXProjectPath(projectRoot);
+      return Paths.getPBXProjectPath(applePlatform)(projectRoot);
     },
     async read(filePath) {
       const project = xcode.project(filePath);
@@ -159,7 +161,7 @@ const defaultProviders = {
       }
       try {
         // Fallback on glob...
-        return await Paths.getInfoPlistPath(config.modRequest.projectRoot);
+        return await Paths.getInfoPlistPath(applePlatform)(config.modRequest.projectRoot);
       } catch (error: any) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -217,7 +219,7 @@ const defaultProviders = {
     async getFilePath(config) {
       try {
         ensureApplicationTargetEntitlementsFileConfigured(config.modRequest.projectRoot);
-        return Entitlements.getEntitlementsPath(config.modRequest.projectRoot) ?? '';
+        return Entitlements.getEntitlementsPath(applePlatform)(config.modRequest.projectRoot) ?? '';
       } catch (error: any) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -277,7 +279,7 @@ const defaultProviders = {
 
   podfile: provider<Paths.PodfileProjectFile>({
     getFilePath({ modRequest: { projectRoot } }) {
-      return Paths.getPodfilePath(projectRoot);
+      return Paths.getPodfilePath(applePlatform)(projectRoot);
     },
     // @ts-expect-error
     async read(filePath) {

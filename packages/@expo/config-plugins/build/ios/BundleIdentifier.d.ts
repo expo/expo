@@ -1,15 +1,12 @@
-import { ExpoConfig } from '@expo/config-types';
-import { InfoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
-export declare const withBundleIdentifier: ConfigPlugin<{
-    bundleIdentifier?: string;
+export declare const withBundleIdentifier: import("..").ConfigPlugin<{
+    bundleIdentifier?: string | undefined;
 }>;
-declare function getBundleIdentifier(config: Pick<ExpoConfig, 'ios'>): string | null;
+export declare const getBundleIdentifier: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">) => string | null;
 /**
  * In Turtle v1 we set the bundleIdentifier directly on Info.plist rather
  * than in pbxproj
  */
-declare function setBundleIdentifier(config: ExpoConfig, infoPlist: InfoPlist): InfoPlist;
+export declare const setBundleIdentifier: (config: import("@expo/config-types").ExpoConfig, infoPlist: import("./IosConfig.types").InfoPlist) => import("./IosConfig.types").InfoPlist;
 /**
  * Gets the bundle identifier defined in the Xcode project found in the project directory.
  *
@@ -25,18 +22,10 @@ declare function setBundleIdentifier(config: ExpoConfig, infoPlist: InfoPlist): 
  * @param {string} buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
-declare function getBundleIdentifierFromPbxproj(projectRoot: string, { targetName, buildConfiguration, }?: {
-    targetName?: string;
-    buildConfiguration?: string;
-}): string | null;
-/**
- * Updates the bundle identifier for a given pbxproj
- *
- * @param {string} pbxprojPath Path to pbxproj file
- * @param {string} bundleIdentifier Bundle identifier to set in the pbxproj
- * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
- */
-declare function updateBundleIdentifierForPbxproj(pbxprojPath: string, bundleIdentifier: string, updateProductName?: boolean): void;
+export declare const getBundleIdentifierFromPbxproj: (projectRoot: string, options?: {
+    targetName?: string | undefined;
+    buildConfiguration?: string | undefined;
+}) => string | null;
 /**
  * Updates the bundle identifier for pbx projects inside the ios directory of the given project root
  *
@@ -44,7 +33,6 @@ declare function updateBundleIdentifierForPbxproj(pbxprojPath: string, bundleIde
  * @param {string} bundleIdentifier Desired bundle identifier
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-declare function setBundleIdentifierForPbxproj(projectRoot: string, bundleIdentifier: string, updateProductName?: boolean): void;
-declare function resetAllPlistBundleIdentifiers(projectRoot: string): void;
-declare function resetPlistBundleIdentifier(plistPath: string): void;
-export { getBundleIdentifier, setBundleIdentifier, getBundleIdentifierFromPbxproj, updateBundleIdentifierForPbxproj, setBundleIdentifierForPbxproj, resetAllPlistBundleIdentifiers, resetPlistBundleIdentifier, };
+export declare const setBundleIdentifierForPbxproj: (projectRoot: string, bundleIdentifier: string, updateProductName?: boolean) => void;
+export declare const resetAllPlistBundleIdentifiers: (projectRoot: string) => void;
+export { updateBundleIdentifierForPbxproj, resetPlistBundleIdentifier, } from '../apple/BundleIdentifier';

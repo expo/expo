@@ -3,37 +3,16 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createBuildSourceFile = createBuildSourceFile;
-exports.withBuildSourceFile = void 0;
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
+exports.withBuildSourceFile = exports.createBuildSourceFile = void 0;
+function AppleImpl() {
+  const data = _interopRequireWildcard(require("../apple/XcodeProjectFile"));
+  AppleImpl = function () {
     return data;
   };
   return data;
 }
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**
  * Create a build source file and link it to Xcode.
  *
@@ -43,57 +22,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param props.overwrite should the contents overwrite any existing file in the same location on disk.
  * @returns
  */
-const withBuildSourceFile = (config, {
-  filePath,
-  contents,
-  overwrite
-}) => {
-  return (0, _iosPlugins().withXcodeProject)(config, config => {
-    const projectName = (0, _Xcodeproj().getProjectName)(config.modRequest.projectRoot);
-    config.modResults = createBuildSourceFile({
-      project: config.modResults,
-      nativeProjectRoot: config.modRequest.platformProjectRoot,
-      fileContents: contents,
-      filePath: _path().default.join(projectName, filePath),
-      overwrite
-    });
-    return config;
-  });
-};
+const withBuildSourceFile = exports.withBuildSourceFile = AppleImpl().withBuildSourceFile('ios');
 
 /**
  * Add a source file to the Xcode project and write it to the file system.
  *
- * @param nativeProjectRoot absolute path to the native app root `user/app/ios`
- * @param filePath path relative to the `nativeProjectRoot` for the file to create `user/app/ios/myapp/foobar.swift`
+ * @param nativeProjectRoot absolute path to the native app root `user/app/ios` or `user/app/macos`
+ * @param filePath path relative to the `nativeProjectRoot` for the file to create `user/app/ios/myapp/foobar.swift` or `user/app/macos/myapp/foobar.swift`
  * @param fileContents string file contents to write to the `filePath`
  * @param overwrite should write file even if one already exists
  */
-exports.withBuildSourceFile = withBuildSourceFile;
-function createBuildSourceFile({
-  project,
-  nativeProjectRoot,
-  filePath,
-  fileContents,
-  overwrite
-}) {
-  const absoluteFilePath = _path().default.join(nativeProjectRoot, filePath);
-  if (overwrite || !_fs().default.existsSync(absoluteFilePath)) {
-    // Create the file
-    _fs().default.writeFileSync(absoluteFilePath, fileContents, 'utf8');
-  }
-
-  // `myapp`
-  const groupName = _path().default.dirname(filePath);
-
-  // Ensure the file is linked with Xcode resource files
-  if (!project.hasFile(filePath)) {
-    project = (0, _Xcodeproj().addBuildSourceFileToGroup)({
-      filepath: filePath,
-      groupName,
-      project
-    });
-  }
-  return project;
-}
+const createBuildSourceFile = exports.createBuildSourceFile = AppleImpl().createBuildSourceFile('ios');
 //# sourceMappingURL=XcodeProjectFile.js.map

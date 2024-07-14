@@ -9,11 +9,10 @@ import { ConfigPlugin, XcodeProject } from '../Plugin.types';
  * 3. Sets the build configuration `SWIFT_OBJC_BRIDGING_HEADER = [PROJECT_NAME]-Bridging-Header.h`
  */
 export declare const withSwiftBridgingHeader: (applePlatform: 'ios' | 'macos') => ConfigPlugin;
-export declare function ensureSwiftBridgingHeaderSetup({ projectRoot, applePlatform, project, }: {
+export declare const ensureSwiftBridgingHeaderSetup: (applePlatform: 'ios' | 'macos') => ({ projectRoot, project }: {
     projectRoot: string;
-    applePlatform: 'ios' | 'macos';
     project: XcodeProject;
-}): XcodeProject;
+}) => XcodeProject;
 export declare function getDesignatedSwiftBridgingHeaderFileReference({ project, }: {
     project: XcodeProject;
 }): string | null;
@@ -26,11 +25,10 @@ export declare function linkBridgingHeaderFile({ project, bridgingHeader, }: {
     project: XcodeProject;
     bridgingHeader: string;
 }): XcodeProject;
-export declare function createBridgingHeaderFile({ applePlatform, projectRoot, projectName, project, bridgingHeader, }: {
-    applePlatform: 'ios' | 'macos';
+export declare const createBridgingHeaderFile: (applePlatform: 'ios' | 'macos') => ({ projectRoot, projectName, project, bridgingHeader, }: {
     project: XcodeProject;
     projectName: string;
     projectRoot: string;
     bridgingHeader: string;
-}): XcodeProject;
+}) => XcodeProject;
 export declare const withNoopSwiftFile: (applePlatform: 'ios' | 'macos') => ConfigPlugin;

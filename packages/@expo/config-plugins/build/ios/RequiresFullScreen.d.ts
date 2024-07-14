@@ -1,5 +1,3 @@
-import { ExpoConfig } from '@expo/config-types';
-import { InfoPlist } from './IosConfig.types';
 export declare const withRequiresFullScreen: import("..").ConfigPlugin;
-export declare function getRequiresFullScreen(config: Pick<ExpoConfig, 'ios' | 'sdkVersion'>): boolean;
-export declare function setRequiresFullScreen(config: Pick<ExpoConfig, 'ios'>, infoPlist: InfoPlist): InfoPlist;
+export declare const getRequiresFullScreen: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos" | "sdkVersion">) => boolean;
+export declare const setRequiresFullScreen: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">, infoPlist: import("./IosConfig.types").InfoPlist) => import("./IosConfig.types").InfoPlist;

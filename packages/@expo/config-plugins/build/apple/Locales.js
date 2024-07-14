@@ -4,9 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getLocales = getLocales;
-exports.getResolvedLocalesAsync = getResolvedLocalesAsync;
-exports.setLocalesAsync = setLocalesAsync;
-exports.withLocales = void 0;
+exports.withLocales = exports.setLocalesAsync = exports.getResolvedLocalesAsync = void 0;
 function _jsonFile() {
   const data = _interopRequireDefault(require("@expo/json-file"));
   _jsonFile = function () {
@@ -52,7 +50,7 @@ function _warnings() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const withLocales = applePlatform => config => {
   return (0, _applePlugins().withXcodeProject)(applePlatform)(config, async config => {
-    config.modResults = await setLocalesAsync(config, applePlatform, {
+    config.modResults = await setLocalesAsync(applePlatform)(config, {
       projectRoot: config.modRequest.projectRoot,
       project: config.modResults
     });
@@ -63,18 +61,18 @@ exports.withLocales = withLocales;
 function getLocales(config) {
   return config.locales ?? null;
 }
-async function setLocalesAsync(config, applePlatform, {
+const setLocalesAsync = applePlatform => async (config, {
   projectRoot,
   project
-}) {
+}) => {
   const applePlatformDir = applePlatform;
   const locales = getLocales(config);
   if (!locales) {
     return project;
   }
   // possibly validate CFBundleAllowMixedLocalizations is enabled
-  const localesMap = await getResolvedLocalesAsync(projectRoot, applePlatform, locales);
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot, applePlatform);
+  const localesMap = await getResolvedLocalesAsync(applePlatform)(projectRoot, locales);
+  const projectName = (0, _Xcodeproj().getProjectName)(applePlatform)(projectRoot);
   const supportingDirectory = (0, _path().join)(projectRoot, applePlatformDir, projectName, 'Supporting');
 
   // TODO: Should we delete all before running? Revisit after we land on a lock file.
@@ -101,19 +99,19 @@ async function setLocalesAsync(config, applePlatform, {
       comment
     }) => comment === stringName)) {
       // Only write the file if it doesn't already exist.
-      project = (0, _Xcodeproj().addResourceFileToGroup)({
+      project = (0, _Xcodeproj().addResourceFileToGroup)(applePlatform)({
         filepath: (0, _path().relative)(supportingDirectory, strings),
         groupName,
         project,
-        applePlatform,
         isBuildFile: true,
         verbose: true
       });
     }
   }
   return project;
-}
-async function getResolvedLocalesAsync(projectRoot, applePlatform, input) {
+};
+exports.setLocalesAsync = setLocalesAsync;
+const getResolvedLocalesAsync = applePlatform => async (projectRoot, input) => {
   const locales = {};
   for (const [lang, localeJsonPath] of Object.entries(input)) {
     if (typeof localeJsonPath === 'string') {
@@ -130,5 +128,6 @@ async function getResolvedLocalesAsync(projectRoot, applePlatform, input) {
     }
   }
   return locales;
-}
+};
+exports.getResolvedLocalesAsync = getResolvedLocalesAsync;
 //# sourceMappingURL=Locales.js.map

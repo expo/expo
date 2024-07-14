@@ -1,5 +1,3 @@
-import { ExpoConfig } from '@expo/config-types';
-import { InfoPlist } from './IosConfig.types';
 export declare const withUsesNonExemptEncryption: import("..").ConfigPlugin;
-export declare function getUsesNonExemptEncryption(config: Pick<ExpoConfig, 'ios'>): boolean | null;
-export declare function setUsesNonExemptEncryption(config: Pick<ExpoConfig, 'ios'>, { ITSAppUsesNonExemptEncryption, ...infoPlist }: InfoPlist): InfoPlist;
+export declare const getUsesNonExemptEncryption: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">) => boolean | null;
+export declare const setUsesNonExemptEncryption: (config: Pick<import("@expo/config-types").ExpoConfig, "ios" | "macos">, { ITSAppUsesNonExemptEncryption, ...infoPlist }: import("./IosConfig.types").InfoPlist) => import("./IosConfig.types").InfoPlist;

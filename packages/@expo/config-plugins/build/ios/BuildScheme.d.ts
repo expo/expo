@@ -1,10 +1,10 @@
-export declare function getSchemesFromXcodeproj(projectRoot: string): string[];
-export declare function getRunnableSchemesFromXcodeproj(projectRoot: string, { configuration }?: {
-    configuration?: 'Debug' | 'Release';
-}): {
+export declare const getSchemesFromXcodeproj: (projectRoot: string) => string[];
+export declare const getRunnableSchemesFromXcodeproj: (projectRoot: string, { configuration }?: {
+    configuration?: "Debug" | "Release" | undefined;
+}) => {
     name: string;
     osType: string;
     type: string;
 }[];
-export declare function getApplicationTargetNameForSchemeAsync(projectRoot: string, scheme: string): Promise<string>;
-export declare function getArchiveBuildConfigurationForSchemeAsync(projectRoot: string, scheme: string): Promise<string>;
+export declare const getApplicationTargetNameForSchemeAsync: (projectRoot: string, scheme: string) => Promise<string>;
+export declare const getArchiveBuildConfigurationForSchemeAsync: (projectRoot: string, scheme: string) => Promise<string>;
