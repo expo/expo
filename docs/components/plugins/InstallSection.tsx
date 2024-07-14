@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 
 import { usePageMetadata } from '~/providers/page-metadata';
 import { Terminal } from '~/ui/components/Snippet';
-import { A, P, DEMI } from '~/ui/components/Text';
+import { A, P, DEMI, CODE } from '~/ui/components/Text';
 
 type InstallSectionProps = PropsWithChildren<{
   packageName: string;
@@ -29,12 +29,14 @@ export default function InstallSection({
       <Terminal cmd={cmd} />
       {hideBareInstructions ? null : (
         <P>
-          If you are installing this in an <A href="/bare/overview/">existing React Native app</A>,
-          you have to <A href="/bare/installing-expo-modules/">prepare your existing project</A> to
-          use this Expo library. Then, follow the{' '}
-          <A href={sourceCodeUrl ?? href}>additional configuration instructions</A> to configure
-          native projects (Android and iOS) as mentioned by library's README{' '}
-          <DEMI>under installation in bare React Native projects section</DEMI>.
+          If you are installing this in an{' '}
+          <A href="/bare/overview/">existing React Native app (bare workflow)</A>, start by{' '}
+          <A href="/bare/installing-expo-modules/">
+            installing <CODE>expo</CODE>
+          </A>{' '}
+          in your project. Then, follow the{' '}
+          <A href={sourceCodeUrl ?? href}>additional instructions</A> as mentioned by library's
+          README under <DEMI>"Installation in bare React Native projects"</DEMI> section.
         </P>
       )}
     </>
