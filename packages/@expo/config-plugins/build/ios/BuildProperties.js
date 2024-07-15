@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createBuildPodfilePropsConfigPlugin = void 0;
-Object.defineProperty(exports, "updateAppleBuildPropertiesFromConfig", {
+Object.defineProperty(exports, "updateIosBuildPropertiesFromConfig", {
   enumerable: true,
   get: function () {
     return AppleImpl().updateAppleBuildPropertiesFromConfig;

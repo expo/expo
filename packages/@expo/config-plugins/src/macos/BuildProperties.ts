@@ -24,6 +24,6 @@ export const createBuildPodfilePropsConfigPlugin =
 export const withJsEnginePodfileProps = AppleImpl.withJsEnginePodfileProps('macos');
 
 export {
-  updateAppleBuildPropertiesFromConfig,
-  updateAppleBuildProperty as updatemacosBuildProperty,
+  updateAppleBuildPropertiesFromConfig as updateMacosBuildPropertiesFromConfig,
+  updateAppleBuildProperty as updateMacosBuildProperty,
 } from '../apple/BuildProperties';

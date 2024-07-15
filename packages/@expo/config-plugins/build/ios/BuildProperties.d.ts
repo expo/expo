@@ -18,4 +18,4 @@ export declare const createBuildPodfilePropsConfigPlugin: <SourceConfigType exte
  * A config-plugin to update `ios/Podfile.properties.json` from the `jsEngine` in expo config
  */
 export declare const withJsEnginePodfileProps: import("..").ConfigPlugin<void>;
-export { updateAppleBuildPropertiesFromConfig, updateAppleBuildProperty as updateIosBuildProperty, } from '../apple/BuildProperties';
+export { updateAppleBuildPropertiesFromConfig as updateIosBuildPropertiesFromConfig, updateAppleBuildProperty as updateIosBuildProperty, } from '../apple/BuildProperties';
