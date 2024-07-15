@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed broken `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun`. ([#30344](https://github.com/expo/expo/pull/30344) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.10.1 — 2024-07-15
+
+### 🐛 Bug fixes
+
+- Fixed broken `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun`. ([#30344](https://github.com/expo/expo/pull/30344) by [@kudo](https://github.com/kudo))
 
 ## 0.10.0 — 2024-06-20
 

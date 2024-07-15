@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] fix getLastNotificationResponseAsync. ([#30301](https://github.com/expo/expo/pull/30301) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.28.10 — 2024-07-15
+
+### 🐛 Bug fixes
+
+- [Android] fix getLastNotificationResponseAsync. ([#30301](https://github.com/expo/expo/pull/30301) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.9 — 2024-06-12
 
