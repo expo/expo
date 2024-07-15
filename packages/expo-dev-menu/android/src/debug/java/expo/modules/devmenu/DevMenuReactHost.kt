@@ -11,7 +11,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
-import com.facebook.react.devsupport.DevMenuReactInternalSettings
+import com.facebook.react.devsupport.DevMenuReactSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.JSCInstance
@@ -125,7 +125,7 @@ object DevMenuReactHost {
         it.readLine()
       }
 
-      val devMenuInternalReactSettings = DevMenuReactInternalSettings(serverIp, applicationContext)
+      val devMenuInternalReactSettings = DevMenuReactSettings(serverIp, applicationContext)
 
       val devSupportManager = reactHost.devSupportManager
       val devSupportManagerBaseClass = devSupportManager.javaClass.superclass!!

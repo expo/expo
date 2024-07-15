@@ -8,49 +8,41 @@ import com.facebook.react.packagerconnection.PackagerConnectionSettings
 import expo.modules.devmenu.react.DevMenuPackagerConnectionSettings
 
 /**
- * Class representing react's internal [DevInternalSettings] class, which we want to replace to change [packagerConnectionSettings] and others settings.
+ * Class representing react's DevSettings class, which we want to replace to change [packagerConnectionSettings] and others settings.
  * It is only use when [expo.modules.devmenu.DevMenuReactNativeHost.getUseDeveloperSupport] returns true.
  */
-internal class DevMenuReactInternalSettings(
+internal class DevMenuReactSettings(
   serverIp: String,
   application: Context
-) : DevInternalSettings(application, {}) {
-  private val packagerConnectionSettings = DevMenuPackagerConnectionSettings(serverIp, application)
+) : DeveloperSettings {
+  override val packagerConnectionSettings = DevMenuPackagerConnectionSettings(serverIp, application)
 
-  override fun isElementInspectorEnabled() = false
+  override var isElementInspectorEnabled = false
 
-  override fun isJSMinifyEnabled() = false
+  override var isJSMinifyEnabled = false
 
-  override fun setRemoteJSDebugEnabled(remoteJSDebugEnabled: Boolean) = Unit
+  override var isJSDevModeEnabled = true
 
-  override fun isJSDevModeEnabled() = true
+  override var isStartSamplingProfilerOnInit = false
 
-  override fun isStartSamplingProfilerOnInit() = false
+  override var isAnimationFpsDebugEnabled = false
 
-  override fun setElementInspectorEnabled(enabled: Boolean) = Unit
+  override var isDeviceDebugEnabled = false
 
-  override fun isAnimationFpsDebugEnabled() = false
+  override var isRemoteJSDebugEnabled = false
 
-  override fun setJSDevModeEnabled(value: Boolean) = Unit
+  override var isHotModuleReplacementEnabled = true
 
-  override fun setFpsDebugEnabled(enabled: Boolean) = Unit
+  override var isFpsDebugEnabled = false
 
-  override fun isRemoteJSDebugEnabled() = false
-
-  override fun isHotModuleReplacementEnabled() = true
-
-  override fun setHotModuleReplacementEnabled(enabled: Boolean) = Unit
-
-  override fun isFpsDebugEnabled() = false
-
-  override fun getPackagerConnectionSettings() = packagerConnectionSettings
+  override fun addMenuItem(title: String) {
+  }
 }
 
 /**
  * A wrapper of [DevInternalSettings] allows us to access the package-private [DevInternalSettings] properties
  */
-internal class DevMenuInternalSettingsWrapper(private val devSettings: DevInternalSettings) {
-  constructor(developerSettings: DeveloperSettings) : this(developerSettings as DevInternalSettings)
+internal class DevMenuInternalSettingsWrapper(private val devSettings: DeveloperSettings) {
 
   val isFpsDebugEnabled = devSettings.isFpsDebugEnabled
   var isHotModuleReplacementEnabled: Boolean

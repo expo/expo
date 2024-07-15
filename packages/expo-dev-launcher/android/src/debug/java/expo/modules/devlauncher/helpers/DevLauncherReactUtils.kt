@@ -10,7 +10,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.devsupport.DevLauncherDevServerHelper
-import com.facebook.react.devsupport.DevLauncherInternalSettings
+import com.facebook.react.devsupport.DevLauncherSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -112,7 +112,7 @@ private fun injectDebugServerHost(
   debugServerHost: String,
   appBundleName: String
 ) {
-  val settings = DevLauncherInternalSettings(context, debugServerHost)
+  val settings = DevLauncherSettings(context, debugServerHost)
   val devSupportManagerBaseClass: Class<*> = DevSupportManagerBase::class.java
   devSupportManagerBaseClass.setProtectedDeclaredField(
     devSupportManager,
@@ -215,7 +215,7 @@ private fun injectLocalBundleLoader(
 
 fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager, controller: DevLauncherControllerInterface?) {
   val defaultServerHost = AndroidInfoHelpers.getServerHost(context)
-  val devSettings = DevLauncherInternalSettings(context, defaultServerHost)
+  val devSettings = DevLauncherSettings(context, defaultServerHost)
   val devLauncherDevServerHelper = DevLauncherDevServerHelper(
     context = context,
     controller = controller,

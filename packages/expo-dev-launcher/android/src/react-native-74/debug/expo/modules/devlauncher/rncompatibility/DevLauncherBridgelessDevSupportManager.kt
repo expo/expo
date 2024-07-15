@@ -23,7 +23,7 @@ class DevLauncherBridgelessDevSupportManager(
     injectDevServerHelper(context, this, controller)
   }
 
-  override fun showNewJavaError(message: String?, e: Throwable) {
+  override fun showNewJavaError(message: String?, e: Throwable?) {
     Log.e("DevLauncher", "$message", e)
     if (!DevLauncherController.wasInitialized()) {
       Log.e("DevLauncher", "DevLauncher wasn't initialized. Couldn't intercept native error handling.")
@@ -41,6 +41,10 @@ class DevLauncherBridgelessDevSupportManager(
   }
 
   override fun getUniqueTag() = "DevLauncherApp-Bridgeless"
+
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:JvmName("getJSCallInvokerHolder")
+  override val jSBundleURLForRemoteDebugging: String?  = super.getJSBundleURLForRemoteDebugging()
 
   override fun startInspector() {
     // no-op for the default `startInspector` which would be implicitly called

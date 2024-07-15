@@ -31,6 +31,7 @@ import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 
@@ -87,7 +88,8 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
             int minNumShakes,
             @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
             @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-            @Nullable DevLoadingViewManager devLoadingViewManager) {
+            @Nullable DevLoadingViewManager devLoadingViewManager,
+            @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
         super(
                 applicationContext,
                 reactInstanceManagerHelper,
@@ -98,7 +100,8 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
                 minNumShakes,
                 customPackagerCommandHandlers,
                 surfaceDelegateFactory,
-                devLoadingViewManager);
+                devLoadingViewManager,
+                pausedInDebuggerOverlayManager);
 
         if (getDevSettings().isStartSamplingProfilerOnInit()) {
             // Only start the profiler. If its already running, there is an error
@@ -221,7 +224,7 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
             String bundleURL =
                     getDevServerHelper()
                             .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-            reloadJSFromServer(bundleURL);
+            reloadJSFromServer(bundleURL, () -> {});
         }
     }
 
