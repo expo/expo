@@ -70,8 +70,10 @@ jobs:
         run: |
           # Run the Expo Dev Server in the background
           node ../../packages/@expo/cli/build/bin/cli start --ios &
+          sleep 10
           # Start the build early
-          curl  -H "Content-Type: multipart/mixed" -H "expo-platform: ios" http://localhost:8081
+          BUNDLE_URL=$(curl  -H "Content-Type: multipart/mixed" -H "expo-platform: ios" http://localhost:8081 | jq -r ".launchAsset.url")
+          curl $BUNDLE_URL
 
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
