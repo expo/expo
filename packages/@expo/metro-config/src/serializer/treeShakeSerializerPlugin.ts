@@ -8,7 +8,7 @@ import { NodePath, traverse } from '@babel/core';
 import generate from '@babel/generator';
 import * as types from '@babel/types';
 import assert from 'assert';
-import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { SerializerConfigT } from 'metro-config';
 
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
@@ -18,6 +18,7 @@ import {
   ReconcileTransformSettings,
   collectDependenciesForShaking,
 } from '../transform-worker/metro-transform-worker';
+import { ExpoSerializerOptions } from './fork/baseJSBundle';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
 const isDebugEnabled = require('debug').enabled('expo:treeshake');
@@ -167,9 +168,9 @@ export async function treeShakeSerializer(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],
   graph: ReadOnlyGraph,
-  options: SerializerOptions
+  options: ExpoSerializerOptions
 ): Promise<SerializerParameters> {
-  if (!isShakingEnabled(graph, options)) {
+  if (!options.serializerOptions?.usedExports) {
     return [entryPoint, preModules, graph, options];
   }
 
@@ -893,6 +894,7 @@ export function accessAst(output: AdvancedMixedOutput): types.File | undefined {
   return output.data.ast;
 }
 
-export function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions) {
-  return String(graph.transformOptions.customTransformOptions?.treeshake) === 'true'; // && !options.dev;
+export function isEnvBoolean(graph: ReadOnlyGraph, name: string): boolean {
+  if (!graph.transformOptions.customTransformOptions) return false;
+  return String(graph.transformOptions.customTransformOptions[name]) === 'true';
 }

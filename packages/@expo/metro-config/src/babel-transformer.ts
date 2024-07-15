@@ -116,8 +116,7 @@ function getBabelCaller({
 
     // Set the standard Babel flag to disable ESM transformations.
     supportsStaticESM:
-      isCustomTruthy(options.customTransformOptions?.treeshake) ||
-      options.experimentalImportSupport,
+      isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
 
     // Enable React compiler support in Babel.
     // TODO: Remove this in the future when compiler is on by default.

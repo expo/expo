@@ -14,7 +14,7 @@ import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
 
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { accessAst, isShakingEnabled } from './treeShakeSerializerPlugin';
+import { accessAst, isEnvBoolean } from './treeShakeSerializerPlugin';
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
   type Dependency,
@@ -66,7 +66,7 @@ export async function reconcileTransformSerializerPlugin(
   graph: ReadOnlyGraph,
   options: SerializerOptions
 ): Promise<SerializerParameters> {
-  if (!isShakingEnabled(graph, options)) {
+  if (!isOptimizeEnabled(graph)) {
     return [entryPoint, preModules, graph, options];
   }
 
@@ -260,4 +260,8 @@ export function sortDependencies(
   });
 
   return nextDependencies;
+}
+
+function isOptimizeEnabled(graph: ReadOnlyGraph) {
+  return isEnvBoolean(graph, 'optimize');
 }

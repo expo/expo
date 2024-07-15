@@ -65,7 +65,7 @@ function assertCollectDependenciesOptions(collectDependenciesOptions) {
 }
 // This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
 async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph, options) {
-    if (!(0, treeShakeSerializerPlugin_1.isShakingEnabled)(graph, options)) {
+    if (!isOptimizeEnabled(graph)) {
         return [entryPoint, preModules, graph, options];
     }
     // Convert all remaining AST and dependencies to standard output that Metro expects.
@@ -211,4 +211,7 @@ function sortDependencies(dependencies, accordingTo) {
     return nextDependencies;
 }
 exports.sortDependencies = sortDependencies;
+function isOptimizeEnabled(graph) {
+    return (0, treeShakeSerializerPlugin_1.isEnvBoolean)(graph, 'optimize');
+}
 //# sourceMappingURL=reconcileTransformSerializerPlugin.js.map

@@ -29,6 +29,7 @@ import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutation
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { CommandError } from '../../../utils/errors';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -136,11 +137,17 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental React Compiler is enabled.`);
   }
 
+  if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+    throw new CommandError(
+      'EXPO_UNSTABLE_TREE_SHAKING requires EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH to be enabled.'
+    );
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,
     platformBundlers,
-    isTreeShakingEnabled: env.EXPO_UNSTABLE_TREE_SHAKING,
+    isTreeShakingEnabled: env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH && env.EXPO_UNSTABLE_TREE_SHAKING,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,

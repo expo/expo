@@ -249,6 +249,7 @@ function getDefaultSerializer(
         return {
           outputMode: customSerializerOptions.output,
           splitChunks: customSerializerOptions.splitChunks,
+          usedExports: customSerializerOptions.usedExports,
           includeSourceMaps: customSerializerOptions.includeSourceMaps,
         };
       }
@@ -261,6 +262,7 @@ function getDefaultSerializer(
 
         return {
           outputMode: url.searchParams.get('serializer.output'),
+          usedExports: url.searchParams.get('serializer.usedExports') === 'true',
           splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
         };

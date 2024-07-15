@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isShakingEnabled = exports.accessAst = exports.treeShakeSerializer = exports.isModuleEmptyFor = void 0;
+exports.isEnvBoolean = exports.accessAst = exports.treeShakeSerializer = exports.isModuleEmptyFor = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -150,7 +150,7 @@ function markUnused(path) {
     path.remove();
 }
 async function treeShakeSerializer(entryPoint, preModules, graph, options) {
-    if (!isShakingEnabled(graph, options)) {
+    if (!options.serializerOptions?.usedExports) {
         return [entryPoint, preModules, graph, options];
     }
     if (!OPTIMIZE_GRAPH) {
@@ -714,8 +714,10 @@ function accessAst(output) {
     return output.data.ast;
 }
 exports.accessAst = accessAst;
-function isShakingEnabled(graph, options) {
-    return String(graph.transformOptions.customTransformOptions?.treeshake) === 'true'; // && !options.dev;
+function isEnvBoolean(graph, name) {
+    if (!graph.transformOptions.customTransformOptions)
+        return false;
+    return String(graph.transformOptions.customTransformOptions[name]) === 'true';
 }
-exports.isShakingEnabled = isShakingEnabled;
+exports.isEnvBoolean = isEnvBoolean;
 //# sourceMappingURL=treeShakeSerializerPlugin.js.map

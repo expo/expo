@@ -78,6 +78,7 @@ export async function microBundle({
     minify?: boolean;
     splitChunks?: boolean;
     treeshake?: boolean;
+    optimize?: boolean;
     inlineRequires?: boolean;
   };
   preModulesFs?: Record<string, string>;
@@ -123,7 +124,7 @@ export async function microBundle({
       baseUrl: options.baseUrl,
       engine: options.hermes ? 'hermes' : undefined,
       environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
-      treeshake: options.treeshake,
+      optimize: options.optimize ?? options.treeshake,
     },
     // NOTE: This is non-standard but it provides a cleaner output
     experimentalImportSupport: true,
@@ -217,8 +218,13 @@ export async function microBundle({
     {
       // @ts-ignore
       serializerOptions:
-        options.output || options.hermes || options.sourceMaps || options.splitChunks
+        options.output ||
+        options.hermes ||
+        options.sourceMaps ||
+        options.splitChunks ||
+        options.treeshake
           ? {
+              usedExports: options.treeshake,
               output: options.output,
               includeSourceMaps: options.sourceMaps,
               splitChunks: options.splitChunks,

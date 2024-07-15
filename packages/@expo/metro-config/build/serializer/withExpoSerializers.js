@@ -167,6 +167,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 return {
                     outputMode: customSerializerOptions.output,
                     splitChunks: customSerializerOptions.splitChunks,
+                    usedExports: customSerializerOptions.usedExports,
                     includeSourceMaps: customSerializerOptions.includeSourceMaps,
                 };
             }
@@ -177,6 +178,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 const url = new URL(sourceUrl, 'https://expo.dev');
                 return {
                     outputMode: url.searchParams.get('serializer.output'),
+                    usedExports: url.searchParams.get('serializer.usedExports') === 'true',
                     splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
                     includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
                 };

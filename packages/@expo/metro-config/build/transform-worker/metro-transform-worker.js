@@ -233,14 +233,14 @@ function performConstantFolding(ast, { filename }) {
 async function transformJS(file, { config, options }) {
     const targetEnv = options.customTransformOptions?.environment;
     const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
-    const treeshake = 
+    const optimize = 
     // Ensure we don't enable tree shaking for scripts or assets.
     file.type === 'js/module' &&
-        String(options.customTransformOptions?.treeshake) === 'true' &&
+        String(options.customTransformOptions?.optimize) === 'true' &&
         // Disable tree shaking on JSON files.
         !file.filename.endsWith('.json');
-    const unstable_disableModuleWrapping = treeshake || config.unstable_disableModuleWrapping;
-    if (treeshake && !options.experimentalImportSupport) {
+    const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
+    if (optimize && !options.experimentalImportSupport) {
         // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
         throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.');
     }
@@ -255,7 +255,7 @@ async function transformJS(file, { config, options }) {
     // @ts-expect-error: Not on types yet (Metro 0.80).
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
-    if (!treeshake) {
+    if (!optimize) {
         ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
     }
     if (!options.dev) {
@@ -292,7 +292,7 @@ async function transformJS(file, { config, options }) {
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
                 // If tree shaking is enabled, then preserve the original require calls.
                 // This ensures require.context calls are not broken.
-                collectOnly: treeshake === true,
+                collectOnly: optimize === true,
             };
             ({ ast, dependencies, dependencyMapName } = (0, collect_dependencies_1.default)(ast, {
                 ...collectDependenciesOptions,
@@ -355,7 +355,7 @@ async function transformJS(file, { config, options }) {
     if (minify) {
         ({ map, code } = await (0, exports.minifyCode)(config, file.filename, result.code, file.code, map, reserved));
     }
-    const possibleReconcile = treeshake
+    const possibleReconcile = optimize
         ? {
             inlineRequires: options.inlineRequires,
             importDefault,

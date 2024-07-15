@@ -384,6 +384,18 @@ In the future, we'll enable this feature by default.
 
 <Step label="2">
 
+Toggle on the environment variable `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1` to keep modules around until the entire graph is created. Ensure your app builds and runs as expected in production with this feature enabled before continuing.
+
+```sh .env
+EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1
+```
+
+This will only be used in production mode.
+
+</Step>
+
+<Step label="3">
+
 Toggle on the environment variable `EXPO_UNSTABLE_TREE_SHAKING=1` to enable the feature.
 
 ```sh .env
@@ -394,7 +406,7 @@ This will only be used in production mode.
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 Bundle your app in production mode to see the effects of tree shaking.
 
