@@ -108,6 +108,7 @@ function useLocalSearchParams() {
 }
 exports.useLocalSearchParams = useLocalSearchParams;
 function useSearchParams({ global = false } = {}) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const params = global ? useGlobalSearchParams() : useLocalSearchParams();
     const entries = Object.entries(params).flatMap(([key, value]) => {
         if (global) {
