@@ -59,7 +59,7 @@ function createMemoryHistory() {
             const id = window.history.state?.id ?? (0, non_secure_1.nanoid)();
             // Need to keep the hash part of the path if there was no previous history entry
             // or the previous history entry had the same path
-            let pathWithHash = path;
+            const pathWithHash = path;
             // ------- START OF FORK
             // if (!items.length || items.findIndex((item) => item.id === id) < 0) {
             //   // There are two scenarios for creating an array with only one history record:

@@ -91,7 +91,7 @@ export default function createMemoryHistory() {
 
       // Need to keep the hash part of the path if there was no previous history entry
       // or the previous history entry had the same path
-      let pathWithHash = path;
+      const pathWithHash = path;
 
       // ------- START OF FORK
 
