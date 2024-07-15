@@ -415,13 +415,8 @@ function getPathFromResolvedState(
           }
         }
 
-        const params = new URLSearchParams(
-          Object.entries(focusedParams).flatMap(([key, values]) => {
-            return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
-          })
-        );
+        const query = new URLSearchParams(focusedParams).toString();
 
-        const query = params.toString();
         if (query) {
           path += `?${query}`;
         }
