@@ -102,15 +102,46 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     let node: RouteNode = {
       type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
       loadRoute() {
+        let routeModule: any;
         if (options.ignoreRequireErrors) {
           try {
-            return contextModule(filePath);
+            routeModule = contextModule(filePath);
           } catch {
-            return {};
+            routeModule = {};
           }
         } else {
-          return contextModule(filePath);
+          routeModule = contextModule(filePath);
         }
+
+        if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
+          // In development mode, when async routes are disabled, add some extra error handling to improve the developer experience.
+          // This can be useful when you accidentally use an async function in a route file for the default export.
+          if (routeModule instanceof Promise) {
+            throw new Error(
+              `Route "${filePath}" cannot be a promise when async routes is disabled.`
+            );
+          }
+
+          const defaultExport = routeModule?.default;
+          if (defaultExport instanceof Promise) {
+            throw new Error(
+              `The default export from route "${filePath}" is a promise. Ensure the React Component does not use async or promises.`
+            );
+          }
+
+          // check if default is an async function without invoking it
+          if (
+            defaultExport instanceof Function &&
+            // This only works on web because Hermes support async functions so we have to transform them out.
+            defaultExport.constructor.name === 'AsyncFunction'
+          ) {
+            throw new Error(
+              `The default export from route "${filePath}" is an async function. Ensure the React Component does not use async or promises.`
+            );
+          }
+        }
+
+        return routeModule;
       },
       contextKey: filePath,
       route: '', // This is overwritten during hoisting based upon the _layout
@@ -122,8 +153,20 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
       // filter the missing routes.
       if (node.type !== 'api' && importMode === 'sync') {
-        if (!node.loadRoute()?.default) {
+        const routeItem = node.loadRoute();
+        // Have a warning for nullish ex
+        const route = routeItem?.default;
+        if (route == null) {
+          // Do not throw an error since a user may just be creating a new route.
+          console.warn(
+            `Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`
+          );
           continue;
+        }
+        if (['boolean', 'number', 'string'].includes(typeof route)) {
+          throw new Error(
+            `The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
+          );
         }
       }
     }
