@@ -334,18 +334,6 @@ export default function Route() {
 }
 ```
 
-Parameter names with a `[]` suffix will always be returned as an array.
-
-```tsx app/hash.tsx
-import { router, useLocalSearchParams } from 'expo-router';
-
-export default function Route() {
-  // If the current URL is `/route?myParam[]=1
-  const { myParam } = useLocalSearchParams();
-  // myParam === ["1"]
-}
-```
-
 \*/}
 
 ## Hash support

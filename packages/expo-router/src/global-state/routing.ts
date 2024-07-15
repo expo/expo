@@ -76,13 +76,6 @@ export function setParams(
   params: Record<string, string | number | (string | number)[]> = {}
 ) {
   assertIsReady(this);
-  for (const key of Object.keys(params)) {
-    const value = params[key];
-    if (key.endsWith('[]') && !Array.isArray(value)) {
-      params = { ...params, [key]: [value] };
-    }
-  }
-
   return (this.navigationRef?.current?.setParams as any)(params);
 }
 

@@ -576,7 +576,7 @@ const parseQueryParams = (path, parseConfig) => {
             : searchParams.getAll(name);
         // searchParams.getAll returns an array.
         // if we only have a single value, and its not an array param, we need to extract the value
-        params[name] = !name.endsWith('[]') && values.length === 1 ? values[0] : values;
+        params[name] = values.length === 1 ? values[0] : values;
     }
     return Object.keys(params).length ? params : undefined;
 };
