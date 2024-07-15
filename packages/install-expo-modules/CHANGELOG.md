@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed "Unsupported Swift Version" when running `install-expo-modules` on a RNC CLI project.
+- [iOS] Fixed "Unsupported Swift Version" when running `install-expo-modules` on a RNC CLI project. ([#30414](https://github.com/expo/expo/pull/30414) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
