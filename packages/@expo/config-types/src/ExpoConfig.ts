@@ -45,7 +45,7 @@ export interface ExpoConfig {
   /**
    * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
    */
-  platforms?: ('android' | 'ios' | 'web')[];
+  platforms?: ('android' | 'ios' | 'macos' | 'web')[];
   /**
    * If you would like to share the source code of your app on Github, enter the URL for the repository here and it will be linked to from your Expo project page.
    */
@@ -232,6 +232,7 @@ export interface ExpoConfig {
    */
   jsEngine?: 'hermes' | 'jsc';
   ios?: IOS;
+  macos?: MacOS;
   android?: Android;
   web?: Web;
   /**
