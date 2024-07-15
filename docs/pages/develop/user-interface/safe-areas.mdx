@@ -3,14 +3,13 @@ title: Safe areas
 description: Learn how to add safe areas for screen components inside your Expo project.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Creating a safe area ensures your app screen's content is positioned correctly. This means it doesn't get overlapped by notches, status bars, home indicators, and other interface elements. When the content gets overlapped, it gets concealed by these interface elements.
+Creating a safe area ensures your app screen's content is positioned correctly. This means it doesn't get overlapped by notches, status bars, home indicators, and other interface elements that are part of the device's physical hardware or are controlled by the operating system. When the content gets overlapped, it gets concealed by these interface elements.
 
-Here's an example of an app screen's content concealed by the status bar on Android. On iOS, the same content is concealed by rounded corners, notch, and the status bar.
+Here's an example of an app screen's content getting concealed by the status bar on Android. On iOS, the same content is concealed by rounded corners, notch, and the status bar.
 
 <ContentSpotlight
   alt="Without defining a safe area, the content can be obscured by the device's interface elements."
@@ -35,8 +34,6 @@ Using the library, the result of the previous example changes as it displays the
 You can skip installing `react-native-safe-area-context` if you have created a project using [the default template](/get-started/create-a-project/). This library is installed as peer dependency for Expo Router library. Otherwise, install it by running the following command:
 
 <Terminal cmd={['$ npx expo install react-native-safe-area-context']} />
-
-</Collapsible>
 
 ### Usage
 
