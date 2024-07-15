@@ -1,6 +1,6 @@
 export declare const getSchemesFromXcodeproj: (projectRoot: string) => string[];
 export declare const getRunnableSchemesFromXcodeproj: (projectRoot: string, { configuration }?: {
-    configuration?: "Debug" | "Release" | undefined;
+    configuration?: "Release" | "Debug" | undefined;
 }) => {
     name: string;
     osType: string;

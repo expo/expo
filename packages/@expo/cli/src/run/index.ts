@@ -36,8 +36,8 @@ export const expoRun: Command = async (argv) => {
     if (!platform && args['--help']) {
       printHelp(
         'Run the native app locally',
-        `npx expo run <android|ios>`,
-        chalk`{dim $} npx expo run <android|ios> --help  Output usage information`
+        `npx expo run <android|ios|macos>`,
+        chalk`{dim $} npx expo run <android|ios|macos> --help  Output usage information`
       );
     }
 
@@ -46,6 +46,7 @@ export const expoRun: Command = async (argv) => {
       platform = await selectAsync('Select the platform to run', [
         { title: 'Android', value: 'android' },
         { title: 'iOS', value: 'ios' },
+        { title: 'macOS', value: 'macos' },
       ]);
     }
 
@@ -57,9 +58,12 @@ export const expoRun: Command = async (argv) => {
         return expoRunAndroid(argsWithoutPlatform);
       }
 
-      case 'ios': {
-        const { expoRunIos } = await import('./ios/index.js');
-        return expoRunIos(argsWithoutPlatform);
+      case 'ios':
+      case 'macos': {
+        const { expoRunIos, expoRunMacos } = await import('./apple/index.js');
+        return platform === 'ios'
+          ? expoRunIos(argsWithoutPlatform)
+          : expoRunMacos(argsWithoutPlatform);
       }
 
       default:

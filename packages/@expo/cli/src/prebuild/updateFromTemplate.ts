@@ -72,7 +72,10 @@ export async function updateFromTemplateAsync(
   return {
     hasNewProjectFiles: !!copiedPaths.length,
     // If the iOS folder changes or new packages are added, we should rerun pod install.
-    needsPodInstall: copiedPaths.includes('ios') || !!depsResults.changedDependencies.length,
+    needsPodInstall:
+      copiedPaths.includes('ios') ||
+      copiedPaths.includes('macos') ||
+      !!depsResults.changedDependencies.length,
     templateChecksum,
     ...depsResults,
   };
@@ -138,7 +141,7 @@ export async function cloneTemplateAndCopyToProjectAsync({
     ora.fail(`Failed to create the native ${pluralized}`);
     Log.log(
       chalk.yellow(
-        chalk`You may want to delete the {bold ./ios} and/or {bold ./android} directories before trying again.`
+        chalk`You may want to delete the {bold ./ios} and/or {bold ./macos} and/or {bold ./android} directories before trying again.`
       )
     );
     throw new SilentError(e);

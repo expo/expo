@@ -11,12 +11,12 @@ import { Log } from '../log';
 const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
 
 // TODO: Adjust to indicate that the bundle identifier must start with a letter, period, or hyphen.
-const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
+const APPLE_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
 const ANDROID_PACKAGE_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
 
-/** Validate an iOS bundle identifier. */
+/** Validate an iOS/macOS bundle identifier. */
 export function validateBundleId(value: string): boolean {
-  return IOS_BUNDLE_ID_REGEX.test(value);
+  return APPLE_BUNDLE_ID_REGEX.test(value);
 }
 
 /** Validate an Android package name. */
@@ -153,13 +153,13 @@ const RESERVED_ANDROID_PACKAGE_NAME_SEGMENTS = [
   'strictfp',
 ];
 
-export function assertValidBundleId(value: string) {
+export const assertValidBundleId = (applePlatform: 'ios' | 'macos') => (value: string) => {
   assert.match(
     value,
-    IOS_BUNDLE_ID_REGEX,
-    `The ios.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter.`
+    APPLE_BUNDLE_ID_REGEX,
+    `The ${applePlatform}.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter.`
   );
-}
+};
 
 export function assertValidPackage(value: string) {
   assert.match(
@@ -170,38 +170,43 @@ export function assertValidPackage(value: string) {
 }
 
 /** @private */
-export async function getBundleIdWarningInternalAsync(bundleId: string): Promise<string | null> {
-  if (env.EXPO_OFFLINE) {
-    Log.warn('Skipping Apple bundle identifier reservation validation in offline-mode.');
-    return null;
-  }
+export const getBundleIdWarningInternalAsync =
+  (applePlatform: 'ios' | 'macos') =>
+  async (bundleId: string): Promise<string | null> => {
+    const appleBrandName = applePlatform === 'ios' ? 'iOS' : 'macOS';
 
-  if (!(await isUrlAvailableAsync('itunes.apple.com'))) {
-    debug(
-      `Couldn't connect to iTunes Store to check bundle ID ${bundleId}. itunes.apple.com may be down.`
-    );
-    // If no network, simply skip the warnings since they'll just lead to more confusion.
-    return null;
-  }
-
-  const url = `http://itunes.apple.com/lookup?bundleId=${bundleId}`;
-  try {
-    debug(`Checking iOS bundle ID '${bundleId}' at: ${url}`);
-    const response = await fetch(url);
-    const json = await response.json();
-    if (json.resultCount > 0) {
-      const firstApp = json.results[0];
-      return formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
+    if (env.EXPO_OFFLINE) {
+      Log.warn('Skipping Apple bundle identifier reservation validation in offline-mode.');
+      return null;
     }
-  } catch (error: any) {
-    debug(`Error checking bundle ID ${bundleId}: ${error.message}`);
-    // Error fetching itunes data.
-  }
-  return null;
-}
 
-/** Returns a warning message if an iOS bundle identifier is potentially already in use. */
-export const getBundleIdWarningAsync = memoize(getBundleIdWarningInternalAsync);
+    if (!(await isUrlAvailableAsync('itunes.apple.com'))) {
+      debug(
+        `Couldn't connect to iTunes Store to check bundle ID ${bundleId}. itunes.apple.com may be down.`
+      );
+      // If no network, simply skip the warnings since they'll just lead to more confusion.
+      return null;
+    }
+
+    const url = `http://itunes.apple.com/lookup?bundleId=${bundleId}`;
+    try {
+      debug(`Checking ${appleBrandName} bundle ID '${bundleId}' at: ${url}`);
+      const response = await fetch(url);
+      const json = await response.json();
+      if (json.resultCount > 0) {
+        const firstApp = json.results[0];
+        return formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
+      }
+    } catch (error: any) {
+      debug(`Error checking bundle ID ${bundleId}: ${error.message}`);
+      // Error fetching itunes data.
+    }
+    return null;
+  };
+
+/** Returns a warning message if an iOS/macOS bundle identifier is potentially already in use. */
+export const getBundleIdWarningAsyncIos = memoize(getBundleIdWarningInternalAsync('ios'));
+export const getBundleIdWarningAsyncMacos = memoize(getBundleIdWarningInternalAsync('macos'));
 
 /** @private */
 export async function getPackageNameWarningInternalAsync(
@@ -227,7 +232,7 @@ export async function getPackageNameWarningInternalAsync(
     // If the page exists, then warn the user.
     if (response.status === 200) {
       // There is no JSON API for the Play Store so we can't concisely
-      // locate the app name and developer to match the iOS warning.
+      // locate the app name and developer to match the iOS/macOS warning.
       return `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
         learnMore(url)
       )}`;

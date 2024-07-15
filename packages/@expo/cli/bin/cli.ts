@@ -19,7 +19,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
   // NOTE(EvanBacon): Ensure every bundler-related command sets `NODE_ENV` as expected for the command.
   run: () => import('../src/run/index.js').then((i) => i.expoRun),
-  'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
+  'run:ios': () => import('../src/run/apple/index.js').then((i) => i.expoRunIos),
+  'run:macos': () => import('../src/run/apple/index.js').then((i) => i.expoRunMacos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
@@ -87,6 +88,7 @@ if (!isSubcommand && args['--help']) {
     customize,
     prebuild,
     'run:ios': runIos,
+    'run:macos': runMacos,
     'run:android': runAndroid,
     // NOTE(EvanBacon): Don't document this command as it's a temporary
     // workaround until we can use `expo export` for all production bundling.
@@ -108,7 +110,7 @@ if (!isSubcommand && args['--help']) {
 
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
-    ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
+    ${Object.keys({ 'run:ios': runIos, 'run:macos': runMacos, 'run:android': runAndroid, prebuild }).join(', ')}
     ${Object.keys({ install, customize, config }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
@@ -132,8 +134,10 @@ if (!isSubcommand) {
     web: 'npx expo start --web',
     'start:web': 'npx expo start --web',
     'build:ios': 'eas build -p ios',
+    'build:macos': 'eas build -p macos',
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
+    'client:install:macos': 'npx expo start --macos',
     'client:install:android': 'npx expo start --android',
     doctor: 'npx expo-doctor',
     upgrade: 'https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/',
@@ -149,6 +153,7 @@ if (!isSubcommand) {
 
     'credentials:manager': `eas credentials`,
     'fetch:ios:certs': `eas credentials`,
+    'fetch:macos:certs': `eas credentials`,
     'fetch:android:keystore': `eas credentials`,
     'fetch:android:hashes': `eas credentials`,
     'fetch:android:upload-cert': `eas credentials`,
@@ -166,6 +171,7 @@ if (!isSubcommand) {
     'build:status': `eas build:list`,
     'upload:android': `eas submit -p android`,
     'upload:ios': `eas submit -p ios`,
+    'upload:macos': `eas submit -p macos`,
   };
 
   // TODO: Log telemetry about invalid command used.

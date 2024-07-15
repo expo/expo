@@ -27,6 +27,12 @@ const platformSettings: Record<
       path.join(getExpoHomeDirectory(), 'ios-simulator-app-cache', `${filename}.app`),
     shouldExtractResults: true,
   },
+  macos: {
+    versionsKey: 'macosClientUrl',
+    getFilePath: (filename) =>
+      path.join(getExpoHomeDirectory(), 'macos-simulator-app-cache', `${filename}.app`),
+    shouldExtractResults: true,
+  },
   android: {
     versionsKey: 'androidClientUrl',
     getFilePath: (filename) =>

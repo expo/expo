@@ -6,7 +6,9 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { AndroidConfig, AppleConfig } from '..';
+import { getVersionCode } from '../android/Version';
+import { getBuildNumber as getBuildNumberIos } from '../ios/Version';
+import { getBuildNumber as getBuildNumberMacos } from '../macos/Version';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
@@ -40,15 +42,21 @@ export function getNativeVersion(
   },
   platform: 'android' | 'ios' | 'macos'
 ): string {
-  const version = AppleConfig.Version.getVersion(config);
+  // For review: We used to use the iOS getVersion() method for all platforms
+  // here, which is subtly different to getAppVersion() above as it uses ||
+  // rather than ??. I've inlined it to prevent regression.
+  const version = config.version || '1.0.0';
   switch (platform) {
-    case 'ios':
+    case 'ios': {
+      const buildNumber = getBuildNumberIos(config);
+      return `${version}(${buildNumber})`;
+    }
     case 'macos': {
-      const buildNumber = AppleConfig.Version.getBuildNumber(platform)(config);
+      const buildNumber = getBuildNumberMacos(config);
       return `${version}(${buildNumber})`;
     }
     case 'android': {
-      const versionCode = AndroidConfig.Version.getVersionCode(config);
+      const versionCode = getVersionCode(config);
       return `${version}(${versionCode})`;
     }
     default: {

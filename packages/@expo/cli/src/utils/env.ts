@@ -115,7 +115,7 @@ class Env {
   /**
    * **Experimental** - Disable using `exp.direct` as the hostname for
    * `--tunnel` connections. This enables **https://** forwarding which
-   * can be used to test universal links on iOS.
+   * can be used to test universal links on iOS or macOS.
    *
    * This may cause issues with `expo-linking` and Expo Go.
    *

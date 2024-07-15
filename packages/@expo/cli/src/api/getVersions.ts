@@ -7,10 +7,16 @@ export type SDKVersion = {
   iosVersion?: string;
   /** @example "https://dpq5q02fu5f55.cloudfront.net/Exponent-2.17.4.tar.gz" */
   iosClientUrl?: string;
+  /** @example "2.16.1" */
+  macosVersion?: string;
+  /** @example "https://dpq5q02fu5f55.cloudfront.net/Exponent-2.17.4.tar.gz" */
+  macosClientUrl?: string;
   /** @example "https://dev.to/expo/expo-sdk-38-is-now-available-5aa0" */
   releaseNoteUrl?: string;
   /** @example "2.17.4" */
   iosClientVersion?: string;
+  /** @example "2.17.4" */
+  macosClientVersion?: string;
   /** @example "https://d1ahtucjixef4r.cloudfront.net/Exponent-2.16.1.apk" */
   androidClientUrl?: string;
   /** @example "2.16.1" */
@@ -34,6 +40,8 @@ export type Versions = {
   androidVersion: string;
   iosUrl: string;
   iosVersion: string;
+  macosUrl: string;
+  macosVersion: string;
   sdkVersions: SDKVersions;
 };
 

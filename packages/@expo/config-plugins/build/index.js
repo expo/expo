@@ -8,6 +8,7 @@ var _exportNames = {
   AndroidConfig: true,
   AppleConfig: true,
   IOSConfig: true,
+  MacOSConfig: true,
   XML: true,
   History: true,
   WarningAggregator: true,
@@ -26,6 +27,20 @@ var _exportNames = {
   withXcodeProject: true,
   withPodfile: true,
   withPodfileProperties: true,
+  withIosAppDelegate: true,
+  withIosInfoPlist: true,
+  withIosEntitlementsPlist: true,
+  withIosExpoPlist: true,
+  withIosXcodeProject: true,
+  withIosPodfile: true,
+  withIosPodfileProperties: true,
+  withMacosAppDelegate: true,
+  withMacosInfoPlist: true,
+  withMacosEntitlementsPlist: true,
+  withMacosExpoPlist: true,
+  withMacosXcodeProject: true,
+  withMacosPodfile: true,
+  withMacosPodfileProperties: true,
   withAndroidManifest: true,
   withStringsXml: true,
   withAndroidColors: true,
@@ -43,7 +58,7 @@ var _exportNames = {
   evalModsAsync: true,
   PluginError: true
 };
-exports.IOSConfig = exports.History = exports.BaseMods = exports.AppleConfig = exports.AndroidConfig = void 0;
+exports.MacOSConfig = exports.IOSConfig = exports.History = exports.BaseMods = exports.AppleConfig = exports.AndroidConfig = void 0;
 Object.defineProperty(exports, "PluginError", {
   enumerable: true,
   get: function () {
@@ -151,6 +166,90 @@ Object.defineProperty(exports, "withInfoPlist", {
   enumerable: true,
   get: function () {
     return _iosPlugins().withInfoPlist;
+  }
+});
+Object.defineProperty(exports, "withIosAppDelegate", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withAppDelegate;
+  }
+});
+Object.defineProperty(exports, "withIosEntitlementsPlist", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withEntitlementsPlist;
+  }
+});
+Object.defineProperty(exports, "withIosExpoPlist", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withExpoPlist;
+  }
+});
+Object.defineProperty(exports, "withIosInfoPlist", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withInfoPlist;
+  }
+});
+Object.defineProperty(exports, "withIosPodfile", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withPodfile;
+  }
+});
+Object.defineProperty(exports, "withIosPodfileProperties", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withPodfileProperties;
+  }
+});
+Object.defineProperty(exports, "withIosXcodeProject", {
+  enumerable: true,
+  get: function () {
+    return _iosPlugins().withXcodeProject;
+  }
+});
+Object.defineProperty(exports, "withMacosAppDelegate", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withAppDelegate;
+  }
+});
+Object.defineProperty(exports, "withMacosEntitlementsPlist", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withEntitlementsPlist;
+  }
+});
+Object.defineProperty(exports, "withMacosExpoPlist", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withExpoPlist;
+  }
+});
+Object.defineProperty(exports, "withMacosInfoPlist", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withInfoPlist;
+  }
+});
+Object.defineProperty(exports, "withMacosPodfile", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withPodfile;
+  }
+});
+Object.defineProperty(exports, "withMacosPodfileProperties", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withPodfileProperties;
+  }
+});
+Object.defineProperty(exports, "withMacosXcodeProject", {
+  enumerable: true,
+  get: function () {
+    return _macosPlugins().withXcodeProject;
   }
 });
 Object.defineProperty(exports, "withMainActivity", {
@@ -264,6 +363,19 @@ Object.defineProperty(exports, "IOSConfig", {
     return IOSConfig();
   }
 });
+function MacOSConfig() {
+  const data = _interopRequireWildcard(require("./macos"));
+  MacOSConfig = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "MacOSConfig", {
+  enumerable: true,
+  get: function () {
+    return MacOSConfig();
+  }
+});
 function _createBaseMod() {
   const data = require("./plugins/createBaseMod");
   _createBaseMod = function () {
@@ -281,6 +393,13 @@ function _withAndroidBaseMods() {
 function _withIosBaseMods() {
   const data = require("./plugins/withIosBaseMods");
   _withIosBaseMods = function () {
+    return data;
+  };
+  return data;
+}
+function _withMacosBaseMods() {
+  const data = require("./plugins/withMacosBaseMods");
+  _withMacosBaseMods = function () {
     return data;
   };
   return data;
@@ -391,6 +510,13 @@ function _iosPlugins() {
   };
   return data;
 }
+function _macosPlugins() {
+  const data = require("./plugins/macos-plugins");
+  _macosPlugins = function () {
+    return data;
+  };
+  return data;
+}
 function _androidPlugins() {
   const data = require("./plugins/android-plugins");
   _androidPlugins = function () {
@@ -437,6 +563,8 @@ const BaseMods = exports.BaseMods = {
   withAndroidBaseMods: _withAndroidBaseMods().withAndroidBaseMods,
   getAndroidModFileProviders: _withAndroidBaseMods().getAndroidModFileProviders,
   withIosBaseMods: _withIosBaseMods().withIosBaseMods,
-  getIosModFileProviders: _withIosBaseMods().getIosModFileProviders
+  getIosModFileProviders: _withIosBaseMods().getIosModFileProviders,
+  withMacosBaseMods: _withMacosBaseMods().withMacosBaseMods,
+  getMacosModFileProviders: _withMacosBaseMods().getMacosModFileProviders
 };
 //# sourceMappingURL=index.js.map

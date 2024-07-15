@@ -58,10 +58,11 @@ export async function hasRequiredAndroidFilesAsync(projectRoot: string): Promise
 export const hasRequiredAppleFilesAsync =
   (applePlatform: 'ios' | 'macos') => async (projectRoot: string) => {
     try {
-      // If any of the following required files are missing, then the project is malformed.
+      // If any of the following required files are missing, then the project is
+      // malformed.
       await Promise.all([
-        AppleConfig.Paths.getAllXcodeProjectPaths(projectRoot, applePlatform),
-        AppleConfig.Paths.getAllPBXProjectPaths(projectRoot, applePlatform),
+        AppleConfig.Paths.getAllXcodeProjectPaths(applePlatform)(projectRoot),
+        AppleConfig.Paths.getAllPBXProjectPaths(applePlatform)(projectRoot),
       ]);
       return true;
     } catch {
@@ -108,7 +109,7 @@ export async function getMalformedNativeProjectsAsync(
   projectRoot: string,
   platforms: ArbitraryPlatform[]
 ): Promise<ArbitraryPlatform[]> {
-  const VERIFIERS: Record<ArbitraryPlatform, (root: string) => Promise<boolean>> = {
+  const VERIFIERS: Record<ArbitraryPlatform, (projectRoot: string) => Promise<boolean>> = {
     android: hasRequiredAndroidFilesAsync,
     ios: (projectRoot: string) => hasRequiredIOSFilesAsync(projectRoot),
     macos: (projectRoot: string) => hasRequiredMacOSFilesAsync(projectRoot),

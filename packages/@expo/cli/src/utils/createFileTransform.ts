@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { AppleConfig } from '@expo/config-plugins';
 import path from 'path';
 import picomatch from 'picomatch';
 import { ReadEntry } from 'tar';
@@ -13,10 +13,10 @@ export function createEntryResolver(name: string) {
         .replace(
           /HelloWorld/g,
           entry.path.includes('android')
-            ? IOSConfig.XcodeUtils.sanitizedName(name.toLowerCase())
-            : IOSConfig.XcodeUtils.sanitizedName(name)
+            ? AppleConfig.XcodeUtils.sanitizedName(name.toLowerCase())
+            : AppleConfig.XcodeUtils.sanitizedName(name)
         )
-        .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(name).toLowerCase());
+        .replace(/helloworld/g, AppleConfig.XcodeUtils.sanitizedName(name).toLowerCase());
     }
     if (entry.type && /^file$/i.test(entry.type) && path.basename(entry.path) === 'gitignore') {
       // Rename `gitignore` because npm ignores files named `.gitignore` when publishing.

@@ -22,7 +22,11 @@ export async function ensureConfigAsync(
   }
 
   if (platforms.includes('ios')) {
-    await getOrPromptForBundleIdentifier(projectRoot);
+    await getOrPromptForBundleIdentifier('ios')(projectRoot);
+  }
+
+  if (platforms.includes('macos')) {
+    await getOrPromptForBundleIdentifier('macos')(projectRoot);
   }
 
   // Read config again because prompting for bundle id or package name may have mutated the results.

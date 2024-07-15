@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import { AndroidConfig, AppleConfig } from '@expo/config-plugins';
-import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
+import { getInfoPlistPathFromPbxproj as getInfoPlistPathFromPbxprojIos } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
+import { getInfoPlistPathFromPbxproj as getInfoPlistPathFromPbxprojMacos } from '@expo/config-plugins/build/macos/utils/getInfoPlistPath';
 import plist from '@expo/plist';
 import fs from 'fs';
 import path from 'path';
@@ -36,7 +37,10 @@ export const getSchemesForAppleAsync =
   (applePlatform: 'ios' | 'macos') =>
   async (projectRoot: string): Promise<string[]> => {
     try {
-      const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
+      const infoPlistBuildProperty =
+        applePlatform === 'ios'
+          ? getInfoPlistPathFromPbxprojIos(projectRoot)
+          : getInfoPlistPathFromPbxprojMacos(projectRoot);
       debug(`${applePlatform} application Info.plist path:`, infoPlistBuildProperty);
       if (infoPlistBuildProperty) {
         const configPath = path.join(projectRoot, applePlatform, infoPlistBuildProperty);
@@ -47,18 +51,17 @@ export const getSchemesForAppleAsync =
         return resolveExpoOrLongestScheme(schemes);
       }
     } catch (error) {
-      debug(`expected error collecting ios application schemes for the main target:`, error);
+      debug(
+        `expected error collecting ${applePlatform} application schemes for the main target:`,
+        error
+      );
     }
-    // No ios folder or some other error
+    // No ios/macos folder or some other error
     return [];
   };
 
-export function getSchemesForIosAsync(projectRoot: string) {
-  return getSchemesForAppleAsync('ios')(projectRoot);
-}
-export function getSchemesForMacosAsync(projectRoot: string) {
-  return getSchemesForAppleAsync('macos')(projectRoot);
-}
+export const getSchemesForIosAsync = getSchemesForAppleAsync('ios');
+export const getSchemesForMacosAsync = getSchemesForAppleAsync('macos');
 
 // TODO: Revisit and test after run code is merged.
 export async function getSchemesForAndroidAsync(projectRoot: string): Promise<string[]> {

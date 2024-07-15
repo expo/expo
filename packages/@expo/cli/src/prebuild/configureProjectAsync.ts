@@ -23,16 +23,22 @@ export async function configureProjectAsync(
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
+
+  // FIXME: support macOS
   if (platforms.includes('ios')) {
-    // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.
-    bundleIdentifier = await getOrPromptForBundleIdentifier(projectRoot, exp);
+    // Check bundle ID before reading the config because it may mutate the
+    // config if the user is prompted to define it.
+    bundleIdentifier = await getOrPromptForBundleIdentifier('ios')(projectRoot, exp);
   }
+
   let packageName: string | undefined;
   if (platforms.includes('android')) {
-    // Check package before reading the config because it may mutate the config if the user is prompted to define it.
+    // Check package before reading the config because it may mutate the config
+    // if the user is prompted to define it.
     packageName = await getOrPromptForPackage(projectRoot, exp);
   }
 
+  // FIXME: support macOS
   let { exp: config } = await getPrebuildConfigAsync(projectRoot, {
     platforms,
     packageName,

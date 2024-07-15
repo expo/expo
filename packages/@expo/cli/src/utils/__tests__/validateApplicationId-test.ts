@@ -138,11 +138,11 @@ describe(getBundleIdWarningInternalAsync, () => {
   resetOfflineMode();
   it(`returns null if the URL cannot be reached`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(false);
-    expect(await getBundleIdWarningInternalAsync('bacon')).toBe(null);
+    expect(await getBundleIdWarningInternalAsync('ios')('bacon')).toBe(null);
   });
   it(`returns null and warns if running in offline-mode`, async () => {
     process.env.EXPO_OFFLINE = '1';
-    await expect(getBundleIdWarningInternalAsync('bacon')).resolves.toBe(null);
+    await expect(getBundleIdWarningInternalAsync('ios')('bacon')).resolves.toBe(null);
     expect(Log.warn).toBeCalledWith(expect.stringMatching(/offline-mode/));
   });
   it(`returns warning if in use`, async () => {
@@ -167,7 +167,7 @@ describe(getBundleIdWarningInternalAsync, () => {
     } as any);
 
     expect(
-      stripAnsi(await getBundleIdWarningInternalAsync('com.bacon.pillarvalley'))
+      stripAnsi(await getBundleIdWarningInternalAsync('ios')('com.bacon.pillarvalley'))
     ).toMatchInlineSnapshot(
       `"⚠️  The app Pillar Valley by Evan Bacon is already using com.bacon.pillarvalley"`
     );

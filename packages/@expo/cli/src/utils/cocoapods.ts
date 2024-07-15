@@ -68,37 +68,61 @@ export async function hasPackageJsonDependencyListChangedAsync(
   return hasNewDependencies;
 }
 
-export async function installCocoaPodsAsync(projectRoot: string): Promise<boolean> {
-  let step = logNewSection('Installing CocoaPods...');
-  if (process.platform !== 'darwin') {
-    step.succeed('Skipped installing CocoaPods because operating system is not on macOS.');
-    return false;
-  }
+export const installCocoaPodsAsync =
+  (applePlatform: 'ios' | 'macos') =>
+  async (projectRoot: string): Promise<boolean> => {
+    let step = logNewSection('Installing CocoaPods...');
+    if (process.platform !== 'darwin') {
+      step.succeed('Skipped installing CocoaPods because operating system is not on macOS.');
+      return false;
+    }
 
-  const packageManager = new PackageManager.CocoaPodsPackageManager({
-    cwd: path.join(projectRoot, 'ios'),
-    silent: !(env.EXPO_DEBUG || env.CI),
-  });
+    const packageManager = new PackageManager.CocoaPodsPackageManager({
+      cwd: path.join(projectRoot, applePlatform),
+      silent: !(env.EXPO_DEBUG || env.CI),
+    });
 
-  if (!(await packageManager.isCLIInstalledAsync())) {
+    if (!(await packageManager.isCLIInstalledAsync())) {
+      try {
+        // prompt user -- do you want to install cocoapods right now?
+        step.text = 'CocoaPods CLI not found in your PATH, installing it now.';
+        step.stopAndPersist();
+        await PackageManager.CocoaPodsPackageManager.installCLIAsync({
+          nonInteractive: true,
+          spawnOptions: {
+            ...packageManager.options,
+            // Don't silence this part
+            stdio: ['inherit', 'inherit', 'pipe'],
+          },
+        });
+        step.succeed('Installed CocoaPods CLI.');
+        step = logNewSection(`Running \`pod install\` in the \`${applePlatform}\` directory.`);
+      } catch (error: any) {
+        step.stopAndPersist({
+          symbol: '⚠️ ',
+          text: chalk.red('Unable to install the CocoaPods CLI.'),
+        });
+        if (error instanceof PackageManager.CocoaPodsError) {
+          Log.log(error.message);
+        } else {
+          Log.log(`Unknown error: ${error.message}`);
+        }
+        return false;
+      }
+    }
+
     try {
-      // prompt user -- do you want to install cocoapods right now?
-      step.text = 'CocoaPods CLI not found in your PATH, installing it now.';
-      step.stopAndPersist();
-      await PackageManager.CocoaPodsPackageManager.installCLIAsync({
-        nonInteractive: true,
-        spawnOptions: {
-          ...packageManager.options,
-          // Don't silence this part
-          stdio: ['inherit', 'inherit', 'pipe'],
-        },
-      });
-      step.succeed('Installed CocoaPods CLI.');
-      step = logNewSection('Running `pod install` in the `ios` directory.');
+      await packageManager.installAsync({ spinner: step });
+      // Create cached list for later
+      await hasPackageJsonDependencyListChangedAsync(projectRoot).catch(() => null);
+      step.succeed('Installed CocoaPods');
+      return true;
     } catch (error: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
-        text: chalk.red('Unable to install the CocoaPods CLI.'),
+        text: chalk.red(
+          `Something went wrong running \`pod install\` in the \`${applePlatform}\` directory.`
+        ),
       });
       if (error instanceof PackageManager.CocoaPodsError) {
         Log.log(error.message);
@@ -107,82 +131,73 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
       }
       return false;
     }
-  }
+  };
 
-  try {
-    await packageManager.installAsync({ spinner: step });
-    // Create cached list for later
-    await hasPackageJsonDependencyListChangedAsync(projectRoot).catch(() => null);
-    step.succeed('Installed CocoaPods');
-    return true;
-  } catch (error: any) {
-    step.stopAndPersist({
-      symbol: '⚠️ ',
-      text: chalk.red('Something went wrong running `pod install` in the `ios` directory.'),
-    });
-    if (error instanceof PackageManager.CocoaPodsError) {
-      Log.log(error.message);
-    } else {
-      Log.log(`Unknown error: ${error.message}`);
-    }
-    return false;
-  }
-}
+const doesProjectUseCocoaPods =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): boolean => {
+    return fs.existsSync(path.join(projectRoot, applePlatform, 'Podfile'));
+  };
 
-function doesProjectUseCocoaPods(projectRoot: string): boolean {
-  return fs.existsSync(path.join(projectRoot, 'ios', 'Podfile'));
-}
+const isLockfileCreated =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): boolean => {
+    const podfileLockPath = path.join(projectRoot, applePlatform, 'Podfile.lock');
+    return fs.existsSync(podfileLockPath);
+  };
 
-function isLockfileCreated(projectRoot: string): boolean {
-  const podfileLockPath = path.join(projectRoot, 'ios', 'Podfile.lock');
-  return fs.existsSync(podfileLockPath);
-}
-
-function isPodFolderCreated(projectRoot: string): boolean {
-  const podFolderPath = path.join(projectRoot, 'ios', 'Pods');
-  return fs.existsSync(podFolderPath);
-}
+const isPodFolderCreated =
+  (applePlatform: 'ios' | 'macos') =>
+  (projectRoot: string): boolean => {
+    const podFolderPath = path.join(projectRoot, applePlatform, 'Pods');
+    return fs.existsSync(podFolderPath);
+  };
 
 // TODO: Same process but with app.config changes + default plugins.
 // This will ensure the user is prompted for extra setup.
-export async function maybePromptToSyncPodsAsync(projectRoot: string) {
-  if (!doesProjectUseCocoaPods(projectRoot)) {
-    // Project does not use CocoaPods
-    return;
-  }
-  if (!isLockfileCreated(projectRoot) || !isPodFolderCreated(projectRoot)) {
-    if (!(await installCocoaPodsAsync(projectRoot))) {
-      throw new AbortCommandError();
+export const maybePromptToSyncPodsAsync =
+  (applePlatform: 'ios' | 'macos') => async (projectRoot: string) => {
+    if (!doesProjectUseCocoaPods(applePlatform)(projectRoot)) {
+      // Project does not use CocoaPods
+      return;
     }
-    return;
-  }
-
-  // Getting autolinked packages can be heavy, optimize around checking every time.
-  if (!(await hasPackageJsonDependencyListChangedAsync(projectRoot))) {
-    return;
-  }
-
-  await promptToInstallPodsAsync(projectRoot, []);
-}
-
-async function promptToInstallPodsAsync(projectRoot: string, missingPods?: string[]) {
-  if (missingPods?.length) {
-    Log.log(
-      `Could not find the following native modules: ${missingPods
-        .map((pod) => chalk.bold(pod))
-        .join(', ')}. Did you forget to run "${chalk.bold('pod install')}" ?`
-    );
-  }
-
-  try {
-    if (!(await installCocoaPodsAsync(projectRoot))) {
-      throw new AbortCommandError();
+    if (
+      !isLockfileCreated(applePlatform)(projectRoot) ||
+      !isPodFolderCreated(applePlatform)(projectRoot)
+    ) {
+      if (!(await installCocoaPodsAsync(applePlatform)(projectRoot))) {
+        throw new AbortCommandError();
+      }
+      return;
     }
-  } catch (error) {
-    await fs.promises.rm(path.join(getTempPrebuildFolder(projectRoot), CACHED_PACKAGE_JSON), {
-      recursive: true,
-      force: true,
-    });
-    throw error;
-  }
-}
+
+    // Getting autolinked packages can be heavy, optimize around checking every time.
+    if (!(await hasPackageJsonDependencyListChangedAsync(projectRoot))) {
+      return;
+    }
+
+    await promptToInstallPodsAsync(applePlatform)(projectRoot, []);
+  };
+
+const promptToInstallPodsAsync =
+  (applePlatform: 'ios' | 'macos') => async (projectRoot: string, missingPods?: string[]) => {
+    if (missingPods?.length) {
+      Log.log(
+        `Could not find the following native modules: ${missingPods
+          .map((pod) => chalk.bold(pod))
+          .join(', ')}. Did you forget to run "${chalk.bold('pod install')}" ?`
+      );
+    }
+
+    try {
+      if (!(await installCocoaPodsAsync(applePlatform)(projectRoot))) {
+        throw new AbortCommandError();
+      }
+    } catch (error) {
+      await fs.promises.rm(path.join(getTempPrebuildFolder(projectRoot), CACHED_PACKAGE_JSON), {
+        recursive: true,
+        force: true,
+      });
+      throw error;
+    }
+  };

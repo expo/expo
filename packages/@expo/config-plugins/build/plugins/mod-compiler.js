@@ -43,8 +43,15 @@ function _withIosBaseMods() {
   };
   return data;
 }
+function _withMacosBaseMods() {
+  const data = require("./withMacosBaseMods");
+  _withMacosBaseMods = function () {
+    return data;
+  };
+  return data;
+}
 function _Xcodeproj() {
-  const data = require("../ios/utils/Xcodeproj");
+  const data = require("../apple/utils/Xcodeproj");
   _Xcodeproj = function () {
     return data;
   };
@@ -81,6 +88,13 @@ function withDefaultBaseMods(config, props = {}) {
  */
 function withIntrospectionBaseMods(config, props = {}) {
   config = (0, _withIosBaseMods().withIosBaseMods)(config, {
+    saveToInternal: true,
+    // This writing optimization can be skipped since we never write in introspection mode.
+    // Including empty mods will ensure that all mods get introspected.
+    skipEmptyMod: false,
+    ...props
+  });
+  config = (0, _withMacosBaseMods().withMacosBaseMods)(config, {
     saveToInternal: true,
     // This writing optimization can be skipped since we never write in introspection mode.
     // Including empty mods will ensure that all mods get introspected.
@@ -151,6 +165,14 @@ const precedences = {
     xcodeproj: -1,
     // put the finalized mod at the last
     finalized: 1
+  },
+  macos: {
+    // dangerous runs first
+    dangerous: -2,
+    // run the XcodeProject mod second because many plugins attempt to read from it.
+    xcodeproj: -1,
+    // put the finalized mod at the last
+    finalized: 1
   }
 };
 /**
@@ -181,7 +203,7 @@ async function evalModsAsync(config, {
       });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = _path().default.join(projectRoot, platformName);
-      const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;
+      const projectName = platformName === 'ios' || platformName === 'macos' ? (0, _Xcodeproj().getHackyProjectName)(platformName)(projectRoot, config) : undefined;
       for (const [modName, mod] of entries) {
         const modRequest = {
           projectRoot,

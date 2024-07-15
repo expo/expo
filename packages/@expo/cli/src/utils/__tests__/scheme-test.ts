@@ -1,4 +1,4 @@
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { AndroidConfig, AppleConfig } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
 import { vol } from 'memfs';
 import path from 'path';
@@ -35,7 +35,7 @@ describe(getSchemesForAndroidAsync, () => {
   });
 });
 
-describe(getSchemesForIosAsync, () => {
+describe('getSchemesForIosAsync', () => {
   beforeAll(() => {
     const fakePlist = `
       <?xml version="1.0" encoding="UTF-8"?>
@@ -60,7 +60,7 @@ describe(getSchemesForIosAsync, () => {
   it('resolves longest scheme without known expo schemes', async () => {
     jest.mocked(getInfoPlistPathFromPbxproj).mockReturnValue('fake-pbxproject');
     jest
-      .mocked(IOSConfig.Scheme.getSchemesFromPlist)
+      .mocked(AppleConfig.Scheme.getSchemesFromPlist)
       .mockReturnValue(['com.expo.test', 'com.expo.longertest', 'com.expo.longesttest']);
 
     await expect(getSchemesForIosAsync('fake-project')).resolves.toEqual([
@@ -73,7 +73,7 @@ describe(getSchemesForIosAsync, () => {
   it('resolves known expo schemes before longest schemes', async () => {
     jest.mocked(getInfoPlistPathFromPbxproj).mockReturnValue('fake-pbxproject');
     jest
-      .mocked(IOSConfig.Scheme.getSchemesFromPlist)
+      .mocked(AppleConfig.Scheme.getSchemesFromPlist)
       .mockReturnValue(['com.expo.longesttest', 'exp+com.expo.test']);
 
     await expect(getSchemesForIosAsync('fake-project')).resolves.toEqual(['exp+com.expo.test']);

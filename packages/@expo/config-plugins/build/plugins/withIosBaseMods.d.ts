@@ -1,33 +1,25 @@
-import { JSONObject, JSONValue } from '@expo/json-file';
-import xcode from 'xcode';
-import { ForwardedBaseModOptions } from './createBaseMod';
-import { ExportedConfig } from '../Plugin.types';
-import { Paths } from '../ios';
-import { InfoPlist } from '../ios/IosConfig.types';
-declare const defaultProviders: {
+/// <reference types="xcode" />
+export declare const withIosBaseMods: (config: import("..").ExportedConfig, { providers, ...props }?: Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">> & {
+    providers?: Partial<{
+        dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        appDelegate: import("./createBaseMod").BaseModProviderMethods<import("../apple/Paths").AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        expoPlist: import("./createBaseMod").BaseModProviderMethods<import("@expo/json-file").JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        xcodeproj: import("./createBaseMod").BaseModProviderMethods<import("xcode").XcodeProject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        infoPlist: import("./createBaseMod").BaseModProviderMethods<import("..").InfoPlist, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        entitlements: import("./createBaseMod").BaseModProviderMethods<import("@expo/json-file").JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        podfile: import("./createBaseMod").BaseModProviderMethods<import("../apple/Paths").PodfileProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+        podfileProperties: import("./createBaseMod").BaseModProviderMethods<Record<string, import("@expo/json-file").JSONValue>, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    }> | undefined;
+}) => import("..").ExportedConfig;
+export declare const getIosModFileProviders: {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    appDelegate: import("./createBaseMod").BaseModProviderMethods<Paths.AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    expoPlist: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    xcodeproj: import("./createBaseMod").BaseModProviderMethods<xcode.XcodeProject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    infoPlist: import("./createBaseMod").BaseModProviderMethods<InfoPlist, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    entitlements: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    podfile: import("./createBaseMod").BaseModProviderMethods<Paths.PodfileProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    podfileProperties: import("./createBaseMod").BaseModProviderMethods<Record<string, JSONValue>, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    appDelegate: import("./createBaseMod").BaseModProviderMethods<import("../apple/Paths").AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    expoPlist: import("./createBaseMod").BaseModProviderMethods<import("@expo/json-file").JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    xcodeproj: import("./createBaseMod").BaseModProviderMethods<import("xcode").XcodeProject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    infoPlist: import("./createBaseMod").BaseModProviderMethods<import("..").InfoPlist, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    entitlements: import("./createBaseMod").BaseModProviderMethods<import("@expo/json-file").JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    podfile: import("./createBaseMod").BaseModProviderMethods<import("../apple/Paths").PodfileProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
+    podfileProperties: import("./createBaseMod").BaseModProviderMethods<Record<string, import("@expo/json-file").JSONValue>, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
 };
-type IosDefaultProviders = typeof defaultProviders;
-export declare function withIosBaseMods(config: ExportedConfig, { providers, ...props }?: ForwardedBaseModOptions & {
-    providers?: Partial<IosDefaultProviders>;
-}): ExportedConfig;
-export declare function getIosModFileProviders(): {
-    dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    finalized: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    appDelegate: import("./createBaseMod").BaseModProviderMethods<Paths.AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    expoPlist: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    xcodeproj: import("./createBaseMod").BaseModProviderMethods<xcode.XcodeProject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    infoPlist: import("./createBaseMod").BaseModProviderMethods<InfoPlist, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    entitlements: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    podfile: import("./createBaseMod").BaseModProviderMethods<Paths.PodfileProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-    podfileProperties: import("./createBaseMod").BaseModProviderMethods<Record<string, JSONValue>, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
-};
-export {};

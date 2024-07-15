@@ -154,7 +154,12 @@ export function withGeneratedBaseMods<ModName extends string>(
     providers,
     ...props
   }: ForwardedBaseModOptions & {
-    /** Officially supports `'ios' | 'android'` (`ModPlatform`). Arbitrary strings are supported for adding out-of-tree platforms. */
+    /**
+     * Officially supports `'ios' | 'macos' | 'android'` (`ModPlatform`), with
+     * 'macos' support being experimental for now.
+     *
+     * Arbitrary strings are supported for adding out-of-tree platforms.
+     */
     platform: ModPlatform & string;
     providers: Partial<Record<ModName, BaseModProviderMethods<any, any>>>;
   }

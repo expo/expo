@@ -62,9 +62,23 @@ function _semver() {
   };
   return data;
 }
-function _() {
-  const data = require("..");
-  _ = function () {
+function _Version() {
+  const data = require("../android/Version");
+  _Version = function () {
+    return data;
+  };
+  return data;
+}
+function _Version2() {
+  const data = require("../ios/Version");
+  _Version2 = function () {
+    return data;
+  };
+  return data;
+}
+function _Version3() {
+  const data = require("../macos/Version");
+  _Version3 = function () {
     return data;
   };
   return data;
@@ -86,17 +100,24 @@ function getAppVersion(config) {
   return config.version ?? '1.0.0';
 }
 function getNativeVersion(config, platform) {
-  const version = _().AppleConfig.Version.getVersion(config);
+  // For review: We used to use the iOS getVersion() method for all platforms
+  // here, which is subtly different to getAppVersion() above as it uses ||
+  // rather than ??. I've inlined it to prevent regression.
+  const version = config.version || '1.0.0';
   switch (platform) {
     case 'ios':
+      {
+        const buildNumber = (0, _Version2().getBuildNumber)(config);
+        return `${version}(${buildNumber})`;
+      }
     case 'macos':
       {
-        const buildNumber = _().AppleConfig.Version.getBuildNumber(platform)(config);
+        const buildNumber = (0, _Version3().getBuildNumber)(config);
         return `${version}(${buildNumber})`;
       }
     case 'android':
       {
-        const versionCode = _().AndroidConfig.Version.getVersionCode(config);
+        const versionCode = (0, _Version().getVersionCode)(config);
         return `${version}(${versionCode})`;
       }
     default:

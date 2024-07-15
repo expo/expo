@@ -35,7 +35,7 @@ export type PrebuildResults = {
  * Entry point into the prebuild process, delegates to other helpers to perform various steps.
  *
  * 0. Attempt to clean the project folders.
- * 1. Create native projects (ios, android).
+ * 1. Create native projects (ios, macos, android).
  * 2. Install node modules.
  * 3. Apply config to native projects.
  * 4. Install CocoaPods.
@@ -153,10 +153,21 @@ export async function prebuildAsync(
   // Install CocoaPods
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
-  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  if (
+    (options.platforms.includes('ios') || options.platforms.includes('macos')) &&
+    options.install &&
+    needsPodInstall
+  ) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
-    podsInstalled = await installCocoaPodsAsync(projectRoot);
+    // For discussion: we could do this in parallel to halve the pod install
+    // time, but then the CLI log messages may interleave.
+    for (const applePlatform of options.platforms.filter(
+      (platform): platform is 'ios' | 'macos' => platform === 'ios' || platform === 'macos'
+    )) {
+      debug(`Installing pods for ${applePlatform}…`);
+      podsInstalled = await installCocoaPodsAsync(applePlatform)(projectRoot);
+    }
   } else {
     debug('Skipped pod install');
   }

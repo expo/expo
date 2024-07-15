@@ -37,10 +37,10 @@ it('runs `npx expo run --help`', async () => {
         Run the native app locally
 
       Usage
-        $ npx expo run <android|ios>
+        $ npx expo run <android|ios|macos>
 
       Options
-        $ npx expo run <android|ios> --help  Output usage information
+        $ npx expo run <android|ios|macos> --help  Output usage information
     "
   `);
 });

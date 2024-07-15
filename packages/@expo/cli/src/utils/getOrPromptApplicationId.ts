@@ -1,4 +1,5 @@
 import { ExpoConfig, getAccountUsername, getConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
 import { memoize } from './fn';
@@ -8,7 +9,8 @@ import prompt, { confirmAsync } from './prompts';
 import {
   assertValidBundleId,
   assertValidPackage,
-  getBundleIdWarningAsync,
+  getBundleIdWarningAsyncIos,
+  getBundleIdWarningAsyncMacos,
   getPackageNameWarningAsync,
   getSanitizedBundleIdentifier,
   getSanitizedPackage,
@@ -25,7 +27,7 @@ function getExpoUsername(exp: ExpoConfig) {
   return getAccountUsername(exp) || 'anonymous';
 }
 
-const NO_BUNDLE_ID_MESSAGE = `Project must have a \`ios.bundleIdentifier\` set in the Expo config (app.json or app.config.js).`;
+const NO_BUNDLE_ID_MESSAGE = `Project must have a \`ios.bundleIdentifier\` (for iOS) or \`macos.bundleIdentifier\` (for macOS) set in the Expo config (app.json or app.config.js).`;
 
 const NO_PACKAGE_MESSAGE = `Project must have a \`android.package\` set in the Expo config (app.json or app.config.js).`;
 
@@ -34,75 +36,81 @@ const NO_PACKAGE_MESSAGE = `Project must have a \`android.package\` set in the E
  * Prompted value will be validated against the App Store and a local regex.
  * If the project Expo config is a static JSON file, the bundle identifier will be updated in the config automatically.
  */
-export async function getOrPromptForBundleIdentifier(
-  projectRoot: string,
-  exp: ExpoConfig = getConfig(projectRoot).exp
-): Promise<string> {
-  const current = exp.ios?.bundleIdentifier;
-  if (current) {
-    assertValidBundleId(current);
-    return current;
-  }
+export const getOrPromptForBundleIdentifier =
+  (applePlatform: 'ios' | 'macos') =>
+  async (projectRoot: string, exp: ExpoConfig = getConfig(projectRoot).exp): Promise<string> => {
+    const current = exp[applePlatform]?.bundleIdentifier;
+    if (current) {
+      assertValidBundleId(applePlatform)(current);
+      return current;
+    }
 
-  return promptForBundleIdWithInitialAsync(projectRoot, exp, getRecommendedBundleId(exp));
-}
+    return promptForBundleIdWithInitialAsync(applePlatform)(
+      projectRoot,
+      exp,
+      getRecommendedBundleId(exp)
+    );
+  };
 
 const memoLog = memoize(Log.log);
 
-async function promptForBundleIdWithInitialAsync(
-  projectRoot: string,
-  exp: ExpoConfig,
-  bundleIdentifier?: string
-): Promise<string> {
-  if (!bundleIdentifier) {
-    memoLog(
-      chalk`\n{bold 📝  iOS Bundle Identifier} {dim ${learnMore(
-        'https://expo.fyi/bundle-identifier'
-      )}}\n`
-    );
+const promptForBundleIdWithInitialAsync =
+  (applePlatform: 'ios' | 'macos') =>
+  async (projectRoot: string, exp: ExpoConfig, bundleIdentifier?: string): Promise<string> => {
+    const appleBrandName = applePlatform === 'ios' ? 'iOS' : 'macOS';
 
-    // Prompt the user for the bundle ID.
-    // Even if the project is using a dynamic config we can still
-    // prompt a better error message, recommend a default value, and help the user
-    // validate their custom bundle ID upfront.
-    const { input } = await prompt(
-      {
-        type: 'text',
-        name: 'input',
-        // The Apple helps people know this isn't an EAS feature.
-        message: `What would you like your iOS bundle identifier to be?`,
-        validate: validateBundleId,
-      },
-      {
-        nonInteractiveHelp: NO_BUNDLE_ID_MESSAGE,
-      }
-    );
-    bundleIdentifier = input as string;
-  }
+    if (!bundleIdentifier) {
+      memoLog(
+        chalk`\n{bold 📝  ${appleBrandName} Bundle Identifier} {dim ${learnMore(
+          'https://expo.fyi/bundle-identifier'
+        )}}\n`
+      );
 
-  // Warn the user if the bundle ID is already in use.
-  const warning = await getBundleIdWarningAsync(bundleIdentifier);
+      // Prompt the user for the bundle ID.
+      // Even if the project is using a dynamic config we can still
+      // prompt a better error message, recommend a default value, and help the user
+      // validate their custom bundle ID upfront.
+      const { input } = await prompt(
+        {
+          type: 'text',
+          name: 'input',
+          // The Apple helps people know this isn't an EAS feature.
+          message: `What would you like your ${appleBrandName} bundle identifier to be?`,
+          validate: validateBundleId,
+        },
+        {
+          nonInteractiveHelp: NO_BUNDLE_ID_MESSAGE,
+        }
+      );
+      bundleIdentifier = input as string;
+    }
 
-  if (warning && !(await warnAndConfirmAsync(warning))) {
-    // Cycle the Bundle ID prompt to try again.
-    return await promptForBundleIdWithInitialAsync(projectRoot, exp);
-  }
+    // Warn the user if the bundle ID is already in use.
+    const warning =
+      applePlatform === 'ios'
+        ? await getBundleIdWarningAsyncIos(bundleIdentifier)
+        : await getBundleIdWarningAsyncMacos(bundleIdentifier);
 
-  // Apply the changes to the config.
-  if (
-    await attemptModification(
-      projectRoot,
-      {
-        ios: { ...(exp.ios || {}), bundleIdentifier },
-      },
-      { ios: { bundleIdentifier } }
-    )
-  ) {
-    Log.log(chalk.gray`\u203A Apple bundle identifier: ${bundleIdentifier}`);
-  }
+    if (warning && !(await warnAndConfirmAsync(warning))) {
+      // Cycle the Bundle ID prompt to try again.
+      return await promptForBundleIdWithInitialAsync(applePlatform)(projectRoot, exp);
+    }
 
-  return bundleIdentifier;
-}
+    // Apply the changes to the config.
+    if (
+      await attemptModification(
+        projectRoot,
+        {
+          [applePlatform]: { ...(exp[applePlatform] || {}), bundleIdentifier },
+        },
+        { [applePlatform]: { bundleIdentifier } }
+      )
+    ) {
+      Log.log(chalk.gray`\u203A Apple bundle identifier: ${bundleIdentifier}`);
+    }
+
+    return bundleIdentifier;
+  };
 
 async function warnAndConfirmAsync(warning: string): Promise<boolean> {
   Log.log();
@@ -140,11 +148,13 @@ function getRecommendedBundleId(exp: ExpoConfig): string | undefined {
 
 // Recommend a package name based on the username and project slug.
 function getRecommendedPackageName(exp: ExpoConfig): string | undefined {
-  const possibleIdFromApple = exp.ios?.bundleIdentifier
-    ? getSanitizedPackage(exp.ios.bundleIdentifier)
+  const possibleBundleIdentifier = exp.ios?.bundleIdentifier ?? exp.macos?.bundleIdentifier;
+  const possibleIdFromApple = possibleBundleIdentifier
+    ? getSanitizedPackage(possibleBundleIdentifier)
     : undefined;
 
-  // Attempt to use the ios bundle id first since it's convenient to have them aligned.
+  // Attempt to use the ios/macos bundle id first since it's convenient to have
+  // them aligned.
   if (possibleIdFromApple && validatePackage(possibleIdFromApple)) {
     return possibleIdFromApple;
   } else {
@@ -179,7 +189,7 @@ export async function getOrPromptForPackage(
   return await promptForPackageAsync(projectRoot, exp);
 }
 
-function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
+async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Promise<string> {
   return promptForPackageWithInitialAsync(projectRoot, exp, getRecommendedPackageName(exp));
 }
 

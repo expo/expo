@@ -175,7 +175,7 @@ function getDebugPluginStackFromStackTrace(stacktrace) {
  * Plugin to extend a mod function in the plugins config.
  *
  * @param config exported config
- * @param platform platform to target (ios or android)
+ * @param platform platform to target (ios, macos, or android)
  * @param mod name of the platform function to extend
  * @param action method to run on the mod when the config is compiled
  */

@@ -4,8 +4,9 @@ import path from 'path';
 import { assertModResults, ForwardedBaseModOptions } from './createBaseMod';
 import { withAndroidBaseMods } from './withAndroidBaseMods';
 import { withIosBaseMods } from './withIosBaseMods';
+import { withMacosBaseMods } from './withMacosBaseMods';
 import { ExportedConfig, Mod, ModConfig, ModPlatform } from '../Plugin.types';
-import { getHackyProjectName } from '../ios/utils/Xcodeproj';
+import { getHackyProjectName } from '../apple/utils/Xcodeproj';
 import { PluginError } from '../utils/errors';
 import * as Warnings from '../utils/warnings';
 
@@ -30,6 +31,13 @@ export function withIntrospectionBaseMods(
   props: ForwardedBaseModOptions = {}
 ): ExportedConfig {
   config = withIosBaseMods(config, {
+    saveToInternal: true,
+    // This writing optimization can be skipped since we never write in introspection mode.
+    // Including empty mods will ensure that all mods get introspected.
+    skipEmptyMod: false,
+    ...props,
+  });
+  config = withMacosBaseMods(config, {
     saveToInternal: true,
     // This writing optimization can be skipped since we never write in introspection mode.
     // Including empty mods will ensure that all mods get introspected.
@@ -116,6 +124,14 @@ const precedences: Record<string, Record<string, number>> = {
     // put the finalized mod at the last
     finalized: 1,
   },
+  macos: {
+    // dangerous runs first
+    dangerous: -2,
+    // run the XcodeProject mod second because many plugins attempt to read from it.
+    xcodeproj: -1,
+    // put the finalized mod at the last
+    finalized: 1,
+  },
 };
 /**
  * A generic plugin compiler.
@@ -158,7 +174,9 @@ export async function evalModsAsync(
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
       const projectName =
-        platformName === 'ios' ? getHackyProjectName(projectRoot, config) : undefined;
+        platformName === 'ios' || platformName === 'macos'
+          ? getHackyProjectName(platformName)(projectRoot, config)
+          : undefined;
 
       for (const [modName, mod] of entries) {
         const modRequest = {
