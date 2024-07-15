@@ -28,6 +28,9 @@
 - Fixed a crash when the event listener throws an error. ([#30065](https://github.com/expo/expo/pull/30065) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Fixed the record's constructor with default parameters were being ignored when converting from JavaScript to native. ([#30217](https://github.com/expo/expo/pull/30217) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fixed returning already registered shared objects. ([#30241](https://github.com/expo/expo/pull/30241) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
+- [Android] When a `SharedObject` that was passed as an argument is returned, it no longer creates a new object. ([#30231](https://github.com/expo/expo/pull/30231) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed some types weren't correctly converted when using coroutines. ([#30227](https://github.com/expo/expo/pull/30227) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -49,6 +52,7 @@
 - [Android] Decouple the modules state from the `AppContext` ([#30098](https://github.com/expo/expo/pull/30098) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added `customizeRootView:` support to `EXAppDelegateWrapper.createRCTRootViewFactory`. ([#30245](https://github.com/expo/expo/pull/30245) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Bump Kotlin coroutines version to 1.7.3. ([#30226](https://github.com/expo/expo/pull/30226) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.12.16 - 2024-06-20
 

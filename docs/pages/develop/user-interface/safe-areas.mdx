@@ -32,11 +32,7 @@ Using the library, the result of the previous example changes as it displays the
 
 ### Installation
 
-The [`default`](https://github.com/expo/expo/tree/main/templates/expo-template-default) Expo template comes with `react-native-safe-area-context` installed as a peer dependency. The library is used by Expo Router.
-
-<Collapsible summary="Manual installation instruction when using a different Expo template">
-
-If you're using a different [Expo template](/more/create-expo/#--template), install `react-native-safe-area-context` by running following command:
+You can skip installing `react-native-safe-area-context` if you have created a project using [the default template](/get-started/create-a-project/). This library is installed as peer dependency for Expo Router library. Otherwise, install it by running the following command:
 
 <Terminal cmd={['$ npx expo install react-native-safe-area-context']} />
 
@@ -46,7 +42,7 @@ If you're using a different [Expo template](/more/create-expo/#--template), inst
 
 <Step label="1">
 
-Import and add [`SafeAreaProvider`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider). If your project uses Expo Router, add it to the [root layout (**app/\_layout.tsx**)](/develop/file-based-routing/#_layout-file) file. Otherwise, add it to the root component (such as **App.tsx** file).
+Import and add [`SafeAreaProvider`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider). If your project uses Expo Router, add it to the [root layout (**app/\_layout.tsx**)](/develop/file-based-routing/#_layout-file) file. Otherwise, add it to the root component file (such as **App.tsx**).
 
 ```tsx app/_layout.tsx
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -62,7 +58,7 @@ function RootLayout() {
 }
 ```
 
-> **Note:** In the above example, the `Stack` is wrapping one screen. Your project's root layout file may have more than one screen. The `index` screen is used here an example for a screen component.
+> **Note:** In the above example, the `Stack` is wrapping one screen. Your project's root layout file may have more than one screen. The `index` screen is used here an example to represent a screen component.
 
 </Step>
 
@@ -87,7 +83,7 @@ export default function HomeScreen() {
 
 ## Alternate: `useSafeAreaInsets` hook
 
-Alternate to `SafeAreaView`, you can use [`useSafeAreaInsets`](https://github.com/th3rdwave/react-native-safe-area-context#usesafeareainsets) hook in your screen component. It gives direct access to the safe area insets. It offers more flexibility and gives you more control. You can apply padding for each edge using an inset from this hook directly to the `<View>`.
+Alternate to `SafeAreaView`, you can use [`useSafeAreaInsets`](https://github.com/th3rdwave/react-native-safe-area-context#usesafeareainsets) hook in your screen component. It provides direct access to the safe area insets, allowing you to apply padding for each edge of the `<View>` using an inset from this hook.
 
 The example below uses the `useSafeAreaInsets` hook. It applies top padding to a `<View>` using `insets.top`.
 

@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix touch interactions when using gesture handler. ([#30338](https://github.com/expo/expo/pull/30338) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix issues where fonts were removed when the app is backgrounded. ([#30400](https://github.com/expo/expo/pull/30400) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))

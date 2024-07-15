@@ -407,4 +407,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
+
+  // Based on SEO tool reports
+  '/build-reference/eas-json/': '/eas/json/',
+  '/build-reference/custom-builds/schema/': '/custom-builds/schema/',
 };

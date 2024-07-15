@@ -45,10 +45,10 @@ To follow the above example, set up a [React Context provider](https://react.dev
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
 ```tsx ctx.tsx
-import React from 'react';
+import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 
-const AuthContext = React.createContext<{
+const AuthContext = createContext<{
   signIn: () => void;
   signOut: () => void;
   session?: string | null;
@@ -62,7 +62,7 @@ const AuthContext = React.createContext<{
 
 // This hook can be used to access the user info.
 export function useSession() {
-  const value = React.useContext(AuthContext);
+  const value = useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {
     if (!value) {
       throw new Error('useSession must be wrapped in a <SessionProvider />');
@@ -72,7 +72,7 @@ export function useSession() {
   return value;
 }
 
-export function SessionProvider(props: React.PropsWithChildren) {
+export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
@@ -88,7 +88,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
         session,
         isLoading,
       }}>
-      {props.children}
+      {children}
     </AuthContext.Provider>
   );
 }
@@ -196,6 +196,7 @@ export default function Root() {
 Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
 ```tsx app/(app)/_layout.tsx|collapseHeight=400
+import { Text } from 'react-native';
 import { Redirect, Stack } from 'expo-router';
 
 import { useSession } from '../../ctx';
@@ -294,7 +295,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
   files={[
     ['app/_layout.tsx', 'Declares global session context'],
     'app/(app)/_layout.tsx',
-    ['app/(app)/sign-in.tsx', <span>Modally presented over the root</span>],
+    ['app/(app)/sign-in.tsx', <span>Modal presented over the root</span>],
     ['app/(app)/(root)/_layout.tsx', <span>Protects child routes</span>],
     [
       'app/(app)/(root)/index.tsx',

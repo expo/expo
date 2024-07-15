@@ -143,7 +143,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <APIBox header="generateStaticParams">
 
-A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process, not just the values prefixed with **EXPO*PUBLIC***. **generateStaticParams** is not run in a browser environment, so it cannot access browser APIs like **localStorage** or **document**, nor can it access native Expo APIs such as **expo-camera** or **expo-location**.
+A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_.generateStaticParams` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
 
 ```tsx app/[id].tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
@@ -155,11 +155,11 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
 }
 ```
 
-**generateStaticParams** cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
+`generateStaticParams` cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
 
 ```tsx app/[id]/_layout.tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
-  /* @info Any dynamic children that export <b>generateStaticParams</b> will be invoked once for every entry in the array. */
+  /* @info Any dynamic children that export <CODE>generateStaticParams</CODE> will be invoked once for every entry in the array. */
   return [{ id: 'one' }, { id: 'two' }];
   /* @end */
 }
@@ -216,7 +216,7 @@ You can customize the root HTML file by creating an **app/+html.tsx** file in yo
 
 ```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.

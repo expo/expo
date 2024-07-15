@@ -169,7 +169,7 @@ You can test the Apple App Site Association file (**public/.well-known/apple-app
 
 If you're having issues, the best thing you can do is enable the most aggressive handoff settings in your app. This ensures that any possible route is linkable. You can do this by making sure that **public/.well-known/apple-app-site-association** file matches all routes:
 
-```json title=public/.well-known/apple-app-site-association
+```json public/.well-known/apple-app-site-association
 {
   "applinks": {
     "details": [
@@ -206,7 +206,7 @@ Your **public/.well-known/apple-app-site-association** must be served from a sec
 
 Check your **ios&#x2f;project&#x2f;project.entitlements** file, under the `com.apple.developer.associated-domains` key. This should contain the same domains as your web server/website. The URL cannot contain a protocol (`https://`) or additional pathname, query parameters, or fragments.
 
-### Still Stuck?
+### Still stuck
 
 > This is an important but very difficult feature to set up. Expo Router automates many of the moving parts, Expo CLI automates much of the configuration and hosting. However, hardware settings can still be misconfigured.
 

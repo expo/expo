@@ -7,11 +7,11 @@
 import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
 import chalk from 'chalk';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 // @ts-expect-error
 import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
+import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
 
@@ -105,9 +105,7 @@ function augmentLogsInternal(projectRoot: string) {
             //    at http://localhost:8081/node_modules/expo-router/node/render.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&resolver.environment=node&transform.environment=node:38008:27
             //    at Background (http://localhost:8081/node_modules/expo-router/node/render.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&resolver.environment=node&transform.environment=node:151009:7)
             const customStack = args[1];
-            const { parseErrorStack } = require(
-              resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
-            );
+
             try {
               const parsedStack = parseErrorStack(customStack);
               const symbolicatedStack = parsedStack.map((line: any) => {

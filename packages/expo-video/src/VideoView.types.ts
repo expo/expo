@@ -73,6 +73,9 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines whether the player allows Picture in Picture (PiP) mode.
+   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+   * > has to be configured for the PiP to work.
+   *
    * @default false
    * @platform ios 14+
    */
@@ -81,6 +84,10 @@ export interface VideoViewProps extends ViewProps {
   /**
    * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
    * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+   *
+   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+   * > has to be configured for the PiP to work.
+   *
    * @default false
    * @platform android 12+
    * @platform ios 14.2+

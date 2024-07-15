@@ -20,6 +20,22 @@ By default, the splash screen is hidden when the first route is rendered, which 
 
 To enable this functionality, install `expo-splash-screen` in your project.
 
+```tsx app/_layout.tsx
+import {
+  /* @info Import `SplashScreen` from `expo-router` instead of `expo-splash-screen` */
+  SplashScreen,
+  /* @end */
+  // This example uses a basic Layout component, but you can use any Layout.
+  Slot,
+} from 'expo-router';
+import { useFonts, Inter_500Medium } from '@expo-google-fonts/inter';
+import { useEffect } from 'react';
+
+/* @info Prevent hiding the splash screen after the navigation has mounted. */
+SplashScreen.preventAutoHideAsync();
+/* @end */
+```
+
 <BoxLink
   title="Expo Splash Screen API reference"
   description={
@@ -51,6 +67,28 @@ Expo Router's [static rendering](/router/reference/static-rendering) provides [a
 
 Use Expo Image for the best cross-platform experience:
 
+```tsx app/index.tsx
+import { Text } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
+
+/* @info Prevent hiding the splash screen after the navigation has mounted. */
+SplashScreen.preventAutoHideAsync();
+/* @end */
+
+export default function App() {
+  const [isReady, setReady] = useState(false);
+
+  useEffect(() => {
+    // Perform some sort of async data or asset fetching.
+    setTimeout(() => {
+      // When all loading is setup, unmount the splash screen component.
+      SplashScreen.hideAsync();
+      setReady(true);
+    }, 1000);
+  }, []);
+```
+
 <BoxLink
   title="Expo Image API reference"
   description={
@@ -80,6 +118,45 @@ Expo Router comes with the `react-native-safe-area-context` library installed. T
 />
 
 ## Additional information
+
+To use it, import the `SafeAreaProvider` component from `react-native-safe-area-context` and wrap your root layout with it:
+
+```tsx app/_layout_.tsx
+import { Stack } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+function RootLayoutNav() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <SafeAreaProvider>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    </SafeAreaProvider>
+  );
+}
+```
+
+On a page component, you can use `<SafeAreaView>` component or `useSafeAreaInsets` hook to access the safe area insets and use them with `<View>`. The following example shows how to use `useSafeAreaInsets`:
+
+```tsx app/index.tsx
+import { View, Text } from 'react-native';
+/* @info Import useSafeAreaInsets hook */ import { useSafeAreaInsets } from 'react-native-safe-area-context'; /* @end */
+
+export default function TabOneScreen() {
+  /* @info */ const insets = useSafeAreaInsets(); /* @end */
+
+  return (
+    /* @info You can use "insets.top" to apply the top padding from the useSafeAreaInsets() hook.*/
+    <View style={{ paddingTop: insets.top }}>
+      /* @end */
+      <Text>Home page</Text>
+    </View>
+  );
+}
+```
+
 
 ### React Navigation themes
 
