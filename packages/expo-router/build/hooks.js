@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
+exports.useSearchParams = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const router_store_1 = require("./global-state/router-store");
@@ -107,4 +107,28 @@ function useLocalSearchParams() {
     }));
 }
 exports.useLocalSearchParams = useLocalSearchParams;
+function useSearchParams({ global = false } = {}) {
+    const params = global ? useGlobalSearchParams() : useLocalSearchParams();
+    const entries = Object.entries(params).flatMap(([key, value]) => {
+        if (global) {
+            if (key === 'params')
+                return [];
+            if (key === 'screen')
+                return [];
+        }
+        return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]];
+    });
+    return Object.assign(new URLSearchParams(entries), {
+        set() {
+            throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+        },
+        append() {
+            throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+        },
+        delete() {
+            throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+        },
+    });
+}
+exports.useSearchParams = useSearchParams;
 //# sourceMappingURL=hooks.js.map

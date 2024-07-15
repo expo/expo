@@ -149,3 +149,27 @@ export function useLocalSearchParams<
     })
   ) as RouteParams<TParams1, TParams2>;
 }
+
+export function useSearchParams({ global = false } = {}): URLSearchParams {
+  const params = global ? useGlobalSearchParams() : useLocalSearchParams();
+  const entries = Object.entries(params).flatMap(([key, value]) => {
+    if (global) {
+      if (key === 'params') return [];
+      if (key === 'screen') return [];
+    }
+
+    return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]];
+  });
+
+  return Object.assign(new URLSearchParams(entries), {
+    set() {
+      throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+    },
+    append() {
+      throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+    },
+    delete() {
+      throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+    },
+  });
+}
