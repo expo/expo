@@ -25,9 +25,9 @@ internal struct FontFamilyAliasManager {
    Sets the alias for the given family name.
    If the alias has already been set, its family name will be overriden.
    */
-  internal static func setAlias(_ familyNameAlias: String, forFamilyName familyName: String) {
+  internal static func setAlias(_ familyNameAlias: String, forFont font: String) {
     maybeSwizzleUIFont()
-    fontFamilyAliases[familyNameAlias] = familyName
+    fontFamilyAliases[familyNameAlias] = font
   }
 
   /**

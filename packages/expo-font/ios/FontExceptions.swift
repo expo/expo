@@ -17,3 +17,9 @@ internal final class FontRegistrationFailedException: GenericException<CFError> 
     "Registering '\(param)' font failed with message: '\(param.localizedDescription)'"
   }
 }
+
+internal final class UnregisteringFontFailedException: GenericException<CFError> {
+  override var reason: String {
+    "Unregistering '\(param)' font failed with message: '\(param.localizedDescription)'"
+  }
+}
