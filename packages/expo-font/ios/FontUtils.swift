@@ -31,25 +31,24 @@ internal func queryCustomNativeFonts() -> [String] {
 }
 
 /**
- Loads the font from the given path and returns it as ``CGFont``.
+ Loads the font from the given url and returns it as ``CGFont``.
  */
-internal func loadFont(fromPath path: String, alias: String) throws -> CGFont {
-  guard let data = FileManager.default.contents(atPath: path) else {
-    throw FontFileNotFoundException(path)
-  }
-  guard let provider = CGDataProvider(data: data as CFData), let font = CGFont(provider) else {
+internal func loadFont(fromUrl url: CFURL, alias: String) throws -> CGFont {
+  guard let provider = CGDataProvider(url: url),
+    let cgFont = CGFont(provider) else {
     throw FontCreationFailedException(alias)
   }
-  return font
+
+  return cgFont
 }
 
 /**
  Registers the given font to make it discoverable through font descriptor matching.
  */
-internal func registerFont(_ font: CGFont) throws {
+internal func registerFont(_ fontUrl: CFURL) throws {
   var error: Unmanaged<CFError>?
 
-  if !CTFontManagerRegisterGraphicsFont(font, &error), let error = error?.takeRetainedValue() {
+  if !CTFontManagerRegisterFontsForURL(fontUrl, .process, &error), let error = error?.takeRetainedValue() {
     let fontError = CTFontManagerError(rawValue: CFErrorGetCode(error))
 
     switch fontError {
@@ -68,10 +67,10 @@ internal func registerFont(_ font: CGFont) throws {
  Unregisters the given font, so the app will no longer be able to render it.
  Returns a boolean indicating if the font is successfully unregistered after this function completes.
  */
-internal func unregisterFont(_ font: CGFont) throws -> Bool {
+internal func unregisterFont(url: CFURL) throws -> Bool {
   var error: Unmanaged<CFError>?
 
-  if !CTFontManagerUnregisterGraphicsFont(font, &error), let error = error?.takeRetainedValue() {
+  if !CTFontManagerUnregisterFontsForURL(url, .process, &error), let error = error?.takeRetainedValue() {
     if let ctFontManagerError = CTFontManagerError(rawValue: CFErrorGetCode(error as CFError)) {
       switch ctFontManagerError {
       case .systemRequired, .inUse:
@@ -79,20 +78,9 @@ internal func unregisterFont(_ font: CGFont) throws -> Bool {
       case .notRegistered:
         return true
       default:
-        throw FontRegistrationFailedException(error)
+        throw UnregisteringFontFailedException(error)
       }
     }
-  }
-  return true
-}
-
-/**
- Unregisters a font with the given name, so the app will no longer be able to render it.
- Returns a boolean indicating if the font is successfully unregistered after this function completes.
- */
-internal func unregisterFont(named fontName: String) throws -> Bool {
-  if let font = CGFont(fontName as CFString) {
-    return try unregisterFont(font)
   }
   return true
 }
