@@ -127,6 +127,7 @@ export default () => {
 
       // on Android, we need to keep the title of the item the same
       // because updating dev menu items currently doesn't work
+      // TODO https://linear.app/expo/issue/ENG-12786
       const label = Platform.select({
         ios: persistenceEnabled
           ? '✗  Disable navigation state persistence'
