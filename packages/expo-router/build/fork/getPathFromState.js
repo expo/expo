@@ -292,10 +292,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
                         delete focusedParams[param];
                     }
                 }
-                const params = new URLSearchParams(Object.entries(focusedParams).flatMap(([key, values]) => {
-                    return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
-                }));
-                const query = params.toString();
+                const query = new URLSearchParams(focusedParams).toString();
                 if (query) {
                     path += `?${query}`;
                 }
