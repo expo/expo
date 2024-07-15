@@ -11,6 +11,10 @@ void JavaScriptWeakObject::registerNatives() {
   });
 }
 
+std::shared_ptr<jsi::WeakObject> JavaScriptWeakObject::getWeak() {
+  return _weakObject;
+}
+
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptWeakObject::lock() {
   jsi::Runtime &rt = _runtimeHolder.getJSRuntime();
 

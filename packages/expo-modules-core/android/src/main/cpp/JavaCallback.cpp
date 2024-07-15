@@ -8,6 +8,7 @@
 #include <fbjni/fbjni.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
 
 #include <functional>
 
@@ -234,12 +235,12 @@ void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject
   );
 }
 
-void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result) {
-  invokeJSFunction<jni::global_ref<SharedRef::javaobject>>(
+void JavaCallback::invokeSharedRef(jni::alias_ref<JSharedRef::javaobject> result) {
+  invokeJSFunction<jni::global_ref<JSharedRef::javaobject>>(
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      jni::global_ref<SharedRef::javaobject> arg
+      jni::global_ref<JSharedRef::javaobject> arg
     ) {
       const auto jsiContext = getJSIContext(rt);
       auto native = jni::make_local(arg);

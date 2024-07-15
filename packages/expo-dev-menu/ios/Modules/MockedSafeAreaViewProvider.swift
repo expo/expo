@@ -4,7 +4,8 @@
 // So we can just mock it.
 @objc(MockedRNCSafeAreaProvider)
 class MockedRNCSafeAreaProvider: RCTViewManager {
-  public static override func moduleName() -> String! {
+  // swiftlint:disable:next implicitly_unwrapped_optional
+  static override func moduleName() -> String! {
     return "RNCSafeAreaProvider"
   }
 }

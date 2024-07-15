@@ -7,7 +7,8 @@
  */
 import Anser from 'anser';
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS: Record<string, string> = {
@@ -64,7 +65,7 @@ export function Ansi({ text, style }: { text: string; style: StyleProp<TextStyle
   };
 
   return (
-    <View>
+    <>
       {parsedLines.map((items, i) => (
         <View style={styles.line} key={i}>
           {items.map((bundle, key) => {
@@ -85,7 +86,7 @@ export function Ansi({ text, style }: { text: string; style: StyleProp<TextStyle
           })}
         </View>
       ))}
-    </View>
+    </>
   );
 }
 

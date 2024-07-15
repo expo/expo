@@ -69,7 +69,7 @@ jobs:
         run: expotools native-unit-tests --platform android
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: packages/**/build/test-results/**/*xml

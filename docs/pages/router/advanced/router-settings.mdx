@@ -14,9 +14,9 @@ import { FileTree } from '~/ui/components/FileTree';
 
 When deep linking to a route, you may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
 
-<FileTree files={['app/_layout.js', 'app/index.js', 'app/other.js']} />
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/other.tsx']} />
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -33,7 +33,7 @@ Now deep linking directly to `/other` or reloading the page will continue to sho
 
 When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
 
-```js other.js
+```tsx other.tsx
 export const unstable_settings = {
   // Used for `(foo)`
   initialRouteName: 'first',

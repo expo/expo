@@ -83,10 +83,16 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
+    observer.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
-    observer.unregisterDelegate(delegate: self)
-    pointer.replaceCurrentItem(with: nil)
+
+    // The current item has to be replaced with nil from the main thread. When replacing from the SharedObjectRegistry queue
+    // sometimes the KVOs used by AVPlayerViewController would try to deliver updates about the item being changed to nil after the
+    // player was deallocated, which caused crashes.
+    DispatchQueue.main.async { [pointer] in
+      pointer.replaceCurrentItem(with: nil)
+    }
   }
 
   func replaceCurrentItem(with videoSource: VideoSource?) throws {
@@ -98,7 +104,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    let asset = AVURLAsset(url: url)
+    let asset = if let headers = videoSource.headers {
+      AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
+    } else {
+      AVURLAsset(url: url)
+    }
     let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
 
     if let drm = videoSource.drm {

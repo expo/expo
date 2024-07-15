@@ -339,7 +339,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
 
       locationPermission.android = PermissionDetailsLocationAndroid(
-        scope = accuracy,
         accuracy = accuracy
       )
 

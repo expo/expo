@@ -73,7 +73,7 @@ function reactClientReferencesPlugin() {
                                     pushProxy(exportName);
                                 }
                             }
-                            else if (!['InterfaceDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)) {
+                            else if (!['InterfaceDeclaration', 'TSTypeAliasDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)) {
                                 // TODO: What is this type?
                                 console.warn('[babel-preset-expo] Unsupported export specifier for "use client":', exportPath.node.declaration.type);
                             }

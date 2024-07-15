@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  publish-canaries:
     runs-on: ubuntu-22.04
     env:
       NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
@@ -39,7 +39,7 @@ jobs:
         run: yarn install --ignore-scripts --frozen-lockfile
         working-directory: tools
       - name: 📦 Publish canaries
-        run: ./bin/expotools publish-packages --canary --dry
+        run: ./bin/expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
         env:
           FORCE_COLOR: '2'
       - name: 🔔 Notify on Slack

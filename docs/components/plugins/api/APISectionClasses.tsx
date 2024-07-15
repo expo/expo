@@ -1,4 +1,4 @@
-import { CornerDownRightIcon } from '@expo/styleguide-icons';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
 import {
@@ -29,23 +29,22 @@ import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 export type APISectionClassesProps = {
   data: GeneratedData[];
   sdkVersion: string;
-
-  /**
-   * Whether to expose all classes props in the sidebar.
-   * @default true when `data` has only one class, false otherwise.
-   *
-   * > **Note:** When you have multiple classes and want to enable this option, you should also set the mdx `maxHeadingDepth` at least to 3.
-   */
-  exposeAllClassPropsInSidebar?: boolean;
 };
 
-const classNamesMap: Record<string, string> = {
+const CLASS_NAMES_MAP: Record<string, string> = {
   AccelerometerSensor: 'Accelerometer',
   BarometerSensor: 'Barometer',
   DeviceMotionSensor: 'DeviceMotion',
   GyroscopeSensor: 'Gyroscope',
   MagnetometerSensor: 'Magnetometer',
 } as const;
+
+const CLASSES_TO_IGNORE_INHERITED_PROPS = [
+  'EventEmitter',
+  'NativeModule',
+  'SharedObject',
+  'SharedRef',
+] as const;
 
 const isProp = (child: PropData) =>
   child.kind === TypeDocKind.Property &&
@@ -60,9 +59,17 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
+// This is intended to filter out inherited properties from some
+// common classes that are documented inside the `expo` package docs.
+const isInheritedFromCommonClass = (child: PropData) =>
+  child.inheritedFrom?.type === 'reference' &&
+  CLASSES_TO_IGNORE_INHERITED_PROPS.some(className =>
+    child.inheritedFrom?.name.startsWith(`${className}.`)
+  );
+
 const remapClass = (clx: ClassDefinitionData) => {
-  clx.isSensor = !!classNamesMap[clx.name] || Object.values(classNamesMap).includes(clx.name);
-  clx.name = classNamesMap[clx.name] ?? clx.name;
+  clx.isSensor = !!CLASS_NAMES_MAP[clx.name] || Object.values(CLASS_NAMES_MAP).includes(clx.name);
+  clx.name = CLASS_NAMES_MAP[clx.name] ?? clx.name;
 
   if (clx.isSensor && clx.extendedTypes) {
     clx.extendedTypes = clx.extendedTypes.map(type => ({
@@ -75,23 +82,20 @@ const remapClass = (clx: ClassDefinitionData) => {
 };
 
 const renderClass = (
-  clx: ClassDefinitionData,
-  options: { hasOnlyOneClass: boolean },
+  { name, comment, type, extendedTypes, children, implementedTypes, isSensor }: ClassDefinitionData,
   sdkVersion: string
 ): JSX.Element => {
-  const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
-
   const properties = children?.filter(isProp);
   const methods = children
-    ?.filter(child => isMethod(child, isSensor))
+    ?.filter(child => isMethod(child, isSensor) && !isInheritedFromCommonClass(child))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
 
-  const linksNestingLevel = DEFAULT_BASE_NESTING_LEVEL + 2 + (options.hasOnlyOneClass ? 1 : 0);
+  const linksNestingLevel = DEFAULT_BASE_NESTING_LEVEL + 2;
 
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-      <APISectionDeprecationNote comment={comment} />
+      <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -154,7 +158,7 @@ const renderClass = (
           <BoxSectionHeader
             text={`${name} Properties`}
             className="!text-secondary !font-medium"
-            exposeInSidebar={options.hasOnlyOneClass}
+            exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
           <div>
@@ -172,7 +176,7 @@ const renderClass = (
           <BoxSectionHeader
             text={`${name} Methods`}
             className="!text-secondary !font-medium !text-sm"
-            exposeInSidebar={options.hasOnlyOneClass}
+            exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
           {methods.map(method =>
@@ -190,19 +194,10 @@ const renderClass = (
 
 const APISectionClasses = ({ data, sdkVersion }: APISectionClassesProps) => {
   if (data?.length) {
-    const hasOnlyOneClass = data.length === 1;
     return (
       <>
         <H2>Classes</H2>
-        {data.map(clx =>
-          renderClass(
-            remapClass(clx),
-            {
-              hasOnlyOneClass,
-            },
-            sdkVersion
-          )
-        )}
+        {data.map(clx => renderClass(remapClass(clx), sdkVersion))}
       </>
     );
   }

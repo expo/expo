@@ -1,11 +1,9 @@
 import { mergeClasses } from '@expo/styleguide';
-import {
-  GithubIcon,
-  DiscordIcon,
-  RedditIcon,
-  XLogoIcon,
-  ArrowUpRightIcon,
-} from '@expo/styleguide-icons';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { RedditIcon } from '@expo/styleguide-icons/custom/RedditIcon';
+import { XLogoIcon } from '@expo/styleguide-icons/custom/XLogoIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';
@@ -82,7 +80,7 @@ function CommunityGridCell({
     <A
       href={link}
       className={mergeClasses(
-        'flex justify-between items-center bg-default p-4 min-h-[30px] overflow-hidden relative border border-default rounded-lg',
+        'flex justify-between items-center bg-default p-4 min-h-[30px] overflow-hidden relative border border-default rounded-lg transition shadow-xs',
         '[&_h2]:!my-0 [&_h3]:!mt-0',
         'hocus:shadow-sm',
         className

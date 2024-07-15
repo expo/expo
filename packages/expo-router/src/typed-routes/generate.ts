@@ -1,6 +1,3 @@
-import fs from 'node:fs';
-import path from 'path';
-
 import { RouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
 import { isTypedRoute, removeSupportedExtensions } from '../matchers';
@@ -28,26 +25,21 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
     dynamicRouteContextKeys
   );
 
-  // If the user has expo-router v3+ installed, we can use the types from the package
-  return (
-    fs
-      .readFileSync(path.join(__dirname, '../../types/expo-router.d.ts'), 'utf-8')
-      // Swap from being a namespace to a module
-      .replace('declare namespace ExpoRouter {', `declare module "expo-router" {`)
-      // Add the route values
-      .replace(
-        'type StaticRoutes = string;',
-        `type StaticRoutes = ${setToUnionType(staticRoutes)};`
-      )
-      .replace(
-        'type DynamicRoutes<T extends string> = string;',
-        `type DynamicRoutes<T extends string> = ${setToUnionType(dynamicRoutes)};`
-      )
-      .replace(
-        'type DynamicRouteTemplate = never;',
-        `type DynamicRouteTemplate = ${setToUnionType(dynamicRouteContextKeys)};`
-      )
-  );
+  return `/* eslint-disable */
+import * as Router from 'expo-router';
+
+export * from 'expo-router';
+
+declare module 'expo-router' {
+  export namespace ExpoRouter {
+    export interface __routes<T extends string = string> extends Record<string, unknown> {
+      StaticRoutes: ${setToUnionType(staticRoutes)};
+      DynamicRoutes: ${setToUnionType(dynamicRoutes)};
+      DynamicRouteTemplate: ${setToUnionType(dynamicRouteContextKeys)};
+    }
+  }
+}
+`;
 }
 
 /**
@@ -91,9 +83,7 @@ function addRouteNode(
     for (const path of generateCombinations(routePath)) {
       dynamicRouteContextKeys.add(path);
       dynamicRoutes.add(
-        `${path
-          .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
-          .replaceAll(SLUG, '${SingleRoutePart<T>}')}`
+        `${path.replaceAll(CATCH_ALL, '${string}').replaceAll(SLUG, '${Router.SingleRoutePart<T>}')}`
       );
     }
   } else {
@@ -126,7 +116,7 @@ function generateCombinations(pathname) {
     }
 
     const group = groups[currentIndex];
-    const withoutGroup = currentPath.replace(group, '');
+    const withoutGroup = currentPath.replace(`/${group}`, '');
     generate(currentIndex + 1, withoutGroup);
     generate(currentIndex + 1, currentPath);
   }

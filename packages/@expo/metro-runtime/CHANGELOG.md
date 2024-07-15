@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
+- Use `src` directory for source code. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
+- Always enable async bundle loading on native. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))
 - Support `location.reload()` in native production builds. ([#29572](https://github.com/expo/expo/pull/29572) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Improve error message for `window.location` polyfill. ([#30331](https://github.com/expo/expo/pull/30331) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Remove downloading indicator for split bundles. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.1 — 2024-04-23
 

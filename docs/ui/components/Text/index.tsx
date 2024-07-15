@@ -155,7 +155,7 @@ const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[2],
   marginBottom: spacing[2],
   ...codeInHeaderStyle,
@@ -163,7 +163,7 @@ const h1Style = {
 
 const h2Style = {
   ...h2,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
   '& a:focus-visible': { outlineOffset: spacing[1] },
@@ -173,8 +173,8 @@ const h2Style = {
 const h3Style = {
   ...h3,
   fontWeight: 600,
-  marginTop: spacing[6],
-  marginBottom: spacing[2.5],
+  marginTop: spacing[7],
+  marginBottom: spacing[3],
   '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
@@ -183,7 +183,7 @@ const h4Style = {
   ...h4,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1.5],
+  marginBottom: spacing[2],
   ...codeInHeaderStyle,
 };
 

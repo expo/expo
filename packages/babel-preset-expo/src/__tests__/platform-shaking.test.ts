@@ -594,6 +594,55 @@ describe('SSR window check', () => {
     });
   });
 
+  it(`preserves process.env.EXPO_SERVER usage in server bundles`, async () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // compact: true,
+      // Make the snapshot easier to read
+      retainLines: true,
+      compact: true,
+      caller: getCaller({ name: 'metro', platform: 'web', isDev: false, isServer: true }),
+    };
+
+    const src = `
+    if (process.env.EXPO_SERVER) {
+      console.log('ssr.1');
+    }
+    `;
+
+    const res = babel.transform(src, options);
+    expect(res?.code).toMatch('if(true){');
+
+    // Code is fully minified away
+    expect((await minifyLikeMetroAsync(res!)).code).toBe(`console.log('ssr.1');`);
+  });
+  it(`removes process.env.EXPO_SERVER usage in client bundles`, async () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // compact: true,
+      // Make the snapshot easier to read
+      retainLines: true,
+      compact: true,
+      caller: getCaller({ name: 'metro', platform: 'web', isDev: false, isServer: false }),
+    };
+
+    const src = `
+    if (process.env.EXPO_SERVER) {
+      console.log('ssr.1');
+    }
+    `;
+
+    const res = babel.transform(src, options);
+    expect(res?.code).toMatch('if(false){');
+
+    // Code is fully minified away
+    expect((await minifyLikeMetroAsync(res!)).code).toBe(`0;`);
+  });
+
   it(`preserves typeof window usage in client bundles`, async () => {
     const options = {
       babelrc: false,

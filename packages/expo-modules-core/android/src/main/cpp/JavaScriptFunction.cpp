@@ -45,7 +45,7 @@ jobject JavaScriptFunction::invoke(
   convertedArgs.reserve(size);
 
   for (size_t i = 0; i < size; i++) {
-    jni::local_ref<jni::JObject> arg = args->getElement(i);
+    jni::local_ref<jobject> arg = args->getElement(i);
     convertedArgs.push_back(convert(env, rt, std::move(arg)));
   }
 

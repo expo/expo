@@ -4,8 +4,8 @@ Expo universal module for BackgroundFetch API
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/background-fetch.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/background-fetch/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/background-fetch/)
 
 # Installation in managed Expo projects
 
@@ -21,12 +21,6 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-background-fetch
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
-In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](https://docs.expo.dev/versions/latest/sdk/task-manager/#configuration-for-standalone-apps) for more details.
-
 ### Configure for Android
 
 No additional set up necessary.
@@ -38,6 +32,12 @@ This module might listen when the device is starting up. It's necessary to conti
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 ```
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
+
+In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](https://docs.expo.dev/versions/latest/sdk/task-manager/#configuration-for-standalone-apps) for more details.
 
 # Contributing
 

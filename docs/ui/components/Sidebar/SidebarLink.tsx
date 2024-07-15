@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography, LinkBase } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useRef, type PropsWithChildren } from 'react';
 

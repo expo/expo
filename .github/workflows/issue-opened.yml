@@ -11,7 +11,7 @@ jobs:
   check-if-trusted:
     runs-on: ubuntu-22.04
     steps:
-      - uses: 8398a7/action-slack@v3.8.0
+      - uses: 8398a7/action-slack@v3
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_expo_support }}
@@ -22,7 +22,7 @@ jobs:
           text: 'This issue should be triaged ASAP: ${{ github.event.issue.html_url }}'
           author_name: ${{ github.event.issue.user.login }}
           fields: repo
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v7
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

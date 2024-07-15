@@ -181,7 +181,7 @@ export type PropData = {
   signatures?: MethodSignatureData[];
   overwrites?: TypeDefinitionData;
   implementationOf?: TypeDefinitionData;
-  inheritedFrom?: TypeGeneralData;
+  inheritedFrom?: InheritedFromData;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -217,4 +217,9 @@ export type TypeParameterData = {
   name: string;
   kind: TypeDocKind;
   variant: string;
+};
+
+export type InheritedFromData = {
+  type: 'reference';
+  name: string;
 };

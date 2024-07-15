@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
+const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
     return value === true || value === 'true';
 }
@@ -22,7 +23,7 @@ function memoize(fn) {
     });
 }
 const memoizeWarning = memoize((message) => {
-    console.warn(message);
+    debug(message);
 });
 function getBabelCaller({ filename, options, }) {
     const isNodeModule = filename.includes('node_modules');
@@ -33,7 +34,7 @@ function getBabelCaller({ filename, options, }) {
         ? decodeURI(options.customTransformOptions.routerRoot)
         : undefined;
     if (routerRoot == null) {
-        memoizeWarning('Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory.');
+        memoizeWarning('Warning: Missing transform.routerRoot option in Metro bundling request, falling back to `app` as routes directory. This can occur if you bundle without Expo CLI or expo/metro-config.');
     }
     return {
         name: 'metro',

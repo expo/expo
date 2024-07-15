@@ -302,26 +302,28 @@ export async function modifyConfigAsync(
       )}`,
       config: null,
     };
-  } else if (config.staticConfigPath) {
-    // Static with no dynamic config, this means we can append to the config automatically.
-    let outputConfig: AppJSONConfig;
-    // If the config has an expo object (app.json) then append the options to that object.
-    if (config.rootConfig.expo) {
-      outputConfig = {
-        ...config.rootConfig,
-        expo: { ...config.rootConfig.expo, ...modifications },
-      };
-    } else {
-      // Otherwise (app.config.json) just add the config modification to the top most level.
-      outputConfig = { ...config.rootConfig, ...modifications };
-    }
-    if (!writeOptions.dryRun) {
-      await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
-    }
-    return { type: 'success', config: outputConfig };
+  } else if (config.staticConfigPath == null) {
+    // No config in the project, use a default location.
+    config.staticConfigPath = path.join(projectRoot, 'app.json');
   }
 
-  return { type: 'fail', message: 'No config exists', config: null };
+  // Static with no dynamic config, this means we can append to the config automatically.
+  let outputConfig: AppJSONConfig;
+  // If the config has an expo object (app.json) then append the options to that object.
+  if (config.rootConfig.expo) {
+    outputConfig = {
+      ...config.rootConfig,
+      expo: { ...config.rootConfig.expo, ...modifications },
+    };
+  } else {
+    // Otherwise (app.config.json) just add the config modification to the top most level.
+    outputConfig = { ...config.rootConfig, ...modifications };
+  }
+  if (!writeOptions.dryRun) {
+    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
+  }
+
+  return { type: 'success', config: outputConfig };
 }
 
 function ensureConfigHasDefaultValues({

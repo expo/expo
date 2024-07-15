@@ -6,6 +6,7 @@ import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import SharedObject from './SharedObject';
+import SharedRef from './SharedRef';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
@@ -24,6 +25,7 @@ export {
   // Globals
   EventEmitter,
   SharedObject,
+  SharedRef,
   NativeModule,
   // Errors
   CodedError,

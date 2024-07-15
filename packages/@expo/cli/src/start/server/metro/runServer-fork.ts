@@ -11,6 +11,7 @@ import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
 import { parse } from 'url';
+import type { WebSocketServer } from 'ws';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
@@ -94,6 +95,23 @@ export const runServer = async (
   httpServer.on('close', () => {
     end();
   });
+
+  // Extend the close method to ensure all websocket servers are closed, and connections are terminated
+  const originalClose = httpServer.close.bind(httpServer);
+
+  httpServer.close = function closeHttpServer(callback) {
+    originalClose(callback);
+
+    // Close all websocket servers, including possible client connections (see: https://github.com/websockets/ws/issues/2137#issuecomment-1507469375)
+    for (const endpoint of Object.values(websocketEndpoints) as WebSocketServer[]) {
+      endpoint.close();
+      endpoint.clients.forEach((client) => client.terminate());
+    }
+
+    // Forcibly close active connections
+    this.closeAllConnections();
+    return this;
+  };
 
   if (mockServer) {
     return { server: httpServer, metro: metroServer };

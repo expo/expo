@@ -76,15 +76,11 @@
     @"EXNativeModulesProxy",
     @"EXReactNativeEventEmitter",
     @"ExpoModulesCore",
-    @"ViewManagerAdapter_"
+    @"ViewManagerAdapter_",
+    @"EXDevLauncherDevMenu"
   ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
-
-    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
-      return true;
-    }
-
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
         return true;

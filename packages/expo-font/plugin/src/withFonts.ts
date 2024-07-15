@@ -7,6 +7,12 @@ const pkg = require('expo-font/package.json');
 
 export type FontProps = {
   fonts?: string[];
+  android?: {
+    fonts?: string[];
+  };
+  ios?: {
+    fonts?: string[];
+  };
 };
 
 const withFonts: ConfigPlugin<FontProps> = (config, props) => {
@@ -14,12 +20,17 @@ const withFonts: ConfigPlugin<FontProps> = (config, props) => {
     return config;
   }
 
-  if (props.fonts && props.fonts.length === 0) {
-    return config;
+  const iosFonts = [...(props.fonts ?? []), ...(props.ios?.fonts ?? [])];
+
+  if (iosFonts.length > 0) {
+    config = withFontsIos(config, iosFonts);
   }
 
-  config = withFontsIos(config, props.fonts ?? []);
-  config = withFontsAndroid(config, props.fonts ?? []);
+  const androidFonts = [...(props.fonts ?? []), ...(props.android?.fonts ?? [])];
+
+  if (androidFonts.length > 0) {
+    config = withFontsAndroid(config, androidFonts);
+  }
 
   return config;
 };

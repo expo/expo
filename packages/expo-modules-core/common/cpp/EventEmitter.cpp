@@ -2,6 +2,8 @@
 #include "EventEmitter.h"
 #include "LazyObject.h"
 
+#include <cxxreact/ErrorUtils.h>
+
 namespace expo::EventEmitter {
 
 #pragma mark - Listeners
@@ -51,11 +53,15 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
   }
   if (listSize == 1) {
     // The most common scenario – just call the only listener.
-    listenersList
-      .front()
-      .asObject(runtime)
-      .asFunction(runtime)
-      .callWithThis(runtime, thisObject, args, count);
+    try {
+      listenersList
+        .front()
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callWithThis(runtime, thisObject, args, count);
+    } catch (jsi::JSError& error) {
+      facebook::react::handleJSError(runtime, error, false);
+    }
     return;
   }
   // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
@@ -71,7 +77,14 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
   // i.e. newly added listeners will not be called and removed listeners will be called one last time.
   // This is compliant with the EventEmitter in Node.js
   for (const jsi::Function &listener : listenersVector) {
-    listener.callWithThis(runtime, thisObject, args, count);
+    // As opposed to Node.js and fbemitter, when the listener throws an error the behavior is the same as on web.
+    // That is, it doesn't stop the execution of subsequent listeners and the error is not propagated to the `emit` function.
+    // The motivation behind this is that errors thrown from a module or user's code shouldn't affect other modules' behavior.
+    try {
+      listener.callWithThis(runtime, thisObject, args, count);
+    } catch (jsi::JSError& error) {
+      facebook::react::handleJSError(runtime, error, false);
+    }
   }
 }
 

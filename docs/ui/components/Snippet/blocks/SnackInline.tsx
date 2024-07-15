@@ -1,5 +1,5 @@
 import { mergeClasses, SnackLogo } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { useEffect, useRef, useState, PropsWithChildren, ReactElement, Children } from 'react';
 
 import { Snippet } from '../Snippet';

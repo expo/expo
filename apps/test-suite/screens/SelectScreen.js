@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Checkbox } from 'expo-checkbox';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -15,11 +15,9 @@ function ListItem({ title, onPressItem, selected, id }) {
     <PlatformTouchable onPress={onPress}>
       <View style={styles.listItem}>
         <Text style={styles.label}>{title}</Text>
-        <MaterialCommunityIcons
-          color={selected ? Colors.tintColor : 'black'}
-          name={selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
-          size={24}
-        />
+        <View style={{ pointerEvents: 'none' }}>
+          <Checkbox color={Colors.tintColor} value={selected} />
+        </View>
       </View>
     </PlatformTouchable>
   );
@@ -166,10 +164,10 @@ export default class SelectScreen extends React.PureComponent {
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
 
     return (
-      // eslint-disable-next-line react/jsx-fragments
       <>
         <FlatList
           data={this.state.modules}
+          contentContainerStyle={{ backgroundColor: '#fff' }}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
@@ -189,8 +187,7 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const isRunningInBareExpo =
-    Constants.__unsafeNoWarnManifest && Constants.__unsafeNoWarnManifest.slug === 'bare-expo';
+  const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
   const paddingVertical = 16;
 
   return (
@@ -224,14 +221,14 @@ function FooterButton({ title, style, ...props }) {
   );
 }
 
-const HORIZONTAL_MARGIN = 24;
+const HORIZONTAL_MARGIN = 20;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
   footerButtonTitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.tintColor,
   },
   footerButton: {
@@ -246,18 +243,18 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: HORIZONTAL_MARGIN,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#dddddd',
+    borderBottomColor: Colors.border,
   },
   label: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 16,
   },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#dddddd',
+    borderTopColor: Colors.border,
     backgroundColor: 'white',
   },
   contentContainerStyle: {

@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 import fs from 'fs';
-import { sync as globSync } from 'glob';
+import { globSync } from 'glob';
 import path from 'path';
 
 import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';

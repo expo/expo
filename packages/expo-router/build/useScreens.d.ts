@@ -10,7 +10,10 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
      */
     redirect?: boolean;
     initialParams?: Record<string, any>;
-    options?: TOptions;
+    options?: TOptions | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+        navigation: any;
+    }) => TOptions);
     listeners?: ScreenListeners<State, EventMap> | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;

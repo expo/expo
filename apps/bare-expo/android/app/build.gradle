@@ -197,7 +197,7 @@ dependencies {
 class ExecuteSetupAndroidProject implements Plugin<Project> {
     @Override
     void apply(Project target) {
-        target.providers.exec {
+        target.exec {
             def configuration = target.gradle.startParameter.taskNames.any {
                 it.toLowerCase().contains("release")
             } ? "release" : "debug"

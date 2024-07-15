@@ -73,6 +73,9 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines whether the player allows Picture in Picture (PiP) mode.
+   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+   * > has to be configured for the PiP to work.
+   *
    * @default false
    * @platform ios 14+
    */
@@ -81,9 +84,20 @@ export interface VideoViewProps extends ViewProps {
   /**
    * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
    * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+   *
+   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+   * > has to be configured for the PiP to work.
+   *
    * @default false
    * @platform android 12+
    * @platform ios 14.2+
    */
   startsPictureInPictureAutomatically?: boolean;
+
+  /**
+   * Specifies whether to perform video frame analysis (Live Text in videos). Check official [Apple documentation](https://developer.apple.com/documentation/avkit/avplayerviewcontroller/allowsvideoframeanalysis) for more details.
+   * @default true
+   * @platform ios 16.0+
+   */
+  allowsVideoFrameAnalysis?: boolean;
 }

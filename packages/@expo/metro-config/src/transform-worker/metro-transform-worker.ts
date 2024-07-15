@@ -12,17 +12,8 @@ import { transformFromAstSync } from '@babel/core';
 import type { ParseResult, PluginItem } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
-import * as types from '@babel/types';
-import type { TransformResultDependency } from 'metro/src/DeltaBundler';
+import * as t from '@babel/types';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import collectDependencies, {
-  InvalidRequireCallError as InternalInvalidRequireCallError,
-  Dependency,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
-import type {
-  DependencyTransformer,
-  DynamicRequiresBehavior,
-} from 'metro/src/ModuleGraph/worker/collectDependencies';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import countLines from 'metro/src/lib/countLines';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
@@ -41,6 +32,14 @@ import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
+import collectDependencies, {
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+  Dependency,
+  DependencyTransformer,
+  DynamicRequiresBehavior,
+  CollectedDependencies,
+  Options as CollectDependenciesOptions,
+} from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
 
 export { JsTransformOptions };
@@ -62,6 +61,7 @@ interface JSFile extends BaseFile {
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
   readonly reactClientReference?: string;
+  readonly hasCjsExports?: boolean;
 }
 
 interface JSONFile extends BaseFile {
@@ -75,12 +75,13 @@ interface TransformationContext {
 }
 
 interface TransformResponse {
-  readonly dependencies: readonly TransformResultDependency[];
+  readonly dependencies: CollectedDependencies['dependencies'];
   readonly output: readonly ExpoJsOutput[];
 }
 
 export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
   readonly data: JsOutput['data'] & {
+    readonly hasCjsExports?: boolean;
     readonly reactClientReference?: string;
   };
 };
@@ -105,9 +106,8 @@ function getDynamicDepsBehavior(
   }
 }
 
-const minifyCode = async (
-  config: JsTransformerConfig,
-  projectRoot: string,
+export const minifyCode = async (
+  config: Pick<JsTransformerConfig, 'minifierPath' | 'minifierConfig'>,
   filename: string,
   code: string,
   source: string,
@@ -154,13 +154,6 @@ const minifyCode = async (
   }
 };
 
-const disabledDependencyTransformer: DependencyTransformer = {
-  transformSyncRequire: () => {},
-  transformImportCall: () => {},
-  transformPrefetch: () => {},
-  transformIllegalDynamicRequire: () => {},
-};
-
 class InvalidRequireCallError extends Error {
   innerError: InternalInvalidRequireCallError;
   filename: string;
@@ -172,21 +165,20 @@ class InvalidRequireCallError extends Error {
   }
 }
 
-async function transformJS(
-  file: JSFile,
-  { config, options, projectRoot }: TransformationContext
-): Promise<TransformResponse> {
-  // const targetEnv = options.customTransformOptions?.environment;
-  // const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+export function renameTopLevelModuleVariables() {
+  // A babel plugin which renames variables in the top-level scope that are named "module".
+  return {
+    visitor: {
+      Program(path: any) {
+        ['global', 'require', 'module', 'exports'].forEach((name) => {
+          path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
+        });
+      },
+    },
+  };
+}
 
-  // Transformers can output null ASTs (if they ignore the file). In that case
-  // we need to parse the module source code to get their AST.
-  let ast: babylon.ParseResult<types.File> =
-    file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
-
-  // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
-  const { importDefault, importAll } = generateImportNames(ast);
-
+function applyUseStrictDirective(ast: babylon.ParseResult<t.File>) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -196,9 +188,28 @@ async function transformJS(
     directives != null &&
     directives.findIndex((d) => d.value.value === 'use strict') === -1
   ) {
-    directives.push(types.directive(types.directiveLiteral('use strict')));
+    directives.push(t.directive(t.directiveLiteral('use strict')));
   }
+}
 
+export function applyImportSupport<TFile extends t.File>(
+  ast: TFile,
+  {
+    filename,
+    options,
+    importDefault,
+    importAll,
+  }: {
+    filename: string;
+
+    options: Pick<
+      JsTransformOptions,
+      'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'
+    >;
+    importDefault: string;
+    importAll: string;
+  }
+): TFile {
   // Perform the import-export transform (in case it's still needed), then
   // fold requires and perform constant folding (if in dev).
   const plugins: PluginItem[] = [];
@@ -210,9 +221,14 @@ async function transformJS(
   };
 
   // NOTE(EvanBacon): This is effectively a replacement for the `@babel/plugin-transform-modules-commonjs`
-  // plugin that's running in `@@react-native/babel-preset`, but with shared names for inlining requires.
+  // plugin that's running in `@react-native/babel-preset`, but with shared names for inlining requires.
   if (options.experimentalImportSupport === true) {
-    plugins.push([metroTransformPlugins.importExportPlugin, babelPluginOpts]);
+    plugins.push(
+      // Ensure the iife "globals" don't have conflicting variables in the module.
+      renameTopLevelModuleVariables,
+      //
+      [metroTransformPlugins.importExportPlugin, babelPluginOpts]
+    );
   }
 
   // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
@@ -232,7 +248,7 @@ async function transformJS(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
-    ast = nullthrows<babylon.ParseResult<types.File>>(
+    ast = nullthrows<TFile>(
       // @ts-expect-error
       transformFromAstSync(ast, '', {
         ast: true,
@@ -240,7 +256,7 @@ async function transformJS(
         code: false,
         configFile: false,
         comments: true,
-        filename: file.filename,
+        filename,
         plugins,
         sourceMaps: false,
 
@@ -253,83 +269,131 @@ async function transformJS(
         // > either because one of the plugins is doing something funky or Babel messes up some caches.
         // > Make sure to test the above mentioned case before flipping the flag back to false.
         cloneInputAst: false,
-      }).ast!
+      })?.ast
     );
   }
+  return ast;
+}
 
-  if (!options.dev) {
-    // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
-    // references, and hence the `constantFoldingPlugin` below will remove them.
-    // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
-    // Babel traversal cache (`traverse.cache.clear()`)
-    const clearProgramScopePlugin: PluginItem = {
-      visitor: {
-        Program: {
-          enter(path) {
-            path.scope.crawl();
-          },
+function performConstantFolding(
+  ast: babylon.ParseResult<t.File>,
+  { filename }: { filename: string }
+) {
+  // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
+  // references, and hence the `constantFoldingPlugin` below will remove them.
+  // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
+  // Babel traversal cache (`traverse.cache.clear()`)
+  const clearProgramScopePlugin: PluginItem = {
+    visitor: {
+      Program: {
+        enter(path) {
+          path.scope.crawl();
         },
       },
-    };
+    },
+  };
 
-    // Run the constant folding plugin in its own pass, avoiding race conditions
-    // with other plugins that have exit() visitors on Program (e.g. the ESM
-    // transform).
-    ast = nullthrows<babylon.ParseResult<types.File>>(
-      // @ts-expect-error
-      transformFromAstSync(ast, '', {
-        ast: true,
-        babelrc: false,
-        code: false,
-        configFile: false,
-        comments: true,
-        filename: file.filename,
-        plugins: [
-          clearProgramScopePlugin,
-          [metroTransformPlugins.constantFoldingPlugin, babelPluginOpts],
-        ],
-        sourceMaps: false,
+  // Run the constant folding plugin in its own pass, avoiding race conditions
+  // with other plugins that have exit() visitors on Program (e.g. the ESM
+  // transform).
+  ast = nullthrows<babylon.ParseResult<t.File>>(
+    // @ts-expect-error
+    transformFromAstSync(ast, '', {
+      ast: true,
+      babelrc: false,
+      code: false,
+      configFile: false,
+      comments: true,
+      filename,
+      plugins: [clearProgramScopePlugin, metroTransformPlugins.constantFoldingPlugin],
+      sourceMaps: false,
 
-        // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
-        // running with `cloneInputAst: true`.
-        // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
-        cloneInputAst: false,
-      }).ast
-    );
+      // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
+      // running with `cloneInputAst: true`.
+      // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
+      cloneInputAst: false,
+    }).ast
+  );
+  return ast;
+}
+
+async function transformJS(
+  file: JSFile,
+  { config, options }: TransformationContext
+): Promise<TransformResponse> {
+  const targetEnv = options.customTransformOptions?.environment;
+  const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
+
+  const unstable_disableModuleWrapping = config.unstable_disableModuleWrapping;
+
+  // Transformers can output null ASTs (if they ignore the file). In that case
+  // we need to parse the module source code to get their AST.
+  let ast: babylon.ParseResult<t.File> =
+    file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
+
+  // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
+  const { importDefault, importAll } = generateImportNames(ast);
+
+  // Add "use strict" if the file was parsed as a module, and the directive did
+  // not exist yet.
+  applyUseStrictDirective(ast);
+
+  // @ts-expect-error: Not on types yet (Metro 0.80).
+  const unstable_renameRequire = config.unstable_renameRequire;
+
+  // Perform the import-export transform (in case it's still needed), then
+  // fold requires and perform constant folding (if in dev).
+
+  ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+
+  if (!options.dev) {
+    ast = performConstantFolding(ast, { filename: file.filename });
   }
 
   let dependencyMapName: string = '';
   let dependencies: readonly Dependency[];
-  let wrappedAst: types.File | undefined;
+  let wrappedAst: t.File | undefined;
 
   // If the module to transform is a script (meaning that is not part of the
   // dependency graph and it code will just be prepended to the bundle modules),
   // we need to wrap it differently than a commonJS module (also, scripts do
   // not have dependencies).
+  let collectDependenciesOptions: CollectDependenciesOptions | undefined;
   if (file.type === 'js/script') {
     dependencies = [];
     wrappedAst = JsFileWrapping.wrapPolyfill(ast);
   } else {
     try {
-      const opts = {
+      collectDependenciesOptions = {
         asyncRequireModulePath: config.asyncRequireModulePath,
         dependencyTransformer:
           config.unstable_disableModuleWrapping === true
             ? disabledDependencyTransformer
             : undefined,
-        dynamicRequires: getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
+        dynamicRequires: isServerEnv
+          ? // NOTE(EvanBacon): Allow arbitrary imports in server environments.
+            // This requires a patch to Metro collectDeps.
+            'warn'
+          : getDynamicDepsBehavior(config.dynamicDepsInPackages, file.filename),
         inlineableCalls: [importDefault, importAll],
         keepRequireNames: options.dev,
         allowOptionalDependencies: config.allowOptionalDependencies,
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
-
-        // NOTE(EvanBacon): Allow arbitrary imports in server environments.
-        // This requires a patch to Metro collectDeps.
-        // allowArbitraryImport: isServerEnv,
       };
 
-      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
+        ...collectDependenciesOptions,
+        // This setting shouldn't be shared with the tree shaking transformer.
+        dependencyTransformer:
+          unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
+      }));
+
+      // Ensure we use the same name for the second pass of the dependency collection in the serializer.
+      collectDependenciesOptions = {
+        ...collectDependenciesOptions,
+        dependencyMapName,
+      };
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);
@@ -337,7 +401,7 @@ async function transformJS(
       throw error;
     }
 
-    if (config.unstable_disableModuleWrapping === true) {
+    if (unstable_disableModuleWrapping === true) {
       wrappedAst = ast;
     } else {
       // TODO: Replace this with a cheaper transform that doesn't require AST.
@@ -351,21 +415,26 @@ async function transformJS(
         // release. It should be made non-optional in ConfigT or removed in
         // future.
         // @ts-expect-error: Not on types yet (Metro 0.80.9).
-        config.unstable_renameRequire === false
+        unstable_renameRequire === false
       ));
     }
   }
+  const minify = shouldMinify(options);
+
+  const shouldNormalizePseudoGlobals =
+    minify &&
+    file.inputFileSize <= config.optimizationSizeLimit &&
+    !config.unstable_disableNormalizePseudoGlobals;
+
   const reserved: string[] = [];
   if (config.unstable_dependencyMapReservedName != null) {
     reserved.push(config.unstable_dependencyMapReservedName);
   }
 
-  const minify = shouldMinify(options);
-
   if (
-    minify &&
-    file.inputFileSize <= config.optimizationSizeLimit &&
-    !config.unstable_disableNormalizePseudoGlobals
+    shouldNormalizePseudoGlobals &&
+    // TODO: If the module wrapping is disabled then the normalize function needs to change to account for not being in a body.
+    !unstable_disableModuleWrapping
   ) {
     // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
     reserved.push(
@@ -392,10 +461,10 @@ async function transformJS(
   let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
   let code = result.code;
 
+  // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
     ({ map, code } = await minifyCode(
       config,
-      projectRoot,
       file.filename,
       result.code,
       file.code,
@@ -411,6 +480,7 @@ async function transformJS(
         lineCount: countLines(code),
         map,
         functionMap: file.functionMap,
+        hasCjsExports: file.hasCjsExports,
         reactClientReference: file.reactClientReference,
       },
       type: file.type,
@@ -442,6 +512,7 @@ async function transformAsset(
     type: 'js/module/asset',
     ast: result.ast,
     functionMap: null,
+    hasCjsExports: true,
     reactClientReference: result.reactClientReference,
   };
 
@@ -483,6 +554,7 @@ async function transformJSWithBabel(
       // Fallback to deprecated explicitly-generated `functionMap`
       transformResult.functionMap ??
       null,
+    hasCjsExports: transformResult.metadata?.hasCjsExports,
     reactClientReference: transformResult.metadata?.reactClientReference,
   };
 
@@ -491,7 +563,7 @@ async function transformJSWithBabel(
 
 async function transformJSON(
   file: JSONFile,
-  { options, config, projectRoot }: TransformationContext
+  { options, config }: TransformationContext
 ): Promise<TransformResponse> {
   let code =
     config.unstable_disableModuleWrapping === true
@@ -502,7 +574,7 @@ async function transformJSON(
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ map, code } = await minifyCode(config, projectRoot, file.filename, code, file.code, map));
+    ({ map, code } = await minifyCode(config, file.filename, code, file.code, map));
   }
 
   let jsType: JSFileType;
@@ -618,7 +690,9 @@ export function getCacheKey(config: JsTransformerConfig): string {
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
     require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
+    require.resolve('./resolveOptions'),
     require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
     require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
@@ -631,3 +705,10 @@ export function getCacheKey(config: JsTransformerConfig): string {
     babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
   ].join('$');
 }
+
+const disabledDependencyTransformer: DependencyTransformer = {
+  transformSyncRequire: () => {},
+  transformImportCall: () => {},
+  transformPrefetch: () => {},
+  transformIllegalDynamicRequire: () => {},
+};

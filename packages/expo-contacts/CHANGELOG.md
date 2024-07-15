@@ -17,6 +17,12 @@
 
 ### 💡 Others
 
+- Handle new permission status on `iOS` 18. ([#29639](https://github.com/expo/expo/pull/29639) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.0.4 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
 ## 13.0.3 — 2024-05-01
 
 _This version does not introduce any user-facing changes._

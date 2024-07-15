@@ -1,5 +1,7 @@
 import { ExpoGoLogo, mergeClasses } from '@expo/styleguide';
-import { ChevronDownIcon, Monitor01DuotoneIcon, Phone01DuotoneIcon } from '@expo/styleguide-icons';
+import { Monitor01DuotoneIcon } from '@expo/styleguide-icons/duotone/Monitor01DuotoneIcon';
+import { Phone01DuotoneIcon } from '@expo/styleguide-icons/duotone/Phone01DuotoneIcon';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { useEffect, useState } from 'react';
 
 type RuntimePopupProps<T extends string> = {

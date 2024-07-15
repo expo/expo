@@ -88,7 +88,7 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  *
  * @example
  * ```js
- * const [status, requestPermission] = ScreenCapture.useScreenCapturePermissions();
+ * const [status, requestPermission] = ScreenCapture.usePermissions();
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];

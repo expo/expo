@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+- Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
+
+## 4.0.18 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.17 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.16 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.15 - 2024-05-29
 
 _This version does not introduce any user-facing changes._

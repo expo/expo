@@ -34,7 +34,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -48,13 +48,11 @@ jobs:
       - name: 🧪 Run Docs tests
         run: yarn test
       - name: 🚨 Lint Docs website code
+        env:
+          NODE_ENV: production
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
         run: yarn lint-prose
-      - name: ⚠️ Danger check
-        run: yarn danger ci
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 🏗️ Build Docs website
         run: yarn export-preview
         timeout-minutes: 20
@@ -100,7 +98,7 @@ jobs:
         run: ./deploy.sh
       - name: 🔍 Find old comment if it exists
         if: contains(github.event.pull_request.labels.*.name, 'preview')
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         id: old_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -108,7 +106,7 @@ jobs:
           body-includes: 📘 Your docs
       - name: 💬 Add comment with preview URL
         if: contains(github.event.pull_request.labels.*.name, 'preview') && steps.old_comment.outputs.comment-id == ''
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -120,7 +118,7 @@ jobs:
             });
       - name: 💬 Update comment with preview URL
         if: contains(github.event.pull_request.labels.*.name, 'preview') && steps.old_comment.outputs.comment-id != ''
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |

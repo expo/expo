@@ -106,11 +106,11 @@ describe(diffFingerprintChangesAsync, () => {
         {
           "op": "changed",
           "source": {
-            "contents": "{"start":"expo start","android":"expo start --android","ios":"expo start --ios","web":"expo start --web","postinstall":"echo \\"hello\\""}",
+            "contents": "{"start":"expo start","web":"expo start --web","postinstall":"echo \\"hello\\""}",
             "debugInfo": {
-              "hash": "47f4d7bae018eb17440153f09977113501eace30",
+              "hash": "fa4e572415a69f7f5bf749b54d5e3fafb416975a",
             },
-            "hash": "47f4d7bae018eb17440153f09977113501eace30",
+            "hash": "fa4e572415a69f7f5bf749b54d5e3fafb416975a",
             "id": "packageJson:scripts",
             "reasons": [
               "packageJson:scripts",
