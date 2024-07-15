@@ -6,6 +6,7 @@ import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
 import { RouteNode } from '../Route';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+import { RouterStore } from '../global-state/router-store';
 
 type Options<ParamList extends object> = {
   initialRouteName?: string;
@@ -92,11 +93,11 @@ export function getUrlWithReactNavigationConcessions(
  * @param options Extra options to fine-tune how to parse the path.
  */
 export default function getStateFromPath<ParamList extends object>(
+  this: RouterStore | undefined,
   path: string,
-  options?: Options<ParamList>,
-  previousSegments: string[] = []
+  options?: Options<ParamList>
 ): ResultState | undefined {
-  const { initialRoutes, configs } = getMatchableRouteConfigs(options, previousSegments);
+  const { initialRoutes, configs } = getMatchableRouteConfigs(options, this?.routeInfo?.segments);
 
   return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }

@@ -51,8 +51,8 @@ exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessi
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-function getStateFromPath(path, options, previousSegments = []) {
-    const { initialRoutes, configs } = getMatchableRouteConfigs(options, previousSegments);
+function getStateFromPath(path, options) {
+    const { initialRoutes, configs } = getMatchableRouteConfigs(options, this?.routeInfo?.segments);
     return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
 exports.default = getStateFromPath;

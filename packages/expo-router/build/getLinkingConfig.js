@@ -9,7 +9,7 @@ function getNavigationConfig(routes, metaOnly = true) {
     return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
 }
 exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(routes, context, { metaOnly = true, serverUrl } = {}) {
+function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -55,7 +55,7 @@ function getLinkingConfig(routes, context, { metaOnly = true, serverUrl } = {}) 
             return initialUrl;
         },
         subscribe: (0, linking_1.addEventListener)(nativeLinking),
-        getStateFromPath: linking_1.getStateFromPath,
+        getStateFromPath: linking_1.getStateFromPath.bind(store),
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {
                 screens: {},

@@ -11,6 +11,7 @@ import {
   getStateFromPath,
 } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
+import { RouterStore } from './global-state/router-store';
 
 export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
   return getReactNavigationConfig(routes, metaOnly);
@@ -28,6 +29,7 @@ export type LinkingConfigOptions = {
 };
 
 export function getLinkingConfig(
+  store: RouterStore,
   routes: RouteNode,
   context: RequireContext,
   { metaOnly = true, serverUrl }: LinkingConfigOptions = {}
@@ -78,7 +80,7 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: addEventListener(nativeLinking),
-    getStateFromPath,
+    getStateFromPath: getStateFromPath.bind(store),
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
