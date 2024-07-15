@@ -121,7 +121,17 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
     // TODO: We may want a hashed version for production builds in the future.
     let id = fileToIdMap.get(modulePath);
     if (id == null) {
-      id = path.relative(root, modulePath);
+      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+      if (modulePath == null) {
+        id = 'MODULE_NOT_FOUND';
+      } else if (modulePath.startsWith('\0')) {
+        // Virtual modules should be stable.
+        id = modulePath;
+      } else if (path.isAbsolute(modulePath)) {
+        id = path.relative(root, modulePath);
+      } else {
+        id = modulePath;
+      }
       fileToIdMap.set(modulePath, id);
     }
     // @ts-expect-error: we patch this to support being a string.
