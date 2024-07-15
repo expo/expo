@@ -13,7 +13,6 @@ swap:
   cancelling: canceling
   cocoapods: CocoaPods
   devops: DevOps
-  devtools: DevTools
   eas: EAS
   eas build: EAS Build
   eas cli: EAS CLI

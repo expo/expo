@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- Improve missing module errors. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix support for defining variables named `module`, `require`, `global`, and `exports` with `experimentalImportSupport`. ([#30348](https://github.com/expo/expo/pull/30348) by [@EvanBacon](https://github.com/EvanBacon))
 - Support showing the hidden entry file in chrome dev tools. ([#30113](https://github.com/expo/expo/pull/30113) by [@EvanBacon](https://github.com/EvanBacon))
 - Align source map behavior with community exports. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))

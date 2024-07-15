@@ -27,6 +27,7 @@
 
 ### 💡 Others
 
+- Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add robot export e2e test. ([#30049](https://github.com/expo/expo/pull/30049) by [@EvanBacon](https://github.com/EvanBacon))
 - Add internal externals to prevent bundling `source-map-support` in development. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
@@ -40,6 +41,7 @@
 - Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 - Update `glob@7` to `glob@10`. ([#29898](https://github.com/expo/expo/pull/29898) by [@byCedric](https://github.com/byCedric))
 - Improve simulators texts ([#30403](https://github.com/expo/expo/pull/30403) by [@germanolira](https://github.com/germanolira))
+- Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.18.19 - 2024-06-13
 
