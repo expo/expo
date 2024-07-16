@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._createSideEffectMatcher = exports.hasSideEffectWithDebugTrace = void 0;
+exports.isVirtualModule = exports._createSideEffectMatcher = exports.hasSideEffectWithDebugTrace = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -102,7 +102,7 @@ function detectHasSideEffectInPackageJson(options, value) {
         return value.sideEffects;
     }
     // Don't perform lookup on virtual modules.
-    if (value.path.startsWith('\0')) {
+    if (isVirtualModule(value.path)) {
         return false;
     }
     if (value.output.some((output) => output.type === 'js/module')) {
@@ -114,4 +114,8 @@ function detectHasSideEffectInPackageJson(options, value) {
     }
     return null;
 }
+function isVirtualModule(path) {
+    return path.startsWith('\0');
+}
+exports.isVirtualModule = isVirtualModule;
 //# sourceMappingURL=sideEffects.js.map

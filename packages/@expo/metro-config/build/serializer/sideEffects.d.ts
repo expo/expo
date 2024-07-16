@@ -6,4 +6,5 @@ export declare function hasSideEffectWithDebugTrace(options: SerializerOptions, 
 export declare function _createSideEffectMatcher(dirRoot: string, packageJson: {
     sideEffects?: boolean | string[];
 }, packageJsonPath?: string): (fp: string) => boolean | null;
+export declare function isVirtualModule(path: string): boolean;
 export {};

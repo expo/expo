@@ -138,7 +138,7 @@ function detectHasSideEffectInPackageJson(
     return value.sideEffects;
   }
   // Don't perform lookup on virtual modules.
-  if (value.path.startsWith('\0')) {
+  if (isVirtualModule(value.path)) {
     return false;
   }
 
@@ -152,4 +152,8 @@ function detectHasSideEffectInPackageJson(
   }
 
   return null;
+}
+
+export function isVirtualModule(path: string) {
+  return path.startsWith('\0');
 }
