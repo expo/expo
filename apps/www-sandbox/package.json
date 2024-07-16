@@ -1,5 +1,5 @@
 {
-  "name": "@expo/sandbox",
+  "name": "@expo/www-sandbox",
   "version": "0.0.0",
   "main": "expo-router/entry",
   "scripts": {

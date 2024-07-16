@@ -208,7 +208,6 @@ export async function exportEmbedBundleAndAssetsAsync(
               files,
               platform: 'web',
               outputDirectory: options.assetsDest!,
-              // outputDirectory: `${rootDir}/${hash}`,
               baseUrl,
             });
           }
