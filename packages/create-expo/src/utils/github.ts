@@ -1,10 +1,13 @@
-import fetch from 'node-fetch';
+import type { Endpoints } from '@octokit/types';
+import { Readable } from 'stream';
 
+import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
 import { createGlobFilter } from '../createFileTransform';
 
 const debug = require('debug')('expo:init:github') as typeof console.log;
 
+type GithubRepoResponse = Endpoints['GET /repos/{owner}/{repo}']['response']['data'];
 type GitHubRepoInfo = {
   owner: string;
   name: string;
@@ -21,17 +24,19 @@ async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo> {
   // https://github.com/:owner/:my-cool-example-repo-name.
   if (t === undefined) {
     const response = await fetch(`https://api.github.com/repos/${owner}/${name}`);
-    if (!response.ok) {
-      // Private or doesn't exist
-      if (response.status === 404) {
-        throw new Error(`GitHub repository not found for url: ${url}`);
-      }
+
+    if (!response.ok && response.status === 404) {
+      // Private or non-existing repositories
+      throw new Error(`GitHub repository not found for url: ${url}`);
+    } else if (!response.ok) {
+      // Unexpected error from GitHub
       throw new Error(
         `[${response.status}] Failed to fetch GitHub repository information for url: ${url}`
       );
     }
 
-    const info = await response.json();
+    const info = (await response.json()) as GithubRepoResponse;
+
     return { owner, name, branch: info['default_branch'], filePath };
   }
 
@@ -43,16 +48,11 @@ async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo> {
 }
 
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L86-L91
-async function isValidGitHubRepoAsync({
-  owner,
-  name,
-  branch,
-  filePath,
-}: GitHubRepoInfo): Promise<boolean> {
-  const contentsUrl = `https://api.github.com/repos/${owner}/${name}/contents`;
-  const packagePath = `${filePath ? `/${filePath}` : ''}/package.json`;
+async function isValidGitHubRepoAsync(repo: GitHubRepoInfo): Promise<boolean> {
+  const contentsUrl = `https://api.github.com/repos/${repo.owner}/${repo.name}/contents`;
+  const packagePath = `${repo.filePath ? `/${repo.filePath}` : ''}/package.json`;
 
-  const response = await fetch(contentsUrl + packagePath + `?ref=${branch}`);
+  const response = await fetch(contentsUrl + packagePath + `?ref=${repo.branch}`);
   return response.ok;
 }
 
@@ -83,7 +83,11 @@ async function extractRemoteGitHubTarballAsync(
     }
   );
 
-  await extractNpmTarballAsync(response.body, { ...props, filter, strip });
+  await extractNpmTarballAsync(
+    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    Readable.fromWeb(response.body),
+    { ...props, filter, strip }
+  );
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(

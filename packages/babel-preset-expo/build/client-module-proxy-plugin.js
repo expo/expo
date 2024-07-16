@@ -73,7 +73,7 @@ function reactClientReferencesPlugin() {
                                     pushProxy(exportName);
                                 }
                             }
-                            else if (!['InterfaceDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)) {
+                            else if (!['InterfaceDeclaration', 'TSTypeAliasDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)) {
                                 // TODO: What is this type?
                                 console.warn('[babel-preset-expo] Unsupported export specifier for "use client":', exportPath.node.declaration.type);
                             }
@@ -107,10 +107,7 @@ function reactClientReferencesPlugin() {
                 }
                 assertExpoMetadata(state.file.metadata);
                 // Save the client reference in the metadata.
-                if (!state.file.metadata.clientReferences) {
-                    state.file.metadata.clientReferences ??= [];
-                }
-                state.file.metadata.clientReferences.push(outputKey);
+                state.file.metadata.reactClientReference = outputKey;
                 // Store the proxy export names for testing purposes.
                 state.file.metadata.proxyExports = [...proxyExports];
             },

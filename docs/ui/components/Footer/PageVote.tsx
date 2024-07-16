@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide-icons';
+import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
+import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { useState } from 'react';
 
 import { reportPageVote } from '~/providers/Analytics';

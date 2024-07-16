@@ -50,7 +50,7 @@ In order to be able to receive push notifications on the device:
 
 ### Configure for Android
 
-In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.dev/guides/setup-native-firebase/#bare-workflow-setup).
+In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.dev/guides/using-firebase/#install-and-initialize-react-native-firebase).
 
 This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 

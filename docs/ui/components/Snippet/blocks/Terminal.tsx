@@ -1,4 +1,4 @@
-import { TerminalSquareIcon } from '@expo/styleguide-icons';
+import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
 import { Language, Prism } from 'prism-react-renderer';
 
 import { Snippet } from '../Snippet';

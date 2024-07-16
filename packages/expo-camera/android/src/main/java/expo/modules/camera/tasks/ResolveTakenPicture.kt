@@ -90,7 +90,7 @@ class ResolveTakenPicture(
         // If OOM exception was thrown, we try to use downsampling to recover.
         while (bitmapOptions.inSampleSize <= options.maxDownsampling) {
           try {
-            bitmap = decodeBitmap(imageData, orientation, bitmapOptions)
+            bitmap = decodeBitmap(imageData, orientation, options.exif, bitmapOptions)
             break
           } catch (exception: OutOfMemoryError) {
             bitmapOptions.inSampleSize *= 2
@@ -222,9 +222,9 @@ class ResolveTakenPicture(
     return null
   }
 
-  private fun decodeBitmap(imageData: ByteArray, orientation: Int, bitmapOptions: BitmapFactory.Options): Bitmap {
+  private fun decodeBitmap(imageData: ByteArray, orientation: Int, exif: Boolean, bitmapOptions: BitmapFactory.Options): Bitmap {
     // Rotate the bitmap to the proper orientation if needed
-    return if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+    return if (!exif) {
       decodeAndRotateBitmap(imageData, getImageRotation(orientation), bitmapOptions)
     } else {
       BitmapFactory.decodeByteArray(imageData, 0, imageData.size, bitmapOptions)

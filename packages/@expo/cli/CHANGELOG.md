@@ -6,6 +6,55 @@
 
 ### 🎉 New features
 
+- Use `react` and `react-dom` 19 with `experiments.reactCanary`. ([#30335](https://github.com/expo/expo/pull/30335) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `EXPO_USE_METRO_REQUIRE` to enable stable string module IDs. ([#30176](https://github.com/expo/expo/pull/30176) by [@EvanBacon](https://github.com/EvanBacon))
+- Print the selected app IDs in prebuild when they change. ([#30044](https://github.com/expo/expo/pull/30044) by [@EvanBacon](https://github.com/EvanBacon))
+- Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
+- Automatically use valid default app identifiers in prebuild. ([#30023](https://github.com/expo/expo/pull/30023) by [@EvanBacon](https://github.com/EvanBacon))
+- Add microsecond format for bundling. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `.eslintrc.js` to `expo customize`. ([#29570](https://github.com/expo/expo/pull/29570) by [@EvanBacon](https://github.com/EvanBacon))
+- Support web imports of `react-native/Libraries/Image/resolveAssetSource` in Metro. ([#29685](https://github.com/expo/expo/pull/29685) by [@EvanBacon](https://github.com/EvanBacon))
+- Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
+
+### 🐛 Bug fixes
+
+- Fix resolver fields for SSR + native platforms. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
+- Resolve module specifiers to posix paths for Metro. ([#29696](https://github.com/expo/expo/pull/29696) by [@byCedric](https://github.com/byCedric))
+- Ensure Metro dev server closes fully when clients are connected. ([#30067](https://github.com/expo/expo/pull/30067) by [@byCedric](https://github.com/byCedric))
+- Fix app crashing when hitting debugger breakpoint through VSCode. ([#30287](https://github.com/expo/expo/pull/30287) by [@byCedric](https://github.com/byCedric))
+- Resolve real locations of file paths when using `eas build --local`. ([#30340](https://github.com/expo/expo/pull/30340) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
+- Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
+- Add robot export e2e test. ([#30049](https://github.com/expo/expo/pull/30049) by [@EvanBacon](https://github.com/EvanBacon))
+- Add internal externals to prevent bundling `source-map-support` in development. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove webpack dependency in repo. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
+- Add "more tools" to terminal UI all the time. ([#29837](https://github.com/expo/expo/pull/29837) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unused `serve.json` file from `expo customize`. ([#29571](https://github.com/expo/expo/pull/29571) by [@EvanBacon](https://github.com/EvanBacon))
+- Add more tests for export:embed. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
+- Reduce unused server code in exports. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
+- Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
+- Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
+- Update `glob@7` to `glob@10`. ([#29898](https://github.com/expo/expo/pull/29898) by [@byCedric](https://github.com/byCedric))
+- Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.18.19 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.18 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.17 - 2024-06-10
+
+### 🎉 New features
+
+- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
 - Support passing `--port 0` to use any free port. ([#29466](https://github.com/expo/expo/pull/29466) by [@EvanBacon](https://github.com/EvanBacon))
 - Deep link to simulators without prompting for permissions first. ([#29468](https://github.com/expo/expo/pull/29468) by [@EvanBacon](https://github.com/EvanBacon))
 
@@ -18,6 +67,11 @@
 - Reduce export code paths. ([#29218](https://github.com/expo/expo/pull/29218) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
 - Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.16 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 
 ## 0.18.15 — 2024-06-05

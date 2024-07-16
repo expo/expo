@@ -6,15 +6,37 @@
 
 ### 🎉 New features
 
+- On `Android`, add support for setting the aspect ratio of the camera. ([#29822](https://github.com/expo/expo/pull/29822) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
-- On `web`, fix missing function "getCapabilities" in Firefox. ([#28947](https://github.com/expo/expo/pull/28947) by [@miso-belica](https://github.com/miso-belica))
-- Allow starting the camera with the torch enabled. ([#29217](https://github.com/expo/expo/pull/29217) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix touch interactions when using gesture handler. ([#30338](https://github.com/expo/expo/pull/30338) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
-- Make the returned `type` in `BarCodeScanningResult` consistent. ([#29421](https://github.com/expo/expo/pull/29421)) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated docs for the `pictureSize` prop. ([#30195](https://github.com/expo/expo/pull/30195) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.12 - 2024-06-20
+
+### 🐛 Bug fixes
+
+- Prevent shutter sound when device volume is muted. ([#29638](https://github.com/expo/expo/pull/29638) by [@frederikocmr](https://github.com/frederikocmr))
+- On `Android`, correct image orientation when `exif` is set to true in `takePictureAsync`. ([#29712](https://github.com/expo/expo/pull/29712) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.11 - 2024-06-13
+
+### 🐛 Bug fixes
+
+- Fix return type of scanFromURLAsync. ([#29547](https://github.com/expo/expo/pull/29547) by [@janicduplessis](https://github.com/janicduplessis))
+- On `web`, fix missing function "getCapabilities" in Firefox. ([#28947](https://github.com/expo/expo/pull/28947) by [@miso-belica](https://github.com/miso-belica))
+- Allow starting the camera with the torch enabled. ([#29217](https://github.com/expo/expo/pull/29217) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, return the correct orientation in the exif data. ([#29681](https://github.com/expo/expo/pull/29681) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Make the returned `type` in `BarCodeScanningResult` consistent. ([#29421](https://github.com/expo/expo/pull/29421)) by [@alanjhughes](https://github.com/alanjhughes)) ([#29421](https://github.com/expo/expo/pull/29421) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.10 — 2024-05-29
 

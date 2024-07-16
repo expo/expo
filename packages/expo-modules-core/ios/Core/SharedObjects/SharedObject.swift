@@ -46,7 +46,7 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
   /**
    Schedules an event with the given name and arguments to be emitted to the associated JavaScript object.
    */
-  public func emit<each A: AnyArgument>(event: String, arguments: repeat each A) {
+  func emit<each A: AnyArgument>(event: String, arguments: repeat each A) {
     guard let appContext, let runtime = try? appContext.runtime else {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return

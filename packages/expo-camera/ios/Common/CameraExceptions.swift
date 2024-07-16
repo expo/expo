@@ -32,7 +32,7 @@ internal class CameraSavingImageException: Exception {
 
 internal class CameraRecordingException: GenericException<String?> {
   override var reason: String {
-    "Video Codec '\(param)' is not supported on this device"
+    "Video Codec '\(String(describing: param))' is not supported on this device"
   }
 }
 

@@ -13,6 +13,14 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Animated styles',
+    route: 'image/animated-styles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimatedStyles'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},

@@ -345,12 +345,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GifScreen'));
-    },
-    name: 'Gif',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/SegmentedControlScreen'));
     },
     name: 'SegmentedControl',
@@ -399,7 +393,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/VideoScreen'));
+      return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
     },
     name: 'Video (expo-av)',
   },

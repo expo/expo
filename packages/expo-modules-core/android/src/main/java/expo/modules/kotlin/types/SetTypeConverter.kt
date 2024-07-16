@@ -49,7 +49,7 @@ class SetTypeConverter(
           CollectionElementCastException(
             setType,
             setType.arguments.first().type!!,
-            type,
+            getType(),
             cause
           )
         }) {

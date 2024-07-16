@@ -1,6 +1,8 @@
-import { UnavailabilityError, Platform } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import NativeLinking from './ExpoLinking';
+import { Platform } from 'react-native';
+import ExpoLinking from './ExpoLinking';
+import RNLinking from './RNLinking';
 import { parse } from './createURL';
 import { validateURL } from './validateURL';
 // @needsAudit
@@ -14,11 +16,7 @@ import { validateURL } from './validateURL';
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type, handler) {
-    // Do nothing in Node.js environments
-    if (typeof window === 'undefined') {
-        return { remove() { } };
-    }
-    return NativeLinking.addEventListener(type, handler);
+    return RNLinking.addEventListener(type, handler);
 }
 // @needsAudit
 /**
@@ -29,7 +27,7 @@ export function addEventListener(type, handler) {
  * @return A promise that resolves with `ParsedURL` object.
  */
 export async function parseInitialURLAsync() {
-    const initialUrl = typeof window === 'undefined' ? null : await NativeLinking.getInitialURL();
+    const initialUrl = await RNLinking.getInitialURL();
     if (!initialUrl) {
         return {
             scheme: null,
@@ -48,8 +46,8 @@ export async function parseInitialURLAsync() {
  * @platform android
  */
 export async function sendIntent(action, extras) {
-    if (Platform.OS === 'android' && typeof window !== 'undefined') {
-        return await NativeLinking.sendIntent(action, extras);
+    if (Platform.OS === 'android') {
+        return await RNLinking.sendIntent(action, extras);
     }
     throw new UnavailabilityError('Linking', 'sendIntent');
 }
@@ -58,11 +56,11 @@ export async function sendIntent(action, extras) {
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
  */
 export async function openSettings() {
-    if (Platform.OS === 'web' || typeof window === 'undefined') {
+    if (Platform.OS === 'web') {
         throw new UnavailabilityError('Linking', 'openSettings');
     }
-    if (NativeLinking.openSettings) {
-        return await NativeLinking.openSettings();
+    if (RNLinking.openSettings) {
+        return await RNLinking.openSettings();
     }
     await openURL('app-settings:');
 }
@@ -72,10 +70,14 @@ export async function openSettings() {
  * @return The URL string that launched your app, or `null`.
  */
 export async function getInitialURL() {
-    if (typeof window === 'undefined') {
-        return null;
-    }
-    return (await NativeLinking.getInitialURL()) ?? null;
+    return (await RNLinking.getInitialURL()) ?? null;
+}
+/**
+ * Get the URL that was used to launch the app if it was launched by a link.
+ * @return The URL string that launched your app, or `null`.
+ */
+export function getLinkingURL() {
+    return ExpoLinking.getLinkingURL();
 }
 // @needsAudit
 /**
@@ -88,10 +90,7 @@ export async function getInitialURL() {
  */
 export async function openURL(url) {
     validateURL(url);
-    if (typeof window === 'undefined') {
-        return true;
-    }
-    return await NativeLinking.openURL(url);
+    return await RNLinking.openURL(url);
 }
 // @needsAudit
 /**
@@ -106,10 +105,7 @@ export async function openURL(url) {
  */
 export async function canOpenURL(url) {
     validateURL(url);
-    if (typeof window === 'undefined') {
-        return false;
-    }
-    return await NativeLinking.canOpenURL(url);
+    return await RNLinking.canOpenURL(url);
 }
 // @needsAudit
 /**
@@ -127,6 +123,22 @@ export function useURL() {
         return () => subscription.remove();
     }, []);
     return url;
+}
+/**
+ * Returns the linking URL followed by any subsequent changes to the URL.
+ * Always returns the initial URL immediately on reload.
+ * @return Returns the initial URL or `null`.
+ */
+export function useLinkingURL() {
+    const [url, setLink] = useState(ExpoLinking.getLinkingURL);
+    function onChange(event) {
+        setLink(event.url);
+    }
+    useEffect(() => {
+        const subscription = ExpoLinking.addListener('onURLReceived', onChange);
+        return () => subscription.remove();
+    }, []);
+    return url ?? null;
 }
 export * from './Linking.types';
 export * from './Schemes';

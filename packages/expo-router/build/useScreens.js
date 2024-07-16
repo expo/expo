@@ -128,7 +128,9 @@ function getQualifiedRouteComponent(value) {
     // Pass all other props to the component
     ...props }, ref) => {
         const loadable = getLoadable(props, ref);
-        return <Route_1.Route node={value}>{loadable}</Route_1.Route>;
+        return (<Route_1.Route node={value} route={route}>
+          {loadable}
+        </Route_1.Route>);
     });
     QualifiedRoute.displayName = `Route(${value.route})`;
     qualifiedStore.set(value, QualifiedRoute);

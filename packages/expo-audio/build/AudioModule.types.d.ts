@@ -14,7 +14,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Initializes a new audio player instance with the given source.
      * @hidden
      */
-    constructor(source: AudioSource | string | number | null);
+    constructor(source: AudioSource | string | number | null, updateInterval: number);
     /**
      * Unique identifier for the player object.
      */
@@ -22,7 +22,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**
      * Boolean value indicating whether the player is currently playing.
      */
-    isPlaying: boolean;
+    playing: boolean;
     /**
      * Boolean value indicating whether the player is currently muted.
      */
@@ -64,6 +64,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     shouldCorrectPitch: boolean;
     /**
+     * The current status of the audio player.
+     * @hidden
+     */
+    currentStatus: AudioStatus;
+    /**
      * Resumes the player.
      */
     play(): void;
@@ -83,9 +88,9 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     /**
-     * Release the player and frees up resources.
+     * Remove the player from memory to free up resources.
      */
-    release(): void;
+    remove(): void;
 }
 type AudioEvents = {
     onPlaybackStatusUpdate(status: AudioStatus): void;
@@ -95,7 +100,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * Initializes a new audio recorder instance with the given source.
      * @hidden
      */
-    constructor(options: RecordingOptions);
+    constructor(options: Partial<RecordingOptions>);
     /**
      * Unique identifier for the recorder object.
      */

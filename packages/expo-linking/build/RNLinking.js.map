@@ -1,0 +1,1 @@
+{"version":3,"file":"RNLinking.js","sourceRoot":"","sources":["../src/RNLinking.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,cAAc,CAAC;AACvC,eAAe,OAAO,CAAC","sourcesContent":["import { Linking } from 'react-native';\nexport default Linking;\n"]}

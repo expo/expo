@@ -2,8 +2,9 @@ import { UnavailabilityError, Platform } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { EmitterSubscription } from 'react-native';
 
-import NativeLinking from './ExpoLinking';
+import ExpoLinking from './ExpoLinking';
 import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import RNLinking from './RNLinking';
 import { parse } from './createURL';
 import { validateURL } from './validateURL';
 
@@ -24,7 +25,7 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
     return { remove() {} };
   }
 
-  return NativeLinking.addEventListener(type, handler);
+  return RNLinking.addEventListener(type, handler);
 }
 
 // @needsAudit
@@ -36,7 +37,7 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * @return A promise that resolves with `ParsedURL` object.
  */
 export async function parseInitialURLAsync(): Promise<ParsedURL> {
-  const initialUrl = typeof window === 'undefined' ? null : await NativeLinking.getInitialURL();
+  const initialUrl = typeof window === 'undefined' ? null : await RNLinking.getInitialURL();
   if (!initialUrl) {
     return {
       scheme: null,
@@ -58,7 +59,7 @@ export async function parseInitialURLAsync(): Promise<ParsedURL> {
  */
 export async function sendIntent(action: string, extras?: SendIntentExtras[]): Promise<void> {
   if (Platform.OS === 'android' && typeof window !== 'undefined') {
-    return await NativeLinking.sendIntent(action, extras);
+    return await RNLinking.sendIntent(action, extras);
   }
   throw new UnavailabilityError('Linking', 'sendIntent');
 }
@@ -71,8 +72,8 @@ export async function openSettings(): Promise<void> {
   if (Platform.OS === 'web' || typeof window === 'undefined') {
     throw new UnavailabilityError('Linking', 'openSettings');
   }
-  if (NativeLinking.openSettings) {
-    return await NativeLinking.openSettings();
+  if (RNLinking.openSettings) {
+    return await RNLinking.openSettings();
   }
   await openURL('app-settings:');
 }
@@ -86,7 +87,15 @@ export async function getInitialURL(): Promise<string | null> {
   if (typeof window === 'undefined') {
     return null;
   }
-  return (await NativeLinking.getInitialURL()) ?? null;
+  return (await RNLinking.getInitialURL()) ?? null;
+}
+
+/**
+ * Get the URL that was used to launch the app if it was launched by a link.
+ * @return The URL string that launched your app, or `null`.
+ */
+export function getLinkingURL(): string | null {
+  return ExpoLinking.getLinkingURL();
 }
 
 // @needsAudit
@@ -103,7 +112,7 @@ export async function openURL(url: string): Promise<true> {
   if (typeof window === 'undefined') {
     return true;
   }
-  return await NativeLinking.openURL(url);
+  return await RNLinking.openURL(url);
 }
 
 // @needsAudit
@@ -122,7 +131,7 @@ export async function canOpenURL(url: string): Promise<boolean> {
   if (typeof window === 'undefined') {
     return false;
   }
-  return await NativeLinking.canOpenURL(url);
+  return await RNLinking.canOpenURL(url);
 }
 
 // @needsAudit
@@ -144,6 +153,26 @@ export function useURL(): string | null {
   }, []);
 
   return url;
+}
+
+/**
+ * Returns the linking URL followed by any subsequent changes to the URL.
+ * Always returns the initial URL immediately on reload.
+ * @return Returns the initial URL or `null`.
+ */
+export function useLinkingURL(): string | null {
+  const [url, setLink] = useState<string | null>(ExpoLinking.getLinkingURL);
+
+  function onChange(event: { url: string }) {
+    setLink(event.url);
+  }
+
+  useEffect(() => {
+    const subscription = ExpoLinking.addListener('onURLReceived', onChange as any);
+    return () => subscription.remove();
+  }, []);
+
+  return url ?? null;
 }
 
 export * from './Linking.types';

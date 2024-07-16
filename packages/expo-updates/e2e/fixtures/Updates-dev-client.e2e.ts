@@ -14,7 +14,7 @@ const pressTestButtonAsync = async (testID: string) => await element(by.id(testI
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Basic tests', () => {

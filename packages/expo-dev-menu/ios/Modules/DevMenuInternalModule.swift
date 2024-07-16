@@ -20,20 +20,12 @@ public class DevMenuInternalModule: Module {
       ]
     }
 
-    AsyncFunction("fetchDataSourceAsync") { (dataSourceId: String, promise: Promise) in
-      for dataSource in DevMenuManager.shared.devMenuDataSources where dataSource.id == dataSourceId {
-        dataSource.fetchData { data in
-          promise.resolve(data.map { $0.serialize() })
-        }
-        return
-      }
-
-      throw Exception(name: "ERR_DEVMENU_DATA_SOURCE_FAILED", description: "DataSource \(dataSourceId) not found.")
-    }
-
-    AsyncFunction("dispatchCallableAsync") { (callableId: String, args: [String: Any]?) in
-      DevMenuManager.shared.dispatchCallable(withId: callableId, args: args)
-    }
+    AsyncFunction("reload", DevMenuManager.shared.reload)
+    AsyncFunction("togglePerformanceMonitor", DevMenuManager.shared.togglePerformanceMonitor)
+    AsyncFunction("toggleInspector", DevMenuManager.shared.toggleInspector)
+    AsyncFunction("toggleRemoteDebug", DevMenuManager.shared.toggleRemoteDebug)
+    AsyncFunction("openJSInspector", DevMenuManager.shared.openJSInspector)
+    AsyncFunction("toggleFastRefresh", DevMenuManager.shared.toggleFastRefresh)
 
     AsyncFunction("loadFontsAsync") {
       DevMenuManager.shared.loadFonts()

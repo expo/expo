@@ -14,6 +14,11 @@ export type NotificationsPluginProps = {
      */
     color?: string;
     /**
+     * Default channel for FCMv1 notifications.
+     * @platform android
+     */
+    defaultChannel?: string;
+    /**
      * Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
      */
     sounds?: string[];

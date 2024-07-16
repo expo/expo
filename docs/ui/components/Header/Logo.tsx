@@ -1,5 +1,5 @@
 import { Logo as LogoIcon, WordMarkLogo, LinkBase, mergeClasses } from '@expo/styleguide';
-import { ChevronRightIcon } from '@expo/styleguide-icons';
+import { ChevronRightIcon } from '@expo/styleguide-icons/outline/ChevronRightIcon';
 
 import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
 

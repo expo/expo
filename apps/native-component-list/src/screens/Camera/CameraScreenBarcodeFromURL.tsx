@@ -6,7 +6,7 @@ import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
 
 export default function CameraScreenFromURL() {
   const [image, setImage] = useState<string | null>(null);
-  const [results, setResults] = useState<BarcodeScanningResult | null>(null);
+  const [results, setResults] = useState<BarcodeScanningResult[] | null>(null);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

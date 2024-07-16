@@ -1,4 +1,3 @@
-import * as Font from 'expo-font';
 import { Text, View, useWindowDimensions } from 'react-native';
 import * as Svg from 'react-native-svg';
 import { VictoryArea, VictoryChart, VictoryStack } from 'victory-native';
@@ -50,13 +49,7 @@ function VictoryChartExample() {
         </VictoryStack>
       </VictoryChart>
       <Svg.Svg width={width} height={50}>
-        <Svg.Text
-          fill="#fff"
-          stroke="#000"
-          fontSize={15}
-          fontFamily={Font.processFontFamily('space-mono')!}
-          x={25}
-          y={15}>
+        <Svg.Text fill="#fff" stroke="#000" fontSize={18} fontFamily="space-mono" x={25} y={15}>
           drawn with victory-native
         </Svg.Text>
       </Svg.Svg>

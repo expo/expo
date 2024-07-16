@@ -10,7 +10,7 @@ internal struct GetImageOptions: Record {
   var jpegQuality: Double = 1.0
 }
 
-internal enum ImageFormat: String, EnumArgument {
+internal enum ImageFormat: String, Enumerable {
   case jpeg
   case png
 
@@ -34,7 +34,7 @@ internal struct SetStringOptions: Record {
   var inputFormat: StringFormat = .plainText
 }
 
-internal enum StringFormat: String, EnumArgument {
+internal enum StringFormat: String, Enumerable {
   case plainText
   case html
 }

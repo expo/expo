@@ -9,20 +9,69 @@
 - Added support for `startObserving` and `stopObserving` on the web. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
 - Switched exported `EventEmitter` to the C++ implementation. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Add the ability to change the name of the exported shared object. ([#30040](https://github.com/expo/expo/pull/30040) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
+- [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))
+- [jest] Fix `uuid` mock in `jest-expo`. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Fix error: no viable constructor or deduction guide for deduction of template arguments of 'weak_ptr' ([#29075](https://github.com/expo/expo/pull/29075) by [@rafi16jan](https://github.com/rafi16jan))
 - [Android] Fix `getContext().getNativeModule(UIManagerModule.class)` in Bridgeless. ([#29203](https://github.com/expo/expo/pull/29203) by [@arushikesarwani94](https://github.com/arushikesarwani94))
-- [Android] Fixed converting from `null` to `Record` sometimes didn't work as expected. ([#29508](https://github.com/expo/expo/pull/29508) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Fixed `No implementation found for com.facebook.jni.HybridData expo.modules.kotlin.jni.JavaScriptModuleObject.initHybrid`. ([#29513](https://github.com/expo/expo/pull/29513) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+- [Android] Fix the event emitter, which might crash during the reloads. ([#29176](https:/github.com/expo/expo/pull/29176) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix random conversion errors when converting JavaScript floating point numbers to `Swift.Float`. ([#29053](https://github.com/expo/expo/pull/29053) by [@behenate](https://github.com/behenate))
+- [Android] Reduce the number of global references to JSIContext. ([#29936](https://github.com/expo/expo/pull/29936) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
+- Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed broken `addUIBlock` and `executeUIBlock` on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+- Fixed blocking SSE responses from network interceptor on Android. ([#30062](https://github.com/expo/expo/pull/30062) by [@kudo](https://github.com/kudo))
+- Fixed a crash when the event listener throws an error. ([#30065](https://github.com/expo/expo/pull/30065) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed the record's constructor with default parameters were being ignored when converting from JavaScript to native. ([#30217](https://github.com/expo/expo/pull/30217) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed returning already registered shared objects. ([#30241](https://github.com/expo/expo/pull/30241) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
+- [Android] When a `SharedObject` that was passed as an argument is returned, it no longer creates a new object. ([#30231](https://github.com/expo/expo/pull/30231) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed some types weren't correctly converted when using coroutines. ([#30227](https://github.com/expo/expo/pull/30227) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
+- [Android] Use getter methods in convertibles. ([#30239](https://github.com/expo/expo/pull/30239) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Change `sideEffects` to use `src` folder. ([#29964](https://github.com/expo/expo/pull/29964) by [@EvanBacon](https://github.com/EvanBacon))
+- [web] Use global `crypto` object for UUID. ([#29828](https://github.com/expo/expo/pull/29828) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Send open url event to all matching subscribers. ([#29645](https://github.com/expo/expo/pull/29645) by [@aleqsio](https://github.com/aleqsio))
 - Use `process.env.EXPO_OS` for `Platform.OS` and `Platform.select`, when available. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
 - Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Switch to the JS thread when sending an event. ([#29753](https://github.com/expo/expo/pull/29753) by [@lukmccall](https://github.com/lukmccall))
+- Moved `process` object declaration to global declaration. ([#29745](https://github.com/expo/expo/pull/29745) by [@tsapeta](https://github.com/tsapeta))
+- Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+- Make it possible for TypeScript to infer EventEmitter's events map. ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Exposed `Utilities` class for Expo Modules common tasks. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
+- [iOS] Stop throwing runtime errors when the promise is settled more than once. ([#30000](https://github.com/expo/expo/pull/30000) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Renamed `pointer` property in the `SharedRef` class to `ref` for parity with Android. ([#30061](https://github.com/expo/expo/pull/30061) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Started using `noexcept`. ([#30128](https://github.com/expo/expo/pull/30128) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Decouple the modules state from the `AppContext` ([#30098](https://github.com/expo/expo/pull/30098) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Added `customizeRootView:` support to `EXAppDelegateWrapper.createRCTRootViewFactory`. ([#30245](https://github.com/expo/expo/pull/30245) by [@kudo](https://github.com/kudo))
+- Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Bump Kotlin coroutines version to 1.7.3. ([#30226](https://github.com/expo/expo/pull/30226) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.16 - 2024-06-20
+
+### 🐛 Bug fixes
+
+- Fixed resource leakage from `ExpoRequestInterceptorProtocol`. ([#29798](https://github.com/expo/expo/pull/29798) by [@kudo](https://github.com/kudo))
+
+## 1.12.15 - 2024-06-13
+
+### 🐛 Bug fixes
+
+- Fixed reload crash on Android. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
+- [Android] Fixed converting from `null` to `Record` sometimes didn't work as expected. ([#29508](https://github.com/expo/expo/pull/29508) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.12.14 - 2024-06-06
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `No implementation found for com.facebook.jni.HybridData expo.modules.kotlin.jni.JavaScriptModuleObject.initHybrid`. ([#29513](https://github.com/expo/expo/pull/29513) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.12.13 - 2024-06-05
 

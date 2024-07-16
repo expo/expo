@@ -24,9 +24,11 @@ type ImageTest = {
 type PropsType = {
   test: ImageTest;
   animValue?: Animated.Value;
+  useAnimatedComponent: boolean;
 };
+const AnimatedExpoImage = Animated.createAnimatedComponent(Image);
 
-export default function ImageTestListItem({ test, animValue }: PropsType) {
+export function ImageTestListItem({ test, animValue, useAnimatedComponent }: PropsType) {
   const imageProps = resolveProps(test.props, animValue);
 
   return (
@@ -38,14 +40,13 @@ export default function ImageTestListItem({ test, animValue }: PropsType) {
         <ImageTestView
           style={styles.image}
           imageProps={imageProps}
-          ImageComponent={Image}
+          ImageComponent={useAnimatedComponent ? AnimatedExpoImage : Image}
           loadOnDemand={test.loadOnDemand}
         />
-        <View style={styles.spacer} />
         <ImageTestView
           style={styles.image}
           imageProps={imageProps}
-          ImageComponent={RNImage}
+          ImageComponent={useAnimatedComponent ? Animated.Image : RNImage}
           loadOnDemand={test.loadOnDemand}
         />
       </View>
@@ -76,9 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-  },
-  spacer: {
-    width: 10,
+    columnGap: 10,
   },
   image: {
     width: (Dimensions.get('window').width - 30) / 2,

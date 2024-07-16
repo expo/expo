@@ -8,7 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
+- [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
+
 ### 💡 Others
+
+## 5.0.15 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 5.0.14 — 2024-05-09
 

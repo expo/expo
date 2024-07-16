@@ -1,21 +1,19 @@
 import { Button, RouterLogo } from '@expo/styleguide';
-import {
-  Cube01Icon,
-  CpuChip01Icon,
-  EasMetadataIcon,
-  LayersTwo02Icon,
-  Rocket01Icon,
-  TerminalBrowserIcon,
-  EasSubmitIcon,
-  Bell03Icon,
-  PlanEnterpriseIcon,
-  PaletteIcon,
-  DataIcon,
-  CodeSquare01Icon,
-  Phone01Icon,
-  CheckIcon,
-  StoplightIcon,
-} from '@expo/styleguide-icons';
+import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
+import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
+import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
+import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
+import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
+import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
 import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink, SidebarSection } from './index';

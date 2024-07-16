@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Added `react-native-config` command to support core autolinking for react-native. ([#29818](https://github.com/expo/expo/pull/29818) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- [Android] Fixed autolinking of Maven AWS S3 repository. ([#30204](https://github.com/expo/expo/pull/30204) by [@ElielC](https://github.com/ElielC))
 
 ### 💡 Others
 

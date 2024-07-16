@@ -145,6 +145,7 @@ export async function exportAppAsync(
             engine: isHermes ? 'hermes' : undefined,
             serializerIncludeMaps: sourceMaps,
             bytecode: bytecode && isHermes,
+            reactCompiler: !!exp.experiments?.reactCompiler,
           });
 
           bundles[platform] = bundle;
@@ -163,6 +164,7 @@ export async function exportAppAsync(
               template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
                 scripts: [],
                 cssLinks: [],
+                exp: projectConfig.exp,
               }),
               baseUrl,
             });
@@ -172,6 +174,7 @@ export async function exportAppAsync(
               outputDir,
               baseUrl,
               files,
+              exp: projectConfig.exp,
             });
             if (modifyHtml) {
               html = modifyHtml(html);
@@ -248,9 +251,11 @@ export async function exportAppAsync(
         baseUrl,
         includeSourceMaps: sourceMaps,
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        reactCompiler: !!exp.experiments?.reactCompiler,
         exportServer,
         maxWorkers,
         isExporting: true,
+        exp: projectConfig.exp,
       });
     }
   } finally {

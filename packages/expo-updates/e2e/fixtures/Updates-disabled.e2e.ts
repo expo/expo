@@ -14,7 +14,7 @@ const pressTestButtonAsync = async (testID: string) => await element(by.id(testI
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Basic tests', () => {
@@ -49,6 +49,11 @@ describe('Basic tests', () => {
     await device.installApp();
     await device.launchApp({
       newInstance: true,
+
+      // The ReactContext is required by detox synchronization on Android.
+      // However ReactContext will be changed after the app is reloaded.
+      // All future tests will be blocked after reloading, so we need to disable synchronization for reload tests.
+      launchArgs: device.getPlatform() === 'android' ? { detoxEnableSynchronization: 0 } : {},
     });
     await waitForAppToBecomeVisible();
 
@@ -62,18 +67,6 @@ describe('Basic tests', () => {
     // wait 3 seconds for reload to complete
     // it's delayed 2 seconds after the button press in the client so the button press finish registers in detox
     await setTimeout(3000);
-
-    // on android, the react context must be reacquired by detox.
-    // there's no detox public API to tell it that react native
-    // has been reloaded by the client application and that it should
-    // reacquire the react context. Instead, we use the detox reload
-    // API to do a second reload which reacquires the context. This
-    // detox reload method does the same thing that expo-updates reload does
-    // under the hood, so this is ok and is the best we can do. It should
-    // do the job of catching issues in react native either way.
-    if (device.getPlatform() === 'android') {
-      await device.reloadReactNative();
-    }
 
     const isReloadingAfter = await testElementValueAsync('isReloading');
     jestExpect(isReloadingAfter).toBe('false');

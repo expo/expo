@@ -35,7 +35,7 @@ const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
 // createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
-const createMemoryHistory_1 = __importDefault(require("@react-navigation/native/lib/commonjs/createMemoryHistory"));
+const createMemoryHistory_1 = __importDefault(require("./createMemoryHistory"));
 // import ServerContext from './ServerContext';
 const serverContext_1 = __importDefault(require("../global-state/serverContext"));
 const getPathFromState_1 = require("./getPathFromState");
@@ -219,7 +219,10 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
                     const focusedRoute = (0, core_1.findFocusedRoute)(stateForPath);
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
-                        (0, fast_deep_equal_1.default)(focusedRoute.params, route.params)) {
+                        /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L2278  */
+                        (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })
+                    /* End of fork */
+                    ) {
                         /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L280  */
                         return (0, getPathFromState_1.appendBaseUrl)(route.path);
                         /* End of fork */

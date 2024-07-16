@@ -7,25 +7,16 @@
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
-import { StackFrame } from 'stacktrace-parser';
+import { parse, StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
+import { LogBoxLog } from './log-box/LogBoxLog';
+import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
+import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-
-type CodeFrame = {
-  content: string;
-  location?: {
-    row: number;
-    column: number;
-    [key: string]: any;
-  };
-  fileName: string;
-};
-
-type MetroStackFrame = StackFrame & { collapse?: boolean };
 
 function fill(width: number): string {
   return Array(width).join(' ');
@@ -48,7 +39,7 @@ export async function logMetroErrorWithStack(
     error,
   }: {
     stack: MetroStackFrame[];
-    codeFrame: CodeFrame;
+    codeFrame?: CodeFrame;
     error: Error;
   }
 ) {
@@ -58,10 +49,6 @@ export async function logMetroErrorWithStack(
 
   // process.stdout.write('\u001b[0m'); // Reset attributes
   // process.stdout.write('\u001bc'); // Reset the terminal
-
-  const { getStackFormattedLocation } = require(
-    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
-  );
 
   Log.log();
   Log.log(chalk.red('Metro error: ') + error.message);
@@ -156,10 +143,6 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
     return;
   }
 
-  const { LogBoxLog, parseErrorStack } = require(
-    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
-  );
-
   const stack = parseErrorStack(error.stack);
 
   const log = new LogBoxLog({
@@ -190,17 +173,9 @@ function isTransformError(
 }
 
 /** @returns the html required to render the static metro error as an SPA. */
-function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
-  symbolicated: any;
-  symbolicate: (type: string, callback: () => void) => void;
-  codeFrame: CodeFrame;
-} {
-  const { LogBoxLog, parseErrorStack } = require(
-    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
-  );
-
+function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }) {
   // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
-  let stack;
+  let stack: MetroStackFrame[] | undefined;
   if (isTransformError(error)) {
     // Syntax errors in static rendering.
     stack = [
@@ -213,7 +188,7 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
         column: error.column,
       },
     ];
-  } else if ('originModulePath' in error) {
+  } else if ('originModulePath' in error && typeof error.originModulePath === 'string') {
     // TODO: Use import stack here when the error is resolution based.
     stack = [
       {
@@ -252,7 +227,7 @@ export async function logMetroErrorAsync({
 }) {
   const log = logFromError({ projectRoot, error });
 
-  await new Promise<void>((res) => log.symbolicate('stack', res));
+  await new Promise<void>((res) => log.symbolicate('stack', () => res()));
 
   logMetroErrorWithStack(projectRoot, {
     stack: log.symbolicated?.stack?.stack ?? [],
@@ -273,7 +248,7 @@ export async function getErrorOverlayHtmlAsync({
 }) {
   const log = logFromError({ projectRoot, error });
 
-  await new Promise<void>((res) => log.symbolicate('stack', res));
+  await new Promise<void>((res) => log.symbolicate('stack', () => res()));
 
   logMetroErrorWithStack(projectRoot, {
     stack: log.symbolicated?.stack?.stack ?? [],
@@ -281,9 +256,8 @@ export async function getErrorOverlayHtmlAsync({
     error,
   });
 
-  // @ts-expect-error
   if ('message' in log && 'content' in log.message && typeof log.message.content === 'string') {
-    log.message.content = stripAnsi(log.message.content);
+    log.message.content = stripAnsi(log.message.content)!;
   }
 
   const logBoxContext = {
@@ -307,9 +281,27 @@ export async function getErrorOverlayHtmlAsync({
       baseUrl: '',
       routerRoot,
       isExporting: false,
+      reactCompiler: false,
     }
   );
 
   const htmlWithJs = html.replace('</body>', `<script src=${errorOverlayEntry}></script></body>`);
   return htmlWithJs;
+}
+
+function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
+  if (stack == null) {
+    return [];
+  }
+  if (Array.isArray(stack)) {
+    return stack;
+  }
+
+  return parse(stack).map((frame) => {
+    // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
+    return {
+      ...frame,
+      column: frame.column != null ? frame.column - 1 : null,
+    };
+  });
 }

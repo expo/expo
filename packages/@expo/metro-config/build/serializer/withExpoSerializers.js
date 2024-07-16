@@ -191,10 +191,10 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return (...props) => {
+    return async (...props) => {
         for (const processor of processors) {
             if (processor) {
-                props = processor(...props);
+                props = await processor(...props);
             }
         }
         return finalSerializer(...props);

@@ -6,11 +6,28 @@
 
 ### 🎉 New features
 
+- Add detection for CJS module exports for tree shaking. ([#30348](https://github.com/expo/expo/pull/30348) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `EXPO_USE_METRO_REQUIRE` to enable stable string module IDs. ([#30176](https://github.com/expo/expo/pull/30176) by [@EvanBacon](https://github.com/EvanBacon))
+- Allow dynamic import/require statements in server bundles. ([#30175](https://github.com/expo/expo/pull/30175) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for bundling assets in React Server mode. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+- Disable require rename. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
+- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Improve missing module errors. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix support for defining variables named `module`, `require`, `global`, and `exports` with `experimentalImportSupport`. ([#30348](https://github.com/expo/expo/pull/30348) by [@EvanBacon](https://github.com/EvanBacon))
+- Support showing the hidden entry file in chrome dev tools. ([#30113](https://github.com/expo/expo/pull/30113) by [@EvanBacon](https://github.com/EvanBacon))
+- Align source map behavior with community exports. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
+- Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Fork collectDependencies to support customizations for tree shaking and RSC. ([#30140](https://github.com/expo/expo/pull/30140) by [@EvanBacon](https://github.com/EvanBacon))
+- Rework mini-metro tests to support full transformation. ([#29980](https://github.com/expo/expo/pull/29980) by [@EvanBacon](https://github.com/EvanBacon))
+- Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade `glob@7` to `glob@10`. ([#29929](https://github.com/expo/expo/pull/29929) by [@byCedric](https://github.com/byCedric))
 
 ## 0.18.4 — 2024-05-16
 

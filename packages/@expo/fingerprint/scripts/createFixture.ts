@@ -4,21 +4,9 @@
  * Usage: npx ts-node scripts/createFixture /path/to/app /path/to/output.json
  */
 import realFS from 'fs';
-import glob from 'glob';
+import { glob as globAsync } from 'glob';
 import { fs, vol } from 'memfs';
 import path from 'path';
-
-function globAsync(pattern: string, options: Parameters<typeof glob>[1]): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    glob(pattern, options, (err, matches) => {
-      if (err != null) {
-        reject(err);
-      } else {
-        resolve(matches);
-      }
-    });
-  });
-}
 
 async function createFixtureAsync(targetDir: string, outputFile: string) {
   const files = await globAsync('**/*', {

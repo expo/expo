@@ -65,7 +65,7 @@ class RecordTypeConverter<T : Record>(
 
   private fun convertFromReadableMap(jsMap: ReadableMap): T {
     val kClass = type.classifier as KClass<*>
-    val instance = getObjectConstructor(kClass.java).construct()
+    val instance = getObjectConstructor(kClass).construct()
 
     propertyDescriptors
       .forEach { (property, descriptor) ->
@@ -82,7 +82,7 @@ class RecordTypeConverter<T : Record>(
         jsMap.getDynamic(jsKey).recycle {
           val javaField = property.javaField!!
 
-          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
+          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, getType(), cause) }) {
             descriptor.typeConverter.convert(this)
           }
 
@@ -104,7 +104,7 @@ class RecordTypeConverter<T : Record>(
     return instance as T
   }
 
-  private fun <T> getObjectConstructor(clazz: Class<T>): ObjectConstructor<T> {
+  private fun <T : Any> getObjectConstructor(clazz: KClass<T>): ObjectConstructor<T> {
     return objectConstructorFactory.get(clazz)
   }
 

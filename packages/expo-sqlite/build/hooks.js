@@ -141,7 +141,13 @@ async function openDatabaseWithInitAsync({ databaseName, options, assetSource, o
     }
     return database;
 }
-async function importDatabaseFromAssetAsync(databaseName, assetSource) {
+/**
+ * Imports an asset database into the SQLite database directory.
+ *
+ * Exposed only for testing purposes.
+ * @hidden
+ */
+export async function importDatabaseFromAssetAsync(databaseName, assetSource) {
     const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
     if (!asset.localUri) {
         throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);

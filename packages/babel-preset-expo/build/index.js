@@ -22,9 +22,11 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isNodeModule = api.caller(common_1.getIsNodeModule);
     const isServer = api.caller(common_1.getIsServer);
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
+    const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
     const isServerEnv = isServer || isReactServer;
@@ -58,21 +60,48 @@ function babelPresetExpo(api, options = {}) {
     // `@react-native/babel-preset` will handle it.
     const lazyImportsOption = platformOptions?.lazyImports;
     const extraPlugins = [];
+    // Add compiler as soon as possible to prevent other plugins from modifying the code.
+    if (isReactCompilerEnabled &&
+        // Don't run compiler on node modules, it can only safely be run on the user's code.
+        !isNodeModule &&
+        // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
+        // NOTE: We might want to allow running it to prevent hydration errors.
+        !isServerEnv &&
+        // Give users the ability to opt-out of the feature, per-platform.
+        platformOptions['react-compiler'] !== false) {
+        extraPlugins.push([
+            require('babel-plugin-react-compiler'),
+            {
+                runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
+                // enableUseMemoCachePolyfill: true,
+                // compilationMode: 'infer',
+                environment: {
+                    enableResetCacheOnSourceFileChanges: !isProduction,
+                    ...(platformOptions['react-compiler']?.environment ?? {}),
+                },
+                panicThreshold: isDev ? undefined : 'NONE',
+                ...platformOptions['react-compiler'],
+            },
+        ]);
+    }
     if (engine !== 'hermes') {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
         extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
     }
-    else if (!isServerEnv) {
-        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-        // JSX is used in a function body. This is technically not required in production, but we
-        // should retain the same behavior since it's hard to debug the differences.
-        extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    else {
+        if (platform !== 'web' && !isServerEnv) {
+            // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+            // JSX is used in a function body. This is technically not required in production, but we
+            // should retain the same behavior since it's hard to debug the differences.
+            extraPlugins.push(require('@babel/plugin-transform-parameters'));
+        }
     }
     const inlines = {
         'process.env.EXPO_OS': platform,
         // 'typeof document': isServerEnv ? 'undefined' : 'object',
+        'process.env.EXPO_SERVER': !!isServerEnv,
     };
     // `typeof window` is left in place for native + client environments.
     const minifyTypeofWindow = (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
@@ -137,6 +166,9 @@ function babelPresetExpo(api, options = {}) {
                 skipEnvCheck: true,
             },
         ]);
+    }
+    if (platformOptions.disableImportExportTransform) {
+        extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
     // Use the simpler babel preset for web and server environments (both web and native SSR).
     const isModernEngine = platform === 'web' || isServerEnv;

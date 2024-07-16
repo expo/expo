@@ -25,6 +25,21 @@ export interface Fingerprint {
   hash: string;
 }
 
+export interface FingerprintDiffItem {
+  /**
+   * The operation type of the diff item.
+   */
+  op: 'added' | 'removed' | 'changed';
+
+  /**
+   * The source of the diff item.
+   *   - When type is 'added', the source is the new source.
+   *   - When type is 'removed', the source is the old source.
+   *   - When type is 'changed', the source is the new source.
+   */
+  source: FingerprintSource;
+}
+
 export type Platform = 'android' | 'ios';
 
 export interface Options {
@@ -68,9 +83,17 @@ export interface Options {
 
   /**
    * Skips some sources from fingerprint.
-   * @default SourceSkips.None
+   * @default DEFAULT_SOURCE_SKIPS
    */
   sourceSkips?: SourceSkips;
+
+  /**
+   * Enable ReactImportsPatcher to transform imports from React of the form `#import "RCTBridge.h"` to `#import <React/RCTBridge.h>`.
+   * This is useful when you want to have a stable fingerprint for Expo projects,
+   * since expo-modules-autolinking will change the import style on iOS.
+   * @default true
+   */
+  enableReactImportsPatcher?: boolean;
 
   /**
    * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
@@ -89,7 +112,12 @@ export interface Options {
  */
 export type Config = Pick<
   Options,
-  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'sourceSkips' | 'debug'
+  | 'concurrentIoLimit'
+  | 'hashAlgorithm'
+  | 'extraSources'
+  | 'sourceSkips'
+  | 'enableReactImportsPatcher'
+  | 'debug'
 >;
 
 //#region internal types
@@ -100,6 +128,7 @@ export interface NormalizedOptions extends Options {
   hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
   ignorePaths: NonNullable<Options['ignorePaths']>;
   sourceSkips: NonNullable<Options['sourceSkips']>;
+  enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
 }
 
 export interface HashSourceFile {

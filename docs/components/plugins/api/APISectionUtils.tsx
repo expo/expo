@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
-import { shadows, theme, typography } from '@expo/styleguide';
+import { shadows, theme, typography, mergeClasses } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import { CodeSquare01Icon } from '@expo/styleguide-icons';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -21,6 +21,7 @@ import {
   MethodSignatureData,
   PropData,
   TypeDefinitionData,
+  TypeParameterData,
   TypePropertyDataFlags,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
@@ -59,6 +60,7 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  TypeParameter = 131072,
   Accessor = 262144,
   TypeAlias = 2097152,
   TypeAlias_Legacy = 4194304,
@@ -238,7 +240,7 @@ const renderWithLink = ({
 }: {
   name: string;
   type?: string;
-  typePackage: string | undefined;
+  typePackage?: string;
   sdkVersion: string;
 }) => {
   const replacedName = replaceableTypes[name] ?? name;
@@ -392,14 +394,14 @@ export const resolveTypeName = (
             ))}
             <span className="text-quaternary">)</span>{' '}
             <span className="text-quaternary">{'=>'}</span>{' '}
-            {resolveTypeName(baseSignature.type, sdkVersion)}
+            {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
       } else {
         return (
           <>
             <span className="text-quaternary">{'() =>'}</span>{' '}
-            {resolveTypeName(baseSignature.type, sdkVersion)}
+            {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
       }
@@ -686,14 +688,26 @@ export const getTagNamesList = (comment?: CommentData) =>
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
 
+export function getTypeParametersNames(typeParameters?: TypeParameterData[]) {
+  if (typeParameters?.length) {
+    return `<${typeParameters.map(param => param.name).join(', ')}>`;
+  }
+  return '';
+}
+
 export const getMethodName = (
   method: MethodDefinitionData,
   apiName?: string,
   name?: string,
-  parameters?: MethodParamData[]
+  parameters?: MethodParamData[],
+  typeParameters?: TypeParameterData[]
 ) => {
   const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
-  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  const methodName =
+    ((apiName && `${apiName}.`) ?? '') +
+    (method.name || name) +
+    getTypeParametersNames(typeParameters);
+
   if (!isProperty) {
     return `${methodName}(${parameters ? listParams(parameters) : ''})`;
   }
@@ -747,9 +761,10 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <div key={'example-' + index} className={ELEMENT_SPACING}>
+    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="flex mb-1">
+        <DEMI theme="secondary" className="flex flex-row gap-1.5 items-center mb-1.5">
+          <CodeSquare01Icon className="icon-sm" />
           Example
         </DEMI>
       ) : (
@@ -774,7 +789,12 @@ export const CommentTextBlock = ({
 
   return (
     <>
-      {includePlatforms && hasPlatforms && <APISectionPlatformTags comment={comment} />}
+      {includePlatforms && hasPlatforms && (
+        <APISectionPlatformTags
+          comment={comment}
+          prefix={emptyCommentFallback ? 'Only for:' : undefined}
+        />
+      )}
       {paramTags && (
         <>
           <DEMI theme="secondary">Only for:&ensp;</DEMI>
@@ -817,14 +837,13 @@ export function getPossibleComponentPropsNames(name?: string, children: PropData
 }
 
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.md,
+  borderRadius: borderRadius.lg,
   borderWidth: 1,
   borderStyle: 'solid',
-  borderColor: theme.border.default,
+  borderColor: theme.border.secondary,
   padding: spacing[5],
   boxShadow: shadows.xs,
   marginBottom: spacing[6],
-  overflowX: 'hidden',
 
   h3: {
     marginBottom: spacing[2.5],
@@ -864,7 +883,7 @@ export const STYLES_APIBOX_NESTED = css({
 });
 
 export const STYLES_APIBOX_WRAPPER = css({
-  marginBottom: spacing[4],
+  marginBottom: spacing[3.5],
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   [`.css-${tableWrapperStyle.name}:last-child`]: {
@@ -886,6 +905,10 @@ export const STYLES_NESTED_SECTION_HEADER = css({
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,
+  },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    marginInline: -spacing[4],
   },
 });
 

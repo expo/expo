@@ -55,11 +55,7 @@ export default function useLastNotificationResponse() {
     // and always returns the most recent response.
     useEffect(() => {
         NotificationsEmitterModule.getLastNotificationResponseAsync?.().then((response) => {
-            // We only update the state with the resolved value if it's empty,
-            // because if it's not empty it must have been populated by the `useLayoutEffect`
-            // listener which returns "live" values.
-            const mappedResponse = response ? mapNotificationResponse(response) : response;
-            setLastNotificationResponse((currentResponse) => currentResponse ?? mappedResponse);
+            setLastNotificationResponse(response);
         });
     }, []);
     return lastNotificationResponse;

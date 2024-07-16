@@ -4,11 +4,11 @@ sidebar_title: Android development build
 description: Learn how to configure a development build for Android devices and emulators using EAS Build.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 In this chapter, we'll create a development build that can run on Android with EAS Build.
 
@@ -34,10 +34,10 @@ This command prompts us with the following questions:
 
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the Expo dashboard:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Android development build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/android-build-details.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 <Collapsible summary="What information does a build details page contain?">
@@ -64,7 +64,7 @@ For example, our example app has `com.owner.stickersmash` where `com.owner` is t
 
 Once the build finishes, the **Build artifact** section gets updated, indicating that the build is complete:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Build artifact gives the option to download development build for Android devices and emulators"
   src="/static/images/tutorial/eas/android-build-artifact.png"
 />
@@ -77,10 +77,10 @@ This section provides the methods available for running the development build on
 - Open the Orbit menu bar app.
 - Select the **Device** in the Orbit app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Expo Orbit app interface when connected to an Android device"
   src="/static/images/tutorial/eas/android-orbit.png"
-  style={{ maxWidth: 300 }}
+  className="max-w-[300px]"
 />
 
 - On the Expo dashboard, under **Build artifact**, click the **Open with Orbit**.
@@ -93,10 +93,10 @@ The **Install** button in the **Build artifact** generates a QR code for install
 
 - Click **Install** to display a popup with the QR code.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Install button generates a QR code for easy installation on Android devices and emulators"
   src="/static/images/tutorial/eas/android-qr-code.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 - Scan the QR code with our Android device's camera to open the build link in the default web browser.
@@ -104,10 +104,10 @@ The **Install** button in the **Build artifact** generates a QR code for install
 - Once downloaded, open the **.apk** to start the installation process.
 - If an **Unsafe app blocked message** appears, select **Install anyway**. This warning can safely be ignored as the source of the **.apk** (which we generated) is trusted.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Unsafe app message dialog on Android device when installing development build"
   src="/static/images/tutorial/eas/android-unsafe-dialog.png"
-  style={{ maxWidth: 300 }}
+  className="max-w-[300px]"
 />
 
 </Collapsible>
@@ -132,15 +132,15 @@ Start the development server by running `npx expo start` from the project direct
 
 In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an Android Emulator. Press <kbd>Y</kbd>.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="EAS CLI automatically gives to run build on Android Emulator"
   src="/static/images/tutorial/eas/android-emulator-cli.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 <Collapsible summary="Alternate: Use Expo Orbit">
 
-Alternatively, Expo Orbit can be used for installation. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
+Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
 
 </Collapsible>
 

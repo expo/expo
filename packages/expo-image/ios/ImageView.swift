@@ -24,7 +24,10 @@ public final class ImageView: ExpoView {
 
   var loadingOptions: SDWebImageOptions = [
     .retryFailed, // Don't blacklist URLs that failed downloading
-    .handleCookies // Handle cookies stored in the shared `HTTPCookieStore`
+    .handleCookies, // Handle cookies stored in the shared `HTTPCookieStore`
+    // Images from cache are `AnimatedImage`s. BlurRadius is done via a SDImageBlurTransformer
+    // so this flag needs to be enabled. Beware most transformers cannot manage animated images.
+    .transformAnimatedImage
   ]
 
   var sources: [ImageSource]?

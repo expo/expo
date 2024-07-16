@@ -99,6 +99,6 @@ describe(createBundleUrlPath, () => {
         lazy: true,
         isExporting: true,
       })
-    ).toEqual('/index.bundle?platform=ios&dev=true&hot=false');
+    ).toEqual('/index.bundle?platform=ios&dev=true&hot=false&resolver.exporting=true');
   });
 });

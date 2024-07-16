@@ -6,11 +6,32 @@
 
 ### 🎉 New features
 
-- Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `hasCjsExports` metadata for tracking static exports. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `process.env.EXPO_SERVER` for detecting when the JS was bundled for a server or react server environment. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
+- Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
 
+- Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.10 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.9 - 2024-06-10
+
+### 🎉 New features
+
+- Add experimental React Compiler support. ([#29168](https://github.com/expo/expo/pull/29168) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for `export * from` to `use client` plugin. ([#29426](https://github.com/expo/expo/pull/29426) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.8 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.7 - 2024-06-05
 

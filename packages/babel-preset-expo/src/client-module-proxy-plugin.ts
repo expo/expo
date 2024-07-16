@@ -82,7 +82,9 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
                   pushProxy(exportName);
                 }
               } else if (
-                !['InterfaceDeclaration', 'TypeAlias'].includes(exportPath.node.declaration.type)
+                !['InterfaceDeclaration', 'TSTypeAliasDeclaration', 'TypeAlias'].includes(
+                  exportPath.node.declaration.type
+                )
               ) {
                 // TODO: What is this type?
                 console.warn(
@@ -128,10 +130,7 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
         assertExpoMetadata(state.file.metadata);
 
         // Save the client reference in the metadata.
-        if (!state.file.metadata.clientReferences) {
-          state.file.metadata.clientReferences ??= [];
-        }
-        state.file.metadata.clientReferences.push(outputKey);
+        state.file.metadata.reactClientReference = outputKey;
 
         // Store the proxy export names for testing purposes.
         state.file.metadata.proxyExports = [...proxyExports];
@@ -142,7 +141,7 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
 
 function assertExpoMetadata(
   metadata: any
-): asserts metadata is { clientReferences?: string[]; proxyExports?: string[] } {
+): asserts metadata is { reactClientReference?: string; proxyExports?: string[] } {
   if (metadata && typeof metadata === 'object') {
     return;
   }

@@ -6,7 +6,25 @@
 
 ### 🎉 New features
 
+- Add better errors and warnings for malformed route exports. ([#30332](https://github.com/expo/expo/pull/30332) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `client-only` and `server-only` dependencies. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Fix deep linking to Expo Go. ([#30283](https://github.com/expo/expo/pull/30283) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
+- Fix pushing multiple hashes on web. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Import `@expo/metro-runtime` internals from `src` directory. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
+- Update URL params docblocks ([#29799](https://github.com/expo/expo/pull/29799) by [@aaron-mota](https://github.com/aaron-mota))
+- Update TypeScript types for Screen options function ([#30074](https://github.com/expo/expo/pull/30074) by [@vilnytskyi](https://github.com/vilnytskyi))
+- Prevent creating params object with null prototype ([#30009](https://github.com/expo/expo/pull/30009) by [@marklawlor](https://github.com/marklawlor))
+- Fix Typed Routes clashing types and allow strict types for hooks. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.16 - 2024-06-10
 
 ### 💡 Others
 
@@ -135,6 +153,7 @@ _This version does not introduce any user-facing changes._
 - Fork NavigationContainer on web to use custom linking context ([#27712](https://github.com/expo/expo/pull/27712) by [@marklawlor](https://github.com/marklawlor))
 - Fix relative navigation on hoisted routes ([#27778](https://github.com/expo/expo/pull/27778) by [@marklawlor](https://github.com/marklawlor))
 - Fix setting an initial location to a hoisted index router in a group ([#27935](https://github.com/expo/expo/pull/27935) by [@marklawlor](https://github.com/marklawlor))
+- Flush test timers after each navigation ([#27981](https://github.com/expo/expo/pull/27981) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

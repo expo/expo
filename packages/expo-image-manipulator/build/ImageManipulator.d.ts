@@ -1,4 +1,5 @@
-import { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
+import ExpoImageManipulator from './ExpoImageManipulator';
+import { Action, Context, ImageResult, SaveOptions } from './ImageManipulator.types';
 /**
  * Manipulate the image provided via `uri`. Available modifications are rotating, flipping (mirroring),
  * resizing and cropping. Each invocation results in a new file. With one invocation you can provide
@@ -9,7 +10,10 @@ import { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
  * __only one__ of the keys that corresponds to specific transformation.
  * @param saveOptions A map defining how modified image should be saved.
  * @return Promise which fulfils with [`ImageResult`](#imageresult) object.
+ * @deprecated It has been replaced by the new, contextual and object-oriented API.
+ * Use [`ImageManipulator.manipulate`](#manipulateuri) or [`useImageManipulator`](#useimagemanipulatoruri) instead.
  */
 export declare function manipulateAsync(uri: string, actions?: Action[], saveOptions?: SaveOptions): Promise<ImageResult>;
-export * from './ImageManipulator.types';
+export declare function useImageManipulator(uri: string): Context;
+export { ExpoImageManipulator as ImageManipulator };
 //# sourceMappingURL=ImageManipulator.d.ts.map

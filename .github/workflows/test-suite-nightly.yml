@@ -61,7 +61,7 @@ jobs:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -91,7 +91,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -116,7 +116,7 @@ jobs:
         working-directory: apps/bare-expo
       - name: Store images of build failures
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-artifacts
           path: |
@@ -174,7 +174,7 @@ jobs:
         run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest --no-daemon
         working-directory: apps/bare-expo/android
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -201,7 +201,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -221,7 +221,7 @@ jobs:
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of test failures
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts

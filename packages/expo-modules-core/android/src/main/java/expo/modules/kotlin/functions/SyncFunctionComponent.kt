@@ -6,7 +6,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JNIFunctionBody
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.JSTypeConverter
 
@@ -35,12 +35,12 @@ class SyncFunctionComponent(
     }
   }
 
-  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
+  override fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String) {
     jsObject.registerSyncFunction(
       name,
       takesOwner,
       getCppRequiredTypes().toTypedArray(),
-      getJNIFunctionBody(jsObject.name, appContext)
+      getJNIFunctionBody(moduleName, appContext)
     )
   }
 }

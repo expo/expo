@@ -135,7 +135,7 @@ However, there are a few considerations that we should follow when writing confi
 
 > Although not required, we can use [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts) to make plugin development easier — it provides a recommended default configuration for TypeScript and Jest. For more information, see [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin).
 
-Let's start by creating our plugin with this minimal boilerplate. This will create a **plugin** folder where we will write the plugin in TypeScript and add a **app.plugin.js** file in the project root, which will be the entry file for the plugin.
+Let's start by creating our plugin with this minimal boilerplate. This will create a **plugin** folder where we will write the plugin in TypeScript and add an **app.plugin.js** file in the project root, which will be the entry file for the plugin.
 
 1. Create a **plugin/tsconfig.json** file:
 
@@ -200,7 +200,7 @@ const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
 };
 ```
 
-Similarly, we can use `withAndroidManifest` to modify the **AndroidManifest.xml** file. In this case, we will utilize `AndroidConfig` helpers to add a meta data item to the main application:
+Similarly, we can use `withAndroidManifest` to modify the **AndroidManifest.xml** file. In this case, we will utilize `AndroidConfig` helpers to add a metadata item to the main application:
 
 ```ts
 const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
