@@ -5,8 +5,8 @@
 
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXTaskInterface.h>
-#import <EXLocation/EXLocation.h>
-#import <EXLocation/EXLocationTaskConsumer.h>
+#import <ExpoLocation/EXLocation.h>
+#import <ExpoLocation/EXLocationTaskConsumer.h>
 
 @interface EXLocationTaskConsumer ()
 

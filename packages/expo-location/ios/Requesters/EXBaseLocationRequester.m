@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXLocation/EXBaseLocationRequester.h>
+#import <ExpoLocation/EXBaseLocationRequester.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 #import <objc/message.h>
