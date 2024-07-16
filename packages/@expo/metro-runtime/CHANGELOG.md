@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix exceptions native import.
 - Improve error message for `window.location` polyfill. ([#30331](https://github.com/expo/expo/pull/30331) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
