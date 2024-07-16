@@ -16,6 +16,13 @@ import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:ios');
 
+
+import path from 'path';
+async function getValidBinaryPathAsync(input: string) {
+  const resolved = path.resolve(input);
+  return resolved;
+}
+
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
@@ -31,12 +38,23 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Resolve the CLI arguments into useable options.
   const props = await resolveOptionsAsync(projectRoot, options);
 
-  // Spawn the `xcodebuild` process to create the app binary.
-  const buildOutput = await XcodeBuild.buildAsync(props);
+  let binaryPath: string;
+  if (options.binary) {
+    binaryPath = await getValidBinaryPathAsync(options.binary);
+    Log.log('Using custom binary path:', binaryPath);
+    // TODO: Validate if the binary path is valid.
+    // - Check if the file exists.
+    // - Check if the target is simulator and the binary is provisioned for a simulator.
+    // - Check if the target is a device and the binary is provisioned for a device.
+    // - If .ipa, find the app binary inside the .ipa.
+  } else {
+    // Spawn the `xcodebuild` process to create the app binary.
+    const buildOutput = await XcodeBuild.buildAsync(props);
 
-  // Find the path to the built app binary, this will be used to install the binary
-  // on a device.
-  const binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+    // Find the path to the built app binary, this will be used to install the binary
+    // on a device.
+    binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+  }
 
   debug('Binary path:', binaryPath);
 

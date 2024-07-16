@@ -18,6 +18,8 @@ export type Options = {
   install?: boolean;
   /** Should use derived data for builds. */
   buildCache?: boolean;
+  /** Path to an existing binary to install on the device. */
+  binary?: string;
 };
 
 export type ProjectInfo = {
