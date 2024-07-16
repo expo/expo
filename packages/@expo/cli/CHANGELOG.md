@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `--binary <path>` option to `expo run` commands for reusing builds.
+- Add `--binary <path>` option to `expo run` commands for reusing builds. ([#30437](https://github.com/expo/expo/pull/30437) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `react` and `react-dom` 19 with `experiments.reactCanary`. ([#30335](https://github.com/expo/expo/pull/30335) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `EXPO_USE_METRO_REQUIRE` to enable stable string module IDs. ([#30176](https://github.com/expo/expo/pull/30176) by [@EvanBacon](https://github.com/EvanBacon))
 - Print the selected app IDs in prebuild when they change. ([#30044](https://github.com/expo/expo/pull/30044) by [@EvanBacon](https://github.com/EvanBacon))
