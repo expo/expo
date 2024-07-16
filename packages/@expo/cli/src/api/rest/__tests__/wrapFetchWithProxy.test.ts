@@ -1,4 +1,4 @@
-import { ProxyAgent } from 'undici';
+import { EnvHttpProxyAgent } from 'undici';
 
 import { wrapFetchWithProxy } from '../wrapFetchWithProxy';
 
@@ -26,7 +26,7 @@ describe(wrapFetchWithProxy, () => {
     await next('https://example.com/', {});
 
     expect(input).toHaveBeenCalledWith('https://example.com/', {
-      dispatcher: expect.any(ProxyAgent),
+      dispatcher: expect.any(EnvHttpProxyAgent),
     });
   });
 });
