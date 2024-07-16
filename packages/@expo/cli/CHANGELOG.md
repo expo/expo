@@ -28,6 +28,7 @@
 
 ### 💡 Others
 
+- Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add robot export e2e test. ([#30049](https://github.com/expo/expo/pull/30049) by [@EvanBacon](https://github.com/EvanBacon))
 - Add internal externals to prevent bundling `source-map-support` in development. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
