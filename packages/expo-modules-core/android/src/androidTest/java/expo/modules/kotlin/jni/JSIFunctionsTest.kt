@@ -498,11 +498,13 @@ class JSIFunctionsTest {
       ref.ref
     }
   }) {
-    evaluateScript("""
+    evaluateScript(
+      """
       const ref = $moduleRef.createRef();
       global.ref = ref;
       ref
-    """.trimIndent()).getObject()
+      """.trimIndent()
+    ).getObject()
     val value = call("getRef", "global.ref").getInt()
     Truth.assertThat(value).isEqualTo(123)
   }

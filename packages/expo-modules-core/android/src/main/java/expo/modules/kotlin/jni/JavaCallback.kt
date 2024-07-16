@@ -7,7 +7,6 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.sharedobjects.SharedRef
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
