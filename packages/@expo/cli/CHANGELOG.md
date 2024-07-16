@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix server closing in headless run commands. ([#30432](https://github.com/expo/expo/pull/30432) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.18.26 — 2024-07-29
