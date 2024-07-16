@@ -7,7 +7,3 @@ describe(Linking.addEventListener, () => {
     subscription.remove();
   });
 });
-
-it('foo', () => {
-  expect(Linking.parse('exp://')).toMatchSnapshot();
-});

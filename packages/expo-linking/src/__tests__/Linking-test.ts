@@ -1,4 +1,3 @@
-'use client';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
