@@ -14,6 +14,8 @@ import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
 
+const debug = require('debug')('expo:run:ios');
+
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
@@ -35,6 +37,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Find the path to the built app binary, this will be used to install the binary
   // on a device.
   const binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+
+  debug('Binary path:', binaryPath);
 
   // Ensure the port hasn't become busy during the build.
   if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
