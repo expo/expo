@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hasSideEffectWithDebugTrace = void 0;
+exports._createSideEffectMatcher = exports.hasSideEffectWithDebugTrace = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -60,7 +60,12 @@ const getPackageJsonMatcher = (options, dir) => {
     }
     // TODO: Split out and unit test.
     const dirRoot = path_1.default.dirname(packageJsonPath);
-    const isSideEffect = (fp) => {
+    const isSideEffect = _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath);
+    pkgJsonCache.set(dir, isSideEffect);
+    return isSideEffect;
+};
+function _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath = '') {
+    return (fp) => {
         // Default is that everything is a side-effect unless explicitly marked as not.
         if (packageJson.sideEffects == null) {
             return null;
@@ -82,9 +87,8 @@ const getPackageJsonMatcher = (options, dir) => {
         debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
         return null;
     };
-    pkgJsonCache.set(dir, isSideEffect);
-    return isSideEffect;
-};
+}
+exports._createSideEffectMatcher = _createSideEffectMatcher;
 function getShallowSideEffect(options, value) {
     if (value?.sideEffects !== undefined) {
         return value.sideEffects;
