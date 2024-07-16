@@ -39,10 +39,10 @@ const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/J
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
+const jsOutput_1 = require("./jsOutput");
 const sideEffects_1 = require("./sideEffects");
 const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
-const jsOutput_1 = require("./jsOutput");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
 class InvalidRequireCallError extends Error {

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import generate from '@babel/generator';
-import * as t from '@babel/types';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
@@ -14,6 +13,7 @@ import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
 
+import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
@@ -21,7 +21,6 @@ import collectDependencies, {
   Options as CollectDependenciesOptions,
 } from '../transform-worker/collect-dependencies';
 import { applyImportSupport, minifyCode } from '../transform-worker/metro-transform-worker';
-import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
