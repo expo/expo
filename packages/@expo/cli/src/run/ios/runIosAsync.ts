@@ -1,5 +1,10 @@
 import chalk from 'chalk';
 
+import * as XcodeBuild from './XcodeBuild';
+import { Options } from './XcodeBuild.types';
+import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
+import { resolveOptionsAsync } from './options/resolveOptions';
+import { getValidBinaryPathAsync } from './validateExternalBinary';
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -9,14 +14,8 @@ import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
-import { getValidBinaryPathAsync } from './validateExternalBinary';
-import * as XcodeBuild from './XcodeBuild';
-import { Options } from './XcodeBuild.types';
 
 const debug = require('debug')('expo:run:ios');
-
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
@@ -69,11 +68,16 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   });
 
   // Install and launch the app binary on a device.
-  await launchAppAsync(binaryPath, manager, {
-    isSimulator: props.isSimulator,
-    device: props.device,
-    shouldStartBundler: props.shouldStartBundler,
-  }, launchInfo.bundleId);
+  await launchAppAsync(
+    binaryPath,
+    manager,
+    {
+      isSimulator: props.isSimulator,
+      device: props.device,
+      shouldStartBundler: props.shouldStartBundler,
+    },
+    launchInfo.bundleId
+  );
 
   // Log the location of the JS logs for the device.
   if (props.shouldStartBundler) {

@@ -6,7 +6,13 @@ import { CommandError } from '../../../utils/errors';
 const debug = require('debug')('expo:start:platforms:ios:xcrun') as typeof console.log;
 
 export function isSpawnResultError(obj: any): obj is Error & SpawnResult {
-  return obj && 'message' in obj && obj.status !== undefined && obj.stdout !== undefined && obj.stderr !== undefined;
+  return (
+    obj &&
+    'message' in obj &&
+    obj.status !== undefined &&
+    obj.stdout !== undefined &&
+    obj.stderr !== undefined
+  );
 }
 
 export async function xcrunAsync(args: (string | undefined)[], options?: SpawnOptions) {

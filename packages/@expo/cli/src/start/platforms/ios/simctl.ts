@@ -359,7 +359,7 @@ export async function simctlAsync(
       // if (error.status === 115) {
       // }
     }
-    throw error
+    throw error;
   }
 }
 

@@ -4,6 +4,7 @@ import path from 'path';
 import * as XcodeBuild from './XcodeBuild';
 import { BuildProps } from './XcodeBuild.types';
 import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
+import { Log } from '../../log';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { launchBinaryOnMacAsync } from '../../start/platforms/ios/devicectl';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
@@ -14,7 +15,7 @@ import { profile } from '../../utils/profile';
 type BinaryLaunchInfo = {
   bundleId: string;
   schemes: string[];
-}
+};
 
 /** Install and launch the app binary on a device. */
 export async function launchAppAsync(
@@ -25,6 +26,7 @@ export async function launchAppAsync(
 ) {
   appId ??= (await profile(getLaunchInfoForBinaryAsync)(binaryPath)).bundleId;
 
+  Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
   if (!props.isSimulator) {
     if (props.device.osType === 'macOS') {
       await launchBinaryOnMacAsync(appId, binaryPath);
@@ -67,14 +69,15 @@ export async function getLaunchInfoForBinaryAsync(binaryPath: string): Promise<B
   const builtInfoPlistPath = path.join(binaryPath, 'Info.plist');
   const { CFBundleIdentifier, CFBundleURLTypes } = await parsePlistAsync(builtInfoPlistPath);
 
-  const schemes = CFBundleURLTypes?.reduce<string[]>((acc: any, urlType: any) => {
-    if (!urlType) return acc;
-    
-    if (urlType.CFBundleURLSchemes) {
-      return [...acc, ...urlType.CFBundleURLSchemes];
-    }
-    return acc;
-  }, []) ?? [];
+  const schemes =
+    CFBundleURLTypes?.reduce<string[]>((acc: any, urlType: any) => {
+      if (!urlType) return acc;
+
+      if (urlType.CFBundleURLSchemes) {
+        return [...acc, ...urlType.CFBundleURLSchemes];
+      }
+      return acc;
+    }, []) ?? [];
 
   return { bundleId: CFBundleIdentifier, schemes };
 }
