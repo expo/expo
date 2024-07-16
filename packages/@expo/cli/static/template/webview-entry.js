@@ -6,7 +6,11 @@ import { renderRootComponent } from 'expo-router/build/renderRootComponent';
 import { _getActionsObject } from 'expo/webview';
 import React from 'react';
 
-import App from '[$$GENERATED_ENTRY]';
+const AppModule = require('[$$GENERATED_ENTRY]');
+
+if (!AppModule) {
+  throw new Error('No exports from module: [$$GENERATED_ENTRY]');
+}
 
 const actions = _getActionsObject();
 
@@ -26,6 +30,16 @@ function ActionsWrapper(props) {
       };
     }, []);
   }
+
+  if (!AppModule.default) {
+    return React.createElement(
+      'div',
+      undefined,
+      'Missing default export in module: [$$GENERATED_ENTRY]'
+    );
+  }
+
+  const App = AppModule.default;
 
   return <App {...props} actions={actions} />;
 }

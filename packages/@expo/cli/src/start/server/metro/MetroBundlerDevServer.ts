@@ -719,23 +719,30 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
       middleware.use(deepLinkMiddleware.getHandler());
 
+      const serverRoot = getMetroServerRoot(this.projectRoot);
+
       middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
         if (!req.url) return next();
+
         const url = coreceUrl(req.url);
+
         // Match `/_expo/@iframe`
         if (!url.pathname.startsWith('/_expo/@iframe')) {
           return next();
         }
+
         const file = url.searchParams.get('file');
+
         if (!file || !file.startsWith('file://')) {
           res.statusCode = 400;
           res.statusMessage = 'Invalid file path';
           return res.end();
         }
+
+        // Generate a unique entry file for the webview.
         const generatedEntry = await this.getWebviewProxyEntry(file);
 
-        const serverRoot = getMetroServerRoot(this.projectRoot);
-
+        // Create the script URL
         const metroUrl = new URL(
           createBundleUrlPath({
             ...instanceMetroOptions,
@@ -750,7 +757,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         res.statusCode = 200;
         // Return HTML file
         res.setHeader('Content-Type', 'text/html');
-        res.end(getWebviewProxyHtml(metroUrl));
+        res.end(
+          // Create the entry HTML file.
+          getWebviewProxyHtml(metroUrl)
+        );
       });
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
