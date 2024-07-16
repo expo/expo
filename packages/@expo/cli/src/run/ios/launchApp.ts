@@ -69,15 +69,22 @@ export async function getLaunchInfoForBinaryAsync(binaryPath: string): Promise<B
   const builtInfoPlistPath = path.join(binaryPath, 'Info.plist');
   const { CFBundleIdentifier, CFBundleURLTypes } = await parsePlistAsync(builtInfoPlistPath);
 
-  const schemes =
-    CFBundleURLTypes?.reduce<string[]>((acc: any, urlType: any) => {
-      if (!urlType) return acc;
+  let schemes: string[] = [];
 
-      if (urlType.CFBundleURLSchemes) {
-        return [...acc, ...urlType.CFBundleURLSchemes];
-      }
-      return acc;
-    }, []) ?? [];
+  if (Array.isArray(CFBundleURLTypes)) {
+    schemes =
+      CFBundleURLTypes.reduce<string[]>((acc, urlType: unknown) => {
+        if (
+          urlType &&
+          typeof urlType === 'object' &&
+          'CFBundleURLSchemes' in urlType &&
+          Array.isArray(urlType.CFBundleURLSchemes)
+        ) {
+          return [...acc, ...urlType.CFBundleURLSchemes];
+        }
+        return acc;
+      }, []) ?? [];
+  }
 
   return { bundleId: CFBundleIdentifier, schemes };
 }
