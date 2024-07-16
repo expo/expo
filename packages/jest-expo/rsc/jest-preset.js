@@ -1,5 +1,4 @@
 const { withWatchPlugins } = require('jest-expo/config');
-
 const {
   getIOSPreset,
   getAndroidPreset,
