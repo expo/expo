@@ -54,6 +54,7 @@ jest.mock('../XcodeBuild', () => ({
 
 jest.mock('../launchApp', () => ({
   launchAppAsync: jest.fn(async () => {}),
+  getLaunchInfoForBinaryAsync: jest.fn(async () => ({})),
 }));
 
 const mockPlatform = (value: typeof process.platform) =>
@@ -99,7 +100,7 @@ describe(resolveOptionsAsync, () => {
       device: { name: 'mock', udid: '123' },
       isSimulator: true,
       shouldStartBundler: true,
-    });
+    }, undefined);
 
     expect(logProjectLogsLocation).toBeCalled();
   });
@@ -150,7 +151,7 @@ describe(resolveOptionsAsync, () => {
       },
       isSimulator: false,
       shouldStartBundler: true,
-    });
+    }, undefined);
 
     expect(logProjectLogsLocation).toBeCalled();
   });
