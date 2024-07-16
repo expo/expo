@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add experimental support for React Server Components.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
