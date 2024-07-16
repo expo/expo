@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { loadAsync, isLoaded } from './Font';
+import { isLoaded, loadAsync } from './Font';
 import { FontSource } from './Font.types';
 
 function isMapLoaded(map: string | Record<string, FontSource>) {
@@ -11,7 +11,11 @@ function isMapLoaded(map: string | Record<string, FontSource>) {
   }
 }
 
-function useRuntimeFonts(map: string | Record<string, FontSource>): [boolean, Error | null] {
+function useRuntimeFonts<T extends string | Record<string, FontSource>>(
+  ...args: T extends string ? [map: T, source: FontSource] : [map: T]
+): [boolean, Error | null] {
+  const [map, source] = args;
+
   const [loaded, setLoaded] = useState(
     // For web rehydration, we need to check if the fonts are already loaded during the static render.
     // Native will also benefit from this optimization.
@@ -20,16 +24,33 @@ function useRuntimeFonts(map: string | Record<string, FontSource>): [boolean, Er
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    loadAsync(map)
-      .then(() => setLoaded(true))
-      .catch(setError);
+    if (typeof map === 'object') {
+      loadAsync(map)
+        .then(() => setLoaded(true))
+        .catch(setError);
+    } else {
+      // we can safely cast source because we know that the first argument is a string and the second is required
+      loadAsync(map, source as FontSource)
+        .then(() => setLoaded(true))
+        .catch(setError);
+    }
   }, []);
 
   return [loaded, error];
 }
 
-function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Error | null] {
-  loadAsync(map);
+function useStaticFonts<T extends string | Record<string, FontSource>>(
+  ...args: T extends string ? [map: T, source: FontSource] : [map: T]
+): [boolean, Error | null] {
+  const [map, source] = args;
+
+  if (typeof map === 'object') {
+    loadAsync(map);
+  } else {
+    // we can safely cast source because we know that the first argument is a string and the second is required
+    loadAsync(map, source as FontSource);
+  }
+
   return [true, null];
 }
 
@@ -40,8 +61,14 @@ function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Err
  *
  * > Note, the fonts are not "reloaded" when you dynamically change the font map.
  *
- * @param map A map of `fontFamily`s to [`FontSource`](#fontsource)s. After loading the font you can
- * use the key in the `fontFamily` style prop of a `Text` element.
+ * @template T The type of the first argument. If a string is provided, the second argument must be
+ * a `FontSource`. If an object is provided, the second argument must be omitted.
+ *
+ * @param map A map of `fontFamily`s to [`FontSource`](#fontsource)s or a `fontFamily` as a string. After loading the font
+ * you can use the key in the `fontFamily` style prop of a `Text` element. If the first argument is a string, the second
+ * argument is required.
+ * @param source The font asset that should be loaded into the `fontFamily` namespace. Provide this argument only if the first
+ * first argument is a string.
  *
  * @return
  * - __loaded__ (`boolean`) - A boolean to detect if the font for `fontFamily` has finished
@@ -49,9 +76,17 @@ function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Err
  * - __error__ (`Error | null`) - An error encountered when loading the fonts.
  *
  * @example
+ * Load fonts from a map of `fontFamily`s to [`FontSource`](#fontsource)s:
  * ```tsx
  * const [loaded, error] = useFonts({ ... });
  * ```
+ *
+ * @example
+ * Load a single font by providing a `fontFamily` as a string and a [`FontSource`](#fontsource):
+ * ```tsx
+ * const [loaded, error] = useFonts("Inter_900Black", require("./assets/fonts/Inter-Black.ttf"));
+ * ```
  */
-export const useFonts: (map: string | Record<string, FontSource>) => [boolean, Error | null] =
-  typeof window === 'undefined' ? useStaticFonts : useRuntimeFonts;
+export const useFonts: <T extends string | Record<string, FontSource>>(
+  ...args: T extends string ? [map: T, source: FontSource] : [map: T]
+) => [boolean, Error | null] = typeof window === 'undefined' ? useStaticFonts : useRuntimeFonts;

@@ -1,7 +1,7 @@
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
+import { FontDisplay, FontResource, FontSource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 import { loaded, loadPromises } from './memory';
 import { registerStaticFont } from './server';
@@ -51,31 +51,30 @@ export function isLoading(fontFamily: string): boolean {
  * with the platform's native text elements. In the browser this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
  *
+ * @template T The type of the first argument. If a string is provided, the second argument must be
+ * a `FontSource`. If an object is provided, the second argument must be omitted.
+ *
  * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
  * with React Native `Text` elements.
- * @param source The font asset that should be loaded into the `fontFamily` namespace.
+ * @param source The font asset that should be loaded into the `fontFamily` namespace. Provide this argument only if the first
+ * first argument is a string.
  *
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.
  */
-export function loadAsync(
-  fontFamilyOrFontMap: string | Record<string, FontSource>,
-  source?: FontSource
+export function loadAsync<T extends string | Record<string, FontSource>>(
+  ...args: T extends string
+    ? [fontFamilyOrFontMap: T, source: FontSource]
+    : [fontFamilyOrFontMap: T]
 ): Promise<void> {
   // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
   // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
   // standard Expo SDK style guide.
   const isServer = Platform.OS === 'web' && typeof window === 'undefined';
 
+  const [fontFamilyOrFontMap, source] = args;
+
   if (typeof fontFamilyOrFontMap === 'object') {
-    if (source) {
-      return Promise.reject(
-        new CodedError(
-          `ERR_FONT_API`,
-          `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`
-        )
-      );
-    }
     const fontMap = fontFamilyOrFontMap;
     const names = Object.keys(fontMap);
 
@@ -94,20 +93,11 @@ export function loadAsync(
     return Promise.resolve();
   }
 
-  return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
+  // we can safely cast source because we know that the first argument is a string and the second is required
+  return loadFontInNamespaceAsync(fontFamilyOrFontMap, source as FontSource);
 }
 
-async function loadFontInNamespaceAsync(
-  fontFamily: string,
-  source?: FontSource | null
-): Promise<void> {
-  if (!source) {
-    throw new CodedError(
-      `ERR_FONT_SOURCE`,
-      `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`
-    );
-  }
-
+async function loadFontInNamespaceAsync(fontFamily: string, source: FontSource): Promise<void> {
   if (loaded[fontFamily]) {
     return;
   }
@@ -162,24 +152,25 @@ export async function unloadAllAsync(): Promise<void> {
  * Unload custom fonts matching the `fontFamily`s and display values provided.
  * Because fonts are automatically unloaded on every platform this is mostly used for testing.
  *
+ * @template T The type of the first argument. If a string is provided, the second argument must be
+ * an `UnloadFontOptions`. If an object is provided, the second argument must be omitted.
+ *
  * @param fontFamilyOrFontMap The name or names of the custom fonts that will be unloaded.
  * @param options When `fontFamilyOrFontMap` is a string, this should be the font source used to load
  * the custom font originally.
  */
-export async function unloadAsync(
-  fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>,
-  options?: UnloadFontOptions
+export async function unloadAsync<T extends string | Record<string, UnloadFontOptions>>(
+  ...args: T extends string
+    ? [fontFamilyOrFontMap: T, options?: UnloadFontOptions]
+    : [fontFamilyOrFontMap: T]
 ): Promise<void> {
   if (!ExpoFontLoader.unloadAsync) {
     throw new UnavailabilityError('expo-font', 'unloadAsync');
   }
+
+  const [fontFamilyOrFontMap, options] = args;
+
   if (typeof fontFamilyOrFontMap === 'object') {
-    if (options) {
-      throw new CodedError(
-        `ERR_FONT_API`,
-        `No fontFamily can be used for the provided options: ${options}. The second argument of \`unloadAsync()\` can only be used with a \`string\` value as the first argument.`
-      );
-    }
     const fontMap = fontFamilyOrFontMap;
     const names = Object.keys(fontMap);
     await Promise.all(names.map((name) => unloadFontInNamespaceAsync(name, fontMap[name])));
@@ -211,4 +202,4 @@ async function unloadFontInNamespaceAsync(
   await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 
-export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+export { FontDisplay, FontResource, FontSource, UnloadFontOptions };
