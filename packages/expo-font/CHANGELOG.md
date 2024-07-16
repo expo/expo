@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - On `iOS`, fix issues where fonts were removed when the app is backgrounded. ([#30400](https://github.com/expo/expo/pull/30400) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix the `useFonts` hook to always throw a runtime error when the argument passed is a `string`. Turn the runtime errors of the `useFonts` hook to type errors. This disables the passing of invalid props at type level.
+- Fix the `useFonts` hook to always throw a runtime error when the argument passed is a `string`. Turn the runtime errors of the `useFonts` hook to type errors. This disables the passing of invalid props at type level. ([#30434](https://github.com/expo/expo/pull/30434) by [@welf](https://github.com/welf))
 
 ### 💡 Others
 
