@@ -15,22 +15,6 @@ if (!AppModule) {
 const actions = _getActionsObject();
 
 function ActionsWrapper(props) {
-  if (__DEV__) {
-    // Prevent intercepting "R" key press for reloading in development
-    React.useEffect(() => {
-      const listener = function (event) {
-        if (event.key === 'r') {
-          event.preventDefault();
-        }
-      };
-      // Add event listener to prevent WebView from intercepting "R" key press
-      window.addEventListener('keydown', listener);
-      return () => {
-        window.removeEventListener('keydown', listener);
-      };
-    }, []);
-  }
-
   if (!AppModule.default) {
     return React.createElement(
       'div',
