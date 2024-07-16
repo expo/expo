@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.collectDependenciesForShaking = exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.renameTopLevelModuleVariables = exports.minifyCode = void 0;
+exports.collectDependenciesForShaking = exports.getCacheKey = exports.transform = exports.applyImportSupport = exports.minifyCode = exports.InvalidRequireCallError = void 0;
 /**
  * Copyright 2023-present 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -54,6 +54,16 @@ const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const resolveOptions_1 = require("./resolveOptions");
+class InvalidRequireCallError extends Error {
+    innerError;
+    filename;
+    constructor(innerError, filename) {
+        super(`${filename}:${innerError.message}`);
+        this.innerError = innerError;
+        this.filename = filename;
+    }
+}
+exports.InvalidRequireCallError = InvalidRequireCallError;
 // asserts non-null
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -104,15 +114,6 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
     }
 };
 exports.minifyCode = minifyCode;
-class InvalidRequireCallError extends Error {
-    innerError;
-    filename;
-    constructor(innerError, filename) {
-        super(`${filename}:${innerError.message}`);
-        this.innerError = innerError;
-        this.filename = filename;
-    }
-}
 function renameTopLevelModuleVariables() {
     // A babel plugin which renames variables in the top-level scope that are named "module".
     return {
@@ -125,7 +126,6 @@ function renameTopLevelModuleVariables() {
         },
     };
 }
-exports.renameTopLevelModuleVariables = renameTopLevelModuleVariables;
 function applyUseStrictDirective(ast) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
@@ -355,7 +355,7 @@ async function transformJS(file, { config, options }) {
     if (minify) {
         ({ map, code } = await (0, exports.minifyCode)(config, file.filename, result.code, file.code, map, reserved));
     }
-    const possibleReconcile = optimize
+    const possibleReconcile = optimize && collectDependenciesOptions
         ? {
             inlineRequires: options.inlineRequires,
             importDefault,

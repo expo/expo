@@ -63,7 +63,7 @@ export type ReconcileTransformSettings = {
     minifierPath: string;
     minifierConfig: JsTransformerConfig['minifierConfig'];
   };
-  collectDependenciesOptions?: CollectDependenciesOptions;
+  collectDependenciesOptions: CollectDependenciesOptions;
 
   unstable_dependencyMapReservedName?: string;
   optimizationSizeLimit?: number;

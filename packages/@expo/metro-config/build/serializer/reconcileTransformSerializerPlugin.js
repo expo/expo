@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isEnvBoolean = exports.sortDependencies = exports.reconcileTransformSerializerPlugin = void 0;
+exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -45,24 +45,31 @@ const collect_dependencies_1 = __importStar(require("../transform-worker/collect
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
-class InvalidRequireCallError extends Error {
-    innerError;
-    filename;
-    constructor(innerError, filename) {
-        super(`${filename}:${innerError.message}`);
-        this.innerError = innerError;
-        this.filename = filename;
-    }
+// Some imports may change order during the transform, so we need to resort them.
+// Resort the dependencies to match the current order of the AST.
+function sortDependencies(dependencies, accordingTo) {
+    // Some imports may change order during the transform, so we need to resort them.
+    // Resort the dependencies to match the current order of the AST.
+    const nextDependencies = new Map();
+    // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
+    dependencies.forEach((dep) => {
+        nextDependencies.set(dep.data.key, {
+            ...(accordingTo.get(dep.data.key) || {}),
+            // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
+            data: dep,
+        });
+    });
+    return nextDependencies;
 }
-function assertCollectDependenciesOptions(collectDependenciesOptions) {
-    if (!collectDependenciesOptions) {
-        throw new Error('collectDependenciesOptions is required. Something is wrong with the metro transformer or transform cache.');
-    }
-    if (typeof collectDependenciesOptions !== 'object') {
-        throw new Error('collectDependenciesOptions must be an object.');
-    }
-    (0, assert_1.default)('inlineableCalls' in collectDependenciesOptions, 'inlineableCalls is required.');
+function isOptimizeEnabled(graph) {
+    return isEnvBoolean(graph, 'optimize');
 }
+function isEnvBoolean(graph, name) {
+    if (!graph.transformOptions.customTransformOptions)
+        return false;
+    return String(graph.transformOptions.customTransformOptions[name]) === 'true';
+}
+exports.isEnvBoolean = isEnvBoolean;
 // This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
 async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph, options) {
     if (!isOptimizeEnabled(graph)) {
@@ -91,11 +98,8 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         // results between the tree-shake and the final transform.
         const reconcile = outputItem.data.reconcile;
         (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
-        assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
         let ast = outputItem.data.ast;
-        if (!ast) {
-            throw new Error('missing AST for ' + value.path);
-        }
+        (0, assert_1.default)(ast, 'Missing AST for module: ' + value.path);
         delete outputItem.data.ast;
         const { importDefault, importAll } = reconcile;
         const sideEffectReferences = () => [...value.dependencies.values()]
@@ -121,13 +125,11 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
                     : [],
             },
         });
-        // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
         let dependencyMapName = '';
         let dependencies;
         // This pass converts the modules to use the generated import names.
         try {
             // Rewrite the deps to use Metro runtime, collect the new dep positions.
-            // TODO: We could just update the deps in the graph to use the correct positions after we modify the AST. This seems hard and fragile though.
             ({ ast, dependencies, dependencyMapName } = (0, collect_dependencies_1.default)(ast, {
                 ...reconcile.collectDependenciesOptions,
                 collectOnly: false,
@@ -139,7 +141,7 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         }
         catch (error) {
             if (error instanceof collect_dependencies_1.InvalidRequireCallError) {
-                throw new InvalidRequireCallError(error, value.path);
+                throw new metro_transform_worker_1.InvalidRequireCallError(error, value.path);
             }
             throw error;
         }
@@ -195,30 +197,4 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
     }
 }
 exports.reconcileTransformSerializerPlugin = reconcileTransformSerializerPlugin;
-// Some imports may change order during the transform, so we need to resort them.
-// Resort the dependencies to match the current order of the AST.
-function sortDependencies(dependencies, accordingTo) {
-    // Some imports may change order during the transform, so we need to resort them.
-    // Resort the dependencies to match the current order of the AST.
-    const nextDependencies = new Map();
-    // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
-    dependencies.forEach((dep) => {
-        nextDependencies.set(dep.data.key, {
-            ...(accordingTo.get(dep.data.key) || {}),
-            // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
-            data: dep,
-        });
-    });
-    return nextDependencies;
-}
-exports.sortDependencies = sortDependencies;
-function isOptimizeEnabled(graph) {
-    return isEnvBoolean(graph, 'optimize');
-}
-function isEnvBoolean(graph, name) {
-    if (!graph.transformOptions.customTransformOptions)
-        return false;
-    return String(graph.transformOptions.customTransformOptions[name]) === 'true';
-}
-exports.isEnvBoolean = isEnvBoolean;
 //# sourceMappingURL=reconcileTransformSerializerPlugin.js.map

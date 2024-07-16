@@ -83,6 +83,17 @@ interface TransformResponse {
   readonly output: readonly ExpoJsOutput[];
 }
 
+export class InvalidRequireCallError extends Error {
+  innerError: InternalInvalidRequireCallError;
+  filename: string;
+
+  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
+    super(`${filename}:${innerError.message}`);
+    this.innerError = innerError;
+    this.filename = filename;
+  }
+}
+
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -151,18 +162,7 @@ export const minifyCode = async (
   }
 };
 
-class InvalidRequireCallError extends Error {
-  innerError: InternalInvalidRequireCallError;
-  filename: string;
-
-  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
-    super(`${filename}:${innerError.message}`);
-    this.innerError = innerError;
-    this.filename = filename;
-  }
-}
-
-export function renameTopLevelModuleVariables() {
+function renameTopLevelModuleVariables() {
   // A babel plugin which renames variables in the top-level scope that are named "module".
   return {
     visitor: {
@@ -486,27 +486,28 @@ async function transformJS(
     ));
   }
 
-  const possibleReconcile: ReconcileTransformSettings | undefined = optimize
-    ? {
-        inlineRequires: options.inlineRequires,
-        importDefault,
-        importAll,
-        normalizePseudoGlobals: shouldNormalizePseudoGlobals,
-        globalPrefix: config.globalPrefix,
-        unstable_compactOutput: config.unstable_compactOutput,
-        collectDependenciesOptions,
-        minify: minify
-          ? {
-              minifierPath: config.minifierPath,
-              minifierConfig: config.minifierConfig,
-            }
-          : undefined,
-        unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
-        optimizationSizeLimit: config.optimizationSizeLimit,
-        unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
-        unstable_renameRequire,
-      }
-    : undefined;
+  const possibleReconcile: ReconcileTransformSettings | undefined =
+    optimize && collectDependenciesOptions
+      ? {
+          inlineRequires: options.inlineRequires,
+          importDefault,
+          importAll,
+          normalizePseudoGlobals: shouldNormalizePseudoGlobals,
+          globalPrefix: config.globalPrefix,
+          unstable_compactOutput: config.unstable_compactOutput,
+          collectDependenciesOptions,
+          minify: minify
+            ? {
+                minifierPath: config.minifierPath,
+                minifierConfig: config.minifierConfig,
+              }
+            : undefined,
+          unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+          optimizationSizeLimit: config.optimizationSizeLimit,
+          unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+          unstable_renameRequire,
+        }
+      : undefined;
 
   const output: ExpoJsOutput[] = [
     {
