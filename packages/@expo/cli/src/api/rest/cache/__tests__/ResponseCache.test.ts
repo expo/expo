@@ -40,8 +40,8 @@ describe(getRequestBodyCacheData, () => {
 
   it('converts FormData body', () => {
     const formData = new FormData();
-    formData.append('test', 'true');
-    expect(getRequestBodyCacheData(formData as any)).toBe('test=true');
+    formData.append('test', 'hello');
+    expect(getRequestBodyCacheData(formData as any)).toBe('test=hello');
   });
 
   it('converts buffer body', () => {

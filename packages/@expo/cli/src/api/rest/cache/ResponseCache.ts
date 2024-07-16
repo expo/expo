@@ -86,7 +86,6 @@ export function getRequestBodyCacheData(body: RequestInit['body']) {
   }
 
   if (body.toString && body.toString() === '[object FormData]') {
-    // TODO
     return new URLSearchParams(body as any).toString();
   }
 
