@@ -24,6 +24,7 @@
 - Ensure Metro dev server closes fully when clients are connected. ([#30067](https://github.com/expo/expo/pull/30067) by [@byCedric](https://github.com/byCedric))
 - Fix app crashing when hitting debugger breakpoint through VSCode. ([#30287](https://github.com/expo/expo/pull/30287) by [@byCedric](https://github.com/byCedric))
 - Resolve real locations of file paths when using `eas build --local`. ([#30340](https://github.com/expo/expo/pull/30340) by [@byCedric](https://github.com/byCedric))
+- Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads.
 
 ### 💡 Others
 
