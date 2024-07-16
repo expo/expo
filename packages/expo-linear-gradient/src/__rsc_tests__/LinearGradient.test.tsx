@@ -1,3 +1,5 @@
+/// <reference types="jest-expo/rsc/expect" />
+
 import { LinearGradient } from '../LinearGradient';
 
 it(`renders to RSC`, async () => {
