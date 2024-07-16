@@ -31,7 +31,11 @@
   "private": true,
   "expo": {
     "autolinking": {
-      "exclude": []
+      "exclude": [
+        "expo-dev-client",
+        "expo-dev-launcher",
+        "expo-dev-menu"
+      ]
     }
   }
 }

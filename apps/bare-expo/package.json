@@ -28,7 +28,10 @@
         "expo-ads-admob",
         "expo-module-template",
         "expo-module-template-local",
-        "expo-face-detector"
+        "expo-face-detector",
+        "expo-dev-client",
+        "expo-dev-launcher",
+        "expo-dev-menu"
       ],
       "ios": {
         "flags": {
@@ -45,7 +48,6 @@
     "@react-native-community/slider": "4.5.2",
     "@react-native-masked-view/masked-view": "0.3.1",
     "@react-native-picker/picker": "2.7.5",
-    "@react-native-segmented-control/segmented-control": "2.5.2",
     "@shopify/flash-list": "1.6.4",
     "expo": "~51.0.0",
     "expo-camera": "~15.0.0",
