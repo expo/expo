@@ -1,6 +1,7 @@
 'use strict';
 const { getBareExtensions } = require('@expo/config/paths');
 
+const path = require('path');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
 
@@ -61,6 +62,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
         },
       ],
     },
+
     displayName: displayOptions,
     testMatch,
     testPathIgnorePatterns: isReactServer
@@ -86,6 +88,14 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   }
 
   if (isReactServer) {
+    try {
+      // This will throw if React isn't the right version.
+      require('react-server-dom-webpack/server');
+    } catch {
+      // Use a resolver which redirects to the canaries directory for React and React DOM.
+      preset.resolver = require.resolve('./react-canaries-resolver');
+    }
+
     preset.testEnvironment = 'node';
     if (!preset.setupFiles) {
       preset.setupFiles = [];
@@ -96,6 +106,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     if (!preset.setupFilesAfterEnv) {
       preset.setupFilesAfterEnv = [];
     }
+
     preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
 
     if (!preset.testEnvironmentOptions) {
