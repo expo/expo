@@ -3,7 +3,7 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
-import { loaded, loadPromises } from './memory';
+import { isLoadedInCache, isLoadedNative, loadPromises, markLoaded, purgeCache } from './memory';
 import { registerStaticFont } from './server';
 
 // @needsAudit
@@ -29,9 +29,9 @@ export function processFontFamily(fontFamily: string | null): string | null {
  */
 export function isLoaded(fontFamily: string): boolean {
   if (Platform.OS === 'web') {
-    return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
+    return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded(fontFamily);
   }
-  return fontFamily in loaded || ExpoFontLoader.customNativeFonts?.includes(fontFamily);
+  return isLoadedNative(fontFamily);
 }
 
 // @needsAudit
@@ -108,7 +108,9 @@ async function loadFontInNamespaceAsync(
     );
   }
 
-  if (loaded[fontFamily]) {
+  // we consult the native module to see if the font is already loaded
+  // this is slower than checking the cache but can help avoid loading the same font n times
+  if (isLoaded(fontFamily)) {
     return;
   }
 
@@ -125,7 +127,7 @@ async function loadFontInNamespaceAsync(
   loadPromises[fontFamily] = (async () => {
     try {
       await loadSingleFontAsync(fontFamily, asset);
-      loaded[fontFamily] = true;
+      markLoaded(fontFamily);
     } finally {
       delete loadPromises[fontFamily];
     }
@@ -137,6 +139,7 @@ async function loadFontInNamespaceAsync(
 // @needsAudit
 /**
  * Unloads all the custom fonts. This is used for testing.
+ * @hidden
  */
 export async function unloadAllAsync(): Promise<void> {
   if (!ExpoFontLoader.unloadAllAsync) {
@@ -149,22 +152,19 @@ export async function unloadAllAsync(): Promise<void> {
       `Cannot unload fonts while they're still loading: ${Object.keys(loadPromises).join(', ')}`
     );
   }
-
-  for (const fontFamily of Object.keys(loaded)) {
-    delete loaded[fontFamily];
-  }
-
+  purgeCache();
   await ExpoFontLoader.unloadAllAsync();
 }
 
 // @needsAudit
 /**
  * Unload custom fonts matching the `fontFamily`s and display values provided.
- * Because fonts are automatically unloaded on every platform this is mostly used for testing.
+ * This is used for testing.
  *
  * @param fontFamilyOrFontMap The name or names of the custom fonts that will be unloaded.
  * @param options When `fontFamilyOrFontMap` is a string, this should be the font source used to load
  * the custom font originally.
+ * @hidden
  */
 export async function unloadAsync(
   fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>,
@@ -193,10 +193,10 @@ async function unloadFontInNamespaceAsync(
   fontFamily: string,
   options?: UnloadFontOptions | null
 ): Promise<void> {
-  if (!loaded[fontFamily]) {
+  if (!isLoaded(fontFamily)) {
     return;
   } else {
-    delete loaded[fontFamily];
+    purgeCache(fontFamily);
   }
 
   // Important: we want all callers that concurrently try to load the same font to await the same

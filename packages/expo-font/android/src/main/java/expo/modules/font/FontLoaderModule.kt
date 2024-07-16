@@ -22,9 +22,17 @@ open class FontLoaderModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
+    val customNativeFonts = queryCustomNativeFonts()
+    // could be a Set, but to be able to pass to JS we keep it as an array
+    var loadedFonts: List<String> = customNativeFonts
+
     Name("ExpoFontLoader")
 
-    Constants("customNativeFonts" to queryCustomNativeFonts())
+    Constants("customNativeFonts" to customNativeFonts)
+
+    Property("loadedFonts") {
+      return@Property loadedFonts
+    }
 
     AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
       val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -43,6 +51,7 @@ open class FontLoaderModule : Module() {
       }
 
       ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, typeface)
+      loadedFonts = loadedFonts.toMutableSet().apply { add(fontFamilyName) }.toList()
     }
   }
 

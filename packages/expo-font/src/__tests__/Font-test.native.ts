@@ -1,12 +1,10 @@
-import { loaded, loadPromises } from '../memory';
+import { loadPromises, purgeCache } from '../memory';
 
 let Font;
 let NativeModulesProxy;
 
 function clearMemory() {
-  for (const key of Object.keys(loaded)) {
-    delete loaded[key];
-  }
+  purgeCache();
   for (const key of Object.keys(loadPromises)) {
     delete loadPromises[key];
   }
