@@ -60,6 +60,11 @@ export default async function checkPackageAsync(
         args.push('--maxWorkers', '1');
       }
       await runPackageScriptAsync(pkg, 'test', args);
+
+      if (pkg.hasReactServerComponents && options.checkPackageType === 'package') {
+        // Test RSC if available...
+        await runPackageScriptAsync(pkg, 'test:rsc', args);
+      }
     }
     if (options.lint) {
       const args = ['--max-warnings', '0'];

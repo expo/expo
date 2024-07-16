@@ -68,7 +68,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
 
     displayName: displayOptions,
     testMatch,
-    testPathIgnorePatterns: ['/node_modules/'],
     testPathIgnorePatterns: isReactServer
       ? ['/node_modules/']
       : [
