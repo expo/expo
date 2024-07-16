@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add experimental support for React Server Components.
+- Add experimental support for React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
