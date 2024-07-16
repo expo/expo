@@ -11,13 +11,19 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
 
+type BinaryLaunchInfo = {
+  bundleId: string;
+  schemes: string[];
+}
+
 /** Install and launch the app binary on a device. */
 export async function launchAppAsync(
   binaryPath: string,
   manager: DevServerManager,
-  props: Pick<BuildProps, 'isSimulator' | 'device' | 'shouldStartBundler'>
+  props: Pick<BuildProps, 'isSimulator' | 'device' | 'shouldStartBundler'>,
+  appId?: string
 ) {
-  const appId = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
+  appId ??= (await profile(getLaunchInfoForBinaryAsync)(binaryPath)).bundleId;
 
   if (!props.isSimulator) {
     if (props.device.osType === 'macOS') {
@@ -57,8 +63,18 @@ export async function launchAppAsync(
   );
 }
 
-async function getBundleIdentifierForBinaryAsync(binaryPath: string): Promise<string> {
+export async function getLaunchInfoForBinaryAsync(binaryPath: string): Promise<BinaryLaunchInfo> {
   const builtInfoPlistPath = path.join(binaryPath, 'Info.plist');
-  const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
-  return CFBundleIdentifier;
+  const { CFBundleIdentifier, CFBundleURLTypes } = await parsePlistAsync(builtInfoPlistPath);
+
+  const schemes = CFBundleURLTypes?.reduce<string[]>((acc: any, urlType: any) => {
+    if (!urlType) return acc;
+    
+    if (urlType.CFBundleURLSchemes) {
+      return [...acc, ...urlType.CFBundleURLSchemes];
+    }
+    return acc;
+  }, []) ?? [];
+
+  return { bundleId: CFBundleIdentifier, schemes };
 }

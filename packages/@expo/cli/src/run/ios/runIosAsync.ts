@@ -1,9 +1,5 @@
 import chalk from 'chalk';
 
-import * as XcodeBuild from './XcodeBuild';
-import { Options } from './XcodeBuild.types';
-import { launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -13,15 +9,14 @@ import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
+import { resolveOptionsAsync } from './options/resolveOptions';
+import { getValidBinaryPathAsync } from './validateExternalBinary';
+import * as XcodeBuild from './XcodeBuild';
+import { Options } from './XcodeBuild.types';
 
 const debug = require('debug')('expo:run:ios');
 
-
-import path from 'path';
-async function getValidBinaryPathAsync(input: string) {
-  const resolved = path.resolve(input);
-  return resolved;
-}
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
@@ -40,13 +35,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   let binaryPath: string;
   if (options.binary) {
-    binaryPath = await getValidBinaryPathAsync(options.binary);
+    binaryPath = await getValidBinaryPathAsync(options.binary, props);
     Log.log('Using custom binary path:', binaryPath);
-    // TODO: Validate if the binary path is valid.
-    // - Check if the file exists.
-    // - Check if the target is simulator and the binary is provisioned for a simulator.
-    // - Check if the target is a device and the binary is provisioned for a device.
-    // - If .ipa, find the app binary inside the .ipa.
   } else {
     // Spawn the `xcodebuild` process to create the app binary.
     const buildOutput = await XcodeBuild.buildAsync(props);
@@ -63,13 +53,19 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     props.shouldStartBundler = false;
   }
 
+  const launchInfo = await getLaunchInfoForBinaryAsync(binaryPath);
+  const isCustomBinary = !!options.binary;
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     headless: !props.shouldStartBundler,
-    // If a scheme is specified then use that instead of the package name.
-    scheme: (await getSchemesForIosAsync(projectRoot))?.[0],
+
+    scheme: isCustomBinary
+      ? // If launching a custom binary, use the schemes in the Info.plist.
+        launchInfo.schemes[0]
+      : // If a scheme is specified then use that instead of the package name.
+        (await getSchemesForIosAsync(projectRoot))?.[0],
   });
 
   // Install and launch the app binary on a device.
@@ -77,7 +73,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     isSimulator: props.isSimulator,
     device: props.device,
     shouldStartBundler: props.shouldStartBundler,
-  });
+  }, launchInfo.bundleId);
 
   // Log the location of the JS logs for the device.
   if (props.shouldStartBundler) {
