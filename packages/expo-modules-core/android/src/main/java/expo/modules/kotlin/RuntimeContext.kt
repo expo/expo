@@ -85,7 +85,7 @@ class RuntimeContext(
           jsiContext.installJSI(
             this,
             jsRuntimePointer,
-            reactContext.catalystInstance.jSCallInvokerHolder as CallInvokerHolderImpl
+            reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl
           )
         }
 
