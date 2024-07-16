@@ -93,6 +93,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
         headers: resolvedHeaders,
       });
 
+      // Handle expected API errors (4xx)
       if (response.status >= 400 && response.status < 500) {
         const body = await response.text();
         try {
@@ -107,10 +108,6 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
           }
           throw error;
         }
-      }
-
-      if (response.status >= 500) {
-        throw response;
       }
 
       return response;

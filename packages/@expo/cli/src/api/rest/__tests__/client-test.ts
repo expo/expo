@@ -1,11 +1,16 @@
 import nock from 'nock';
 import { URLSearchParams } from 'url';
 
+import { CommandError } from '../../../utils/errors';
+import { fetch } from '../../../utils/fetch';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
 
 jest.mock('../../user/UserSettings');
+jest.mock('../../../utils/fetch', () => ({
+  fetch: jest.fn(jest.requireActual('../../../utils/fetch').fetch),
+}));
 
 it('converts Expo APIv2 error to ApiV2Error', async () => {
   nock(getExpoApiBaseUrl())
@@ -60,17 +65,35 @@ it('converts Expo APIv2 error to ApiV2Error (invalid password)', async () => {
   }
 });
 
-it('does not convert non-APIv2 error to ApiV2Error', async () => {
-  nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
+it('converts system ENOTFOUND non-APIv2 error to CommandError', async () => {
+  const networkError = new Error('fetch failed - network unavailable');
+  // @ts-expect-error
+  networkError.code = 'ENOTFOUND';
 
-  expect.assertions(2);
+  jest.mocked(fetch).mockRejectedValueOnce(networkError);
+  expect.assertions(1);
 
   try {
     console.log(await fetchAsync('test', { method: 'POST' }));
   } catch (error: any) {
+    expect(error).toBeInstanceOf(CommandError);
+  }
+});
+
+it('does not convert non-APIv2 error to ApiV2Error', async () => {
+  const scope = nock(getExpoApiBaseUrl()).post('/v2/test').reply(500, 'Something went wrong');
+
+  // Only expect the `scope.isDone` assertion
+  expect.assertions(1);
+
+  try {
+    await fetchAsync('test', { method: 'POST' });
+  } catch (error: any) {
+    // These should never trigger
     expect(error).toBeInstanceOf(Response);
     expect(error).not.toBeInstanceOf(ApiV2Error);
   }
+  expect(scope.isDone()).toBe(true);
 });
 
 it('makes a get request', async () => {
