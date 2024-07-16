@@ -65,8 +65,6 @@ export const run = () => 'c:' + bar;
   ]);
   expect(artifacts[0].source).toMatch('bar');
   expect(artifacts[0].source).toMatch('run');
-
-  // TODO: Test orphans.
 });
 
 it(`supports multiple imports to the same module`, async () => {
