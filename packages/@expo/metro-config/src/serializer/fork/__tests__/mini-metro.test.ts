@@ -307,7 +307,7 @@ it(`can create a micro Metro graph fixture`, async () => {
             "bytecode": undefined,
             "engine": undefined,
             "environment": undefined,
-            "treeshake": undefined,
+            "optimize": undefined,
           },
           "dev": true,
           "experimentalImportSupport": true,

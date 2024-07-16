@@ -1,4 +1,4 @@
-import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
+import { serializeOptimizeAsync } from '../fork/__tests__/serializer-test-utils';
 
 jest.mock('../exportHermes', () => {
   return {
@@ -27,8 +27,8 @@ const AnyPosition = expect.objectContaining({
   start: expect.any(Object),
 });
 
-it(`does unlink if a multiple import chains are removed`, async () => {
-  const [[, , graph]] = await serializeShakingAsync({
+it(`traces multiple imports to the same module`, async () => {
+  const [[, , graph]] = await serializeOptimizeAsync({
     'index.js': `
 import {run} from "./b";
 export {foo} from "./b";
