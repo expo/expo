@@ -1,5 +1,3 @@
-'use client';
-
 import { render, screen } from '@testing-library/react-native';
 import React from 'react';
 

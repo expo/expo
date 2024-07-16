@@ -1,4 +1,4 @@
-import { LinearGradient } from '../../LinearGradient';
+import { LinearGradient } from '../LinearGradient';
 
 it(`renders to RSC`, async () => {
   const jsx = (

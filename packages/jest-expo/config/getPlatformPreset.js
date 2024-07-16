@@ -1,7 +1,6 @@
 'use strict';
 const { getBareExtensions } = require('@expo/config/paths');
 
-const path = require('path');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
 
@@ -24,9 +23,13 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     const platformExtension = extension ? `.${extension}` : '';
     const sourceExtension = `.[jt]s?(x)`;
 
-    // NOTE(EvanBacon): For now (assuming this doesn't stick), we'll only run RSC on tests in the `__tests__/_rsc` directory.
+    // NOTE(EvanBacon): For now (assuming this doesn't stick), we'll only run RSC on tests in the `/__rsc_tests__/` directory.
     if (isReactServer) {
-      // return [`**/__tests__/_rsc/**/*test${platformExtension}${sourceExtension}`];
+      return [
+        `**/__rsc_tests__/**/*spec${platformExtension}${sourceExtension}`,
+        `**/__rsc_tests__/**/*test${platformExtension}${sourceExtension}`,
+        `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
+      ];
     }
 
     return [
@@ -65,12 +68,13 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
 
     displayName: displayOptions,
     testMatch,
+    testPathIgnorePatterns: ['/node_modules/'],
     testPathIgnorePatterns: isReactServer
       ? ['/node_modules/']
       : [
           '/node_modules/',
-          // Ignore the files in the `__tests__/_rsc` directory when not targeting RSC.
-          '/__tests__/_rsc/',
+          // Ignore the files in the `__rsc_tests__` directory when not targeting RSC.
+          '/__rsc_tests__/',
         ],
     moduleFileExtensions,
     snapshotResolver: isReactServer
