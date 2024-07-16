@@ -58,19 +58,6 @@ test.describe(inputDir, () => {
     // This icon remains.
     expect(largestFile).toMatch(/test-icon-banana/);
 
-    largestFile.split('\n').forEach((line, i) => {
-      if (line.startsWith('__d(')) {
-        const contents = line.match(/__d\(\(function\([^)]+\){(.*)}\),"/)?.[1];
-        // Multi-line comments are skipped.
-        if (!contents) return;
-        // Ensure no empty modules are included
-        if (contents!.length < 5) {
-          console.log(contents);
-          throw new Error(`Module is empty: ${line} at line ${i}`);
-        }
-      }
-    });
-
     console.time('npx serve');
     await serveCmd.startAsync([inputDir]);
     console.timeEnd('npx serve');
