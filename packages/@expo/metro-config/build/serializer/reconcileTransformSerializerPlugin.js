@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortDependencies = exports.reconcileTransformSerializerPlugin = void 0;
+exports.isEnvBoolean = exports.sortDependencies = exports.reconcileTransformSerializerPlugin = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -40,9 +40,9 @@ const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const sideEffects_1 = require("./sideEffects");
-const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
+const jsOutput_1 = require("./jsOutput");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
 class InvalidRequireCallError extends Error {
@@ -72,8 +72,13 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
     // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
     for (const value of graph.dependencies.values()) {
         for (const index in value.output) {
-            // @ts-expect-error: Typed as readonly
-            value.output[index] = await transformDependencyOutput(value, value.output[index]);
+            const output = value.output[index];
+            if ((0, jsOutput_1.isExpoJsOutput)(output)) {
+                // @ts-expect-error: Typed as readonly
+                value.output[index] =
+                    //
+                    await transformDependencyOutput(value, output);
+            }
         }
     }
     return [entryPoint, preModules, graph, options];
@@ -84,15 +89,13 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         }
         // This should be cached by the transform worker for use here to ensure close to consistent
         // results between the tree-shake and the final transform.
-        // @ts-expect-error: reconcile object is not on the type.
         const reconcile = outputItem.data.reconcile;
         (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
         assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
-        let ast = (0, treeShakeSerializerPlugin_1.accessAst)(outputItem);
+        let ast = outputItem.data.ast;
         if (!ast) {
             throw new Error('missing AST for ' + value.path);
         }
-        // @ts-expect-error: TODO
         delete outputItem.data.ast;
         const { importDefault, importAll } = reconcile;
         const sideEffectReferences = () => [...value.dependencies.values()]
@@ -178,7 +181,6 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             data: {
                 ...outputItem.data,
                 code,
-                // @ts-expect-error: TODO: Source maps are likely completely broken.
                 map,
                 lineCount: (0, countLines_1.default)(code),
                 functionMap: 
@@ -186,7 +188,6 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
                 ast.metadata?.metro?.functionMap ??
                     // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
                     ast.functionMap ??
-                    // @ts-expect-error
                     outputItem.data.functionMap ??
                     null,
             },
@@ -212,6 +213,12 @@ function sortDependencies(dependencies, accordingTo) {
 }
 exports.sortDependencies = sortDependencies;
 function isOptimizeEnabled(graph) {
-    return (0, treeShakeSerializerPlugin_1.isEnvBoolean)(graph, 'optimize');
+    return isEnvBoolean(graph, 'optimize');
 }
+function isEnvBoolean(graph, name) {
+    if (!graph.transformOptions.customTransformOptions)
+        return false;
+    return String(graph.transformOptions.customTransformOptions[name]) === 'true';
+}
+exports.isEnvBoolean = isEnvBoolean;
 //# sourceMappingURL=reconcileTransformSerializerPlugin.js.map

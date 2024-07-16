@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import generate from '@babel/generator';
+import * as t from '@babel/types';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
@@ -14,17 +15,13 @@ import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
 
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { accessAst, isEnvBoolean } from './treeShakeSerializerPlugin';
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
   type Dependency,
   Options as CollectDependenciesOptions,
 } from '../transform-worker/collect-dependencies';
-import {
-  ReconcileTransformSettings,
-  applyImportSupport,
-  minifyCode,
-} from '../transform-worker/metro-transform-worker';
+import { applyImportSupport, minifyCode } from '../transform-worker/metro-transform-worker';
+import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -74,8 +71,13 @@ export async function reconcileTransformSerializerPlugin(
   // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
   for (const value of graph.dependencies.values()) {
     for (const index in value.output) {
-      // @ts-expect-error: Typed as readonly
-      value.output[index] = await transformDependencyOutput(value, value.output[index]);
+      const output = value.output[index];
+      if (isExpoJsOutput(output)) {
+        // @ts-expect-error: Typed as readonly
+        value.output[index] =
+          //
+          await transformDependencyOutput(value, output);
+      }
     }
   }
 
@@ -83,8 +85,8 @@ export async function reconcileTransformSerializerPlugin(
 
   async function transformDependencyOutput(
     value: Module<MixedOutput>,
-    outputItem: MixedOutput
-  ): Promise<MixedOutput> {
+    outputItem: ExpoJsOutput
+  ): Promise<ExpoJsOutput> {
     if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
       debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
@@ -92,19 +94,17 @@ export async function reconcileTransformSerializerPlugin(
 
     // This should be cached by the transform worker for use here to ensure close to consistent
     // results between the tree-shake and the final transform.
-    // @ts-expect-error: reconcile object is not on the type.
-    const reconcile = outputItem.data.reconcile as ReconcileTransformSettings;
+    const reconcile = outputItem.data.reconcile;
 
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
     assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
 
-    let ast = accessAst(outputItem);
+    let ast = outputItem.data.ast;
     if (!ast) {
       throw new Error('missing AST for ' + value.path);
     }
 
-    // @ts-expect-error: TODO
     delete outputItem.data.ast;
 
     const { importDefault, importAll } = reconcile;
@@ -224,7 +224,6 @@ export async function reconcileTransformSerializerPlugin(
       data: {
         ...outputItem.data,
         code,
-        // @ts-expect-error: TODO: Source maps are likely completely broken.
         map,
         lineCount: countLines(code),
         functionMap:
@@ -232,7 +231,6 @@ export async function reconcileTransformSerializerPlugin(
           ast.metadata?.metro?.functionMap ??
           // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
           ast.functionMap ??
-          // @ts-expect-error
           outputItem.data.functionMap ??
           null,
       },
@@ -264,4 +262,9 @@ export function sortDependencies(
 
 function isOptimizeEnabled(graph: ReadOnlyGraph) {
   return isEnvBoolean(graph, 'optimize');
+}
+
+export function isEnvBoolean(graph: ReadOnlyGraph, name: string): boolean {
+  if (!graph.transformOptions.customTransformOptions) return false;
+  return String(graph.transformOptions.customTransformOptions[name]) === 'true';
 }

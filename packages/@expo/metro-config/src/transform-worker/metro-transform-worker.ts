@@ -29,7 +29,7 @@ import {
 } from 'metro-source-map';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-import { JsOutput, JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
+import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
 import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
@@ -44,6 +44,7 @@ import collectDependencies, {
   State,
 } from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
+import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 
 export { JsTransformOptions };
 
@@ -81,35 +82,6 @@ interface TransformResponse {
   readonly dependencies: CollectedDependencies['dependencies'];
   readonly output: readonly ExpoJsOutput[];
 }
-
-export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
-  readonly data: JsOutput['data'] & {
-    readonly hasCjsExports?: boolean;
-    readonly reactClientReference?: string;
-    readonly ast?: t.File;
-    readonly reconcile?: ReconcileTransformSettings;
-  };
-};
-
-export type ReconcileTransformSettings = {
-  inlineRequires: boolean;
-  importDefault: string;
-  importAll: string;
-  globalPrefix: string;
-  unstable_renameRequire?: boolean;
-  unstable_compactOutput?: boolean;
-  minify?: {
-    minifierPath: string;
-    minifierConfig: JsTransformerConfig['minifierConfig'];
-  };
-  collectDependenciesOptions?: CollectDependenciesOptions;
-
-  unstable_dependencyMapReservedName?: string;
-  optimizationSizeLimit?: number;
-  unstable_disableNormalizePseudoGlobals?: boolean;
-
-  normalizePseudoGlobals: boolean;
-};
 
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
