@@ -42,7 +42,7 @@ class FilteredReadableMap(
   private val filteredKeys: List<String>
 ) : ReadableMap by backingMap {
   override fun getEntryIterator(): Iterator<Map.Entry<String, Any>> =
-    FilteredIterator(backingMap.getEntryIterator()) {
+    FilteredIterator(backingMap.entryIterator) {
       !filteredKeys.contains(it.key)
     }
 

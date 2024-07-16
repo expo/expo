@@ -79,7 +79,7 @@ abstract class AnyFunction(
       val desiredType = desiredArgsTypes[index]
       argIterator.next().recycle {
         exceptionDecorator({ cause ->
-          ArgumentCastException(desiredType.kType, index, getType().toString(), cause)
+          ArgumentCastException(desiredType.kType, index, type.toString(), cause)
         }) {
           finalArgs[index] = desiredType.convert(this)
         }
