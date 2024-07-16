@@ -4,7 +4,7 @@ import React from 'react';
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
 
 import { WebView } from 'react-native-webview';
-import { _emitGlobalEvent } from './webview';
+import { _emitGlobalEvent } from './global-events';
 
 // const outputKey =
 //   'file://' + process.env.EXPO_PROJECT_ROOT + '/__e2e__/tailwind-postcss/components/thing.tsx';
