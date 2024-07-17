@@ -17,6 +17,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `PlatformUtils.ts` to have the correct export placeholders for react-native-web ([#29791](https://github.com/expo/expo/pull/29791) by [@Bram-dc](https://github.com/Bram-dc))
+- Add missing `react` and `react-native` peer dependencies for isolated modules.
 
 ## 10.0.9 - 2024-06-13
 
