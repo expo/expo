@@ -150,7 +150,11 @@ public final class LocationModule: Module {
       try ensureLocationServicesEnabled()
       try ensureForegroundLocationPermissions(appContext)
       try ensureBackgroundLocationPermissions(appContext)
+
       guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
+        throw Exceptions.LocationUpdatesUnavailable()
+      }
+      guard try taskManager.hasBackgroundModeEnabled("location") else {
         throw Exceptions.LocationUpdatesUnavailable()
       }
 
@@ -158,7 +162,11 @@ public final class LocationModule: Module {
     }
 
     AsyncFunction("stopLocationUpdatesAsync") { (taskName: String) in
-      try taskManager.unregisterTask(withName: taskName, consumerClass: EXLocationTaskConsumer.self)
+      let taskManager = try taskManager
+
+      try EXUtilities.catchException {
+        taskManager.unregisterTask(withName: taskName, consumerClass: EXLocationTaskConsumer.self)
+      }
     }
 
     AsyncFunction("hasStartedLocationUpdatesAsync") { (taskName: String) -> Bool in
@@ -169,15 +177,23 @@ public final class LocationModule: Module {
 
     AsyncFunction("startGeofencingAsync") { (taskName: String, options: [String: Any]) in
       try ensureBackgroundLocationPermissions(appContext)
+
       guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
         throw Exceptions.GeofencingUnavailable()
+      }
+      guard try taskManager.hasBackgroundModeEnabled("location") else {
+        throw Exceptions.LocationUpdatesUnavailable()
       }
 
       try taskManager.registerTask(withName: taskName, consumer: EXGeofencingTaskConsumer.self, options: options)
     }
 
     AsyncFunction("stopGeofencingAsync") { (taskName: String) in
-      try taskManager.unregisterTask(withName: taskName, consumerClass: EXGeofencingTaskConsumer.self)
+      let taskManager = try taskManager
+
+      try EXUtilities.catchException {
+        taskManager.unregisterTask(withName: taskName, consumerClass: EXGeofencingTaskConsumer.self)
+      }
     }
 
     AsyncFunction("hasStartedGeofencingAsync") { (taskName: String) -> Bool in
