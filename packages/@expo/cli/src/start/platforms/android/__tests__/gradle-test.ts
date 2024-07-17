@@ -76,6 +76,30 @@ describe(assembleAsync, () => {
       { cwd: '/android', stdio: 'inherit' }
     );
   });
+  it('uses pass-through gradle properties instead of default ones', async () => {
+    await assembleAsync('/android', {
+      variant: 'debug',
+      appName: 'app',
+      port: 8081,
+      architectures: 'universal',
+      gradleArgs: ['-PreactNativeArchitectures=test', '-PreactNativeDevServerPort=6969'],
+    });
+
+    expect(spawnAsync).toHaveBeenCalledWith(
+      '/android/gradlew',
+      [
+        'app:assembleDebug',
+        '-x',
+        'lint',
+        '-x',
+        'test',
+        '--configure-on-demand',
+        '-PreactNativeArchitectures=test',
+        '-PreactNativeDevServerPort=6969',
+      ],
+      { cwd: '/android', stdio: 'inherit' }
+    );
+  });
 });
 
 describe(installAsync, () => {
