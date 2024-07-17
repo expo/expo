@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` and `react-native` peer dependencies for isolated modules.
+
 ### 💡 Others
 
 ## 0.1.0 — 2024-04-18
