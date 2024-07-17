@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.playbackService
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,6 +18,8 @@ import androidx.media3.session.MediaSessionService
 import androidx.media3.session.MediaStyleNotificationHelper
 import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
+import expo.modules.kotlin.AppContext
+import expo.modules.video.R
 
 class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 
@@ -152,5 +154,22 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     const val CHANNEL_ID = "PlaybackService"
     const val SESSION_SHOW_NOTIFICATION = "showNotification"
     const val SEEK_INTERVAL_MS = 10000L
+
+    fun startService(appContext: AppContext, context: Context, serviceConnection: PlaybackServiceConnection) {
+      appContext.reactContext?.apply {
+        val intent = Intent(context, ExpoVideoPlaybackService::class.java)
+        intent.action = SERVICE_INTERFACE
+
+        startService(intent)
+
+        val flags = if (Build.VERSION.SDK_INT >= 29) {
+          BIND_AUTO_CREATE or Context.BIND_INCLUDE_CAPABILITIES
+        } else {
+          BIND_AUTO_CREATE
+        }
+
+        bindService(intent, serviceConnection, flags)
+      }
+    }
   }
 }

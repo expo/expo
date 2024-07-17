@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.utils
 
 import android.content.Context
 import android.content.pm.ApplicationInfo

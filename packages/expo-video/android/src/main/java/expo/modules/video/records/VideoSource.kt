@@ -8,7 +8,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.video.UnsupportedDRMTypeException
-import expo.modules.video.buildMediaSourceWithHeaders
+import expo.modules.video.utils.buildMediaSourceWithHeaders
 import java.io.Serializable
 
 @OptIn(UnstableApi::class)

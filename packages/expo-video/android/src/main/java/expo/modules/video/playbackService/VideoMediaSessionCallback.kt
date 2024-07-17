@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.playbackService
 
 import android.os.Bundle
 import androidx.media3.common.Player
