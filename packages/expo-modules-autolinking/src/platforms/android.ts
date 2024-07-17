@@ -25,7 +25,7 @@ async function findGradleFilesAsync(revision: PackageRevision): Promise<string[]
     return configGradlePaths;
   }
 
-  const buildGradleFiles = await glob('*/build.gradle', {
+  const buildGradleFiles = await glob('*/build.gradle{,.kts}', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
