@@ -223,7 +223,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {
-    listeners.find { it.get() == videoPlayerListener } ?: run {
+    if (listeners.all { it.get() != videoPlayerListener }) {
       listeners.add(WeakReference(videoPlayerListener))
     }
   }

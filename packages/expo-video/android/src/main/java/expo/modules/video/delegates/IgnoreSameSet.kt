@@ -2,7 +2,8 @@ package expo.modules.video.delegates
 
 import kotlin.reflect.KProperty
 
-/** Property delegate, where the set is ignored unless the value has changed.
+/**
+ * Property delegate, where the set is ignored unless the value has changed.
  * @param T The type of the property.
  * @param value The initial value of the property.
  * @param propertyMapper A function that maps the new value to the property value.
