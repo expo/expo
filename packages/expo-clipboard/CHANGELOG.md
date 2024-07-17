@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed issue when copying PNG images on Android. ([#29629](https://github.com/expo/expo/pull/29629) by [@weslley75](https://github.com/weslley75))
-- Add missing `react` and `react-native` peer dependencies for isolated modules.
+- Add missing `react-native` peer dependencies for isolated modules.
 
 ### 💡 Others
 
