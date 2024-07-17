@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXLocation/EXBackgroundLocationPermissionRequester.h>
+#import <ExpoLocation/EXBackgroundLocationPermissionRequester.h>
 
 #import <objc/message.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>

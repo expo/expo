@@ -6,8 +6,8 @@
 
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXTaskInterface.h>
-#import <EXLocation/EXLocation.h>
-#import <EXLocation/EXGeofencingTaskConsumer.h>
+#import <ExpoLocation/EXLocation.h>
+#import <ExpoLocation/EXGeofencingTaskConsumer.h>
 
 @interface EXGeofencingTaskConsumer ()
 
