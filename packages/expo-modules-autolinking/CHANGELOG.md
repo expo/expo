@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed autolinking of Maven AWS S3 repository. ([#30204](https://github.com/expo/expo/pull/30204) by [@ElielC](https://github.com/ElielC))
+- [Android] Fixed autolinking when using Gradle Kotlin script. ([#30448](https://github.com/expo/expo/pull/30448) by [@amrfarid140](https://github.com/amrfarid140))
 
 ### 💡 Others
 
