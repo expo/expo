@@ -14,6 +14,9 @@ struct TakePictureOptions: Record {
   var exif: Bool = false
 
   @Field
+  var mirror: Bool = false
+
+  @Field
   var fastMode: Bool = false
 
   @Field

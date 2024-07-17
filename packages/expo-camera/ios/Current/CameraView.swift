@@ -358,6 +358,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+      connection?.isVideoMirrored = self.presetCamera == .front && options.mirror
       var photoSettings = AVCapturePhotoSettings()
 
       if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
