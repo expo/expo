@@ -11,5 +11,6 @@ export { ErrorBoundary } from './views/ErrorBoundary';
 export { SplashScreen } from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect } from './useFocusEffect';
+export * from './headless/Tabs';
 export type * from './types';
 //# sourceMappingURL=exports.d.ts.map
