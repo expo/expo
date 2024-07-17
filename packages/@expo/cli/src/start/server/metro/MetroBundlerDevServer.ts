@@ -1089,8 +1089,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
           // @ts-expect-error: passed to our serializer to enable non-serial return values.
           serializerOptions,
-          // NOTE: Exposed for additional serializer logging in atlas.
-          _metroConfig: config,
         }
       );
 
