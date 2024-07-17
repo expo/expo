@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Removed usage of reserved keyword `module`. ([#30010](https://github.com/expo/expo/pull/30010) by [@EvanBacon](https://github.com/EvanBacon))
+Add missing `react` and `react-native` peer dependencies for isolated modules.
 
 ### 💡 Others
 
