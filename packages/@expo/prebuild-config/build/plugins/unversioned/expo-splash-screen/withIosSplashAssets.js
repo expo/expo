@@ -51,21 +51,16 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreen.imageset';
-const BACKGROUND_IMAGESET_PATH = 'Images.xcassets/SplashScreenBackground.imageset';
-const PNG_FILENAME = 'image.png';
-const DARK_PNG_FILENAME = 'dark_image.png';
-const TABLET_PNG_FILENAME = 'tablet_image.png';
-const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image.png';
+const PNG_FILENAME = 'image';
+const DARK_PNG_FILENAME = 'dark_image';
+const TABLET_PNG_FILENAME = 'tablet_image';
+const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image';
 const withIosSplashAssets = (config, splash) => {
   if (!splash) {
     return config;
   }
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
     const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
-    await createSplashScreenBackgroundImageAsync({
-      iosNamedProjectRoot,
-      splash
-    });
     await configureImageAssets({
       projectRoot: config.modRequest.projectRoot,
       iosNamedProjectRoot,
@@ -113,30 +108,6 @@ async function configureImageAssets({
     darkTabletImage
   });
 }
-async function createPngFileAsync(color, filePath) {
-  const pngBuffer = await (0, _imageUtils().createSquareAsync)({
-    size: 1,
-    color
-  });
-  await _fsExtra().default.writeFile(filePath, pngBuffer);
-}
-async function createBackgroundImagesAsync({
-  iosNamedProjectRoot,
-  color,
-  darkColor,
-  tabletColor,
-  darkTabletColor
-}) {
-  await generateImagesAssetsAsync({
-    async generateImageAsset(item, fileName) {
-      await createPngFileAsync(item, _path().default.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH, fileName));
-    },
-    anyItem: color,
-    darkItem: darkColor,
-    tabletItem: tabletColor,
-    darkTabletItem: darkTabletColor
-  });
-}
 async function copyImageFiles({
   projectRoot,
   iosNamedProjectRoot,
@@ -145,6 +116,23 @@ async function copyImageFiles({
   tabletImage,
   darkTabletImage
 }) {
+  const logo = await _jimpCompact().default.read(image);
+  await Promise.all([{
+    ratio: 1,
+    suffix: ''
+  }, {
+    ratio: 2,
+    suffix: '@2x'
+  }, {
+    ratio: 3,
+    suffix: '@3x'
+  }].map(({
+    ratio,
+    suffix
+  }) => {
+    const filePath = path().resolve(iosNamedProjectRoot, IMAGESET_PATH, `image${suffix}.png`);
+    return logo.clone().resize(100 * ratio, _jimpCompact().default.AUTO).writeAsync(filePath);
+  }));
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
       // Using this method will cache the images in `.expo` based on the properties used to generate them.
@@ -177,6 +165,7 @@ async function generateImagesAssetsAsync({
   const items = [[anyItem, PNG_FILENAME], [darkItem, DARK_PNG_FILENAME], [tabletItem, TABLET_PNG_FILENAME], [darkTabletItem, DARK_TABLET_PNG_FILENAME]].filter(([item]) => !!item);
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
+<<<<<<< HEAD
 async function createSplashScreenBackgroundImageAsync({
   iosNamedProjectRoot,
   splash
@@ -204,6 +193,36 @@ async function createSplashScreenBackgroundImageAsync({
     darkTabletImage: darkTabletColor ? DARK_TABLET_PNG_FILENAME : null
   });
 }
+||||||| parent of a1ac4fc818 (Adjust iOS part of plugin)
+async function createSplashScreenBackgroundImageAsync({
+  iosNamedProjectRoot,
+  splash
+}) {
+  const color = splash.backgroundColor;
+  const darkColor = splash.dark?.backgroundColor;
+  const tabletColor = splash.tabletBackgroundColor;
+  const darkTabletColor = splash.dark?.tabletBackgroundColor;
+  const imagesetPath = path().join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
+  // Ensure the Images.xcassets/... path exists
+  await _fsExtra().default.remove(imagesetPath);
+  await _fsExtra().default.ensureDir(imagesetPath);
+  await createBackgroundImagesAsync({
+    iosNamedProjectRoot,
+    color,
+    darkColor: darkColor ? darkColor : null,
+    tabletColor: tabletColor ? tabletColor : null,
+    darkTabletColor: darkTabletColor ? darkTabletColor : null
+  });
+  await writeContentsJsonFileAsync({
+    assetPath: path().resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
+    image: PNG_FILENAME,
+    darkImage: darkColor ? DARK_PNG_FILENAME : null,
+    tabletImage: tabletColor ? TABLET_PNG_FILENAME : null,
+    darkTabletImage: darkTabletColor ? DARK_TABLET_PNG_FILENAME : null
+  });
+}
+=======
+>>>>>>> a1ac4fc818 (Adjust iOS part of plugin)
 const darkAppearances = [{
   appearance: 'luminosity',
   value: 'dark'
@@ -218,13 +237,15 @@ function buildContentsJsonImages({
   // Phone light
   (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
-    filename: image,
+    filename: 'image.png',
     scale: '1x'
   }), (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
+    filename: 'image@2x.png',
     scale: '2x'
   }), (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
+    filename: 'image@3x.png',
     scale: '3x'
   }),
   // Phone dark

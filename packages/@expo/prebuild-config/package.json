@@ -45,6 +45,7 @@
     "@react-native/normalize-colors": "0.76.0",
     "debug": "^4.3.1",
     "fs-extra": "^9.0.0",
+    "jimp": "^0.22.12",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0",
     "xml2js": "0.6.0"

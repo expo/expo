@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class SplashScreenOptions : Record {
   @Field
-  val duration: Long = 800L
+  val duration: Long = 400L
 }
 
 class SplashScreenModule : Module() {

@@ -35,7 +35,8 @@ function applySplashScreenStoryboard(obj, splash) {
     const contentMode = getImageContentMode(resizeMode || 'contain');
     return (0, _InterfaceBuilder().applyImageToSplashScreenXML)(obj, {
       contentMode,
-      imageName
+      imageName,
+      backgroundColor: splash.backgroundColor
     });
   }
   return (0, _InterfaceBuilder().removeImageFromSplashScreen)(obj, {

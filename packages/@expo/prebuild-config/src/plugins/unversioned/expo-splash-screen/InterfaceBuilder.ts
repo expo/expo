@@ -73,7 +73,7 @@ export type IBFontDescription = IBItem<{
 
 export type ImageContentMode = 'scaleAspectFit' | 'scaleAspectFill';
 
-export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading';
+export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading' | 'centerX' | 'centerY';
 
 export type IBImageView = IBItem<
   {
@@ -83,8 +83,8 @@ export type IBImageView = IBItem<
     clipsSubviews?: IBBoolean;
     userInteractionEnabled: IBBoolean;
     contentMode: IBContentMode;
-    horizontalHuggingPriority: number;
-    verticalHuggingPriority: number;
+    horizontalHuggingPriority?: number;
+    verticalHuggingPriority?: number;
     insetsLayoutMarginsFromSafeArea?: IBBoolean;
     translatesAutoresizingMaskIntoConstraints?: IBBoolean;
   },
@@ -180,7 +180,13 @@ export type IBViewController = IBItem<
         >[];
         color: IBItem<{
           key: string | 'backgroundColor';
-          systemColor: string | 'systemBackgroundColor';
+          systemColor?: string | 'systemBackgroundColor';
+          red?: string;
+          green?: string;
+          blue?: string;
+          alpha?: string;
+          colorSpace?: string;
+          customColorSpace?: string;
         }>[];
         constraints: IBItem<
           object,
@@ -313,10 +319,8 @@ export function removeImageFromSplashScreen(
 
 function getAbsoluteConstraints(childId: string, parentId: string) {
   return [
-    createConstraint([childId, 'top'], [parentId, 'top']),
-    createConstraint([childId, 'leading'], [parentId, 'leading']),
-    createConstraint([childId, 'trailing'], [parentId, 'trailing']),
-    createConstraint([childId, 'bottom'], [parentId, 'bottom']),
+    createConstraint([childId, 'centerX'], [parentId, 'centerX']),
+    createConstraint([childId, 'centerY'], [parentId, 'centerY']),
   ];
 }
 
@@ -325,13 +329,18 @@ export function applyImageToSplashScreenXML(
   {
     imageName,
     contentMode,
+    backgroundColor,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
+    backgroundColor: string;
   }
 ): IBSplashScreenDocument {
-  const width = 414;
-  const height = 736;
+  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
+  const width = 100;
+  const height = 100;
+  const x = (mainView.rect[0].$.width - width) / 2;
+  const y = (mainView.rect[0].$.height - height) / 2;
 
   const imageView: IBImageView = {
     $: {
@@ -339,8 +348,6 @@ export function applyImageToSplashScreenXML(
       userLabel: imageName,
       image: imageName,
       contentMode,
-      horizontalHuggingPriority: 251,
-      verticalHuggingPriority: 251,
       clipsSubviews: true,
       userInteractionEnabled: false,
       translatesAutoresizingMaskIntoConstraints: false,
@@ -349,8 +356,8 @@ export function applyImageToSplashScreenXML(
       {
         $: {
           key: 'frame',
-          x: 0.0,
-          y: 0.0,
+          x,
+          y,
           width,
           height,
         },
@@ -358,10 +365,10 @@ export function applyImageToSplashScreenXML(
     ],
   };
 
-  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-
   // Add ImageView
   ensureUniquePush(mainView.subviews[0].imageView, imageView);
+
+  mainView.constraints[0].constraint = [];
 
   // Add Constraints
   getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
@@ -384,6 +391,21 @@ export function applyImageToSplashScreenXML(
       name: imageName,
       width,
       height,
+    },
+  });
+
+  // Add background color
+  mainView.color = mainView.color ?? [];
+  const colorSection = mainView.color;
+  const color = parseColor(backgroundColor);
+
+  colorSection.push({
+    $: {
+      key: 'backgroundColor',
+      ...color.rgb,
+      alpha: '1',
+      colorSpace: 'custom',
+      customColorSpace: 'sRGB',
     },
   });
 
@@ -435,3 +457,35 @@ export function toString(xml: any): string {
 export function toObjectAsync(contents: string) {
   return new Parser().parseStringPromise(contents);
 }
+
+// Function taken from react-native-bootsplash
+export const parseColor = (value: string): Color => {
+  const color = value.toUpperCase().replace(/[^0-9A-F]/g, '');
+
+  if (color.length !== 3 && color.length !== 6) {
+    console.error(`"${value}" value is not a valid hexadecimal color.`);
+    process.exit(1);
+  }
+
+  const hex =
+    color.length === 3
+      ? '#' + color[0] + color[0] + color[1] + color[1] + color[2] + color[2]
+      : '#' + color;
+
+  const rgb: Color['rgb'] = {
+    red: (parseInt('' + hex[1] + hex[2], 16) / 255).toPrecision(15),
+    green: (parseInt('' + hex[3] + hex[4], 16) / 255).toPrecision(15),
+    blue: (parseInt('' + hex[5] + hex[6], 16) / 255).toPrecision(15),
+  };
+
+  return { hex, rgb };
+};
+
+type Color = {
+  hex: string;
+  rgb: {
+    red: string;
+    green: string;
+    blue: string;
+  };
+};

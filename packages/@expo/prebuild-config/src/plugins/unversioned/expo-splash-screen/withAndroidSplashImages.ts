@@ -1,7 +1,8 @@
 import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
+// @ts-ignore
+import Jimp from 'jimp-compact';
 import path from 'path';
 
 import {
@@ -13,7 +14,6 @@ import {
 type DRAWABLE_SIZE = 'default' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type THEME = 'light' | 'dark';
 
-const IMAGE_CACHE_NAME = 'splash-android';
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const DRAWABLES_CONFIGS: {
   [key in DRAWABLE_SIZE]: {
@@ -149,16 +149,21 @@ export async function setSplashImageDrawablesForThemeAsync(
   if (!config) return;
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
 
+  const sizes: DRAWABLE_SIZE[] = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+
   await Promise.all(
-    ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async (imageKey) => {
+    sizes.map(async (imageKey) => {
       // @ts-ignore
-      const image = config[imageKey];
+      const image = await Jimp.read(config[imageKey]);
+
       if (image) {
-        // Using this method will cache the images in `.expo` based on the properties used to generate them.
-        // this method also supports remote URLs and using the global sharp instance.
-        const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
-          src: image,
-        } as any);
+        const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+
+        // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
+        const canvasSize = 288 * multiplier;
+        const canvas = await Jimp.create(canvasSize, Jimp.AUTO, '#ffffff');
+        const input = image.clone().resize(100 * multiplier, Jimp.AUTO);
+        const output = canvas.composite(input, 100 * multiplier, Jimp.AUTO);
 
         // Get output path for drawable.
         const outputPath = path.join(
@@ -166,11 +171,11 @@ export async function setSplashImageDrawablesForThemeAsync(
           // @ts-ignore
           DRAWABLES_CONFIGS[imageKey].modes[theme].path
         );
-        // Ensure directory exists.
+
         const folder = path.dirname(outputPath);
+        // Ensure directory exists.
         await fs.ensureDir(folder);
-        // Write image buffer to the file system.
-        await fs.writeFile(outputPath, source);
+        await output.writeAsync(outputPath);
       }
       return null;
     })

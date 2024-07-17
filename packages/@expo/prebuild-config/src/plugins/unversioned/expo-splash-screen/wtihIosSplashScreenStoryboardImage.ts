@@ -26,6 +26,7 @@ export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash:
     return applyImageToSplashScreenXML(obj, {
       contentMode,
       imageName,
+      backgroundColor: splash.backgroundColor,
     });
   }
 

@@ -13,16 +13,16 @@ function _configPlugins() {
   };
   return data;
 }
-function _imageUtils() {
-  const data = require("@expo/image-utils");
-  _imageUtils = function () {
+function _fsExtra() {
+  const data = _interopRequireDefault(require("fs-extra"));
+  _fsExtra = function () {
     return data;
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _jimpCompact() {
+  const data = _interopRequireDefault(require("jimp-compact"));
+  _jimpCompact = function () {
     return data;
   };
   return data;
@@ -41,8 +41,9 @@ function _getAndroidSplashConfig() {
   };
   return data;
 }
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-const IMAGE_CACHE_NAME = 'splash-android';
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// @ts-ignore
+
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const DRAWABLES_CONFIGS = {
   default: {
@@ -150,30 +151,27 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
 async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot) {
   if (!config) return;
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
-  await Promise.all(['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async imageKey => {
+  const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+  await Promise.all(sizes.map(async imageKey => {
     // @ts-ignore
-    const image = config[imageKey];
+    const image = await _jimpCompact().default.read(config[imageKey]);
     if (image) {
-      // Using this method will cache the images in `.expo` based on the properties used to generate them.
-      // this method also supports remote URLs and using the global sharp instance.
-      const {
-        source
-      } = await (0, _imageUtils().generateImageAsync)({
-        projectRoot,
-        cacheType: IMAGE_CACHE_NAME
-      }, {
-        src: image
-      });
+      const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+
+      // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
+      const canvasSize = 288 * multiplier;
+      const canvas = await _jimpCompact().default.create(canvasSize, _jimpCompact().default.AUTO, '#ffffff');
+      const input = image.clone().resize(100 * multiplier, _jimpCompact().default.AUTO);
+      const output = canvas.composite(input, 100 * multiplier, _jimpCompact().default.AUTO);
 
       // Get output path for drawable.
       const outputPath = _path().default.join(androidMainPath,
       // @ts-ignore
       DRAWABLES_CONFIGS[imageKey].modes[theme].path);
-      // Ensure directory exists.
       const folder = _path().default.dirname(outputPath);
+      // Ensure directory exists.
       await _fsExtra().default.ensureDir(folder);
-      // Write image buffer to the file system.
-      await _fsExtra().default.writeFile(outputPath, source);
+      await output.writeAsync(outputPath);
     }
     return null;
   }));
