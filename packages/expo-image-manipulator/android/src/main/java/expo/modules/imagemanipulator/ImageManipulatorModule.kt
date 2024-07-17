@@ -30,7 +30,7 @@ class ImageManipulatorModule : Module() {
   private fun createManipulatorContext(url: URL): ImageManipulatorContext {
     val loader = suspend {
       val imageLoader = appContext.imageLoader
-                        ?: throw ImageLoaderNotFoundException()
+        ?: throw ImageLoaderNotFoundException()
 
       suspendCancellableCoroutine { continuation ->
         imageLoader.loadImageForManipulationFromURL(
