@@ -94,26 +94,6 @@ export class InvalidRequireCallError extends Error {
   }
 }
 
-export type ReconcileTransformSettings = {
-  inlineRequires: boolean;
-  importDefault: string;
-  importAll: string;
-  globalPrefix: string;
-  unstable_renameRequire?: boolean;
-  unstable_compactOutput?: boolean;
-  minify?: {
-    minifierPath: string;
-    minifierConfig: JsTransformerConfig['minifierConfig'];
-  };
-  collectDependenciesOptions?: CollectDependenciesOptions;
-
-  unstable_dependencyMapReservedName?: string;
-  optimizationSizeLimit?: number;
-  unstable_disableNormalizePseudoGlobals?: boolean;
-
-  normalizePseudoGlobals: boolean;
-};
-
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);

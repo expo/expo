@@ -26,9 +26,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isEnvBoolean = exports.accessAst = exports.treeShakeSerializer = exports.isModuleEmptyFor = void 0;
+exports.treeShakeSerializer = exports.isModuleEmptyFor = void 0;
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,6 +37,7 @@ const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
 const types = __importStar(require("@babel/types"));
 const assert_1 = __importDefault(require("assert"));
+const jsOutput_1 = require("./jsOutput");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const sideEffects_1 = require("./sideEffects");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
@@ -126,10 +127,12 @@ function getExportsThatAreNotUsedInModule(ast) {
 function populateModuleWithImportUsage(value) {
     for (const index in value.output) {
         const outputItem = value.output[index];
-        const ast = accessAst(outputItem);
+        if (!(0, jsOutput_1.isExpoJsOutput)(outputItem)) {
+            continue;
+        }
+        const ast = outputItem.data.ast;
         // This should be cached by the transform worker for use here to ensure close to consistent
         // results between the tree-shake and the final transform.
-        // @ts-expect-error: reconcile object is not on the type.
         const reconcile = outputItem.data.reconcile;
         (0, assert_1.default)(ast, 'ast must be defined.');
         (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
@@ -224,7 +227,10 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         let hasUnresolvableStarExport = false;
         for (const index in value.output) {
             const outputItem = value.output[index];
-            const ast = accessAst(outputItem);
+            if (!(0, jsOutput_1.isExpoJsOutput)(outputItem)) {
+                continue;
+            }
+            const ast = outputItem.data.ast;
             if (!ast)
                 continue;
             // Detect if the module is static...
@@ -458,7 +464,10 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         };
         for (const index in value.output) {
             const outputItem = value.output[index];
-            const ast = accessAst(outputItem);
+            if (!(0, jsOutput_1.isExpoJsOutput)(outputItem)) {
+                continue;
+            }
+            const ast = outputItem.data.ast;
             if (!ast) {
                 throw new Error('AST missing for module: ' + value.path);
             }
@@ -713,11 +722,4 @@ exports.treeShakeSerializer = treeShakeSerializer;
 function accessAst(output) {
     return output.data.ast;
 }
-exports.accessAst = accessAst;
-function isEnvBoolean(graph, name) {
-    if (!graph.transformOptions.customTransformOptions)
-        return false;
-    return String(graph.transformOptions.customTransformOptions[name]) === 'true';
-}
-exports.isEnvBoolean = isEnvBoolean;
 //# sourceMappingURL=treeShakeSerializerPlugin.js.map

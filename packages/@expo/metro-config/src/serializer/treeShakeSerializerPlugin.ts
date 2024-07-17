@@ -1,5 +1,5 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,14 +11,12 @@ import assert from 'assert';
 import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { SerializerConfigT } from 'metro-config';
 
+import { ExpoSerializerOptions } from './fork/baseJSBundle';
+import { isExpoJsOutput } from './jsOutput';
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
 import { DependencyData } from '../transform-worker/collect-dependencies';
-import {
-  ReconcileTransformSettings,
-  collectDependenciesForShaking,
-} from '../transform-worker/metro-transform-worker';
-import { ExpoSerializerOptions } from './fork/baseJSBundle';
+import { collectDependenciesForShaking } from '../transform-worker/metro-transform-worker';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
 const isDebugEnabled = require('debug').enabled('expo:treeshake');
@@ -133,12 +131,14 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
   for (const index in value.output) {
     const outputItem = value.output[index];
 
-    const ast = accessAst(outputItem);
+    if (!isExpoJsOutput(outputItem)) {
+      continue;
+    }
+    const ast = outputItem.data.ast;
 
     // This should be cached by the transform worker for use here to ensure close to consistent
     // results between the tree-shake and the final transform.
-    // @ts-expect-error: reconcile object is not on the type.
-    const reconcile = outputItem.data.reconcile as ReconcileTransformSettings;
+    const reconcile = outputItem.data.reconcile;
 
     assert(ast, 'ast must be defined.');
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
@@ -271,7 +271,11 @@ export async function treeShakeSerializer(
 
     for (const index in value.output) {
       const outputItem = value.output[index];
-      const ast = accessAst(outputItem);
+      if (!isExpoJsOutput(outputItem)) {
+        continue;
+      }
+
+      const ast = outputItem.data.ast;
       if (!ast) continue;
 
       // Detect if the module is static...
@@ -582,8 +586,11 @@ export async function treeShakeSerializer(
 
     for (const index in value.output) {
       const outputItem = value.output[index];
+      if (!isExpoJsOutput(outputItem)) {
+        continue;
+      }
 
-      const ast = accessAst(outputItem);
+      const ast = outputItem.data.ast;
       if (!ast) {
         throw new Error('AST missing for module: ' + value.path);
       }
@@ -890,11 +897,6 @@ export async function treeShakeSerializer(
   }
 }
 
-export function accessAst(output: AdvancedMixedOutput): types.File | undefined {
+function accessAst(output: AdvancedMixedOutput): types.File | undefined {
   return output.data.ast;
-}
-
-export function isEnvBoolean(graph: ReadOnlyGraph, name: string): boolean {
-  if (!graph.transformOptions.customTransformOptions) return false;
-  return String(graph.transformOptions.customTransformOptions[name]) === 'true';
 }

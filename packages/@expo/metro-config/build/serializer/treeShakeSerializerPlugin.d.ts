@@ -4,16 +4,6 @@ import { SerializerConfigT } from 'metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
-type AdvancedMixedOutput = {
-    readonly data: {
-        ast?: types.File;
-        code: string;
-        hasCjsExports?: boolean;
-    };
-    readonly type: string;
-};
 export declare function isModuleEmptyFor(ast?: types.File): boolean;
 export declare function treeShakeSerializer(entryPoint: string, preModules: readonly Module<MixedOutput>[], graph: ReadOnlyGraph, options: ExpoSerializerOptions): Promise<SerializerParameters>;
-export declare function accessAst(output: AdvancedMixedOutput): types.File | undefined;
-export declare function isEnvBoolean(graph: ReadOnlyGraph, name: string): boolean;
 export {};
