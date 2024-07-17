@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added experimental support for tree shaking. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
+- Added experimental support for production graph optimizations. ([#30417](https://github.com/expo/expo/pull/30417) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `react` and `react-dom` 19 with `experiments.reactCanary`. ([#30335](https://github.com/expo/expo/pull/30335) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `EXPO_USE_METRO_REQUIRE` to enable stable string module IDs. ([#30176](https://github.com/expo/expo/pull/30176) by [@EvanBacon](https://github.com/EvanBacon))
 - Print the selected app IDs in prebuild when they change. ([#30044](https://github.com/expo/expo/pull/30044) by [@EvanBacon](https://github.com/EvanBacon))
@@ -19,6 +20,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix server closing in headless run commands. ([#30432](https://github.com/expo/expo/pull/30432) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix resolver fields for SSR + native platforms. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
 - Resolve module specifiers to posix paths for Metro. ([#29696](https://github.com/expo/expo/pull/29696) by [@byCedric](https://github.com/byCedric))
@@ -28,6 +30,7 @@
 
 ### 💡 Others
 
+- Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add robot export e2e test. ([#30049](https://github.com/expo/expo/pull/30049) by [@EvanBacon](https://github.com/EvanBacon))
 - Add internal externals to prevent bundling `source-map-support` in development. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))

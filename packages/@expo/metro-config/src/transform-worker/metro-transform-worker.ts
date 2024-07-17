@@ -29,7 +29,7 @@ import {
 } from 'metro-source-map';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-import { JsOutput, JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
+import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
 import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
@@ -44,6 +44,7 @@ import collectDependencies, {
   State,
 } from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
+import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 
 export { JsTransformOptions };
 
@@ -82,14 +83,16 @@ interface TransformResponse {
   readonly output: readonly ExpoJsOutput[];
 }
 
-export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
-  readonly data: JsOutput['data'] & {
-    readonly hasCjsExports?: boolean;
-    readonly reactClientReference?: string;
-    readonly ast?: t.File;
-    readonly reconcile?: ReconcileTransformSettings;
-  };
-};
+export class InvalidRequireCallError extends Error {
+  innerError: InternalInvalidRequireCallError;
+  filename: string;
+
+  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
+    super(`${filename}:${innerError.message}`);
+    this.innerError = innerError;
+    this.filename = filename;
+  }
+}
 
 export type ReconcileTransformSettings = {
   inlineRequires: boolean;
@@ -179,18 +182,7 @@ export const minifyCode = async (
   }
 };
 
-class InvalidRequireCallError extends Error {
-  innerError: InternalInvalidRequireCallError;
-  filename: string;
-
-  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
-    super(`${filename}:${innerError.message}`);
-    this.innerError = innerError;
-    this.filename = filename;
-  }
-}
-
-export function renameTopLevelModuleVariables() {
+function renameTopLevelModuleVariables() {
   // A babel plugin which renames variables in the top-level scope that are named "module".
   return {
     visitor: {
@@ -514,27 +506,28 @@ async function transformJS(
     ));
   }
 
-  const possibleReconcile: ReconcileTransformSettings | undefined = optimize
-    ? {
-        inlineRequires: options.inlineRequires,
-        importDefault,
-        importAll,
-        normalizePseudoGlobals: shouldNormalizePseudoGlobals,
-        globalPrefix: config.globalPrefix,
-        unstable_compactOutput: config.unstable_compactOutput,
-        collectDependenciesOptions,
-        minify: minify
-          ? {
-              minifierPath: config.minifierPath,
-              minifierConfig: config.minifierConfig,
-            }
-          : undefined,
-        unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
-        optimizationSizeLimit: config.optimizationSizeLimit,
-        unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
-        unstable_renameRequire,
-      }
-    : undefined;
+  const possibleReconcile: ReconcileTransformSettings | undefined =
+    optimize && collectDependenciesOptions
+      ? {
+          inlineRequires: options.inlineRequires,
+          importDefault,
+          importAll,
+          normalizePseudoGlobals: shouldNormalizePseudoGlobals,
+          globalPrefix: config.globalPrefix,
+          unstable_compactOutput: config.unstable_compactOutput,
+          collectDependenciesOptions,
+          minify: minify
+            ? {
+                minifierPath: config.minifierPath,
+                minifierConfig: config.minifierConfig,
+              }
+            : undefined,
+          unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+          optimizationSizeLimit: config.optimizationSizeLimit,
+          unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+          unstable_renameRequire,
+        }
+      : undefined;
 
   const output: ExpoJsOutput[] = [
     {

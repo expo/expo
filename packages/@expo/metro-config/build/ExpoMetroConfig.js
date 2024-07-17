@@ -44,6 +44,7 @@ const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
+const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
@@ -107,7 +108,7 @@ function createStableModuleIdFactory(root) {
             if (modulePath == null) {
                 id = 'MODULE_NOT_FOUND';
             }
-            else if (modulePath.startsWith('\0')) {
+            else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
                 // Virtual modules should be stable.
                 id = modulePath;
             }
@@ -206,7 +207,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         serializer: {
             isThirdPartyModule(module) {
                 // Block virtual modules from appearing in the source maps.
-                if (module.path.startsWith('\0'))
+                if ((0, sideEffects_1.isVirtualModule)(module.path))
                     return true;
                 // Generally block node modules
                 if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {

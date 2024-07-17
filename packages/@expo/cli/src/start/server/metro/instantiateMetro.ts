@@ -143,11 +143,17 @@ export async function loadMetroConfigAsync(
     );
   }
 
+  if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+    Log.warn(`Experimental bundle optimization is enabled.`);
+  }
+  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+    Log.warn(`Experimental tree shaking is enabled.`);
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,
     platformBundlers,
-    isTreeShakingEnabled: env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH && env.EXPO_UNSTABLE_TREE_SHAKING,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,

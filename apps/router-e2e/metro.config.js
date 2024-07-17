@@ -27,7 +27,7 @@ config.transformer.enableBabelRCLookup = false;
 
 config.transformer.getTransformOptions = () => ({
   transform: {
-    experimentalImportSupport: require('getenv').boolish('EXPO_UNSTABLE_TREE_SHAKING', false),
+    experimentalImportSupport: require('getenv').boolish('EXPO_USE_METRO_REQUIRE', false),
     inlineRequires: false,
   },
 });

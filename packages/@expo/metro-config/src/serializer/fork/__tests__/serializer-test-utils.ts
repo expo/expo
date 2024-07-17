@@ -1,8 +1,8 @@
 import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
-import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
+import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,
@@ -72,6 +72,20 @@ export async function serializeShakingAsync(
   options: {
     isReactServer?: boolean;
     treeshake?: boolean;
+    optimize?: boolean;
+    splitChunks?: boolean;
+    minify?: boolean;
+  } = {}
+) {
+  return serializeOptimizeAsync(fs, { treeshake: true, ...options });
+}
+
+export async function serializeOptimizeAsync(
+  fs: Record<string, string>,
+  options: {
+    isReactServer?: boolean;
+    treeshake?: boolean;
+    optimize?: boolean;
     splitChunks?: boolean;
     minify?: boolean;
   } = {}
@@ -83,13 +97,19 @@ export async function serializeShakingAsync(
         platform: 'web',
         dev: false,
         output: 'static',
-        treeshake: true,
+        treeshake: false,
+        optimize: true,
         splitChunks: true,
         minify: false,
         inlineRequires: true,
         ...options,
       },
     },
-    [treeShakeSerializer, reconcileTransformSerializerPlugin]
+    [reconcileTransformSerializerPlugin]
   );
+}
+
+export function expectImports(graph, name: string) {
+  if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
+  return expect([...graph.dependencies.get(name).dependencies.values()]);
 }

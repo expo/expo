@@ -33,7 +33,7 @@ export type ExpoMetroOptions = {
   inlineSourceMap?: boolean;
   splitChunks?: boolean;
   usedExports?: boolean;
-  /** Enable optimized bundling (tree shaking). */
+  /** Enable optimized bundling (required for tree shaking). */
   optimize?: boolean;
 };
 

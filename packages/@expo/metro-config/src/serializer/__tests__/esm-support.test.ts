@@ -1,4 +1,4 @@
-import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
+import { serializeOptimizeAsync } from '../fork/__tests__/serializer-test-utils';
 
 jest.mock('../exportHermes', () => {
   return {
@@ -19,7 +19,7 @@ describe('iife properties', () => {
     [true, false].forEach((treeshake) => {
       describe(`variable: ${name}, treeshake: ${treeshake}`, () => {
         it(`can declare variable module in top-scope`, async () => {
-          const [, [artifact]] = await serializeShakingAsync(
+          const [, [artifact]] = await serializeOptimizeAsync(
             {
               'index.js': `let ${name} = 0;`,
             },
@@ -28,7 +28,7 @@ describe('iife properties', () => {
           expect(artifact.source).toMatch(`_${name} = 0`);
         });
         it(`can re-define iife param in top-scope`, async () => {
-          const [, [artifact]] = await serializeShakingAsync(
+          const [, [artifact]] = await serializeOptimizeAsync(
             {
               'index.js': `${name} = 0;`,
             },
@@ -38,7 +38,7 @@ describe('iife properties', () => {
         });
 
         it(`can declare variable module in sub-scope`, async () => {
-          const [, [artifact]] = await serializeShakingAsync(
+          const [, [artifact]] = await serializeOptimizeAsync(
             {
               'index.js': `{let ${name} = 0;}`,
             },

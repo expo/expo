@@ -13,16 +13,15 @@ import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
 
+import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { accessAst, isEnvBoolean } from './treeShakeSerializerPlugin';
 import collectDependencies, {
+  Dependency,
   InvalidRequireCallError as InternalInvalidRequireCallError,
-  type Dependency,
-  Options as CollectDependenciesOptions,
 } from '../transform-worker/collect-dependencies';
 import {
-  ReconcileTransformSettings,
   applyImportSupport,
+  InvalidRequireCallError,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
 
@@ -34,29 +33,35 @@ const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
 const FORCE_REQUIRE_NAME_HINTS = false;
 
-class InvalidRequireCallError extends Error {
-  innerError: InternalInvalidRequireCallError;
-  filename: string;
+// Some imports may change order during the transform, so we need to resort them.
+// Resort the dependencies to match the current order of the AST.
+function sortDependencies(
+  dependencies: readonly Dependency[],
+  accordingTo: Module['dependencies']
+): Map<string, Dependency> {
+  // Some imports may change order during the transform, so we need to resort them.
+  // Resort the dependencies to match the current order of the AST.
+  const nextDependencies = new Map<string, Dependency>();
 
-  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
-    super(`${filename}:${innerError.message}`);
-    this.innerError = innerError;
-    this.filename = filename;
-  }
+  // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
+  dependencies.forEach((dep) => {
+    nextDependencies.set(dep.data.key, {
+      ...(accordingTo.get(dep.data.key) || {}),
+      // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
+      data: dep,
+    });
+  });
+
+  return nextDependencies;
 }
 
-function assertCollectDependenciesOptions(
-  collectDependenciesOptions: any
-): asserts collectDependenciesOptions is CollectDependenciesOptions {
-  if (!collectDependenciesOptions) {
-    throw new Error(
-      'collectDependenciesOptions is required. Something is wrong with the metro transformer or transform cache.'
-    );
-  }
-  if (typeof collectDependenciesOptions !== 'object') {
-    throw new Error('collectDependenciesOptions must be an object.');
-  }
-  assert('inlineableCalls' in collectDependenciesOptions, 'inlineableCalls is required.');
+function isOptimizeEnabled(graph: ReadOnlyGraph) {
+  return isEnvBoolean(graph, 'optimize');
+}
+
+export function isEnvBoolean(graph: ReadOnlyGraph, name: string): boolean {
+  if (!graph.transformOptions.customTransformOptions) return false;
+  return String(graph.transformOptions.customTransformOptions[name]) === 'true';
 }
 
 // This is the insane step which reconciles the second half of the transformation process but it does it uncached at the end of the bundling process when we have tree shaking completed.
@@ -74,8 +79,13 @@ export async function reconcileTransformSerializerPlugin(
   // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
   for (const value of graph.dependencies.values()) {
     for (const index in value.output) {
-      // @ts-expect-error: Typed as readonly
-      value.output[index] = await transformDependencyOutput(value, value.output[index]);
+      const output = value.output[index];
+      if (isExpoJsOutput(output)) {
+        // @ts-expect-error: Typed as readonly
+        value.output[index] =
+          //
+          await transformDependencyOutput(value, output);
+      }
     }
   }
 
@@ -83,8 +93,8 @@ export async function reconcileTransformSerializerPlugin(
 
   async function transformDependencyOutput(
     value: Module<MixedOutput>,
-    outputItem: MixedOutput
-  ): Promise<MixedOutput> {
+    outputItem: ExpoJsOutput
+  ): Promise<ExpoJsOutput> {
     if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
       debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
@@ -92,19 +102,11 @@ export async function reconcileTransformSerializerPlugin(
 
     // This should be cached by the transform worker for use here to ensure close to consistent
     // results between the tree-shake and the final transform.
-    // @ts-expect-error: reconcile object is not on the type.
-    const reconcile = outputItem.data.reconcile as ReconcileTransformSettings;
-
+    const reconcile = outputItem.data.reconcile;
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
-    assertCollectDependenciesOptions(reconcile.collectDependenciesOptions);
-
-    let ast = accessAst(outputItem);
-    if (!ast) {
-      throw new Error('missing AST for ' + value.path);
-    }
-
-    // @ts-expect-error: TODO
+    let ast = outputItem.data.ast;
+    assert(ast, 'Missing AST for module: ' + value.path);
     delete outputItem.data.ast;
 
     const { importDefault, importAll } = reconcile;
@@ -137,14 +139,12 @@ export async function reconcileTransformSerializerPlugin(
       },
     });
 
-    // TODO: Test a JSON, asset, and script-type module from the transformer since they have different handling.
     let dependencyMapName = '';
     let dependencies: readonly Dependency[];
 
     // This pass converts the modules to use the generated import names.
     try {
       // Rewrite the deps to use Metro runtime, collect the new dep positions.
-      // TODO: We could just update the deps in the graph to use the correct positions after we modify the AST. This seems hard and fragile though.
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         ...reconcile.collectDependenciesOptions,
         collectOnly: false,
@@ -224,7 +224,6 @@ export async function reconcileTransformSerializerPlugin(
       data: {
         ...outputItem.data,
         code,
-        // @ts-expect-error: TODO: Source maps are likely completely broken.
         map,
         lineCount: countLines(code),
         functionMap:
@@ -232,36 +231,9 @@ export async function reconcileTransformSerializerPlugin(
           ast.metadata?.metro?.functionMap ??
           // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
           ast.functionMap ??
-          // @ts-expect-error
           outputItem.data.functionMap ??
           null,
       },
     };
   }
-}
-
-// Some imports may change order during the transform, so we need to resort them.
-// Resort the dependencies to match the current order of the AST.
-export function sortDependencies(
-  dependencies: readonly Dependency[],
-  accordingTo: Module['dependencies']
-): Map<string, Dependency> {
-  // Some imports may change order during the transform, so we need to resort them.
-  // Resort the dependencies to match the current order of the AST.
-  const nextDependencies = new Map<string, Dependency>();
-
-  // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
-  dependencies.forEach((dep) => {
-    nextDependencies.set(dep.data.key, {
-      ...(accordingTo.get(dep.data.key) || {}),
-      // @ts-expect-error: Missing async types. This could be a problem for bundle splitting.
-      data: dep,
-    });
-  });
-
-  return nextDependencies;
-}
-
-function isOptimizeEnabled(graph: ReadOnlyGraph) {
-  return isEnvBoolean(graph, 'optimize');
 }

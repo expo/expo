@@ -395,7 +395,7 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
       }
     },
     {
-      "src": "api/index.js",
+      "src": "api/index.ts",
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["dist/server/**"]
@@ -408,7 +408,7 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index.ts"
     }
   ]
 }
@@ -424,7 +424,7 @@ The **legacy** version of the **vercel.json** needs a `@vercel/static-build` run
   "buildCommand": "expo export -p web",
   "outputDirectory": "dist/client",
   "functions": {
-    "api/index.js": {
+    "api/index.ts": {
       "runtime": "@vercel/node@3.0.11",
       "includeFiles": "dist/server/**"
     }
@@ -432,7 +432,7 @@ The **legacy** version of the **vercel.json** needs a `@vercel/static-build` run
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index.js"
+      "destination": "/api/index.ts"
     }
   ]
 }

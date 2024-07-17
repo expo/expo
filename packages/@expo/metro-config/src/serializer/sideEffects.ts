@@ -87,7 +87,17 @@ const getPackageJsonMatcher = (
 
   // TODO: Split out and unit test.
   const dirRoot = path.dirname(packageJsonPath);
-  const isSideEffect = (fp: string): boolean | null => {
+  const isSideEffect = _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath);
+  pkgJsonCache.set(dir, isSideEffect);
+  return isSideEffect;
+};
+
+export function _createSideEffectMatcher(
+  dirRoot: string,
+  packageJson: { sideEffects?: boolean | string[] },
+  packageJsonPath: string = ''
+): (fp: string) => boolean | null {
+  return (fp: string) => {
     // Default is that everything is a side-effect unless explicitly marked as not.
     if (packageJson.sideEffects == null) {
       return null;
@@ -109,10 +119,7 @@ const getPackageJsonMatcher = (
     debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
     return null;
   };
-
-  pkgJsonCache.set(dir, isSideEffect);
-  return isSideEffect;
-};
+}
 
 function getShallowSideEffect(options: SerializerOptions, value: AdvancedModule): boolean | null {
   if (value?.sideEffects !== undefined) {
@@ -131,7 +138,7 @@ function detectHasSideEffectInPackageJson(
     return value.sideEffects;
   }
   // Don't perform lookup on virtual modules.
-  if (value.path.startsWith('\0')) {
+  if (isVirtualModule(value.path)) {
     return false;
   }
 
@@ -145,4 +152,8 @@ function detectHasSideEffectInPackageJson(
   }
 
   return null;
+}
+
+export function isVirtualModule(path: string) {
+  return path.startsWith('\0');
 }
