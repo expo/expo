@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `react` peer dependencies for isolated modules.
+- Add missing `react` peer dependencies for isolated modules. ([#30474](https://github.com/expo/expo/pull/30474) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
