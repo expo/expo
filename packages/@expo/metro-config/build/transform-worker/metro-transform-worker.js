@@ -385,6 +385,7 @@ async function transformJS(file, { config, options }) {
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
+                webviewReference: file.webviewReference,
                 ...(possibleReconcile
                     ? {
                         ast: wrappedAst,
@@ -447,6 +448,7 @@ async function transformJSWithBabel(file, context) {
             null,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
         reactClientReference: transformResult.metadata?.reactClientReference,
+        webviewReference: transformResult.metadata?.webviewReference,
     };
     return await transformJS(jsFile, context);
 }
