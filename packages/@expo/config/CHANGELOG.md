@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Upgrade `glob@7` to `glob@10`. ([#30425](https://github.com/expo/expo/pull/30425) by [@byCedric](https://github.com/byCedric))
+
 ## 9.0.2 — 2024-05-16
 
 _This version does not introduce any user-facing changes._

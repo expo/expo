@@ -166,6 +166,16 @@ For more information, see Apple's [Diagnosing Issues Using Crash Reports and Dev
 
 This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React DevTools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
 
+### Using error reporting services
+
+Implementing a crash and bug reporting service in your production app offers several benefits, such as:
+
+- Real-time insights on production deployments with information to reproduce crashes and bugs.
+- Setting up an alert system to get notified about fatal JavaScript errors or any other event you configure.
+- Using a web dashboard to see details on exceptions such as stack traces, device information, and so on.
+
+With Expo, you can integrate a reporting service like [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/) to get more insights in real-time.
+
 ## Stuck?
 
 The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the same error as you, so make sure to read the documentation, search the [forums](https://chat.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [Stack Overflow](https://stackoverflow.com/).

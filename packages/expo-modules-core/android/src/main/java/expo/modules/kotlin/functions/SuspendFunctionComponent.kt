@@ -73,7 +73,7 @@ class SuspendFunctionComponent(
           exceptionDecorator({
             FunctionCallException(name, moduleName, it)
           }) {
-            val result = body.invoke(this, convertArgs(args))
+            val result = body.invoke(this, convertArgs(args, appContext))
             if (isActive) {
               promiseImpl.resolve(result)
             }

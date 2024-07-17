@@ -39,8 +39,8 @@ The Link component wraps the children in a `<Text>` component by default, this i
 
 {/* prettier-ignore */}
 ```tsx
-import { Pressable, Text } from "react-native";
-import { Link } from "expo-router";
+import { Pressable, Text } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function Page() {
   return (
@@ -82,6 +82,7 @@ Dynamic routes and query parameters can be provided statically or with the conve
 /* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
 /* @end */
+import { View } from 'react-native';
 
 export default function Page() {
   return (
@@ -89,7 +90,7 @@ export default function Page() {
       <Link
         href={{
           /* @info Navigate to <strong>/user/bacon</strong> */
-          pathname: "/user/[id]",
+          pathname: '/user/[id]',
           params: { id: 'bacon' }
           /* @end */
         }}>

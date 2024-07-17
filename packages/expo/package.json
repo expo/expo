@@ -85,5 +85,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   }
 }

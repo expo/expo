@@ -9,6 +9,7 @@ data class PictureOptions(
   @Field val base64: Boolean = false,
   @Field val exif: Boolean = false,
   @Field val additionalExif: Map<String, Any>? = null,
+  @Field val mirror: Boolean = false,
   @Field val skipProcessing: Boolean = false,
   @Field val fastMode: Boolean = false,
   @Field val id: Int? = null,

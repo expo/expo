@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo-modules-core';
-import { DeviceEventEmitter, EventSubscription } from 'react-native';
+import { Alert, DeviceEventEmitter, EventSubscription } from 'react-native';
 
 export type JSEngine = 'Hermes' | 'JSC' | 'V8';
 
@@ -88,5 +88,8 @@ export async function loadFontsAsync() {
 }
 
 export async function fireCallbackAsync(name: string) {
-  return await DevMenu.fireCallback(name).catch((error) => console.warn(error.message));
+  return await DevMenu.fireCallback(name).catch((error) => {
+    console.warn(error.message);
+    Alert.alert('Error', error.message);
+  });
 }

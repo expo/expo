@@ -77,7 +77,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         if (initialLocation instanceof URL) {
             contextType = {
                 location: {
-                    pathname: initialLocation.pathname,
+                    pathname: initialLocation.pathname + initialLocation.hash,
                     search: initialLocation.search,
                 },
             };

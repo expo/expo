@@ -262,7 +262,9 @@ class AppContext(
   }
 
   internal fun onHostResume() {
-    val activity = currentActivity
+    // If the current activity is null, it means that the current React context was destroyed.
+    // We can just return here.
+    val activity = currentActivity ?: return
     check(activity is AppCompatActivity) {
       "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
     }
