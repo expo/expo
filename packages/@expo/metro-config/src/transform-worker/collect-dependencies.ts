@@ -21,7 +21,7 @@ function nullthrows<T extends object>(x: T | null, message?: string): NonNullabl
   return x;
 }
 
-type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -55,9 +55,10 @@ type MutableDependencyData = {
   isOptional?: boolean;
   locs: readonly t.SourceLocation[];
   contextParams?: RequireContextParams;
+  exportNames: string[];
 };
 
-type DependencyData = Readonly<MutableDependencyData>;
+export type DependencyData = Readonly<MutableDependencyData>;
 
 type MutableInternalDependency = MutableDependencyData & {
   locs: t.SourceLocation[];
@@ -77,6 +78,8 @@ export type State = {
   keepRequireNames: boolean;
   allowOptionalDependencies: AllowOptionalDependencies;
   unstable_allowRequireContext: boolean;
+  /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+  collectOnly?: boolean;
 };
 
 export type Options = Readonly<{
@@ -88,6 +91,8 @@ export type Options = Readonly<{
   allowOptionalDependencies: AllowOptionalDependencies;
   dependencyTransformer?: DependencyTransformer;
   unstable_allowRequireContext: boolean;
+  /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+  collectOnly?: boolean;
 }>;
 
 export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
@@ -114,6 +119,7 @@ type ImportQualifier = Readonly<{
   asyncType: AsyncDependencyType | null;
   optional: boolean;
   contextParams?: RequireContextParams;
+  exportNames: string[];
 }>;
 
 function collectDependencies<TAst extends t.File>(
@@ -132,6 +138,7 @@ function collectDependencies<TAst extends t.File>(
     keepRequireNames: options.keepRequireNames,
     allowOptionalDependencies: options.allowOptionalDependencies,
     unstable_allowRequireContext: options.unstable_allowRequireContext,
+    collectOnly: options.collectOnly,
   };
 
   traverse(
@@ -172,6 +179,7 @@ function collectDependencies<TAst extends t.File>(
           !path.scope.getBinding('require')
         ) {
           processRequireContextCall(path, state);
+
           visited.add(path.node);
           return;
         }
@@ -332,11 +340,17 @@ function processRequireContextCall(path: NodePath<CallExpression>, state: State)
       contextParams,
       asyncType: null,
       optional: isOptionalDependency(directory, path, state),
+      exportNames: ['*'],
     },
     path
   );
 
-  path.get('callee').replaceWith(t.identifier('require'));
+  // If the pass is only collecting dependencies then we should avoid mutating the AST,
+  // this enables calling collectDependencies multiple times on the same AST.
+  if (state.collectOnly !== true) {
+    // require() the generated module representing this context
+    path.get('callee').replaceWith(t.identifier('require'));
+  }
   transformer.transformSyncRequire(path, dep, state);
 }
 
@@ -353,6 +367,7 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
       name,
       asyncType: 'weak',
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -364,6 +379,38 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
   );
 }
 
+export function getExportNamesFromPath(path: NodePath<any>): string[] {
+  if (path.node.source) {
+    if (t.isExportAllDeclaration(path.node)) {
+      return ['*'];
+    } else if (t.isExportNamedDeclaration(path.node)) {
+      return path.node.specifiers.map((specifier) => {
+        const exportedName = t.isIdentifier(specifier.exported)
+          ? specifier.exported.name
+          : specifier.exported.value;
+        const localName = 'local' in specifier ? specifier.local.name : exportedName;
+
+        // `export { default as add } from './add'`
+        return specifier.type === 'ExportSpecifier' ? localName : exportedName;
+      });
+    } else if (t.isImportDeclaration(path.node)) {
+      return path.node.specifiers
+        .map((specifier) => {
+          if (specifier.type === 'ImportDefaultSpecifier') {
+            return 'default';
+          } else if (specifier.type === 'ImportNamespaceSpecifier') {
+            return '*';
+          }
+          return t.isImportSpecifier(specifier) && t.isIdentifier(specifier.imported)
+            ? specifier.imported.name
+            : null;
+        })
+        .filter(Boolean) as string[];
+    }
+  }
+  return [];
+}
+
 function collectImports(path: NodePath<any>, state: State): void {
   if (path.node.source) {
     registerDependency(
@@ -372,6 +419,7 @@ function collectImports(path: NodePath<any>, state: State): void {
         name: path.node.source.value,
         asyncType: null,
         optional: false,
+        exportNames: getExportNamesFromPath(path),
       },
       path
     );
@@ -400,6 +448,7 @@ function processImportCall(
       name,
       asyncType: options.asyncType,
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -443,6 +492,7 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
       name,
       asyncType: null,
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -464,6 +514,7 @@ function registerDependency(
   path: NodePath<any>
 ): InternalDependency {
   const dependency = state.dependencyRegistry.registerDependency(qualifier);
+
   const loc = getNearestLocFromPath(path);
   if (loc != null) {
     dependency.locs.push(loc);
@@ -641,6 +692,7 @@ class DependencyRegistry {
       const newDependency: MutableInternalDependency = {
         name: qualifier.name,
         asyncType: qualifier.asyncType,
+        exportNames: qualifier.exportNames,
         locs: [],
         index: this._dependencies.size,
         key: crypto.createHash('sha1').update(key).digest('base64'),
@@ -661,6 +713,11 @@ class DependencyRegistry {
           isOptional: false,
         };
       }
+
+      dependency = {
+        ...dependency,
+        exportNames: [...new Set(dependency.exportNames.concat(qualifier.exportNames))],
+      };
     }
 
     this._dependencies.set(key, dependency);
