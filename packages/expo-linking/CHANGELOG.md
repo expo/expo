@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` and `react-native` peer dependencies for isolated modules.
+
 ### 💡 Others
 
 ## 6.3.1 — 2024-04-23
