@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] fix getLastNotificationResponseAsync. ([#30301](https://github.com/expo/expo/pull/30301) by [@douglowder](https://github.com/douglowder))
-- Add missing `react` and `react-native` peer dependencies for isolated modules.
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
