@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `react` and `react-native` peer dependencies for isolated modules.
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30459](https://github.com/expo/expo/pull/30459) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
