@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependencies for isolated modules.
+
 ### 💡 Others
 
 ## 13.0.3 — 2024-04-29
