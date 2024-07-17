@@ -43,10 +43,10 @@ class ResolveTakenPicture(
   private var imageData: ByteArray,
   private var promise: Promise,
   private var options: PictureOptions,
+  private var mirror: Boolean,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
 ) {
-
   private val quality: Int
     get() = (options.quality * 100).toInt()
 
@@ -76,7 +76,7 @@ class ResolveTakenPicture(
         // Get orientation of the image from mImageData via inputStream
         val orientation = exifInterface.getAttributeInt(
           ExifInterface.TAG_ORIENTATION,
-          ExifInterface.ORIENTATION_UNDEFINED
+          ExifInterface.ORIENTATION_NORMAL
         )
 
         val bitmapOptions = BitmapFactory
@@ -90,7 +90,7 @@ class ResolveTakenPicture(
         // If OOM exception was thrown, we try to use downsampling to recover.
         while (bitmapOptions.inSampleSize <= options.maxDownsampling) {
           try {
-            bitmap = decodeBitmap(imageData, orientation, options.exif, bitmapOptions)
+            bitmap = decodeBitmap(imageData, orientation, options, bitmapOptions)
             break
           } catch (exception: OutOfMemoryError) {
             bitmapOptions.inSampleSize *= 2
@@ -222,9 +222,9 @@ class ResolveTakenPicture(
     return null
   }
 
-  private fun decodeBitmap(imageData: ByteArray, orientation: Int, exif: Boolean, bitmapOptions: BitmapFactory.Options): Bitmap {
+  private fun decodeBitmap(imageData: ByteArray, orientation: Int, options: PictureOptions, bitmapOptions: BitmapFactory.Options): Bitmap {
     // Rotate the bitmap to the proper orientation if needed
-    return if (!exif) {
+    return if (!options.exif) {
       decodeAndRotateBitmap(imageData, getImageRotation(orientation), bitmapOptions)
     } else {
       BitmapFactory.decodeByteArray(imageData, 0, imageData.size, bitmapOptions)
@@ -234,7 +234,12 @@ class ResolveTakenPicture(
   private fun decodeAndRotateBitmap(imageData: ByteArray, angle: Int, options: BitmapFactory.Options): Bitmap {
     val source = BitmapFactory.decodeByteArray(imageData, 0, imageData.size, options)
     val matrix = Matrix()
-    matrix.postRotate(angle.toFloat())
+    matrix.apply {
+      postRotate(angle.toFloat())
+      if (mirror) {
+        postScale(-1f, 1f)
+      }
+    }
     return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
   }
 
