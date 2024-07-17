@@ -32,8 +32,9 @@ import kotlinx.coroutines.test.TestScope
 private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
   val appContextMock = mockk<AppContext>()
   val runtimeContext = mockk<RuntimeContext>()
+  val classRegistry = ClassRegistry()
 
-  every { runtimeContext.classRegistry } answers { ClassRegistry() }
+  every { runtimeContext.classRegistry } answers { classRegistry }
   every { runtimeContext.appContext } answers { appContextMock }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   every { appContextMock.hostingRuntimeContext } answers { runtimeContext }
