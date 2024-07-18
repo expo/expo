@@ -261,7 +261,7 @@ export function parseModule(
   };
 }
 
-function mockAbsolutePath(name: string) {
+function mockAbsolutePath(name: string, fp: string = name) {
   if (name.match(/^(\.|\/)/)) {
     return path.join(projectRoot, name.replace(/\.[tj]sx?/, '')) + '.js';
   }

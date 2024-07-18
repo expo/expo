@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Account for the entire dependency tree when creating module name hashes. ([#30512](https://github.com/expo/expo/pull/30512) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.18.8 — 2024-06-27
