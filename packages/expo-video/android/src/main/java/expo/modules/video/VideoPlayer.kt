@@ -30,7 +30,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
-  val audioFocusManager = VideoPlayerAudioFocusManager(context, WeakReference(this))
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
@@ -69,13 +68,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
     player.volume = if (muted) 0f else new
     sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(new, muted), VolumeEvent(old, muted)))
-    audioFocusManager.onPlayerChangedAudioFocusProperty(this)
   }
 
   var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
     volume = if (new) 0f else userVolume
     sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(volume, new), VolumeEvent(volume, old)))
-    audioFocusManager.onPlayerChangedAudioFocusProperty(this)
   }
 
   var playbackParameters by IgnoreSameSet(
@@ -92,7 +89,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
-      audioFocusManager.onPlayerChangedAudioFocusProperty(this@VideoPlayer)
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
