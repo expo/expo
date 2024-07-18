@@ -75,7 +75,7 @@ export class DirectoryCheck implements DoctorCheck {
       isSuccessful: !issues.length,
       issues,
       advice: issues.length
-        ? `Use libaries that are actively maintained and support the New Architecture.`
+        ? `Use libraries that are actively maintained and support the New Architecture. Find alternatives at https://reactnative.directory`
         : undefined,
     };
   }
