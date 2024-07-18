@@ -1,3 +1,3 @@
 'use client';
 
-export * from 'react-native';
+export { View, Image, Text, ScrollView, Alert, Button } from 'react-native';

@@ -97,12 +97,19 @@ function installBuiltin(name: string, getValue: () => any) {
   installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
 
-// NOTE: Fetch is polyfilled in expo/metro-runtime
-installBuiltin('ReadableStream', () => require('web-streams-polyfill/ponyfill/es6').ReadableStream);
+try {
+  require('web-streams-polyfill');
+  // NOTE: Fetch is polyfilled in expo/metro-runtime
+  installBuiltin(
+    'ReadableStream',
+    () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
+  );
 
-installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
-installBuiltin('Request', () => require('react-native-fetch-api').Request);
-installBuiltin('Response', () => require('react-native-fetch-api').Response);
+  require('react-native-fetch-api');
+  installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
+  installBuiltin('Request', () => require('react-native-fetch-api').Request);
+  installBuiltin('Response', () => require('react-native-fetch-api').Response);
+} catch {}
 
 if (manifest?.extra?.router?.origin !== false) {
   // Polyfill window.location in native runtimes.
@@ -113,18 +120,29 @@ if (manifest?.extra?.router?.origin !== false) {
       install();
     }
   }
-  const { fetch } = require('react-native-fetch-api');
 
+  const fetch = getBestFetch();
   // Polyfill native fetch to support relative URLs
   Object.defineProperty(global, 'fetch', {
     // value: fetch,
     value: wrapFetchWithWindowLocation(fetch),
   });
 } else {
-  const { fetch } = require('react-native-fetch-api');
+  const fetch = getBestFetch();
 
   // Polyfill native fetch to support relative URLs
   Object.defineProperty(global, 'fetch', {
     value: fetch,
   });
+}
+
+function getBestFetch() {
+  try {
+    const otherFetch = require('react-native-fetch-api');
+    if (otherFetch) {
+      return otherFetch.fetch;
+    }
+  } catch {
+    return fetch;
+  }
 }
