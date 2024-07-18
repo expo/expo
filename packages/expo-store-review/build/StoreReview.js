@@ -1,5 +1,5 @@
-import Constants from 'expo-constants';
 import { Platform } from 'expo/modules-core';
+import Constants from 'expo-constants';
 import { Linking } from 'react-native';
 import StoreReview from './ExpoStoreReview';
 // @needsAudit

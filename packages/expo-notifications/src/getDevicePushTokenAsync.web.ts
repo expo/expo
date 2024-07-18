@@ -1,5 +1,5 @@
-import Constants from 'expo-constants';
 import { CodedError, Platform } from 'expo/modules-core';
+import Constants from 'expo-constants';
 import { DeviceEventEmitter } from 'react-native';
 
 import { DevicePushToken } from './Tokens.types';

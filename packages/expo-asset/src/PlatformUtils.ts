@@ -1,5 +1,5 @@
-import Constants, { AppOwnership } from 'expo-constants';
 import { requireOptionalNativeModule } from 'expo/modules-core';
+import Constants, { AppOwnership } from 'expo-constants';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { ExpoUpdatesModule } from 'expo-updates';
 
