@@ -2,8 +2,10 @@
 import 'react-native/Libraries/Core/InitializeCore';
 // This MUST be imported to ensure URL is installed.
 import 'expo';
-
+// This file configures the runtime environment to increase compatibility with WinterCG.
+// https://wintercg.org/
 import Constants from 'expo-constants';
+import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
 import { install, setLocationHref } from './Location';
 import getDevServer from '../getDevServer';
@@ -76,6 +78,31 @@ export function wrapFetchWithWindowLocation(
 
   return _fetch;
 }
+
+// Add a well-known shared symbol that doesn't show up in iteration or inspection
+// this can be used to detect if the global object abides by the Expo team's documented
+// built-in requirements.
+const BUILTIN_SYMBOL = Symbol.for('expo.builtin');
+
+function addBuiltinSymbol(obj: object) {
+  Object.defineProperty(obj, BUILTIN_SYMBOL, {
+    value: true,
+    enumerable: false,
+    configurable: false,
+  });
+  return obj;
+}
+
+function installBuiltin(name: string, getValue: () => any) {
+  installGlobal(name, () => addBuiltinSymbol(getValue()));
+}
+
+// NOTE: Fetch is polyfilled in expo/metro-runtime
+installBuiltin('ReadableStream', () => require('web-streams-polyfill/ponyfill/es6').ReadableStream);
+
+installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
+installBuiltin('Request', () => require('react-native-fetch-api').Request);
+installBuiltin('Response', () => require('react-native-fetch-api').Response);
 
 if (manifest?.extra?.router?.origin !== false) {
   // Polyfill window.location in native runtimes.
