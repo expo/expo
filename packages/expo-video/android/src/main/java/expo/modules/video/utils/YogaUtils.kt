@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.utils
 
 import com.facebook.yoga.YogaConstants
 

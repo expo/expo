@@ -43,7 +43,7 @@ object VideoManager {
     }
 
     if (videoPlayersToVideoViews[videoPlayer]?.size == 1) {
-      videoPlayer.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
     }
   }
 
@@ -52,7 +52,7 @@ object VideoManager {
 
     // Unregister disconnected VideoPlayers from the playback service
     if (videoPlayersToVideoViews[videoPlayer] == null || videoPlayersToVideoViews[videoPlayer]?.size == 0) {
-      videoPlayer.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
     }
   }
 
