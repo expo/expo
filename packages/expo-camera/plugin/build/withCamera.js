@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addCameraImport = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+// TODO(cedric): expose the generateCode util, or fork the plugin to import only from `expo/config-plugins`
 const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-camera/package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';

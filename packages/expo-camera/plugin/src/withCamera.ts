@@ -1,15 +1,16 @@
-import {
-  AndroidConfig,
-  withProjectBuildGradle,
-  ConfigPlugin,
-  createRunOncePlugin,
-  IOSConfig,
-} from '@expo/config-plugins';
+// TODO(cedric): expose the generateCode util, or fork the plugin to import only from `expo/config-plugins`
 import {
   createGeneratedHeaderComment,
   MergeResults,
   removeGeneratedContents,
 } from '@expo/config-plugins/build/utils/generateCode';
+import {
+  AndroidConfig,
+  type ConfigPlugin,
+  createRunOncePlugin,
+  IOSConfig,
+  withProjectBuildGradle,
+} from 'expo/config-plugins';
 
 const pkg = require('expo-camera/package.json');
 
