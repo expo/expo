@@ -1,21 +1,13 @@
 package expo.modules.constants
 
-import org.apache.commons.io.IOUtils
+import android.content.Context
+import android.os.Build
 
+import expo.modules.core.AppConfig
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.interfaces.constants.ConstantsInterface
 
-import android.os.Build
-import android.util.Log
-import android.content.Context
-
-import java.io.FileNotFoundException
-import java.lang.Exception
-import java.nio.charset.StandardCharsets
-import java.util.*
-
-private val TAG = ConstantsService::class.java.simpleName
-private const val CONFIG_FILE_NAME = "app.config"
+import java.util.UUID
 
 open class ConstantsService(private val context: Context) : InternalModule, ConstantsInterface {
   var statusBarHeightInternal = context.resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -42,7 +34,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
       "deviceName" to deviceName,
       "systemFonts" to systemFonts,
       "systemVersion" to systemVersion,
-      "manifest" to appConfig,
+      "manifest" to AppConfig.get(context),
       "platform" to mapOf<String, Map<String, Any>>("android" to emptyMap())
     )
   }
@@ -69,21 +61,6 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
     "Roboto",
     "monospace"
   )
-
-  private val appConfig: String?
-    get() {
-      try {
-        context.assets.open(CONFIG_FILE_NAME).use {
-            stream ->
-          return IOUtils.toString(stream, StandardCharsets.UTF_8)
-        }
-      } catch (e: FileNotFoundException) {
-        // do nothing, expected in managed apps
-      } catch (e: Exception) {
-        Log.e(TAG, "Error reading embedded app config", e)
-      }
-      return null
-    }
 
   companion object {
     private fun convertPixelsToDp(px: Float, context: Context): Int {

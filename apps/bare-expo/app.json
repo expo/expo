@@ -80,6 +80,9 @@
         }
       ],
       "./plugins/withAndroidNetworkSecurityConfig"
-    ]
+    ],
+    "experiments": {
+      "edgeToEdge": true
+    }
   }
 }
