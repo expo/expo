@@ -1,6 +1,5 @@
-import { NativeEventEmitter } from 'react-native';
-
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { NativeEventEmitter } from 'react-native';
 
 export default function DevLoadingView() {
   const show = useFastRefresh();
