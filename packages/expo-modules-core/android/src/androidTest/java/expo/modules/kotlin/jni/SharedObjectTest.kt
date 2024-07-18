@@ -136,6 +136,26 @@ class SharedObjectTest {
     Truth.assertThat(exception.getProperty("message").getString()).contains("This is a test exception")
   }
 
+  @Test
+  fun should_be_able_to_return_new_instance_from_function() = withSingleModule({
+    Function("createSharedObject") {
+      SharedObjectExampleClass()
+    }
+    Class<SharedObjectExampleClass> {
+      Constructor { SharedObjectExampleClass() }
+    }
+  }) {
+    val hasCorrectPrototype = evaluateScript(
+      """
+      const sharedObjectFromFunction = $moduleRef.createSharedObject();
+      const sharedObjectFromConstructor = new $moduleRef.SharedObjectExampleClass();
+      sharedObjectFromFunction.prototype === sharedObjectFromConstructor.prototype;
+      """.trimIndent()
+    ).getBool()
+
+    Truth.assertThat(hasCorrectPrototype).isTrue()
+  }
+
   private class SharedObjectExampleClass : SharedObject()
 
   private fun withExampleSharedClass(

@@ -77,7 +77,7 @@ private:
 
   void invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result);
 
-  void invokeSharedRef(jni::alias_ref<JSharedRef::javaobject> result);
+  void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
 
   void invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage);
 

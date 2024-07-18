@@ -79,6 +79,7 @@ export default function VideoScreen() {
     player.preservesPitch = preservePitch;
     player.staysActiveInBackground = staysActiveInBackground;
     player.showNowPlayingNotification = true;
+    player.allowsExternalPlayback = true;
     player.play();
   });
 

@@ -1,4 +1,4 @@
-internal final class Conversions {
+public struct Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */
@@ -50,7 +50,7 @@ internal final class Conversions {
    - The dictionary is missing some of the given keys (`MissingKeysException`)
    - Some of the values cannot be cast to specified type (`CastingValuesException`)
    */
-  static func pickValues<ValueType>(from dict: [String: Any], byKeys keys: [String], as type: ValueType.Type) throws -> [ValueType] {
+  public static func pickValues<ValueType>(from dict: [String: Any], byKeys keys: [String], as type: ValueType.Type) throws -> [ValueType] {
     var result = (
       values: [ValueType](),
       missingKeys: [String](),
@@ -203,11 +203,11 @@ internal final class Conversions {
   /**
    An exception that can be thrown by convertible types, when given value cannot be converted.
    */
-  internal class ConvertingException<TargetType>: GenericException<Any?> {
-    override var code: String {
+  public class ConvertingException<TargetType>: GenericException<Any?> {
+    public override var code: String {
       "ERR_CONVERTING_FAILED"
     }
-    override var reason: String {
+    public override var reason: String {
       "Cannot convert '\(String(describing: param))' to \(TargetType.self)"
     }
   }

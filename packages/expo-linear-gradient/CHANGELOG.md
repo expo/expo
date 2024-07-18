@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30471](https://github.com/expo/expo/pull/30471) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 13.0.2 — 2024-05-01

@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 
 import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
+import { DirectoryCheck } from './checks/DirectoryCheck';
 import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
 import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
@@ -132,6 +133,14 @@ export function getChecksInScopeForProject(exp: ExpoConfig) {
     new MetroConfigCheck(),
     new NativeToolingVersionCheck(),
   ];
+
+  if (env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK) {
+    chalk.yellow(
+      'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
+    );
+    checks.push(new DirectoryCheck());
+  }
+
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
     Log.log(
       chalk.yellow(

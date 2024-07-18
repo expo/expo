@@ -16,6 +16,7 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
 const env_1 = require("../env");
 function withExpoSerializers(config, options = {}) {
@@ -24,6 +25,8 @@ function withExpoSerializers(config, options = {}) {
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
+    // Then finish transforming the modules from AST to JS.
+    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
 exports.withExpoSerializers = withExpoSerializers;

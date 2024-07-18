@@ -4,7 +4,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 
-internal class VolumeEvent(
+class VolumeEvent(
   @Field var volume: Float? = null,
   @Field var isMuted: Boolean? = null
 ) : Record, Serializable

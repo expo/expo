@@ -57,16 +57,23 @@ void JSPropertiesDecorator::decorate(
 
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime,
                                                                   1 << 1 /* enumerable */);
-    descriptor.setProperty(
-      runtime,
-      "get",
-      jsi::Value(runtime, *getter->toJSFunction(runtime))
-    );
-    descriptor.setProperty(
-      runtime,
-      "set",
-      jsi::Value(runtime, *setter->toJSFunction(runtime))
-    );
+    auto jsGetter = getter->toJSFunction(runtime);
+    if (jsGetter != nullptr) {
+      descriptor.setProperty(
+        runtime,
+        "get",
+        jsi::Value(runtime, *jsGetter)
+      );
+    }
+
+    auto jsSetter = setter->toJSFunction(runtime);
+    if (jsSetter != nullptr) {
+      descriptor.setProperty(
+        runtime,
+        "set",
+        jsi::Value(runtime, *jsSetter)
+      );
+    }
     common::defineProperty(runtime, &jsObject, name.c_str(), std::move(descriptor));
   }
 }
