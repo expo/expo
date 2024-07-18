@@ -7,7 +7,7 @@
  *
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
  */
-/// <reference types="react/canary" />
+//// <reference types="react/canary" />
 'use client';
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
