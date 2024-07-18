@@ -94,5 +94,13 @@
     "@types/react": "~18.2.79",
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "^3.0.0"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "@react-native-segmented-control/segmented-control",
+        "expo-sqlite"
+      ]
+    }
   }
 }

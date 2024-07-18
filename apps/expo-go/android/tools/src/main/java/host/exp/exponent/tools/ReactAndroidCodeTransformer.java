@@ -251,70 +251,70 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
-    FILES_TO_MODIFY.put("devsupport/DevInternalSettings.java", new MethodVisitor() {
+    // FILES_TO_MODIFY.put("devsupport/DevInternalSettings.kt", new MethodVisitor() {
 
-      @Override
-      public Node visit(String methodName, MethodDeclaration n) {
-        switch (methodName) {
-          case "isReloadOnJSChangeEnabled":
-            BlockStmt blockStmt = JavaParser.parseBlock("{return false;}");
-            blockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for"));
-            blockStmt.addOrphanComment(new LineComment(" now. I managed to get into a state where fast refresh wouldn't work because live reload"));
-            blockStmt.addOrphanComment(new LineComment(" would kick in every time and there was no way to turn it off from the dev menu."));
-            blockStmt.addOrphanComment(new LineComment(" return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);"));
-            n.setBody(blockStmt);
-            return n;
-          case "setReloadOnJSChangeEnabled":
-            BlockStmt emptyBlockStmt = JavaParser.parseBlock("{}");
-            emptyBlockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): We don't need to do anything here because this option is always false"));
-            emptyBlockStmt.addOrphanComment(new LineComment(" mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();"));
-            n.setBody(emptyBlockStmt);
-            return n;
-          case "isHotModuleReplacementEnabled":
-            n.setPublic(true);
-            return n;
-          case "setHotModuleReplacementEnabled":
-            n.setPublic(true);
-            return n;
-          case "getPackagerConnectionSettings":
-            n.setPublic(true);
-            return n;
-        }
+    //   @Override
+    //   public Node visit(String methodName, MethodDeclaration n) {
+    //     switch (methodName) {
+    //       case "isReloadOnJSChangeEnabled":
+    //         BlockStmt blockStmt = JavaParser.parseBlock("{return false;}");
+    //         blockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for"));
+    //         blockStmt.addOrphanComment(new LineComment(" now. I managed to get into a state where fast refresh wouldn't work because live reload"));
+    //         blockStmt.addOrphanComment(new LineComment(" would kick in every time and there was no way to turn it off from the dev menu."));
+    //         blockStmt.addOrphanComment(new LineComment(" return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);"));
+    //         n.setBody(blockStmt);
+    //         return n;
+    //       case "setReloadOnJSChangeEnabled":
+    //         BlockStmt emptyBlockStmt = JavaParser.parseBlock("{}");
+    //         emptyBlockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): We don't need to do anything here because this option is always false"));
+    //         emptyBlockStmt.addOrphanComment(new LineComment(" mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();"));
+    //         n.setBody(emptyBlockStmt);
+    //         return n;
+    //       case "isHotModuleReplacementEnabled":
+    //         n.setPublic(true);
+    //         return n;
+    //       case "setHotModuleReplacementEnabled":
+    //         n.setPublic(true);
+    //         return n;
+    //       case "getPackagerConnectionSettings":
+    //         n.setPublic(true);
+    //         return n;
+    //     }
 
-        return n;
-      }
+    //     return n;
+    //   }
 
-      @Override
-      String modifySource(String source) {
-        // Make DevInternalSettings class "public"
-        source = source.replace("\nclass DevInternalSettings", "\npublic class DevInternalSettings");
+    //   @Override
+    //   String modifySource(String source) {
+    //     // Make DevInternalSettings class "public"
+    //     source = source.replace("\nclass DevInternalSettings", "\npublic class DevInternalSettings");
 
-        return addBeforeEndOfClass(source, """
-          public int exponentActivityId = -1;
+    //     return addBeforeEndOfClass(source, """
+    //       public int exponentActivityId = -1;
 
-          public void setExponentActivityId(int value) {
-              exponentActivityId = value;
-          }
+    //       public void setExponentActivityId(int value) {
+    //           exponentActivityId = value;
+    //       }
 
-          public int getExponentActivityId(){
-              return exponentActivityId;
-          }
-        """);
-      }
-    });
+    //       public int getExponentActivityId(){
+    //           return exponentActivityId;
+    //       }
+    //     """);
+    //   }
+    // });
 
-    FILES_TO_MODIFY.put("modules/debug/interfaces/DeveloperSettings.java", new MethodVisitor() {
+    // FILES_TO_MODIFY.put("modules/debug/interfaces/DeveloperSettings.kt", new MethodVisitor() {
 
-      @Override
-      public Node visit(String methodName, MethodDeclaration n) {
-        return n;
-      }
+    //   @Override
+    //   public Node visit(String methodName, MethodDeclaration n) {
+    //     return n;
+    //   }
 
-      @Override
-      String modifySource(String source) {
-        return addBeforeEndOfClass(source, "int getExponentActivityId();");
-      }
-    });
+    //   @Override
+    //   String modifySource(String source) {
+    //     return addBeforeEndOfClass(source, "int getExponentActivityId();");
+    //   }
+    // });
 
     FILES_TO_MODIFY.put("BaseReactPackage.java", new MethodVisitor() {
 
