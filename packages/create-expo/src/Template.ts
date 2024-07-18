@@ -332,6 +332,7 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   delete packageJson.description;
   delete packageJson.tags;
   delete packageJson.repository;
+  delete packageJson.license;
 
   await packageFile.writeAsync(packageJson);
 }

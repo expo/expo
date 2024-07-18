@@ -1,5 +1,6 @@
 {
   "name": "expo-template-default",
+  "license": "0BSD",
   "main": "expo-router/entry",
   "version": "51.0.31",
   "scripts": {
