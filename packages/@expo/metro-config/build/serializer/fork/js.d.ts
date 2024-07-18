@@ -25,7 +25,7 @@ export declare function wrapModule(module: Module, options: Options): {
     src: string;
     paths: Record<string, string>;
 };
-export declare function getModuleParams(module: Module, options: Pick<Options, 'createModuleId' | 'sourceUrl' | 'includeAsyncPaths' | 'serverRoot' | 'splitChunks' | 'dev' | 'projectRoot' | 'computedAsyncModulePaths'>): {
+export declare function getModuleParams(module: Module, options: Pick<Options, 'createModuleId' | 'sourceUrl' | 'includeAsyncPaths' | 'serverRoot' | 'splitChunks' | 'skipWrapping' | 'dev' | 'projectRoot' | 'computedAsyncModulePaths'>): {
     params: any[];
     paths: Record<string, string>;
 };
