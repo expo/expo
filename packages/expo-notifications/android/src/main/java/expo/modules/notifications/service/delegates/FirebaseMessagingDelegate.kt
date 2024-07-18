@@ -103,7 +103,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     if (vibrationPattern != null) {
       val jsonVibrationTimings = JSONArray()
       vibrationPattern.forEach {
-        jsonVibrationTimings.put(it.toInt() )
+        jsonVibrationTimings.put(it.toInt())
       }
       payload.put("vibrate", jsonVibrationTimings)
     }
