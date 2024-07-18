@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Only import from `expo/config` to follow proper dependency chains.
+
 ### 💡 Others
 
 ## 0.14.3 — 2024-05-16
