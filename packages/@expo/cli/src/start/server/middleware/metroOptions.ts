@@ -66,7 +66,7 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
 function withDefaults({
   mode = 'development',
   minify = mode === 'production',
-  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
+  preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
@@ -187,7 +187,7 @@ export function getMetroDirectBundleOptions(
       __proto__: null,
       optimize: optimize || undefined,
       engine,
-      preserveEnvVars: preserveEnvVars || undefined,
+      preserveEnvVars: preserveEnvVars === false ? String(preserveEnvVars) : undefined,
       // Use string to match the query param behavior.
       asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
       environment,
