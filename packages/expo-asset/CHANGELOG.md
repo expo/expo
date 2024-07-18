@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing dependencies and follow proper dependency chains.
+
 ### 💡 Others
 
 - Remove unused `pathJoin` function. ([#29963](https://github.com/expo/expo/pull/29963) by [@EvanBacon](https://github.com/EvanBacon))

@@ -1,4 +1,5 @@
 import { type ImageOptions, generateImageAsync } from '@expo/image-utils';
+// TODO(cedric): expose the AssetContents util, or add the dependency chain to `@expo/prebuild-config`
 import {
   type ContentsJsonImage,
   createContentsJsonItem,
