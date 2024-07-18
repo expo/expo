@@ -5,6 +5,7 @@ export { default as registerRootComponent } from './launch/registerRootComponent
 
 export { isRunningInExpoGo, getExpoGoProjectConfig } from './environment/ExpoGo';
 
+// Exported for docs type generation
 export {
   // Core classes
   EventEmitter,

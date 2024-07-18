@@ -1,6 +1,6 @@
 import 'react-native';
 import '../Expo.fx';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 
 if (Platform.OS === 'web') {
   it('provides a helpful error message on web', () => {
