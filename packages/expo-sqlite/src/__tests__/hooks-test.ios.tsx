@@ -64,10 +64,10 @@ describe(useSQLiteContext, () => {
         </View>
       );
     }
-    const wrapper = () => (
+    const wrapper = ({ children }) => (
       <React.Suspense fallback={<LoadingFallback />}>
         <SQLiteProvider databaseName=":memory:" useSuspense>
-          <View />
+          {children}
         </SQLiteProvider>
       </React.Suspense>
     );
