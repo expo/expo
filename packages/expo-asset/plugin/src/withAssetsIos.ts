@@ -6,7 +6,7 @@ import {
   writeContentsJsonAsync,
 } from '@expo/prebuild-config/build/plugins/icons/AssetContents';
 import { ConfigPlugin, IOSConfig, XcodeProject, withXcodeProject } from 'expo/config-plugins';
-import { ensureDir, writeFile } from 'fs-extra';
+import fsp from 'fs/promises';
 import path from 'path';
 
 import { IMAGE_TYPES, resolveAssetPaths, validateAssets } from './utils';
@@ -58,12 +58,12 @@ async function addImageAssets(assets: string[], root: string) {
     const image = path.basename(asset);
 
     const assetPath = path.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
-    await ensureDir(assetPath);
+    await fsp.mkdir(assetPath, { recursive: true });
 
     const buffer = await generateImageAsync({ projectRoot: root }, {
       src: asset,
     } as unknown as ImageOptions);
-    await writeFile(path.resolve(assetPath, image), buffer.source);
+    await fsp.writeFile(path.resolve(assetPath, image), buffer.source);
 
     await writeContentsJsonFileAsync({
       assetPath,
