@@ -50,7 +50,7 @@ function _AssetContents() {
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
-const IMAGESET_PATH = 'Images.xcassets/SplashScreen.imageset';
+const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
 const PNG_FILENAME = 'image';
 const DARK_PNG_FILENAME = 'dark_image';
 const TABLET_PNG_FILENAME = 'tablet_image';

@@ -147,7 +147,7 @@ async function getTemplateAsync() {
           </scene>
       </scenes>
       <resources>
-          <image name="SplashScreen" width="100" height="90.333335876464844"/>
+          <image name="SplashScreenLogo" width="100" height="90.333335876464844"/>
       </resources>
   </document>`;
   return await new (_xml2js().Parser)().parseStringPromise(contents);
