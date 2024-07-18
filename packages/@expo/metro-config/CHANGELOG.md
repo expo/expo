@@ -16,7 +16,7 @@
 
 ### 🐛 Bug fixes
 
-- Account for the entire dependency tree when creating module name hashes.
+- Account for the entire dependency tree when creating module name hashes. ([#30512](https://github.com/expo/expo/pull/30512) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve missing module errors. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix support for defining variables named `module`, `require`, `global`, and `exports` with `experimentalImportSupport`. ([#30348](https://github.com/expo/expo/pull/30348) by [@EvanBacon](https://github.com/EvanBacon))
 - Support showing the hidden entry file in chrome dev tools. ([#30113](https://github.com/expo/expo/pull/30113) by [@EvanBacon](https://github.com/EvanBacon))
