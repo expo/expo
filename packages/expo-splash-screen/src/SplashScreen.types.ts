@@ -1,7 +1,7 @@
 export type SplashScreenOptions = {
   /**
    * The duration of the fade out animation in milliseconds.
-   * @default 2000
+   * @default 400
    */
   duration?: number;
 };

@@ -10,6 +10,11 @@ export type SplashScreenConfig = {
   resizeMode: 'contain' | 'cover' | 'native';
 };
 
+export type AndroidPluginConfig = {
+  backgroundColor: string;
+  logoWidth: number;
+};
+
 const defaultResizeMode = 'contain';
 
 export function getAndroidSplashConfig(

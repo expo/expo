@@ -6,6 +6,7 @@ import Jimp from 'jimp-compact';
 import path from 'path';
 
 import {
+  AndroidPluginConfig,
   getAndroidDarkSplashConfig,
   getAndroidSplashConfig,
   SplashScreenConfig,
@@ -93,11 +94,14 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin = (config) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidPluginConfig> = (
+  config,
+  { logoWidth = 100 }
+) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot);
+      await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot, logoWidth);
       return config;
     },
   ]);
@@ -112,7 +116,8 @@ export const withAndroidSplashImages: ConfigPlugin = (config) => {
  */
 export async function setSplashImageDrawablesAsync(
   config: Pick<ExpoConfig, 'android' | 'splash'>,
-  projectRoot: string
+  projectRoot: string,
+  logoWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
@@ -120,8 +125,8 @@ export async function setSplashImageDrawablesAsync(
   const darkSplash = getAndroidDarkSplashConfig(config);
 
   await Promise.all([
-    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot),
-    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot),
+    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth),
+    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth),
   ]);
 }
 
@@ -144,7 +149,8 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
 export async function setSplashImageDrawablesForThemeAsync(
   config: SplashScreenConfig | null,
   theme: 'dark' | 'light',
-  projectRoot: string
+  projectRoot: string,
+  logoWidth: number
 ) {
   if (!config) return;
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
@@ -158,17 +164,22 @@ export async function setSplashImageDrawablesForThemeAsync(
 
       if (image) {
         const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+        const width = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+        const height = Math.ceil(width * (image.bitmap.height / image.bitmap.width)); // compute the height according to the width and image ratio
 
         // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
         const canvasSize = 288 * multiplier;
-        const canvas = await Jimp.create(canvasSize, Jimp.AUTO, '#ffffff');
-        const input = image.clone().resize(100 * multiplier, Jimp.AUTO);
-        const output = canvas.composite(input, 100 * multiplier, Jimp.AUTO);
+        const canvas = await Jimp.create(canvasSize, canvasSize, 0xffffff00);
+        const input = image.clone().resize(width, height);
+
+        const x = (canvasSize - width) / 2;
+        const y = (canvasSize - height) / 2;
+
+        const output = canvas.blit(input, x, y).quality(100);
 
         // Get output path for drawable.
         const outputPath = path.join(
           androidMainPath,
-          // @ts-ignore
           DRAWABLES_CONFIGS[imageKey].modes[theme].path
         );
 

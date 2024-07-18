@@ -25,7 +25,12 @@ function _generateCode() {
   };
   return data;
 }
-const withAndroidSplashMainActivity = config => {
+const withAndroidSplashMainActivity = (config, {
+  v2 = false
+}) => {
+  if (!v2) {
+    return config;
+  }
   return (0, _configPlugins().withMainActivity)(config, config => {
     const {
       modResults

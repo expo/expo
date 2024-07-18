@@ -1,14 +1,17 @@
 import { ConfigPlugin, WarningAggregator, withPlugins } from '@expo/config-plugins';
 
-import { getAndroidSplashConfig } from './getAndroidSplashConfig';
+import { AndroidPluginConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
 import { withAndroidSplashDrawables } from './withAndroidSplashDrawables';
 import { withAndroidSplashImages } from './withAndroidSplashImages';
 import { withAndroidSplashMainActivity } from './withAndroidSplashMainActivity';
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 
-export const withAndroidSplashScreen: ConfigPlugin = (config) => {
-  const splashConfig = getAndroidSplashConfig(config);
+export const withAndroidSplashScreen: ConfigPlugin<
+  AndroidPluginConfig | undefined | null | void
+> = (config, props) => {
+  const v2 = !!props;
+  const splashConfig = props || getAndroidSplashConfig(config);
 
   // Update the android status bar to match the splash screen
   // androidStatusBar applies info to the app activity style.
@@ -28,8 +31,8 @@ export const withAndroidSplashScreen: ConfigPlugin = (config) => {
   }
 
   return withPlugins(config, [
-    withAndroidSplashMainActivity,
-    withAndroidSplashImages,
+    [withAndroidSplashMainActivity, { v2 }],
+    [withAndroidSplashImages, props],
     [withAndroidSplashDrawables, splashConfig],
     withAndroidSplashStyles,
     withAndroidSplashStrings,

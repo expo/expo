@@ -113,9 +113,11 @@ const DRAWABLES_CONFIGS = {
     dimensionsMultiplier: 4
   }
 };
-const withAndroidSplashImages = config => {
+const withAndroidSplashImages = (config, {
+  logoWidth = 100
+}) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot);
+    await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot, logoWidth);
     return config;
   }]);
 };
@@ -128,11 +130,11 @@ const withAndroidSplashImages = config => {
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
 exports.withAndroidSplashImages = withAndroidSplashImages;
-async function setSplashImageDrawablesAsync(config, projectRoot) {
+async function setSplashImageDrawablesAsync(config, projectRoot, logoWidth) {
   await clearAllExistingSplashImagesAsync(projectRoot);
   const splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
   const darkSplash = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config);
-  await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot)]);
+  await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth)]);
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
@@ -148,7 +150,7 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
     }));
   }));
 }
-async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot) {
+async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, logoWidth) {
   if (!config) return;
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
@@ -157,17 +159,19 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot) 
     const image = await _jimpCompact().default.read(config[imageKey]);
     if (image) {
       const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+      const width = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+      const height = Math.ceil(width * (image.bitmap.height / image.bitmap.width)); // compute the height according to the width and image ratio
 
       // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
       const canvasSize = 288 * multiplier;
-      const canvas = await _jimpCompact().default.create(canvasSize, _jimpCompact().default.AUTO, '#ffffff');
-      const input = image.clone().resize(100 * multiplier, _jimpCompact().default.AUTO);
-      const output = canvas.composite(input, 100 * multiplier, _jimpCompact().default.AUTO);
+      const canvas = await _jimpCompact().default.create(canvasSize, canvasSize, 0xffffff00);
+      const input = image.clone().resize(width, height);
+      const x = (canvasSize - width) / 2;
+      const y = (canvasSize - height) / 2;
+      const output = canvas.blit(input, x, y).quality(100);
 
       // Get output path for drawable.
-      const outputPath = _path().default.join(androidMainPath,
-      // @ts-ignore
-      DRAWABLES_CONFIGS[imageKey].modes[theme].path);
+      const outputPath = _path().default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
       const folder = _path().default.dirname(outputPath);
       // Ensure directory exists.
       await _fsExtra().default.ensureDir(folder);

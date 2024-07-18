@@ -8,5 +8,9 @@ export type SplashScreenConfig = {
     backgroundColor: string | null;
     resizeMode: 'contain' | 'cover' | 'native';
 };
+export type AndroidPluginConfig = {
+    backgroundColor: string;
+    logoWidth: number;
+};
 export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): SplashScreenConfig | null;
 export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): SplashScreenConfig | null;

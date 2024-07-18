@@ -67,7 +67,8 @@ const withIosSplashAssets = (config, splash) => {
       image: splash.image,
       darkImage: splash.dark?.image,
       tabletImage: splash.tabletImage,
-      darkTabletImage: splash.dark?.tabletImage
+      darkTabletImage: splash.dark?.tabletImage,
+      logoWidth: splash.logoWidth ?? 100
     });
     return config;
   }]);
@@ -83,7 +84,8 @@ async function configureImageAssets({
   image,
   darkImage,
   tabletImage,
-  darkTabletImage
+  darkTabletImage,
+  logoWidth
 }) {
   const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
 
@@ -105,7 +107,8 @@ async function configureImageAssets({
     image,
     darkImage,
     tabletImage,
-    darkTabletImage
+    darkTabletImage,
+    logoWidth
   });
 }
 async function copyImageFiles({
@@ -114,7 +117,8 @@ async function copyImageFiles({
   image,
   darkImage,
   tabletImage,
-  darkTabletImage
+  darkTabletImage,
+  logoWidth
 }) {
   const logo = await _jimpCompact().default.read(image);
   await Promise.all([{
@@ -130,8 +134,10 @@ async function copyImageFiles({
     ratio,
     suffix
   }) => {
-    const filePath = path().resolve(iosNamedProjectRoot, IMAGESET_PATH, `image${suffix}.png`);
-    return logo.clone().resize(100 * ratio, _jimpCompact().default.AUTO).writeAsync(filePath);
+    const filePath = path().resolve(iosNamedProjectRoot, IMAGESET_PATH, `${PNG_FILENAME}${suffix}.png`);
+    const size = logoWidth * ratio;
+    const height = Math.ceil(size * (logo.bitmap.height / logo.bitmap.width));
+    return logo.clone().resize(size, height).writeAsync(filePath);
   }));
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
@@ -237,15 +243,15 @@ function buildContentsJsonImages({
   // Phone light
   (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
-    filename: 'image.png',
+    filename: `${image}.png`,
     scale: '1x'
   }), (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
-    filename: 'image@2x.png',
+    filename: `${image}@2x.png`,
     scale: '2x'
   }), (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
-    filename: 'image@3x.png',
+    filename: `${image}@3x.png`,
     scale: '3x'
   }),
   // Phone dark

@@ -53,8 +53,9 @@ function _withAndroidSplashStyles() {
   };
   return data;
 }
-const withAndroidSplashScreen = config => {
-  const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
+const withAndroidSplashScreen = (config, props) => {
+  const v2 = !!props;
+  const splashConfig = props || (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
 
   // Update the android status bar to match the splash screen
   // androidStatusBar applies info to the app activity style.
@@ -67,7 +68,9 @@ const withAndroidSplashScreen = config => {
     if (!config.androidStatusBar) config.androidStatusBar = {};
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
-  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashMainActivity().withAndroidSplashMainActivity, _withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
+  return (0, _configPlugins().withPlugins)(config, [[_withAndroidSplashMainActivity().withAndroidSplashMainActivity, {
+    v2
+  }], [_withAndroidSplashImages().withAndroidSplashImages, props], [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
 };
 exports.withAndroidSplashScreen = withAndroidSplashScreen;
 //# sourceMappingURL=withAndroidSplashScreen.js.map
