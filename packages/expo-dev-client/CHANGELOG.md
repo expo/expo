@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Only import from `expo/config-plugins` to follow proper dependency chains.
+
 ### 💡 Others
 
 - Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
