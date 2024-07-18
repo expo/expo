@@ -13,11 +13,11 @@ React Server Components (RSC) is a new feature in React that allows you to build
 
 ## Jest testing
 
-React Server Components run in a Node.js environment, unlike a client-based Jest testing environment. This means you can emulate the server-side rendering environment closely with Jest.
+React Server Components run on Node.js. This means Jest on its own can closely emulate the server-side rendering environment, in contrast with client-based tests that require a Jest preset to communicate between Node.js and a web browser.
 
 ### Setup
 
-While standard server rendering is web-only, Expo's universal RSC bundles custom server renderers for each platform. For example, when writing server components for an iOS app, the platform-specific extensions such as **\*.ios.js** and **\*.native.ts** will be resolved.
+While standard server rendering is web-only, Expo's universal RSC bundles custom server renderers for each platform. This means platform-specific file extensions are supported. For example, when writing server components for an iOS app, platform-specific extensions such as **\*.ios.js** and **\*.native.ts** will be resolved.
 
 `jest-expo` provides a couple different presets for testing server components:
 
@@ -75,7 +75,7 @@ Any code you import in your test files will run in the server environment. You c
 - `toMatchFlight`: Render a JSX element using a pseudo-implementation of the render in Expo CLI and compare to a flight string.
 - `toMatchFlightSnapshot`: Same as `toMatchFlight` but saves the flight string to a snapshot file.
 
-Behind the scenes, these methods handle a part of the framework operation needed to render RSC. The component is streamed to a string and compared all at once. You can alternatively stream it manually to observe the progress.
+Behind the scenes, these methods handle a part of the framework operation needed to render RSC. The component's render stream is buffered to a string and compared all at once. You can alternatively stream it manually to observe the rendering progress.
 
 If a component fails to render, the matcher will throw an error to fail the test. An `E:` line will be present in your flight string in real time. This will be sent to the client, where the error will be thrown.
 
@@ -114,4 +114,6 @@ RSC supports package exports by default. You can use the `react-server` conditio
 }
 ```
 
-When a process is bundling for RSC, all modules are bundled in React Server mode and you can opt-out with the `"use client"` directive. When `"use client"` is found, the module becomes an async reference to the client module. `"use server"` is not the opposite of `"use client"`. It is instead used to define React Server Actions.
+When bundling for RSC, all modules are bundled in React Server mode and you can opt out with the `"use client"` directive. When `"use client"` is found, the module becomes an async reference to the client module.
+
+`"use server"` is not the opposite of `"use client"`. It is instead used to define React Server Actions.
