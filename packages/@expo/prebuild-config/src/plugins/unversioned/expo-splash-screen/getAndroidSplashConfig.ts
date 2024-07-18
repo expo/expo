@@ -13,6 +13,7 @@ export type SplashScreenConfig = {
 export type AndroidPluginConfig = {
   backgroundColor: string;
   logoWidth: number;
+  image?: string | null;
 };
 
 const defaultResizeMode = 'contain';

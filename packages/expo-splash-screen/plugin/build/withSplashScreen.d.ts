@@ -4,6 +4,7 @@ import { ConfigPlugin } from 'expo/config-plugins';
 type PluginConfig = {
     backgroundColor: string;
     logoWidth: number;
+    image?: string | null;
     android: AndroidPluginConfig;
     ios: IOSPluginConfig;
 };

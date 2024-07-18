@@ -6,11 +6,10 @@ const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-splash-screen/package.json');
 const withSplashScreen = (config, props) => {
     const android = {
+        ...props,
         ...props.android,
-        backgroundColor: props.backgroundColor,
-        logoWidth: props.logoWidth,
     };
-    const ios = { ...props.ios, backgroundColor: props.backgroundColor, logoWidth: props.logoWidth };
+    const ios = { ...props, ...props.ios };
     config = (0, withAndroidSplashScreen_1.withAndroidSplashScreen)(config, android);
     config = (0, withIosSplashScreen_1.withIosSplashScreen)(config, ios);
     return config;
