@@ -24,7 +24,7 @@ function wrapModule(module, options) {
         return { src: output.data.code, paths: {} };
     }
     const { params, paths } = getModuleParams(module, options);
-    let src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
+    const src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
     return { src, paths };
 }
 exports.wrapModule = wrapModule;
@@ -78,8 +78,7 @@ function getModuleParams(module, options) {
     });
     const params = [
         moduleId,
-        // If skipWrapping is enabled then we should not include the async paths since they are ambiguous until the end of bundling.
-        hasPaths && !options.skipWrapping
+        hasPaths
             ? {
                 ...dependencyMapArray,
                 paths,
