@@ -31,6 +31,10 @@ class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
+    OnCreate {
+      VideoManager.onModuleCreated(appContext)
+    }
+
     Function("isPictureInPictureSupported") {
       return@Function VideoView.isPictureInPictureSupported(activity)
     }
