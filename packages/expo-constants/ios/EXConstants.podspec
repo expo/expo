@@ -33,4 +33,8 @@ Pod::Spec.new do |s|
   else
     s.source_files = "**/*.{h,m,swift}"
   end
+
+  s.resource_bundles = {
+    'ExpoConstants_privacy' => ['PrivacyInfo.xcprivacy']
+  }
 end
