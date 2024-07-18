@@ -21,12 +21,12 @@ While standard server rendering is web-only, Expo's universal RSC bundles custom
 
 `jest-expo` provides a couple different presets for testing server components:
 
-| Runner                  | Description                                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Runner                  | Description                                                                                    |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
 | `jest-expo/rsc/android` | An Android-only runner for RSC. Uses **\*.android.js**, **\*.native.js**, and **\*.js** files. |
 | `jest-expo/rsc/ios`     | An iOS-only runner for RSC. Uses **\*.ios.js**, **\*.native.js**, and **\*.js** files.         |
-| `jest-expo/rsc/web`     | A web-only runner for RSC. Uses **\*.web.js** and **\*.js** files.                            |
-| `jest-expo/rsc`         | A multi-runner that combines the above runners.                                                                   |
+| `jest-expo/rsc/web`     | A web-only runner for RSC. Uses **\*.web.js** and **\*.js** files.                             |
+| `jest-expo/rsc`         | A multi-runner that combines the above runners.                                                |
 
 To configure Jest for RSC, create a **jest-rsc.config.js** file in your project's root:
 
