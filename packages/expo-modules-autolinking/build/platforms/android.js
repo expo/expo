@@ -22,7 +22,7 @@ async function findGradleFilesAsync(revision) {
     if (configGradlePaths && configGradlePaths.length) {
         return configGradlePaths;
     }
-    const buildGradleFiles = await (0, fast_glob_1.default)('*/build.gradle', {
+    const buildGradleFiles = await (0, fast_glob_1.default)('*/build.gradle{,.kts}', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
