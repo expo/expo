@@ -1,4 +1,4 @@
-import { PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError, } from 'expo/modules-core';
 import invariant from 'invariant';
 import ExponentPedometer from './ExponentPedometer';
 // @needsAudit

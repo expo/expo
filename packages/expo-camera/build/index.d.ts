@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo/modules-core';
 import { BarcodeScanningResult, BarcodeType } from './Camera.types';
 export { default as CameraView } from './CameraView';
 /**
@@ -21,7 +21,7 @@ declare function requestCameraPermissionsAsync(): Promise<PermissionResponse>;
  * const [status, requestPermission] = useCameraPermissions();
  * ```
  */
-export declare const useCameraPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useCameraPermissions: (options?: import("expo/modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Checks user's permissions for accessing microphone.
  * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
@@ -42,7 +42,7 @@ declare function requestMicrophonePermissionsAsync(): Promise<PermissionResponse
  * const [status, requestPermission] = Camera.useMicrophonePermissions();
  * ```
  */
-export declare const useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useMicrophonePermissions: (options?: import("expo/modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Scan bar codes from the image at the given URL.
  * @param url URL to get the image from.

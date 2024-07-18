@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 /**

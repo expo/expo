@@ -1,4 +1,4 @@
-import { type Platform } from 'expo-modules-core';
+import { type Platform } from 'expo/modules-core';
 export interface NativeDevicePushToken {
     type: 'ios' | 'android';
     data: string;

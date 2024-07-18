@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/modules-core';
 import NotificationPresenter from './NotificationPresenterModule';
 /**
  * Fetches information about all notifications present in the notification tray (Notification Center).

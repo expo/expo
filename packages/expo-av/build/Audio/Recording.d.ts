@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions, type EventSubscription } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions, type EventSubscription } from 'expo/modules-core';
 import { RecordingInput, RecordingObject, RecordingOptions, RecordingStatus } from './Recording.types';
 import { SoundObject } from './Sound';
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';

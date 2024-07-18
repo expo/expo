@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, Platform } from 'expo/modules-core';
 
 import {
   ImagePickerAsset,

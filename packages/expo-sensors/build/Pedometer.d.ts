@@ -1,4 +1,4 @@
-import { PermissionExpiration, PermissionResponse, PermissionStatus, type EventSubscription } from 'expo-modules-core';
+import { PermissionExpiration, PermissionResponse, PermissionStatus, type EventSubscription } from 'expo/modules-core';
 export type PedometerResult = {
     /**
      * Number of steps taken between the given dates.

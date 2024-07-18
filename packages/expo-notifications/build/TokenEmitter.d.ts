@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo/modules-core';
 import { DevicePushToken } from './Tokens.types';
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.

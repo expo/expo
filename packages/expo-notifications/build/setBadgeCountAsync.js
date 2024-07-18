@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from 'expo-modules-core';
+import { UnavailabilityError, Platform } from 'expo/modules-core';
 import BadgeModule from './BadgeModule';
 /**
  * Sets the badge of the app's icon to the specified number. Setting it to `0` clears the badge. On iOS, this method requires that you have requested

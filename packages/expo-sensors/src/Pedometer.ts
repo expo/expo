@@ -4,7 +4,7 @@ import {
   PermissionStatus,
   type EventSubscription,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';

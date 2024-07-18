@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/modules-core';
 import ExpoUpdates from './ExpoUpdates';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:

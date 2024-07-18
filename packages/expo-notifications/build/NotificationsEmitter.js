@@ -1,4 +1,4 @@
-import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo/modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
 import { mapNotificationResponse } from './utils/mapNotificationResponse';
 // Web uses SyntheticEventEmitter

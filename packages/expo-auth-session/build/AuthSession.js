@@ -1,6 +1,6 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import { dismissAuthSession } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
 import { resolveDiscoveryAsync } from './Discovery';

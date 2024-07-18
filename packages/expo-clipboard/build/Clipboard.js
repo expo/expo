@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from 'expo-modules-core';
+import { UnavailabilityError, Platform } from 'expo/modules-core';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard from './ExpoClipboard';
 const onClipboardEventName = 'onClipboardChanged';

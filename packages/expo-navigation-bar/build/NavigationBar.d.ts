@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo/modules-core';
 import { ColorValue } from 'react-native';
 import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 /**

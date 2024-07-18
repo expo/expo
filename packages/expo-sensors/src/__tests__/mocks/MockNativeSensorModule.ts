@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo/modules-core';
 
 export default class MockNativeSensorModule extends NativeModule {
   startObserving = jest.fn(async () => {});

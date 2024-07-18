@@ -1,4 +1,4 @@
-import { LegacyEventEmitter, Platform } from 'expo-modules-core';
+import { LegacyEventEmitter, Platform } from 'expo/modules-core';
 import PushTokenManager from './PushTokenManager';
 // Web uses SyntheticEventEmitter
 const tokenEmitter = new LegacyEventEmitter(PushTokenManager);

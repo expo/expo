@@ -1,4 +1,4 @@
-import { UnavailabilityError, PermissionStatus, createPermissionHook, } from 'expo-modules-core';
+import { UnavailabilityError, PermissionStatus, createPermissionHook, } from 'expo/modules-core';
 import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();

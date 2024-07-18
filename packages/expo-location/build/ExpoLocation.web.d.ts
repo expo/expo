@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo/modules-core';
 import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 declare const _default: {
     getProviderStatusAsync(): Promise<{

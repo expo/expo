@@ -3,7 +3,7 @@ import {
   type EventSubscription,
   CodedError,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 import { Notification, NotificationBehavior } from './Notifications.types';
 import NotificationsHandlerModule from './NotificationsHandlerModule';

@@ -1,4 +1,4 @@
-import { PermissionResponse, SharedObject } from 'expo-modules-core';
+import { PermissionResponse, SharedObject } from 'expo/modules-core';
 
 import {
   AudioMode,

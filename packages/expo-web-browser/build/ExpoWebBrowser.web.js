@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/modules-core';
 import { AppState } from 'react-native';
 import { WebBrowserResultType, } from './WebBrowser.types';
 const POPUP_WIDTH = 500;

@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo/modules-core';
 import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
 export { NetworkState, NetworkStateEvent, NetworkStateType };
 /**

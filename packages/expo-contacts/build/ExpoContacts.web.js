@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus } from 'expo/modules-core';
 const noPermissionResponse = {
     status: PermissionStatus.UNDETERMINED,
     canAskAgain: true,

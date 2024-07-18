@@ -5,7 +5,7 @@ import {
   PermissionHookOptions,
   UnavailabilityError,
   createPermissionHook,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import { Platform } from 'react-native';
 
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';

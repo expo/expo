@@ -1,5 +1,5 @@
 import { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import { unmockAllProperties } from 'jest-expo';
 
 import { describeManifest, mockConstants } from './ManifestTestUtils';

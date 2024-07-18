@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/modules-core';
 import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule';
 /**
  * Used to unregister tasks registered with `registerTaskAsync` method.

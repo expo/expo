@@ -1,4 +1,4 @@
-import { type Platform } from 'expo-modules-core';
+import { type Platform } from 'expo/modules-core';
 
 // @docsMissing
 export interface NativeDevicePushToken {

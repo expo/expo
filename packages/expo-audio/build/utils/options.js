@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 export function createRecordingOptions(options) {
     let newOptions = {
         extension: options.extension,

@@ -1,5 +1,5 @@
 import { useEvent } from 'expo';
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo/modules-core';
 import { useEffect, useState, useMemo } from 'react';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';

@@ -1,4 +1,4 @@
-import { LegacyEventEmitter, CodedError, UnavailabilityError, } from 'expo-modules-core';
+import { LegacyEventEmitter, CodedError, UnavailabilityError, } from 'expo/modules-core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
 /**
  * @hidden

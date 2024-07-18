@@ -1,4 +1,4 @@
-import { PermissionStatus, createPermissionHook, LegacyEventEmitter, Platform, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, LegacyEventEmitter, Platform, } from 'expo/modules-core';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { RecordingOptionsPresets } from './RecordingConstants';
 import { Sound } from './Sound';

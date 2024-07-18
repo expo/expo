@@ -1,4 +1,4 @@
-import { createSnapshotFriendlyRef } from 'expo-modules-core';
+import { createSnapshotFriendlyRef } from 'expo/modules-core';
 
 describe('Refs', () => {
   it('refs should be snapshot friendly', () => {

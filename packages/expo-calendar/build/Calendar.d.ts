@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo/modules-core';
 /**
  * @platform ios
  */

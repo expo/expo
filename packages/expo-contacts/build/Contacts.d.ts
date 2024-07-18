@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo/modules-core';
 import { type ShareOptions } from 'react-native';
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;

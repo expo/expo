@@ -1,4 +1,4 @@
-import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { Platform, type EventSubscription, UnavailabilityError } from 'expo/modules-core';
 import { useEffect, useState } from 'react';
 import { ColorValue, processColor } from 'react-native';
 

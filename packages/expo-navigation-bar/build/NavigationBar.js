@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo/modules-core';
 import { useEffect, useState } from 'react';
 import { processColor } from 'react-native';
 import ExpoNavigationBar from './ExpoNavigationBar';

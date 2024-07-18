@@ -1,4 +1,4 @@
-import { LegacyEventEmitter } from 'expo-modules-core';
+import { LegacyEventEmitter } from 'expo/modules-core';
 
 import ExpoLocation from './ExpoLocation';
 

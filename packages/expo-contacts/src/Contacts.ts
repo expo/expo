@@ -4,7 +4,7 @@ import {
   PermissionExpiration,
   UnavailabilityError,
   uuid,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';

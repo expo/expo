@@ -1,4 +1,4 @@
-import { requireOptionalNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo/modules-core';
 const SplashModule = requireOptionalNativeModule('ExpoSplashScreen');
 let _userControlledAutoHideEnabled = false;
 let _preventAutoHideAsyncInvoked = false;

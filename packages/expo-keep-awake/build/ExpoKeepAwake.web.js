@@ -1,4 +1,4 @@
-import { CodedError, Platform } from 'expo-modules-core';
+import { CodedError, Platform } from 'expo/modules-core';
 import { KeepAwakeEventState } from './KeepAwake.types';
 const wakeLockMap = {};
 /** Wraps the webWakeLock API https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API */

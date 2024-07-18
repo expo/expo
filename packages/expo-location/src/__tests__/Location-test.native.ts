@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import ExpoLocation from '../ExpoLocation';

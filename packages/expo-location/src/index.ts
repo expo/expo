@@ -2,7 +2,7 @@ export {
   PermissionStatus,
   type PermissionHookOptions,
   type PermissionExpiration,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 export { LocationEventEmitter as EventEmitter } from './LocationEventEmitter';
 export { _getCurrentWatchId } from './LocationSubscribers';

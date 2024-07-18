@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 function uriFromFontSource(asset) {

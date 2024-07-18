@@ -1,4 +1,4 @@
-import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError, Platform } from 'expo/modules-core';
 
 import type {
   ClipboardImage,

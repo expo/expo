@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo/modules-core';
 import { ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
     launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, base64, }: {

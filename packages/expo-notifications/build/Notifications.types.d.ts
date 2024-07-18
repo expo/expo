@@ -1,4 +1,4 @@
-import type { PermissionExpiration, PermissionResponse, PermissionStatus, EventSubscription } from 'expo-modules-core';
+import type { PermissionExpiration, PermissionResponse, PermissionStatus, EventSubscription } from 'expo/modules-core';
 /**
  * An object represents a notification delivered by a push notification system.
  *

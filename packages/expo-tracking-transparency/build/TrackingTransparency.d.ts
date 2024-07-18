@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo/modules-core';
 /**
  * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
  * frequency capping, attribution, conversion events, estimating the number of unique users,

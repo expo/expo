@@ -244,7 +244,7 @@ it(`removes Platform module usage on web (expo-modules-core)`, () => {
   };
 
   const sourceCode = `
-    import { Platform } from 'expo-modules-core';
+    import { Platform } from 'expo/modules-core';
   
     if (Platform.OS === 'ios') {
       console.log('ios')
@@ -390,7 +390,7 @@ it(`removes Platform module usage on web (expo-modules-core)`, () => {
   };
 
   const sourceCode = `
-    import { Platform } from 'expo-modules-core';
+    import { Platform } from 'expo/modules-core';
   
     if (Platform.OS === 'ios') {
       console.log('ios')

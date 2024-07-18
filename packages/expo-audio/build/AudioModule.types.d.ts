@@ -1,4 +1,4 @@
-import { PermissionResponse, SharedObject } from 'expo-modules-core';
+import { PermissionResponse, SharedObject } from 'expo/modules-core';
 import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStatus } from './Audio.types';
 export interface AudioModule {
     setIsAudioActiveAsync(active: boolean): Promise<void>;

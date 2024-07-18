@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo/modules-core';
 
 // Import the native module. On web, it will be resolved to <%- project.name %>.web.ts
 // and on native platforms to <%- project.name %>.ts

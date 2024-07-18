@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/modules-core';
 import { CryptoEncoding } from './Crypto.types';
 const getCrypto = () => window.crypto ?? window.msCrypto;
 export default {

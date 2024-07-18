@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 
 import { getFilename } from './AssetUris';
 

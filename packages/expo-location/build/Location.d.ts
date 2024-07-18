@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo/modules-core';
 import { LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
 /**
  * Check status of location providers.
@@ -118,7 +118,7 @@ export declare function requestForegroundPermissionsAsync(): Promise<LocationPer
  * const [status, requestPermission] = Location.useForegroundPermissions();
  * ```
  */
-export declare const useForegroundPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse>, () => Promise<LocationPermissionResponse>];
+export declare const useForegroundPermissions: (options?: import("expo/modules-core").PermissionHookOptions<object> | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse>, () => Promise<LocationPermissionResponse>];
 /**
  * Checks user's permissions for accessing location while the app is in the background.
  * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
@@ -144,7 +144,7 @@ export declare function requestBackgroundPermissionsAsync(): Promise<PermissionR
  * const [status, requestPermission] = Location.useBackgroundPermissions();
  * ```
  */
-export declare const useBackgroundPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useBackgroundPermissions: (options?: import("expo/modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Checks whether location services are enabled by the user.
  * @return A promise which fulfills to `true` if location services are enabled on the device,

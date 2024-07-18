@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import { PixelRatio } from 'react-native';
 // Returns the Metro dev server-specific asset location.
 function getScaledAssetPath(asset) {

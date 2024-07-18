@@ -4,7 +4,7 @@ import {
   type EventSubscription,
   Platform,
   PermissionExpiration,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 /**
  * @hidden

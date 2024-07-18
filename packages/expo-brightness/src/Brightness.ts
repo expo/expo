@@ -6,7 +6,7 @@ import {
   PermissionResponse,
   PermissionStatus,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import { Platform } from 'react-native';
 
 import ExpoBrightness from './ExpoBrightness';

@@ -1,4 +1,4 @@
-import { LegacyEventEmitter } from 'expo-modules-core';
+import { LegacyEventEmitter } from 'expo/modules-core';
 import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 export type AudioChannel = {

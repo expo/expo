@@ -1,5 +1,5 @@
 import { getAssetByID } from '@react-native/assets-registry/registry';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import { downloadAsync } from './ExpoAsset';

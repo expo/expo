@@ -1,4 +1,4 @@
-import { createPermissionHook, Platform } from 'expo-modules-core';
+import { createPermissionHook, Platform } from 'expo/modules-core';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, } from './Location.types';
 import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';

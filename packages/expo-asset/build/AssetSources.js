@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import { PixelRatio, NativeModules } from 'react-native';
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest2, manifestBaseUrl } from './PlatformUtils';

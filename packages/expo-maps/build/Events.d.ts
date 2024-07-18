@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo/modules-core';
 import { CameraPosition, MapCluster, Marker, Point, PointOfInterest, UserLocation } from './Common.types';
 /**
  * Type of an argument of MarkerClick listener.

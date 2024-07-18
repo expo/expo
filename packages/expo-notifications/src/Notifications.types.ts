@@ -3,7 +3,7 @@ import type {
   PermissionResponse,
   PermissionStatus,
   EventSubscription,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 /**
  * An object represents a notification delivered by a push notification system.

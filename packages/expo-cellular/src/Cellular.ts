@@ -3,7 +3,7 @@ import {
   PermissionStatus,
   Platform,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 import { CellularGeneration, PermissionResponse } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';

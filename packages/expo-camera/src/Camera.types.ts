@@ -4,7 +4,7 @@ import {
   PermissionExpiration,
   PermissionHookOptions,
   EventSubscription,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 

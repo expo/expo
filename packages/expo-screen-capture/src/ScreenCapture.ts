@@ -5,7 +5,7 @@ import {
   createPermissionHook,
   PermissionHookOptions,
   EventSubscription,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';

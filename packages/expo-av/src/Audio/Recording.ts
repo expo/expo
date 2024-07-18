@@ -6,7 +6,7 @@ import {
   LegacyEventEmitter,
   type EventSubscription,
   Platform,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import {

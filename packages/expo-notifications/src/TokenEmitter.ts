@@ -1,4 +1,4 @@
-import { LegacyEventEmitter, type EventSubscription, Platform } from 'expo-modules-core';
+import { LegacyEventEmitter, type EventSubscription, Platform } from 'expo/modules-core';
 
 import PushTokenManager from './PushTokenManager';
 import { DevicePushToken } from './Tokens.types';

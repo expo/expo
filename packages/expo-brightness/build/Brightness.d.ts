@@ -1,4 +1,4 @@
-import { type EventSubscription, PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { type EventSubscription, PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo/modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.

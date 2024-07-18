@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import CameraManager from '../ExpoCameraManager';
 // Values under keys from this object will be transformed to native options
 export const ConversionTables = {

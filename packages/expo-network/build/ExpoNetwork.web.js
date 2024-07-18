@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { EventEmitter } from 'expo/modules-core';
 import { NetworkStateType } from './Network.types';
 const emitter = new EventEmitter();
 const onNetworkStateEventName = 'onNetworkStateChanged';

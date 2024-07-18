@@ -6,7 +6,7 @@ import {
   createPermissionHook,
   UnavailabilityError,
   EventSubscription,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExpoMediaLibrary';

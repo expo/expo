@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse, PermissionHookOptions } from 'expo/modules-core';
 export declare enum IosAlertStyle {
     NONE = 0,
     BANNER = 1,

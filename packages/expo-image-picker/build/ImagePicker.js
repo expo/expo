@@ -1,4 +1,4 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, CodedError, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, CodedError, } from 'expo/modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
 function validateOptions(options) {
     const { aspect, quality, videoMaxDuration } = options;

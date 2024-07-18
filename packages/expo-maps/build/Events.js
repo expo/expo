@@ -1,4 +1,4 @@
-import { LegacyEventEmitter } from 'expo-modules-core';
+import { LegacyEventEmitter } from 'expo/modules-core';
 import { Platform } from 'react-native';
 import { NativeExpoAppleMapsModule, NativeExpoGoogleMapsModule } from './ExpoMaps';
 let nativeModule;

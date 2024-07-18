@@ -1,4 +1,4 @@
-import { UnavailabilityError, uuid } from 'expo-modules-core';
+import { UnavailabilityError, uuid } from 'expo/modules-core';
 import NotificationPresenter from './NotificationPresenterModule';
 let warningMessageShown = false;
 /**

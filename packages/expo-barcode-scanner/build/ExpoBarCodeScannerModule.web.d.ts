@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo/modules-core';
 declare const _default: {
     readonly BarCodeType: {
         code39mod43: string;

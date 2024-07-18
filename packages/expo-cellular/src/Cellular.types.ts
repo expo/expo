@@ -3,7 +3,7 @@ export {
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
-} from 'expo-modules-core';
+} from 'expo/modules-core';
 
 // @needsAudit
 /**

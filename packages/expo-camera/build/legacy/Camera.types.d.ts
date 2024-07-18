@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo/modules-core';
 import type { ViewProps } from 'react-native';
 export declare enum CameraType {
     front = "front",

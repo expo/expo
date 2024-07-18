@@ -1,4 +1,4 @@
-import { PermissionStatus, Platform } from 'expo-modules-core';
+import { PermissionStatus, Platform } from 'expo/modules-core';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
     [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',

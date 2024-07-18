@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo/modules-core';
 import { ApplicationReleaseType } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 // @needsAudit

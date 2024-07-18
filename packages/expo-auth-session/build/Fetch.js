@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 // TODO(Bacon): pending react-native-adapter publish after sdk 38
 const isDOMAvailable = Platform.OS === 'web' &&
     typeof window !== 'undefined' &&

@@ -1,4 +1,4 @@
-import { CodedError, createWebModule } from 'expo-modules-core';
+import { CodedError, createWebModule } from 'expo/modules-core';
 import { VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;

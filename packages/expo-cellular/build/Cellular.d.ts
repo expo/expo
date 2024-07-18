@@ -217,5 +217,5 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * const [status, requestPermission] = Cellular.usePermissions();
  * ```
  */
-export declare const usePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const usePermissions: (options?: import("expo/modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 //# sourceMappingURL=Cellular.d.ts.map

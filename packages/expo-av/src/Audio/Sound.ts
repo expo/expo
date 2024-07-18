@@ -1,4 +1,4 @@
-import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo/modules-core';
 
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 import {

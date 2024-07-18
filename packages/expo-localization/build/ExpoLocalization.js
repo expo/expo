@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo/modules-core';
 import * as rtlDetect from 'rtl-detect';
 const getNavigatorLocales = () => {
     return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];

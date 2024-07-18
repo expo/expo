@@ -1,5 +1,5 @@
 import Constants, { AppOwnership } from 'expo-constants';
-import { requireOptionalNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo/modules-core';
 import { getManifestBaseUrl } from './AssetUris';
 const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
 const isRunningInExpoGo = Constants.appOwnership === AppOwnership.Expo;
