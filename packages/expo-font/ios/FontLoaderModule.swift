@@ -19,10 +19,16 @@ public final class FontLoaderModule: Module {
       "customNativeFonts": self.customNativeFonts
     ])
 
+    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
+    // and potentially consumed outside of Expo (e.g. RN vector icons)
+    // do NOT change the property as it'll break consumers!
     Property("loadedFonts") {
       return registeredFonts
     }
 
+    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadAsync
+    // and potentially consumed outside of Expo (e.g. RN vector icons)
+    // do NOT change the function signature as it'll break consumers!
     AsyncFunction("loadAsync") { (fontFamilyAlias: String, localUri: URL) in
       let fontUrl = localUri as CFURL
       // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
