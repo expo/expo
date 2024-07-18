@@ -14,12 +14,12 @@ export default function Route() {
           title: 'Dashboard',
         }}
       />
-      <Charts scrollEnabled={false} />
+      {/* <Charts scrollEnabled={false} /> */}
       <WebDashboard
         actions={{
           showNotifications(title) {
-            alert(title);
-            throw new Error('Error');
+            // alert(title);
+            // throw new Error('Error');
             return '....';
           },
           haptics() {

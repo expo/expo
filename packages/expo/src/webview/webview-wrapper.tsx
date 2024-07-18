@@ -11,7 +11,7 @@ import { _emitGlobalEvent } from './global-events';
 
 // const proxy = { uri: new URL('/_expo/@iframe?file=' + outputKey, window.location.href).toString() };
 
-const RawWebView = React.forwardRef(({ actions, ...props }, ref) => {
+const RawWebView = React.forwardRef(({ actions, webview, ...props }, ref) => {
   const webviewRef = React.useRef<WebView>(null);
 
   const setRef = useMergeRefs(webviewRef, {}, ref);
@@ -41,6 +41,7 @@ const RawWebView = React.forwardRef(({ actions, ...props }, ref) => {
       allowFileAccessFromFileURLs
       allowsAirPlayForMediaPlayback
       allowsFullscreenVideo
+      {...webview}
       {...props}
       style={[
         props.style

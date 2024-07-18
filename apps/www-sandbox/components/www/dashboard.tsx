@@ -69,6 +69,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export default function Dashboard({
   actions,
 }: {
+  webview: import('react-native-webview').WebViewProps;
   actions: {
     haptics: () => void;
     showNotifications: (title: string) => void;
@@ -267,7 +268,7 @@ export default function Dashboard({
                   <CardFooter>
                     <Button
                       onClick={async () => {
-                        console.log(await actions.showNotifications('hey phil'));
+                        console.log(await actions.showNotifications('hey'));
                       }}>
                       Create New Order
                     </Button>
