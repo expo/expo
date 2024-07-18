@@ -190,8 +190,9 @@ export abstract class BundlerDevServer {
     return {
       // Create a mock server
       server: {
-        close: () => {
+        close: (callback: () => void) => {
           this.instance = null;
+          callback?.();
         },
         addListener() {},
       },

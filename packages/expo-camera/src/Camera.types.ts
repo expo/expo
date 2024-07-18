@@ -154,6 +154,13 @@ export type CameraPictureOptions = {
    */
   isImageMirror?: boolean;
   /**
+   * When set to `true`, the output image will be flipped along the vertical axis when using the front camera.
+   * @default false
+   * @platform ios
+   * @platform android
+   */
+  mirror?: boolean;
+  /**
    * @hidden
    */
   id?: number;

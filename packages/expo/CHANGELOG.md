@@ -14,6 +14,7 @@
 
 - Use `globalThis` instead of `global` in the URL implementation to fix issues in Jest. ([#29895](https://github.com/expo/expo/pull/29895) by [@tsapeta](https://github.com/tsapeta))
 - Fixed `WebSocket was closed before the connection was established` unhandled exceptions from WebSocketWithReconnect. ([#29904](https://github.com/expo/expo/pull/29904) by [@kudo](https://github.com/kudo))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30449](https://github.com/expo/expo/pull/30449) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

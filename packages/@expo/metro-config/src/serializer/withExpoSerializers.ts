@@ -16,6 +16,7 @@ import {
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
+import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
@@ -52,6 +53,9 @@ export function withExpoSerializers(
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
+
+  // Then finish transforming the modules from AST to JS.
+  processors.push(reconcileTransformSerializerPlugin);
 
   return withSerializerPlugins(config, processors, options);
 }

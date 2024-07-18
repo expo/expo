@@ -5,6 +5,9 @@
 #include "types/JNIToJSIConverter.h"
 #include "Exceptions.h"
 
+#include "JSIUtils.h"
+#include "JNIUtils.h"
+
 #include <fbjni/fbjni.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
@@ -60,7 +63,7 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeString),
                    makeNativeMethod("invokeNative", JavaCallback::invokeArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeMap),
-                   makeNativeMethod("invokeNative", JavaCallback::invokeSharedRef),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
                  });
 }
@@ -235,36 +238,20 @@ void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject
   );
 }
 
-void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result) {
-  invokeJSFunction<jni::global_ref<SharedRef::javaobject>>(
+void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
+  invokeJSFunction<jni::global_ref<JSharedObject::javaobject>>(
     [](
       jsi::Runtime &rt,
       jsi::Function &jsFunction,
-      jni::global_ref<SharedRef::javaobject> arg
+      jni::global_ref<JSharedObject::javaobject> arg
     ) {
       const auto jsiContext = getJSIContext(rt);
-      auto native = jni::make_local(arg);
 
-      auto jsClass = jsiContext->getJavascriptClass(native->getClass());
-      auto jsObject = jsClass
-        ->cthis()
-        ->get()
-        ->asFunction(rt)
-        .callAsConstructor(rt)
-        .asObject(rt);
-
-      auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
-      auto jsObjectInstance = JavaScriptObject::newInstance(
-        jsiContext,
-        jsiContext->runtimeHolder,
-        objSharedPtr
+      auto ret = convertSharedObject(
+        jni::make_local(arg),
+        rt,
+        jsiContext
       );
-      jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
-        jsObjectInstance
-      );
-      jsiContext->registerSharedObject(native, jsRef);
-
-      auto ret = jsi::Value(rt, *objSharedPtr);
 
       jsFunction.call(
         rt,

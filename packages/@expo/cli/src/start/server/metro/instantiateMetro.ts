@@ -137,6 +137,10 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental React Compiler is enabled.`);
   }
 
+  if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+    Log.warn(`Experimental bundle optimization is enabled.`);
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,

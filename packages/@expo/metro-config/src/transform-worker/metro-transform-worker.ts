@@ -12,6 +12,8 @@ import { transformFromAstSync } from '@babel/core';
 import type { ParseResult, PluginItem } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
+import template from '@babel/template';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
@@ -27,7 +29,7 @@ import {
 } from 'metro-source-map';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-import { JsOutput, JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
+import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
 import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
@@ -39,8 +41,10 @@ import collectDependencies, {
   DynamicRequiresBehavior,
   CollectedDependencies,
   Options as CollectDependenciesOptions,
+  State,
 } from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
+import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 
 export { JsTransformOptions };
 
@@ -79,12 +83,16 @@ interface TransformResponse {
   readonly output: readonly ExpoJsOutput[];
 }
 
-export type ExpoJsOutput = Pick<JsOutput, 'type'> & {
-  readonly data: JsOutput['data'] & {
-    readonly hasCjsExports?: boolean;
-    readonly reactClientReference?: string;
-  };
-};
+export class InvalidRequireCallError extends Error {
+  innerError: InternalInvalidRequireCallError;
+  filename: string;
+
+  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
+    super(`${filename}:${innerError.message}`);
+    this.innerError = innerError;
+    this.filename = filename;
+  }
+}
 
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
@@ -154,18 +162,7 @@ export const minifyCode = async (
   }
 };
 
-class InvalidRequireCallError extends Error {
-  innerError: InternalInvalidRequireCallError;
-  filename: string;
-
-  constructor(innerError: InternalInvalidRequireCallError, filename: string) {
-    super(`${filename}:${innerError.message}`);
-    this.innerError = innerError;
-    this.filename = filename;
-  }
-}
-
-export function renameTopLevelModuleVariables() {
+function renameTopLevelModuleVariables() {
   // A babel plugin which renames variables in the top-level scope that are named "module".
   return {
     visitor: {
@@ -324,7 +321,20 @@ async function transformJS(
   const targetEnv = options.customTransformOptions?.environment;
   const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
 
-  const unstable_disableModuleWrapping = config.unstable_disableModuleWrapping;
+  const optimize =
+    // Ensure we don't enable tree shaking for scripts or assets.
+    file.type === 'js/module' &&
+    String(options.customTransformOptions?.optimize) === 'true' &&
+    // Disable tree shaking on JSON files.
+    !file.filename.endsWith('.json');
+  const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
+
+  if (optimize && !options.experimentalImportSupport) {
+    // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
+    throw new Error(
+      'Experimental tree shaking support only works with experimentalImportSupport enabled.'
+    );
+  }
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
@@ -341,10 +351,10 @@ async function transformJS(
   // @ts-expect-error: Not on types yet (Metro 0.80).
   const unstable_renameRequire = config.unstable_renameRequire;
 
-  // Perform the import-export transform (in case it's still needed), then
-  // fold requires and perform constant folding (if in dev).
-
-  ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+  // Disable all Metro single-file optimizations when full-graph optimization will be used.
+  if (!optimize) {
+    ast = applyImportSupport(ast, { filename: file.filename, options, importDefault, importAll });
+  }
 
   if (!options.dev) {
     ast = performConstantFolding(ast, { filename: file.filename });
@@ -380,6 +390,9 @@ async function transformJS(
         allowOptionalDependencies: config.allowOptionalDependencies,
         dependencyMapName: config.unstable_dependencyMapReservedName,
         unstable_allowRequireContext: config.unstable_allowRequireContext,
+        // If tree shaking is enabled, then preserve the original require calls.
+        // This ensures require.context calls are not broken.
+        collectOnly: optimize === true,
       };
 
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
@@ -473,6 +486,29 @@ async function transformJS(
     ));
   }
 
+  const possibleReconcile: ReconcileTransformSettings | undefined =
+    optimize && collectDependenciesOptions
+      ? {
+          inlineRequires: options.inlineRequires,
+          importDefault,
+          importAll,
+          normalizePseudoGlobals: shouldNormalizePseudoGlobals,
+          globalPrefix: config.globalPrefix,
+          unstable_compactOutput: config.unstable_compactOutput,
+          collectDependenciesOptions,
+          minify: minify
+            ? {
+                minifierPath: config.minifierPath,
+                minifierConfig: config.minifierConfig,
+              }
+            : undefined,
+          unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+          optimizationSizeLimit: config.optimizationSizeLimit,
+          unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
+          unstable_renameRequire,
+        }
+      : undefined;
+
   const output: ExpoJsOutput[] = [
     {
       data: {
@@ -482,6 +518,14 @@ async function transformJS(
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactClientReference: file.reactClientReference,
+        ...(possibleReconcile
+          ? {
+              ast: wrappedAst,
+              // Store settings for the module that will be used to finish transformation after graph-based optimizations
+              // have finished.
+              reconcile: possibleReconcile,
+            }
+          : {}),
       },
       type: file.type,
     },
@@ -541,6 +585,7 @@ async function transformJSWithBabel(
     }
   }
 
+  // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
   const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [functionMapBabelPlugin])
@@ -706,9 +751,55 @@ export function getCacheKey(config: JsTransformerConfig): string {
   ].join('$');
 }
 
+/**
+ * Produces a Babel template that transforms an "import(...)" call into a
+ * "require(...)" call to the asyncRequire specified.
+ */
+const makeShimAsyncRequireTemplate = template.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
+
+type InternalDependency = any;
+
 const disabledDependencyTransformer: DependencyTransformer = {
-  transformSyncRequire: () => {},
-  transformImportCall: () => {},
+  transformSyncRequire: (path) => {},
+  transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
+    // HACK: Ensure the async import code is included in the bundle when an import() call is found.
+    let topParent = path;
+    while (topParent.parentPath) {
+      topParent = topParent.parentPath;
+    }
+
+    // @ts-expect-error
+    if (topParent._handled) {
+      return;
+    }
+
+    path.insertAfter(
+      makeShimAsyncRequireTemplate({
+        ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+      })
+    );
+    // @ts-expect-error: Prevent recursive loop
+    topParent._handled = true;
+  },
   transformPrefetch: () => {},
   transformIllegalDynamicRequire: () => {},
 };
+
+export function collectDependenciesForShaking(
+  ast: babylon.ParseResult<t.File>,
+  options: CollectDependenciesOptions
+) {
+  const collectDependenciesOptions = {
+    ...options,
+
+    // If tree shaking is enabled, then preserve the original require calls.
+    // This ensures require.context calls are not broken.
+    collectOnly: true,
+  };
+
+  return collectDependencies(ast, {
+    ...collectDependenciesOptions,
+    // This setting shouldn't be shared with the tree shaking transformer.
+    dependencyTransformer: disabledDependencyTransformer,
+  });
+}

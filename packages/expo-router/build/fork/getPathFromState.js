@@ -169,7 +169,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         }
         pattern = inputPattern;
         if (route.params) {
-            if (route.params['#']) {
+            if (route.params['#'] !== undefined) {
                 hash = route.params['#'];
                 delete route.params['#'];
             }

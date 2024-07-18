@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.7.0 — 2024-07-18
+
+### 🎉 New features
+
+- Add experimental check to validate packages against known issues in React Native Directory. Enable it with `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK=1`.  ([#30496](https://github.com/expo/expo/pull/30496) by [@brentvatne](https://github.com/brentvatne))
+
 ## 1.6.1 — 2024-05-16
 
 _This version does not introduce any user-facing changes._

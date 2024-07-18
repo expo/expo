@@ -247,7 +247,8 @@ class ExpoCameraView(
           }
           cacheDirectory.let {
             scope.launch {
-              ResolveTakenPicture(data, promise, options, it) { response: Bundle ->
+              val mirror = options.mirror && lensFacing == CameraType.FRONT
+              ResolveTakenPicture(data, promise, options, mirror, it) { response: Bundle ->
                 onPictureSaved(response)
               }.resolve()
             }

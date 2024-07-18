@@ -14,6 +14,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     loop: boolean;
     /**
+     * Determines whether the player should allow external playback.
+     * @default true
+     * @platform ios
+     */
+    allowsExternalPlayback: boolean;
+    /**
      * Boolean value whether the player is currently muted.
      * Setting this property to `true`/`false` will mute/unmute the player.
      * @default false
