@@ -37,6 +37,10 @@ const RawWebView = React.forwardRef(({ actions, ...props }, ref) => {
     <WebView
       webviewDebuggingEnabled={__DEV__}
       originWhitelist={['*']}
+      allowFileAccess
+      allowFileAccessFromFileURLs
+      allowsAirPlayForMediaPlayback
+      allowsFullscreenVideo
       {...props}
       style={[
         props.style

@@ -759,7 +759,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         res.setHeader('Content-Type', 'text/html');
         res.end(
           // Create the entry HTML file.
-          getWebviewProxyHtml(metroUrl)
+          getWebviewProxyHtml(metroUrl, { title: path.basename(file) })
         );
       });
 
@@ -1379,7 +1379,7 @@ function getWebviewProxyForFilepath(generatedEntry: string, filePath: string) {
   };
 }
 
-export function getWebviewProxyHtml(src?: string) {
+export function getWebviewProxyHtml(src?: string, { title }: { title?: string } = {}) {
   return `
     <!DOCTYPE html>
     <html>
@@ -1387,6 +1387,7 @@ export function getWebviewProxyHtml(src?: string) {
         <meta charset="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        ${title ? `<title>${title}</title>` : ''}
         <style id="expo-reset">
         /* These styles make the body full-height */
         html,
