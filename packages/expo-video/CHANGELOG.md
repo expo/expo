@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Refactor `VideoPlayer.kt`, organize files ([#30452](https://github.com/expo/expo/pull/30452) by [@behenate](https://github.com/behenate))
+
 ## 1.2.3 — 2024-07-11
 
 ### 🛠 Breaking changes

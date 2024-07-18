@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.enums
 
 import androidx.media3.ui.AspectRatioFrameLayout
 import expo.modules.kotlin.types.Enumerable
