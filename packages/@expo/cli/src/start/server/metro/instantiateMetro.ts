@@ -195,7 +195,7 @@ export async function instantiateMetroAsync(
     }
   );
 
-  const { securityHeadersMiddleware, createDevServerMiddleware } =
+  const { createDevServerMiddleware, securityHeadersMiddleware } =
     require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
 
   const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
@@ -210,14 +210,12 @@ export async function instantiateMetroAsync(
 
   if (!isExporting) {
     // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
-    // TODO: This causes issues with RSC previews
     replaceMiddlewareWith(
       middleware as ConnectServer,
       securityHeadersMiddleware,
       createCorsMiddleware(exp)
     );
 
-    // TODO: This causes issues with RSC previews
     prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
     // TODO: We can probably drop this now.
@@ -230,14 +228,12 @@ export async function instantiateMetroAsync(
       return middleware.use(metroMiddleware);
     };
 
-    // TODO: This causes issues with RSC previews
     middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
     // Initialize all React Native debug features
     const { debugMiddleware, ...options } = createDebugMiddleware(metroBundler);
     debugWebsocketEndpoints = options.debugWebsocketEndpoints;
     prependMiddleware(middleware, debugMiddleware);
-    // TODO: This causes issues with RSC previews
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
   }
 
