@@ -33,7 +33,6 @@ export function registerServerReferenceDEV(
   encodeFormAction: string
 ) {
   const res = globalThis._REACT_registerServerReference(proxy, reference, encodeFormAction);
-  console.log('[SSR] registerServerReferenceDEV:', reference + '#' + encodeFormAction, res);
   getKnownServerReferences().set(reference + '#' + encodeFormAction, res);
   return res;
 }

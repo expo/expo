@@ -16,10 +16,11 @@ import {
   createContext,
   createElement,
   memo,
-  use,
   useCallback,
   useState,
   startTransition,
+  // @ts-expect-error
+  use,
 } from 'react';
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
