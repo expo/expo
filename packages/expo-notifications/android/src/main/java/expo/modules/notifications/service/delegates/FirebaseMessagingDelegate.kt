@@ -12,6 +12,7 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
+import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.*
@@ -98,6 +99,14 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
     val identifier = getNotificationIdentifier(remoteMessage)
     val payload = JSONObject(remoteMessage.data as Map<*, *>)
+    val vibrationPattern = remoteMessage.notification?.vibrateTimings
+    if (vibrationPattern != null) {
+      val jsonVibrationTimings = JSONArray()
+      vibrationPattern.forEach {
+        jsonVibrationTimings.put(it.toInt() )
+      }
+      payload.put("vibrate", jsonVibrationTimings)
+    }
     val content = JSONNotificationContentBuilder(context).setPayload(payload).build()
     val request = createNotificationRequest(identifier, content, FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))
