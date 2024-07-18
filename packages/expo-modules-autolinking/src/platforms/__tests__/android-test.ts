@@ -68,7 +68,11 @@ describe(resolveModuleAsync, () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, ['android/build.gradle', 'subproject/build.gradle', 'kotlinSubProject/build.gradle.kts'], pkgDir);
+    registerGlobMock(
+      glob,
+      ['android/build.gradle', 'subproject/build.gradle', 'kotlinSubProject/build.gradle.kts'],
+      pkgDir
+    );
 
     const result = await resolveModuleAsync(name, {
       path: pkgDir,
