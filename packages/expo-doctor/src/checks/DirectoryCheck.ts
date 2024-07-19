@@ -109,7 +109,7 @@ export class DirectoryCheck implements DoctorCheck {
 
     if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
       issues.push(
-        `- ${unknownPackages.join(', ')} ${unknownPackages.length > 1 ? 'were' : 'was'} not validated because ${unknownPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can hide this message by setting ${chalk.bold('expo.doctor.directoryCheck.listUnknownPackages')} to ${chalk.bold('false')} in your package.json.`
+        `- ${unknownPackages.join(', ')} ${unknownPackages.length > 1 ? 'were' : 'was'} not validated because ${unknownPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can hide this message by setting ${chalk.bold('expo.doctor.directoryCheck.listUnknownPackages')} to ${chalk.bold('false')} in package.json.`
       );
     }
 
