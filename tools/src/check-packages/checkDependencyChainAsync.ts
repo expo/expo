@@ -17,6 +17,7 @@ type SourceFile = {
 type SourceFileImport = {
   packageName: string;
   packagePath?: string;
+  isTypeOnly?: boolean;
 };
 
 type SourceFileImports = {
@@ -24,6 +25,8 @@ type SourceFileImports = {
   external: SourceFileImport[];
   builtIn: SourceFileImport[];
 };
+
+const IGNORED_CHAINS = ['expo-modules-core'];
 
 /**
  * Checks whether the package has valid dependency chains for each import.
@@ -81,10 +84,11 @@ function createDependencyChainValidator(pkg: Package) {
     DependencyKind.Peer,
   ]);
 
+  IGNORED_CHAINS.forEach((dependency) => dependencyMap.set(dependency, null));
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
 
   return (ref: SourceFileImport) =>
-    pkg.packageName === ref.packageName || dependencyMap.has(ref.packageName);
+    pkg.packageName === ref.packageName || ref.isTypeOnly || dependencyMap.has(ref.packageName);
 }
 
 /** Get a list of all source files to validate for dependency chains */
@@ -131,7 +135,7 @@ function getSourceFileImports(pkg: Package, sourceFile: SourceFile): SourceFileI
 function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImports) {
   if (ts.isImportDeclaration(node)) {
     // Collect `import` statements
-    storeTypescriptImport(imports, node.moduleSpecifier.getText());
+    storeTypescriptImport(imports, node.moduleSpecifier.getText(), node.importClause?.isTypeOnly);
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require' &&
@@ -148,22 +152,31 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
   return imports;
 }
 
-function storeTypescriptImport(store: SourceFileImports, importText: string): void {
+function storeTypescriptImport(
+  store: SourceFileImports,
+  importText: string,
+  importTypeOnly?: boolean
+): void {
   const importRef = importText.replace(/['"]/g, '');
 
   if (isBuiltin(importRef)) {
-    store.builtIn.push({ packageName: importRef });
+    store.builtIn.push({ packageName: importRef, isTypeOnly: importTypeOnly });
   } else if (importRef.startsWith('.')) {
-    store.internal.push({ packageName: importRef });
+    store.internal.push({ packageName: importRef, isTypeOnly: importTypeOnly });
   } else if (importRef.startsWith('@')) {
     const [packageScope, packageName, ...packagePath] = importRef.split('/');
     store.external.push({
       packageName: `${packageScope}/${packageName}`,
       packagePath: packagePath.join('/'),
+      isTypeOnly: importTypeOnly,
     });
   } else {
     const [packageName, ...packagePath] = importRef.split('/');
-    store.external.push({ packageName, packagePath: packagePath.join('/') });
+    store.external.push({
+      packageName,
+      packagePath: packagePath.join('/'),
+      isTypeOnly: importTypeOnly,
+    });
   }
 }
 
