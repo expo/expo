@@ -10,6 +10,7 @@
 
 - Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
 - [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Skip dev server websocket connection for expo updates. ([#30535](https://github.com/expo/expo/pull/30535) by [@joeporpeglia](https://github.com/joeporpeglia))
 
 ### 💡 Others
 
