@@ -9,8 +9,19 @@ export const unstable_settings = {
   products: {
     initialRouteName: 'products',
   },
+  charts: {
+    initialRouteName: 'charts',
+  },
 };
 
 export default function Layout() {
-  return <Stack />;
+  return (
+    <Stack
+      screenOptions={{
+        contentStyle: {
+          backgroundColor: 'white',
+        },
+      }}
+    />
+  );
 }

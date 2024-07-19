@@ -25,4 +25,9 @@ config.resolver.blockList = [
 config.resolver.assetExts.push('db');
 config.transformer.enableBabelRCLookup = false;
 
+////
+config.resolver.sourceExts.push('md', 'mdx');
+
+config.transformer.babelTransformerPath = require.resolve('./metro.transformer.js');
+
 module.exports = config;

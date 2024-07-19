@@ -50,6 +50,7 @@ const RawWebView = React.forwardRef(
         ]}
         onMessage={(event) => {
           const { type, data } = JSON.parse(event.nativeEvent.data);
+
           if (type === '$$native_action') {
             if (!actions || !actions[data.actionId]) {
               throw new Error(`Native action "${data.actionId}" is not defined.`);
@@ -59,7 +60,7 @@ const RawWebView = React.forwardRef(
             }
 
             const action = actions[data.actionId];
-            const fnName = `${data.actionId}(${data.args.join(', ')})`;
+            const fnName = `${data.actionId}(${data.args})`;
 
             const emitError = (error) => {
               console.log('[Native] error:', fnName, error);

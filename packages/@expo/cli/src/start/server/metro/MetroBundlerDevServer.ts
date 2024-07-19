@@ -742,6 +742,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Generate a unique entry file for the webview.
         const generatedEntry = await this.getWebviewProxyEntry(file);
 
+        // Use public URL for dev + physical devices.
+        // e.g. `http://111.222.333.444:8081`
+        const publicUrl = this.urlCreator?.constructUrl({
+          hostType: 'lan',
+          scheme: 'http',
+        })!;
         // Create the script URL
         const metroUrl = new URL(
           createBundleUrlPath({
@@ -751,7 +757,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             platform: 'web',
             isExporting: false,
           }),
-          this.getDevServerUrlOrAssert()
+          publicUrl
+          // this.getDevServerUrlOrAssert()
         ).toString();
 
         res.statusCode = 200;
@@ -1392,12 +1399,12 @@ export function getWebviewProxyHtml(src?: string, { title }: { title?: string } 
         /* These styles make the body full-height */
         html,
         body {
-          height: 100%;
+          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
+          /* height: 100%; */
         }
         /* These styles make the root element full-height */
         #root {
           display: flex;
-          height: 100%;
           flex: 1;
         }
         </style>
