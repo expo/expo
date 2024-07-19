@@ -1,8 +1,6 @@
-//
-//  SplashScreenOptions.swift
-//  ExpoSplashScreen
-//
-//  Created by Alan Hughes on 17/07/2024.
-//
+import ExpoModulesCore
 
-import Foundation
+internal struct SplashScreenOptions: Record {
+  @Field var fade: Bool = false
+  @Field var duration: Double = 800
+}

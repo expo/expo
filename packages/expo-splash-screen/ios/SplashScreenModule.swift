@@ -1,8 +1,19 @@
-//
-//  SplashScreenModule.swift
-//  EXSplashScreen
-//
-//  Created by Alan Hughes on 17/07/2024.
-//
+import ExpoModulesCore
 
-import Foundation
+public class SplashScreenModule : Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoSplashScreen")
+  
+    Function("setOptions") { (options: SplashScreenOptions) in
+      SplashScreenManager.shared.setOptions(options: options)
+    }
+
+    Function("hide") {
+      SplashScreenManager.shared.hide()
+    }
+
+    AsyncFunction("hideAsync") {
+      SplashScreenManager.shared.hide()
+    }
+  }
+}
