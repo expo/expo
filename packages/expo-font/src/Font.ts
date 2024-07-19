@@ -3,7 +3,14 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
-import { isLoadedInCache, isLoadedNative, loadPromises, markLoaded, purgeCache } from './memory';
+import {
+  isLoadedInCache,
+  isLoadedNative,
+  loadPromises,
+  markLoaded,
+  purgeCache,
+  purgeFontFamilyFromCache,
+} from './memory';
 import { registerStaticFont } from './server';
 
 // @needsAudit
@@ -32,6 +39,16 @@ export function isLoaded(fontFamily: string): boolean {
     return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded(fontFamily);
   }
   return isLoadedNative(fontFamily);
+}
+
+/**
+ * Synchronously get all the fonts that have been loaded.
+ * This includes fonts that were bundled at build time using the config plugin as well as those loaded at runtime using `loadAsync`.
+ *
+ * @returns Returns array of font family names that have been loaded.
+ */
+export function getLoadedFonts(): string[] {
+  return ExpoFontLoader.loadedFonts;
 }
 
 // @needsAudit
@@ -196,7 +213,7 @@ async function unloadFontInNamespaceAsync(
   if (!isLoaded(fontFamily)) {
     return;
   } else {
-    purgeCache(fontFamily);
+    purgeFontFamilyFromCache(fontFamily);
   }
 
   // Important: we want all callers that concurrently try to load the same font to await the same

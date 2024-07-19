@@ -17,6 +17,13 @@ export declare function processFontFamily(fontFamily: string | null): string | n
  */
 export declare function isLoaded(fontFamily: string): boolean;
 /**
+ * Synchronously get all the fonts that have been loaded.
+ * This includes fonts that were bundled at build time using the config plugin as well as those loaded at runtime using `loadAsync`.
+ *
+ * @returns Returns array of font family names that have been loaded.
+ */
+export declare function getLoadedFonts(): string[];
+/**
  * Synchronously detect if the font for `fontFamily` is still being loaded.
  *
  * @param fontFamily The name used to load the `FontResource`.

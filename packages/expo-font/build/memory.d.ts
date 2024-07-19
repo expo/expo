@@ -4,5 +4,6 @@ export declare const loadPromises: {
 export declare const markLoaded: (fontFamily: string) => void;
 export declare const isLoadedInCache: (fontFamily: string) => boolean;
 export declare const isLoadedNative: (fontFamily: string) => boolean;
-export declare const purgeCache: (fontFamily?: string) => void;
+export declare const purgeFontFamilyFromCache: (fontFamily: string) => void;
+export declare const purgeCache: () => void;
 //# sourceMappingURL=memory.d.ts.map

@@ -1,7 +1,7 @@
 import ExpoFontLoader from './ExpoFontLoader';
 export const loadPromises = {};
 // cache the value on the js side for fast access to the fonts that are loaded
-const _cache = {};
+let _cache = {};
 export const markLoaded = (fontFamily) => {
     _cache[fontFamily] = true;
 };
@@ -20,10 +20,10 @@ export const isLoadedNative = (fontFamily) => {
         return fontFamily in _cache;
     }
 };
-export const purgeCache = (fontFamily) => {
-    const keysToPurge = fontFamily ? [fontFamily] : Object.keys(_cache);
-    for (const fontFamily of keysToPurge) {
-        delete _cache[fontFamily];
-    }
+export const purgeFontFamilyFromCache = (fontFamily) => {
+    delete _cache[fontFamily];
+};
+export const purgeCache = () => {
+    _cache = {};
 };
 //# sourceMappingURL=memory.js.map
