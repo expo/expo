@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { checkDependencyChainAsync } from './checkDependencyChainAsync';
+import { checkDependenciesAsync } from './checkDependenciesAsync';
 import checkUniformityAsync from './checkUniformityAsync';
 import runPackageScriptAsync from './runPackageScriptAsync';
 import { ActionOptions } from './types';
@@ -73,7 +73,7 @@ export default async function checkPackageAsync(
       await runPackageScriptAsync(pkg, 'lint', args);
     }
     if (options.dependencyCheck) {
-      await checkDependencyChainAsync(pkg, options.checkPackageType);
+      await checkDependenciesAsync(pkg, options.checkPackageType);
     }
     logger.log(`✨ ${green.bold(pkg.packageName)} checks passed`);
 

@@ -5,25 +5,25 @@ import ts from 'typescript';
 
 import type { ActionOptions } from './types';
 import Logger from '../Logger';
-import { DependencyKind, PackageDependency, type Package } from '../Packages';
+import { DependencyKind, type PackageDependency, type Package } from '../Packages';
 
-type PackageType = ActionOptions['checkPackageType'];
+type PackageCheckType = ActionOptions['checkPackageType'];
 
 type SourceFile = {
   path: string;
   type: 'source' | 'test';
 };
 
-type SourceFileImport = {
+type SourceFileImportRef = {
   packageName: string;
   packagePath?: string;
   isTypeOnly?: boolean;
 };
 
 type SourceFileImports = {
-  internal: SourceFileImport[];
-  external: SourceFileImport[];
-  builtIn: SourceFileImport[];
+  internal: SourceFileImportRef[];
+  external: SourceFileImportRef[];
+  builtIn: SourceFileImportRef[];
 };
 
 // We are incrementally rolling this out, the imports in this list are expected to be invalid
@@ -68,30 +68,30 @@ const IGNORED_PACKAGES = [
 ];
 
 /**
- * Checks whether the package has valid dependency chains for each import.
+ * Checks whether the package has valid dependency chains for each (external) import.
+ *
  * @param pkg Package to check
  * @param type What part of the package needs to be checked
- * @param match Path or pattern of the files to match
  */
-export async function checkDependencyChainAsync(pkg: Package, type: PackageType = 'package') {
+export async function checkDependenciesAsync(pkg: Package, type: PackageCheckType = 'package') {
   if (IGNORED_PACKAGES.includes(pkg.packageName)) {
     return;
   }
 
   const sources = (await getSourceFilesAsync(pkg, type))
     .filter((file) => file.type === 'source')
-    .map((file) => ({ file, imports: getSourceFileImports(pkg, file) }));
+    .map((file) => ({ file, importRefs: getSourceFileImports(file) }));
 
   if (!sources.length) {
     return;
   }
 
-  const importValidator = createDependencyChainValidator(pkg);
-  const invalidImports: { file: SourceFile; importRef: SourceFileImport }[] = [];
+  const isValidImport = createImportValidator(pkg);
+  const invalidImports: { file: SourceFile; importRef: SourceFileImportRef }[] = [];
 
   for (const source of sources) {
-    for (const importRef of source.imports.external) {
-      if (!importValidator(importRef)) {
+    for (const importRef of source.importRefs.external) {
+      if (!isValidImport(importRef)) {
         invalidImports.push({ file: source.file, importRef });
       }
     }
@@ -99,22 +99,24 @@ export async function checkDependencyChainAsync(pkg: Package, type: PackageType 
 
   if (invalidImports.length) {
     const importAreTypesOnly = invalidImports.every(({ importRef }) => importRef.isTypeOnly);
-    const dependencyList = [...invalidImports].map(({ importRef }) => importRef.packageName);
-    const uniqueDependencies = [...new Set(dependencyList)];
+    const importPackageNames = [
+      ...new Set(invalidImports.map(({ importRef }) => importRef.packageName)),
+    ];
 
     Logger.warn(
-      uniqueDependencies.length === 1
-        ? `📦 Invalid dependency${importAreTypesOnly ? ' (types only)' : ''}: ${uniqueDependencies.join(', ')}`
-        : `📦 Invalid dependencies${importAreTypesOnly ? ' (types only)' : ''}: ${uniqueDependencies.join(', ')}`
+      importPackageNames.length === 1
+        ? `📦 Invalid dependency${importAreTypesOnly ? ' (types only)' : ''}: ${importPackageNames.join(', ')}`
+        : `📦 Invalid dependencies${importAreTypesOnly ? ' (types only)' : ''}: ${importPackageNames.join(', ')}`
     );
 
     invalidImports.forEach(({ file, importRef }) => {
-      const properties = importRef.isTypeOnly ? ' (types only)' : '';
-      const fullImport = importRef.packagePath
+      const importPath = importRef.packagePath
         ? `${importRef.packageName}/${importRef.packagePath}`
         : `${importRef.packageName}`;
 
-      Logger.verbose(`     > ${path.relative(pkg.path, file.path)} - ${fullImport}${properties}`);
+      Logger.verbose(
+        `     > ${path.relative(pkg.path, file.path)} - ${importPath}${importRef.isTypeOnly ? ' (types only)' : ''}`
+      );
     });
 
     if (!importAreTypesOnly) {
@@ -123,7 +125,13 @@ export async function checkDependencyChainAsync(pkg: Package, type: PackageType 
   }
 }
 
-function createDependencyChainValidator(pkg: Package) {
+/**
+ * Create a filter guard that validates any import reference against the package dependencies.
+ * The filter only returns valid imports by checking:
+ *   - If the imported package name is equal to the current package name (e.g. for scripts)
+ *   - If the imported package name is in the package dependencies, devDependencies, or peerDependencies
+ */
+function createImportValidator(pkg: Package) {
   const dependencyMap = new Map<string, null | PackageDependency>();
   const dependencies = pkg.getDependencies([
     DependencyKind.Normal,
@@ -134,23 +142,27 @@ function createDependencyChainValidator(pkg: Package) {
   IGNORED_IMPORTS.forEach((dependency) => dependencyMap.set(dependency, null));
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
 
-  return (ref: SourceFileImport) =>
+  return (ref: SourceFileImportRef) =>
     pkg.packageName === ref.packageName || dependencyMap.has(ref.packageName);
 }
 
 /** Get a list of all source files to validate for dependency chains */
-async function getSourceFilesAsync(pkg: Package, type: PackageType): Promise<SourceFile[]> {
-  const cwd = getPackageTypePath(pkg, type);
-  const files = await glob('src/**/*.{ts,tsx,js,jsx}', { cwd, absolute: true, nodir: true });
+async function getSourceFilesAsync(pkg: Package, type: PackageCheckType): Promise<SourceFile[]> {
+  const files = await glob('src/**/*.{ts,tsx,js,jsx}', {
+    cwd: getSourceFilePaths(pkg, type),
+    absolute: true,
+    nodir: true,
+  });
 
   return files.map((filePath) =>
-    filePath.includes('__tests__') || filePath.includes('__mocks__')
+    filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
       ? { path: filePath, type: 'test' }
       : { path: filePath, type: 'source' }
   );
 }
 
-function getPackageTypePath(pkg: Package, type: PackageType): string {
+/** Get the path of source files based on the package, and the type of check currently running */
+function getSourceFilePaths(pkg: Package, type: PackageCheckType): string {
   switch (type) {
     case 'package':
       return pkg.path;
@@ -165,9 +177,10 @@ function getPackageTypePath(pkg: Package, type: PackageType): string {
   }
 }
 
-function getSourceFileImports(pkg: Package, sourceFile: SourceFile): SourceFileImports {
-  const compiler = createTypescriptCompiler();
+/** Parse and return all imports from a single source file, usign TypeScript AST parsing */
+function getSourceFileImports(sourceFile: SourceFile): SourceFileImports {
   const imports: SourceFileImports = { internal: [], external: [], builtIn: [] };
+  const compiler = createTypescriptCompiler();
   const source = compiler.getSourceFile(sourceFile.path, ts.ScriptTarget.Latest, (message) => {
     throw new Error(`Failed to parse ${sourceFile.path}: ${message}`);
   });
@@ -179,6 +192,7 @@ function getSourceFileImports(pkg: Package, sourceFile: SourceFile): SourceFileI
   return imports;
 }
 
+/** Iterate the parsed TypeScript AST and collect all imports or require statements */
 function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImports) {
   if (ts.isImportDeclaration(node)) {
     // Collect `import` statements
@@ -227,7 +241,10 @@ function storeTypescriptImport(
   }
 }
 
+/** The shared but lazily initialized TypeScript compiler instance */
 let compiler: ts.CompilerHost | null = null;
+
+/** Get or create the TypeScript compiler used to analyze imports for all source files */
 function createTypescriptCompiler() {
   if (!compiler) {
     compiler = ts.createCompilerHost(
