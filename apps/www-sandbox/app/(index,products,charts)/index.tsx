@@ -8,6 +8,8 @@ import { ChevronLeft } from 'lucide-react';
 
 import { Stack } from 'expo-router';
 
+import ThreeThing from '@/components/www/three-01';
+
 import Content from '@/components/mdx/story.mdx';
 import { getDOMComponents, MDXComponents } from '@bacons/mdx';
 
@@ -34,8 +36,8 @@ export default function Route() {
         }}
       /> */}
 
+      <ThreeThing style={{ height: 360 }} />
       <Content />
-      {/* <ChevronLeft /> */}
 
       {/* <Auth01 />
       <Dashboard01 />
