@@ -3,6 +3,7 @@
 package expo.modules.video
 
 import android.app.Activity
+import android.net.Uri
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
@@ -272,12 +273,12 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") { ref: VideoPlayer, source: Either<String, VideoSource>? ->
+      Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
         val videoSource = source?.let {
           if (it.`is`(VideoSource::class)) {
             it.get(VideoSource::class)
           } else {
-            VideoSource(it.get(String::class))
+            VideoSource(it.get(Uri::class))
           }
         }
 
