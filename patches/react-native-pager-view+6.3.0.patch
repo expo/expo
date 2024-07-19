@@ -1,13 +1,3 @@
-diff --git a/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml b/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml
-index ee757d6..068070f 100644
---- a/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml
-+++ b/node_modules/react-native-pager-view/android/src/main/AndroidManifest.xml
-@@ -1,4 +1,4 @@
- <manifest xmlns:android="http://schemas.android.com/apk/res/android"
--          package="com.reactnativepagerview">
-+          >
- 
- </manifest>
 diff --git a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
 index 4d0adff..959362c 100644
 --- a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
@@ -21,15 +11,3 @@ index 4d0adff..959362c 100644
          PagerViewViewManagerImpl.addView(host, child, index)
      }
  
-diff --git a/node_modules/react-native-pager-view/ios/ReactNativePageView.m b/node_modules/react-native-pager-view/ios/ReactNativePageView.m
-index 01e7f8e..a59e8f8 100644
---- a/node_modules/react-native-pager-view/ios/ReactNativePageView.m
-+++ b/node_modules/react-native-pager-view/ios/ReactNativePageView.m
-@@ -1,6 +1,6 @@
- 
- #import "ReactNativePageView.h"
--#import "React/RCTLog.h"
-+#import <React/RCTLog.h>
- #import <React/RCTViewManager.h>
- 
- #import "UIViewController+CreateExtension.h"
