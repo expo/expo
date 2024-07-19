@@ -20,8 +20,8 @@ Accounts can create Robot users to take actions on resources owned by the Accoun
 ## Access tokens usage
 
 You can use any tokens you have created to perform actions with the EAS CLI. To use tokens, you need to define an environment variable, like `EXPO_TOKEN="token"`, before running commands.
-Once you set the `EXPO_TOKEN` environment variable, you can run any EAS CLI command being authenticated with the token without a need to run the `eas login` command.
-The `eas login` command is only used for username and password authentication. The `EXPO_TOKEN` auth method takes precedence over the username and password if both are configured.
+
+Once you set the `EXPO_TOKEN` environment variable, you can run any EAS CLI command authenticated with the token without running the `eas login` command. The `eas login` command is only used for username and password authentication. The `EXPO_TOKEN` auth method takes precedence over the username and password if both are configured.
 
 For example, once you obtain a token, you can run the following EAS CLI command to trigger a build:
 
