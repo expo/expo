@@ -12,7 +12,7 @@ import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.yoga.YogaConstants
-import expo.modules.video.ifYogaUndefinedUse
+import expo.modules.video.utils.ifYogaUndefinedUse
 
 class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   enum class BorderRadiusConfig {

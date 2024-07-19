@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoConfig, ExpoUpdatesManifest, EmbeddedManifest, ManifestAsset as ManifestAssetForReExport, ManifestExtra as ManifestExtraForReExport, ClientScopingConfig as ClientScopingConfigForReExport, ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport } from 'expo-manifests';
 export declare enum AppOwnership {
     /**

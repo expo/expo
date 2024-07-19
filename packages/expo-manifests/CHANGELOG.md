@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.14.3 — 2024-05-16

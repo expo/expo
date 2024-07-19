@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` peer dependencies for isolated modules. ([#30474](https://github.com/expo/expo/pull/30474) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))

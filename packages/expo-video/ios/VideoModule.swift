@@ -129,6 +129,13 @@ public final class VideoModule: Module {
         player.isMuted = muted
       }
 
+      Property("allowsExternalPlayback") { player -> Bool in
+        return player.pointer.allowsExternalPlayback
+      }
+      .set { (player, allowsExternalPlayback: Bool) in
+        player.pointer.allowsExternalPlayback = allowsExternalPlayback
+      }
+
       Property("currentTime") { player -> Double in
         return player.pointer.currentTime().seconds
       }

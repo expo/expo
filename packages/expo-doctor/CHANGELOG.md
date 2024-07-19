@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 1.8.1 — 2024-07-19
+
+### 🐛 Bug fixes
+
+- Change default ignore to string for react-native rather than regex. ([#30532](https://github.com/expo/expo/pull/30532) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.8.0 — 2024-07-19
+
+### 🎉 New features
+
+- List unvalidated packages in directory check. Add `expo.doctor.directoryCheck.exclude` to **package.json** config to skip validating packages entirely. ([#30517](https://github.com/expo/expo/pull/30517) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.7.0 — 2024-07-18
+
+### 🎉 New features
+
+- Add experimental check to validate packages against known issues in React Native Directory. Enable it with `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK=1`.  ([#30496](https://github.com/expo/expo/pull/30496) by [@brentvatne](https://github.com/brentvatne))
+
 ## 1.6.1 — 2024-05-16
 
 _This version does not introduce any user-facing changes._

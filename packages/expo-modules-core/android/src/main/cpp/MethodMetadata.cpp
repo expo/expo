@@ -150,6 +150,10 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
   jsi::Runtime &runtime
 ) {
   if (body == nullptr) {
+    if (jBodyReference == nullptr) {
+      return nullptr;
+    }
+
     if (isAsync) {
       body = std::make_shared<jsi::Function>(toAsyncFunction(runtime));
     } else {
