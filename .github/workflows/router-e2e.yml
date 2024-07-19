@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -60,7 +60,7 @@ jobs:
           BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
 
           # Start the build early
-          curl --fail --silent --show-error $BUNDLE_URL
+          curl --silent --output /dev/null --show-error --fail $BUNDLE_URL
 
           # Save the app url
           echo "MAESTRO_APP_URL=${E2E_ROUTER_APP_URL}" >> $GITHUB_ENV
