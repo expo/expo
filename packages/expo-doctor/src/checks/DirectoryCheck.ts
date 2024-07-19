@@ -11,7 +11,8 @@ const DEFAULT_PACKAGES_TO_IGNORE = [
   'react-dom',
   'react-native-web',
   'jest',
-  /^babel-*/,
+  /^babel-.*$/,
+  /^@types\/.*$/,
 ];
 
 export function filterPackages(packages: string[], ignoredPackages: (RegExp | string)[]) {
