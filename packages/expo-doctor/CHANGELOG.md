@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- List unvalidated packages in directory check. Add `expo.doctor.directoryCheck.exclude` to **package.json** config to skip validating packages entirely. ([#30517](https://github.com/expo/expo/pull/30517) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.8.0 — 2024-07-19
+
+### 🎉 New features
+
+- List unvalidated packages in directory check. Add `expo.doctor.directoryCheck.exclude` to **package.json** config to skip validating packages entirely. ([#30517](https://github.com/expo/expo/pull/30517) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.7.0 — 2024-07-18
 
