@@ -89,36 +89,54 @@ export class DirectoryCheck implements DoctorCheck {
 
     if (newArchUnsupportedPackages.length > 0) {
       issues.push(
-        `- ${newArchUnsupportedPackages.join(', ')} ${newArchUnsupportedPackages.length > 1 ? 'are' : 'is'} not supported on the New Architecture.`
+        `${chalk.bold(`Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
       );
     }
 
     if (newArchUntestedPackages.length > 0) {
       issues.push(
-        `- ${newArchUntestedPackages.join(', ')} ${newArchUntestedPackages.length > 1 ? 'are' : 'is'} not tested on the New Architecture.`
+        `${chalk.bold(`Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
       );
     }
 
     if (unmaintainedPackages.length > 0) {
-      issues.push(
-        `- ${unmaintainedPackages.join(', ')} ${unmaintainedPackages.length > 1 ? 'are' : 'is'} unmaintained.`
+      issues.push(`${chalk.bold(`Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
+    }
+
+    if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
+      issues.push(`${chalk.bold(`No metadata available`)}: ${unknownPackages.join(', ')}`);
+    }
+
+    if (issues.length) {
+      issues.unshift(
+        `The following issues were found when validating your dependencies against React Native Directory:`
       );
     }
 
-    const isSuccessful = issues.length === 0;
+    let advice = ``;
 
-    if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
-      issues.push(
-        `- ${unknownPackages.join(', ')} ${unknownPackages.length > 1 ? 'were' : 'was'} not validated because ${unknownPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can hide this message by setting ${chalk.bold('expo.doctor.directoryCheck.listUnknownPackages')} to ${chalk.bold('false')} in package.json.`
-      );
+    if (
+      unmaintainedPackages.length > 0 ||
+      newArchUnsupportedPackages.length > 0 ||
+      newArchUntestedPackages.length > 0
+    ) {
+
+      advice += `\n- Use libraries that are actively maintained and support the New Architecture. Find alternative libraries with ${chalk.bold('https://reactnative.directory')}.`;
+      advice += `\n${chalk.bold('-')} Add packages to ${chalk.bold(
+        'expo.doctor.directoryCheck.exclude'
+      )} in package.json to selectively skip validations, if the warning is not relevant.`;
+    }
+
+    if (unknownPackages.length > 0) {
+      advice += `\n${chalk.bold('-')} Update React Native Directory to include metadata for unknown packages. Alternatively, set ${chalk.bold(
+        'expo.doctor.directoryCheck.listUnknownPackages'
+      )} in package.json to ${chalk.bold('false')} to skip warnings about packages with no metadata, if the warning is not relevant.`;
     }
 
     return {
-      isSuccessful,
+      isSuccessful: issues.length === 0,
       issues,
-      advice: issues.length
-        ? `Use libraries that are actively maintained and support the New Architecture, or exclude them from validations (${chalk.bold('expo.doctor.directoryCheck.exclude')} in package.json) to silence warnings. Find alternative libraries at https://reactnative.directory.`
-        : undefined,
+      advice: issues.length ? advice : undefined,
     };
   }
 }
