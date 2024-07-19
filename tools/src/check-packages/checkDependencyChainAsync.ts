@@ -26,7 +26,136 @@ type SourceFileImports = {
   builtIn: SourceFileImport[];
 };
 
-const IGNORED_CHAINS = ['expo-modules-core'];
+// We are incrementally rolling this out, the imports in this list are expected to be invalid
+const IGNORED_IMPORTS = ['expo-modules-core'];
+// We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
+const IGNORED_PACKAGES = [
+  '@expo/cli',
+  '@expo/config',
+  '@expo/config-plugins',
+  '@expo/config-types',
+  '@expo/dev-server',
+  '@expo/env',
+  '@expo/fingerprint',
+  '@expo/image-utils',
+  '@expo/json-file',
+  '@expo/metro-config',
+  '@expo/metro-runtime',
+  '@expo/osascript',
+  '@expo/package-manager',
+  '@expo/pkcs12',
+  '@expo/plist',
+  '@expo/prebuild-config',
+  '@expo/schemer',
+  '@expo/server',
+  'babel-preset-expo',
+  'create-expo',
+  'create-expo-module',
+  'create-expo-nightly',
+  'eslint-config-expo',
+  'eslint-config-universe',
+  'eslint-plugin-expo',
+  'expo',
+  'expo-apple-authentication',
+  'expo-application',
+  'expo-asset',
+  'expo-audio',
+  'expo-auth-session',
+  'expo-av',
+  'expo-background-fetch',
+  'expo-barcode-scanner',
+  'expo-battery',
+  'expo-blur',
+  'expo-brightness',
+  'expo-build-properties',
+  'expo-calendar',
+  'expo-camera',
+  'expo-cellular',
+  'expo-checkbox',
+  'expo-clipboard',
+  'expo-constants',
+  'expo-contacts',
+  'expo-crypto',
+  'expo-dev-client',
+  'expo-dev-client-components',
+  'expo-dev-launcher',
+  'expo-dev-menu',
+  'expo-dev-menu-interface',
+  'expo-device',
+  'expo-doctor',
+  'expo-document-picker',
+  'expo-eas-client',
+  'expo-env-info',
+  'expo-face-detector',
+  'expo-file-system',
+  'expo-font',
+  'expo-gl',
+  'expo-haptics',
+  'expo-image',
+  'expo-image-loader',
+  'expo-image-manipulator',
+  'expo-image-picker',
+  'expo-insights',
+  'expo-intent-launcher',
+  'expo-json-utils',
+  'expo-keep-awake',
+  'expo-linear-gradient',
+  'expo-linking',
+  'expo-local-authentication',
+  'expo-localization',
+  'expo-location',
+  'expo-mail-composer',
+  'expo-manifests',
+  'expo-maps',
+  'expo-media-library',
+  'expo-module-scripts',
+  'expo-module-template',
+  'expo-module-template-local',
+  'expo-modules-autolinking',
+  'expo-modules-core',
+  'expo-modules-test-core',
+  'expo-navigation-bar',
+  'expo-network',
+  'expo-network-addons',
+  'expo-notifications',
+  'expo-print',
+  'expo-processing',
+  'expo-random',
+  'expo-router',
+  'expo-screen-capture',
+  'expo-screen-orientation',
+  'expo-secure-store',
+  'expo-sensors',
+  'expo-sharing',
+  'expo-sms',
+  'expo-speech',
+  'expo-splash-screen',
+  'expo-sqlite',
+  'expo-standard-web-crypto',
+  'expo-status-bar',
+  'expo-store-review',
+  'expo-structured-headers',
+  'expo-symbols',
+  'expo-system-ui',
+  'expo-task-manager',
+  'expo-test-runner',
+  'expo-tracking-transparency',
+  'expo-updates',
+  'expo-updates-interface',
+  'expo-video',
+  'expo-video-thumbnails',
+  'expo-web-browser',
+  'expo-yarn-workspaces',
+  'html-elements',
+  'install-expo-modules',
+  'jest-expo',
+  'jest-expo-puppeteer',
+  'patch-project',
+  'pod-install',
+  'react-native-unimodules',
+  'unimodules-app-loader',
+  'uri-scheme',
+];
 
 /**
  * Checks whether the package has valid dependency chains for each import.
@@ -35,6 +164,10 @@ const IGNORED_CHAINS = ['expo-modules-core'];
  * @param match Path or pattern of the files to match
  */
 export async function checkDependencyChainAsync(pkg: Package, type: PackageType = 'package') {
+  if (IGNORED_PACKAGES.includes(pkg.packageName)) {
+    return;
+  }
+
   const sources = (await getSourceFilesAsync(pkg, type))
     .filter((file) => file.type === 'source')
     .map((file) => ({ file, imports: getSourceFileImports(pkg, file) }));
@@ -55,24 +188,28 @@ export async function checkDependencyChainAsync(pkg: Package, type: PackageType 
   }
 
   if (invalidImports.length) {
+    const importAreTypesOnly = invalidImports.every(({ importRef }) => importRef.isTypeOnly);
     const dependencyList = [...invalidImports].map(({ importRef }) => importRef.packageName);
     const uniqueDependencies = [...new Set(dependencyList)];
 
     Logger.warn(
       uniqueDependencies.length === 1
-        ? `📦 Invalid dependency: ${uniqueDependencies.join(', ')}`
-        : `📦 Invalid dependencies: ${uniqueDependencies.join(', ')}`
+        ? `📦 Invalid dependency${importAreTypesOnly ? ' (types only)' : ''}: ${uniqueDependencies.join(', ')}`
+        : `📦 Invalid dependencies${importAreTypesOnly ? ' (types only)' : ''}: ${uniqueDependencies.join(', ')}`
     );
 
     invalidImports.forEach(({ file, importRef }) => {
-      Logger.verbose(
-        importRef.packagePath
-          ? `     > ${path.relative(pkg.path, file.path)} - ${importRef.packageName}/${importRef.packagePath}`
-          : `     > ${path.relative(pkg.path, file.path)} - ${importRef.packageName}`
-      );
+      const properties = importRef.isTypeOnly ? ' (types only)' : '';
+      const fullImport = importRef.packagePath
+        ? `${importRef.packageName}/${importRef.packagePath}`
+        : `${importRef.packageName}`;
+
+      Logger.verbose(`     > ${path.relative(pkg.path, file.path)} - ${fullImport}${properties}`);
     });
 
-    throw new Error(`${pkg.packageName} has invalid dependency chains.`);
+    if (!importAreTypesOnly) {
+      throw new Error(`${pkg.packageName} has invalid dependency chains.`);
+    }
   }
 }
 
@@ -84,11 +221,11 @@ function createDependencyChainValidator(pkg: Package) {
     DependencyKind.Peer,
   ]);
 
-  IGNORED_CHAINS.forEach((dependency) => dependencyMap.set(dependency, null));
+  IGNORED_IMPORTS.forEach((dependency) => dependencyMap.set(dependency, null));
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
 
   return (ref: SourceFileImport) =>
-    pkg.packageName === ref.packageName || ref.isTypeOnly || dependencyMap.has(ref.packageName);
+    pkg.packageName === ref.packageName || dependencyMap.has(ref.packageName);
 }
 
 /** Get a list of all source files to validate for dependency chains */
