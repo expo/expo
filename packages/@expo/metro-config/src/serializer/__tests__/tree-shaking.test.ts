@@ -346,7 +346,7 @@ it(`supports async import()`, async () => {
       }),
     },
     {
-      absolutePath: '/app/node_modules/expo-mock/async-require/index.js',
+      absolutePath: '/app/expo-mock/async-require',
       data: expect.objectContaining({
         data: expect.objectContaining({
           // exportNames: undefined,
@@ -982,7 +982,7 @@ it(`removes unused exports`, async () => {
   expect(artifacts).toMatchInlineSnapshot(`
     [
       {
-        "filename": "_expo/static/js/web/index-7e9b9c3c9d06154d4261ce843f7fc8b3.js",
+        "filename": "_expo/static/js/web/index-d0f2de52175bf8c38bbd9fb976cd1222.js",
         "metadata": {
           "isAsync": false,
           "modulePaths": [
