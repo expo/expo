@@ -24,10 +24,7 @@ function wrapModule(module, options) {
         return { src: output.data.code, paths: {} };
     }
     const { params, paths } = getModuleParams(module, options);
-    let src = output.data.code;
-    if (!options.skipWrapping) {
-        src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
-    }
+    const src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
     return { src, paths };
 }
 exports.wrapModule = wrapModule;

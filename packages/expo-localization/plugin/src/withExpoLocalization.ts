@@ -1,5 +1,5 @@
 import { getMainActivityOrThrow } from '@expo/config-plugins/build/android/Manifest';
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   withAndroidManifest,
