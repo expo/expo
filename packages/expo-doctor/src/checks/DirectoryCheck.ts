@@ -112,7 +112,7 @@ export class DirectoryCheck implements DoctorCheck {
 
     if (unvalidatedPackages.length > 0) {
       issues.push(
-        `- ${unvalidatedPackages.join(', ')} ${unvalidatedPackages.length > 1 ? 'were' : 'was'} not validated because ${unvalidatedPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can ignore these packages in ${chalk.bold('expo.doctor.directoryCheck.exclude')} in your package.json.`
+        `- ${unvalidatedPackages.join(', ')} ${unvalidatedPackages.length > 1 ? 'were' : 'was'} not validated because ${unvalidatedPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can explicitly skip validating these packages by adding them to ${chalk.bold('expo.doctor.directoryCheck.exclude')} in your package.json.`
       );
     }
 
