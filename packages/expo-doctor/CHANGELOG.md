@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.8.2 — 2024-07-19
+
+### 💡 Others
+
 - Make directory checks more configurable in package.json and improve check message. ([#30538](https://github.com/expo/expo/pull/30538) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.8.1 — 2024-07-19
