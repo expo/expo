@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { getDirectoryCheckExcludes } from '../utils/doctorConfig';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 const DEFAULT_PACKAGES_TO_IGNORE = [
@@ -13,17 +14,14 @@ const DEFAULT_PACKAGES_TO_IGNORE = [
   /^babel-*/,
 ];
 
-function getUserDefinedIgnoredPackages(pkg: any) {
-  return (pkg.expo?.doctor?.directoryCheck?.exclude ?? []).map((ignoredPackage: string) => {
-    if (
-      typeof ignoredPackage === 'string' &&
-      ignoredPackage.startsWith('/') &&
-      ignoredPackage.endsWith('/')
-    ) {
-      // Remove the leading and trailing slashes
-      return new RegExp(ignoredPackage.slice(1, -1));
-    }
-    return ignoredPackage;
+export function filterPackages(packages: string[], ignoredPackages: (RegExp | string)[]) {
+  return packages.filter((packageName) => {
+    return ignoredPackages.every((ignoredPackage) => {
+      if (ignoredPackage instanceof RegExp) {
+        return !ignoredPackage.test(packageName);
+      }
+      return ignoredPackage !== packageName;
+    });
   });
 }
 
@@ -39,18 +37,11 @@ export class DirectoryCheck implements DoctorCheck {
     const unmaintainedPackages: string[] = [];
     const unvalidatedPackages: string[] = [];
     const dependencies = pkg.dependencies ?? {};
-    const userDefinedIgnoredPackages = getUserDefinedIgnoredPackages(pkg);
-
-    const packageNames = Object.keys(dependencies).filter((packageName) => {
-      return [...DEFAULT_PACKAGES_TO_IGNORE, ...userDefinedIgnoredPackages].every(
-        (ignoredPackage) => {
-          if (ignoredPackage instanceof RegExp) {
-            return !ignoredPackage.test(packageName);
-          }
-          return ignoredPackage !== packageName;
-        }
-      );
-    });
+    const userDefinedIgnoredPackages = getDirectoryCheckExcludes(pkg);
+    const packageNames = filterPackages(Object.keys(dependencies), [
+      ...DEFAULT_PACKAGES_TO_IGNORE,
+      ...userDefinedIgnoredPackages,
+    ]);
 
     try {
       const response = await fetch('https://reactnative.directory/api/libraries/check', {
