@@ -5,11 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withAssetsIos = void 0;
 const image_utils_1 = require("@expo/image-utils");
-// TODO(cedric): expose the AssetContents util, or add the dependency chain to `@expo/prebuild-config`
-const AssetContents_1 = require("@expo/prebuild-config/build/plugins/icons/AssetContents");
 const config_plugins_1 = require("expo/config-plugins");
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const AssetContents_1 = require("./AssetContents");
 const utils_1 = require("./utils");
 const IMAGE_DIR = 'Images.xcassets';
 const withAssetsIos = (config, assets) => {
@@ -66,18 +65,8 @@ async function writeContentsJsonFileAsync({ assetPath, image, }) {
 }
 function buildContentsJsonImages({ image }) {
     return [
-        (0, AssetContents_1.createContentsJsonItem)({
-            idiom: 'universal',
-            filename: image,
-            scale: '1x',
-        }),
-        (0, AssetContents_1.createContentsJsonItem)({
-            idiom: 'universal',
-            scale: '2x',
-        }),
-        (0, AssetContents_1.createContentsJsonItem)({
-            idiom: 'universal',
-            scale: '3x',
-        }),
+        { idiom: 'universal', filename: image, scale: '1x' },
+        { idiom: 'universal', scale: '2x' },
+        { idiom: 'universal', scale: '3x' },
     ];
 }

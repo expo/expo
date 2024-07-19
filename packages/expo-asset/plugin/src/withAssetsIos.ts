@@ -1,10 +1,4 @@
 import { type ImageOptions, generateImageAsync } from '@expo/image-utils';
-// TODO(cedric): expose the AssetContents util, or add the dependency chain to `@expo/prebuild-config`
-import {
-  type ContentsJsonImage,
-  createContentsJsonItem,
-  writeContentsJsonAsync,
-} from '@expo/prebuild-config/build/plugins/icons/AssetContents';
 import type { ExpoConfig } from 'expo/config';
 import {
   type ConfigPlugin,
@@ -15,6 +9,7 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 
+import { type ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
 import { IMAGE_TYPES, resolveAssetPaths, validateAssets } from './utils';
 
 const IMAGE_DIR = 'Images.xcassets';
@@ -91,18 +86,8 @@ async function writeContentsJsonFileAsync({
 
 function buildContentsJsonImages({ image }: { image: string }): ContentsJsonImage[] {
   return [
-    createContentsJsonItem({
-      idiom: 'universal',
-      filename: image,
-      scale: '1x',
-    }),
-    createContentsJsonItem({
-      idiom: 'universal',
-      scale: '2x',
-    }),
-    createContentsJsonItem({
-      idiom: 'universal',
-      scale: '3x',
-    }),
-  ] as ContentsJsonImage[];
+    { idiom: 'universal', filename: image, scale: '1x' },
+    { idiom: 'universal', scale: '2x' },
+    { idiom: 'universal', scale: '3x' },
+  ];
 }
