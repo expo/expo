@@ -55,12 +55,12 @@ jobs:
           node ../../packages/@expo/cli/build/bin/cli start --ios --port $E2E_ROUTER_EXPO_PORT &
           sleep 10
 
-          # Start the build early
-          BUNDLE_INFO=$(curl -H "Content-Type: multipart/mixed" -H "expo-platform: ios" $E2E_ROUTER_EXPO_SERVER)
+          # Get the bundle URL
+          BUNDLE_INFO=$(curl --silent --show-error --fail -H "Content-Type: multipart/mixed" -H "expo-platform: ios" $E2E_ROUTER_EXPO_SERVER)
           BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
 
-          # Start the build early
-          curl --silent --output /dev/null --show-error --fail $BUNDLE_URL
+          # Start the build early by starting the build in the background
+          curl --silent --output /dev/null --show-error --fail $BUNDLE_URL &
 
           # Save the app url
           echo "MAESTRO_APP_URL=${E2E_ROUTER_APP_URL}" >> $GITHUB_ENV
