@@ -23,6 +23,10 @@ class Env {
 
   /** Opt in to DirectoryCheck */
   get EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK() {
+    if (typeof process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK === 'undefined') {
+      return null;
+    }
+
     return boolish('EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK', false);
   }
 }
