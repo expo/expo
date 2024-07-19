@@ -2,7 +2,10 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { getDirectoryCheckExcludes } from '../utils/doctorConfig';
+import {
+  getDirectoryCheckExcludes,
+  getDirectoryCheckListUnknownPackagesEnabled,
+} from '../utils/doctorConfig';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 const DEFAULT_PACKAGES_TO_IGNORE = [
@@ -36,9 +39,11 @@ export class DirectoryCheck implements DoctorCheck {
     const newArchUnsupportedPackages: string[] = [];
     const newArchUntestedPackages: string[] = [];
     const unmaintainedPackages: string[] = [];
-    const unvalidatedPackages: string[] = [];
+    const unknownPackages: string[] = [];
     const dependencies = pkg.dependencies ?? {};
     const userDefinedIgnoredPackages = getDirectoryCheckExcludes(pkg);
+    const listUnknownPackagesEnabled = getDirectoryCheckListUnknownPackagesEnabled(pkg);
+
     const packageNames = filterPackages(Object.keys(dependencies), [
       ...DEFAULT_PACKAGES_TO_IGNORE,
       ...userDefinedIgnoredPackages,
@@ -58,7 +63,7 @@ export class DirectoryCheck implements DoctorCheck {
       packageNames.forEach((packageName) => {
         const metadata = packageMetadata[packageName];
         if (!metadata) {
-          unvalidatedPackages.push(packageName);
+          unknownPackages.push(packageName);
           return;
         }
 
@@ -102,9 +107,9 @@ export class DirectoryCheck implements DoctorCheck {
 
     const isSuccessful = issues.length === 0;
 
-    if (unvalidatedPackages.length > 0) {
+    if (listUnknownPackagesEnabled && unknownPackages.length > 0) {
       issues.push(
-        `- ${unvalidatedPackages.join(', ')} ${unvalidatedPackages.length > 1 ? 'were' : 'was'} not validated because ${unvalidatedPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can explicitly skip validating these packages by adding them to ${chalk.bold('expo.doctor.directoryCheck.exclude')} in your package.json.`
+        `- ${unknownPackages.join(', ')} ${unknownPackages.length > 1 ? 'were' : 'was'} not validated because ${unknownPackages.length > 1 ? 'they are' : 'it is'} not tracked by React Native Directory. You can hide this message by setting ${chalk.bold('expo.doctor.directoryCheck.listUnknownPackages')} to ${chalk.bold('false')} in your package.json.`
       );
     }
 
@@ -112,7 +117,7 @@ export class DirectoryCheck implements DoctorCheck {
       isSuccessful,
       issues,
       advice: issues.length
-        ? `Use libraries that are actively maintained and support the New Architecture. Find alternatives at https://reactnative.directory`
+        ? `Use libraries that are actively maintained and support the New Architecture, or exclude them from validations (${chalk.bold('expo.doctor.directoryCheck.exclude')} in package.json) to silence warnings. Find alternative libraries at https://reactnative.directory.`
         : undefined,
     };
   }
