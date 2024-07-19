@@ -60,7 +60,7 @@ jobs:
           BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
 
           # Start the build early
-          curl $BUNDLE_URL
+          curl --fail --silent --show-error $BUNDLE_URL
 
           # Save the app url
           echo "MAESTRO_APP_URL=${E2E_ROUTER_APP_URL}" >> $GITHUB_ENV
