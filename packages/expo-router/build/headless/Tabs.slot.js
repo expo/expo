@@ -15,18 +15,25 @@ function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'we
     if (!loaded[focusedRouteKey]) {
         setLoaded({ ...loaded, [focusedRouteKey]: true });
     }
-    return state.routes.map((route, index) => {
-        return renderFn(route, descriptors[route.key], {
-            index,
-            isFocused: state.index === index,
-            loaded: loaded[route.key],
-            detachInactiveScreens,
-        });
-    });
+    return (<>
+      {state.routes.map((route, index) => {
+            return renderFn(route, descriptors[route.key], {
+                index,
+                isFocused: state.index === index,
+                loaded: loaded[route.key],
+                detachInactiveScreens,
+            });
+        })}
+    </>);
 }
 exports.useTabSlot = useTabSlot;
-function TabSlot() {
-    return useTabSlot();
+function TabSlot(props) {
+    return (<react_native_1.View style={{
+            flexGrow: 1,
+            flexShrink: 0,
+        }} {...props}>
+      {useTabSlot()}
+    </react_native_1.View>);
 }
 exports.TabSlot = TabSlot;
 function defaultTabsSlotRender(route, descriptor, { isFocused, loaded, detachInactiveScreens }) {
@@ -38,15 +45,30 @@ function defaultTabsSlotRender(route, descriptor, { isFocused, loaded, detachIna
         // Don't render a lazy screen if we've never navigated to it
         return null;
     }
-    return (<native_1.NavigationContext.Provider value={descriptor.navigation}>
-      <native_1.NavigationRouteContext.Provider value={route}>
-        <react_native_screens_1.ScreenContainer enabled={detachInactiveScreens} hasTwoStates key={route.key} style={[react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}>
-          <react_native_screens_1.Screen enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur}>
-            {descriptor.render()}
+    return (<react_native_screens_1.ScreenContainer key={route.key} enabled={detachInactiveScreens} hasTwoStates style={isFocused ? styles.focused : styles.unfocused}>
+      <native_1.NavigationContext.Provider value={descriptor.navigation}>
+        <native_1.NavigationRouteContext.Provider value={route}>
+          <react_native_screens_1.Screen enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={styles.flexBoxGrowOnly}>
+            <react_native_1.View style={styles.flexBoxGrowOnly}>{descriptor.render()}</react_native_1.View>
           </react_native_screens_1.Screen>
-        </react_native_screens_1.ScreenContainer>
-      </native_1.NavigationRouteContext.Provider>
-    </native_1.NavigationContext.Provider>);
+        </native_1.NavigationRouteContext.Provider>
+      </native_1.NavigationContext.Provider>
+    </react_native_screens_1.ScreenContainer>);
 }
 exports.defaultTabsSlotRender = defaultTabsSlotRender;
+const styles = react_native_1.StyleSheet.create({
+    flexBoxGrowOnly: {
+        flexShrink: 0,
+        flexGrow: 1,
+        position: 'relative',
+    },
+    focused: {
+        zIndex: 0,
+        flexGrow: 1,
+        flexShrink: 0,
+    },
+    unfocused: {
+        zIndex: -1,
+    },
+});
 //# sourceMappingURL=Tabs.slot.js.map

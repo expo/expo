@@ -1,46 +1,57 @@
-import { PropsWithChildren, ReactNode } from 'react';
+import {
+  Fragment,
+  FunctionComponentElement,
+  isValidElement,
+  PropsWithChildren,
+  useId,
+  useContext,
+  Children,
+  ReactNode,
+} from 'react';
+import { Platform, ViewProps, View } from 'react-native';
 import { createNavigatorFactory } from '@react-navigation/core';
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
-import { BottomTabNavigationConfig } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import {
   DefaultNavigatorOptions,
+  LinkingContext,
+  LinkingOptions,
   ParamListBase,
   TabActionHelpers,
-  TabNavigationState,
-  TabRouter,
   TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import { TabsContext } from './Tabs.common';
+import { TabsContext, ExpoTabsScreenOptions } from './Tabs.common';
 import { RouteNode, useRouteNode } from '../Route';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { resolveHref } from '../link/href';
-import { Href, UnknownInputParams } from '../types';
+import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
+import { ExpoTabNavigationState, ExpoTabRouterOptions, TabRouter } from './Tabs.router';
+import { sortRoutesWithInitial } from '../sortRoutes';
+import { TabList, TabTrigger, TabTriggerOptions, TabTriggerProps } from './Tabs.bar';
 
 export * from './Tabs.slot';
+export * from './Tabs.bar';
 export * from './Tabs.common';
 
 export type UseTabsOptions = Omit<
   DefaultNavigatorOptions<
     ParamListBase,
-    TabNavigationState<ParamListBase>,
-    TabsScreenOptions,
+    ExpoTabNavigationState,
+    ExpoTabsScreenOptions,
     TabNavigationEventMap
   >,
   'children'
 > &
-  Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
-  BottomTabNavigationConfig & {
-    hrefs: HrefOptions;
+  Omit<TabRouterOptions, 'initialRouteName'> & {
+    triggers: TabTriggerOptions[];
   };
 
 // `@react-navigation/core` does not expose the Screen or Group components directly, so we have to
 // do this hack.
 const { Screen } = createNavigatorFactory({} as any)();
 
-export type TabsProps = PropsWithChildren<UseTabsOptions>;
-export type TabsScreenOptions = BottomTabNavigationOptions;
+export type TabsProps = PropsWithChildren<ViewProps>;
+
 export type TabNavigationEventMap = {
   /**
    * Event which fires on tapping on the tab in the tab bar.
@@ -52,86 +63,172 @@ export type TabNavigationEventMap = {
   tabLongPress: { data: undefined };
 };
 
-export function useTabs({ hrefs, ...options }: UseTabsOptions) {
+export function useTabs({ triggers, ...options }: UseTabsOptions) {
   const routeNode = useRouteNode();
-  if (routeNode == null) {
+  const linking = useContext(LinkingContext).options;
+
+  if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
-  const children = hrefOptionsToScreens(routeNode, hrefs);
+  const { children, initialRouteName } = triggersToScreens(triggers, routeNode, linking);
 
-  return useNavigationBuilder<
-    TabNavigationState<ParamListBase>,
-    TabRouterOptions,
+  const key = `${routeNode.contextKey}-${useId()}`;
+
+  const { state, descriptors, navigation, ...rest } = useNavigationBuilder<
+    ExpoTabNavigationState,
+    ExpoTabRouterOptions,
     TabActionHelpers<ParamListBase>,
-    BottomTabNavigationOptions,
+    ExpoTabsScreenOptions,
     TabNavigationEventMap
-  >(TabRouter, { children, ...options });
+  >(TabRouter, {
+    children,
+    backBehavior: Platform.OS === 'web' ? 'history' : 'firstRoute',
+    ...options,
+    initialRouteName,
+    key,
+  });
+
+  const routes = Object.fromEntries(
+    state.routes.map((route, index) => {
+      const options = descriptors[route.key].options;
+      const action = {
+        ...options.action,
+        target: state.key,
+      };
+
+      return [
+        '/',
+        {
+          route,
+          action,
+          key: route.key,
+          isFocused: state.index === index,
+          props: {
+            key: route.key,
+            onPress: () => {
+              const isFocused = state.index === index;
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
+
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.dispatch(action);
+              }
+            },
+          },
+        },
+      ];
+    })
+  );
+
+  return { state, descriptors, navigation, routes, ...rest };
 }
 
-export function Tabs({ children, ...options }: TabsProps) {
-  const tabsContext = useTabs(options);
+export type ExpoTabHrefs =
+  | Record<string, Omit<ExpoTabsScreenOptions, 'action'>>
+  | Array<Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>]>;
 
+type ScreenConfig = {
+  routeNode: RouteNode;
+  key: string;
+};
+
+function isTabListOrFragment(child: ReactNode): child is FunctionComponentElement<TabTriggerProps> {
+  return isValidElement(child) && (child.type === TabList || child.type === Fragment);
+}
+
+function isTabTrigger(child: ReactNode): child is FunctionComponentElement<TabTriggerProps> {
+  return isValidElement(child) && child.type === TabTrigger;
+}
+
+function parseTriggersFromChildren(children: ReactNode, screenTriggers: TabTriggerOptions[] = []) {
+  Children.forEach(children, (child) => {
+    if (isTabListOrFragment(child)) {
+      return parseTriggersFromChildren(child.props.children, screenTriggers);
+    }
+
+    if (!isTabTrigger(child)) {
+      return;
+    }
+
+    let { href, initialRoute } = child.props;
+
+    href = resolveHref(href);
+
+    if (shouldLinkExternally(href)) {
+      return;
+    }
+
+    screenTriggers.push({ href, initialRoute });
+    return;
+  });
+
+  return screenTriggers;
+}
+
+function triggersToScreens(
+  triggers: TabTriggerOptions[],
+  layoutRouteNode: RouteNode,
+  linking: LinkingOptions<ParamListBase>
+) {
+  let initialRouteName: string | undefined;
+
+  const screenConfig = triggers.reduce((acc, { href, initialRoute }, index) => {
+    let state = linking.getStateFromPath?.(href as any, linking.config)?.routes[0];
+
+    if (!state) {
+      return acc;
+    }
+
+    if (layoutRouteNode.route) {
+      while (state?.state) {
+        const previousState = state;
+        state = state.state.routes[0];
+        if (previousState.name === layoutRouteNode.route) break;
+      }
+    }
+
+    let routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
+
+    if (routeNode) {
+      const key = `${routeNode.route}#${index}`;
+      if (initialRoute) {
+        initialRouteName = routeNode.route;
+      }
+
+      acc.push({ routeNode, key });
+    }
+
+    return acc;
+  }, [] as ScreenConfig[]);
+
+  const sortFn = sortRoutesWithInitial(initialRouteName);
+
+  const children = screenConfig
+    .sort((a, b) => sortFn(a.routeNode, b.routeNode))
+    .map(({ routeNode, key }) => (
+      <Screen key={key} name={key} getComponent={() => getQualifiedRouteComponent(routeNode)} />
+    ));
+
+  return {
+    children,
+    initialRouteName,
+  };
+}
+
+export function NewTabs({ children, style = { flex: 1 } }: TabsProps) {
+  const triggers = parseTriggersFromChildren(children);
+  const tabsContext = useTabs({ triggers });
   const NavigationContent = tabsContext.NavigationContent;
 
   return (
     <TabsContext.Provider value={tabsContext}>
-      <NavigationContent>{children}</NavigationContent>
+      <View style={style}>
+        <NavigationContent>{children}</NavigationContent>
+      </View>
     </TabsContext.Provider>
   );
-}
-
-type HrefOptions = Record<string, object> | Array<Href | [Href, object]>;
-
-function hrefOptionsToScreens(layoutRouteNode: RouteNode, hrefOptions: HrefOptions) {
-  const hrefEntries: [Href, object][] = Array.isArray(hrefOptions)
-    ? hrefOptions.map((option) => (Array.isArray(option) ? option : [option, {}]))
-    : Object.entries(hrefOptions);
-
-  return hrefEntries.reduce((acc, [href, options], index) => {
-    if (
-      typeof href === 'string' &&
-      'params' in options &&
-      typeof options.params === 'object' &&
-      options.params
-    ) {
-      href = {
-        pathname: href,
-        params: options.params as UnknownInputParams,
-      };
-    }
-
-    const routeNode = hrefToRouteNode(layoutRouteNode, href, index);
-
-    // If the href isn't valid, skip it
-    if (!routeNode) {
-      return acc;
-    }
-
-    acc.push(
-      <Screen
-        key={routeNode.contextKey}
-        name={`${index}`} // The name needs to be unique, but we don't actually use it
-        getComponent={() => getQualifiedRouteComponent(routeNode)}
-      />
-    );
-
-    return acc;
-  }, [] as ReactNode[]);
-}
-
-function hrefToRouteNode(layoutRouteNode: RouteNode, href: Href, index: number) {
-  href = resolveHref(href);
-
-  if (shouldLinkExternally(href)) {
-    return null;
-  }
-
-  // You cannot navigate outside this layout
-  if (href.startsWith('..')) {
-    return null;
-  }
-
-  // TODO: Properly resolve the routeNode
-  return layoutRouteNode.children[index];
 }

@@ -1,25 +1,36 @@
 import { createContext, useContext } from 'react';
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
-import { BottomTabNavigationConfig } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
+import {
+  BottomTabNavigationOptions,
+  BottomTabNavigationConfig,
+} from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import {
   DefaultNavigatorOptions,
+  NavigationAction,
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
   TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
+import { ExpoTabNavigationState, ExpoTabRouterOptions } from './Tabs.router';
 
-export type TabsProps = DefaultNavigatorOptions<
+export type ExpoTabsProps = DefaultNavigatorOptions<
   ParamListBase,
   TabNavigationState<ParamListBase>,
-  TabsScreenOptions,
+  ExpoTabsScreenOptions,
   TabNavigationEventMap
 > &
   Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
   BottomTabNavigationConfig;
 
-export type TabsScreenOptions = BottomTabNavigationOptions;
+export type ExpoTabsScreenOptions = Pick<
+  BottomTabNavigationOptions,
+  'title' | 'lazy' | 'unmountOnBlur' | 'freezeOnBlur'
+> & {
+  params?: object;
+  title: string;
+  action: NavigationAction;
+};
 
 export type TabNavigationEventMap = {
   /**
@@ -34,10 +45,10 @@ export type TabNavigationEventMap = {
 
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<
-    TabNavigationState<ParamListBase>,
-    TabRouterOptions,
+    ExpoTabNavigationState,
+    ExpoTabRouterOptions,
     TabActionHelpers<ParamListBase>,
-    TabsScreenOptions,
+    ExpoTabsScreenOptions,
     TabNavigationEventMap
   >
 >;

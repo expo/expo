@@ -256,6 +256,10 @@ function getNavigateAction(
     }
   }
 
+  if (navigationState.type === 'expo-tab') {
+    type = 'JUMP_TO';
+  }
+
   if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
     type = 'JUMP_TO';
   }

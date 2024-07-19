@@ -211,7 +211,7 @@ export default function useLinking(
         return;
       }
 
-      const state = getStateFromPathRef.current(path, configRef.current);
+      let state = getStateFromPathRef.current(path, configRef.current);
 
       // We should only dispatch an action when going forward
       // Otherwise the action will likely add items to history, which would mess things up
@@ -219,6 +219,21 @@ export default function useLinking(
         // Make sure that the routes in the state exist in the root navigator
         // Otherwise there's an error in the linking configuration
         const rootState = navigation.getRootState();
+
+        // The Expo Navigators use a special `#` delimiter in some navigators to allow for multiple
+        // duplicate screens
+        if (rootState.type.startsWith('expo-')) {
+          state = {
+            ...state,
+            routes: state.routes.map((route) => {
+              const name = rootState.routeNames.find((name) => name.startsWith(`${route.name}#`));
+              return {
+                ...route,
+                name: name ?? route.name,
+              };
+            }),
+          };
+        }
 
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           console.warn(

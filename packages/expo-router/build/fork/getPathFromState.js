@@ -156,6 +156,12 @@ function deepEqual(a, b) {
     return false;
 }
 exports.deepEqual = deepEqual;
+/*
+ * Expo Navigators use a special `#` delimiter to allow for multiple screens with the same name in a navigator
+ */
+function parseExpoRouteName(name) {
+    return name.includes('#') ? name.split('#')[0] : name;
+}
 function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, }) {
     // NOTE(EvanBacon): Fill in current route using state that was passed as params.
     if (!route.state && isInvalidParams(route.params)) {
@@ -165,12 +171,13 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
     let focusedParams;
     let hash;
     const collectedParams = {};
-    while (route.name in configs) {
-        const configItem = configs[route.name];
+    let routeName = parseExpoRouteName(route.name);
+    while (routeName in configs) {
+        const configItem = configs[routeName];
         const inputPattern = configItem.pattern;
         if (inputPattern == null) {
             // This should never happen in Expo Router.
-            throw new Error('Unexpected: No pattern found for route ' + route.name);
+            throw new Error('Unexpected: No pattern found for route ' + routeName);
         }
         pattern = inputPattern;
         if (route.params) {

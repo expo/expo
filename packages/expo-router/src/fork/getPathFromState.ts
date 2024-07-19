@@ -238,6 +238,13 @@ export function deepEqual(a: any, b: any) {
   return false;
 }
 
+/*
+ * Expo Navigators use a special `#` delimiter to allow for multiple screens with the same name in a navigator
+ */
+function parseExpoRouteName(name: string) {
+  return name.includes('#') ? name.split('#')[0] : name;
+}
+
 function walkConfigItems(
   route: CustomRoute,
   focusedRoute: {
@@ -262,13 +269,15 @@ function walkConfigItems(
 
   const collectedParams: Record<string, any> = {};
 
-  while (route.name in configs) {
-    const configItem = configs[route.name];
+  let routeName = parseExpoRouteName(route.name);
+
+  while (routeName in configs) {
+    const configItem = configs[routeName];
     const inputPattern = configItem.pattern;
 
     if (inputPattern == null) {
       // This should never happen in Expo Router.
-      throw new Error('Unexpected: No pattern found for route ' + route.name);
+      throw new Error('Unexpected: No pattern found for route ' + routeName);
     }
     pattern = inputPattern;
 
