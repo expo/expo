@@ -7,26 +7,26 @@ public class SplashScreenManager: NSObject {
   private var rootView: UIView?
   private var options = SplashScreenOptions()
   private var nativeHidden = false
-  
+
   private override init() {}
-  
+
   public func initWithStoryboard(view: RCTRootView) {
     if RCTRunningInAppExtension() {
       return
     }
-    
+
     Timer.scheduledTimer(withTimeInterval: 0.35, repeats: false) { _ in
       self.nativeHidden = true
     }
-    
+
     rootView = view
     if let vc = UIStoryboard(name: "SplashScreen", bundle: nil).instantiateInitialViewController() {
       loadingView = vc.view
       loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      
+
       if let bounds = rootView?.bounds {
         loadingView?.frame = bounds
-        loadingView?.center = CGPoint(x: CGRectGetMidX(bounds), y: CGRectGetMidY(bounds))
+        loadingView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
       }
       loadingView?.isHidden = false
       if let loadingView {
@@ -34,12 +34,12 @@ public class SplashScreenManager: NSObject {
       }
     }
   }
-  
+
   func hide() {
     if RCTRunningInAppExtension() || !nativeHidden {
       return
     }
-    
+
     DispatchQueue.main.async { [self] in
       guard let rootView, isLoadingViewVisible() else {
         return
@@ -59,16 +59,16 @@ public class SplashScreenManager: NSObject {
       }
     }
   }
-  
+
   func setOptions(options: SplashScreenOptions) {
     self.options = options
   }
-  
+
   private func isLoadingViewVisible() -> Bool {
     guard let loadingView else {
       return false
     }
-    
+
     return !loadingView.isHidden
   }
 }

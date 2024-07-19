@@ -1,9 +1,9 @@
 import ExpoModulesCore
 
-public class SplashScreenModule : Module {
+public class SplashScreenModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSplashScreen")
-  
+
     Function("setOptions") { (options: SplashScreenOptions) in
       SplashScreenManager.shared.setOptions(options: options)
     }
