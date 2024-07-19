@@ -68,7 +68,7 @@ jobs:
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
         run: |
           # Run the Expo Dev Server in the background
           maestro test launch-tests.yml --no-ansi --format=junit
