@@ -6,7 +6,7 @@ import { getDirectoryCheckExcludes } from '../utils/doctorConfig';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 const DEFAULT_PACKAGES_TO_IGNORE = [
-  /react-native/,
+  'react-native',
   'react',
   'react-dom',
   'react-native-web',
