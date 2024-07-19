@@ -14182,7 +14182,7 @@ react-native-webview@13.8.6:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@0.75.0-rc.5:
+react-native@0.74.3, react-native@0.75.0-rc.5:
   version "0.75.0-rc.5"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.75.0-rc.5.tgz#8dd53b602d2adf0a233f68642ca272cbd72945b6"
   integrity sha512-MqkKVr/jSvMhGKGRubVs61sHyybiZk50dc6saLsUgYeTQBSLQPqileKvIfNvvrrkdMgPw3FgROE1DJIxHj8nRw==
@@ -14287,6 +14287,13 @@ react-timer-mixin@^0.13.3:
   version "0.13.4"
   resolved "https://registry.yarnpkg.com/react-timer-mixin/-/react-timer-mixin-0.13.4.tgz#75a00c3c94c13abe29b43d63b4c65a88fc8264d3"
   integrity sha512-4+ow23tp/Tv7hBM5Az5/Be/eKKF7DIvJ09voz5LyHGQaqqz9WV8YMs31eFvcYQs7d451LSg7kDJV70XYN/Ug/Q==
+
+react@18.2.0:
+  version "18.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
+  integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
+  dependencies:
+    loose-envify "^1.1.0"
 
 react@19.0.0-rc-fb9a90fa48-20240614:
   version "19.0.0-rc-fb9a90fa48-20240614"
