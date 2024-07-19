@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import WebDashboard from '@/components/www/dashboard';
 import ICharts from '@/components/www/charts';
@@ -14,6 +14,7 @@ export default function Route() {
           title: 'Dashboard',
         }}
       />
+
       {/* <Charts scrollEnabled={false} /> */}
       <WebDashboard
         actions={{

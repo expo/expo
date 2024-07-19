@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "sandbox",
-    "slug": "sandbox",
+    "name": "www-sandbox",
+    "slug": "www-sandbox",
     "privacy": "public",
     "sdkVersion": "UNVERSIONED",
     "scheme": "sandbox",
@@ -16,15 +16,21 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bacon.sandbox"
+      "bundleIdentifier": "dev.expo.wwwsandbox"
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "ccacheEnabled": true
+          }
+        }
+      ],
       [
         "expo-router",
         {

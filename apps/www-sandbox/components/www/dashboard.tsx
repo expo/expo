@@ -1,6 +1,7 @@
 'use webview';
 
 import '@/global.css';
+import type { WebViewProps } from 'expo/webview';
 
 import { Link } from 'expo-router';
 import {
@@ -69,7 +70,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export default function Dashboard({
   actions,
 }: {
-  webview: import('react-native-webview').WebViewProps;
+  webview?: WebViewProps;
   actions: {
     haptics: () => void;
     showNotifications: (title: string) => void;
