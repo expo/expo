@@ -10,7 +10,7 @@ jobs:
   router-maestro:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -39,27 +39,6 @@ jobs:
           arch -arm64 brew install facebook/fb/idb-companion
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      - name: Start iOS Simulator
-        run: |
-          # Find a simulator by name (e.g., iPhone 15)
-          DEVICE_NAME="iPhone 15 Pro"
-          DEVICE_ID=$(xcrun simctl list devices available --json | jq -r --arg DEVICE_NAME "$DEVICE_NAME" '.devices[] | .[] | select(.name == $DEVICE_NAME) | .udid' | head -n 1)
-          DEVICE_STATE=$(xcrun simctl list devices available --json | jq -r --arg DEVICE_ID "$DEVICE_ID" '.devices[] | .[] | select(.udid == $DEVICE_ID) | .state')
-
-          if [ -z "$DEVICE_ID" ]; then
-            echo "No available simulator found for the criteria."
-            exit 1
-          fi
-
-          if [ "$DEVICE_STATE" != "Booted" ]; then
-            # Boot the simulator if it's not already booted
-            xcrun simctl boot "$DEVICE_ID"
-            # Wait a bit for the simulator to boot
-            sleep 30
-          else
-            echo "Simulator with DEVICE_ID=$DEVICE_ID is already booted."
-          fi
-
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
@@ -68,12 +47,23 @@ jobs:
         env:
           E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
         run: |
+          E2E_ROUTER_EXPO_PORT=8081
+          E2E_ROUTER_EXPO_SERVER="http://localhost:${E2E_ROUTER_EXPO_PORT}"
+          E2E_ROUTER_APP_URL="exp://localhost:${E2E_ROUTER_EXPO_PORT}"
+
           # Run the Expo Dev Server in the background
-          node ../../packages/@expo/cli/build/bin/cli start --ios &
+          node ../../packages/@expo/cli/build/bin/cli start --ios --port $E2E_ROUTER_EXPO_PORT &
           sleep 10
+
           # Start the build early
-          BUNDLE_URL=$(curl  -H "Content-Type: multipart/mixed" -H "expo-platform: ios" http://localhost:8081 | jq -r ".launchAsset.url")
+          BUNDLE_INFO=$(curl -H "Content-Type: multipart/mixed" -H "expo-platform: ios" $E2E_ROUTER_EXPO_SERVER)
+          BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
+
+          # Start the build early
           curl $BUNDLE_URL
+
+          # Save the app url
+          echo "MAESTRO_APP_URL=${E2E_ROUTER_APP_URL}" >> $GITHUB_ENV
 
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
