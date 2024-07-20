@@ -756,6 +756,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             bytecode: false,
             platform: 'web',
             isExporting: false,
+
+            // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
+            lazy: true,
           }),
           publicUrl
           // this.getDevServerUrlOrAssert()

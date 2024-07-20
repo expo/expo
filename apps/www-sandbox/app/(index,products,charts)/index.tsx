@@ -29,15 +29,15 @@ export default function Route() {
   //   </View>
   // );
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       {/* <Stack.Screen
         options={{
           title: 'Dashboard',
         }}
       /> */}
 
-      <ThreeThing style={{ height: 360 }} />
-      <Content />
+      <ThreeThing />
+      {/* <Content /> */}
 
       {/* <Auth01 />
       <Dashboard01 />
@@ -55,11 +55,11 @@ export default function Route() {
           },
         }}
       /> */}
-      {Array.from({ length: 100 }).map((_, i) => (
+      {/* {Array.from({ length: 100 }).map((_, i) => (
         <View key={i} style={{ padding: 20 }}>
           <Text>Item {i}</Text>
         </View>
-      ))}
-    </ScrollView>
+      ))} */}
+    </View>
   );
 }

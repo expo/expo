@@ -1,0 +1,1 @@
+{"version":3,"file":"optional-safe-area.js","sourceRoot":"","sources":["../../src/views/optional-safe-area.ts"],"names":[],"mappings":";;;AAAA,iFAA8D;AAArD,8HAAA,YAAY,OAAA","sourcesContent":["export { SafeAreaView } from 'react-native-safe-area-context';\n"]}

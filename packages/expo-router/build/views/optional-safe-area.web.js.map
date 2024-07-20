@@ -1,0 +1,1 @@
+{"version":3,"file":"optional-safe-area.web.js","sourceRoot":"","sources":["../../src/views/optional-safe-area.web.ts"],"names":[],"mappings":";;;AAAA,qDAAwD;AAA/C,gHAAA,IAAI,OAAgB","sourcesContent":["export { View as SafeAreaView } from 'react-native-web';\n"]}

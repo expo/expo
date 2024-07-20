@@ -7,7 +7,7 @@ exports.ErrorBoundary = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const optional_safe_area_1 = require("./optional-safe-area");
 const Pressable_1 = require("./Pressable");
 const Link_1 = require("../link/Link");
 let useMetroSymbolication;
@@ -73,13 +73,15 @@ else {
 function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
     const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
-    const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
+    const Wrapper = inTabBar ? react_native_1.View : optional_safe_area_1.SafeAreaView;
+    const { width } = (0, react_native_1.useWindowDimensions)();
     return (<react_native_1.View style={styles.container}>
-      <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
+      <Wrapper style={{ flex: 1, gap: 8, maxWidth: width < 640 ? '100%' : 720, marginHorizontal: 'auto' }}>
         <react_native_1.View style={{
             marginBottom: 12,
             gap: 4,
-            flexWrap: 'wrap',
+            flex: 1,
+            // flexWrap: 'wrap',
         }}>
           <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
@@ -112,10 +114,16 @@ exports.ErrorBoundary = ErrorBoundary;
 const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,
+        maxWidth: '100%',
         backgroundColor: 'black',
         padding: 24,
         alignItems: 'stretch',
         justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
     title: {
         color: 'white',
@@ -157,6 +165,7 @@ const styles = react_native_1.StyleSheet.create({
     errorMessage: {
         color: 'white',
         fontSize: 16,
+        flex: 1,
     },
     subtitle: {
         color: 'white',

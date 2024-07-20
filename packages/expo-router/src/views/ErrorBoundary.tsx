@@ -1,8 +1,8 @@
 import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, useWindowDimensions, Text, View, Platform, ScrollView } from 'react-native';
+import { SafeAreaView } from './optional-safe-area';
 
 import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
@@ -87,14 +87,17 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   const inTabBar = React.useContext(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
+  const { width } = useWindowDimensions();
   return (
     <View style={styles.container}>
-      <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
+      <Wrapper
+        style={{ flex: 1, gap: 8, maxWidth: width < 640 ? '100%' : 720, marginHorizontal: 'auto' }}>
         <View
           style={{
             marginBottom: 12,
             gap: 4,
-            flexWrap: 'wrap',
+            flex: 1,
+            // flexWrap: 'wrap',
           }}>
           <Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong
@@ -134,10 +137,16 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxWidth: '100%',
     backgroundColor: 'black',
     padding: 24,
     alignItems: 'stretch',
     justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   title: {
     color: 'white',
@@ -179,6 +188,7 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: 'white',
     fontSize: 16,
+    flex: 1,
   },
   subtitle: {
     color: 'white',
