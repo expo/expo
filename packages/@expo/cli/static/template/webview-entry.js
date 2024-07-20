@@ -2,8 +2,6 @@
 import '@expo/metro-runtime';
 
 import { ActivityIndicator } from 'react-native';
-import { Try } from 'expo-router/build/views/Try';
-import { ErrorBoundary } from 'expo-router/build/views/ErrorBoundary';
 // Add web error box
 import { renderRootComponent } from 'expo-router/build/renderRootComponent';
 import { _getActionsObject } from 'expo/webview';
@@ -12,14 +10,6 @@ import React from 'react';
 const actions = _getActionsObject();
 
 function ActionsWrapper(props) {
-  return (
-    <Try catch={ErrorBoundary}>
-      <BundleWrapper {...props} />
-    </Try>
-  );
-}
-
-function BundleWrapper(props) {
   const AppModule = React.useMemo(() => {
     return React.lazy(async () => {
       const AppModule = await import('[$$GENERATED_ENTRY]');
