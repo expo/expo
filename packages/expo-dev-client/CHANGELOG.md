@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Only import from `expo/config-plugins` to follow proper dependency chains.
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
