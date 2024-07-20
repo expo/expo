@@ -15,7 +15,14 @@ export {
   // Methods
   requireNativeModule,
   requireOptionalNativeModule,
+  requireNativeViewManager,
   reloadAppAsync,
+
+  // Constants
+  Platform,
+
+  // Hooks
+  useReleasingSharedObject,
 } from 'expo-modules-core';
 
 export { useEvent } from './hooks/useEvent';
