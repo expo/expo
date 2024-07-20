@@ -4,7 +4,7 @@ set -eo pipefail
 
 DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXConstants.bundle"
-EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+EXPO_MODULES_CORE_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 # For classic main project build phases integration, will be no-op to prevent duplicated app.config creation.
 #
@@ -18,7 +18,7 @@ fi
 
 # If PROJECT_ROOT is not specified, fallback to use Xcode PROJECT_DIR
 PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/../.."}
-PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_CONSTANTS_PACKAGE_DIR/../.."}
+PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_MODULES_CORE_PACKAGE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
@@ -32,4 +32,4 @@ else
   exit 1
 fi
 
-"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"
+"${EXPO_MODULES_CORE_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_MODULES_CORE_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"

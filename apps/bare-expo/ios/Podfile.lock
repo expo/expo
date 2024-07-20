@@ -2186,7 +2186,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXConstants:
     inhibit_warnings: false
-    :path: "../../../packages/expo-constants/ios"
+    :path: "../../../packages/expo-modules-core/ios"
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
@@ -2528,7 +2528,7 @@ SPEC CHECKSUMS:
   EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
   EXAV: cb6e8dbcc40873d8a386af357e6c2eb55d6d739e
   EXBarCodeScanner: e2dd9b42c1b522a2adc9202b1dfbc64cb34456d1
-  EXConstants: 9a008dbf262550884e6280dea95b81b51f65ea6f
+  EXConstants: 049d5fa3c2b0d4463dd0df5411877347548d0965
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   EXJSONUtils: fa6c5cd41afdcec8f0eca28a78b96abb86c28493
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
@@ -2570,7 +2570,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMaps: 664ff9a93fe6b461976136327d7231ac78d87af7
   ExpoMediaLibrary: d94d530648c1051a09fa906e93b9b6eb225d70db
-  ExpoModulesCore: 4eb2165cde325c8c121d495bb8beb0da9b30c92e
+  ExpoModulesCore: f3800ab0a43ba2acd7a29be09648e04b60ba2c7d
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 0acb8b37c43634602ef20eec38dd108111736ef0
@@ -2596,7 +2596,7 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 4bc164e5b5e6cfc288d2b5ff28643ea15fa1a589
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 01d3e052018c2a13937aca1860fbedbccd4a41b7
@@ -2606,7 +2606,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
+  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: b03c35057846b685b3ccadc9bfe43e349989cdb2
   RCTRequired: 194626909cfa8d39ca6663138c417bc6c431648c
   RCTTypeSafety: 552aff5b8e8341660594db00e53ac889682bc120
@@ -2677,7 +2677,7 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
-  Yoga: 2f71ecf38d934aecb366e686278102a51679c308
+  Yoga: ae3c32c514802d30f687a04a6a35b348506d411f
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 0fc98953198511e28868729fa83918f7888b9425

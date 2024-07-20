@@ -3,6 +3,7 @@ package expo.modules.systemui
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.systemui.singletons.SystemUI
 

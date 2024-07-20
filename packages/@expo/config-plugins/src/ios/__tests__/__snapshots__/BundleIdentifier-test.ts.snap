@@ -246,7 +246,7 @@ exports[`BundleIdentifier module setBundleIdentifierForPbxproj sets the bundle i
 			);
 			inputPaths = (
 				"\${PODS_ROOT}/Target Support Files/Pods-HelloWorld/Pods-HelloWorld-resources.sh",
-				"\${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"\${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/EXConstants.bundle",
 				"\${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
 				"\${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 			);

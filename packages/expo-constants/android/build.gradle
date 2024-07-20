@@ -3,8 +3,6 @@ apply plugin: 'com.android.library'
 group = 'host.exp.exponent'
 version = '16.0.1'
 
-apply from: "../scripts/get-app-config-android.gradle"
-
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
@@ -22,5 +20,4 @@ android {
 
 dependencies {
   api "androidx.annotation:annotation:1.0.0"
-  implementation "commons-io:commons-io:2.6"
 }

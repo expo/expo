@@ -1864,7 +1864,7 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
-  - EXConstants (from `../../../packages/expo-constants/ios`)
+  - EXConstants (from `../../../packages/expo-modules-core/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
@@ -2066,7 +2066,7 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXConstants:
-    :path: "../../../packages/expo-constants/ios"
+    :path: "../../../packages/expo-modules-core/ios"
   EXImageLoader:
     :path: "../../../packages/expo-image-loader/ios"
   EXJSONUtils:

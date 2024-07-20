@@ -1529,7 +1529,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
-  - EXConstants (from `../../../packages/expo-constants/ios`)
+  - EXConstants (from `../../../packages/expo-modules-core/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
@@ -1630,7 +1630,7 @@ EXTERNAL SOURCES:
   EXAV:
     :path: "../../../packages/expo-av/ios"
   EXConstants:
-    :path: "../../../packages/expo-constants/ios"
+    :path: "../../../packages/expo-modules-core/ios"
   EXJSONUtils:
     :path: "../../../packages/expo-json-utils/ios"
   EXManifests:

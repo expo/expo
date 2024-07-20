@@ -34,17 +34,7 @@ Pod::Spec.new do |s|
     s.source_files = "**/*.{h,m,swift}"
   end
 
-  s.script_phase = {
-    :name => 'Generate app.config for prebuilt Constants.manifest',
-    :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"',
-    :execution_position => :before_compile
-  }
-
-  # Generate EXConstants.bundle without existing resources
-  # `get-app-config-ios.sh` will generate app.config in EXConstants.bundle
   s.resource_bundles = {
-    'EXConstants' => [],
     'ExpoConstants_privacy' => ['PrivacyInfo.xcprivacy']
   }
-
 end

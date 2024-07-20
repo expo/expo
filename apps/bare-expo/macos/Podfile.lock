@@ -1053,7 +1053,7 @@ PODS:
 DEPENDENCIES:
   - boost (from `../../../node_modules/react-native-macos/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec`)
-  - EXConstants (from `../../../packages/expo-constants/ios`)
+  - EXConstants (from `../../../packages/expo-modules-core/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - Expo (from `../../../node_modules/expo`)
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
@@ -1124,7 +1124,7 @@ EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../../../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec"
   EXConstants:
-    :path: "../../../packages/expo-constants/ios"
+    :path: "../../../packages/expo-modules-core/ios"
   EXFont:
     :path: "../../../packages/expo-font/ios"
   Expo:

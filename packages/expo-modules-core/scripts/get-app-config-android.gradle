@@ -3,9 +3,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 
-def expoConstantsDir = project.providers.exec {
+def expoModulesCoreDir = project.providers.exec {
   workingDir(projectDir)
-  commandLine("node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));")
+  commandLine("node", "-e", "console.log(require('path').dirname(require.resolve('expo-modules-core/package.json')));")
 }.standardOutput.asText.get().trim()
 
 def config = project.hasProperty("react") ? project.react : [];
@@ -13,10 +13,10 @@ def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
 afterEvaluate {
   def projectRoot = file("${rootProject.projectDir}")
-  def assetsDir = file("$buildDir/generated/assets/expo-constants")
+  def assetsDir = file("$buildDir/generated/assets/expo-modules-core")
 
   def currentCreateConfigTask = tasks.register('createExpoConfig', Exec) {
-    description = 'expo-constants: Create app.config.'
+    description = 'expo-modules-core: Create app.config.'
 
     doFirst {
       assetsDir.deleteDir()
@@ -33,9 +33,9 @@ afterEvaluate {
     workingDir projectRoot
 
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoModulesCoreDir/scripts/getAppConfig.js", projectRoot, assetsDir)
     } else {
-      commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      commandLine(*nodeExecutableAndArgs, "$expoModulesCoreDir/scripts/getAppConfig.js", projectRoot, assetsDir)
     }
   }
 
