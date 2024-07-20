@@ -208,7 +208,7 @@ const PedometerSensor = () => {
   const [currentStepCount, setCurrentStepCount] = useState(0);
 
   useEffect(() => {
-    let listener: Subscription;
+    let listener: EventSubscription;
     const subscribe = async () => {
       const isAvailable = await Sensors.Pedometer.isAvailableAsync();
       setIsPedometerAvailable(String(isAvailable));
