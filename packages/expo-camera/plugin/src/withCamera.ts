@@ -1,15 +1,12 @@
 import {
   AndroidConfig,
-  withProjectBuildGradle,
-  ConfigPlugin,
+  type ConfigPlugin,
   createRunOncePlugin,
   IOSConfig,
-} from '@expo/config-plugins';
-import {
-  createGeneratedHeaderComment,
-  MergeResults,
-  removeGeneratedContents,
-} from '@expo/config-plugins/build/utils/generateCode';
+  withProjectBuildGradle,
+} from 'expo/config-plugins';
+
+import { appendGeneratedCodeContents, type CodeMergeResults } from './appendCode';
 
 const pkg = require('expo-camera/package.json');
 
@@ -35,47 +32,14 @@ const withAndroidCameraGradle: ConfigPlugin = (config) => {
   });
 };
 
-export function addCameraImport(src: string): MergeResults {
-  return appendContents({
+/** @internal Exposed for testing */
+export function addCameraImport(src: string): CodeMergeResults {
+  return appendGeneratedCodeContents({
     tag: 'expo-camera-import',
     src,
-    newSrc: gradleMaven,
+    generatedCode: gradleMaven,
     comment: '//',
   });
-}
-
-// Fork of config-plugins mergeContents, but appends the contents to the end of the file.
-function appendContents({
-  src,
-  newSrc,
-  tag,
-  comment,
-}: {
-  src: string;
-  newSrc: string;
-  tag: string;
-  comment: string;
-}): MergeResults {
-  const header = createGeneratedHeaderComment(newSrc, tag, comment);
-  if (!src.includes(header)) {
-    // Ensure the old generated contents are removed.
-    const sanitizedTarget = removeGeneratedContents(src, tag);
-    const contentsToAdd = [
-      // @something
-      header,
-      // contents
-      newSrc,
-      // @end
-      `${comment} @generated end ${tag}`,
-    ].join('\n');
-
-    return {
-      contents: sanitizedTarget ?? src + contentsToAdd,
-      didMerge: true,
-      didClear: !!sanitizedTarget,
-    };
-  }
-  return { contents: src, didClear: false, didMerge: false };
 }
 
 const withCamera: ConfigPlugin<
