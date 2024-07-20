@@ -1,6 +1,7 @@
-import { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
 import { type ConfigPlugin } from 'expo/config-plugins';
-export declare function addCameraImport(src: string): MergeResults;
+import { type CodeMergeResults } from './appendCode';
+/** @internal Exposed for testing */
+export declare function addCameraImport(src: string): CodeMergeResults;
 declare const _default: ConfigPlugin<void | {
     cameraPermission?: string | false | undefined;
     microphonePermission?: string | false | undefined;
