@@ -39,6 +39,20 @@ private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
 private const val ID_KEY = "id"
 
+fun getMirroredOrientation(orientation: Int): Int {
+  return when (orientation) {
+    ExifInterface.ORIENTATION_NORMAL -> ExifInterface.ORIENTATION_FLIP_HORIZONTAL
+    ExifInterface.ORIENTATION_ROTATE_90 -> ExifInterface.ORIENTATION_TRANSPOSE
+    ExifInterface.ORIENTATION_ROTATE_180 -> ExifInterface.ORIENTATION_FLIP_VERTICAL
+    ExifInterface.ORIENTATION_ROTATE_270 -> ExifInterface.ORIENTATION_TRANSVERSE
+    ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> ExifInterface.ORIENTATION_NORMAL
+    ExifInterface.ORIENTATION_TRANSPOSE -> ExifInterface.ORIENTATION_ROTATE_90
+    ExifInterface.ORIENTATION_FLIP_VERTICAL -> ExifInterface.ORIENTATION_ROTATE_180
+    ExifInterface.ORIENTATION_TRANSVERSE -> ExifInterface.ORIENTATION_ROTATE_270
+    else -> ExifInterface.ORIENTATION_UNDEFINED
+  }
+}
+
 class ResolveTakenPicture(
   private var imageData: ByteArray,
   private var promise: Promise,
@@ -78,6 +92,9 @@ class ResolveTakenPicture(
           ExifInterface.TAG_ORIENTATION,
           ExifInterface.ORIENTATION_NORMAL
         )
+        if (options.mirror) {
+          exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, getMirroredOrientation(orientation).toString())
+        }
 
         val bitmapOptions = BitmapFactory
           .Options()
@@ -246,8 +263,11 @@ class ResolveTakenPicture(
   // Get rotation degrees from Exif orientation enum
   private fun getImageRotation(orientation: Int) = when (orientation) {
     ExifInterface.ORIENTATION_ROTATE_90 -> 90
+    ExifInterface.ORIENTATION_TRANSPOSE -> 90
     ExifInterface.ORIENTATION_ROTATE_180 -> 180
+    ExifInterface.ORIENTATION_FLIP_VERTICAL -> 180
     ExifInterface.ORIENTATION_ROTATE_270 -> 270
+    ExifInterface.ORIENTATION_TRANSVERSE -> 270
     else -> 0
   }
 }

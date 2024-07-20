@@ -27,6 +27,7 @@
 - Ensure Metro dev server closes fully when clients are connected. ([#30067](https://github.com/expo/expo/pull/30067) by [@byCedric](https://github.com/byCedric))
 - Fix app crashing when hitting debugger breakpoint through VSCode. ([#30287](https://github.com/expo/expo/pull/30287) by [@byCedric](https://github.com/byCedric))
 - Resolve real locations of file paths when using `eas build --local`. ([#30340](https://github.com/expo/expo/pull/30340) by [@byCedric](https://github.com/byCedric))
+- Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads. ([#30424](https://github.com/expo/expo/pull/30424) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -44,6 +45,10 @@
 - Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 - Update `glob@7` to `glob@10`. ([#29898](https://github.com/expo/expo/pull/29898) by [@byCedric](https://github.com/byCedric))
 - Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+
+### 📚 3rd party library updates
+
+- Update @react-native/dev-middleware to 0.74.85. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.18.19 - 2024-06-13
 

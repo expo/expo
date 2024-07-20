@@ -25,6 +25,8 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
+import expo.modules.video.enums.ContentFit
+import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3

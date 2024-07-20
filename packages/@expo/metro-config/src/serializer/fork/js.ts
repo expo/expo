@@ -39,11 +39,7 @@ export function wrapModule(
   }
 
   const { params, paths } = getModuleParams(module, options);
-  let src = output.data.code;
-  if (!options.skipWrapping) {
-    src = addParamsToDefineCall(output.data.code, ...params);
-  }
-
+  const src = addParamsToDefineCall(output.data.code, ...params);
   return { src, paths };
 }
 

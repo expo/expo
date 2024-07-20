@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+import { type ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 import { withFontsAndroid } from './withFontsAndroid';
 import { withFontsIos } from './withFontsIos';

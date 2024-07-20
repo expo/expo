@@ -141,7 +141,7 @@ it(`supports async import()`, async () => {
       }),
     },
     {
-      absolutePath: '/app/node_modules/expo-mock/async-require/index.js',
+      absolutePath: '/app/expo-mock/async-require',
       data: expect.objectContaining({
         data: expect.objectContaining({}),
       }),

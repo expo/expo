@@ -1023,7 +1023,7 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 2402cc34b2..40971e1cd1 100644
+index 2402cc34b2..a5a78f3e57 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -7,36 +7,12 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
@@ -1064,7 +1064,7 @@ index 2402cc34b2..40971e1cd1 100644
  target 'HelloWorld' do
    use_expo_modules!
    config = use_native_modules!
-@@ -44,26 +20,23 @@ target 'HelloWorld' do
+@@ -44,26 +20,21 @@ target 'HelloWorld' do
    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
  
@@ -1079,9 +1079,7 @@ index 2402cc34b2..40971e1cd1 100644
      :app_path => "#{Pod::Config.instance.installation_root}/..",
 -    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
 -    :flipper_configuration => flipper_config
-+    # Temporarily disable privacy file aggregation by default, until React
-+    # Native 0.74.2 is released with fixes.
-+    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] == 'true',
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
    )
  
    post_install do |installer|
@@ -1097,7 +1095,7 @@ index 2402cc34b2..40971e1cd1 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a02dbebe41..01a1bbd884 100644
+index a02dbebe41..87791e2d65 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1120,7 +1118,7 @@ index a02dbebe41..01a1bbd884 100644
 +    "expo-status-bar": "~1.12.1",
      "react": "18.2.0",
 -    "react-native": "0.72.12"
-+    "react-native": "0.74.1"
++    "react-native": "0.74.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

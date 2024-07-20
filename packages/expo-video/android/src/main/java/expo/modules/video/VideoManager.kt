@@ -2,6 +2,7 @@ package expo.modules.video
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
+import expo.modules.kotlin.AppContext
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
 @OptIn(UnstableApi::class)
@@ -13,6 +14,12 @@ object VideoManager {
 
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
+
+  private lateinit var audioFocusManager: AudioFocusManager
+
+  fun onModuleCreated(appContext: AppContext) {
+    audioFocusManager = AudioFocusManager(appContext)
+  }
 
   fun registerVideoView(videoView: VideoView) {
     videoViews[videoView.id] = videoView
@@ -28,10 +35,12 @@ object VideoManager {
 
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: mutableListOf()
+    audioFocusManager.registerPlayer(videoPlayer)
   }
 
   fun unregisterVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews.remove(videoPlayer)
+    audioFocusManager.unregisterPlayer(videoPlayer)
   }
 
   fun onVideoPlayerAttachedToView(videoPlayer: VideoPlayer, videoView: VideoView) {
@@ -43,7 +52,7 @@ object VideoManager {
     }
 
     if (videoPlayersToVideoViews[videoPlayer]?.size == 1) {
-      videoPlayer.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
     }
   }
 
@@ -52,7 +61,7 @@ object VideoManager {
 
     // Unregister disconnected VideoPlayers from the playback service
     if (videoPlayersToVideoViews[videoPlayer] == null || videoPlayersToVideoViews[videoPlayer]?.size == 0) {
-      videoPlayer.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
     }
   }
 
