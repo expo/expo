@@ -120,7 +120,6 @@ export class DirectoryCheck implements DoctorCheck {
       newArchUnsupportedPackages.length > 0 ||
       newArchUntestedPackages.length > 0
     ) {
-
       advice += `\n- Use libraries that are actively maintained and support the New Architecture. Find alternative libraries with ${chalk.bold('https://reactnative.directory')}.`;
       advice += `\n${chalk.bold('-')} Add packages to ${chalk.bold(
         'expo.doctor.directoryCheck.exclude'
