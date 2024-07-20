@@ -8,7 +8,7 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (5.9.1):
     - ExpoModulesCore
-  - EXAV (14.0.6):
+  - EXAV (14.0.5):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBarCodeScanner (13.0.1):
@@ -340,7 +340,7 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - ExpoCellular (6.0.3):
+  - ExpoCellular (6.0.2):
     - ExpoModulesCore
   - ExpoClipboard (6.0.3):
     - ExpoModulesCore
@@ -496,7 +496,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoSecureStore (13.0.2):
+  - ExpoSecureStore (13.0.1):
     - ExpoModulesCore
   - ExpoSensors (13.0.7):
     - ExpoModulesCore
@@ -506,7 +506,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (12.0.2):
     - ExpoModulesCore
-  - ExpoSQLite (14.0.4):
+  - ExpoSQLite (14.0.3):
     - ExpoModulesCore
     - "sqlite3 (~> 3.45.3+1)"
     - "sqlite3/bytecodevtab (~> 3.45.3+1)"
@@ -2526,7 +2526,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
   EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
-  EXAV: a1e8d579f0cb4a60792d1686732117420c901b8b
+  EXAV: cb6e8dbcc40873d8a386af357e6c2eb55d6d739e
   EXBarCodeScanner: e2dd9b42c1b522a2adc9202b1dfbc64cb34456d1
   EXConstants: 9a008dbf262550884e6280dea95b81b51f65ea6f
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
@@ -2596,7 +2596,7 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
@@ -2606,7 +2606,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
+  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
   RCTTypeSafety: b20878506b094fa3d9007d7b9e4be0faa3562499
