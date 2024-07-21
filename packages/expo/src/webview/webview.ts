@@ -5,7 +5,7 @@ import { BridgeMessage, JSONValue } from './www-types';
 import type WebView from 'react-native-webview';
 import type { WebViewMessageEvent } from 'react-native-webview';
 
-export type WebViewProps = import('react-native-webview').WebViewProps;
+export type WebViewProps = Omit<import('react-native-webview').WebViewProps, 'source'>;
 
 export const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
   // This is limited on native because the context is ambiguous. You can have multiple web views on native but only one native parent on web.

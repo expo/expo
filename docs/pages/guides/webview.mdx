@@ -51,9 +51,41 @@ export default function App() {
 - Access to all web functionality without needing a native rebuild.
 - Runtime error overlay in development.
 
+## WebView props
+
+To pass props to the underlying webview, add a `webview` object to the component:
+
+```tsx my-components.tsx (web)
+'use webview';
+
+export default function MyComponent({}: { webview: import('expo/webview').WebViewProps }) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+    </div>
+  );
+}
+```
+
+Now you can pass [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) to the webview component:
+
+```tsx App.tsx (native)
+import MyComponent from './my-component';
+
+export default function App() {
+  return (
+    <MyComponent
+      webview={{
+        scrollEnabled: false,
+      }}
+    />
+  );
+}
+```
+
 ## Native Actions
 
-You can send type-safe native functions to webview components using the `actions` prop:
+You can send type-safe native functions to webview components by passing async functions as props to the webview component:
 
 ```ts App.tsx (native)
 import MyWebView from './my-component';
@@ -61,10 +93,8 @@ import MyWebView from './my-component';
 export default function App() {
   return (
     <MyWebView
-      actions={{
-        hello(data: string) {
-          console.log('Hello', data)
-        },
+      hello={(data: string) => {
+        console.log('Hello', data)
       }}
     />
   );
@@ -74,24 +104,44 @@ export default function App() {
 ```tsx my-component.tsx (web)
 'use webview';
 
-export default function MyComponent({ actions }: { actions: { hello: (data: string) => void } }) {
-  return <p onClick={() => actions.hello('world')}>Click me</p>;
+export default function MyComponent({ hello }: { hello: (data: string) => Promise<void> }) {
+  return <p onClick={() => hello('world')}>Click me</p>;
 }
 ```
+
+> You cannot pass functions as nested props to webview components. They must be top-level props.
 
 Native actions are always asynchronous and only accept serializable arguments (i.e. no functions). This is because the data is sent over a bridge to the webview.
 
 Native actions can return serializable data to the webview, this is useful for getting data back from the native side.
 
 ```tsx
-actions={{
-    getDeviceName(): Promise<string> {
-        return DeviceInfo.getDeviceName();
-    }
-}}
+getDeviceName(): Promise<string> {
+  return DeviceInfo.getDeviceName();
+}
 ```
 
 Think of these functions like React Server Actions, but instead of living on the server they live locally in the native app and communicate with the webview. This is a powerful way to inject truly native functionality into your webviews.
+
+## Marshalled props
+
+You can also send data to the webview through serializable props:
+
+```tsx App.tsx (native)
+export default function App() {
+  return <MyComponent hello={'world'} />;
+}
+```
+
+```tsx my-component.tsx (web)
+'use webview';
+
+export default function MyComponent({ hello }: { hello: string }) {
+  return <p>Hello, {hello}</p>;
+}
+```
+
+These props are sent over an async bridge so they won't be updated synchronously. They're passed as props to the React root component meaning they re-render the entire React tree.
 
 ## Communication
 
@@ -102,12 +152,12 @@ import MyComponent from './my-component';
 import { useBridge } from 'expo/webview';
 
 export default function App() {
-  const [emit, bridge] = useBridge(data => {
+  const [emit, webview] = useBridge(data => {
     console.log('Message from webview:', data);
   });
   return (
     <>
-      <MyComponent {...bridge} />
+      <MyComponent webview={webview} />
       <Text onPress={() => emit({ type: 'hello', data: 'world' })}>Send message</Text>
     </>
   );
@@ -186,6 +236,66 @@ export default function App() {
 
 This can be useful for rendering websites from a remote server.
 
+## Measuring WebViews
+
+You may want to measure the size of a webview component and report it back to the native side. This can be done using a native action:
+
+```tsx App.tsx (native)
+import MyComponent from './my-component';
+import { useState } from 'react';
+
+export default function Route() {
+  const [height, setHeight] = useState(270);
+  return (
+    <MyComponent
+      updateSize={size => {
+        if (size[1] !== height) {
+          setHeight(size[1]);
+        }
+      }}
+      webview={{
+        style: { height },
+      }}
+    />
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+import { useEffect } from 'react';
+
+function useSize(callback: (size: [number, number]) => void) {
+  useEffect(() => {
+    // Observe window size changes
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        callback([width, height]);
+      }
+    });
+
+    observer.observe(document.body);
+
+    callback([document.body.clientWidth, document.body.clientHeight]);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [callback]);
+}
+
+export default function Route({
+  onLayout,
+}: {
+  webview: import('expo/webview').WebViewProps;
+  onLayout(size: [number, number]);
+}) {
+  useSize(onLayout);
+
+  return <div />;
+}
+```
+
 ## Architecture
 
 Built-in webview support only renders content as single-page applications (e.g. no SSR or SSG). This is because it's a bit simpler to work with and because you don't need browser indexing techniques in your embedded JS code.
@@ -210,9 +320,13 @@ While you should avoid using WebViews for your main app, there are some reasonab
 
 Many large apps also use WebViews for auxiliary routes such as settings pages, help pages, and other less frequently visited parts of the app.
 
-## Embedding vs Hosting
+## Limitations
 
-Webviews support both fetching from a server and reading from disk. By default, Expo's webview support embeds the web content and assets on disk to reduce version conflicts and improve performance. This can be extended in the future to support conditionally hosting components as part of our larger universal React Server Components work.
+- You cannot pass `children` to the webview component from the native side.
+- Webviews are standalone and do not automatically share data between different instances.
+- You cannot add native views to webviews. You can try to absolutely position native content on top of webviews but it may feel a bit janky.
+- Function props cannot return content synchronously. They must be async.
+- Webviews support both fetching from a server and reading from disk. By default, Expo's webview support embeds the web content and assets on disk to reduce version conflicts and improve performance. This can be extended in the future to support conditionally hosting components as part of our larger universal React Server Components work.
 
 ## Direction
 

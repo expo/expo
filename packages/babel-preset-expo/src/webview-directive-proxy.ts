@@ -72,7 +72,7 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
                 import React from 'react';
               import { WebView } from 'expo/webview';
               export default React.forwardRef((props, ref) => {
-                return React.createElement(WebView, { ref, ...props, source: proxy });
+                return React.createElement(WebView, { ref, ...props, $$source: proxy });
             });
               `
             : `export default proxy`

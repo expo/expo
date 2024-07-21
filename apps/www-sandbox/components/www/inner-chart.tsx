@@ -29,14 +29,12 @@ function useSize(callback: (size: [number, number]) => void) {
 }
 
 export default function Route({
-  actions,
+  updateSize,
 }: {
   webview: import('expo/webview').WebViewProps;
-  actions: {
-    updateSize(size: [number, number]);
-  };
+  updateSize(size: [number, number]);
 }) {
-  useSize(actions.updateSize);
+  useSize(updateSize);
   return (
     <Card className="w-full" x-chunk="charts-01-chunk-0">
       <ChartContainer

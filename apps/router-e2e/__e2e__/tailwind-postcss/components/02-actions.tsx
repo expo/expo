@@ -7,13 +7,13 @@ import '../global.css';
 // const actions = _getActionsObject();
 
 export default function Page({
-  actions,
+  showAlert,
+  throwError,
+  getNativeSettings,
 }: {
-  actions: {
-    showAlert: (time: number) => void;
-    throwError: () => never;
-    getNativeSettings: () => Promise<string>;
-  };
+  showAlert: (time: number) => void;
+  throwError: () => never;
+  getNativeSettings: () => Promise<string>;
 }) {
   const [nativeSetting, setNativeSetting] = useState<string | null>(null);
 
@@ -22,22 +22,22 @@ export default function Page({
       <p
         className="text-lg text-blue-900 font-medium"
         onClick={() => {
-          actions.showAlert(Date.now());
+          showAlert(Date.now());
         }}>
         Show alert
       </p>
       <p
         className="text-lg text-blue-900 font-medium"
         onClick={async () => {
-          setNativeSetting(await actions.getNativeSettings());
-          console.log('return value:', await actions.getNativeSettings());
+          setNativeSetting(await getNativeSettings());
+          console.log('return value:', await getNativeSettings());
         }}>
         Read native value: "{nativeSetting}"
       </p>
       <p
         className="text-lg text-blue-900 font-medium"
         onClick={async () => {
-          actions.throwError();
+          throwError();
         }}>
         Throw error from native
       </p>

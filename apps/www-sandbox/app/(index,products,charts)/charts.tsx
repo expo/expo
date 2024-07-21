@@ -60,19 +60,17 @@ export default function Route() {
         </CardHeader>
         <CardContent style={{ minHeight: height, padding: 16 }}>
           <ChartInner
-            actions={{
-              updateSize(size) {
-                console.log('{GOT} Native size:', size);
-                if (size[1] !== height) {
-                  console.log('Native size:', size[1]);
-                  setHeight(size[1]);
-                } else {
-                  console.log('Skip size:', size[1]);
-                }
-              },
+            updateSize={(size) => {
+              console.log('{GOT} Native size:', size);
+              if (size[1] !== height) {
+                console.log('Native size:', size[1]);
+                setHeight(size[1]);
+              } else {
+                console.log('Skip size:', size[1]);
+              }
             }}
-            style={{ height: height }}
             webview={{
+              style: { height },
               scrollEnabled: false,
             }}
           />
@@ -90,8 +88,8 @@ export default function Route() {
       </View>
 
       <Charts
-        style={{ height: 2200 }}
         webview={{
+          style: { height: 2200 },
           scrollEnabled: false,
         }}
       />

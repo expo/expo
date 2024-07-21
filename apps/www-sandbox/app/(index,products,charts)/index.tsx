@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Button, ScrollView, Text, View } from 'react-native';
 
 import WebDashboard from '@/components/www/dashboard';
 import Charts from '@/components/www/charts';
@@ -13,6 +13,8 @@ import ThreeThing from '@/components/www/three-01';
 import Content from '@/components/mdx/story.mdx';
 import { getDOMComponents, MDXComponents } from '@bacons/mdx';
 
+import MarshalProps from '@/components/www/marshal-props';
+import { useState } from 'react';
 export default function Route() {
   // return (
   //   <View>
@@ -28,6 +30,8 @@ export default function Route() {
   //     </MDXComponents>
   //   </View>
   // );
+
+  const [index, setIndex] = useState(0);
   return (
     <View style={{ flex: 1 }}>
       {/* <Stack.Screen
@@ -36,7 +40,17 @@ export default function Route() {
         }}
       /> */}
 
-      <ThreeThing />
+      <MarshalProps
+        index={index}
+        onPress={() => {
+          console.log('Pressed');
+          setIndex((index) => index + 1);
+        }}
+      />
+
+      <Button onPress={() => setIndex((index) => index + 1)} title="Increment" />
+
+      {/* <ThreeThing /> */}
       {/* <Content /> */}
 
       {/* <Auth01 />

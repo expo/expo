@@ -3,7 +3,7 @@ import '@expo/metro-runtime';
 
 // Add web error box
 import { renderRootComponent } from 'expo-router/build/renderRootComponent';
-import { _getActionsObject } from 'expo/webview';
+import { _getActionsObject, addEventListener } from 'expo/webview';
 import React from 'react';
 
 const actions = _getActionsObject();
@@ -32,9 +32,39 @@ function ActionsWrapper(props) {
     });
   }, []);
 
+  // Props listeners
+  const [marshalledProps, setProps] = React.useState(() => {
+    if (typeof globalThis.$$EXPO_INITIAL_PROPS === 'undefined') {
+      return {};
+    }
+    return JSON.parse(globalThis.$$EXPO_INITIAL_PROPS);
+  });
+
+  React.useEffect(() => {
+    const remove = addEventListener((msg) => {
+      if (msg.type === '$$props') {
+        setProps(msg.data);
+      }
+    });
+    return () => {
+      remove();
+    };
+  }, [setProps]);
+
+  const proxyActions = React.useMemo(() => {
+    if (!marshalledProps.names) return {};
+    // Create a named map { [name: string]: ProxyFunction }
+    return Object.fromEntries(
+      marshalledProps.names.map((key) => {
+        return [key, actions[key]];
+      })
+    );
+  }, [marshalledProps.names]);
+
+  console.log('ACTIONS:', marshalledProps, proxyActions);
   return (
     <React.Suspense fallback={null}>
-      <AppModule {...props} actions={actions} />
+      <AppModule {...props} {...(marshalledProps.props || {})} {...proxyActions} />
     </React.Suspense>
   );
 }
