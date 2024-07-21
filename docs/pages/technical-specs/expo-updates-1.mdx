@@ -160,7 +160,7 @@ type Asset = {
 };
 ```
 
-- `id`: The ID MUST uniquely specify the manifest.
+- `id`: The ID MUST uniquely specify the manifest and must be a UUID.
 - `createdAt`: The date and time at which the update was created is essential as the client library selects the most recent update (subject to any constraints supplied by the `expo-manifest-filters` header). The datetime should be formatted according to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601).
 - `runtimeVersion`: Can be any string defined by the developer. It stipulates what native code setup is required to run the associated update.
 - `launchAsset`: A special asset that is the entry point of the application code. The `fileExtension` field will be ignored for this asset and SHOULD be omitted.
