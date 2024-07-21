@@ -69,7 +69,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open func applicationWillTerminate(_ application: UIApplication) {
     subscribers.forEach { $0.applicationWillTerminate?(application) }
   }
-  
+
   @objc public func customizeRootView(rctView: RCTRootView) {
     subscribers.forEach { $0.customizeRootView?(rctView: rctView) }
   }
