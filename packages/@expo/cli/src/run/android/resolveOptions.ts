@@ -12,6 +12,7 @@ export type Options = {
   install?: boolean;
   buildCache?: boolean;
   allArch?: boolean;
+  binary?: string;
 };
 
 export type ResolvedOptions = GradleProps &

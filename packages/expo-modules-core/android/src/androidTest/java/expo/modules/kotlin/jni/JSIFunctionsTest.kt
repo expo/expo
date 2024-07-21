@@ -1,12 +1,14 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
@@ -483,5 +485,27 @@ class JSIFunctionsTest {
       call("list", "[{ name: 'expo' }, { name: 'is' }, { name: 'awesome' }]")
       call("map", "{ k1: { name: 'k1' }, k2: { name: 'k2' }}")
     }
+  }
+
+  private class MySharedRef(value: Int, runtimeContext: RuntimeContext) : SharedRef<Int>(value, runtimeContext)
+
+  @Test
+  fun shared_ref_should_be_convertible() = withSingleModule({
+    Function("createRef") {
+      MySharedRef(123, module!!.runtimeContext)
+    }
+    Function("getRef") { ref: MySharedRef ->
+      ref.ref
+    }
+  }) {
+    evaluateScript(
+      """
+      const ref = $moduleRef.createRef();
+      global.ref = ref;
+      ref
+      """.trimIndent()
+    ).getObject()
+    val value = call("getRef", "global.ref").getInt()
+    Truth.assertThat(value).isEqualTo(123)
   }
 }

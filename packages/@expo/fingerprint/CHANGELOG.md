@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed broken `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun`. ([#30344](https://github.com/expo/expo/pull/30344) by [@kudo](https://github.com/kudo))
+- Fixed `fingerprint.config.js` loading error on EAS build. ([#30505](https://github.com/expo/expo/pull/30505) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

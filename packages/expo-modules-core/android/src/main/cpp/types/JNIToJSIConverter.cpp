@@ -4,6 +4,7 @@
 #include "../JavaReferencesCache.h"
 #include "ObjectDeallocator.h"
 #include "../JSharedObject.h"
+#include "../JNIUtils.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/ReadableNativeArray.h>
@@ -130,22 +131,8 @@ jsi::Value convert(
       "expo/modules/kotlin/sharedobjects/SharedObject").clazz
   )) {
     JSIContext *jsiContext = getJSIContext(rt);
-
     auto sharedObject = jni::static_ref_cast<JSharedObject::javaobject>(value);
-    int id = sharedObject->getId();
-
-    if (id == 0) {
-      auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
-      auto jsObjectRef = JavaScriptObject::newInstance(
-        jsiContext,
-        jsiContext->runtimeHolder,
-        jsObject
-      );
-      jsiContext->registerSharedObject(jni::make_local(unpackedValue), jsObjectRef);
-      return jsi::Value(rt, *jsObject);
-    }
-
-    return jsi::Value(rt, *jsiContext->getSharedObject(id)->cthis()->get());
+    return convertSharedObject(sharedObject, rt, jsiContext);
   }
   if (env->IsInstanceOf(
     unpackedValue,

@@ -47,6 +47,8 @@
     "react-test-renderer": "18.2.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

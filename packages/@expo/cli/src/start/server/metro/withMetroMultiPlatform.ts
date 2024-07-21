@@ -145,6 +145,7 @@ export function withExtendedResolver(
   if (isFastResolverEnabled) {
     Log.warn(`Experimental module resolution is enabled.`);
   }
+
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
   }

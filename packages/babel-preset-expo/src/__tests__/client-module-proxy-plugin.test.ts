@@ -223,7 +223,7 @@ export default Svg;
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents?.metadata).toEqual({});
+    expect(contents?.metadata).toEqual({ hasCjsExports: false });
 
     expect(contents?.code).not.toMatch('react-server-dom-webpack');
   });

@@ -54,6 +54,8 @@
     "node-fetch": "^2.6.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

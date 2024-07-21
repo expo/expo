@@ -3,7 +3,7 @@ import ImageManipulatorContext from './web/ImageManipulatorContext.web';
 import ImageManipulatorImageRef from './web/ImageManipulatorImageRef.web';
 declare class ImageManipulator extends NativeModule {
     Context: typeof ImageManipulatorContext;
-    ImageRef: typeof ImageManipulatorImageRef;
+    Image: typeof ImageManipulatorImageRef;
     manipulate(uri: string): ImageManipulatorContext;
 }
 declare const _default: ImageManipulator;

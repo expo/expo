@@ -6,7 +6,7 @@ import { loadImageAsync } from './web/utils.web';
 
 class ImageManipulator extends NativeModule {
   Context = ImageManipulatorContext;
-  ImageRef = ImageManipulatorImageRef;
+  Image = ImageManipulatorImageRef;
 
   manipulate(uri: string): ImageManipulatorContext {
     return new ImageManipulatorContext(() => loadImageAsync(uri));

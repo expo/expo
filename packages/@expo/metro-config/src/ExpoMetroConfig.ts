@@ -18,6 +18,7 @@ import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
+import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
@@ -124,7 +125,7 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
       // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
       if (modulePath == null) {
         id = 'MODULE_NOT_FOUND';
-      } else if (modulePath.startsWith('\0')) {
+      } else if (isVirtualModule(modulePath)) {
         // Virtual modules should be stable.
         id = modulePath;
       } else if (path.isAbsolute(modulePath)) {
@@ -244,7 +245,7 @@ export function getDefaultConfig(
     serializer: {
       isThirdPartyModule(module) {
         // Block virtual modules from appearing in the source maps.
-        if (module.path.startsWith('\0')) return true;
+        if (isVirtualModule(module.path)) return true;
 
         // Generally block node modules
         if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {

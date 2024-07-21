@@ -136,6 +136,10 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental React Compiler is enabled.`);
   }
 
+  if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+    Log.warn(`Experimental bundle optimization is enabled.`);
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,
@@ -232,7 +236,7 @@ export async function instantiateMetroAsync(
   }
 
   // Attach Expo Atlas if enabled
-  const atlas = await attachAtlasAsync({
+  await attachAtlasAsync({
     isExporting,
     exp,
     projectRoot,
@@ -257,9 +261,6 @@ export async function instantiateMetroAsync(
       mockServer: isExporting,
     }
   );
-
-  // If Atlas is enabled, and can register to Metro, attach it to listen for changes
-  atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent

@@ -209,7 +209,7 @@ class CameraViewModule : Module() {
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {
-            ResolveTakenPicture(image, promise, options, cacheDirectory) { response ->
+            ResolveTakenPicture(image, promise, options, false, cacheDirectory) { response ->
               view.onPictureSaved(response)
             }.resolve()
           }
