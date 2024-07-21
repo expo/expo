@@ -108,9 +108,9 @@ export default function App() {
     );
   }
 
-  const toggleCameraFacing = () => {
+  function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
-  };
+  }
 
   return (
     <View style={styles.container}>
