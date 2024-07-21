@@ -61,6 +61,10 @@
 - [iOS] Refactor and expose `URLSessionSessionDelegateProxy` class. ([#30173](https://github.com/expo/expo/pull/30173) by [@kudo](https://github.com/kudo))
 - [Android] Supports passing `Accept: text/event-stream` header to bypass streaming requests from `ExpoNetworkInspectOkHttpInterceptors`. ([#30219](https://github.com/expo/expo/pull/30219) by [@kudo](https://github.com/kudo))
 
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.12.16 - 2024-06-20
 
 ### 🐛 Bug fixes

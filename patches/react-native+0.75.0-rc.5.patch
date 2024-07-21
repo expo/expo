@@ -1,16 +1,3 @@
-diff --git a/node_modules/react-native/scripts/bundle.js b/node_modules/react-native/scripts/bundle.js
-index 53acb05..9f4fe19 100644
---- a/node_modules/react-native/scripts/bundle.js
-+++ b/node_modules/react-native/scripts/bundle.js
-@@ -12,7 +12,7 @@
- 
- const {bundleCommand: bc} = require('@react-native/community-cli-plugin');
- const {execSync} = require('child_process');
--const program = require('commander');
-+const {program} = require('commander');
- const {existsSync, readFileSync} = require('fs');
- const path = require('path');
- 
 diff --git a/node_modules/react-native/scripts/react-native-xcode.sh b/node_modules/react-native/scripts/react-native-xcode.sh
 index 0886282..1900c21 100755
 --- a/node_modules/react-native/scripts/react-native-xcode.sh
