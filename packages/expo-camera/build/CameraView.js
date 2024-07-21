@@ -13,6 +13,9 @@ function ensurePictureOptions(options) {
     if (!options.quality) {
         options.quality = 1;
     }
+    if (options.mirror) {
+        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
+    }
     if (options.onPictureSaved) {
         const id = _GLOBAL_PICTURE_ID++;
         _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
@@ -24,6 +27,9 @@ function ensurePictureOptions(options) {
 function ensureRecordingOptions(options = {}) {
     if (!options || typeof options !== 'object') {
         return {};
+    }
+    if (options.mirror) {
+        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
     }
     return options;
 }
