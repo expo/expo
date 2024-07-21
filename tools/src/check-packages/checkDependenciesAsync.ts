@@ -30,37 +30,37 @@ type SourceFileImports = {
 const IGNORED_IMPORTS = ['expo-modules-core'];
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
-  '@expo/cli',
-  '@expo/html-elements',
-  '@expo/image-utils',
-  '@expo/metro-config',
-  '@expo/metro-runtime',
-  '@expo/prebuild-config',
-  'babel-preset-expo',
-  'expo-apple-authentication',
-  'expo-asset',
-  'expo-auth-session',
-  'expo-av',
-  'expo-camera',
-  'expo-checkbox',
-  'expo-clipboard',
-  'expo-dev-client-components',
-  'expo-doctor',
-  'expo-font',
-  'expo-gl',
-  'expo-image',
-  'expo-modules-core',
-  'expo-modules-test-core',
-  'expo-navigation-bar',
-  'expo-router',
-  'expo-sqlite',
-  'expo-status-bar',
-  'expo-store-review',
-  'expo-symbols',
-  'expo-system-ui',
-  'expo-updates',
-  'jest-expo',
-  'patch-project',
+  '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
+  '@expo/html-elements', // package: react, react-native, react-native-web
+  '@expo/image-utils', // package: sharp, sharp-cli
+  '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
+  '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
+  '@expo/prebuild-config', // package: jimp-compact, xcode
+  'babel-preset-expo', // package: @babel/*, debug, expo, react-native-reanimated, resolve-from
+  'expo-apple-authentication', // package: react, react-native
+  'expo-asset', // package: @react-native/assets-registry, expo-updates (types only)
+  'expo-auth-session', // package: react, react-native
+  'expo-av', // package: expo-asset, react-native-web
+  'expo-camera', // package: react-native-web
+  'expo-checkbox', // package: react, react-native
+  'expo-clipboard', // package: react
+  'expo-dev-client-components', // package: react, react-native
+  'expo-doctor', // package: fast-glob, getenv, metro-config, node-fetch, terminal-link
+  'expo-font', // package: expo-asset
+  'expo-gl', // package: react-dom, react-native-reanimated, react-native-web
+  'expo-image', // package: @react-native/assets-registry, react-native-web
+  'expo-modules-core', // package: react, react-native
+  'expo-modules-test-core', // package: typescript - TODO
+  'expo-navigation-bar', // package: react, react-native
+  'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
+  'expo-sqlite', // package: expo-asset
+  'expo-status-bar', // package: react, react-native
+  'expo-store-review', // package: expo-constants
+  'expo-symbols', // package: react-native (types only, without marking)
+  'expo-system-ui', // package: react-native-web
+  'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
+  'jest-expo', // package: expo, fbemitter, react-native
+  'patch-project', // package: @expo/env, getenv
 ];
 
 /**
@@ -96,7 +96,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   if (invalidImports.length) {
     const importAreTypesOnly = invalidImports.every(({ importRef }) => importRef.isTypeOnly);
     const importPackageNames = [
-      ...new Set(invalidImports.map(({ importRef }) => importRef.packageName)),
+      ...new Set(invalidImports.map(({ importRef }) => importRef.packageName).sort()),
     ];
 
     Logger.warn(
