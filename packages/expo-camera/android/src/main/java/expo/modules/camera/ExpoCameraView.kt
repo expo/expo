@@ -33,6 +33,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.ResolutionSelector
@@ -171,6 +172,12 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
+  var mirror: Boolean = false
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
   var mute: Boolean = false
   var animateShutter: Boolean = true
   var enableTorch: Boolean by Delegates.observable(false) { _, _, newValue ->
@@ -247,8 +254,8 @@ class ExpoCameraView(
           }
           cacheDirectory.let {
             scope.launch {
-              val mirror = options.mirror && lensFacing == CameraType.FRONT
-              ResolveTakenPicture(data, promise, options, mirror, it) { response: Bundle ->
+              val shouldMirror = mirror && lensFacing == CameraType.FRONT
+              ResolveTakenPicture(data, promise, options, shouldMirror, it) { response: Bundle ->
                 onPictureSaved(response)
               }.resolve()
             }
@@ -305,6 +312,7 @@ class ExpoCameraView(
                     }
                   )
                 }
+
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
                     event.cause?.message
@@ -422,9 +430,12 @@ class ExpoCameraView(
         this.recorder = it
       }
 
-    return VideoCapture.Builder(recorder)
-      .setVideoStabilizationEnabled(true)
-      .build()
+    return VideoCapture.Builder(recorder).apply {
+      if (mirror) {
+        setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
+      }
+      setVideoStabilizationEnabled(true)
+    }.build()
   }
 
   private fun startFocusMetering() {
@@ -448,6 +459,7 @@ class ExpoCameraView(
           onCameraReady(Unit)
           setTorchEnabled(enableTorch)
         }
+
         else -> {}
       }
     }
