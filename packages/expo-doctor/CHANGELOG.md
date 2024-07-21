@@ -8,8 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- Drop `node-fetch` in favor of Node built-in `fetch` to support Node 22.
-- Add missing dependencies `fast-glob`, `getenv`, and `terminal-link`.
+- Drop `node-fetch` in favor of Node built-in `fetch` to support Node 22. ([#30551](https://github.com/expo/expo/pull/30551) by [@byCedric](https://github.com/byCedric))
+- Add missing dependencies `fast-glob`, `getenv`, and `terminal-link`. ([#30551](https://github.com/expo/expo/pull/30551) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
