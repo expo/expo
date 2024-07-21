@@ -15,15 +15,11 @@ type SourceFile = {
 };
 
 type SourceFileImportRef = {
+  type: 'builtIn' | 'internal' | 'external';
+  importValue: string;
   packageName: string;
   packagePath?: string;
   isTypeOnly?: boolean;
-};
-
-type SourceFileImports = {
-  internal: SourceFileImportRef[];
-  external: SourceFileImportRef[];
-  builtIn: SourceFileImportRef[];
 };
 
 // We are incrementally rolling this out, the imports in this list are expected to be invalid
@@ -82,15 +78,13 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
     return;
   }
 
-  const isValidImport = createImportValidator(pkg);
+  const isValidExternalImport = createExternalImportValidator(pkg);
   const invalidImports: { file: SourceFile; importRef: SourceFileImportRef }[] = [];
 
   for (const source of sources) {
-    for (const importRef of source.importRefs.external) {
-      if (!isValidImport(importRef)) {
-        invalidImports.push({ file: source.file, importRef });
-      }
-    }
+    source.importRefs
+      .filter((importRef) => !isValidExternalImport(importRef))
+      .forEach((importRef) => invalidImports.push({ file: source.file, importRef }));
   }
 
   if (invalidImports.length) {
@@ -106,12 +100,8 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
     );
 
     invalidImports.forEach(({ file, importRef }) => {
-      const importPath = importRef.packagePath
-        ? `${importRef.packageName}/${importRef.packagePath}`
-        : `${importRef.packageName}`;
-
       Logger.verbose(
-        `     > ${path.relative(pkg.path, file.path)} - ${importPath}${importRef.isTypeOnly ? ' (types only)' : ''}`
+        `     > ${path.relative(pkg.path, file.path)} - ${importRef.importValue}${importRef.isTypeOnly ? ' (types only)' : ''}`
       );
     });
 
@@ -124,10 +114,11 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
 /**
  * Create a filter guard that validates any import reference against the package dependencies.
  * The filter only returns valid imports by checking:
+ *   - If the imported package is an external import (e.g. importing a package)
  *   - If the imported package name is equal to the current package name (e.g. for scripts)
  *   - If the imported package name is in the package dependencies, devDependencies, or peerDependencies
  */
-function createImportValidator(pkg: Package) {
+function createExternalImportValidator(pkg: Package) {
   const dependencyMap = new Map<string, null | PackageDependency>();
   const dependencies = pkg.getDependencies([
     DependencyKind.Normal,
@@ -139,7 +130,9 @@ function createImportValidator(pkg: Package) {
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
 
   return (ref: SourceFileImportRef) =>
-    pkg.packageName === ref.packageName || dependencyMap.has(ref.packageName);
+    ref.type !== 'external' ||
+    pkg.packageName === ref.packageName ||
+    dependencyMap.has(ref.packageName);
 }
 
 /** Get a list of all source files to validate for dependency chains */
@@ -176,32 +169,34 @@ function getSourceFilePaths(pkg: Package, type: PackageCheckType): string {
 }
 
 /** Parse and return all imports from a single source file, usign TypeScript AST parsing */
-function getSourceFileImports(sourceFile: SourceFile): SourceFileImports {
-  const imports: SourceFileImports = { internal: [], external: [], builtIn: [] };
+function getSourceFileImports(sourceFile: SourceFile): SourceFileImportRef[] {
+  const importRefs: SourceFileImportRef[] = [];
   const compiler = createTypescriptCompiler();
   const source = compiler.getSourceFile(sourceFile.path, ts.ScriptTarget.Latest, (message) => {
     throw new Error(`Failed to parse ${sourceFile.path}: ${message}`);
   });
 
   if (source) {
-    return collectTypescriptImports(source, imports);
+    return collectTypescriptImports(source, importRefs);
   }
 
-  return imports;
+  return importRefs;
 }
 
 /** Iterate the parsed TypeScript AST and collect all imports or require statements */
-function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImports) {
+function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImportRef[]) {
   if (ts.isImportDeclaration(node)) {
     // Collect `import` statements
-    storeTypescriptImport(imports, node.moduleSpecifier.getText(), node.importClause?.isTypeOnly);
+    imports.push(
+      createTypescriptImportRef(node.moduleSpecifier.getText(), node.importClause?.isTypeOnly)
+    );
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require' &&
     node.arguments.every((arg) => ts.isStringLiteral(arg)) // Filter `require(requireFrom(...))
   ) {
     // Collect `require` statement
-    storeTypescriptImport(imports, node.arguments[0].getText());
+    imports.push(createTypescriptImportRef(node.arguments[0].getText()));
   } else {
     ts.forEachChild(node, (child) => {
       collectTypescriptImports(child, imports);
@@ -211,32 +206,40 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
   return imports;
 }
 
-function storeTypescriptImport(
-  store: SourceFileImports,
+/** Analyze the import and return the import ref object */
+function createTypescriptImportRef(
   importText: string,
-  importTypeOnly?: boolean
-): void {
-  const importRef = importText.replace(/['"]/g, '');
+  importTypeOnly = false
+): SourceFileImportRef {
+  const importValue = importText.replace(/['"]/g, '');
 
-  if (isBuiltin(importRef)) {
-    store.builtIn.push({ packageName: importRef, isTypeOnly: importTypeOnly });
-  } else if (importRef.startsWith('.')) {
-    store.internal.push({ packageName: importRef, isTypeOnly: importTypeOnly });
-  } else if (importRef.startsWith('@')) {
-    const [packageScope, packageName, ...packagePath] = importRef.split('/');
-    store.external.push({
+  if (isBuiltin(importValue)) {
+    return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly };
+  }
+
+  if (importValue.startsWith('.')) {
+    return { type: 'internal', importValue, packageName: importValue, isTypeOnly: importTypeOnly };
+  }
+
+  if (importValue.startsWith('@')) {
+    const [packageScope, packageName, ...packagePath] = importValue.split('/');
+    return {
+      type: 'external',
+      importValue,
       packageName: `${packageScope}/${packageName}`,
       packagePath: packagePath.join('/'),
       isTypeOnly: importTypeOnly,
-    });
-  } else {
-    const [packageName, ...packagePath] = importRef.split('/');
-    store.external.push({
-      packageName,
-      packagePath: packagePath.join('/'),
-      isTypeOnly: importTypeOnly,
-    });
+    };
   }
+
+  const [packageName, ...packagePath] = importValue.split('/');
+  return {
+    type: 'external',
+    importValue,
+    packageName,
+    packagePath: packagePath.join(','),
+    isTypeOnly: importTypeOnly,
+  };
 }
 
 /** The shared but lazily initialized TypeScript compiler instance */
