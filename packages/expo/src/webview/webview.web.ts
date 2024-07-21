@@ -62,14 +62,6 @@ export function _invokeNativeAction(actionId: string, args: any[]): Promise<any>
 }
 
 export function _getActionsObject(): Record<string, (...args: any[]) => void | Promise<any>> {
-  // TODO: Inject this list and keep it updated when props change on the native side.
-  // const availableActions = globalThis.__expoActions || [];
-  // if (__DEV__) {
-  //     if (!Array.isArray(availableActions)) {
-  //         throw new Error('Internal error: native actions not found')
-  //     }
-  // }
-
   return new Proxy(
     {},
     {

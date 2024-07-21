@@ -48,15 +48,6 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
     { names: [], props: {} }
   );
 
-  // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
-  useEffect(() => {
-    if (webviewRef.current) {
-      webviewRef.current?.injectJavaScript(
-        `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`
-      );
-    }
-  }, [webviewRef.current]);
-
   // When the `marshallProps` change, emit them to the webview.
   React.useEffect(() => {
     emit({ type: '$$props', data: smartActions });
@@ -72,6 +63,14 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
       allowsAirPlayForMediaPlayback
       allowsFullscreenVideo
       {...webview}
+      injectedJavaScriptBeforeContentLoaded={[
+        // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
+        `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
+        webview?.injectedJavaScriptBeforeContentLoaded,
+        'true;',
+      ]
+        .filter(Boolean)
+        .join('\n')}
       ref={setRef}
       source={$$source}
       style={[

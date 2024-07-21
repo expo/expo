@@ -34,10 +34,10 @@ function ActionsWrapper(props) {
 
   // Props listeners
   const [marshalledProps, setProps] = React.useState(() => {
-    if (typeof globalThis.$$EXPO_INITIAL_PROPS === 'undefined') {
-      return {};
+    if (typeof window.$$EXPO_INITIAL_PROPS === 'undefined') {
+      throw new Error('Initial props are not defined. This is a bug in the webview runtime.');
     }
-    return JSON.parse(globalThis.$$EXPO_INITIAL_PROPS);
+    return window.$$EXPO_INITIAL_PROPS;
   });
 
   React.useEffect(() => {
@@ -61,7 +61,6 @@ function ActionsWrapper(props) {
     );
   }, [marshalledProps.names]);
 
-  console.log('ACTIONS:', marshalledProps, proxyActions);
   return (
     <React.Suspense fallback={null}>
       <AppModule {...props} {...(marshalledProps.props || {})} {...proxyActions} />
