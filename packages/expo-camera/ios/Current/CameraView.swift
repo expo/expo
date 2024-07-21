@@ -94,6 +94,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   var animateShutter = true
+  var mirror = false
 
   var zoom: CGFloat = 0 {
     didSet {
@@ -358,7 +359,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-      connection?.isVideoMirrored = self.presetCamera == .front && options.mirror
+
+      // options.mirror is deprecated but should continue to work until removed
+      connection?.isVideoMirrored = self.presetCamera == .front && (self.mirror || options.mirror)
       var photoSettings = AVCapturePhotoSettings()
 
       if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
@@ -564,8 +567,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
           connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
           self.setVideoOptions(options: options, for: connection, promise: promise)
 
-          if connection.isVideoOrientationSupported && options.mirror {
-            connection.isVideoMirrored = options.mirror
+          if connection.isVideoOrientationSupported && self.mirror {
+            connection.isVideoMirrored = self.mirror
           }
         }
 

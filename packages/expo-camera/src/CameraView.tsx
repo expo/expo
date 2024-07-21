@@ -26,29 +26,42 @@ const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 
 function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
-  const pictureOptions: CameraPictureOptions =
-    !options || typeof options !== 'object' ? {} : options;
+  if (!options || typeof options !== 'object') {
+    return {};
+  }
 
-  if (!pictureOptions.quality) {
-    pictureOptions.quality = 1;
+  if (!options.quality) {
+    options.quality = 1;
   }
-  if (pictureOptions.onPictureSaved) {
+
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
+  }
+
+  if (options.onPictureSaved) {
     const id = _GLOBAL_PICTURE_ID++;
-    _PICTURE_SAVED_CALLBACKS[id] = pictureOptions.onPictureSaved;
-    pictureOptions.id = id;
-    pictureOptions.fastMode = true;
+    _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
+    options.id = id;
+    options.fastMode = true;
   }
-  return pictureOptions;
+
+  return options;
 }
 
 function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordingOptions {
-  let recordingOptions = options || {};
-
-  if (!recordingOptions || typeof recordingOptions !== 'object') {
-    recordingOptions = {};
+  if (!options || typeof options !== 'object') {
+    return {};
   }
 
-  return recordingOptions;
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
+  }
+
+  return options;
 }
 
 function _onPictureSaved({
