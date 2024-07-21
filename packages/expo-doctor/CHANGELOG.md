@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Drop `node-fetch` in favor of Node built-in `fetch` to support Node 22.
+- Add missing dependencies `fast-glob`, `getenv`, and `terminal-link`.
+
 ### 💡 Others
 
 ## 1.8.2 — 2024-07-19
