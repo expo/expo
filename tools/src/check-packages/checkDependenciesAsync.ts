@@ -150,11 +150,13 @@ async function getSourceFilesAsync(pkg: Package, type: PackageCheckType): Promis
     nodir: true,
   });
 
-  return files.map((filePath) =>
-    filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
-      ? { path: filePath, type: 'test' }
-      : { path: filePath, type: 'source' }
-  );
+  return files
+    .filter((filePath) => !filePath.endsWith('.d.ts'))
+    .map((filePath) =>
+      filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
+        ? { path: filePath, type: 'test' }
+        : { path: filePath, type: 'source' }
+    );
 }
 
 /** Get the path of source files based on the package, and the type of check currently running */
