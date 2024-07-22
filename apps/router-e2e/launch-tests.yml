@@ -2,7 +2,7 @@ appId: host.exp.Exponent
 ---
 - stopApp: host.exp.Exponent
 - openLink:
-    link: ${MAESTRO_APP_URL}?_TEST_URL=1
+    link: ${MAESTRO_APP_URL}/?_TEST_URL=1
 # - assertVisible: 'URL:(tabs)/explore'
 # - tapOn: DISMISS_URL
 # # - assertVisible:
