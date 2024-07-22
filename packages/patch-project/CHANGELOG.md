@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix dependency imports to `expo/*` packages and add missing `@expo/env`.
+- Fix dependency imports to `expo/*` packages and add missing `@expo/env`. ([#30566](https://github.com/expo/expo/pull/30566) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
