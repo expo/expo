@@ -12,8 +12,8 @@ internal class NetworkFetchUnknownException: Exception {
   }
 }
 
-internal class NetworkFetchRequestCancelledException: Exception {
+internal class NetworkFetchRequestCanceledException: Exception {
   override var reason: String {
-    "Cancelled request"
+    "Fetch request has been canceled"
   }
 }

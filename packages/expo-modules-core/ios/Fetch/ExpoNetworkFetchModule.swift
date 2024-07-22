@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 public final class ExpoNetworkFetchModule: Module {
-  private let queue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
+  private static let queue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
 
   private var urlSession: URLSession?
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
   public required init(appContext: AppContext) {
-    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: queue)
+    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: Self.queue)
     super.init(appContext: appContext)
   }
 
@@ -31,16 +31,16 @@ public final class ExpoNetworkFetchModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(NativeResponse.self) {
       Constructor {
-        return NativeResponse(dispatchQueue: queue)
+        return NativeResponse(dispatchQueue: Self.queue)
       }
 
       AsyncFunction("startStreaming") { (response: NativeResponse) in
         response.startStreaming()
-      }.runOnQueue(queue)
+      }.runOnQueue(Self.queue)
 
       AsyncFunction("cancelStreaming") { (response: NativeResponse, _ reason: String) in
         response.cancelStreaming()
-      }.runOnQueue(queue)
+      }.runOnQueue(Self.queue)
 
       Property("bodyUsed") { (response: NativeResponse) in
         return response.bodyUsed
@@ -71,7 +71,7 @@ public final class ExpoNetworkFetchModule: Module {
           let data = response.ref.finalize()
           promise.resolve(data)
         }
-      }.runOnQueue(queue)
+      }.runOnQueue(Self.queue)
 
       AsyncFunction("text") { (response: NativeResponse, promise: Promise) in
         response.waitFor(states: [.bodyCompleted]) { _ in
@@ -79,7 +79,7 @@ public final class ExpoNetworkFetchModule: Module {
           let text = String(decoding: data, as: UTF8.self)
           promise.resolve(text)
         }
-      }.runOnQueue(queue)
+      }.runOnQueue(Self.queue)
     }
 
     Class(NativeRequest.self) {
@@ -105,16 +105,16 @@ public final class ExpoNetworkFetchModule: Module {
             promise.reject(request.response.error ?? NetworkFetchUnknownException())
           }
         }
-      }.runOnQueue(queue)
+      }.runOnQueue(Self.queue)
 
       AsyncFunction("cancel") { (request: NativeRequest) in
         request.cancel(urlSessionDelegate: self.urlSessionDelegate)
-      }.runOnQueue(queue)
+      }.runOnQueue(Self.queue)
     }
   }
 
   public func setCustomURLSessionConfigurationProvider(provider: NSURLSessionConfigurationProvider?) {
-    queue.async {
+    Self.queue.async {
       if let provider, let config = provider() {
         self.urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
       } else {

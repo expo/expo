@@ -45,11 +45,11 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
     if isInvalidState([.bodyStreamingStarted]) {
       return
     }
-    state = .bodyStreamingCancelled
+    state = .bodyStreamingCanceled
   }
 
-  func emitRequestCancelled() {
-    error = NetworkFetchRequestCancelledException()
+  func emitRequestCanceled() {
+    error = NetworkFetchRequestCanceledException()
     state = .errorReceived
   }
 
@@ -84,7 +84,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
     }
 
     let validStatesString = validStates.map { "\($0.rawValue)" }.joined(separator: ",")
-    NSLog("Invalid state - currentState[\(state.rawValue)] validStates[\(validStatesString)]")
+    log.error("Invalid state - currentState[\(state.rawValue)] validStates[\(validStatesString)]")
     return true
   }
 
@@ -93,7 +93,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
    */
   private static func createResponseInit(response: URLResponse) -> NativeResponseInit? {
     guard let httpResponse = response as? HTTPURLResponse else {
-      NSLog("Invalid response type")
+      log.error("Invalid response type")
       return nil
     }
 
@@ -128,7 +128,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   }
 
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data) {
-    if isInvalidState([.responseReceived, .bodyStreamingStarted, .bodyStreamingCancelled]) {
+    if isInvalidState([.responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled]) {
       return
     }
 
@@ -137,7 +137,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
     } else if state == .bodyStreamingStarted {
       emit(event: "didReceiveResponseData", arguments: data)
     }
-    // no-op in .bodyStreamingCancelled state
+    // no-op in .bodyStreamingCanceled state
   }
 
   func urlSession(_ session: ExpoURLSessionTask, didRedirect response: URLResponse) {
@@ -145,7 +145,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   }
 
   func urlSession(_ session: ExpoURLSessionTask, didCompleteWithError error: (any Error)?) {
-    if isInvalidState([.started, .responseReceived, .bodyStreamingStarted, .bodyStreamingCancelled]) {
+    if isInvalidState([.started, .responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled]) {
       return
     }
 
@@ -201,7 +201,7 @@ internal enum ResponseState: Int {
   case responseReceived
   case bodyCompleted
   case bodyStreamingStarted
-  case bodyStreamingCancelled
+  case bodyStreamingCanceled
   case errorReceived
 }
 

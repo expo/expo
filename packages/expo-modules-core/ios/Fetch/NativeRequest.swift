@@ -29,7 +29,7 @@ internal final class NativeRequest: SharedRef<ExpoURLSessionTask> {
 
   func cancel(urlSessionDelegate: URLSessionSessionDelegateProxy) {
     self.ref.cancel(urlSessionDelegate: urlSessionDelegate)
-    self.response.emitRequestCancelled()
+    self.response.emitRequestCanceled()
   }
 }
 
