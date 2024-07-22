@@ -11,6 +11,7 @@
 - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Add the ability to change the name of the exported shared object. ([#30040](https://github.com/expo/expo/pull/30040) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Supported returning of the `SharedObject` from functions. ([#30426](https://github.com/expo/expo/pull/30426) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
