@@ -75,4 +75,5 @@ jobs:
         if: ${{ failure() }}
         working-directory: apps/router-e2e
         run: |
+          ls -al ./logs
           cat ./logs/maestro.log
