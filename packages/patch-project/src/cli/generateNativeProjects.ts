@@ -1,11 +1,11 @@
-import { type ExpoConfig } from '@expo/config';
-import { type ModPlatform } from '@expo/config-plugins';
 import spawnAsync from '@expo/spawn-async';
+import { type ExpoConfig } from 'expo/config';
+import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { directoryExistsAsync } from './dir';
-import { resolveFromExpoCli } from './resolveFromExpoCli';
+import { resolveFromExpoCli } from './resolveFrom';
 
 /**
  * Generates native projects for the given platforms.
