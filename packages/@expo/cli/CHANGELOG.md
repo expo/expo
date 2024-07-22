@@ -45,6 +45,7 @@
 - Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 - Update `glob@7` to `glob@10`. ([#29898](https://github.com/expo/expo/pull/29898) by [@byCedric](https://github.com/byCedric))
 - Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+- Add `--config-cmd` option to `export:embed` command. ([#30563](https://github.com/expo/expo/pull/30563) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 📚 3rd party library updates
 
