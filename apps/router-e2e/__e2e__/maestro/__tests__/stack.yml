@@ -62,6 +62,13 @@ name: Stack navigation
     text: '/apple'
 - tapOn:
     id: e2e-goto-stack-index
+# Push the index multiple times
+- tapOn:
+    id: e2e-push-index
+- tapOn:
+    id: e2e-push-index
+- tapOn: 'index'
+- tapOn: 'index'
 # Replacing
 - tapOn:
     id: e2e-push-apple

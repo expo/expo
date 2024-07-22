@@ -26,6 +26,9 @@ name: Tabs navigation
     text: 'One'
 # Stacks within tabs
 - tapOn: 'three, tab, 3 of 3'
+- assertVisible:
+    id: e2e-screen
+    text: 'Orange'
 - tapOn:
     id: e2e-navigate-apple
 - assertVisible:

@@ -1,15 +1,12 @@
 import { Tabs, router } from 'expo-router';
-import { Pressable, Text } from 'react-native';
 
 export default function () {
   return (
-    <>
-      <Pressable testID="e2e-back" onPress={() => router.back()}>
-        <Text>Back</Text>
-      </Pressable>
-      <Tabs>
-        <Tabs.Screen name="hidden" options={{ href: null }} />
-      </Tabs>
-    </>
+    <Tabs screenOptions={{ headerShown: false }}>
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="two" />
+      <Tabs.Screen name="hidden" options={{ href: null }} />
+      <Tabs.Screen name="three" options={{ href: '/(tabs)/three/apple' }} />
+    </Tabs>
   );
 }
