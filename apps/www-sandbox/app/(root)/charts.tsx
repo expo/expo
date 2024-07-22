@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Separator } from '@/components/ui/separator';
-import { isWebview } from 'expo/webview';
+import { isWebview } from 'expo/dom';
 
 import ChartInner from '@/components/www/inner-chart';
 import { useState } from 'react';

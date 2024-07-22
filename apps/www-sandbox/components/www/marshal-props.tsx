@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 export default function MyCounter({ index, ...props }: { index: number; onPress: () => void }) {
   console.log('Props', props);

@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 import BlogWrapper from '../../components/www/BlogWrapper';
 import Demo from '../../components/mdx/story.mdx';

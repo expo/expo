@@ -23,8 +23,11 @@ function expoWebviewDirectiveProxy(api) {
                 if (platform === 'web') {
                     return;
                 }
-                const isUseWebview = path.node.directives.some((directive) => directive.value.value === 'use webview');
-                const isUseWebviewSource = path.node.directives.some((directive) => directive.value.value === 'use webview:source');
+                const isUseWebview = path.node.directives.some((directive) => directive.value.value === 'use dom');
+                const isUseWebviewSource = false;
+                // const isUseWebviewSource = path.node.directives.some(
+                //   (directive: any) => directive.value.value === 'use dom:source'
+                // );
                 const filePath = state.file.opts.filename;
                 if (!filePath) {
                     // This can happen in tests or systems that use Babel standalone.
@@ -51,7 +54,7 @@ function expoWebviewDirectiveProxy(api) {
                         ];
                     }
                     else {
-                        throw new Error('production webview directive is not supported yet for platform: ' + platform);
+                        throw new Error('production "use dom" directive is not supported yet for platform: ' + platform);
                     }
                 }
                 else {
@@ -62,7 +65,7 @@ function expoWebviewDirectiveProxy(api) {
                 proxyModule.push(!isUseWebviewSource
                     ? `
                 import React from 'react';
-              import { WebView } from 'expo/webview';
+              import { WebView } from 'expo/dom';
               export default React.forwardRef((props, ref) => {
                 return React.createElement(WebView, { ref, ...props, $$source: proxy });
             });

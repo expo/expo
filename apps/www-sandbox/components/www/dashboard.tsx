@@ -1,7 +1,7 @@
-'use webview';
+'use dom';
 import '@/global.css';
-import type { WebViewProps } from 'expo/webview';
-import { StyleNoSelect } from 'expo/webview';
+import type { WebViewProps } from 'expo/dom';
+import { StyleNoSelect } from 'expo/dom';
 
 import { Link } from 'expo-router';
 import {

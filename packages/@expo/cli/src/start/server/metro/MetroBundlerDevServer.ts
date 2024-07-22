@@ -1380,7 +1380,7 @@ function getWebviewProxyForFilepath(generatedEntry: string, filePath: string) {
     relativeFilePath = './' + relativeFilePath;
   }
 
-  const templatePath = require.resolve(`@expo/cli/static/template/webview-entry.js`);
+  const templatePath = require.resolve(`@expo/cli/static/template/webview-entry.tsx`);
   const template = fs.readFileSync(templatePath, 'utf8');
 
   return {

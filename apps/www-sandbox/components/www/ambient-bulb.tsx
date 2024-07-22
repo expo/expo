@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 // https://codepen.io/lila1984/pen/zYBLVKb
 

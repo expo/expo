@@ -13,7 +13,7 @@ import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
-import { addEventListener, isWebview } from 'expo/webview';
+import { addEventListener, isWebview } from 'expo/dom';
 
 export type ExpoRootProps = {
   context: RequireContext;

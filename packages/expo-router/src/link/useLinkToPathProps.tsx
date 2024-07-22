@@ -4,7 +4,7 @@ import { GestureResponderEvent, Platform } from 'react-native';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
 import { stripGroupSegmentsFromPath } from '../matchers';
-import { emit, isWebview } from 'expo/webview';
+import { emit, isWebview } from 'expo/dom';
 
 function eventShouldPreventDefault(
   e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent

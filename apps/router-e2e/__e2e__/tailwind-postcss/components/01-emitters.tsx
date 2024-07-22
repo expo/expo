@@ -1,8 +1,8 @@
-'use webview';
+'use dom';
 
 import '../global.css';
 
-import { useBridge } from 'expo/webview';
+import { useBridge } from 'expo/dom';
 
 export default function Page() {
   const [emit] = useBridge((msg) => {

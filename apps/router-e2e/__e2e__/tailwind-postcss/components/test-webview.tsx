@@ -1,5 +1,5 @@
 // A webview without babel to test faster.
-import { WebView, BridgeMessage, useBridge } from 'expo/webview';
+import { WebView, BridgeMessage, useBridge } from 'expo/dom';
 import React from 'react';
 
 const outputKey =

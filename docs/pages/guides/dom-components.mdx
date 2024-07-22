@@ -1,23 +1,23 @@
 ---
-title: WebViews in Expo
-sidebar_title: WebViews
-description: Learn about rendering DOM elements in Expo native apps.
+title: Using React DOM in Expo
+sidebar_title: DOM Components
+description: Learn about rendering React DOM elements in Expo native apps.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Expo offers a novel approach to working with modern web code directly in a native app via the `"use webview"` directive. This enables incremental migration for an entire website to a universal app, simply moving on a per-component basis.
+Expo offers a novel approach to working with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app, simply moving on a per-component basis.
 
 The Expo native runtime generally does not support using `<div>` or `<img>` tags, but you may find that you want to quickly drop in some web components. This is where webviews come in.
 
 ## Usage
 
-To render a web component, simply add the `"use webview"` directive to the top of a file:
+To render a web component, simply add the `'use dom'` directive to the top of a file:
 
 ```js my-component.js (web)
-'use webview';
+'use dom';
 
 export default function MyComponent() {
   return (
@@ -56,9 +56,9 @@ export default function App() {
 To pass props to the underlying webview, add a `webview` object to the component:
 
 ```tsx my-components.tsx (web)
-'use webview';
+'use dom';
 
-export default function MyComponent({}: { webview: import('expo/webview').WebViewProps }) {
+export default function MyComponent({}: { webview: import('expo/dom').WebViewProps }) {
   return (
     <div>
       <h1>Hello, world!</h1>
@@ -102,7 +102,7 @@ export default function App() {
 ```
 
 ```tsx my-component.tsx (web)
-'use webview';
+'use dom';
 
 export default function MyComponent({ hello }: { hello: (data: string) => Promise<void> }) {
   return <p onClick={() => hello('world')}>Click me</p>;
@@ -134,7 +134,7 @@ export default function App() {
 ```
 
 ```tsx my-component.tsx (web)
-'use webview';
+'use dom';
 
 export default function MyComponent({ hello }: { hello: string }) {
   return <p>Hello, {hello}</p>;
@@ -145,11 +145,11 @@ These props are sent over an async bridge so they won't be updated synchronously
 
 ## Communication
 
-You can also send and receive serializable data between your native app and webviews using the `useBridge` API from `expo/webview`:
+You can also send and receive serializable data between your native app and webviews using the `useBridge` API from `expo/dom`:
 
 ```js App.js (native)
 import MyComponent from './my-component';
-import { useBridge } from 'expo/webview';
+import { useBridge } from 'expo/dom';
 
 export default function App() {
   const [emit, webview] = useBridge(data => {
@@ -165,9 +165,9 @@ export default function App() {
 ```
 
 ```js my-component.js (web)
-'use webview';
+'use dom';
 
-import { useBridge } from 'expo/webview';
+import { useBridge } from 'expo/dom';
 
 export default function MyComponent() {
   const [emit] = useBridge(data => {
@@ -185,7 +185,7 @@ export default function MyComponent() {
 Data cannot contain functions or circular references. On the web-side you can use the imperative APIs `emit` and `addEventListener` without having to go through React. The native side is more limited since it can host multiple webviews and therefore needs to attach different instances of the event emitters.
 
 ```js my-api.js (web)
-import { emit, addEventListener } from 'expo/webview';
+import { emit, addEventListener } from 'expo/dom';
 
 export function sendData() {
   emit({ type: 'hello', data: 'world' });
@@ -287,7 +287,7 @@ function useSize(callback: (size: [number, number]) => void) {
 export default function Route({
   onLayout,
 }: {
-  webview: import('expo/webview').WebViewProps;
+  webview: import('expo/dom').WebViewProps;
   onLayout(size: [number, number]);
 }) {
   useSize(onLayout);
@@ -300,7 +300,7 @@ export default function Route({
 
 Built-in webview support only renders content as single-page applications (e.g. no SSR or SSG). This is because it's a bit simpler to work with and because you don't need browser indexing techniques in your embedded JS code.
 
-When a module is marked with `"use webview"`, the module is replaced with a proxy reference which is imported at runtime. This feature is primarily just a number of bundler and CLI magic tricks. You can always use a webview with the stnadard approach by passing raw HTML to a webview component if you'd like.
+When a module is marked with `'use dom'`, the module is replaced with a proxy reference which is imported at runtime. This feature is primarily just a number of bundler and CLI magic tricks. You can always use a webview with the stnadard approach by passing raw HTML to a webview component if you'd like.
 
 If you import a webview component from another webview, the component will just be one large webview. This is because web content is passed directly through and not wrapped in an iframe.
 

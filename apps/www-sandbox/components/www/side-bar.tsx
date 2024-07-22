@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 import '@/global.css';
 
@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Link } from 'expo-router';
 import { Home, LineChart, Package, Package2, Settings, ShoppingCart, Users2 } from 'lucide-react';
 
-import type { WebViewProps } from 'expo/webview';
+import type { WebViewProps } from 'expo/dom';
 
 export default function SideBarNav({}: { webview?: WebViewProps }) {
   return (

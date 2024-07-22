@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 import '@/global.css';
 
@@ -31,7 +31,7 @@ function useSize(callback: (size: [number, number]) => void) {
 export default function Route({
   updateSize,
 }: {
-  webview: import('expo/webview').WebViewProps;
+  webview: import('expo/dom').WebViewProps;
   updateSize(size: [number, number]);
 }) {
   useSize(updateSize);

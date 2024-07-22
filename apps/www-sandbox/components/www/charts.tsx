@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 import '@/global.css';
 
@@ -31,9 +31,9 @@ import {
 } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Separator } from '@/components/ui/separator';
-import { isWebview } from 'expo/webview';
+import { isWebview } from 'expo/dom';
 
-export default function Charts({}: { webview: import('expo/webview').WebViewProps }) {
+export default function Charts({}: { webview: import('expo/dom').WebViewProps }) {
   return (
     <>
       {isWebview() && (

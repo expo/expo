@@ -1,4 +1,4 @@
-'use webview';
+'use dom';
 
 import '@/global.css';
 

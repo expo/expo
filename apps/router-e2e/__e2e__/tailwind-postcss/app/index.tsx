@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import Actions from '../components/02-actions';
-import { useBridge } from 'expo/webview';
+import { useBridge } from 'expo/dom';
 
 export default function Page() {
   const [emit, bridge] = useBridge((data) => {

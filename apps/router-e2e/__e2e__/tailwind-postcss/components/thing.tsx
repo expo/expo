@@ -1,8 +1,8 @@
-'use webview';
+'use dom';
 
 import '../global.css';
 
-import { useBridge, _getActionsObject } from 'expo/webview';
+import { useBridge, _getActionsObject } from 'expo/dom';
 
 // TODO: Magically make this a prop of the component in the root HTML.
 // const actions = _getActionsObject();
