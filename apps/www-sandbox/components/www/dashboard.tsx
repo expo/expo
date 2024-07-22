@@ -1,6 +1,7 @@
 'use webview';
 import '@/global.css';
 import type { WebViewProps } from 'expo/webview';
+import { StyleNoSelect } from 'expo/webview';
 
 import { Link } from 'expo-router';
 import {
@@ -87,22 +88,15 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ChartContainer } from '../ui/chart';
 import { AreaChart } from 'recharts';
 
-export default function Dashboard({
-  actions,
-}: {
-  webview?: WebViewProps;
-  actions: {
-    haptics: () => void;
-    showNotifications: (title: string) => void;
-  };
-}) {
+export default function Dashboard({}: { webview?: WebViewProps }) {
   return (
     <TooltipProvider>
+      <StyleNoSelect />
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
           <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
             <Link
-              href="#"
+              href="/"
               className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
               <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
               <span className="sr-only">Acme Inc</span>
@@ -110,7 +104,7 @@ export default function Dashboard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
                   <Home className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
@@ -143,7 +137,7 @@ export default function Dashboard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/customers"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
                   <Users2 className="h-5 w-5" />
                   <span className="sr-only">Customers</span>
@@ -154,7 +148,7 @@ export default function Dashboard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/analytics"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
                   <LineChart className="h-5 w-5" />
                   <span className="sr-only">Analytics</span>
@@ -167,7 +161,7 @@ export default function Dashboard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/settings"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
                   <Settings className="h-5 w-5" />
                   <span className="sr-only">Settings</span>
@@ -189,13 +183,13 @@ export default function Dashboard({
               <SheetContent side="left" className="sm:max-w-xs">
                 <nav className="grid gap-6 text-lg font-medium">
                   <Link
-                    href="#"
+                    href="/"
                     className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base">
                     <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
                     <span className="sr-only">Acme Inc</span>
                   </Link>
                   <Link
-                    href="#"
+                    href="/dashboard"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground">
                     <Home className="h-5 w-5" />
                     Dashboard
@@ -211,13 +205,13 @@ export default function Dashboard({
                     Products
                   </Link>
                   <Link
-                    href="#"
+                    href="/customers"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground">
                     <Users2 className="h-5 w-5" />
                     Customers
                   </Link>
                   <Link
-                    href="#"
+                    href="/settings"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground">
                     <LineChart className="h-5 w-5" />
                     Settings
@@ -229,7 +223,7 @@ export default function Dashboard({
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="#">Dashboard</Link>
+                    <Link href="/dashboard">Dashboard</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -387,18 +381,20 @@ export default function Dashboard({
                     </Button>
                   </CardFooter> */}
                 </Card>
-                <Card x-chunk="dashboard-05-chunk-1">
-                  <CardHeader className="pb-2">
-                    <CardDescription>This Week</CardDescription>
-                    <CardTitle className="text-4xl">$1,329</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xs text-muted-foreground">+25% from last week</div>
-                  </CardContent>
-                  <CardFooter>
-                    <Progress value={25} aria-label="25% increase" />
-                  </CardFooter>
-                </Card>
+                <Link href="/product/123">
+                  <Card x-chunk="dashboard-05-chunk-1">
+                    <CardHeader className="pb-2">
+                      <CardDescription>This Week</CardDescription>
+                      <CardTitle className="text-4xl">$1,329</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-xs text-muted-foreground">+25% from last week</div>
+                    </CardContent>
+                    <CardFooter>
+                      <Progress value={25} aria-label="25% increase" />
+                    </CardFooter>
+                  </Card>
+                </Link>
                 <Card x-chunk="dashboard-05-chunk-2">
                   <CardHeader className="pb-2">
                     <CardDescription>This Month</CardDescription>
