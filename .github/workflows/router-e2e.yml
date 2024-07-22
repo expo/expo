@@ -70,5 +70,7 @@ jobs:
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
         run: |
+          # The current Expo Go does not support the expo-linking on main
+          npm i expo-linking@6.3.1
           # Run the Expo Dev Server in the background
           maestro test launch-tests.yml --no-ansi --format=junit
