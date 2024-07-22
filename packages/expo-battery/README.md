@@ -11,7 +11,8 @@ Provide battery information for the physical device.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/battery.mdx)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/battery/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/battery/)
 
 # Installation in managed Expo projects
 

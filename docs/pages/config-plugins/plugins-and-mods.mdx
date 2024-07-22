@@ -4,7 +4,6 @@ description: Learn about what are plugins and mods when creating a config plugin
 ---
 
 import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified [`ExpoConfig`](/versions/latest/config/app/).
@@ -68,7 +67,7 @@ You may want to create a plugin in a different file, here's how:
 - The root file can be any JS file or a file named **app.plugin.js** in the root of a Node module.
 - The file should export a function that satisfies the [`ConfigPlugin`](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76) type.
 - Plugins should be transpiled for Node environments ahead of time!
-  - They should support the versions of Node that [Expo supports](/get-started/installation/#requirements) (LTS).
+  - They should support the versions of Node that [Expo supports](/get-started/create-a-project/) (LTS).
   - No `import/export` keywords, use `module.exports` in the shipped plugin file.
   - Expo only transpiles the user's initial `app.config` file, anything more would require a bundler which would add too many "opinions" for a config file.
 
@@ -209,6 +208,7 @@ The following default mods are provided by the mod compiler for common file mani
 | `mods.ios.entitlements`      |        -        | Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).                |
 | `mods.ios.expoPlist`         |        -        | Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).          |
 | `mods.ios.xcodeproj`         |        -        | Modify the **ios/&lt;name&gt;.xcodeproj** as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)). |
+| `mods.ios.podfile`           |        -        | Modify the **ios/Podfile** as a string.                                                                                             |
 | `mods.ios.podfileProperties` |        -        | Modify the **ios/Podfile.properties.json** as JSON.                                                                                 |
 | `mods.ios.appDelegate`       | <WarningIcon /> | Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string.                                                                          |
 
@@ -246,6 +246,7 @@ Instead you should use the helper mods provided by `expo/config-plugins`:
 | `mods.ios.entitlements`      | `withEntitlementsPlist` |        -        |
 | `mods.ios.expoPlist`         | `withExpoPlist`         |        -        |
 | `mods.ios.xcodeproj`         | `withXcodeProject`      |        -        |
+| `mods.ios.podfile`           | `withPodfile`           |        -        |
 | `mods.ios.podfileProperties` | `withPodfileProperties` |        -        |
 | `mods.ios.appDelegate`       | `withAppDelegate`       | <WarningIcon /> |
 
@@ -474,7 +475,7 @@ Here is what the serialized config would look like:
 ## Why app.plugin.js for plugins
 
 Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
-This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
+This is because Node environments are often different to Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
 Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,

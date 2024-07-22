@@ -35,7 +35,6 @@
       width: 100%;
       height: 100%;
     }
-
   </style>
 </head>
 
@@ -45,45 +44,15 @@
   </noscript>
   <div id="hint">Connecting to ReactDevToolsProxy...</div>
   <div id="root"></div>
-  <!--
-    JSPM Generator Import Map
-    Edit URL: https://generator.jspm.io/#U2NgYGBkDM0rySzJSU1hKEpNTC7RTUktK8nPzynWTc4vSnUw0TMy1zPSLy5JzEtJzMnPSwUAiUm0+zQA
-  -->
   <script type="importmap">
-      {
-        "imports": {
-          "react-devtools-core/standalone": "https://ga.jspm.io/npm:react-devtools-core@4.27.2/standalone.js"
-        },
-        "scopes": {
-          "https://ga.jspm.io/": {
-            "buffer": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/buffer.js",
-            "child_process": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/child_process.js",
-            "crypto": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/crypto.js",
-            "events": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/events.js",
-            "fs": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/fs.js",
-            "http": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/http.js",
-            "https": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/https.js",
-            "net": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/net.js",
-            "path": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/path.js",
-            "process": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/process-production.js",
-            "stream": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/stream.js",
-            "tls": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/tls.js",
-            "url": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/url.js",
-            "util": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/util.js",
-            "vm": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/vm.js",
-            "zlib": "https://ga.jspm.io/npm:@jspm/core@2.0.1/nodelibs/browser/zlib.js"
-          }
-        }
+    {
+      "imports": {
+        "react-devtools-core/standalone": "./react-devtools/standalone.js"
       }
-    </script>
-
-  <!-- ES Module Shims: Import maps polyfill for modules browsers without import maps support (all except Chrome 89+) -->
-  <script async src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
-    crossorigin="anonymous"></script>
-
+    }
+  </script>
   <script type="module">
-    import { default as DevToolsUIWrapper } from "react-devtools-core/standalone";
-    const DevTools = DevToolsUIWrapper.default;
+    import DevTools from "react-devtools-core/standalone";
 
     /**
      * Private command to support DevTools frontend reload

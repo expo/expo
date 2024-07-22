@@ -87,7 +87,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       fatalError(Exceptions.AppContextLost().reason)
     }
     guard let view = wrappedModuleHolder.definition.view?.createView(appContext: appContext) else {
-      fatalError("Cannot create a view from module '\(self.name)'")
+      fatalError("Cannot create a view from module '\(String(describing: self.name))'")
     }
     return view
   }
@@ -112,7 +112,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       // so there is no other way to pass it to the instances.
       let wrappedModuleBlock: @convention(block) () -> ViewModuleWrapper = { module }
       let wrappedModuleImp: IMP = imp_implementationWithBlock(wrappedModuleBlock)
-      class_addMethod(wrapperClass, Selector("wrappedModule"), wrappedModuleImp, "@@:")
+      class_addMethod(wrapperClass, #selector(DynamicModuleWrapperProtocol.wrappedModule), wrappedModuleImp, "@@:")
 
       return wrapperClass as? ViewModuleWrapper.Type
     }

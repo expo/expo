@@ -1,0 +1,25 @@
+import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
+
+import { resolveDestinationsAsync } from '../appleDestinations';
+
+it(`parses destinations`, async () => {
+  jest.mocked(spawnAsync).mockResolvedValueOnce({
+    stdout:
+      '\n\n\tAvailable destinations for the "apr23" scheme:\n\t\t{ platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:00006021-000C08810CF0C01E, name:My Mac }\n\t\t{ platform:visionOS, arch:arm64, variant:Designed for [iPad,iPhone], id:00008112-001A20EC1E78A01E, name:Apple Vision Pro }\n\t\t{ platform:iOS, arch:arm64, id:00008120-001638590230201E, name:Evan\'s phone }\n\t\t{ platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device }\n\t\t{ platform:iOS Simulator, id:dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder, name:Any iOS Simulator Device }\n\t\t{ platform:visionOS Simulator, variant:Designed for [iPad,iPhone], id:1D9DBD6E-4C07-491A-A991-E05789006B21, OS:1.1, name:Apple Vision Pro }\n\t\t{ platform:iOS Simulator, id:2D411F42-76CF-4CAE-808E-6A48742FEA7A, OS:17.0.1, name:iPad (10th generation) }\n\t\t{ platform:iOS Simulator, id:A100A197-272D-4B06-8F90-ADFF1E6A4693, OS:17.2, name:iPad (10th generation) }\n\t\t{ platform:iOS Simulator, id:C3D864B2-7A49-45D1-A0D5-43224410E049, OS:17.4, name:iPad (10th generation) }\n\t\t{ platform:iOS Simulator, id:3FF83215-94B3-4D92-B738-9D609A272498, OS:17.0.1, name:iPad Air (5th generation) }\n\t\t{ platform:iOS Simulator, id:0222C6EC-1201-40F3-9A46-7437B7BB75FC, OS:17.2, name:iPad Air (5th generation) }\n\t\t{ platform:iOS Simulator, id:DF32B328-FBF8-4AFF-ACB5-051FDA3E87D8, OS:17.4, name:iPad Air (5th generation) }\n\t\t{ platform:iOS Simulator, id:FEC21FFF-197B-4AC9-8DA3-93E1B114C1A5, OS:17.0.1, name:iPad Pro (11-inch) (4th generation) }\n\t\t{ platform:iOS Simulator, id:6833E9A7-CB53-4680-838C-4C2AAE6B50FD, OS:17.2, name:iPad Pro (11-inch) (4th generation) }\n\t\t{ platform:iOS Simulator, id:BA970B35-4BBE-41D2-80A9-318EEAE5BCA2, OS:17.4, name:iPad Pro (11-inch) (4th generation) }\n\t\t{ platform:iOS Simulator, id:211D918A-9DA3-4A9F-BA65-A1B03FD495B3, OS:17.0.1, name:iPad Pro (12.9-inch) (6th generation) }\n\t\t{ platform:iOS Simulator, id:5103AD54-1E7A-447C-ABEB-DDF1F0A4DC81, OS:17.2, name:iPad Pro (12.9-inch) (6th generation) }\n\t\t{ platform:iOS Simulator, id:A4E14843-44F5-40F5-9335-1F256ECFC6F3, OS:17.4, name:iPad Pro (12.9-inch) (6th generation) }\n\t\t{ platform:iOS Simulator, id:2BE21987-D78C-4C56-97F3-16E9FFC0A056, OS:17.0.1, name:iPad mini (6th generation) }\n\t\t{ platform:iOS Simulator, id:CD2254A7-C6AA-43D5-A7B4-C50AE7811CC9, OS:17.2, name:iPad mini (6th generation) }\n\t\t{ platform:iOS Simulator, id:6F25787E-69BA-47BB-8F97-781A0FB011E6, OS:17.4, name:iPad mini (6th generation) }\n\t\t{ platform:iOS Simulator, id:995EC62D-F49E-4DDC-8497-020514AB9D96, OS:17.0.1, name:iPhone 14 }\n\t\t{ platform:iOS Simulator, id:DAC5FD64-4DB3-457D-82BA-3CF5F239757A, OS:17.0.1, name:iPhone 14 Plus }\n\t\t{ platform:iOS Simulator, id:99CBBCFB-309E-42DB-A9F1-5431C1C26257, OS:17.0.1, name:iPhone 14 Pro }\n\t\t{ platform:iOS Simulator, id:7EFB5EB9-D4C5-41DB-8C28-315C19D25B55, OS:17.0.1, name:iPhone 14 Pro Max }\n\t\t{ platform:iOS Simulator, id:B668BBCA-BD25-411E-B4DE-B6CEE1D1EBCC, OS:17.0.1, name:iPhone 15 }\n\t\t{ platform:iOS Simulator, id:8F543F95-68E8-446E-AB37-DFFB6C6AE2A0, OS:17.2, name:iPhone 15 }\n\t\t{ platform:iOS Simulator, id:9B01E470-2A96-4C4B-8E7C-8A2141EB54AB, OS:17.4, name:iPhone 15 }\n\t\t{ platform:iOS Simulator, id:C982CD02-DA1E-471C-B75D-5A9E60466026, OS:17.0.1, name:iPhone 15 Plus }\n\t\t{ platform:iOS Simulator, id:251FC869-1A35-46A1-B3B2-20AE88AB2384, OS:17.2, name:iPhone 15 Plus }\n\t\t{ platform:iOS Simulator, id:A8BC8907-1486-43A7-A8AA-D1EC8846A28B, OS:17.4, name:iPhone 15 Plus }\n\t\t{ platform:iOS Simulator, id:3EA62B23-FEA5-4D9A-BDA5-387FEF8C8D32, OS:17.0.1, name:iPhone 15 Pro }\n\t\t{ platform:iOS Simulator, id:C40569B3-F8D0-4A16-A6A8-102F1D6BA9A2, OS:17.2, name:iPhone 15 Pro }\n\t\t{ platform:iOS Simulator, id:8CD2EC35-A8E3-4696-892F-F6F8665F9208, OS:17.4, name:iPhone 15 Pro }\n\t\t{ platform:iOS Simulator, id:8A8B76C8-7CE9-47FC-A88F-69D0C010D22B, OS:17.0.1, name:iPhone 15 Pro Max }\n\t\t{ platform:iOS Simulator, id:612D1387-1C24-4F28-8A82-E23576552CA5, OS:17.2, name:iPhone 15 Pro Max }\n\t\t{ platform:iOS Simulator, id:58BEC952-8426-4FF8-9AA8-AF2AD3240693, OS:17.4, name:iPhone 15 Pro Max }\n\t\t{ platform:iOS Simulator, id:4234A59A-9840-45FF-AD9D-E4C5CB473881, OS:17.0.1, name:iPhone SE (3rd generation) }\n\t\t{ platform:iOS Simulator, id:B6B15903-338B-43A6-9081-436CE69C1CE2, OS:17.2, name:iPhone SE (3rd generation) }\n\t\t{ platform:iOS Simulator, id:D0B94DA0-D9AE-45C6-BE17-EA6A82805BB3, OS:17.4, name:iPhone SE (3rd generation) }\n',
+  } as any);
+
+  const devices = await resolveDestinationsAsync({
+    xcodeProject: {
+      isWorkspace: true,
+      name: 'bacon',
+    },
+    configuration: 'Debug',
+    scheme: 'evan',
+  });
+
+  for (const device of devices) {
+    assert('name' in device && 'udid' in device);
+  }
+  expect(devices).toMatchSnapshot();
+});

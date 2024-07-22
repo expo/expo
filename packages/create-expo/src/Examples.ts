@@ -1,16 +1,20 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs';
-import fetch from 'node-fetch';
 import path from 'path';
 import prompts from 'prompts';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
-import { sanitizeTemplateAsync } from './Template';
-import { createEntryResolver, createFileTransform } from './createFileTransform';
+import {
+  getTemplateFilesToRenameAsync,
+  renameTemplateAppNameAsync,
+  sanitizeTemplateAsync,
+} from './Template';
+import { createEntryResolver } from './createFileTransform';
 import { env } from './utils/env';
+import { fetch } from './utils/fetch';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
 const pipeline = promisify(Stream.pipeline);
@@ -32,7 +36,7 @@ async function listExamplesAsync() {
     throw new Error('Unexpected GitHub API response: https://github.com/expo/examples');
   }
 
-  const data: GithubContent[] = await response.json();
+  const data = (await response.json()) as GithubContent[];
   return data.filter((item) => item.type === 'dir' && !item.name.startsWith('.'));
 }
 
@@ -92,12 +96,19 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     throw new Error('Failed to fetch the examples code from https://github.com/expo/examples');
   }
 
+  if (!response.body) {
+    debug(
+      `Failed to fetch the examples code, Github responded without content, received status "${response.status}"`
+    );
+    throw new Error('Failed to fetch the examples code from https://github.com/expo/examples');
+  }
+
   await pipeline(
-    response.body,
+    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    Readable.fromWeb(response.body),
     tar.extract(
       {
         cwd: root,
-        transform: createFileTransform(projectName),
         onentry: createEntryResolver(projectName),
         strip: 2,
       },
@@ -105,6 +116,12 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     )
   );
 
+  const files = await getTemplateFilesToRenameAsync({ cwd: root });
+  await renameTemplateAppNameAsync({
+    cwd: root,
+    files,
+    name: projectName,
+  });
   await sanitizeTemplateAsync(root);
   await sanitizeScriptsAsync(root);
 }

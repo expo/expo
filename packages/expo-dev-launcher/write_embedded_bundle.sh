@@ -1,6 +1,8 @@
 #!/bin/bash
 
 export NODE_ENV=production
+export EXPO_USE_FAST_RESOLVER=1
+export EXPO_NO_TELEMETRY=1
 
 # Generate temporary app.json for `npx expo export:embed` and indicate that we want to use JSC bundling profile.
 # The reason to use JSC because the bundle should be compatible with both JSC and Hermes.
@@ -40,8 +42,7 @@ EXPO_BUNDLE_APP=1 npx expo export:embed \
     --entry-file index.js \
     --unstable-transform-profile default \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
-    --assets-dest android/src/debug/res \
-    --reset-cache
+    --assets-dest android/src/debug/res
 
 # Cleanup
 

@@ -1,0 +1,38 @@
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+<Step label="1">
+
+### Install Xcode
+
+Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and click **Install** (or **Update** if you have it already).
+
+</Step>
+
+<Step label="2">
+
+### Install Xcode Command Line Tools
+
+Open Xcode, choose **Settings...** from the Xcode menu (or press <kbd>cmd ⌘</kbd> + <kbd>,</kbd>). Go to the **Locations** and install the tools by selecting the most recent version in the **Command Line Tools** dropdown.
+
+<ContentSpotlight
+  alt="Xcode preferences"
+  src="/static/images/ios-simulator/xcode-command-line.png"
+  className="max-w-[580px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Install Watchman
+
+[Watchman](https://facebook.github.io/watchman/docs/install#macos) is a tool for watching changes in the filesystem. Installing it will result in better performance. You can install it with:
+
+<Terminal
+  cmd={['$ brew update', '$ brew install watchman']}
+  cmdCopy="brew update && brew install watchman"
+/>
+
+</Step>

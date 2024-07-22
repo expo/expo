@@ -30,9 +30,8 @@ exports.patchProjectAsync = void 0;
 const config_1 = require("@expo/config");
 const chalk_1 = __importDefault(require("chalk"));
 const promises_1 = __importDefault(require("fs/promises"));
-const glob_1 = __importDefault(require("glob"));
+const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
-const util_1 = require("util");
 const dir_1 = require("./dir");
 const generateNativeProjects_1 = require("./generateNativeProjects");
 const logger = __importStar(require("./logger"));
@@ -41,7 +40,6 @@ const resolveFromExpoCli_1 = require("./resolveFromExpoCli");
 const workingDirectories_1 = require("./workingDirectories");
 const gitPatch_1 = require("../gitPatch");
 const debug = require('debug')('patch-project');
-const globAsync = (0, util_1.promisify)(glob_1.default);
 /**
  * Entry point into the patch-project process.
  */
@@ -125,7 +123,7 @@ async function patchProjectForPlatformAsync({ projectRoot, platform, workingDire
     }
 }
 async function removePatchFilesAsync(patchRoot, platform) {
-    const patchFiles = await globAsync(`${platform}*.patch`, { cwd: patchRoot, absolute: true });
+    const patchFiles = await (0, glob_1.glob)(`${platform}*.patch`, { cwd: patchRoot, absolute: true });
     await Promise.all(patchFiles.map((file) => {
         logger.log(`Removing patch file: ${file}`);
         return promises_1.default.rm(file, { force: true });

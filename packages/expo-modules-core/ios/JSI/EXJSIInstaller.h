@@ -10,6 +10,11 @@
 @class RCTRuntimeExecutor;
 #endif // React Native >=0.74
 
+/**
+ Property name of the core object in the global scope of the Expo JS runtime.
+ */
+extern NSString * _Nonnull const EXGlobalCoreObjectPropertyName;
+
 @interface EXJavaScriptRuntimeManager : NSObject
 
 /**

@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo-modules-core';
 
 import {
   Manifest,
@@ -12,11 +12,14 @@ import {
   UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
+type UpdatesEvents = {
+  'Expo.nativeUpdatesStateChangeEvent'(params: any);
+};
+
 /**
  * @internal
  */
-export interface ExpoUpdatesModule
-  extends Pick<ProxyNativeModule, 'addListener' | 'removeListeners'> {
+export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> {
   isEmergencyLaunch: boolean;
   emergencyLaunchReason: string | null;
   isEmbeddedLaunch: boolean;
@@ -61,6 +64,9 @@ export interface ExpoUpdatesModule
     | UpdateFetchResultFailure
     | UpdateFetchResultRollBackToEmbedded
   >;
+  /**
+   * @hidden
+   */
   getNativeStateMachineContextAsync: () => Promise<
     UpdatesNativeStateMachineContext & {
       latestManifestString?: string;

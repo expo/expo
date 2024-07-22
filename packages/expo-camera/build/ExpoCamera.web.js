@@ -1,15 +1,15 @@
 import { CodedError } from 'expo-modules-core';
-import * as React from 'react';
+import { forwardRef, useRef, useMemo, useImperativeHandle, } from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
-import { CameraType, } from './Camera.types';
 import CameraManager from './ExpoCameraManager.web';
-import { capture } from './WebCameraUtils';
-import { PictureSizes } from './WebConstants';
-import { useWebCameraStream } from './useWebCameraStream';
-import { useWebQRScanner } from './useWebQRScanner';
-const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }, ref) => {
-    const video = React.useRef(null);
+import { CameraType, } from './legacy/Camera.types';
+import { capture } from './web/WebCameraUtils';
+import { PictureSizes } from './web/WebConstants';
+import { useWebCameraStream } from './web/useWebCameraStream';
+import { useWebQRScanner } from './web/useWebQRScanner';
+const ExponentCamera = forwardRef(({ type, poster, ...props }, ref) => {
+    const video = useRef(null);
     const native = useWebCameraStream(video, type, props, {
         onCameraReady() {
             if (props.onCameraReady) {
@@ -18,8 +18,8 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
         },
         onMountError: props.onMountError,
     });
-    const isQRScannerEnabled = React.useMemo(() => {
-        return !!(props.barCodeScannerSettings?.barCodeTypes?.includes('qr') && !!props.onBarCodeScanned);
+    const isQRScannerEnabled = useMemo(() => {
+        return Boolean(props.barCodeScannerSettings?.barCodeTypes?.includes('qr') && !!props.onBarCodeScanned);
     }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
     useWebQRScanner(video, {
         interval: props.barCodeScannerSettings?.interval,
@@ -30,11 +30,9 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
                 props.onBarCodeScanned(event);
             }
         },
-        // onError: props.onMountError,
     });
-    // const [pause, setPaused]
-    React.useImperativeHandle(ref, () => ({
-        async getAvailablePictureSizes(ratio) {
+    useImperativeHandle(ref, () => ({
+        async getAvailablePictureSizes() {
             return PictureSizes;
         },
         async takePicture(options) {
@@ -72,32 +70,28 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
     // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
     // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
     const isMuted = true;
-    const style = React.useMemo(() => {
+    const style = useMemo(() => {
         const isFrontFacingCamera = native.type === CameraManager.Type.front;
         return [
             StyleSheet.absoluteFill,
             styles.video,
             {
-                pointerEvents: props.pointerEvents,
                 // Flip the camera
                 transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
             },
         ];
-    }, [props.pointerEvents, native.type]);
-    return (<View style={[styles.videoWrapper, props.style]}>
-        <Video autoPlay playsInline muted={isMuted} poster={poster} 
-    // webkitPlaysinline
-    ref={video} style={style}/>
+    }, [native.type]);
+    return (<View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
+        <Video autoPlay playsInline muted={isMuted} poster={poster} pointerEvents={props.pointerEvents} ref={video} style={style}/>
         {props.children}
       </View>);
 });
 export default ExponentCamera;
-const Video = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
+const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
 const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,
         alignItems: 'stretch',
-        pointerEvents: 'box-none',
     },
     video: {
         width: '100%',

@@ -25,6 +25,9 @@ export interface PackageManager {
   /** Run any command using the package manager */
   runAsync(command: string[], options?: SpawnOptions): SpawnPromise<SpawnResult>;
 
+  /** Invoke a binary from within a package, like "eslint" or "jest" */
+  runBinAsync(command: string[], options?: SpawnOptions): SpawnPromise<SpawnResult>;
+
   /** Get the version of the used package manager */
   versionAsync(): Promise<string>;
   /** Get a single configuration property from the package manager */

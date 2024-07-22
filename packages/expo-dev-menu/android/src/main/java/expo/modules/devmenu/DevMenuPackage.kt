@@ -12,16 +12,14 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
-import expo.modules.devmenu.extensions.DevMenuExtension
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(
-      DevMenuExtension(reactContext)
-    )
+    return emptyList()
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {
@@ -37,7 +35,12 @@ class DevMenuPackage : Package, ReactPackage {
       object : ReactActivityLifecycleListener {
         override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
           if (!DevMenuManager.isInitialized()) {
-            DevMenuManager.initializeWithReactNativeHost((activity.application as ReactApplication).reactNativeHost)
+            DevMenuManager.initializeWithReactHost(
+              ReactHostWrapper(
+                reactNativeHost = (activity.application as ReactApplication).reactNativeHost,
+                reactHost = (activity.application as ReactApplication).reactHost
+              )
+            )
           } else {
             DevMenuManager.synchronizeDelegate()
           }

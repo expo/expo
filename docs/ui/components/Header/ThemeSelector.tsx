@@ -1,12 +1,8 @@
-import { css } from '@emotion/react';
-import { useTheme, theme, shadows, typography } from '@expo/styleguide';
-import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import {
-  ChevronDownIcon,
-  Moon01SolidIcon,
-  SunSolidIcon,
-  Contrast02SolidIcon,
-} from '@expo/styleguide-icons';
+import { useTheme, mergeClasses } from '@expo/styleguide';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { Contrast02SolidIcon } from '@expo/styleguide-icons/solid/Contrast02SolidIcon';
+import { Moon01SolidIcon } from '@expo/styleguide-icons/solid/Moon01SolidIcon';
+import { SunSolidIcon } from '@expo/styleguide-icons/solid/SunSolidIcon';
 import { useEffect, useState } from 'react';
 
 export const ThemeSelector = () => {
@@ -22,7 +18,11 @@ export const ThemeSelector = () => {
       <select
         aria-label="Theme selector"
         title="Select theme"
-        css={selectStyle}
+        className={mergeClasses(
+          'flex items-center justify-center h-9 text-default leading-[1.3] p-0 m-0 w-[50px] border border-default shadow-xs rounded-md indent-[-9999px] appearance-none bg-default text-sm',
+          'hocus:bg-element',
+          'max-lg-gutters:w-auto max-lg-gutters:min-w-[100px] max-lg-gutters:px-2 max-lg-gutters:text-secondary max-lg-gutters:indent-0 max-lg-gutters:pl-8'
+        )}
         value={themeName}
         onChange={e => {
           const option = e.target.value;
@@ -47,42 +47,3 @@ export const ThemeSelector = () => {
 };
 
 const ICON_CLASSES = 'icon-sm absolute left-2.5 top-2.5 text-icon-secondary pointer-events-none';
-
-const selectStyle = css`
-  ${typography.fontSizes[14]}
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 36px;
-  color: ${theme.text.default};
-  line-height: 1.3;
-  padding: 0;
-  width: 50px;
-  margin: 0;
-  border: 1px solid ${theme.border.default};
-  box-shadow: ${shadows.xs};
-  border-radius: ${borderRadius.md}px;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  appearance: none;
-  background-color: ${theme.background.default};
-  cursor: pointer;
-  text-indent: -9999px;
-
-  :hover {
-    background-color: ${theme.background.element};
-  }
-
-  :focus-visible {
-    background-color: ${theme.background.element};
-  }
-
-  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
-    width: auto;
-    min-width: 100px;
-    padding: 0 ${spacing[2]}px;
-    padding-left: ${spacing[8]}px;
-    color: ${theme.text.secondary};
-    text-indent: 0;
-  }
-`;

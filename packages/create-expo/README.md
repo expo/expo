@@ -91,13 +91,22 @@ npx create-expo --template https://github.com/:owner/:repo/tree/:ref
 npx create-expo --template https://github.com/expo/expo/tree/sdk-50/templates/expo-template-bare-minimum
 ```
 
-## Placeholders
+## App name customization
 
-Create Expo App uses various placeholder values to customize the name of the projects. These placeholders are replaced with their actual value when unpacking the template, and applies to folder names and file contents.
+Create Expo App customizes the name of the created app by replacing certain placeholder values in the template with the name specified by the user. Most users won't have to think about this process, but it may be relevant for users offering their own templates.
 
-- `Hello App Display Name` → The name of the project, without modifications (example [Android](../../templates//expo-template-bare-minimum/android/app/src/main/res/values/strings.xml#L2))
+Renaming the app is a two-step process:
+
+1. while unpacking the template, the file and folder names are rewritten
+2. after unpacking the template, the file contents are rewritten
+
+By convention, Expo templates use several placeholder values to be searched for and replaced:
+
+- `Hello App Display Name` → The name of the project, without modifications (example [Android](../../templates/expo-template-bare-minimum/android/app/src/main/res/values/strings.xml#L2))
 - `HelloWorld` → The name of the project with sanitization as described below (example [Android](../../templates/expo-template-bare-minimum//android/settings.gradle#L1), [iOS](../../templates/expo-template-bare-minimum/ios/Podfile#L16))
 - `helloworld` → The _lower-cased_ name of the project with sanitization as described below (example [Android](../../templates/expo-template-bare-minimum/android/app/build.gradle#L86))
+
+Although all file and folder names are rewritten, only files specified by the "rename config" have their contents rewritten. This is determined by the `defaultRenameConfig` constant in [./src/Template.ts](./src/Template.ts).
 
 ### Sanitization
 
@@ -107,12 +116,8 @@ Some characters aren't allowed in certain places, that's why Create Expo App app
 - Normalize the string using Unicode's normalization form "canonical composition" or `NFD`.
 - Remove all accent characters `u0300-u036f`.
 
-### Special files
+## Special files
 
 Due to some limitations with `npm pack`, some files are handled differently.
 
 - `gitignore` → Renamed to `.gitignore` due to `npm pack` skipping `.gitignore` files, see [npm/npm#1862](https://github.com/npm/npm/issues/1862)
-
-### Binary files
-
-Placeholder replacements only apply to non-binary files and folder names during unpacking. [These extensions](./src/createFileTransform.ts#L57) are left as-is without any modifications due to possible corrupting binary files.

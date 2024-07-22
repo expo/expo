@@ -10,7 +10,7 @@ import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 
 export const ExpoImageModule = {
-  async prefetch(urls: string | string[], _): Promise<boolean> {
+  async prefetch(urls: string | string[], _, __): Promise<boolean> {
     const urlsArray = Array.isArray(urls) ? urls : [urls];
 
     return new Promise<boolean>((resolve) => {
@@ -95,17 +95,17 @@ export default function ExpoImage({
   recyclingKey,
   style,
   nativeViewRef,
+  containerViewRef,
   ...props
 }: ImageNativeProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
   const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
-    containerRef,
+    containerViewRef as React.MutableRefObject<HTMLDivElement | null>,
     isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
@@ -173,7 +173,10 @@ export default function ExpoImage({
       ),
   ];
   return (
-    <View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
+    <View
+      ref={containerViewRef}
+      dataSet={{ expoimage: true }}
+      style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>

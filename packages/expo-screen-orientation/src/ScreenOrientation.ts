@@ -1,4 +1,5 @@
-import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { Dimensions } from 'react-native';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import {
@@ -23,11 +24,10 @@ export {
   WebOrientation,
   SizeClassIOS,
   ScreenOrientationInfo,
-  Subscription,
+  EventSubscription as Subscription,
 };
 
-const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
-let _orientationChangeSubscribers: Subscription[] = [];
+let _orientationChangeSubscribers: EventSubscription[] = [];
 
 let _lastOrientationLock: OrientationLock = OrientationLock.UNKNOWN;
 
@@ -131,7 +131,7 @@ export async function unlockAsync(): Promise<void> {
 // @needsAudit
 /**
  * Gets the current screen orientation.
- * @return Returns a promise that fulfils with an [`Orientation`](#screenorientationorientation)
+ * @return Returns a promise that fulfils with an [`Orientation`](#orientation)
  * value that reflects the current screen orientation.
  */
 export async function getOrientationAsync(): Promise<Orientation> {
@@ -201,14 +201,6 @@ export async function supportsOrientationLockAsync(
 
   return await ExpoScreenOrientation.supportsOrientationLockAsync(orientationLock);
 }
-
-// Determine the event name lazily so Jest can set up mocks in advance
-function getEventName(): string {
-  return Platform.OS === 'ios' || Platform.OS === 'web'
-    ? 'expoDidUpdateDimensions'
-    : 'didUpdateDimensions';
-}
-
 // We rely on RN to emit `didUpdateDimensions`
 // If this method no longer works, it's possible that the underlying RN implementation has changed
 // see https://github.com/facebook/react-native/blob/c31f79fe478b882540d7fd31ee37b53ddbd60a17/ReactAndroid/src/main/java/com/facebook/react/modules/deviceinfo/DeviceInfoModule.java#L90
@@ -221,31 +213,14 @@ function getEventName(): string {
  * @param listener Each orientation update will pass an object with the new [`OrientationChangeEvent`](#orientationchangeevent)
  * to the listener.
  */
-export function addOrientationChangeListener(listener: OrientationChangeListener): Subscription {
+export function addOrientationChangeListener(
+  listener: OrientationChangeListener
+): EventSubscription {
   if (typeof listener !== 'function') {
     throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
   }
-  const subscription = _orientationChangeEmitter.addListener(
-    getEventName(),
-    async (update: OrientationChangeEvent) => {
-      let orientationInfo, orientationLock;
-      if (Platform.OS === 'ios' || Platform.OS === 'web') {
-        // For iOS, RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions`
-        // event, so we emit our own `expoDidUpdateDimensions` event instead
-        orientationLock = update.orientationLock;
-        orientationInfo = update.orientationInfo;
-      } else {
-        // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
-        let orientation;
-        [orientationLock, orientation] = await Promise.all([
-          getOrientationLockAsync(),
-          getOrientationAsync(),
-        ]);
-        orientationInfo = { orientation };
-      }
-      listener({ orientationInfo, orientationLock });
-    }
-  );
+
+  const subscription = createDidUpdateDimensionsSubscription(listener);
   _orientationChangeSubscribers.push(subscription);
   return subscription;
 }
@@ -276,7 +251,7 @@ export function removeOrientationChangeListeners(): void {
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
  */
-export function removeOrientationChangeListener(subscription: Subscription): void {
+export function removeOrientationChangeListener(subscription: EventSubscription): void {
   if (!subscription || !subscription.remove) {
     throw new TypeError(`Must pass in a valid subscription`);
   }
@@ -284,4 +259,26 @@ export function removeOrientationChangeListener(subscription: Subscription): voi
   _orientationChangeSubscribers = _orientationChangeSubscribers.filter(
     (sub) => sub !== subscription
   );
+}
+
+function createDidUpdateDimensionsSubscription(
+  listener: OrientationChangeListener
+): EventSubscription {
+  if (Platform.OS === 'web' || Platform.OS === 'ios') {
+    return ExpoScreenOrientation.addListener(
+      'expoDidUpdateDimensions',
+      async (update: OrientationChangeEvent) => {
+        listener(update);
+      }
+    );
+  }
+
+  // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
+  return Dimensions.addEventListener('change', async () => {
+    const [orientationLock, orientation] = await Promise.all([
+      getOrientationLockAsync(),
+      getOrientationAsync(),
+    ]);
+    listener({ orientationInfo: { orientation }, orientationLock });
+  });
 }

@@ -19,9 +19,9 @@ export default function TintColorFilter({ tintColor }: TintColorFilterProps) {
   return (
     <svg style={styles.svg}>
       <defs>
-        <filter id={`expo-image-tint-${tintColor}`} x="0" y="0" width="0" height="0">
-          <feFlood floodColor={tintColor} floodOpacity="1" result="flood" />
-          <feComposite in="flood" in2="SourceAlpha" operator="in" />
+        <filter id={`expo-image-tint-${tintColor}`}>
+          <feFlood floodColor={tintColor} />
+          <feComposite in2="SourceAlpha" operator="atop" />
         </filter>
       </defs>
     </svg>

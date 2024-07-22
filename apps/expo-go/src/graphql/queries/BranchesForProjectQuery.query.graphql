@@ -14,12 +14,7 @@ query BranchesForProject(
         name
         updates(limit: 1, offset: 0, filter: { platform: $platform }) {
           id
-          group
-          message
-          createdAt
-          runtimeVersion
-          platform
-          manifestPermalink
+          ...UpdateData
         }
       }
     }

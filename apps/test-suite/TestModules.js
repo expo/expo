@@ -54,13 +54,13 @@ export function getTestModules() {
     require('./tests/FileSystem'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
+    require('./tests/ModulesCore'),
     optionalRequire(() => require('./tests/Image'))
   );
 
   // Universally tested APIs
   modules.push(
     require('./tests/EASClient'),
-    require('./tests/Random'),
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
@@ -70,11 +70,11 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
-    optionalRequire(() => require('./tests/SQLite'))
+    optionalRequire(() => require('./tests/SQLiteLegacy'))
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
-    modules.push(require('./tests/SQLiteNext'));
+    modules.push(require('./tests/SQLite'));
   }
 
   if (Platform.OS === 'android') {

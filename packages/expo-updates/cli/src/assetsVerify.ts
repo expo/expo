@@ -12,6 +12,7 @@ import {
 } from './assetsVerifyTypes';
 import { Command } from './cli';
 import { assertArgs, getProjectRoot } from './utils/args';
+import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
 
 const debug = require('debug')('expo-updates:assets:verify') as typeof console.log;
@@ -56,39 +57,33 @@ Verify that all static files in an exported bundle are in either the export or a
     );
   }
 
-  return (async () => {
-    const projectRoot = getProjectRoot(args);
+  const projectRoot = getProjectRoot(args);
 
-    const validatedArgs = resolveOptions(projectRoot, args);
-    debug(`Validated params: ${JSON.stringify(validatedArgs, null, 2)}`);
+  const validatedArgs = resolveOptions(projectRoot, args);
+  debug(`Validated params: ${JSON.stringify(validatedArgs, null, 2)}`);
 
-    const { buildManifestPath, exportedManifestPath, assetMapPath, platform } = validatedArgs;
+  const { buildManifestPath, exportedManifestPath, assetMapPath, platform } = validatedArgs;
 
-    const missingAssets = await getMissingAssetsAsync(
-      buildManifestPath,
-      exportedManifestPath,
-      assetMapPath,
-      platform
+  const missingAssets = await getMissingAssetsAsync(
+    buildManifestPath,
+    exportedManifestPath,
+    assetMapPath,
+    platform
+  );
+
+  if (missingAssets.length > 0) {
+    throw new CommandError(
+      `${
+        missingAssets.length
+      } assets not found in either embedded manifest or in exported bundle:${JSON.stringify(
+        missingAssets,
+        null,
+        2
+      )}`
     );
-
-    if (missingAssets.length > 0) {
-      throw new Error(
-        `${
-          missingAssets.length
-        } assets not found in either embedded manifest or in exported bundle:${JSON.stringify(
-          missingAssets,
-          null,
-          2
-        )}`
-      );
-    } else {
-      Log.log(`All resolved assets found in either embedded manifest or in exported bundle.`);
-    }
-    process.exit(0);
-  })().catch((e) => {
-    Log.log(`${e}`);
-    process.exit(1);
-  });
+  } else {
+    Log.log(`All resolved assets found in either embedded manifest or in exported bundle.`);
+  }
 };
 
 function resolveOptions(projectRoot: string, args: arg.Result<arg.Spec>): ValidatedOptions {
@@ -102,7 +97,7 @@ function resolveOptions(projectRoot: string, args: arg.Result<arg.Spec>): Valida
 
   const platform = args['--platform'] as unknown as Platform;
   if (!isValidPlatform(platform)) {
-    throw new Error(`Platform must be one of ${JSON.stringify(validPlatforms)}`);
+    throw new CommandError(`Platform must be one of ${JSON.stringify(validPlatforms)}`);
   }
 
   return {
@@ -116,7 +111,7 @@ function resolveOptions(projectRoot: string, args: arg.Result<arg.Spec>): Valida
 function validatedPathFromArgument(projectRoot: string, args: arg.Result<arg.Spec>, key: string) {
   const maybeRelativePath = args[key] as unknown as string;
   if (!maybeRelativePath) {
-    throw new Error(`No value for ${key}`);
+    throw new CommandError(`No value for ${key}`);
   }
   if (maybeRelativePath.indexOf('/') === 0) {
     return maybeRelativePath; // absolute path

@@ -1,4 +1,5 @@
-import { DeviceEventEmitter, PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 async function getPermissionWithQueryAsync(name) {
     if (!navigator || !navigator.permissions || !navigator.permissions.query)
@@ -56,7 +57,7 @@ function getStatusFromMedia(media) {
     const status = {
         isLoaded: true,
         uri: media.src,
-        progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
+        progressUpdateIntervalMillis: 100,
         durationMillis: media.duration * 1000,
         positionMillis: media.currentTime * 1000,
         // playableDurationMillis: media.buffered * 1000,
@@ -64,7 +65,7 @@ function getStatusFromMedia(media) {
         // seekMillisToleranceAfter?: number
         shouldPlay: media.autoplay,
         isPlaying,
-        isBuffering: false, //media.waiting,
+        isBuffering: false,
         rate: media.playbackRate,
         // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
         shouldCorrectPitch: false,
@@ -102,6 +103,9 @@ async function setStatusForMedia(media, status) {
     }
     if (status.rate !== undefined) {
         media.playbackRate = status.rate;
+    }
+    if (status.shouldCorrectPitch !== undefined) {
+        media.preservesPitch = status.shouldCorrectPitch;
     }
     if (status.volume !== undefined) {
         media.volume = status.volume;

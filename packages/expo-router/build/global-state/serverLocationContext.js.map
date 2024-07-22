@@ -1,1 +1,0 @@
-{"version":3,"file":"serverLocationContext.js","sourceRoot":"","sources":["../../src/global-state/serverLocationContext.ts"],"names":[],"mappings":";;;AAAA,iCAAsC;AAEzB,QAAA,qBAAqB,GAAG,IAAA,qBAAa,EAAkB,SAAS,CAAC,CAAC","sourcesContent":["import { createContext } from 'react';\n\nexport const ServerLocationContext = createContext<URL | undefined>(undefined);\n"]}

@@ -2,6 +2,8 @@
 #include "EventEmitter.h"
 #include "LazyObject.h"
 
+#include <cxxreact/ErrorUtils.h>
+
 namespace expo::EventEmitter {
 
 #pragma mark - Listeners
@@ -43,12 +45,46 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
     return;
   }
   ListenersList &listenersList = listenersMap[eventName];
+  size_t listSize = listenersList.size();
 
+  if (listSize == 0) {
+    // Nothing to call.
+    return;
+  }
+  if (listSize == 1) {
+    // The most common scenario – just call the only listener.
+    try {
+      listenersList
+        .front()
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callWithThis(runtime, thisObject, args, count);
+    } catch (jsi::JSError& error) {
+      facebook::react::handleJSError(runtime, error, false);
+    }
+    return;
+  }
+  // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
+  std::vector<jsi::Function> listenersVector;
+  listenersVector.reserve(listSize);
+
+  // Copy listeners to vector already as jsi::Function so we don't additionally copy jsi::Value
   for (const jsi::Value &listener : listenersList) {
-    listener
-      .asObject(runtime)
-      .asFunction(runtime)
-      .callWithThis(runtime, thisObject, args, count);
+    listenersVector.push_back(listener.asObject(runtime).asFunction(runtime));
+  }
+
+  // Call listeners from the vector. The list can be modified by the listeners but it will not affect this loop,
+  // i.e. newly added listeners will not be called and removed listeners will be called one last time.
+  // This is compliant with the EventEmitter in Node.js
+  for (const jsi::Function &listener : listenersVector) {
+    // As opposed to Node.js and fbemitter, when the listener throws an error the behavior is the same as on web.
+    // That is, it doesn't stop the execution of subsequent listeners and the error is not propagated to the `emit` function.
+    // The motivation behind this is that errors thrown from a module or user's code shouldn't affect other modules' behavior.
+    try {
+      listener.callWithThis(runtime, thisObject, args, count);
+    } catch (jsi::JSError& error) {
+      facebook::react::handleJSError(runtime, error, false);
+    }
   }
 }
 
@@ -186,56 +222,61 @@ void installClass(jsi::Runtime &runtime) {
   jsi::HostFunctionType addListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // `this` might be an object that is representing a host object, in which case it's not possible to get the native state.
     // For native modules we need to unwrap it to get the object used under the hood by `LazyObject` host object.
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    addListener(runtime, thisObject, eventName, listener);
-    return createEventSubscription(runtime, eventName, thisObject, listener);
+    addListener(runtime, emitter, eventName, listener);
+    return createEventSubscription(runtime, eventName, emitter, listener);
   };
 
   jsi::HostFunctionType removeListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    removeListener(runtime, thisObject, eventName, listener);
+    removeListener(runtime, emitter, eventName, listener);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType removeAllListenersHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    removeAllListeners(runtime, thisObject, eventName);
+    removeAllListeners(runtime, emitter, eventName);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType emit = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
     // Make a new pointer that skips the first argument which is the event name.
     const jsi::Value *eventArgs = count > 1 ? &args[1] : nullptr;
 
-    emitEvent(runtime, thisObject, eventName, eventArgs, count - 1);
+    emitEvent(runtime, emitter, eventName, eventArgs, count - 1);
     return jsi::Value::undefined();
   };
 
   jsi::HostFunctionType listenerCountHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::string eventName = args[0].asString(runtime).utf8(runtime);
+    jsi::Object thisObject = thisValue.getObject(runtime);
 
     // Unwrap `this` object if it's a lazy object (e.g. native module).
-    const jsi::Object &thisObject = LazyObject::unwrapObjectIfNecessary(runtime, thisValue.getObject(runtime));
+    const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
-    return jsi::Value((int)getListenerCount(runtime, thisObject, eventName));
+    return jsi::Value((int)getListenerCount(runtime, emitter, eventName));
   };
 
   // Added for compatibility with the old EventEmitter API.

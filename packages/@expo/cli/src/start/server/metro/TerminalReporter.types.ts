@@ -1,6 +1,7 @@
 import type { ReportableEvent } from 'metro';
 import type { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
 import type { Terminal } from 'metro-core';
+import type { WatcherStatus } from 'metro-file-map';
 
 import { MetroEnvironment } from '../middleware/metroOptions';
 
@@ -99,6 +100,8 @@ export interface TerminalReporterInterface {
     }: BundleProgress,
     phase: BuildPhase
   ): string;
+
+  _logWatcherStatus(event: WatcherStatus): void;
 
   /**
    * This function is only concerned with logging and should not do state

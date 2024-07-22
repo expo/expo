@@ -129,7 +129,7 @@ class RemoteLoaderTest {
 
     val existingAsset = AssetEntity("489ea2f19fa850b65653ab445637a181.jpg", ".jpg")
     existingAsset.relativePath = "489ea2f19fa850b65653ab445637a181.jpg"
-    db.assetDao()._insertAsset(existingAsset)
+    db.assetDao().insertAssetForTest(existingAsset)
     loader.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
@@ -156,7 +156,7 @@ class RemoteLoaderTest {
     val existingAsset = AssetEntity("489ea2f19fa850b65653ab445637a181.jpg", ".jpg")
     existingAsset.relativePath = "489ea2f19fa850b65653ab445637a181.jpg"
     existingAsset.url = Uri.parse("http://example.com")
-    db.assetDao()._insertAsset(existingAsset)
+    db.assetDao().insertAssetForTest(existingAsset)
     loader.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }

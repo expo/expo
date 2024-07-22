@@ -1,10 +1,16 @@
-import Video from './NativeVideoModule';
+export { VideoView, isPictureInPictureSupported } from './VideoView';
+export { useVideoPlayer } from './VideoPlayer';
 
-export { VideoView, useVideoPlayer, isPictureInPictureSupported } from './VideoView';
-export { Video };
+export { VideoContentFit, VideoViewProps } from './VideoView.types';
+
 export {
-  VideoSource,
+  VideoPlayer,
   VideoPlayerEvents,
   VideoPlayerStatus,
-  VideoContentFit,
-} from './VideoView.types';
+  VideoSource,
+  PlayerError,
+  VolumeEvent,
+  VideoMetadata,
+  DRMType,
+  DRMOptions,
+} from './VideoPlayer.types';

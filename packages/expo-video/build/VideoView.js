@@ -1,20 +1,6 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
 import { PureComponent, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-/**
- * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
- * @param source - A video source that is used to initialize the player.
- * @param setup - A function that allows setting up the player. It will run after the player is created.
- */
-export function useVideoPlayer(source, setup) {
-    const parsedSource = typeof source === 'string' ? { uri: source } : source;
-    return useReleasingSharedObject(() => {
-        const player = new NativeVideoModule.VideoPlayer(parsedSource);
-        setup?.(player);
-        return player;
-    }, [JSON.stringify(parsedSource)]);
-}
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
@@ -41,6 +27,9 @@ export class VideoView extends PureComponent {
     /**
      * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+     *
+     * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+     * > has to be configured for the PiP to work.
      * @platform android
      * @platform ios 14+
      */

@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -41,6 +43,7 @@ class EnabledUpdatesController(
   override val updatesDirectory: File
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   override var appContext: WeakReference<AppContext>? = null
+  override var eventEmitter: EventEmitter? = null
 
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
@@ -49,7 +52,7 @@ class EnabledUpdatesController(
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
-  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.values().toSet())
+  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.entries.toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
@@ -118,14 +121,19 @@ class EnabledUpdatesController(
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
-    startupProcedure.onDidCreateReactInstanceManager(reactContext)
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+    startupProcedure.onDidCreateDevSupportManager(devSupportManager)
+  }
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
     weakActivity = WeakReference(reactContext.currentActivity)
   }
 
   override fun onReactInstanceException(exception: Exception) {
     startupProcedure.onReactInstanceException(exception)
   }
+
+  override val isActiveController = true
 
   @Synchronized
   override fun start() {
@@ -164,7 +172,7 @@ class EnabledUpdatesController(
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
+    UpdatesUtils.sendEvent(eventEmitter, shouldEmitJsEvents, logger, eventName, eventType, params)
   }
 
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {

@@ -118,9 +118,6 @@ window.document = new DOMDocument();
 // @ts-ignore
 window.document.body = new DOMElement('body');
 
-// @ts-ignore
-window.location = 'data:'; // <- Not sure about this... or anything for that matter ¯\_(ツ)_/¯
-
 // This could be made better, but I'm not sure if it'll matter for PIXI
 // @ts-ignore
 global.navigator.userAgent = 'iPhone';

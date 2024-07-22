@@ -18,23 +18,24 @@ class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : Life
   private var isListening: Boolean = true
   private var previousPath: String = ""
 
-  init {
-    val contentObserver: ContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
-      override fun onChange(selfChange: Boolean, uri: Uri?) {
-        super.onChange(selfChange, uri)
-        if (isListening) {
-          if (!hasPermissions(context)) {
-            Log.e("expo-screen-capture", "Could not listen for screenshots, do not have READ_EXTERNAL_STORAGE permission.")
-            return
-          }
-          val path = getFilePathFromContentResolver(context, uri)
-          if (path != null && isPathOfNewScreenshot(path)) {
-            previousPath = path
-            onCapture()
-          }
+  private val contentObserver: ContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+    override fun onChange(selfChange: Boolean, uri: Uri?) {
+      super.onChange(selfChange, uri)
+      if (isListening) {
+        if (!hasPermissions(context)) {
+          Log.e("expo-screen-capture", "Could not listen for screenshots, do not have READ_EXTERNAL_STORAGE permission.")
+          return
+        }
+        val path = getFilePathFromContentResolver(context, uri)
+        if (path != null && isPathOfNewScreenshot(path)) {
+          previousPath = path
+          onCapture()
         }
       }
     }
+  }
+
+  init {
     context.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, contentObserver)
   }
 
@@ -47,7 +48,7 @@ class ScreenshotEventEmitter(val context: Context, onCapture: () -> Unit) : Life
   }
 
   override fun onHostDestroy() {
-    // Do nothing
+    context.contentResolver.unregisterContentObserver(contentObserver)
   }
 
   private fun hasPermissions(context: Context): Boolean {

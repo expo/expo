@@ -1,23 +1,16 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
-import org.junit.Before
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
 class JavaScriptValueTest {
-  private lateinit var jsiInterop: JSIContext
-
-  @Before
-  fun before() {
-    jsiInterop = JSIContext().apply {
-      installJSIForTests(defaultAppContextMock())
-    }
-  }
-
   @Test
-  fun should_wrap_numbers() {
-    val numberResult = jsiInterop.evaluateScript("21 + 37")
+  fun should_wrap_numbers() = withJSIInterop {
+    val numberResult = evaluateScript("21 + 37")
 
     Truth.assertThat(numberResult.kind()).isEqualTo("number")
     Truth.assertThat(numberResult.isNumber()).isEqualTo(true)
@@ -25,8 +18,8 @@ class JavaScriptValueTest {
   }
 
   @Test
-  fun should_wrap_strings() {
-    val stringResult = jsiInterop.evaluateScript("expo is awesome".addSingleQuotes())
+  fun should_wrap_strings() = withJSIInterop {
+    val stringResult = evaluateScript("expo is awesome".addSingleQuotes())
 
     Truth.assertThat(stringResult.kind()).isEqualTo("string")
     Truth.assertThat(stringResult.isString()).isEqualTo(true)
@@ -34,8 +27,8 @@ class JavaScriptValueTest {
   }
 
   @Test
-  fun should_wrap_booleans() {
-    val boolResult = jsiInterop.evaluateScript("true")
+  fun should_wrap_booleans() = withJSIInterop {
+    val boolResult = evaluateScript("true")
 
     Truth.assertThat(boolResult.kind()).isEqualTo("boolean")
     Truth.assertThat(boolResult.isBool()).isEqualTo(true)
@@ -43,8 +36,8 @@ class JavaScriptValueTest {
   }
 
   @Test
-  fun should_wrap_objects() {
-    val objectResult = jsiInterop.evaluateScript("({'p1':123})")
+  fun should_wrap_objects() = withJSIInterop {
+    val objectResult = evaluateScript("({'p1':123})")
 
     Truth.assertThat(objectResult.kind()).isEqualTo("object")
     Truth.assertThat(objectResult.isObject()).isEqualTo(true)

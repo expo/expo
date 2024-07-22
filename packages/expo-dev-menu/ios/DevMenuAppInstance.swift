@@ -13,13 +13,14 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     self.manager = manager
 
     super.init()
-    self.createBridgeAndSetAdapter(launchOptions: nil)
+    super.initRootViewFactory()
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
     self.manager = manager
 
     super.init()
+    super.initRootViewFactory()
     self.rootViewFactory.bridge = bridge
   }
 
@@ -42,12 +43,6 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
 
   override func bundleURL() -> URL? {
     return jsSourceUrl()
-  }
-
-  override func extraModules(for bridge: RCTBridge) -> [RCTBridgeModule] {
-    var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
-    modules.append(DevMenuRCTDevSettings.init())
-    return modules
   }
 
   override func bridge(_ bridge: RCTBridge, didNotFindModule moduleName: String) -> Bool {

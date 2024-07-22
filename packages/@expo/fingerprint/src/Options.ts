@@ -2,7 +2,9 @@ import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
+import { loadConfigAsync } from './Config';
 import type { NormalizedOptions, Options } from './Fingerprint.types';
+import { SourceSkips } from './sourcer/SourceSkips';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -33,6 +35,8 @@ export const DEFAULT_IGNORE_PATHS = [
   // iOS
   '**/ios/Pods/**/*',
   '**/ios/build/**/*',
+  '**/ios/.xcode.env.local',
+  '**/ios/**/project.xcworkspace',
   '**/ios/*.xcworkspace/xcuserdata/**/*',
 
   // System files that differ from machine to machine
@@ -72,15 +76,25 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
+export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
+
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
 ): Promise<NormalizedOptions> {
+  const config = await loadConfigAsync(projectRoot, options?.silent ?? false);
   return {
+    // Defaults
+    platforms: ['android', 'ios'],
+    concurrentIoLimit: os.cpus().length,
+    hashAlgorithm: 'sha1',
+    sourceSkips: DEFAULT_SOURCE_SKIPS,
+    enableReactImportsPatcher: true,
+    // Options from config
+    ...config,
+    // Explicit options
     ...options,
-    platforms: options?.platforms ?? ['android', 'ios'],
-    concurrentIoLimit: options?.concurrentIoLimit ?? os.cpus().length,
-    hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
+    // These options are computed by both default and explicit options, so we put them last.
     ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
   };
 }

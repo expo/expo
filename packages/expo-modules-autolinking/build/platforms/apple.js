@@ -3,10 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
+exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveExtraBuildDependenciesAsync = exports.resolveModuleAsync = exports.getSwiftModuleNames = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
+const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 const indent = '  ';
 async function findPodspecFiles(revision) {
     const configPodspecPaths = revision.config?.applePodspecPaths();
@@ -52,6 +54,21 @@ async function resolveModuleAsync(packageName, revision, options) {
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
+async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
+    const propsFile = path_1.default.join(projectNativeRoot, APPLE_PROPERTIES_FILE);
+    try {
+        const contents = await fs_extra_1.default.readFile(propsFile, 'utf8');
+        const podfileJson = JSON.parse(contents);
+        if (podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]) {
+            // expo-build-properties would serialize the extraPods as JSON string, we should parse it again.
+            const extraPods = JSON.parse(podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]);
+            return extraPods;
+        }
+    }
+    catch { }
+    return null;
+}
+exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */

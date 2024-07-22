@@ -31,6 +31,7 @@ import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import UserReviewSection from '../../components/UserReviewSection';
 import {
+  AppPlatform,
   HomeScreenDataDocument,
   HomeScreenDataQuery,
   HomeScreenDataQueryVariables,
@@ -252,6 +253,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               query: HomeScreenDataDocument,
               variables: {
                 accountName,
+                platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
               },
               fetchPolicy: 'network-only',
             })

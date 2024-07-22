@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBaseUrlOption = exports.getSplitChunksOption = exports.getPlatformOption = void 0;
+exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBaseUrlOption = exports.getPlatformOption = void 0;
 const jsc_safe_url_1 = require("jsc-safe-url");
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
@@ -33,11 +33,6 @@ function getPlatformOption(graph, options) {
     return url.searchParams.get('platform') ?? null;
 }
 exports.getPlatformOption = getPlatformOption;
-function getSplitChunksOption(graph, options) {
-    // Only enable when the entire bundle is being split, and only run on web.
-    return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
-}
-exports.getSplitChunksOption = getSplitChunksOption;
 function getBaseUrlOption(graph, options) {
     const baseUrl = graph.transformOptions?.customTransformOptions?.baseUrl;
     if (typeof baseUrl === 'string') {
@@ -57,7 +52,7 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
     return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
         ...options,
         baseUrl: getBaseUrlOption(graph, options),
-        splitChunks: getSplitChunksOption(graph, options),
+        splitChunks: !!options.serializerOptions?.splitChunks,
         platform,
         skipWrapping: !!options.serializerOptions?.skipWrapping,
         computedAsyncModulePaths: null,
@@ -102,8 +97,8 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         sourceMapUrl,
         // This directive doesn't make a lot of sense in the context of a large single bundle that represent
         // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
-        // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
-        sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl,
+        // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
+        sourceUrl: options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
     });
     // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
     // NOTE: We may want to move this assertion up further.
@@ -141,6 +136,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
             id,
             typeof code === 'number' ? code : code.src,
         ]),
+        paths: Object.fromEntries(mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length).map(([id, code]) => [id, code.paths])),
     };
 }
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;

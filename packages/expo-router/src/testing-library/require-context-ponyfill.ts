@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import type { RequireContext } from '../types';
 
-interface RequireContextPonyFill extends RequireContext {
+export interface RequireContextPonyFill extends RequireContext {
   __add(file: string): void;
   __delete(file: string): void;
 }
@@ -13,10 +13,9 @@ interface RequireContextPonyFill extends RequireContext {
 export default function requireContext(
   base = '.',
   scanSubDirectories = true,
-  regularExpression = /\.[tj]sx?$/
+  regularExpression = /\.[tj]sx?$/,
+  files: Record<string, unknown> = {}
 ) {
-  const files: Record<string, unknown> = {};
-
   function readDirectory(directory: string) {
     fs.readdirSync(directory).forEach((file: string) => {
       const fullPath = path.resolve(directory, file);
@@ -34,7 +33,9 @@ export default function requireContext(
     });
   }
 
-  readDirectory(base);
+  if (fs.existsSync(base)) {
+    readDirectory(base);
+  }
 
   const context: RequireContextPonyFill = Object.assign(
     function Module(file: string) {

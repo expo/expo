@@ -93,8 +93,6 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const expo::ExpoViewProps>();
     _props = defaultProps;
-
-    self.contentView = [[UIView alloc] initWithFrame:CGRectZero];
   }
   return self;
 }
@@ -122,18 +120,6 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
     flavor,
     &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor>
   };
-}
-
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
-{
-  // The `contentView` should always be at the back. Shifting the index makes sure that child components are mounted on top of it.
-  [super mountChildComponentView:childComponentView index:index + 1];
-}
-
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
-{
-  // All child components are mounted on top of `contentView`, so the index needs to be shifted by one.
-  [super unmountChildComponentView:childComponentView index:index + 1];
 }
 
 - (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps
@@ -186,20 +172,6 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 {
   // Implemented in `ExpoFabricView.swift`
   return NO;
-}
-
-#pragma mark - Methods to override in the subclass
-
-- (nullable EXAppContext *)__injectedAppContext
-{
-  [NSException raise:@"UninjectedException" format:@"The AppContext must be injected in the subclass of 'ExpoFabricView'"];
-  return nil;
-}
-
-- (nonnull NSString *)__injectedModuleName
-{
-  [NSException raise:@"UninjectedException" format:@"The module name must be injected in the subclass of 'ExpoFabricView'"];
-  return nil;
 }
 
 @end

@@ -1,12 +1,15 @@
+/**
+ * Copyright © 2024 650 Industries.
+ */
 import { ConfigAPI, NodePath, types } from '@babel/core';
 import nodePath from 'path';
 import resolveFrom from 'resolve-from';
 
 import {
-  getAsyncRoutes,
   getExpoRouterAbsoluteAppRoot,
   getPlatform,
   getPossibleProjectRoot,
+  getAsyncRoutes,
 } from './common';
 
 const debug = require('debug')('expo:babel:router');
@@ -78,7 +81,7 @@ export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) 
                 path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
               } else if (key.value.startsWith('EXPO_ROUTER_APP_ROOT')) {
                 path.replaceWith(
-                  t.stringLiteral(getExpoRouterAppRoot(possibleProjectRoot, routerAbsoluteRoot))
+                  t.stringLiteral(getExpoRouterAppRoot(projectRoot, routerAbsoluteRoot))
                 );
               }
             }

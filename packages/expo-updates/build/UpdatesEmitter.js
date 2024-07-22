@@ -1,9 +1,7 @@
-import { EventEmitter as NativeEventEmitter } from 'expo-modules-core';
 import { EventEmitter as JsEventEmitter } from 'fbemitter';
 import ExpoUpdatesModule from './ExpoUpdates';
 import { transformNativeStateMachineContext } from './Updates';
-const _nativeEventEmitter = new NativeEventEmitter(ExpoUpdatesModule);
-_nativeEventEmitter.addListener('Expo.nativeUpdatesStateChangeEvent', _emitNativeStateChangeEvent);
+ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _emitNativeStateChangeEvent);
 let _jsEventEmitter = null;
 function _getJsEventEmitter() {
     if (!_jsEventEmitter) {

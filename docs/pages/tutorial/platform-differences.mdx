@@ -3,12 +3,12 @@ title: Handle platform differences
 description: In this tutorial, learn how to handle platform differences between native and web when creating a universal app.
 ---
 
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
-import { A } from '~/ui/components/Text';
-import { Step } from '~/ui/components/Step';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library, however, web browsers cannot.
 
@@ -113,7 +113,7 @@ const onSaveImageAsync = async () => {
 
 On running the app in a web browser, we can now save a screenshot:
 
-<Video file="tutorial/web.mp4" />
+<ContentSpotlight file="tutorial/web.mp4" />
 
 </Step>
 

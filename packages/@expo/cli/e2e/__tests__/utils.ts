@@ -179,15 +179,21 @@ export async function createFromFixtureAsync(
 // Set this to true to enable caching and prevent rerunning yarn installs
 const testingLocally = !process.env.CI;
 
-export async function setupTestProjectAsync(
+export async function setupTestProjectWithOptionsAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '49.0.0'
+  {
+    reuseExisting = testingLocally,
+    sdkVersion = '51.0.0',
+  }: {
+    sdkVersion?: string;
+    reuseExisting?: boolean;
+  } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
     dirName: name,
-    reuseExisting: testingLocally,
+    reuseExisting,
     fixtureName,
   });
 

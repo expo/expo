@@ -30,12 +30,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveRuntimeVersion = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const args_1 = require("./utils/args");
+const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
 const resolveRuntimeVersion = async (argv) => {
     const args = (0, args_1.assertArgs)({
         // Types
         '--help': Boolean,
         '--platform': String,
+        '--workflow': String,
         '--debug': Boolean,
         // Aliases
         '-h': '--help',
@@ -50,6 +52,7 @@ Resolve expo-updates runtime version
 
   Options
   --platform <string>                  Platform to resolve runtime version for
+  --workflow <string>                  Workflow to use for runtime version resolution, and auto-detected if not provided
   --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `, 0);
@@ -57,13 +60,25 @@ Resolve expo-updates runtime version
     const { resolveRuntimeVersionAsync } = await import('../../utils/build/resolveRuntimeVersionAsync.js');
     const platform = (0, args_1.requireArg)(args, '--platform');
     if (!['ios', 'android'].includes(platform)) {
-        throw new Error(`Invalid platform argument: ${platform}`);
+        throw new errors_1.CommandError(`Invalid platform argument: ${platform}`);
+    }
+    const workflow = args['--workflow'];
+    if (workflow && !['generic', 'managed'].includes(workflow)) {
+        throw new errors_1.CommandError(`Invalid workflow argument: ${workflow}. Must be either 'managed' or 'generic'`);
     }
     const debug = args['--debug'];
-    const runtimeVersionInfo = await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform, {
-        silent: true,
-        debug,
-    });
+    let runtimeVersionInfo;
+    try {
+        runtimeVersionInfo = await resolveRuntimeVersionAsync((0, args_1.getProjectRoot)(args), platform, {
+            silent: true,
+            debug,
+        }, {
+            workflowOverride: workflow,
+        });
+    }
+    catch (e) {
+        throw new errors_1.CommandError(e.message);
+    }
     console.log(JSON.stringify(runtimeVersionInfo));
 };
 exports.resolveRuntimeVersion = resolveRuntimeVersion;

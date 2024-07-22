@@ -10,6 +10,7 @@ import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 import { AnalyticsProvider } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
+import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { markdownComponents } from '~/ui/components/Markdown';
 import * as Tooltip from '~/ui/components/Tooltip';
 
@@ -42,7 +43,7 @@ Sentry.init({
         /https:\/\/docs\.expo\.dev\/index\.html/,
         /https:\/\/expo\.nodejs\.cn/,
       ],
-  integrations: [new Sentry.BrowserTracing()],
+  integrations: [Sentry.browserTracingIntegration()],
   tracesSampleRate: 0.001,
 });
 
@@ -58,23 +59,25 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AnalyticsProvider>
       <ThemeProvider>
-        <CodeBlockSettingsProvider>
-          <MDXProvider components={rootMarkdownComponents}>
-            <Tooltip.Provider>
-              <Global
-                styles={css({
-                  'html, body, kbd, button, input, select': {
-                    fontFamily: regularFont.style.fontFamily,
-                  },
-                  'code, pre, table.diff': {
-                    fontFamily: monospaceFont.style.fontFamily,
-                  },
-                })}
-              />
-              <Component {...pageProps} />
-            </Tooltip.Provider>
-          </MDXProvider>
-        </CodeBlockSettingsProvider>
+        <TutorialChapterCompletionProvider>
+          <CodeBlockSettingsProvider>
+            <MDXProvider components={rootMarkdownComponents}>
+              <Tooltip.Provider>
+                <Global
+                  styles={css({
+                    'html, body, kbd, button, input, select': {
+                      fontFamily: regularFont.style.fontFamily,
+                    },
+                    'code, pre, table.diff': {
+                      fontFamily: monospaceFont.style.fontFamily,
+                    },
+                  })}
+                />
+                <Component {...pageProps} />
+              </Tooltip.Provider>
+            </MDXProvider>
+          </CodeBlockSettingsProvider>
+        </TutorialChapterCompletionProvider>
       </ThemeProvider>
     </AnalyticsProvider>
   );

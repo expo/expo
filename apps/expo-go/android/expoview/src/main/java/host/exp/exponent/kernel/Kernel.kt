@@ -926,7 +926,7 @@ class Kernel : KernelInterface() {
   }
 
   override fun handleError(exception: Exception) {
-    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true, ExceptionUtils.exceptionToErrorHeader(exception))
+    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true, ExceptionUtils.exceptionToErrorHeader(exception), ExceptionUtils.exceptionToCanRetry(exception))
   }
 
   // TODO: probably need to call this from other places.
@@ -1074,7 +1074,8 @@ class Kernel : KernelInterface() {
       detailsUnversioned: Any?,
       exceptionId: Int?,
       isFatal: Boolean,
-      errorHeader: String? = null
+      errorHeader: String? = null,
+      canRetry: Boolean = true
     ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
@@ -1118,7 +1119,8 @@ class Kernel : KernelInterface() {
           errorHeader,
           stack,
           getExceptionId(exceptionId),
-          isFatal
+          isFatal,
+          canRetry
         )
       )
     }

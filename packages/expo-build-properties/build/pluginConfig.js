@@ -107,10 +107,9 @@ const schema = {
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
                 useLegacyPackaging: { type: 'boolean', nullable: true },
                 manifestQueries: {
-                    required: ['package'],
                     type: 'object',
                     properties: {
-                        package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+                        package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
                         intent: {
                             type: 'array',
                             items: {
@@ -131,7 +130,7 @@ const schema = {
                             },
                             nullable: true,
                         },
-                        provider: { type: 'array', items: { type: 'string' }, nullable: true },
+                        provider: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
                     },
                     nullable: true,
                 },
@@ -145,6 +144,8 @@ const schema = {
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
                 networkInspector: { type: 'boolean', nullable: true },
+                ccacheEnabled: { type: 'boolean', nullable: true },
+                privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },
                 extraPods: {
                     type: 'array',
                     items: {

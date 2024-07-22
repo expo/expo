@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
 public interface ReactNativeHostHandler {
   /**
@@ -70,6 +71,11 @@ public interface ReactNativeHostHandler {
    * Callback before react instance creation
    */
   default void onWillCreateReactInstance(boolean useDeveloperSupport) {}
+
+  /**
+   * Callback when the {@link DevSupportManager} is available
+   */
+  default void onDidCreateDevSupportManager(@NonNull DevSupportManager devSupportManager) {}
 
   /**
    * Callback after react instance creation

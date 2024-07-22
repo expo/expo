@@ -28,6 +28,10 @@ open class ReactNativeHostWrapperBase(
 
     val result = super.createReactInstanceManager()
 
+    reactNativeHostHandlers.forEach { handler ->
+      handler.onDidCreateDevSupportManager(result.devSupportManager)
+    }
+
     result.addReactInstanceEventListener(object : ReactInstanceEventListener {
       override fun onReactContextInitialized(context: ReactContext) {
         reactNativeHostHandlers.forEach { handler ->

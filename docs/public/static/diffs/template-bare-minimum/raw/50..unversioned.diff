@@ -112,18 +112,41 @@ index 73b37e4d99..5c25e728ea 100644
      <selector>
          <!--
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 513b766148..be66878b65 100644
+index 513b766148..932bf7b34b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -8,7 +8,7 @@ buildscript {
+@@ -6,9 +6,9 @@ buildscript {
+         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
+         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
          targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
+-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
  
 -        ndkVersion = "25.1.8937393"
 +        ndkVersion = "26.1.10909125"
      }
      repositories {
          google()
+@@ -17,6 +17,7 @@ buildscript {
+     dependencies {
+         classpath('com.android.tools.build:gradle')
+         classpath('com.facebook.react:react-native-gradle-plugin')
++        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
+     }
+ }
+ 
+diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
+index 877b87e9a5..8a6be07718 100644
+--- a/templates/expo-template-bare-minimum/android/gitignore
++++ b/templates/expo-template-bare-minimum/android/gitignore
+@@ -10,6 +10,7 @@ build/
+ local.properties
+ *.iml
+ *.hprof
++.cxx/
+ 
+ # Bundle artifacts
+ *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index 7f93135c49..d64cd49177 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
@@ -185,6 +208,19 @@ index 53a6b238d4..7101f8e467 100644
  
  goto fail
  
+diff --git a/templates/expo-template-bare-minimum/app.json b/templates/expo-template-bare-minimum/app.json
+index a36a6e08d4..e1cfd57212 100644
+--- a/templates/expo-template-bare-minimum/app.json
++++ b/templates/expo-template-bare-minimum/app.json
+@@ -2,7 +2,6 @@
+   "expo": {
+     "name": "HelloWorld",
+     "slug": "expo-template-bare",
+-    "version": "1.0.0",
+-    "assetBundlePatterns": ["**/*"]
++    "version": "1.0.0"
+   }
+ }
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 index efbdc6e741..f945940c25 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
@@ -243,7 +279,7 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index b3978b9515..eaf07ca4c2 100644
+index b3978b9515..a5a78f3e57 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -13,30 +13,6 @@ install! 'cocoapods',
@@ -277,25 +313,35 @@ index b3978b9515..eaf07ca4c2 100644
  target 'HelloWorld' do
    use_expo_modules!
    config = use_native_modules!
-@@ -49,8 +25,6 @@ target 'HelloWorld' do
+@@ -49,15 +25,15 @@ target 'HelloWorld' do
      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
      # An absolute path to your application root.
      :app_path => "#{Pod::Config.instance.installation_root}/..",
 -    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
 -    :flipper_configuration => flipper_config
++    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
    )
  
    post_install do |installer|
+     react_native_post_install(
+       installer,
+       config[:reactNativePath],
+-      :mac_catalyst_enabled => false
++      :mac_catalyst_enabled => false,
++      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+     )
+ 
+     # This is necessary for Xcode 14, because it signs resource bundles by default
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f4630b8f1d..e7e9e23831 100644
+index f8f8993585..87791e2d65 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
  {
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
--  "version": "50.0.42",
-+  "version": "50.0.17",
+-  "version": "50.0.43",
++  "version": "51.0.27",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -303,13 +349,13 @@ index f4630b8f1d..e7e9e23831 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~50.0.14",
+-    "expo": "~50.0.17",
 -    "expo-status-bar": "~1.11.1",
-+    "expo": "~51.0.0-unreleased",
-+    "expo-status-bar": "~1.11.0",
++    "expo": "~51.0.8",
++    "expo-status-bar": "~1.12.1",
      "react": "18.2.0",
 -    "react-native": "0.73.6"
-+    "react-native": "0.74.0-rc.5"
++    "react-native": "0.74.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"

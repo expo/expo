@@ -5,10 +5,15 @@ export type SerialAsset = {
   filename: string;
   // '\ndiv {\n    background: cyan;\n}\n\n'
   source: string;
-  type: 'css' | 'js' | 'map';
+  type: 'css' | 'js' | 'map' | 'json';
 
   metadata: {
+    hmrId?: string;
     isAsync?: boolean;
     modulePaths?: string[];
-  } & Record<string, boolean | string | string[]>;
+    paths?: Record<string, Record<string, string>>;
+    // React client reference from the static babel pass.
+    reactClientReferences?: string[];
+    requires?: string[];
+  };
 };

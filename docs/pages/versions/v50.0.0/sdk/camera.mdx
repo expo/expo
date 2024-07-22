@@ -7,15 +7,15 @@ iconUrl: '/static/images/packages/expo-camera.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, auto focus, white balance and flash mode are adjustable. Using `Camera`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
 
@@ -97,14 +97,11 @@ export default function App() {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
-  /* @hide if (!permission) ... */
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
-  /* @end */
 
-  /* @hide if (!permission.granted) ... */
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
@@ -114,7 +111,6 @@ export default function App() {
       </View>
     );
   }
-  /* @end */
 
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));

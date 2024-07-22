@@ -21,7 +21,7 @@ sealed class UpdatesStateEvent(val type: UpdatesStateEventType) {
         return UpdatesStateError(errorMessage)
       }
   }
-  class CheckCompleteUnavailable() : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
+  class CheckCompleteUnavailable : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
   class CheckCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable)
   class CheckCompleteWithRollback(val commitTime: Date) : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable)
   class DownloadComplete : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)

@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import * as AppleDevice from './AppleDevice';
+import * as devicectl from '../../../start/platforms/ios/devicectl';
 import { ensureDirectory } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
@@ -60,6 +61,20 @@ export async function installOnDeviceAsync(props: {
       },
     });
   } catch (error: any) {
+    if (error instanceof CommandError) {
+      if (error.code === 'APPLE_DEVICE_USBMUXD') {
+        // Couldn't find device, could be OTA...
+        // Fallback on much slower devicectl method which supports OTA installs.
+        if (devicectl.hasDevicectlEverBeenInstalled()) {
+          // This should never happen.
+          if (indicator) {
+            indicator.clear();
+          }
+          return await devicectl.installAndLaunchAppAsync(props);
+        }
+      }
+    }
+
     if (indicator) {
       indicator.fail();
     }

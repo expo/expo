@@ -92,6 +92,7 @@ export async function installPackagesAsync(
     packageManagerArguments,
     fix,
     check,
+    dev,
   }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
@@ -148,7 +149,7 @@ export async function installPackagesAsync(
         )} because ${
           alreadyExcluded.length > 1 ? 'they are' : 'it is'
         } listed in {bold expo.install.exclude} in package.json. ${learnMore(
-          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
     }
@@ -163,7 +164,7 @@ export async function installPackagesAsync(
         )} because ${
           specifiedExactVersion.length > 1 ? 'these versions' : 'this version'
         } was explicitly provided. Packages excluded from dependency validation should be listed in {bold expo.install.exclude} in package.json. ${learnMore(
-          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
     }
@@ -187,7 +188,11 @@ export async function installPackagesAsync(
     });
   }
 
-  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  if (dev) {
+    await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
+  } else {
+    await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  }
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }

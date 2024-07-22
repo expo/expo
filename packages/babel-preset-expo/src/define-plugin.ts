@@ -95,7 +95,8 @@ const plugin = ({ types }: { types: typeof t }): babel.PluginObj => {
       },
 
       // const x = { version: VERSION };
-      Identifier(nodePath, state) {
+      // @ts-expect-error: Virtual type `ReferencedIdentifier` is not on types.
+      ReferencedIdentifier(nodePath, state) {
         const binding = nodePath.scope?.getBinding(nodePath.node.name);
 
         if (

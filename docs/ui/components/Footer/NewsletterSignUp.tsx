@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { Mail01Icon } from '@expo/styleguide-icons';
+import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useState } from 'react';
 
 import { Input } from '~/ui/components/Form';
@@ -42,7 +42,7 @@ export const NewsletterSignUp = () => {
     <div className="flex-1 max-w-[350px] max-md-gutters:max-w-full">
       <CALLOUT theme="secondary" weight="medium" className="flex gap-2 items-center">
         <Mail01Icon className="text-icon-tertiary shrink-0" />
-        Sign up for the Expo's Newsletter
+        Sign up for the Expo Newsletter
       </CALLOUT>
       <form
         className="relative"

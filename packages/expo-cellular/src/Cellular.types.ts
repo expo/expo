@@ -20,11 +20,11 @@ export enum CellularGeneration {
    */
   CELLULAR_2G = 1,
   /**
-   * Currently connected to a 3G cellular network. Includes EHRPD, EVDO, HSPA, HSUPA, HSDPA, and UTMS type connections.
+   * Currently connected to a 3G cellular network. Includes EHRPD, EVDO, HSPA, HSUPA, HSDPA, HSPAP, and UTMS type connections.
    */
   CELLULAR_3G = 2,
   /**
-   * Currently connected to a 4G cellular network. Includes HSPAP and LTE type connections.
+   * Currently connected to a 4G cellular network. Includes LTE type connections.
    */
   CELLULAR_4G = 3,
   /**

@@ -1,11 +1,11 @@
-import { PermissionStatus, createPermissionHook, EventEmitter, Platform, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, LegacyEventEmitter, Platform, } from 'expo-modules-core';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { RecordingOptionsPresets } from './RecordingConstants';
 import { Sound } from './Sound';
 import { _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS, } from '../AV';
 import ExponentAV from '../ExponentAV';
 let _recorderExists = false;
-const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+const eventEmitter = Platform.OS === 'android' ? new LegacyEventEmitter(ExponentAV) : null;
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
@@ -180,7 +180,11 @@ export class Recording {
             return { recording, status };
         }
         catch (err) {
-            recording.stopAndUnloadAsync();
+            recording.stopAndUnloadAsync().catch((_e) => {
+                // Since there was an issue with starting, when trying calling stopAndUnloadAsync
+                // the promise is rejected which is unhandled
+                // lets catch it since its expected
+            });
             throw err;
         }
     };

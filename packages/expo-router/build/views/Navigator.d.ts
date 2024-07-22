@@ -232,7 +232,7 @@ export declare function useNavigatorContext(): {
             stale: false;
         }>;
     } & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T_1_1 = import("@react-navigation/native").NavigationProp<import("@react-navigation/native").ParamListBase, string, undefined, Readonly<{
+        getParent<T_1 = import("@react-navigation/native").NavigationProp<import("@react-navigation/native").ParamListBase, string, undefined, Readonly<{
             key: string;
             index: number;
             routeNames: string[];
@@ -248,7 +248,7 @@ export declare function useNavigatorContext(): {
             })[];
             type: string;
             stale: false;
-        }>, {}, {}> | undefined>(id?: string | undefined): T_1_1;
+        }>, {}, {}> | undefined>(id?: string | undefined): T_1;
         setParams(params: Partial<object | undefined>): void;
         setOptions(options: Partial<{}>): void;
     } & import("@react-navigation/native").EventConsumer<Record<string, any> & import("@react-navigation/native").EventMapCore<Readonly<{

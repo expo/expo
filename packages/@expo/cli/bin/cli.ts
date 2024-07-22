@@ -32,6 +32,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
   add: () => import('../src/install/index.js').then((i) => i.expoInstall),
   customize: () => import('../src/customize/index.js').then((i) => i.expoCustomize),
+  lint: () => import('../src/lint/index.js').then((i) => i.expoLint),
 
   // Auth
   login: () => import('../src/login/index.js').then((i) => i.expoLogin),
@@ -95,6 +96,8 @@ if (!isSubcommand && args['--help']) {
     'export:web': exportWeb_unused,
     // Other ignored commands, these are intentially not listed in the `--help` output
     run: _run,
+    // NOTE(cedric): Still pending the migration to ESLint's flat config
+    lint: _lint,
     // All other commands
     ...others
   } = commands;

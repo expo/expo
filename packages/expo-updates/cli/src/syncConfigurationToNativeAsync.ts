@@ -4,11 +4,12 @@ import plist from '@expo/plist';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { resolveWorkflowAsync } from '../../utils/build/workflow';
+import { Workflow } from '../../utils/build/workflow';
 
 type SyncConfigurationToNativeOptions = {
   projectRoot: string;
   platform: 'ios' | 'android';
+  workflow: Workflow;
 };
 
 /**
@@ -17,8 +18,7 @@ type SyncConfigurationToNativeOptions = {
 export async function syncConfigurationToNativeAsync(
   options: SyncConfigurationToNativeOptions
 ): Promise<void> {
-  const workflow = await resolveWorkflowAsync(options.projectRoot, options.platform);
-  if (workflow !== 'generic') {
+  if (options.workflow !== 'generic') {
     // not applicable to managed workflow
   }
 

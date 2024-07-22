@@ -216,13 +216,9 @@ describe(getRuntimeVersionAsync, () => {
     ).toBe(version);
   });
 
-  it('works if the runtimeVersion is a fingerprintExperimental policy', async () => {
+  it('works if the runtimeVersion is a fingerprint policy', async () => {
     expect(
-      await getRuntimeVersionAsync(
-        '',
-        { runtimeVersion: { policy: 'fingerprintExperimental' } },
-        'ios'
-      )
+      await getRuntimeVersionAsync('', { runtimeVersion: { policy: 'fingerprint' } }, 'ios')
     ).toBe(FINGERPRINT_RUNTIME_VERSION_SENTINEL);
   });
 

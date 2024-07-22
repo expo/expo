@@ -1,1 +1,1 @@
-module.exports = require('./build/next');
+module.exports = require('./build/index');

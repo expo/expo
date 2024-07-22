@@ -18,67 +18,11 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    'react-native-gesture-handler': {
-      source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
-      semverPrefix: '~',
-      ios: {},
-      android: {
-        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
-          const buildGradlePath = path.join(targetDirectory, 'android', 'build.gradle');
-          let buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
-          buildGradle = buildGradle.replace(
-            'def shouldUseCommonInterfaceFromReanimated() {',
-            'def shouldUseCommonInterfaceFromReanimated() {\n    return true\n'
-          );
-          buildGradle = buildGradle.replace(
-            /react-native-reanimated/g,
-            'vendored_unversioned_react-native-reanimated'
-          );
-          await fs.writeFile(buildGradlePath, buildGradle);
-        },
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-        ],
-      },
-    },
-    'react-native-screens': {
-      source: 'https://github.com/software-mansion/react-native-screens.git',
-      semverPrefix: '~',
-      ios: {},
-      android: {
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-        ],
-      },
-    },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
     },
     'react-native-view-shot': {
       source: 'https://github.com/gre/react-native-view-shot.git',
-    },
-    'react-native-svg': {
-      source: 'https://github.com/react-native-svg/react-native-svg',
-      ios: {},
-      android: {
-        excludeFiles: [
-          'android/gradle{/**,**}',
-          'android/settings.gradle',
-          'android/spotless.gradle',
-          'android/src/fabric/**',
-          'android/src/main/jni/**',
-        ],
-      },
-    },
-    '@react-native-community/netinfo': {
-      source: 'https://github.com/react-native-netinfo/react-native-netinfo',
-      ios: {
-        excludeFiles: 'example/**/*',
-      },
     },
     'react-native-webview': {
       source: 'https://github.com/react-native-webview/react-native-webview.git',
@@ -169,67 +113,9 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}'],
       },
     },
-    '@react-native-community/datetimepicker': {
-      source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-      // TODO: Uncomment the following once the new vendoring scripts support Android
-      // android: {
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'RNTimePickerDialogFragment.java',
-      //         find: /"ClockTimePickerDialog"/,
-      //         replaceWith: '"ReactAndroidClockTimePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNTimePickerDialogFragment.java',
-      //         find: /"SpinnerTimePickerDialog"/,
-      //         replaceWith: '"ReactAndroidSpinnerTimePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNDatePickerDialogFragment.java',
-      //         find: /"CalendarDatePickerDialog"/,
-      //         replaceWith: '"ReactAndroidCalendarDatePickerDialog"',
-      //       },
-      //       {
-      //         paths: 'RNDatePickerDialogFragment.java',
-      //         find: /"SpinnerDatePickerDialog"/,
-      //         replaceWith: '"ReactAndroidSpinnerDatePickerDialog"',
-      //       },
-      //     ],
-      //   },
-      // },
-    },
-    // NOTE(brentvatne): masked-view has been renamed to
-    // @react-native-masked-view/masked-view but we should synchronize moving
-    // over to the new package name along with React Navigation
-    '@react-native-masked-view/masked-view': {
-      source: 'https://github.com/react-native-masked-view/masked-view',
-    },
-    'react-native-pager-view': {
-      source: 'https://github.com/callstack/react-native-viewpager',
-      ios: {},
-      android: {
-        excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
-      },
-    },
-    '@react-native-picker/picker': {
-      source: 'https://github.com/react-native-picker/picker',
-      ios: {},
-      android: {
-        excludeFiles: ['android/gradle{/**,**}'],
-      },
-    },
-    '@react-native-community/slider': {
-      source: 'https://github.com/callstack/react-native-slider',
-      rootDir: 'package',
-      ios: {},
-      android: {
-        includeFiles: 'android/**',
-        excludeFiles: ['android/gradle{/**,**}'],
-      },
-    },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',
+      rootDir: 'packages/default-storage',
       ios: {
         excludeFiles: 'example/**/*',
         async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {

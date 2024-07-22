@@ -29,7 +29,7 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
 
     DispatchQueue.global(qos: .userInitiated).async {
       guard let url = url, let assetLocalIdentifier = assetLocalIdentifier(fromUrl: url) else {
-        let error = makeNSError(description: "Unable to obtain the asset identifier from the url: '\(url?.absoluteString)'")
+        let error = makeNSError(description: "Unable to obtain the asset identifier from the url: '\(String(describing: url?.absoluteString))'")
         completedBlock?(nil, nil, error, false)
         return
       }

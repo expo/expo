@@ -13,7 +13,7 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
-  getComponentName,
+  getPossibleComponentPropsNames,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -26,15 +26,8 @@ type Props = {
   packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  strictTypes?: boolean;
   testRequire?: any;
   headersMapping?: Record<string, string>;
-
-  /**
-   * Whether to expose all classes props in the sidebar.
-   * @default true when the api has only one class, false otherwise.
-   */
-  exposeAllClassPropsInSidebar?: boolean;
 };
 
 const filterDataByKind = (
@@ -76,7 +69,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
@@ -105,10 +98,8 @@ const renderAPI = (
   {
     packageName,
     apiName,
-    strictTypes = false,
     testRequire = undefined,
     headersMapping = {},
-    ...restProps
   }: Omit<Props, 'forceVersion'>
 ): JSX.Element => {
   try {
@@ -164,8 +155,7 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        ) &&
-        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
+        )
     );
 
     const props = filterDataByKind(
@@ -199,9 +189,10 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(
-      ({ name, children }) => `${getComponentName(name, children)}Props`
-    );
+    const componentsPropNames = components
+      .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
+      .flat();
+
     const componentsProps = filterDataByKind(
       props,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
@@ -217,16 +208,15 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map(
-        (cls: ClassDefinitionData) =>
-          cls.children?.filter(
-            child =>
-              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-              !child.inheritedFrom &&
-              child.name !== 'render' &&
-              // note(simek): hide unannotated "private" methods
-              !child.name.startsWith('_')
-          )
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+            !child.inheritedFrom &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
       )
       .flat();
 
@@ -287,11 +277,7 @@ const renderAPI = (
         />
         <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
-        <APISectionClasses
-          data={classes}
-          sdkVersion={sdkVersion}
-          exposeAllClassPropsInSidebar={restProps.exposeAllClassPropsInSidebar}
-        />
+        <APISectionClasses data={classes} sdkVersion={sdkVersion} />
         {props && !componentsProps.length ? (
           <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}

@@ -5,6 +5,7 @@ import ExpoModulesCore
 
 private let EVENT_PEDOMETER_UPDATE = "Exponent.pedometerUpdate"
 
+// This class should always be kept in sync with PedometerModuleDisabled
 public final class PedometerModule: Module {
   private lazy var pedometer = CMPedometer()
 
@@ -39,7 +40,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      appContext?.permissions?.getPermissionUsingRequesterClass(
+      permissionsManager.getPermissionUsingRequesterClass(
         EXMotionPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
@@ -50,7 +51,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      appContext?.permissions?.askForPermission(
+      permissionsManager.askForPermission(
         usingRequesterClass: EXMotionPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
@@ -61,7 +62,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      appContext?.permissions?.register([EXMotionPermissionRequester()])
+      permissionsManager.register([EXMotionPermissionRequester()])
     }
 
     OnStartObserving {
@@ -82,6 +83,8 @@ public final class PedometerModule: Module {
 
     OnStopObserving {
       stopUpdates()
+      watchStartDate = nil
+      watchHandler = nil
     }
 
     OnAppEntersBackground {
@@ -108,8 +111,6 @@ public final class PedometerModule: Module {
     }
 
     pedometer.stopUpdates()
-    watchStartDate = nil
-    watchHandler = nil
   }
 }
 

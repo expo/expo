@@ -1,4 +1,4 @@
-import { mockConnection } from './testUtilts';
+import { mockConnection } from '../../__tests__/mockConnection';
 import { getDebuggerType } from '../../getDebuggerType';
 import type { DebuggerRequest } from '../../types';
 import {
@@ -38,7 +38,7 @@ it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () =>
   // Should stop propagation when handled
   expect(handler.handleDebuggerMessage(message)).toBe(true);
   // Should send a response with empty locations
-  expect(connection.debugger.sendMessage).toBeCalledWith(
+  expect(connection.debugger.sendMessage).toHaveBeenCalledWith(
     expect.objectContaining({
       id: 420,
       result: { locations: [] },

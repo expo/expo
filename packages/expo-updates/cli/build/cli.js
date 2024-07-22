@@ -31,6 +31,7 @@ const arg_1 = __importDefault(require("arg"));
 const chalk_1 = __importDefault(require("chalk"));
 const debug_1 = __importDefault(require("debug"));
 const getenv_1 = require("getenv");
+const errors_1 = require("./utils/errors");
 const Log = __importStar(require("./utils/log"));
 // Setup before requiring `debug`.
 if ((0, getenv_1.boolish)('EXPO_DEBUG', false)) {
@@ -92,4 +93,6 @@ if (!(command in commands)) {
     console.error(`Invalid command: ${command}`);
     process.exit(1);
 }
-commands[command]().then((exec) => exec(commandArgs));
+commands[command]()
+    .then((exec) => exec(commandArgs))
+    .catch(errors_1.logCmdError);

@@ -10,7 +10,6 @@ export interface Options {
   assetCatalogDest?: string;
   entryFile: string;
   resetCache: boolean;
-  resetGlobalCache: boolean;
   transformer?: string;
   minify?: boolean;
   config?: string;
@@ -66,7 +65,6 @@ export function resolveOptions(
     assetsDest: args['--assets-dest'],
     unstableTransformProfile: args['--unstable-transform-profile'],
     resetCache: !!parsed.args['--reset-cache'],
-    resetGlobalCache: false,
     verbose: args['--verbose'] ?? env.EXPO_DEBUG,
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,

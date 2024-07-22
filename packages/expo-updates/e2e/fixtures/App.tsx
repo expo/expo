@@ -14,6 +14,9 @@ require('./includedAssets/lock-filled.svg');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
+// keep the line below for replacement in generate-test-update-bundles
+// REPLACE_WITH_CRASHING_CODE
+
 function TestValue(props: { testID: string; value: string }) {
   return (
     <View>
@@ -21,7 +24,7 @@ function TestValue(props: { testID: string; value: string }) {
         <Text style={styles.labelText}>{props.testID}</Text>
         <Text style={styles.labelText}>&nbsp;</Text>
         <Text style={styles.labelText} testID={props.testID}>
-          {props.value}
+          {props.value || 'null'}
         </Text>
       </View>
     </View>

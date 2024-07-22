@@ -7,13 +7,14 @@
 #include "Exceptions.h"
 #include "JavaCallback.h"
 #include "types/JNIToJSIConverter.h"
+#include "JSReferencesCache.h"
 
 #include <utility>
 #include <functional>
 #include <unistd.h>
 #include <optional>
 
-#include "JSReferencesCache.h"
+#include <ReactCommon/LongLivedObject.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -21,10 +22,10 @@ namespace react = facebook::react;
 
 namespace expo {
 
-jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
-  jsi::Function &&function,
-  jsi::Runtime &rt,
-  bool isRejectCallback = false
+jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
+  jsi::Function &&resolveFunction,
+  jsi::Function &&rejectFunction,
+  jsi::Runtime &rt
 ) {
   JSIContext *jsiContext = getJSIContext(rt);
   std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
@@ -32,9 +33,15 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   std::shared_ptr<JavaCallback::CallbackContext> callbackContext = std::make_shared<JavaCallback::CallbackContext>(
     rt,
     std::move(jsInvoker),
-    std::move(function),
-    isRejectCallback
+    std::move(resolveFunction),
+    std::move(rejectFunction)
   );
+
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  facebook::react::LongLivedObjectCollection::get(rt).add(callbackContext);
+#else
+  facebook::react::LongLivedObjectCollection::get().add(callbackContext);
+#endif
 
   return JavaCallback::newInstance(jsiContext, std::move(callbackContext));
 }
@@ -97,7 +104,8 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
       auto stringRepresentation = arg.toString(rt).utf8(rt);
       throwNewJavaException(
         UnexpectedException::create(
-          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+          "[" + this->name + "] Cannot convert '" + stringRepresentation +
+          "' to a Kotlin type.").get()
       );
     }
   }
@@ -142,6 +150,10 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
   jsi::Runtime &runtime
 ) {
   if (body == nullptr) {
+    if (jBodyReference == nullptr) {
+      return nullptr;
+    }
+
     if (isAsync) {
       body = std::make_shared<jsi::Function>(toAsyncFunction(runtime));
     } else {
@@ -155,18 +167,24 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
 jsi::Function MethodMetadata::toSyncFunction(
   jsi::Runtime &runtime
 ) {
+  auto weakThis = weak_from_this();
   return jsi::Function::createFromHostFunction(
     runtime,
     getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
     argTypes.size(),
-    [this](
+    [weakThis = std::move(weakThis)](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
       try {
-        return this->callSync(
+        auto thisPtr = weakThis.lock();
+        if (thisPtr == nullptr) {
+          return jsi::Value::undefined();
+        }
+
+        return thisPtr->callSync(
           rt,
           thisValue,
           args,
@@ -222,26 +240,23 @@ jsi::Value MethodMetadata::callSync(
 jsi::Function MethodMetadata::toAsyncFunction(
   jsi::Runtime &runtime
 ) {
+  auto weakThis = weak_from_this();
   return jsi::Function::createFromHostFunction(
     runtime,
     getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
     argTypes.size(),
-    [this](
+    [weakThis = std::move(weakThis)](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
-      JSIContext *jsiContext = getJSIContext(rt);
-      /**
-       * Halt execution during cleaning phase as modules and js context will be deallocated soon.
-       * The output of this method doesn't matter.
-       * We added that check to prevent the app from crashing when users reload their apps.
-       */
-      if (jsiContext->wasDeallocated) {
+      auto thisPtr = weakThis.lock();
+      if (thisPtr == nullptr) {
         return jsi::Value::undefined();
       }
 
+      JSIContext *jsiContext = getJSIContext(rt);
       JNIEnv *env = jni::Environment::current();
 
       /**
@@ -256,14 +271,14 @@ jsi::Function MethodMetadata::toAsyncFunction(
       );
 
       try {
-        auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
+        auto convertedArgs = thisPtr->convertJSIArgsToJNI(env, rt, thisValue, args, count);
         auto globalConvertedArgs = (jobjectArray) env->NewGlobalRef(convertedArgs);
         env->DeleteLocalRef(convertedArgs);
 
         // Creates a JSI promise
         jsi::Value promise = Promise.callAsConstructor(
           rt,
-          createPromiseBody(rt, globalConvertedArgs)
+          thisPtr->createPromiseBody(rt, globalConvertedArgs)
         );
         return promise;
       } catch (jni::JniException &jniException) {
@@ -333,15 +348,10 @@ jsi::Function MethodMetadata::createPromiseBody(
       jsi::Function resolveJSIFn = promiseConstructorArgs[0].getObject(rt).getFunction(rt);
       jsi::Function rejectJSIFn = promiseConstructorArgs[1].getObject(rt).getFunction(rt);
 
-      jobject resolve = createJavaCallbackFromJSIFunction(
+      jobject javaCallback = createJavaCallback(
         std::move(resolveJSIFn),
-        rt
-      ).release();
-
-      jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
-        rt,
-        true
+        rt
       ).release();
 
       JNIEnv *env = jni::Environment::current();
@@ -350,15 +360,14 @@ jsi::Function MethodMetadata::createPromiseBody(
         "expo/modules/kotlin/jni/PromiseImpl");
       jmethodID jPromiseConstructor = jPromise.getMethod(
         "<init>",
-        "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"
+        "(Lexpo/modules/kotlin/jni/JavaCallback;)V"
       );
 
       // Creates a promise object
       jobject promise = env->NewObject(
         jPromise.clazz,
         jPromiseConstructor,
-        resolve,
-        reject
+        javaCallback
       );
 
       // Cast in this place is safe, cause we know that this function expects promise.

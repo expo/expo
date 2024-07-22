@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertHeaders = exports.convertRequest = exports.createRequestHandler = void 0;
-const node_1 = require("@remix-run/node");
+const stream_1 = require("@remix-run/node/dist/stream");
 const __1 = require("..");
 /**
  * Returns a request handler for http that serves the response using Remix.
@@ -39,8 +39,7 @@ function convertRequest(req, res) {
         signal: controller.signal,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-        init.body = (0, node_1.createReadableStreamFromReadable)(req);
-        // @ts-expect-error
+        init.body = (0, stream_1.createReadableStreamFromReadable)(req);
         init.duplex = 'half';
     }
     return new Request(url.href, init);
@@ -70,7 +69,7 @@ async function respond(res, expoRes) {
         res.appendHeader(key, value);
     }
     if (expoRes.body) {
-        await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
+        await (0, stream_1.writeReadableStreamToWritable)(expoRes.body, res);
     }
     else {
         res.end();

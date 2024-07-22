@@ -2,9 +2,13 @@ export type SerialAsset = {
     originFilename: string;
     filename: string;
     source: string;
-    type: 'css' | 'js' | 'map';
+    type: 'css' | 'js' | 'map' | 'json';
     metadata: {
+        hmrId?: string;
         isAsync?: boolean;
         modulePaths?: string[];
-    } & Record<string, boolean | string | string[]>;
+        paths?: Record<string, Record<string, string>>;
+        reactClientReferences?: string[];
+        requires?: string[];
+    };
 };

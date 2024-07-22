@@ -69,7 +69,7 @@ class ClipboardPasteButton: ExpoView {
 
           self.onPastePressed([
             "type": "text",
-            "text": data?.absoluteString
+            "text": data?.absoluteString as Any
           ])
         }
       } else if provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) {
@@ -87,7 +87,7 @@ class ClipboardPasteButton: ExpoView {
             return
           }
 
-          guard let data = data as? String else {
+          guard let data else {
             log.error("Failed to read text data")
             return
           }
@@ -126,11 +126,6 @@ class ClipboardPasteButton: ExpoView {
       return
     }
 
-    guard let fileSystem = appContext?.fileSystem else {
-      log.error("Failed to access FileSystem")
-      return
-    }
-
     let imageData = "data:\(imageOptions.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
     self.onPastePressed([
       "type": "image",
@@ -143,7 +138,7 @@ class ClipboardPasteButton: ExpoView {
   }
 
   private func processHtml(data: String?) {
-    guard let htmlString = data as? String else {
+    guard let htmlString = data else {
       log.error("Failed to read html data")
       return
     }

@@ -1,7 +1,7 @@
 {
   "name": "expo-notifications",
-  "version": "0.27.1",
-  "description": "Notifications module",
+  "version": "0.28.3",
+  "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": [
@@ -20,7 +20,8 @@
     "react-native",
     "expo",
     "notifications",
-    "expo-notifications"
+    "expo-notifications",
+    "push-nofifications"
   ],
   "repository": {
     "type": "git",
@@ -37,13 +38,13 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "@expo/image-utils": "^0.4.0",
+    "@expo/image-utils": "^0.5.0",
     "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "~5.8.0",
-    "expo-constants": "~15.4.0",
+    "expo-application": "~5.9.0",
+    "expo-constants": "~16.0.0",
     "fs-extra": "^9.1.0"
   },
   "devDependencies": {
@@ -53,6 +54,8 @@
     "node-fetch": "^2.6.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

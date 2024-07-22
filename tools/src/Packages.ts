@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';
@@ -300,19 +300,6 @@ export class Package {
   }
 
   /**
-   * Checks whether package has any native code (iOS, Android, C++).
-   */
-  async isNativeModuleAsync(): Promise<boolean> {
-    const dirs = ['ios', 'android', 'cpp'].map((dir) => path.join(this.path, dir));
-    for (const dir of dirs) {
-      if (await fs.pathExists(dir)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Checks whether the package contains native unit tests on the given platform.
    */
   async hasNativeTestsAsync(platform: Platform): Promise<boolean> {
@@ -379,6 +366,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
       ignore: [
         '**/example/**',
         '**/node_modules/**',
+        '**/static/**',
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/__fixtures__/**',

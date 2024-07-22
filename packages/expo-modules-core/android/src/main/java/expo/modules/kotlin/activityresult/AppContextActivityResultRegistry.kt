@@ -25,10 +25,10 @@ import androidx.lifecycle.LifecycleOwner
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.safeGetParcelable
+import expo.modules.kotlin.safeGetParcelableExtra
 import java.io.Serializable
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import java.util.Random
 
 private const val TAG = "ActivityResultRegistry"
 
@@ -116,8 +116,9 @@ class AppContextActivityResultRegistry(
           ?: arrayOfNulls(0)
         ActivityCompat.requestPermissions(activity, permissions, requestCode)
       }
+
       StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST -> {
-        val request: IntentSenderRequest = intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
+        val request = intent.safeGetParcelableExtra<IntentSenderRequest>(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
         try {
           // startIntentSenderForResult path
           ActivityCompat.startIntentSenderForResult(
@@ -141,6 +142,7 @@ class AppContextActivityResultRegistry(
           }
         }
       }
+
       else -> {
         // startActivityForResult path
         ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle)
@@ -181,10 +183,14 @@ class AppContextActivityResultRegistry(
 
           // 1. No callbacks registered yet, other path would take care of the results
           @Suppress("UNCHECKED_CAST")
-          val callbacksAndContract: CallbacksAndContract<I, O> = (keyToCallbacksAndContract[key] ?: return@LifecycleEventObserver) as CallbacksAndContract<I, O>
+          val callbacksAndContract: CallbacksAndContract<I, O> = (
+            keyToCallbacksAndContract[key]
+              ?: return@LifecycleEventObserver
+            ) as CallbacksAndContract<I, O>
 
           // 2. There are results to be delivered to the callbacks
-          pendingResults.getParcelable<ActivityResult>(key)?.let {
+          val activityResult = pendingResults.safeGetParcelable<ActivityResult>(key)
+          activityResult?.let {
             pendingResults.remove(key)
 
             @Suppress("UNCHECKED_CAST")
@@ -200,9 +206,11 @@ class AppContextActivityResultRegistry(
             }
           }
         }
+
         Lifecycle.Event.ON_DESTROY -> {
           unregister(key)
         }
+
         else -> Unit
       }
     }
@@ -274,7 +282,7 @@ class AppContextActivityResultRegistry(
     }
     keyToCallbacksAndContract.remove(key)
     if (pendingResults.containsKey(key)) {
-      Log.w(TAG, "Dropping pending result for request $key : ${pendingResults.getParcelable<ActivityResult>(key)}")
+      Log.w(TAG, "Dropping pending result for request $key : ${pendingResults.safeGetParcelable<ActivityResult>(key)}")
       pendingResults.remove(key)
     }
     keyToLifecycleContainers[key]?.let {

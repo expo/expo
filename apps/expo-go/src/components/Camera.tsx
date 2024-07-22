@@ -1,1 +1,1 @@
-export { Camera } from 'expo-camera';
+export { Camera } from 'expo-camera/legacy';

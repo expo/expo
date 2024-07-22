@@ -7,7 +7,7 @@ script_dir="$(dirname "$0")"
 args=("$@")
 
 # If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
-extra_module_build_types=("plugin" "cli" "utils")
+extra_module_build_types=("plugin" "cli" "utils" "scripts")
 for i in "${extra_module_build_types[@]}"
 do
   if [ "$1" == "$i" ]; then

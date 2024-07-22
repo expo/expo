@@ -15,7 +15,7 @@ type Props = PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
   isMobileMenuVisible: boolean;
   hideTOC: boolean;
-  header: React.ReactNode;
+  header: ReactNode;
   sidebarScrollPosition: number;
   sidebar: ReactNode;
   sidebarActiveGroup: string;
@@ -52,7 +52,7 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
     } = this.props;
 
     return (
-      <div className="w-full h-[100vh] overflow-hidden mx-auto flex flex-col">
+      <div className="w-full h-dvh overflow-hidden mx-auto flex flex-col">
         <div className="max-lg-gutters:sticky">{header}</div>
         <div className="flex mx-auto justify-between items-center w-full h-[calc(100vh-60px)]">
           <div
@@ -76,14 +76,14 @@ export default class DocumentationNestedScrollLayout extends Component<Props> {
               isMobileMenuVisible && 'hidden'
             )}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this.scrollHandler}>
-              <div className="max-w-[1200px] mx-auto">{children}</div>
+              <div className="max-w-screen-xl mx-auto">{children}</div>
             </ScrollContainer>
           </div>
           {!hideTOC && (
             <div
               className={mergeClasses(
-                'flex flex-col shrink-0 max-w-[280px] h-full overflow-hidden border-l border-l-default',
-                'max-lg-gutters:hidden'
+                'flex flex-col shrink-0 max-w-[280px] h-[calc(100dvh-60px)] overflow-hidden border-l border-l-default',
+                'max-xl-gutters:hidden'
               )}>
               <ScrollContainer ref={this.sidebarRightRef}>
                 {cloneElement(sidebarRight, {

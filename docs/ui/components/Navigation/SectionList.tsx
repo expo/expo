@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import type { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';

@@ -27,8 +27,8 @@ class EnumTypeConverter(
   }
 
   init {
-    if (Enumerable::class.java.isAssignableFrom(enumClass.java)) {
-      logger.warn("Enum '$enumClass' should inherit from ${Enumerable::class}.")
+    if (!Enumerable::class.java.isAssignableFrom(enumClass.java)) {
+      logger.error("Enum '$enumClass' should inherit from ${Enumerable::class}.")
     }
   }
 
@@ -47,7 +47,7 @@ class EnumTypeConverter(
       )
     }
 
-    throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
+    throw IncompatibleArgTypeException(value.getType().toKType(), enumClass.createType())
   }
 
   override fun convertFromAny(value: Any): Enum<*> {

@@ -468,9 +468,10 @@ export async function test(t) {
         'deleteAssetsAsync',
         async () => {
           const assets = await getAssets(files);
+          const assetsIds = assets.map((asset) => asset?.id);
           const result = await MediaLibrary.deleteAssetsAsync(assets);
           const deletedAssets = await Promise.all(
-            assets.map(async (asset) => await MediaLibrary.getAssetInfoAsync(asset))
+            assetsIds.map(async (id) => await MediaLibrary.getAssetInfoAsync(id))
           );
           t.expect(result).toEqual(true);
           t.expect(assets.length).not.toEqual(0);

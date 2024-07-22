@@ -4,6 +4,7 @@ import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import {
   getApplicationIdAsync,
   getPackage,
+  kotlinSanitized,
   renameJniOnDiskForType,
   renamePackageOnDiskForType,
   setPackageInBuildGradle,
@@ -154,5 +155,13 @@ describe(renameJniOnDiskForType, () => {
     ).toMatch(
       /"Lcom\/bacon\/foobar\/newarchitecture\/modules\/MainApplicationTurboModuleManagerDelegate;";/
     );
+  });
+});
+
+describe(kotlinSanitized, () => {
+  it(`sanitizes kotlin package names`, () => {
+    expect(kotlinSanitized('com.example.xyz')).toBe('com.example.xyz');
+    expect(kotlinSanitized('is.pvin.appname')).toBe('`is`.pvin.appname');
+    expect(kotlinSanitized('com.fun.wow')).toBe('com.`fun`.wow');
   });
 });

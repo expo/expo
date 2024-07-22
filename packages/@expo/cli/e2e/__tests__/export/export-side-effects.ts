@@ -18,7 +18,7 @@ declare const process: {
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
-function clearEnv() {
+export function clearEnv() {
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env.EXPO_USE_PATH_ALIASES = '1';
@@ -26,7 +26,7 @@ function clearEnv() {
   delete process.env.EXPO_E2E_BASE_PATH;
 }
 
-function restoreEnv() {
+export function restoreEnv() {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
   delete process.env.EXPO_USE_PATH_ALIASES;

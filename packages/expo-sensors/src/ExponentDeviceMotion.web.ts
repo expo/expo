@@ -1,4 +1,4 @@
-import { DeviceEventEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import {
   assertSensorEventEnabledAsync,
@@ -27,6 +27,7 @@ export default {
     DeviceEventEmitter.emit('deviceMotionDidUpdate', {
       acceleration: motion.acceleration,
       accelerationIncludingGravity: motion.accelerationIncludingGravity,
+      timestamp: motion.timeStamp / 1000,
       interval: motion.interval,
       rotationRate: motion.rotationRate,
       orientation: window.orientation,

@@ -6,6 +6,7 @@ type Config = {
   templateId?: string;
   code?: string | null;
   files?: Record<string, string>;
+  codeLanguage?: string;
 };
 
 type File = {
@@ -15,7 +16,7 @@ type File = {
 };
 
 export function getSnackFiles(config: Config) {
-  const { templateId, code, files, baseURL } = config;
+  const { templateId, code, files, baseURL, codeLanguage } = config;
 
   const result: Record<string, File> = {};
   if (files) {
@@ -37,9 +38,17 @@ export function getSnackFiles(config: Config) {
   }
 
   if (templateId) {
-    result['App.js'] = { type: 'CODE', url: `${baseURL}/${templateId}.js` };
+    if (codeLanguage === 'jsx') {
+      result['App.js'] = { type: 'CODE', url: `${baseURL}/${templateId}.js` };
+    } else {
+      result['App.tsx'] = { type: 'CODE', url: `${baseURL}/${templateId}.tsx` };
+    }
   } else if (code) {
-    result['App.js'] = { type: 'CODE', contents: code };
+    if (codeLanguage === 'jsx') {
+      result['App.js'] = { type: 'CODE', contents: code };
+    } else {
+      result['App.tsx'] = { type: 'CODE', contents: code };
+    }
   }
 
   return result;

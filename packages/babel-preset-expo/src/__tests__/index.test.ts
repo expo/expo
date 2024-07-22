@@ -18,6 +18,56 @@ jest.mock('../common.ts', () => ({
   }),
 }));
 
+describe('flow + esm', () => {
+  const BABEL_OPTIONS = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    filename: '/unknown',
+    configFile: false,
+    compact: false,
+    comments: true,
+    retainLines: false,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      supportsStaticESM: true,
+    }),
+  };
+
+  it(`strips flow code with supportsStaticESM enabled`, () => {
+    // All of this code should remain intact.
+    const sourceCode = `
+  /**
+   * @flow
+   */
+  import foo from 'bar';
+  import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
+  export type HostComponent<T> = _HostComponentInternal<T>;
+  
+  const foox: CustomFlowType = 'foo';
+  
+  const other = {
+    get registerCallableModule(): CustomFlowType {
+      return require('./Libraries/Core/registerCallableModule').default;
+    }, 
+  };
+  
+  module.exports = (ReactFabric: CustomFlowType);
+  
+  module.exports = {
+    get xyz(): CustomFlowType {
+      return require('./other');
+    }, 
+  };
+  `;
+    const results = babel.transform(sourceCode, BABEL_OPTIONS)!;
+    expect(results.code).toMatch('import foo');
+    expect(results.code).not.toMatch('CustomFlowType');
+  });
+});
+
 it(`compiles samples with Metro targeting Hermes`, () => {
   const options = {
     babelrc: false,

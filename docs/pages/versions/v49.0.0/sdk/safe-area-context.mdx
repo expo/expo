@@ -5,16 +5,17 @@ sourceCodeUrl: 'https://github.com/th3rdwave/react-native-safe-area-context'
 packageName: 'react-native-safe-area-context'
 ---
 
-import { CornerDownRightIcon } from '@expo/styleguide-icons';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
+
+import { APIBox } from '~/components/plugins/APIBox';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { APIBox } from '~/components/plugins/APIBox';
-import { CALLOUT } from '~/ui/components/Text';
 import { BoxSectionHeader } from '~/components/plugins/api/APISectionUtils';
+import { CALLOUT } from '~/ui/components/Text';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/expo-go/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
-**`react-native-safe-area-context`** provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
+`react-native-safe-area-context` provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -59,8 +60,10 @@ function SomeComponent() {
 
 <APIBox header="edges">
 
-<CALLOUT theme="secondary">Optional • Type: [`Edge[]`](#edge) • Default: `["top", "right", "bottom", "left"]`</CALLOUT>
-<br/>
+<CALLOUT theme="secondary">
+  Optional • Type: [`Edge[]`](#edge) • Default: `["top", "right", "bottom", "left"]`
+</CALLOUT>
+<br />
 
 Sets the edges to apply the safe area insets to.
 
@@ -69,7 +72,7 @@ Sets the edges to apply the safe area insets to.
 <APIBox header="emulateUnlessSupported">
 
 <CALLOUT theme="secondary">Optional • Type: `boolean` • Default: `true`</CALLOUT>
-<br/>
+<br />
 
 On iOS 10+, emulate the safe area using the status bar height and home indicator sizes.
 

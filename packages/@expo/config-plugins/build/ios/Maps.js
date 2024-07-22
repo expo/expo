@@ -13,13 +13,6 @@ exports.removeGoogleMapsAppDelegateInit = removeGoogleMapsAppDelegateInit;
 exports.removeMapsCocoaPods = removeMapsCocoaPods;
 exports.setGoogleMapsApiKey = setGoogleMapsApiKey;
 exports.withMaps = void 0;
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
-    return data;
-  };
-  return data;
-}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -37,13 +30,6 @@ function _resolveFrom() {
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _withDangerousMod() {
-  const data = require("../plugins/withDangerousMod");
-  _withDangerousMod = function () {
     return data;
   };
   return data;
@@ -170,19 +156,17 @@ function isReactNativeMapsAutolinked(config) {
 const withMapsCocoaPods = (config, {
   useGoogleMaps
 }) => {
-  return (0, _withDangerousMod().withDangerousMod)(config, ['ios', async config => {
-    const filePath = _path().default.join(config.modRequest.platformProjectRoot, 'Podfile');
-    const contents = await _fs().default.promises.readFile(filePath, 'utf-8');
-    let results;
+  return (0, _iosPlugins().withPodfile)(config, async config => {
     // Only add the block if react-native-maps is installed in the project (best effort).
     // Generally prebuild runs after a yarn install so this should always work as expected.
     const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
     const isLinked = isReactNativeMapsAutolinked(config);
     debug('Is Expo Autolinked:', isLinked);
     debug('react-native-maps path:', googleMapsPath);
+    let results;
     if (isLinked && googleMapsPath && useGoogleMaps) {
       try {
-        results = addMapsCocoaPods(contents);
+        results = addMapsCocoaPods(config.modResults.contents);
       } catch (error) {
         if (error.code === 'ERR_NO_MATCH') {
           throw new Error(`Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`);
@@ -191,13 +175,13 @@ const withMapsCocoaPods = (config, {
       }
     } else {
       // If the package is no longer installed, then remove the block.
-      results = removeMapsCocoaPods(contents);
+      results = removeMapsCocoaPods(config.modResults.contents);
     }
     if (results.didMerge || results.didClear) {
-      await _fs().default.promises.writeFile(filePath, results.contents);
+      config.modResults.contents = results.contents;
     }
     return config;
-  }]);
+  });
 };
 const withGoogleMapsAppDelegate = (config, {
   apiKey

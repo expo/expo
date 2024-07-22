@@ -8,7 +8,91 @@
 
 ### 🐛 Bug fixes
 
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
+
+## 4.0.18 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.17 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.16 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.15 - 2024-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.14 — 2024-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.13 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.12 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.11 — 2024-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.10 — 2024-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.9 — 2024-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.8 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.7 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.6 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.5 — 2024-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.4 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-04-19
+
+### 🎉 New features
+
+- Added bridgeless mode support on Android. ([#28162](https://github.com/expo/expo/pull/28162) by [@kudo](https://github.com/kudo))
+
+## 4.0.0 — 2024-04-18
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 3.3.11 - 2024-03-20
 

@@ -11,6 +11,12 @@
 #import <React_RCTAppDelegate/RCTAppDelegate.h>
 #endif
 
+@interface RCTRootViewFactory ()
+
+- (NSURL *)bundleURL;
+
+@end
+
 @implementation EXReactRootViewFactory
 
 - (instancetype)initWithReactDelegate:(nullable EXReactDelegateWrapper *)reactDelegate
@@ -38,6 +44,11 @@
                       launchOptions:(NSDictionary *)launchOptions
 {
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+}
+
+- (NSURL *)bundleURL
+{
+  return [self.reactDelegate bundleURL] ?: [super bundleURL];
 }
 
 @end

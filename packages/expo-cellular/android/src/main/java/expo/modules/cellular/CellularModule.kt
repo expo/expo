@@ -93,6 +93,7 @@ class CellularModule : Module() {
     val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       telephonyManager.dataNetworkType
     } else {
+      @Suppress("DEPRECATION")
       telephonyManager.networkType
     }
     return when (networkType) {
@@ -116,6 +117,9 @@ class CellularModule : Module() {
       }
       TelephonyManager.NETWORK_TYPE_LTE -> {
         CellularGeneration.CG_4G.value
+      }
+      TelephonyManager.NETWORK_TYPE_NR -> {
+        CellularGeneration.CG_5G.value
       }
       else -> {
         CellularGeneration.UNKNOWN.value

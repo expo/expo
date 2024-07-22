@@ -9,7 +9,7 @@ import expo.modules.devmenu.react.DevMenuPackagerConnectionSettings
 
 /**
  * Class representing react's internal [DevInternalSettings] class, which we want to replace to change [packagerConnectionSettings] and others settings.
- * It is only use when [expo.modules.devmenu.DevMenuHost.getUseDeveloperSupport] returns true.
+ * It is only use when [expo.modules.devmenu.DevMenuReactNativeHost.getUseDeveloperSupport] returns true.
  */
 internal class DevMenuReactInternalSettings(
   serverIp: String,

@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
-sqliteVersion = '3.42.0'
+sqliteVersion = '3.45.3+1'
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoSQLite'
@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
 
   s.dependency 'sqlite3', "~> #{sqliteVersion}"
+  s.dependency 'sqlite3/bytecodevtab', "~> #{sqliteVersion}"
   unless podfile_properties['expo.sqlite.enableFTS'] === 'false'
     s.dependency 'sqlite3/fts', "~> #{sqliteVersion}"
     s.dependency 'sqlite3/fts5', "~> #{sqliteVersion}"

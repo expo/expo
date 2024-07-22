@@ -6,8 +6,11 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
-    Function("isPictureInPictureSupported") {
-      return AVPictureInPictureController.isPictureInPictureSupported()
+    Function("isPictureInPictureSupported") { () -> Bool in
+      if #available(iOS 13.4, tvOS 14.0, *) {
+        return AVPictureInPictureController.isPictureInPictureSupported()
+      }
+      return false
     }
 
     View(VideoView.self) {
@@ -22,6 +25,10 @@ public final class VideoModule: Module {
 
       Prop("nativeControls") { (view, nativeControls: Bool?) in
         view.playerViewController.showsPlaybackControls = nativeControls ?? true
+        #if os(tvOS)
+        view.playerViewController.isSkipForwardEnabled = nativeControls ?? true
+        view.playerViewController.isSkipBackwardEnabled = nativeControls ?? true
+        #endif
       }
 
       Prop("contentFit") { (view, contentFit: VideoContentFit?) in
@@ -40,11 +47,15 @@ public final class VideoModule: Module {
       }
 
       Prop("allowsFullscreen") { (view, allowsFullscreen: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.setValue(allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
+        #endif
       }
 
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
+        #if !os(tvOS)
         view.playerViewController.showsTimecodes = showsTimecodes ?? true
+        #endif
       }
 
       Prop("requiresLinearPlayback") { (view, requiresLinearPlayback: Bool?) in
@@ -56,7 +67,28 @@ public final class VideoModule: Module {
       }
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
+        #if !os(tvOS)
         view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+        #endif
+      }
+
+      Prop("allowsVideoFrameAnalysis") { (view, allowsVideoFrameAnalysis: Bool?) in
+        #if !os(tvOS)
+        if #available(iOS 16.0, macCatalyst 18.0, *) {
+          let newValue = allowsVideoFrameAnalysis ?? true
+
+          view.playerViewController.allowsVideoFrameAnalysis = newValue
+
+          // Setting the `allowsVideoFrameAnalysis` to false after the scanning was already perofrmed doesn't update the UI.
+          // We can force the desired behaviour by quickly toggling the property. Setting it to true clears existing requests,
+          // which updates the UI, hiding the button, then setting it to false before it detects any text keeps it in the desired state.
+          // Tested in iOS 17.5
+          if !newValue {
+            view.playerViewController.allowsVideoFrameAnalysis = true
+            view.playerViewController.allowsVideoFrameAnalysis = false
+          }
+        }
+        #endif
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -77,7 +109,7 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: VideoSource) -> VideoPlayer in
+      Constructor { (source: VideoSource?) -> VideoPlayer in
         let player = AVPlayer()
         let videoPlayer = VideoPlayer(player)
 
@@ -95,6 +127,13 @@ public final class VideoModule: Module {
       }
       .set { (player, muted: Bool) in
         player.isMuted = muted
+      }
+
+      Property("allowsExternalPlayback") { player -> Bool in
+        return player.pointer.allowsExternalPlayback
+      }
+      .set { (player, allowsExternalPlayback: Bool) in
+        player.pointer.allowsExternalPlayback = allowsExternalPlayback
       }
 
       Property("currentTime") { player -> Double in
@@ -125,11 +164,19 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("duration") { player -> Double in
+        return player.pointer.currentItem?.duration.seconds ?? 0
+      }
+
       Property("playbackRate") { player -> Float in
         return player.playbackRate
       }
       .set { (player, playbackRate: Float) in
         player.playbackRate = playbackRate
+      }
+
+      Property("isLive") { player -> Bool in
+        return player.pointer.currentItem?.duration.isIndefinite ?? false
       }
 
       Property("preservesPitch") { player -> Bool in
@@ -139,8 +186,15 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
-      Property("status") { player -> PlayerStatus in
-        return player.status
+      Property("showNowPlayingNotification") { player -> Bool in
+        return player.showNowPlayingNotification
+      }
+      .set {(player, showNowPlayingNotification: Bool) in
+        player.showNowPlayingNotification = showNowPlayingNotification
+      }
+
+      Property("status") { player in
+        return player.status.rawValue
       }
 
       Property("volume") { player -> Float in
@@ -158,11 +212,15 @@ public final class VideoModule: Module {
         player.pointer.pause()
       }
 
-      Function("replace") { (player, source: Either<String, VideoSource>) in
+      Function("replace") { (player, source: Either<String, VideoSource>?) in
+        guard let source else {
+          try player.replaceCurrentItem(with: nil)
+          return
+        }
         var videoSource: VideoSource?
 
         if source.is(String.self), let url: String = source.get() {
-          videoSource = VideoSource(uri: Field(wrappedValue: URL(string: url)))
+          videoSource = VideoSource(uri: URL(string: url))
         } else if source.is(VideoSource.self) {
           videoSource = source.get()
         }

@@ -48,6 +48,9 @@ export const TEMPLATES: {
   destination: (props: DestinationResolutionProps) => string;
   /** List of dependencies to install in the project. These are used inside of the template file. */
   dependencies: string[];
+
+  /** Custom step for configuring the file. Return true to exit early. */
+  configureAsync?: (projectRoot: string) => Promise<boolean>;
 }[] = [
   {
     id: 'babel.config.js',
@@ -59,24 +62,37 @@ export const TEMPLATES: {
     ],
   },
   {
-    id: 'webpack.config.js',
-    file: (projectRoot) =>
-      importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
-    destination: () => 'webpack.config.js',
-    dependencies: ['@expo/webpack-config'],
-  },
-  {
     id: 'metro.config.js',
     dependencies: ['@expo/metro-config'],
     destination: () => 'metro.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'metro.config.js'),
   },
   {
-    id: 'serve.json',
-    file: (projectRoot) => importFromExpoWebpackConfig(projectRoot, 'web-default', 'serve.json'),
-    // web/serve.json
-    destination: ({ webStaticPath }) => webStaticPath + '/serve.json',
+    // `tsconfig.json` is special-cased and doesn't follow the template.
+    id: 'tsconfig.json',
     dependencies: [],
+    destination: () => 'tsconfig.json',
+    file: () => '',
+    configureAsync: async (projectRoot) => {
+      const { typescript } = require('./typescript') as typeof import('./typescript');
+      await typescript(projectRoot);
+      return true;
+    },
+  },
+  {
+    id: '.eslintrc.js',
+    dependencies: [],
+    destination: () => '.eslintrc.js',
+    file: (projectRoot) => importFromVendor(projectRoot, '.eslintrc.js'),
+    configureAsync: async (projectRoot) => {
+      const { ESLintProjectPrerequisite } =
+        require('../lint/ESlintPrerequisite') as typeof import('../lint/ESlintPrerequisite.js');
+      const prerequisite = new ESLintProjectPrerequisite(projectRoot);
+      if (!(await prerequisite.assertAsync())) {
+        await prerequisite.bootstrapAsync();
+      }
+      return false;
+    },
   },
   {
     id: 'index.html',
@@ -86,11 +102,11 @@ export const TEMPLATES: {
     dependencies: [],
   },
   {
-    // `tsconfig.json` is special cased and don't not follow the template
-    id: 'tsconfig.json',
-    dependencies: [],
-    destination: () => 'tsconfig.json',
-    file: () => '',
+    id: 'webpack.config.js',
+    file: (projectRoot) =>
+      importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
+    destination: () => 'webpack.config.js',
+    dependencies: ['@expo/webpack-config'],
   },
 ];
 

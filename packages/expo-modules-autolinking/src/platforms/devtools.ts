@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ModuleDescriptorDevTools, PackageRevision } from '../types';
+import type { ExtraDependencies, ModuleDescriptorDevTools, PackageRevision } from '../types';
 
 export async function resolveModuleAsync(
   packageName: string,
@@ -16,4 +16,10 @@ export async function resolveModuleAsync(
     packageRoot: revision.path,
     webpageRoot: path.join(revision.path, devtoolsConfig.webpageRoot),
   };
+}
+
+export async function resolveExtraBuildDependenciesAsync(
+  _projectNativeRoot: string
+): Promise<ExtraDependencies | null> {
+  return null;
 }

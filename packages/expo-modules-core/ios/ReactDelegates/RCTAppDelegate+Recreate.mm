@@ -21,7 +21,9 @@
   RCTRootViewFactory *rootViewFactory = self.rootViewFactory;
   RCTRootViewFactoryConfiguration *configuration = [rootViewFactory valueForKey:@"_configuration"];
   if (bundleURL != nil) {
-    configuration.bundleURL = bundleURL;
+    configuration.bundleURLBlock = ^{
+      return bundleURL;
+    };
   }
   if (moduleName != nil) {
     self.moduleName = moduleName;

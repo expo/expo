@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import React from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
@@ -15,7 +15,16 @@ const EventRow: React.FunctionComponent<{
   updateEvent: (event: Calendar.Event) => void;
   deleteEvent: (event: Calendar.Event) => void;
   openEventInCalendar: (event: Calendar.Event) => void;
-}> = ({ event, getEvent, getAttendees, updateEvent, deleteEvent, openEventInCalendar }) => (
+  editEventInCalendar: (event: Calendar.Event) => void;
+}> = ({
+  event,
+  getEvent,
+  getAttendees,
+  updateEvent,
+  deleteEvent,
+  openEventInCalendar,
+  editEventInCalendar,
+}) => (
   <View style={styles.eventRow}>
     <HeadingText>{event.title}</HeadingText>
     <MonoText>{JSON.stringify(event, null, 2)}</MonoText>
@@ -23,9 +32,8 @@ const EventRow: React.FunctionComponent<{
     <ListButton onPress={() => getAttendees(event)} title="Get Attendees for Event" />
     <ListButton onPress={() => updateEvent(event)} title="Update Event" />
     <ListButton onPress={() => deleteEvent(event)} title="Delete Event" />
-    {Platform.OS === 'android' && (
-      <ListButton onPress={() => openEventInCalendar(event)} title="Open in Calendar App" />
-    )}
+    <ListButton onPress={() => openEventInCalendar(event)} title="Open in Calendar App" />
+    <ListButton onPress={() => editEventInCalendar(event)} title="Edit in Calendar App" />
   </View>
 );
 
@@ -38,6 +46,26 @@ type Links = {
 };
 
 type Props = StackScreenProps<Links, 'Events'>;
+
+function createEvent(recurring: boolean = false) {
+  const timeInOneHour = new Date();
+  timeInOneHour.setHours(timeInOneHour.getHours() + 1);
+  const newEvent: Parameters<typeof Calendar.createEventAsync>[1] = {
+    title: 'Celebrate Expo',
+    location: '420 Florence St',
+    startDate: new Date(),
+    endDate: timeInOneHour,
+    notes: 'This is a cool note',
+    timeZone: 'America/Los_Angeles',
+  };
+  if (recurring) {
+    newEvent.recurrenceRule = {
+      occurrence: 5,
+      frequency: Calendar.Frequency.DAILY,
+    };
+  }
+  return newEvent;
+}
 
 export default class EventsScreen extends React.Component<Props, State> {
   static navigationOptions = {
@@ -73,34 +101,9 @@ export default class EventsScreen extends React.Component<Props, State> {
       Alert.alert('This calendar does not allow modifications');
       return;
     }
-    const timeInOneHour = new Date();
-    timeInOneHour.setHours(timeInOneHour.getHours() + 1);
-    const newEvent: {
-      title: string;
-      location: string;
-      startDate: Date;
-      endDate: Date;
-      notes: string;
-      timeZone: string;
-      recurrenceRule?: {
-        occurrence: number;
-        frequency: string;
-      };
-    } = {
-      title: 'Celebrate Expo',
-      location: '420 Florence St',
-      startDate: new Date(),
-      endDate: timeInOneHour,
-      notes: "It's cool",
-      timeZone: 'America/Los_Angeles',
-    };
-    if (recurring) {
-      newEvent.recurrenceRule = {
-        occurrence: 5,
-        frequency: 'daily',
-      };
-    }
+
     try {
+      const newEvent = createEvent(recurring);
       await Calendar.createEventAsync(calendar.id, newEvent);
       Alert.alert('Event saved successfully');
       this._findEvents(calendar.id);
@@ -168,19 +171,56 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
-  _openEventInCalendar = (event: Calendar.Event) => {
-    Calendar.openEventInCalendar(event.id!);
+  _openEventInCalendar = async (event: Calendar.Event) => {
+    const result = await Calendar.openEventInCalendarAsync(
+      {
+        id: event.id,
+      },
+      {
+        startNewActivityTask: false,
+        allowsEditing: true,
+        allowsCalendarPreview: true,
+      }
+    );
+    setTimeout(() => {
+      Alert.alert('openEventInCalendarAsync result', JSON.stringify(result), undefined, {
+        cancelable: true,
+      });
+    }, 200);
+  };
+
+  _editEventInCalendar = async (event: Calendar.Event) => {
+    const result = await Calendar.editEventInCalendarAsync({ id: event.id });
+    setTimeout(() => {
+      Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {
+        cancelable: true,
+      });
+    }, 200);
   };
 
   _renderActionButtons = () => {
     return (
-      <View>
+      <View style={{ gap: 10 }}>
         <Button
-          onPress={() => this._addEvent(false)}
-          style={{ marginBottom: 10 }}
-          title="Add New Event"
+          title="get permissions"
+          onPress={() => {
+            Calendar.requestCalendarPermissionsAsync();
+          }}
         />
+        <Button onPress={() => this._addEvent(false)} title="Add New Event" />
         <Button onPress={() => this._addEvent(true)} title="Add New Recurring Event" />
+        <Button
+          onPress={async () => {
+            const newEvent = createEvent(true);
+            const result = await Calendar.createEventInCalendarAsync(newEvent);
+            setTimeout(() => {
+              Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {
+                cancelable: true,
+              });
+            }, 200);
+          }}
+          title="Create Event using the OS dialog"
+        />
       </View>
     );
   };
@@ -197,6 +237,7 @@ export default class EventsScreen extends React.Component<Props, State> {
             updateEvent={this._updateEvent}
             deleteEvent={this._deleteEvent}
             openEventInCalendar={this._openEventInCalendar}
+            editEventInCalendar={this._editEventInCalendar}
           />
         ))}
       </View>

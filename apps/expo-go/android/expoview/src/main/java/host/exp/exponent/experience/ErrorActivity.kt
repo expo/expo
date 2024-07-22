@@ -131,6 +131,7 @@ class ErrorActivity() : FragmentActivity() {
     const val DEVELOPER_ERROR_MESSAGE_KEY = "developerErrorMessage"
     const val DEBUG_MODE_KEY = "isDebugModeEnabled"
     const val ERROR_HEADER_KEY = "errorHeader"
+    const val CAN_RETRY_KEY = "canRetry"
 
     @JvmStatic var visibleActivity: ErrorActivity? = null
       private set

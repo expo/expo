@@ -1,6 +1,7 @@
 import {
   AndroidConfig,
   ConfigPlugin,
+  IOSConfig,
   createRunOncePlugin,
   withInfoPlist,
 } from 'expo/config-plugins';
@@ -22,9 +23,9 @@ const withBackgroundLocation: ConfigPlugin = (config) => {
 
 const withLocation: ConfigPlugin<
   {
-    locationAlwaysAndWhenInUsePermission?: string;
-    locationAlwaysPermission?: string;
-    locationWhenInUsePermission?: string;
+    locationAlwaysAndWhenInUsePermission?: string | false;
+    locationAlwaysPermission?: string | false;
+    locationWhenInUsePermission?: string | false;
     isIosBackgroundLocationEnabled?: boolean;
     isAndroidBackgroundLocationEnabled?: boolean;
     isAndroidForegroundServiceEnabled?: boolean;
@@ -44,21 +45,14 @@ const withLocation: ConfigPlugin<
     config = withBackgroundLocation(config);
   }
 
-  config = withInfoPlist(config, (config) => {
-    config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription =
-      locationAlwaysAndWhenInUsePermission ||
-      config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription ||
-      LOCATION_USAGE;
-    config.modResults.NSLocationAlwaysUsageDescription =
-      locationAlwaysPermission ||
-      config.modResults.NSLocationAlwaysUsageDescription ||
-      LOCATION_USAGE;
-    config.modResults.NSLocationWhenInUseUsageDescription =
-      locationWhenInUsePermission ||
-      config.modResults.NSLocationWhenInUseUsageDescription ||
-      LOCATION_USAGE;
-
-    return config;
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSLocationAlwaysAndWhenInUseUsageDescription: LOCATION_USAGE,
+    NSLocationAlwaysUsageDescription: LOCATION_USAGE,
+    NSLocationWhenInUseUsageDescription: LOCATION_USAGE,
+  })(config, {
+    NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission,
+    NSLocationAlwaysUsageDescription: locationAlwaysPermission,
+    NSLocationWhenInUseUsageDescription: locationWhenInUsePermission,
   });
 
   // If the user has not specified a value for isAndroidForegroundServiceEnabled,

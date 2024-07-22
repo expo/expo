@@ -5,6 +5,7 @@ import { createRequire } from 'module';
 import path from 'path';
 
 import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
+import { getIsolatedModulesPath } from './utils';
 import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
 
@@ -43,20 +44,8 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
         fallbackToDirName: isNativeModulesDir,
       });
 
-      // Check if the project is using isolated modules, by checking
-      // if the parent dir of `packagePath` is a `node_modules` folder.
-      // Isolated modules installs dependencies in small groups such as:
-      //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
-      //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
-      //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
-      // When isolated modules are detected, expand the `searchPaths`
-      // to include possible nested dependencies.
-      const maybeIsolatedModulesPath = path.join(
-        packagePath,
-        name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
-      );
-      const isIsolatedModulesPath = path.basename(maybeIsolatedModulesPath) === 'node_modules';
-      if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+      const maybeIsolatedModulesPath = getIsolatedModulesPath(packagePath, name);
+      if (maybeIsolatedModulesPath) {
         searchPaths.add(maybeIsolatedModulesPath);
       }
 

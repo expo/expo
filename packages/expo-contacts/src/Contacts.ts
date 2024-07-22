@@ -1,4 +1,10 @@
-import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  UnavailabilityError,
+  uuid,
+} from 'expo-modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -278,11 +284,11 @@ export type Contact = {
    */
   maidenName?: string;
   /**
-   * Dr. Mr. Mrs. ect…
+   * Dr., Mr., Mrs., and so on.
    */
   namePrefix?: string;
   /**
-   * Jr. Sr. ect…
+   * Jr., Sr., an so on.
    */
   nameSuffix?: string;
   /**
@@ -550,7 +556,7 @@ export type Container = {
   type: ContainerType;
 };
 
-export { PermissionStatus, PermissionResponse };
+export { PermissionStatus, PermissionResponse, PermissionExpiration };
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
@@ -945,7 +951,7 @@ export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
 
 /**
  * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
- * obtain this permission by calling the [Contacts.requestPermissionsAsync()](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
  * required to use this method.
  * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
  */

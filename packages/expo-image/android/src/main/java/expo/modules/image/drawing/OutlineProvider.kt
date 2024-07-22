@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Outline
 import android.graphics.Path
 import android.graphics.RectF
+import android.os.Build
 import android.view.View
 import android.view.ViewOutlineProvider
 import com.facebook.react.modules.i18nmanager.I18nUtil
@@ -197,7 +198,12 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
       // shadow is. For the particular case, we fallback to canvas clipping in the view
       // which is supposed to call `clipCanvasIfNeeded` in its `draw` method.
       updateConvexPathIfNeeded()
-      outline.setConvexPath(mConvexPath)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        outline.setPath(mConvexPath)
+      } else {
+        @Suppress("DEPRECATION")
+        outline.setConvexPath(mConvexPath)
+      }
     }
   }
 

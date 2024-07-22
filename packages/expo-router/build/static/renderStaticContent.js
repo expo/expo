@@ -51,7 +51,11 @@ const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, { preserveApiRoutes: true, ...options });
+    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+        preserveApiRoutes: true,
+        platform: 'web',
+        ...options,
+    });
     if (!routeTree) {
         throw new Error('No routes found');
     }
@@ -68,7 +72,10 @@ exports.getManifest = getManifest;
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 async function getBuildTimeServerManifestAsync(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, options);
+    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+        platform: 'web',
+        ...options,
+    });
     if (!routeTree) {
         throw new Error('No routes found');
     }
@@ -107,13 +114,9 @@ async function getStaticContent(location) {
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
-    const stream = await server_node_1.default.renderToStaticNodeStream(<head_1.Head.Provider context={headContext}>
+    const html = await server_node_1.default.renderToString(<head_1.Head.Provider context={headContext}>
       <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
     </head_1.Head.Provider>);
-    let html = '';
-    for await (const chunk of stream) {
-        html += chunk;
-    }
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);

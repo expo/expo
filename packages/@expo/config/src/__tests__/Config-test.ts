@@ -96,7 +96,7 @@ describe('getConfig public config', () => {
   it('removes only private data from the config', () => {
     const { exp } = getConfig('/private-data', { isPublicConfig: true });
 
-    expect(exp.hooks).toBeUndefined();
+    expect((exp as any).hooks).toBeUndefined();
 
     expect(exp.ios).toBeDefined();
     expect(exp.ios!.buildNumber).toEqual(appJsonWithPrivateData.ios.buildNumber);

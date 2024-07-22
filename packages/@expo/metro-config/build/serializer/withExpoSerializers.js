@@ -16,6 +16,7 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
 const env_1 = require("../env");
 function withExpoSerializers(config, options = {}) {
@@ -24,6 +25,8 @@ function withExpoSerializers(config, options = {}) {
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
+    // Then finish transforming the modules from AST to JS.
+    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
 exports.withExpoSerializers = withExpoSerializers;
@@ -84,6 +87,29 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                 debugId,
             })).code;
         }
+        const getEnsuredMaps = () => {
+            bundleMap ??= (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+                // TODO: Surface this somehow.
+                excludeSource: false,
+                // excludeSource: options.serializerOptions?.excludeSource,
+                processModuleFilter: options.processModuleFilter,
+                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+            });
+            return bundleMap;
+        };
+        if (!bundleMap && options.sourceUrl) {
+            const url = (0, jsc_safe_url_1.isJscSafeUrl)(options.sourceUrl)
+                ? (0, jsc_safe_url_1.toNormalUrl)(options.sourceUrl)
+                : options.sourceUrl;
+            const parsed = new URL(url, 'http://expo.dev');
+            // Is dev server request for source maps...
+            if (parsed.pathname.endsWith('.map')) {
+                return {
+                    code: bundleCode,
+                    map: getEnsuredMaps(),
+                };
+            }
+        }
         if (isPossiblyDev) {
             if (bundleMap == null) {
                 return bundleCode;
@@ -94,15 +120,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             };
         }
         // Exports....
-        if (!bundleMap) {
-            bundleMap = (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
-                // TODO: Surface this somehow.
-                excludeSource: false,
-                // excludeSource: options.serializerOptions?.excludeSource,
-                processModuleFilter: options.processModuleFilter,
-                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-            });
-        }
+        bundleMap ??= getEnsuredMaps();
         if (enableDebugId) {
             const mutateSourceMapWithDebugId = (sourceMap) => {
                 // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
@@ -137,6 +155,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             if (customSerializerOptions) {
                 return {
                     outputMode: customSerializerOptions.output,
+                    splitChunks: customSerializerOptions.splitChunks,
                     includeSourceMaps: customSerializerOptions.includeSourceMaps,
                 };
             }
@@ -147,6 +166,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 const url = new URL(sourceUrl, 'https://expo.dev');
                 return {
                     outputMode: url.searchParams.get('serializer.output'),
+                    splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
                     includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
                 };
             }
@@ -162,6 +182,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
         };
         const assets = await (0, serializeChunks_1.graphToSerialAssetsAsync)(config, {
             includeSourceMaps: !!serializerOptions.includeSourceMaps,
+            splitChunks: !!serializerOptions.splitChunks,
             ...configOptions,
         }, ...props);
         if (supportsNonSerialReturn) {
@@ -173,10 +194,10 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
 }
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
-    return (...props) => {
+    return async (...props) => {
         for (const processor of processors) {
             if (processor) {
-                props = processor(...props);
+                props = await processor(...props);
             }
         }
         return finalSerializer(...props);

@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.launcher.Launcher
@@ -33,6 +35,7 @@ class DisabledUpdatesController(
   private val fatalException: Exception?
 ) : IUpdatesController, UpdatesStateChangeEventSender {
   override var appContext: WeakReference<AppContext>? = null
+  override var eventEmitter: EventEmitter? = null
 
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
@@ -68,11 +71,15 @@ class DisabledUpdatesController(
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactContext: ReactContext) {
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
     weakActivity = WeakReference(reactContext.currentActivity)
   }
 
   override fun onReactInstanceException(exception: java.lang.Exception) {}
+
+  override val isActiveController = false
 
   @Synchronized
   override fun start() {
@@ -169,6 +176,6 @@ class DisabledUpdatesController(
   }
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToAppContext(shouldEmitJsEvents, appContext, logger, eventName, eventType, params)
+    UpdatesUtils.sendEvent(eventEmitter, shouldEmitJsEvents, logger, eventName, eventType, params)
   }
 }

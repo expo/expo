@@ -20,6 +20,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   public let updatesDirectory: URL? // internal for E2E test
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
+  public let isActiveController = true
   public private(set) var isStarted = false
 
   public var shouldEmitJsEvents = false {
