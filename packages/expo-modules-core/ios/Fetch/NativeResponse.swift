@@ -33,7 +33,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   }
 
   func startStreaming() {
-    if isInvalidState([.responseReceived]) {
+    if isInvalidState(.responseReceived) {
       return
     }
     state = .bodyStreamingStarted
@@ -42,7 +42,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   }
 
   func cancelStreaming() {
-    if isInvalidState([.bodyStreamingStarted]) {
+    if isInvalidState(.bodyStreamingStarted) {
       return
     }
     state = .bodyStreamingCanceled
@@ -78,7 +78,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   /**
    Check valid state machine
    */
-  private func isInvalidState(_ validStates: [ResponseState]) -> Bool {
+  private func isInvalidState(_ validStates: ResponseState...) -> Bool {
     if validStates.contains(state) {
       return false
     }
@@ -113,14 +113,14 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   // MARK: - ExpoURLSessionTaskDelegate implementations
 
   func urlSessionDidStart(_ session: ExpoURLSessionTask) {
-    if isInvalidState([.intialized]) {
+    if isInvalidState(.intialized) {
       return
     }
     state = .started
   }
 
   func urlSession(_ session: ExpoURLSessionTask, didReceive response: URLResponse) {
-    if isInvalidState([.started]) {
+    if isInvalidState(.started) {
       return
     }
     responseInit = Self.createResponseInit(response: response)
@@ -128,7 +128,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   }
 
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data) {
-    if isInvalidState([.responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled]) {
+    if isInvalidState(.responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled) {
       return
     }
 
@@ -145,7 +145,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   }
 
   func urlSession(_ session: ExpoURLSessionTask, didCompleteWithError error: (any Error)?) {
-    if isInvalidState([.started, .responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled]) {
+    if isInvalidState(.started, .responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled) {
       return
     }
 
