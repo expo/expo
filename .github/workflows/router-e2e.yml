@@ -69,6 +69,7 @@ jobs:
           YARN_IGNORE_SCRIPTS=true yarn add expo-linking@sdk-50
           # Setup the maestro env
           MAESTRO_APP_URL="exp://localhost:${E2E_ROUTER_EXPO_PORT}/--"
+          echo $MAESTRO_APP_URL
           # Run the Expo Dev Server in the background
           maestro test launch-tests.yml --no-ansi --format=junit --debug-output .logs
       - name: Log output
