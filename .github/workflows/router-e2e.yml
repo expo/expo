@@ -9,6 +9,11 @@ on:
 jobs:
   router-maestro:
     runs-on: macos-14
+    env:
+      E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
+      E2E_ROUTER_EXPO_PORT: 8081
+      E2E_ROUTER_EXPO_SERVER: 'http://localhost:${E2E_ROUTER_EXPO_PORT}'
+      E2E_ROUTER_APP_URL: 'exp://localhost:${E2E_ROUTER_EXPO_PORT}'
     steps:
       - uses: actions/checkout@v4
 
@@ -44,17 +49,13 @@ jobs:
 
       - name: Start Expo CLI
         working-directory: apps/router-e2e
-        env:
-          E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
         run: |
-          E2E_ROUTER_EXPO_PORT=8081
-          E2E_ROUTER_EXPO_SERVER="http://localhost:${E2E_ROUTER_EXPO_PORT}"
-          E2E_ROUTER_APP_URL="exp://localhost:${E2E_ROUTER_EXPO_PORT}"
-
           # Run the Expo Dev Server in the background
           node ../../packages/@expo/cli/build/bin/cli start --ios --port $E2E_ROUTER_EXPO_PORT &
           sleep 10
 
+      - name: Preload Expo bundle
+        run: |
           # Get the bundle URL
           BUNDLE_INFO=$(curl --silent --show-error --fail -H "Content-Type: multipart/mixed" -H "expo-platform: ios" $E2E_ROUTER_EXPO_SERVER)
           BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
@@ -62,13 +63,11 @@ jobs:
           # Start the build early by starting the build in the background
           curl --silent --output /dev/null --show-error --fail $BUNDLE_URL &
 
-          # Save the app url
-          echo "MAESTRO_APP_URL=${E2E_ROUTER_APP_URL}" >> $GITHUB_ENV
-
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+          MAESTRO_APP_URL: $E2E_ROUTER_APP_URL
         run: |
           # The current Expo Go does not support the expo-linking on main
           npm i expo-linking@6.3.1
