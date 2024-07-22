@@ -56,7 +56,6 @@ const IGNORED_PACKAGES = [
   'expo-system-ui', // package: react-native-web
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
   'jest-expo', // package: expo, fbemitter, react-native
-  'patch-project', // package: @expo/env, getenv
 ];
 
 /**
