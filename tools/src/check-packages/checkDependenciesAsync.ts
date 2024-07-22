@@ -31,7 +31,6 @@ const IGNORED_PACKAGES = [
   '@expo/image-utils', // package: sharp, sharp-cli
   '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
   '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
-  '@expo/prebuild-config', // package: jimp-compact, xcode
   'babel-preset-expo', // package: @babel/*, debug, expo, react-native-reanimated, resolve-from
   'expo-apple-authentication', // package: react, react-native
   'expo-asset', // package: @react-native/assets-registry, expo-updates (types only)
