@@ -68,7 +68,7 @@ jobs:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
         run: |
           # The current Expo Go does not support the expo-linking on main
-          npm i expo-linking@sdk-50
+          YARN_IGNORE_SCRIPTS=true yarn add expo-linking@sdk-50
           # Setup the maestro env
           MAESTRO_APP_URL="exp://localhost:${E2E_ROUTER_EXPO_PORT}"
           # Run the Expo Dev Server in the background
