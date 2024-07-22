@@ -1,5 +1,8 @@
 {
   "platforms": ["apple", "android"],
+  "android": {
+    "modules": ["expo.modules.networkfetch.ExpoNetworkFetchModule"]
+  },
   "apple": {
     "modules": ["ExpoFetchModule"],
     "podspecPath": "Expo.podspec"
