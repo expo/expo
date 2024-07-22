@@ -21,9 +21,9 @@ export const addEventListener = <TData extends JSONValue>(
   };
 
   // TODO: Add component ID to the event name to prevent conflicts with other components.
-  window.addEventListener('iframe-event', listener);
+  window.addEventListener('$dom-event', listener);
   return () => {
-    window.removeEventListener('iframe-event', listener);
+    window.removeEventListener('$dom-event', listener);
   };
 };
 

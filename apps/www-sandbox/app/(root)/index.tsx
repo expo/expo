@@ -1,5 +1,5 @@
 import { Button, ScrollView } from 'react-native';
-import Dashboard from '@/components/www/dashboard';
+import Dashboard from '../../components/www/dashboard';
 
 import { useState } from 'react';
 

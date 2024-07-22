@@ -1,5 +1,5 @@
 import { Button } from 'react-native';
-import MarshalProps from '@/components/www/marshal-props';
+import MarshalProps from '../../components/www/marshal-props';
 
 import { useState } from 'react';
 

@@ -21,7 +21,7 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
       console.log('emit', detail);
       const msg = `;(function() {
   try { 
-  window.dispatchEvent(new CustomEvent("iframe-event",${JSON.stringify({ detail })})); 
+  window.dispatchEvent(new CustomEvent("$dom-event",${JSON.stringify({ detail })})); 
   } catch (e) {}
   })();
   true;`;

@@ -34,8 +34,7 @@
       [
         "expo-router",
         {
-          "origin": "https://naviloop.netlify.app/",
-          "asyncRoutes": true
+          "origin": "https://naviloop.netlify.app/"
         }
       ]
     ],

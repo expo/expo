@@ -757,6 +757,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             platform: 'web',
             isExporting: false,
 
+            engine: 'hermes',
             // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
             lazy: true,
           }),
@@ -1418,7 +1419,7 @@ export function getWebviewProxyHtml(src?: string, { title }: { title?: string } 
       </noscript>
       <!-- The root element for your Expo app. -->
       <div id="root"></div>
-      ${src ? `<script src="${src}"></script>` : ''}
+      ${src ? `<script crossorigin src="${src}"></script>` : ''}
       </body>
     </html>`;
 }

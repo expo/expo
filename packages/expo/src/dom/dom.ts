@@ -22,7 +22,7 @@ export const useBridge = <TData extends JSONValue>(
   const emit = useCallback(
     (detail: BridgeMessage<TData>) => {
       const msg = `(function() {
-  try { window.dispatchEvent(new CustomEvent("iframe-event",${JSON.stringify({ detail })})); } catch {}
+  try { window.dispatchEvent(new CustomEvent("$dom-event",${JSON.stringify({ detail })})); } catch {}
   return true;
   })()`;
       ref.current?.injectJavaScript(msg);
