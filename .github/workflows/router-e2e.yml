@@ -38,8 +38,6 @@ jobs:
         run: |
           export MAESTRO_VERSION=1.36.0
           curl -Ls "https://get.maestro.mobile.dev" | bash
-          arch -arm64 brew tap facebook/fb
-          arch -arm64 brew install facebook/fb/idb-companion
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Build Expo CLI
