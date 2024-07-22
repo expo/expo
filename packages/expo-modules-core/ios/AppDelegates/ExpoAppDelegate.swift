@@ -70,6 +70,10 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     subscribers.forEach { $0.applicationWillTerminate?(application) }
   }
 
+  @objc public func customizeRootView(_ rootView: UIView) {
+    subscribers.forEach { $0.customizeRootView?(rootView) }
+  }
+
   // TODO: - Responding to Environment Changes
 
   // TODO: - Managing App State Restoration
