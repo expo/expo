@@ -3,8 +3,10 @@ import { Platform } from 'react-native';
 
 export const name = 'Fetch';
 
-export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, ...t }) {
+export function test({ describe, expect, it, ...t }) {
   describe('Response types', () => {
+    setupTestTimeout(t);
+
     it('should support redirect and contain basic properties', async () => {
       const resp = await fetch('https://httpbin.org/redirect-to?url=https://httpbin.org/get');
       expect(resp.status).toBe(200);
@@ -32,6 +34,8 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
   });
 
   describe('Request body', () => {
+    setupTestTimeout(t);
+
     it('should post with json', async () => {
       const resp = await fetch('https://httpbin.org/post', {
         headers: {
@@ -90,6 +94,8 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
   });
 
   describe('Headers', () => {
+    setupTestTimeout(t);
+
     it('should process request and response headers', async () => {
       const resp = await fetch('https://httpbin.org/get', {
         headers: {
@@ -103,6 +109,8 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
   });
 
   describe('Cookies', () => {
+    setupTestTimeout(t);
+
     it('should include cookies when credentials are set to include', async () => {
       await fetch(
         'https://httpbin.org/response-headers?Set-Cookie=foo=bar;Path=/;SameSite=None;Secure',
@@ -133,6 +141,8 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
   });
 
   describe('Error handling', () => {
+    setupTestTimeout(t);
+
     it('should process 404', async () => {
       const resp = await fetch('https://httpbin.org/status/404');
       expect(resp.status).toBe(404);
@@ -157,6 +167,8 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
   });
 
   describe('Streaming', () => {
+    setupTestTimeout(t);
+
     it('should stream response', async () => {
       const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2');
       const reader = resp.body.getReader();
@@ -175,6 +187,8 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
   });
 
   describe('Concurrent requests', () => {
+    setupTestTimeout(t);
+
     it('should process multiple requests concurrently', async () => {
       const resps = await Promise.all([
         fetch('https://httpbin.org/get'),
@@ -192,5 +206,19 @@ export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, .
       expect(jsons[3].url).toBe('https://httpbin.org/put');
       expect(jsons[4].url).toBe('https://httpbin.org/delete');
     });
+  });
+}
+
+function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
+  let originalTimeout;
+
+  t.beforeAll(() => {
+    // Increase the timeout in general because httpbin.org can be slow.
+    originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    t.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
+  });
+
+  t.afterAll(() => {
+    t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 }
