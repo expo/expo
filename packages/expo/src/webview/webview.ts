@@ -49,7 +49,7 @@ export function _getActionsObject(): Record<string, (...args: any[]) => void | P
   throw new Error('internal method for webviews');
 }
 
-export { default as WebView } from './webview-wrapper';
+export { default as WebView, StyleNoSelect } from './webview-wrapper';
 
 export * from './www-types';
 

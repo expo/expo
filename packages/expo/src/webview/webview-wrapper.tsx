@@ -157,4 +157,29 @@ function serializeError(error: any) {
   return error;
 }
 
+export function StyleNoSelect() {
+  if (typeof window.ReactNativeWebView === 'undefined') return null;
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: `
+     body {
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+      }
+      body * {
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+      }
+    
+    `,
+      }}
+    />
+  );
+}
+
 export default RawWebView;

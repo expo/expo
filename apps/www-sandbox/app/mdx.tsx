@@ -8,7 +8,7 @@ import { getDOMComponents, MDXComponents } from '@bacons/mdx';
 export default function Route() {
   const { img: Img, ...components } = getDOMComponents();
   return (
-    <div style={{ display: 'block', overflow: 'scroll' }} className="container">
+    <div style={{ display: 'block', overflow: 'scroll' }} className="container pt-8">
       <MDXComponents
         components={{
           ...components,

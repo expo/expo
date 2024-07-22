@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { BridgeMessage, JSONValue } from './www-types';
 
+export { StyleNoSelect } from './webview-wrapper';
+
 export const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
   if (!isWebview()) {
     return;
