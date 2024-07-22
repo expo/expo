@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { directoryExistsAsync } from './dir';
-import { resolveFromExpoCli } from './resolveFrom';
+import { resolveFromExpoCli } from './resolveFromExpoCli';
 
 /**
  * Generates native projects for the given platforms.
