@@ -65,7 +65,7 @@ jobs:
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
         run: |
           # The current Expo Go does not support the expo-linking on main
           YARN_IGNORE_SCRIPTS=true yarn add expo-linking@sdk-50
