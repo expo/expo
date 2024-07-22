@@ -93,11 +93,10 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       ...new Set(invalidImports.map(({ importRef }) => importRef.packageName).sort()),
     ];
 
-    Logger.warn(
-      importPackageNames.length === 1
-        ? `📦 Invalid dependency${importAreTypesOnly ? ' (types only)' : ''}: ${importPackageNames.join(', ')}`
-        : `📦 Invalid dependencies${importAreTypesOnly ? ' (types only)' : ''}: ${importPackageNames.join(', ')}`
-    );
+    const checkStateText = importareTypesOnly ? 'Risky' : 'Invalid';
+    const dependencyText = importPackageNames.length === 1 ? 'dependency' : 'dependencies';
+
+    Logger.warn(`📦 ${checkStateText} ${dependencyText}: ${importPackageNames.join(', ')}`);
 
     invalidImports.forEach(({ file, importRef }) => {
       Logger.verbose(
