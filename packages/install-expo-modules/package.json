@@ -16,8 +16,8 @@
     "build"
   ],
   "scripts": {
-    "build": "ncc build --external simple-plist ./src/index.ts -o build/",
-    "build:prod": "ncc build --external simple-plist ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepare": "expo-module clean && yarn run build:prod",
@@ -50,7 +50,6 @@
     "resolve-from": "^5.0.0",
     "semver": "7.5.4",
     "terminal-link": "^2.1.1",
-    "xcode": "^3.0.1",
     "xcparse": "^0.0.3"
   },
   "publishConfig": {

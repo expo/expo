@@ -2,10 +2,7 @@
   "extends": "../../tsconfig.node",
   "compilerOptions": {
     "outDir": "build",
-    "rootDir": "src",
-    "typeRoots": [
-      "../@expo/cli/ts-declarations",
-    ]
+    "rootDir": "src"
   },
   "include": ["./src"],
   "exclude": [

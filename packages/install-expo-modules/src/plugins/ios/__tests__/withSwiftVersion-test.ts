@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import xcode from 'xcode';
+import { build as xcbuild, parse as xcparse } from 'xcparse';
 
 import { setSwiftVersionIfNotPresent } from '../withSwiftVersion';
 
@@ -10,10 +10,12 @@ it(
   "given targets in pbxproj that don't have `SWIFT_VERSION` build config specified, " +
     'setSwiftVersionIfNotPresent() sets it',
   async () => {
-    const project = xcode.project(
-      path.join(fixturesPath, 'TestTargetsDontHaveSwiftVersion.pbxproj')
+    const content = await fs.promises.readFile(
+      path.join(fixturesPath, 'TestTargetsDontHaveSwiftVersion.pbxproj'),
+      'utf8'
     );
-    project.parseSync();
+
+    const project = xcparse(content);
 
     setSwiftVersionIfNotPresent('5.0', { project });
 
@@ -21,6 +23,6 @@ it(
       path.join(fixturesPath, 'TestTargetsDontHaveSwiftVersion-updated.pbxproj'),
       'utf8'
     );
-    expect(expectContents).toEqual(project.writeSync());
+    expect(expectContents).toEqual(xcbuild(project));
   }
 );
