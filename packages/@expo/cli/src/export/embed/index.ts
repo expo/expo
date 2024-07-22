@@ -22,6 +22,11 @@ export const expoExportEmbed: Command = async (argv) => {
     '--unstable-transform-profile': String,
     '--config': String,
 
+    // Hack: This is added because react-native-xcode.sh script always includes this value.
+    // If supplied, we'll do nothing with the value, but at least the process won't crash.
+    // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
+    '--config-cmd': String,
+
     // This is here for compatibility with the `npx react-native bundle` command.
     // devs should use `DEBUG=expo:*` instead.
     '--verbose': Boolean,
