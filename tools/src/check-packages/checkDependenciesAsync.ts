@@ -41,7 +41,6 @@ const IGNORED_PACKAGES = [
   'expo-checkbox', // package: react, react-native
   'expo-clipboard', // package: react
   'expo-dev-client-components', // package: react, react-native
-  'expo-doctor', // package: fast-glob, getenv, metro-config, node-fetch, terminal-link
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated, react-native-web
   'expo-image', // package: @react-native/assets-registry, react-native-web
