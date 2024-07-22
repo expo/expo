@@ -8,16 +8,16 @@ const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const dir_1 = require("./dir");
-const resolveFrom_1 = require("./resolveFrom");
+const resolveFromExpoCli_1 = require("./resolveFromExpoCli");
 /**
  * Generates native projects for the given platforms.
  * This step is similar to the `expo prebuild` command but removes some validation.
  * @return The checksum of the template used to generate the native projects.
  */
 async function generateNativeProjectsAsync(projectRoot, exp, options) {
-    const { configureProjectAsync } = require((0, resolveFrom_1.resolveFromExpoCli)(projectRoot, 'build/src/prebuild/configureProjectAsync'));
-    const { resolveTemplateOption } = require((0, resolveFrom_1.resolveFromExpoCli)(projectRoot, 'build/src/prebuild/resolveOptions'));
-    const { cloneTemplateAndCopyToProjectAsync } = require((0, resolveFrom_1.resolveFromExpoCli)(projectRoot, 'build/src/prebuild/updateFromTemplate'));
+    const { configureProjectAsync } = require((0, resolveFromExpoCli_1.resolveFromExpoCli)(projectRoot, 'build/src/prebuild/configureProjectAsync'));
+    const { resolveTemplateOption } = require((0, resolveFromExpoCli_1.resolveFromExpoCli)(projectRoot, 'build/src/prebuild/resolveOptions'));
+    const { cloneTemplateAndCopyToProjectAsync } = require((0, resolveFromExpoCli_1.resolveFromExpoCli)(projectRoot, 'build/src/prebuild/updateFromTemplate'));
     // Create native projects from template.
     const { templateChecksum } = await cloneTemplateAndCopyToProjectAsync({
         exp,
@@ -34,7 +34,7 @@ async function generateNativeProjectsAsync(projectRoot, exp, options) {
     // Install CocoaPods is a must on ios because some changes are happening in the `pod install` stage.
     // That would minimize the diff between the native projects.
     if (options.platforms.includes('ios')) {
-        const { installCocoaPodsAsync } = require((0, resolveFrom_1.resolveFromExpoCli)(projectRoot, 'build/src/utils/cocoapods'));
+        const { installCocoaPodsAsync } = require((0, resolveFromExpoCli_1.resolveFromExpoCli)(projectRoot, 'build/src/utils/cocoapods'));
         await installCocoaPodsAsync(projectRoot);
     }
     return templateChecksum;
