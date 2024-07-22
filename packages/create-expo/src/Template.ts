@@ -333,6 +333,11 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   delete packageJson.tags;
   delete packageJson.repository;
 
+  // Only strip the license if it's 0BSD, used by our templates. Leave other licenses alone.
+  if (packageJson.license === '0BSD') {
+    delete packageJson.license;
+  }
+
   await packageFile.writeAsync(packageJson);
 }
 
