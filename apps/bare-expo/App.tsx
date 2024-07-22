@@ -11,6 +11,8 @@ try {
   // do nothing
 }
 
+Splashscreen.setOptions({ fade: true });
+
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
   (async () => null);
