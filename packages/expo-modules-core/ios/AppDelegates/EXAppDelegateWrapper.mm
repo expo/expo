@@ -111,8 +111,8 @@
   return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
 }
 
-- (void)customizeRootView:(RCTRootView *)rootView {
-  [_expoAppDelegate customizeRootViewWithRctView:rootView];
+- (void)customizeRootView:(UIView *)rootView {
+  [_expoAppDelegate customizeRootView:rootView];
 }
 
 @end

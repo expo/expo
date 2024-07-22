@@ -24,7 +24,7 @@ open class BaseExpoAppDelegateSubscriber: UIResponder {
  */
 @objc(EXAppDelegateSubscriberProtocol)
 public protocol ExpoAppDelegateSubscriberProtocol: UIApplicationDelegate {
-  @objc optional func customizeRootView(rctView: RCTRootView)
+  @objc optional func customizeRootView(_ rootView: UIView)
 }
 
 /**
