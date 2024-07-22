@@ -1,4 +1,4 @@
-import { fetch } from 'expo-modules-core/fetch';
+import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 export const name = 'Fetch';

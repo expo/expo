@@ -3,28 +3,28 @@
 /**
  Shared URLSessionDelegate instance and delete calls back to ExpoRequestInterceptorProtocol instances.
  */
-internal final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
+public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
   private let dispatchQueue: DispatchQueue
   private var delegateMap: [AnyHashable: URLSessionDataDelegate] = [:]
 
-  init(dispatchQueue: DispatchQueue) {
+  public init(dispatchQueue: DispatchQueue) {
     self.dispatchQueue = dispatchQueue
     super.init()
   }
 
-  func addDelegate(task: URLSessionTask, delegate: URLSessionDataDelegate) {
+  public func addDelegate(task: URLSessionTask, delegate: URLSessionDataDelegate) {
     self.dispatchQueue.async {
       self.delegateMap[task] = delegate
     }
   }
 
-  func removeDelegate(task: URLSessionTask) {
+  public func removeDelegate(task: URLSessionTask) {
     self.dispatchQueue.async {
       self.delegateMap.removeValue(forKey: task)
     }
   }
 
-  func getDelegate(task: URLSessionTask) -> URLSessionDataDelegate? {
+  public func getDelegate(task: URLSessionTask) -> URLSessionDataDelegate? {
     return self.dispatchQueue.sync {
       return self.delegateMap[task]
     }
@@ -32,7 +32,7 @@ internal final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDel
 
   // MARK: - URLSessionDataDelegate implementations
 
-  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive: Data) {
+  public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive: Data) {
     if let delegate = getDelegate(task: dataTask) {
       delegate.urlSession?(
         session,
@@ -41,7 +41,7 @@ internal final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDel
     }
   }
 
-  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError: Error?) {
+  public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError: Error?) {
     if let delegate = getDelegate(task: task) {
       delegate.urlSession?(
         session,
@@ -51,7 +51,7 @@ internal final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDel
     self.removeDelegate(task: task)
   }
 
-  func urlSession(
+  public func urlSession(
     _ session: URLSession,
     dataTask: URLSessionDataTask,
     didReceive: URLResponse,
@@ -66,7 +66,7 @@ internal final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDel
     }
   }
 
-  func urlSession(
+  public func urlSession(
     _ session: URLSession,
     task: URLSessionTask,
     willPerformHTTPRedirection: HTTPURLResponse,

@@ -1,9 +1,10 @@
+import { requireNativeModule } from 'expo-modules-core';
+
 import { NetworkFetchError } from './FetchErrors';
 import { FetchResponse } from './FetchResponse';
 import { NativeRequest, NativeRequestInit, NativeResponse } from './NativeRequest';
 import { normalizeBodyInitAsync, normalizeHeadersInit } from './RequestUtils';
 import type { FetchRequestInit } from './fetch.types';
-import { requireNativeModule } from '../requireNativeModule';
 
 const NetworkFetchModule = requireNativeModule('ExpoNetworkFetchModule');
 

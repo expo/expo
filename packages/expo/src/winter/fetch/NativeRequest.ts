@@ -1,4 +1,4 @@
-import type { SharedObject } from '../ts-declarations/SharedObject';
+import type { SharedObject } from 'expo-modules-core';
 
 export type NativeHeadersType = [string, string][];
 
