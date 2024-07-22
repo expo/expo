@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix serialization of vibration pattern. ([#30495](https://github.com/expo/expo/pull/30495) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.28.11 — 2024-07-22
+
+### 🐛 Bug fixes
+
+- [Android] Fix serialization of vibration pattern. ([#30495](https://github.com/expo/expo/pull/30495) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.10 — 2024-07-15
 

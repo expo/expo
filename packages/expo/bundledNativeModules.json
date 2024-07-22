@@ -59,7 +59,7 @@
   "expo-modules-core": "~1.12.19",
   "expo-navigation-bar": "~3.0.7",
   "expo-network": "~6.0.1",
-  "expo-notifications": "~0.28.10",
+  "expo-notifications": "~0.28.11",
   "expo-print": "~13.0.1",
   "expo-random": "~14.0.1",
   "expo-router": "~3.5.18",

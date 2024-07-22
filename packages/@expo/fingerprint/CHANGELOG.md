@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `fingerprint.config.js` loading error on EAS build. ([#30505](https://github.com/expo/expo/pull/30505) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.10.2 — 2024-07-22
+
+### 🐛 Bug fixes
+
+- Fixed `fingerprint.config.js` loading error on EAS build. ([#30505](https://github.com/expo/expo/pull/30505) by [@kudo](https://github.com/kudo))
 
 ## 0.10.1 — 2024-07-15
 
