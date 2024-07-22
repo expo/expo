@@ -42,7 +42,7 @@ internal class NativeResponse(private val coroutineScope: CoroutineScope) :
   }
 
   fun startStreaming() {
-    if (isInvalidState(listOf(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED))) {
+    if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
       return
     }
     if (state == ResponseState.RESPONSE_RECEIVED) {
@@ -57,7 +57,7 @@ internal class NativeResponse(private val coroutineScope: CoroutineScope) :
   }
 
   fun cancelStreaming() {
-    if (isInvalidState(listOf(ResponseState.BODY_STREAMING_STARTED))) {
+    if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
       return
     }
     state = ResponseState.BODY_STREAMING_CANCELLED
@@ -86,12 +86,10 @@ internal class NativeResponse(private val coroutineScope: CoroutineScope) :
 
   override fun onFailure(call: Call, e: IOException) {
     if (isInvalidState(
-        listOf(
-          ResponseState.STARTED,
-          ResponseState.RESPONSE_RECEIVED,
-          ResponseState.BODY_STREAMING_STARTED,
-          ResponseState.BODY_STREAMING_CANCELLED
-        )
+        ResponseState.STARTED,
+        ResponseState.RESPONSE_RECEIVED,
+        ResponseState.BODY_STREAMING_STARTED,
+        ResponseState.BODY_STREAMING_CANCELLED
       )
     ) {
       return
@@ -124,7 +122,7 @@ internal class NativeResponse(private val coroutineScope: CoroutineScope) :
 
   //region Internals
 
-  private fun isInvalidState(validStates: List<ResponseState>): Boolean {
+  private fun isInvalidState(vararg validStates: ResponseState): Boolean {
     if (validStates.contains(state)) {
       return false
     }
@@ -154,11 +152,9 @@ internal class NativeResponse(private val coroutineScope: CoroutineScope) :
   private fun pumpResponseBodyStream(stream: BufferedSource) {
     while (!stream.exhausted()) {
       if (isInvalidState(
-          listOf(
-            ResponseState.RESPONSE_RECEIVED,
-            ResponseState.BODY_STREAMING_STARTED,
-            ResponseState.BODY_STREAMING_CANCELLED
-          )
+          ResponseState.RESPONSE_RECEIVED,
+          ResponseState.BODY_STREAMING_STARTED,
+          ResponseState.BODY_STREAMING_CANCELLED
         )
       ) {
         break
