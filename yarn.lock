@@ -4451,7 +4451,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node-fetch@^2.5.12", "@types/node-fetch@^2.5.7", "@types/node-fetch@^2.6.5":
+"@types/node-fetch@^2.5.12", "@types/node-fetch@^2.5.7":
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.6.9.tgz#15f529d247f1ede1824f7e7acdaa192d5f28071e"
   integrity sha512-bQVlnMLFJ2d35DkPNjEPmd9ueO/rh5EiaZt2bhqiSarPjZIuIV6bPQVqcrEyvNo+AfTrRGVazle1tl597w3gfA==

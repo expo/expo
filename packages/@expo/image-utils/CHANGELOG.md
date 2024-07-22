@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop `node-fetch` in favor of Node built-in `fetch` for Node 22 support.
+
 ## 0.5.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
