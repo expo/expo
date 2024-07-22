@@ -93,7 +93,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       ...new Set(invalidImports.map(({ importRef }) => importRef.packageName).sort()),
     ];
 
-    const checkStateText = importareTypesOnly ? 'Risky' : 'Invalid';
+    const checkStateText = importAreTypesOnly ? 'Risky' : 'Invalid';
     const dependencyText = importPackageNames.length === 1 ? 'dependency' : 'dependencies';
 
     Logger.warn(`📦 ${checkStateText} ${dependencyText}: ${importPackageNames.join(', ')}`);
