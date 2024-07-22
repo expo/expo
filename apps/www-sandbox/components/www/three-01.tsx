@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export default function ThreeThing() {
+export default function ThreeThing({}: { webview: import('expo/webview').WebViewProps }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!ref.current) return;
@@ -109,7 +109,7 @@ export default function ThreeThing() {
       ref={ref}
       style={{
         flex: 1,
-        maxHeight: 360,
+        // maxHeight: 360,
         background: 'linear-gradient(to bottom,  #11e8bb 0%,#8200c9 100%)',
       }}
       id="canvas"></div>

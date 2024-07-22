@@ -2,12 +2,18 @@ import { useEffect } from 'react';
 import { BridgeMessage, JSONValue } from './www-types';
 
 export const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
+  if (!isWebview()) {
+    return;
+  }
   (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
 };
 
 export const addEventListener = <TData extends JSONValue>(
   onSubscribe: (message: BridgeMessage<TData>) => void
 ): (() => void) => {
+  if (!isWebview()) {
+    return () => {};
+  }
   const listener = ({ detail }: any) => {
     onSubscribe(detail);
   };
@@ -27,6 +33,9 @@ export const useBridge = <TData extends JSONValue>(
 };
 
 export function _invokeNativeAction(actionId: string, args: any[]): Promise<any> {
+  if (!isWebview()) {
+    throw new Error('Cannot invoke native actions outside of a webview');
+  }
   return new Promise((res, rej) => {
     const uid = Math.random().toString(36).slice(2);
     const sub = addEventListener<{
