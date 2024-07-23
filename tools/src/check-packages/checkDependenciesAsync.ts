@@ -23,7 +23,7 @@ type SourceFileImportRef = {
 };
 
 // We are incrementally rolling this out, the imports in this list are expected to be invalid
-const IGNORED_IMPORTS = ['expo-modules-core'];
+const IGNORED_IMPORTS = ['expo-modules-core', 'typescript'];
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
   '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
@@ -41,7 +41,6 @@ const IGNORED_PACKAGES = [
   'expo-gl', // package: react-dom, react-native-reanimated, react-native-web
   'expo-image', // package: @react-native/assets-registry, react-native-web
   'expo-modules-core', // package: react, react-native
-  'expo-modules-test-core', // package: typescript - TODO
   'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
