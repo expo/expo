@@ -320,6 +320,10 @@ const row = await db.getFirstAsync<{ data: Uint8Array }>('SELECT * FROM blobs');
 expect(row.data).toEqual(blob);
 ```
 
+### Browse an on-device database
+
+You can inspect a database, execute queries against it, and explore data with the [drizzle-studio-expo dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo). This plugin enables you to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any expo-sqlite configuration, it does not require that you use [Drizzle ORM](#drizzle-orm) in your app. [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).
+
 ## Third-party library integrations
 
 The `expo-sqlite` library is designed to be a solid SQLite foundation. It enables broader integrations with third-party libraries for more advanced higher-level features. Here are some of the libraries that you can use with `expo-sqlite`.

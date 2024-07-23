@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed "Unsupported Swift Version" when running `install-expo-modules` on a RNC CLI project. ([#30414](https://github.com/expo/expo/pull/30414) by [@vonovak](https://github.com/vonovak))
 - Fixed crash when `babel.config.js` was not found when upgrading plain React Native project. ([#30356](https://github.com/expo/expo/pull/30356) by [@wojtekmaj](https://github.com/wojtekmaj))
 
 ### 💡 Others

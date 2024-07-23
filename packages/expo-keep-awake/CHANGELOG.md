@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` peer dependencies for isolated modules. ([#30470](https://github.com/expo/expo/pull/30470) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Use `EventSubscription` type instead of `Subscription`. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))

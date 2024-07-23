@@ -82,11 +82,7 @@ public class NotificationSerializer {
       serializedContent.putString("priority", content.getPriority().getEnumValue());
     }
     if (content.getVibrationPattern() != null) {
-      double[] serializedVibrationPattern = new double[content.getVibrationPattern().length];
-      for (int i = 0; i < serializedVibrationPattern.length; i++) {
-        serializedVibrationPattern[i] = content.getVibrationPattern()[i];
-      }
-      serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
+      serializedContent.putIntArray("vibrationPattern", RemoteMessageSerializer.intArrayFromLongArray(content.getVibrationPattern()));
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     if (content.getCategoryId() != null) {

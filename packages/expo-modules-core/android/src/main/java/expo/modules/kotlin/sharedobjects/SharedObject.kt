@@ -19,6 +19,11 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
    */
   internal var sharedObjectId: SharedObjectId = SharedObjectId(0)
 
+  // Used by JNI
+  private fun getSharedObjectId(): Int {
+    return sharedObjectId.value
+  }
+
   var runtimeContextHolder = runtimeContext.weak()
 
   private val runtimeContext: RuntimeContext?

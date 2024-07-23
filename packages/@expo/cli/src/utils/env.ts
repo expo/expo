@@ -200,6 +200,11 @@ class Env {
     return boolish('EXPO_UNSTABLE_ATLAS', false);
   }
 
+  /** Unstable: Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and less optimized for development bundling. */
+  get EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH() {
+    return boolish('EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH', false);
+  }
+
   /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
   get EXPO_USE_METRO_REQUIRE() {
     return boolish('EXPO_USE_METRO_REQUIRE', false);

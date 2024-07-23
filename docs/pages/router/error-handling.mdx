@@ -40,14 +40,15 @@ You can export a nested `ErrorBoundary` component from any route to intercept an
 {/* prettier-ignore */}
 ```tsx app/home.tsx
 import { View, Text } from 'react-native';
+import { type ErrorBoundaryProps } from 'expo-router';
 
 /* @info */
-export function ErrorBoundary(props: ErrorBoundaryProps) {
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 /* @end */
   return (
     <View style={{ flex: 1, backgroundColor: "red" }}>
-      <Text>{props.error.message}</Text>
-      <Text onPress={props.retry}>Try Again?</Text>
+      <Text>{error.message}</Text>
+      <Text onPress={retry}>Try Again?</Text>
     </View>
   );
 }

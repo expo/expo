@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] Migrated the native module to Swift. ([#30388](https://github.com/expo/expo/pull/30388) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - On `iOS`, fix an issue where if the user selects "Allow Once" for location permissions, we needed to request background permissions twice because the first time had effect. ([#29272](https://github.com/expo/expo/pull/29272) by [@alanjhughes](https://github.com/alanjhughes))

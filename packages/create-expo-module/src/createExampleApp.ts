@@ -7,7 +7,7 @@ import path from 'path';
 import { installDependencies } from './packageManager';
 import { PackageManagerName } from './resolvePackageManager';
 import { SubstitutionData } from './types';
-import { newStep } from './utils';
+import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:createExampleApp') as typeof console.log;
 

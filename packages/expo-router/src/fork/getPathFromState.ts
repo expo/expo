@@ -237,7 +237,7 @@ function walkConfigItems(
     pattern = inputPattern;
 
     if (route.params) {
-      if (route.params['#']) {
+      if (route.params['#'] !== undefined) {
         hash = route.params['#'];
         delete route.params['#'];
       }

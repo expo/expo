@@ -1,4 +1,9 @@
-import { AndroidConfig, ConfigPlugin, createRunOncePlugin, IOSConfig } from '@expo/config-plugins';
+import {
+  AndroidConfig,
+  type ConfigPlugin,
+  createRunOncePlugin,
+  IOSConfig,
+} from 'expo/config-plugins';
 
 const pkg = require('expo-image-picker/package.json');
 
