@@ -1,16 +1,31 @@
 // A webview without babel to test faster.
 import React from 'react';
-import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
 import { WebView } from 'react-native-webview';
 
 import { _emitGlobalEvent } from './global-events';
 import type { BridgeMessage } from './www-types';
 import { getInjectEventScript, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
 
+function mergeRefs(...props) {
+  return function forwardRef(node) {
+    props.forEach((ref) => {
+      if (ref == null) {
+        return;
+      }
+
+      if (typeof ref === 'function') {
+        ref(node);
+      } else if (typeof ref === 'object') {
+        ref.current = node;
+      }
+    });
+  };
+}
+
 const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }: any, ref) => {
   const webviewRef = React.useRef<WebView>(null);
 
-  const setRef = useMergeRefs(webviewRef, {}, ref);
+  const setRef = React.useMemo(() => mergeRefs(webviewRef, {}, ref), [webviewRef, ref]);
 
   const emit = React.useCallback(
     (detail: BridgeMessage<any>) => {
