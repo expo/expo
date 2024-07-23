@@ -1,5 +1,6 @@
 import { View } from 'react-native';
 import Actions from '../components/02-actions';
+import LocalAsset from '../components/03-local-asset';
 
 export default function Page() {
   return (
@@ -15,6 +16,8 @@ export default function Page() {
           return 'native setting';
         }}
       />
+
+      <LocalAsset />
     </View>
   );
 }
