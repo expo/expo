@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { ProxyNativeModule } from 'expo/internal';
 
 import { NotificationCategory, NotificationAction } from './Notifications.types';
 

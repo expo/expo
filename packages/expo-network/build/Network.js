@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { useEffect, useState } from 'react';
 import ExpoNetwork from './ExpoNetwork';
 import { NetworkStateType } from './Network.types';

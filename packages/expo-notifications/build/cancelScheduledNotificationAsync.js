@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import NotificationScheduler from './NotificationScheduler';
 /**
  * Cancels a single scheduled notification. The scheduled notification of given ID will not trigger.

@@ -1,4 +1,5 @@
-import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription, Platform } from 'expo';
+import { UnavailabilityError } from 'expo/internal';
 import { Dimensions } from 'react-native';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';

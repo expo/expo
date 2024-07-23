@@ -1,8 +1,7 @@
-import { useEvent } from 'expo';
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useEvent, useReleasingSharedObject } from 'expo';
 import { useEffect, useState, useMemo } from 'react';
 
-import {
+import type {
   AudioMode,
   AudioSource,
   AudioStatus,
@@ -11,7 +10,7 @@ import {
   RecordingStatus,
 } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import type { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 

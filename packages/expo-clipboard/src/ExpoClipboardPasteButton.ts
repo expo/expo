@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo';
 import { Platform } from 'react-native';
 
 let ExpoClipboard: any;

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import NotificationScheduler from './NotificationScheduler';
 import { parseTrigger } from './scheduleNotificationAsync';
 /**

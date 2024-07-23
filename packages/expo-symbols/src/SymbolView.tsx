@@ -1,4 +1,4 @@
-import { Platform, requireNativeViewManager } from 'expo-modules-core';
+import { Platform, requireNativeViewManager } from 'expo';
 
 import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
 

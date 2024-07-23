@@ -1,4 +1,5 @@
-import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { CodedError, UnavailabilityError } from 'expo/internal';
 
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';

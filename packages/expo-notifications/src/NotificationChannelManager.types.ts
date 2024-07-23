@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { ProxyNativeModule } from 'expo/internal';
 
 // @docsMissing
 export enum AndroidNotificationVisibility {

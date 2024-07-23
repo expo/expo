@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { ProxyNativeModule } from 'expo/internal';
 
 import { NotificationChannel } from './NotificationChannelManager.types';
 

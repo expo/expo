@@ -10,6 +10,7 @@
 
 - Add NULL check before releasing `textureRef` in `EXGLCameraObject`. ([#29092](https://github.com/expo/expo/pull/29092) by [@hakonk](https://github.com/hakonk))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30468](https://github.com/expo/expo/pull/30468) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

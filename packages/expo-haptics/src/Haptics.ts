@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 
 import ExpoHaptics from './ExpoHaptics';
 import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';

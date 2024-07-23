@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/internal';
 
 import { ActionExtent } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';

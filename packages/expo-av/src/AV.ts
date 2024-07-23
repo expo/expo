@@ -1,5 +1,5 @@
+import { Platform } from 'expo';
 import { Asset } from 'expo-asset';
-import { Platform } from 'expo-modules-core';
 
 import {
   AVPlaybackSource,

@@ -1,4 +1,5 @@
-import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
+import { UnavailabilityError } from 'expo/internal';
 import { useEffect, useId } from 'react';
 
 import ExpoKeepAwake from './ExpoKeepAwake';

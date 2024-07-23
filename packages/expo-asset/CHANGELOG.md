@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add missing dependencies and follow proper dependency chains. ([#30500](https://github.com/expo/expo/pull/30500) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

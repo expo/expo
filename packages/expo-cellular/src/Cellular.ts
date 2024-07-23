@@ -1,9 +1,5 @@
-import {
-  createPermissionHook,
-  PermissionStatus,
-  Platform,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import { Platform } from 'expo';
+import { createPermissionHook, PermissionStatus, UnavailabilityError } from 'expo/internal';
 
 import { CellularGeneration, PermissionResponse } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';

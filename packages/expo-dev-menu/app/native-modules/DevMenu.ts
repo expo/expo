@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 import { Alert, DeviceEventEmitter, EventSubscription } from 'react-native';
 
 export type JSEngine = 'Hermes' | 'JSC' | 'V8';

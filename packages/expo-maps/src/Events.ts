@@ -1,4 +1,5 @@
-import { LegacyEventEmitter, type EventSubscription, ProxyNativeModule } from 'expo-modules-core';
+import { type EventSubscription } from 'expo';
+import { LegacyEventEmitter, ProxyNativeModule } from 'expo/internal';
 import { Platform } from 'react-native';
 
 import {

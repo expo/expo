@@ -1,5 +1,9 @@
 import { toByteArray } from 'base64-js';
-import { UnavailabilityError, UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
+import {
+  type IntBasedTypedArray,
+  type UintBasedTypedArray,
+  UnavailabilityError,
+} from 'expo/internal';
 
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';

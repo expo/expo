@@ -1,6 +1,7 @@
 import { computeNextBackoffInterval } from '@ide/backoff';
+import { Platform } from 'expo';
+import { CodedError, UnavailabilityError } from 'expo/internal';
 import * as Application from 'expo-application';
-import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ServerRegistrationModule from '../ServerRegistrationModule';
 import { DevicePushToken } from '../Tokens.types';

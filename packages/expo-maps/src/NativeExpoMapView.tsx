@@ -1,4 +1,5 @@
-import { requireNativeViewManager, NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo';
+import { NativeModulesProxy } from 'expo/internal';
 import * as React from 'react';
 
 import { NativeExpoGoogleMapsViewProps, NativeExpoAppleMapsViewProps } from './Map.types';

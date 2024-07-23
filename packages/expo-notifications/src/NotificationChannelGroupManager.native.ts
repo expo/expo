@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
 import { NotificationChannelGroupManager } from './NotificationChannelGroupManager.types';
 

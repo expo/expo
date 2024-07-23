@@ -1,4 +1,5 @@
-import { CodedError, Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { CodedError } from 'expo/internal';
 import FontObserver from 'fontfaceobserver';
 
 import { UnloadFontOptions } from './Font';

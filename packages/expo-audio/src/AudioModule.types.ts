@@ -1,6 +1,7 @@
-import { PermissionResponse, SharedObject } from 'expo-modules-core';
+import type { SharedObject } from 'expo';
+import type { PermissionResponse } from 'expo/internal';
 
-import {
+import type {
   AudioMode,
   AudioSource,
   AudioStatus,

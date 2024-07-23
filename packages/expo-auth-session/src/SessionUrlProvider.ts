@@ -1,6 +1,6 @@
+import { Platform } from 'expo';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
-import { Platform } from 'expo-modules-core';
 
 export class SessionUrlProvider {
   private static readonly BASE_URL = `https://auth.expo.io`;

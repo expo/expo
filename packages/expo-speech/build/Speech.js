@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import ExponentSpeech from './ExponentSpeech';
 import { VoiceQuality } from './Speech.types';
 export { VoiceQuality };

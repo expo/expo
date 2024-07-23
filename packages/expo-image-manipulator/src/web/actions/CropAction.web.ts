@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/internal';
 
 import { ActionCrop } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';

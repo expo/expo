@@ -1,10 +1,10 @@
 import {
-  PermissionResponse,
+  type PermissionExpiration,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
   UnavailabilityError,
   uuid,
-} from 'expo-modules-core';
+} from 'expo/internal';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';

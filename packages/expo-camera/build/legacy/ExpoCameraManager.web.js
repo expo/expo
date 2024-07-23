@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { CameraType, PermissionStatus, } from './Camera.types';
 import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from '../web/WebUserMediaManager';
 function getUserMedia(constraints) {

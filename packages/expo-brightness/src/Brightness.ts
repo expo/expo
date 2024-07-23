@@ -1,12 +1,12 @@
+import type { EventSubscription } from 'expo';
 import {
   createPermissionHook,
-  type EventSubscription,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type PermissionResponse,
   PermissionStatus,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo/internal';
 import { Platform } from 'react-native';
 
 import ExpoBrightness from './ExpoBrightness';

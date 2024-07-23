@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform, type EventSubscription } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';

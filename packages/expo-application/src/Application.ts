@@ -1,4 +1,5 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { UnavailabilityError } from 'expo/internal';
 
 import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
 import ExpoApplication from './ExpoApplication';

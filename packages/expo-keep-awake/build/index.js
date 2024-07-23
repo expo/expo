@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { useEffect, useId } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
 /** Default tag, used when no tag has been specified in keep awake method calls. */

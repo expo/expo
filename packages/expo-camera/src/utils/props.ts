@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { CameraNativeProps, CameraType, FlashMode, CameraProps } from '../Camera.types';
 import CameraManager from '../ExpoCameraManager';

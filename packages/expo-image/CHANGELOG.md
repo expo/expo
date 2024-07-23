@@ -15,6 +15,7 @@
 - Fixed `tintColor` not working on Safari browsers. ([#29169](https://github.com/expo/expo/pull/29169) by [@bradleyayers](https://github.com/bradleyayers))
 - Fixed reanimated support on web. ([#29197](https://github.com/expo/expo/pull/29197) by [@nishan](https://github.com/intergalacticspacehighway))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30469](https://github.com/expo/expo/pull/30469) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

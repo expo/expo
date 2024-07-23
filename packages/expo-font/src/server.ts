@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/internal';
 
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontSource } from './Font.types';

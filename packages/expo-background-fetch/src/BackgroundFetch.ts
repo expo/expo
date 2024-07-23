@@ -1,4 +1,5 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { UnavailabilityError } from 'expo/internal';
 import * as TaskManager from 'expo-task-manager';
 
 import {

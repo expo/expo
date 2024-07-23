@@ -1,10 +1,5 @@
-import {
-  NativeModulesProxy,
-  UnavailabilityError,
-  requireNativeModule,
-  requireNativeViewManager,
-  CodedError,
-} from 'expo-modules-core';
+import { requireNativeModule, requireNativeViewManager } from 'expo';
+import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo/internal';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 

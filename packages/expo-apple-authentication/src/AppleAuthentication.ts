@@ -1,4 +1,5 @@
-import { CodedError, EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
+import { CodedError, UnavailabilityError } from 'expo/internal';
 
 import {
   AppleAuthenticationCredential,

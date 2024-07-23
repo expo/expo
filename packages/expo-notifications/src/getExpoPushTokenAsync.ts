@@ -1,6 +1,7 @@
+import { Platform } from 'expo';
+import { CodedError, UnavailabilityError } from 'expo/internal';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';

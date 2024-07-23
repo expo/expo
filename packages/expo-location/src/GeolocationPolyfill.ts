@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import ExpoLocation from './ExpoLocation';
 import { LocationObject, LocationAccuracy, LocationOptions } from './Location.types';

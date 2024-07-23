@@ -1,5 +1,5 @@
 import { toByteArray } from 'base64-js';
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 export * from './Crypto.types';

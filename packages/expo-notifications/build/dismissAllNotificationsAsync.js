@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import NotificationPresenter from './NotificationPresenterModule';
 /**
  * Removes all application's notifications displayed in the notification tray (Notification Center).

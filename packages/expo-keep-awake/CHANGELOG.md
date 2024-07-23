@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `react` peer dependencies for isolated modules. ([#30470](https://github.com/expo/expo/pull/30470) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

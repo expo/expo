@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
+import type { PermissionResponse, PermissionHookOptions } from 'expo/internal';
 
 export enum IosAlertStyle {
   NONE = 0,

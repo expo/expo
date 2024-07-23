@@ -1,4 +1,4 @@
-import { requireNativeModule, NativeModule } from 'expo-modules-core';
+import { requireNativeModule, NativeModule } from 'expo';
 
 type ExppLinkingModuleEvents = {
   onURLReceived(url: string): void;

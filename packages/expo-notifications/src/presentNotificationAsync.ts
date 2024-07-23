@@ -1,4 +1,4 @@
-import { UnavailabilityError, uuid } from 'expo-modules-core';
+import { UnavailabilityError, uuid } from 'expo/internal';
 
 import NotificationPresenter from './NotificationPresenterModule';
 import { NotificationContentInput } from './Notifications.types';

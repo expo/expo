@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/internal';
 import { AppState } from 'react-native';
 import type { AppStateStatus, NativeEventSubscription } from 'react-native';
 

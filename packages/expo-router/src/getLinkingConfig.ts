@@ -1,5 +1,5 @@
 import { getActionFromState, LinkingOptions } from '@react-navigation/native';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { RouteNode } from './Route';
 import { State } from './fork/getPathFromState';
