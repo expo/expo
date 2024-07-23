@@ -65,26 +65,46 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const babelConfigJsPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
-
-      if (await fs.promises.exists(babelConfigJsPath)) {
-        let contents = await fs.promises.readFile(babelConfigJsPath, 'utf8');
-        contents = updateBabelConfig(contents);
-        await fs.promises.writeFile(babelConfigJsPath, contents);
-        return config;
-      }
-
       const babelConfigJsonPath = path.join(config.modRequest.projectRoot, 'babel.config.json');
+      const babelrcPath = path.join(config.modRequest.projectRoot, '.babelrc.json');
+      const babelConfigJsPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
+      const babelrcJsPath = path.join(config.modRequest.projectRoot, '.babelrc.js');
 
-      if (await fs.promises.exists(babelConfigJsonPath)) {
-        let contents = await fs.promises.readFile(babelConfigJsonPath, 'utf8');
-        contents = updateBabelConfig(contents);
-        await fs.promises.writeFile(babelConfigJsonPath, contents);
-        return config;
+      const [babelConfigJsonExists,
+        babelrcExists,
+        babelConfigJsExists,
+        babelrcJsExists] = Promise.all([
+        fs.existsSync(babelConfigJsonPath),
+        fs.existsSync(babelrcPath),
+        fs.existsSync(babelConfigJsPath),
+        fs.existsSync(babelrcJsPath)
+      ]);
+
+      switch (true) {
+        case babelConfigJsonExists:{
+          let contents = await fs.promises.readFile(babelConfigJsonPath, 'utf8');
+          contents = updateBabelConfig(contents);
+          await fs.promises.writeFile(babelConfigJsonPath, contents);
+          return config;}
+        case babelrcExists:{
+          let contents = await fs.promises.readFile(babelrcPath, 'utf8');
+          contents = updateBabelConfig(contents);
+          await fs.promises.writeFile(babelrcPath, contents);
+          return config;}
+        case babelConfigJsExists:{
+          let contents = await fs.promises.readFile(babelConfigJsPath, 'utf8');
+          contents = updateBabelConfig(contents);
+          await fs.promises.writeFile(babelConfigJsPath, contents);
+          return config;}
+        case babelrcJsExists:{
+          let contents = await fs.promises.readFile(babelrcJsPath, 'utf8');
+          contents = updateBabelConfig(contents);
+          await fs.promises.writeFile(babelrcJsPath, contents);
+          return config;}
       }
 
       console.warn(
-        '⚠️  Could not find `babel.config.js` or `babel.config.json` in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
+        '⚠️  Could not find `babel.config.json`, `.babelrc.json`, `babel.config.js`, or `.babelrc.js` in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
       );
 
       return config;
