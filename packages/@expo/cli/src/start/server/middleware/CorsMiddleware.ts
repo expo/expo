@@ -22,16 +22,17 @@ export function createCorsMiddleware(exp: ExpoConfig) {
     if (typeof req.headers.origin === 'string') {
       const { host, hostname } = new URL(req.headers.origin);
       const isSameOrigin = host === req.headers.host;
-      if (!isSameOrigin && !allowedHostnames.includes(hostname)) {
-        next(
-          new Error(
-            `Unauthorized request from ${req.headers.origin}. ` +
-              'This may happen because of a conflicting browser extension to intercept HTTP requests. ' +
-              'Please try again without browser extensions or using incognito mode.'
-          )
-        );
-        return;
-      }
+      // TODO: This breaks DOM components on Android
+      // if (!isSameOrigin && !allowedHostnames.includes(hostname)) {
+      //   next(
+      //     new Error(
+      //       `Unauthorized request from ${req.headers.origin}. ` +
+      //         'This may happen because of a conflicting browser extension to intercept HTTP requests. ' +
+      //         'Please try again without browser extensions or using incognito mode.'
+      //     )
+      //   );
+      //   return;
+      // }
 
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
       maybePreventMetroResetCorsHeader(req, res);
