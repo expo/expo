@@ -32,7 +32,7 @@ export function ConstantsSection() {
             <Divider style={{ height: 1 }} />
           </>
         ) : null}
-        <ConstantItem title="Supported SDKs" value={Environment.supportedSdksString} />
+        <ConstantItem title="Supported SDK" value={Environment.supportedSdksString} />
       </View>
     </View>
   );

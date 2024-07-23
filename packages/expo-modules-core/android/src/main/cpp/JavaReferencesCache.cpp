@@ -50,6 +50,7 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
 
   loadJClass(env, "expo/modules/kotlin/sharedobjects/SharedObject", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptModuleObject", {});
 }
 
 void JavaReferencesCache::loadJClass(

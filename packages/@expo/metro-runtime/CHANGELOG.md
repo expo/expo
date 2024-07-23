@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix metro symbolication issue with web import errors. ([#30544](https://github.com/expo/expo/pull/30544) by [@EvanBacon](https://github.com/EvanBacon))
+- Remount the failed component when a refresh event occurs. ([#30544](https://github.com/expo/expo/pull/30544) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix web styling bug. ([#30438](https://github.com/expo/expo/pull/30438) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix exceptions native import. ([#30433](https://github.com/expo/expo/pull/30433) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve error message for `window.location` polyfill. ([#30331](https://github.com/expo/expo/pull/30331) by [@EvanBacon](https://github.com/EvanBacon))

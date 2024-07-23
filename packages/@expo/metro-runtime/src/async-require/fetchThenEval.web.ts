@@ -19,7 +19,11 @@ export function fetchThenEvalAsync(
     crossOrigin,
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
-  if (typeof window === 'undefined' || __DEV__) {
+  if (
+    typeof window === 'undefined' ||
+    // In development, use the fetch/eval method to detect the server error codes and parse bundler errors for the error overlay.
+    __DEV__
+  ) {
     return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
   }
   return new Promise<void>((resolve, reject) => {

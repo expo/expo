@@ -220,6 +220,8 @@ export class LogBoxLog {
   }
 }
 
+// Sometime the web stacks don't have correct query params, this can lead to Metro errors when it attempts to resolve without a platform.
+// This will attempt to reconcile the issue by adding the current query params to the stack frames if they exist, or fallback to some common defaults.
 function ensureStackFilesHaveParams(stack: Stack): Stack {
   const currentSrc =
     typeof document !== 'undefined' && document.currentScript

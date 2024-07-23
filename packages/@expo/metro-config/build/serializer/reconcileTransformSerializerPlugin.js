@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = void 0;
+exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = exports.sortDependencies = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -61,6 +61,7 @@ function sortDependencies(dependencies, accordingTo) {
     });
     return nextDependencies;
 }
+exports.sortDependencies = sortDependencies;
 function isOptimizeEnabled(graph) {
     return isEnvBoolean(graph, 'optimize');
 }

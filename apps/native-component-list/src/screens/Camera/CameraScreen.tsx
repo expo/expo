@@ -47,6 +47,7 @@ interface State {
   mute: boolean;
   torchEnabled: boolean;
   cornerPoints?: BarcodePoint[];
+  mirror?: boolean;
   autoFocus: FocusMode;
   barcodeData: string;
   newPhotos: boolean;
@@ -101,6 +102,7 @@ export default class CameraScreen extends React.Component<object, State> {
     torchEnabled: false,
     cornerPoints: undefined,
     mute: false,
+    mirror: false,
     barcodeData: '',
     autoFocus: 'off',
     newPhotos: false,
@@ -150,6 +152,8 @@ export default class CameraScreen extends React.Component<object, State> {
   toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
 
   toggleMute = () => this.setState((state) => ({ mute: !state.mute }));
+
+  toggleMirror = () => this.setState((state) => ({ mirror: !state.mirror }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
@@ -294,6 +298,13 @@ export default class CameraScreen extends React.Component<object, State> {
           AF
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMirror}>
+        <MaterialCommunityIcons
+          name="mirror"
+          size={24}
+          color={this.state.mirror ? 'white' : '#858585'}
+        />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
       </TouchableOpacity>
@@ -396,6 +407,7 @@ export default class CameraScreen extends React.Component<object, State> {
           autofocus={this.state.autoFocus}
           facing={this.state.facing}
           animateShutter
+          mirror={this.state.mirror}
           pictureSize={this.state.pictureSize}
           flash={this.state.flash}
           mode={this.state.mode}

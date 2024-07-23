@@ -9,6 +9,7 @@
 'use client';
 
 import * as React from 'react';
+import { NativeEventEmitter } from 'react-native-web';
 
 import { LogBoxLog, StackType } from './LogBoxLog';
 import type { LogLevel } from './LogBoxLog';
@@ -355,8 +356,6 @@ export function observe(observer: Observer): Subscription {
     },
   };
 }
-
-import { NativeEventEmitter } from 'react-native-web';
 
 const emitter = new NativeEventEmitter({
   addListener() {},

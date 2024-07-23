@@ -200,6 +200,11 @@ class Env {
     return boolish('EXPO_UNSTABLE_ATLAS', false);
   }
 
+  /** Unstable: Enable tree shaking for Metro. */
+  get EXPO_UNSTABLE_TREE_SHAKING() {
+    return boolish('EXPO_UNSTABLE_TREE_SHAKING', false);
+  }
+
   /** Unstable: Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and less optimized for development bundling. */
   get EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH() {
     return boolish('EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH', false);

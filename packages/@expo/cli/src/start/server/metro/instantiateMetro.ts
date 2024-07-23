@@ -21,6 +21,7 @@ import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
@@ -136,8 +137,17 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental React Compiler is enabled.`);
   }
 
+  if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+    throw new CommandError(
+      'EXPO_UNSTABLE_TREE_SHAKING requires EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH to be enabled.'
+    );
+  }
+
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
+  }
+  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+    Log.warn(`Experimental tree shaking is enabled.`);
   }
 
   config = await withMetroMultiPlatformAsync(projectRoot, {

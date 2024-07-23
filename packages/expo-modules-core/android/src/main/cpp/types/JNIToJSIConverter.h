@@ -3,13 +3,23 @@
 #pragma once
 
 #include "../JSIContext.h"
+#include "../JSharedObject.h"
+#include "../JNIUtils.h"
+#include "ObjectDeallocator.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <optional>
 
+#include <react/jni/ReadableNativeMap.h>
+#include <react/jni/ReadableNativeArray.h>
+#include <react/jni/WritableNativeArray.h>
+#include <react/jni/WritableNativeMap.h>
+#include <jsi/JSIDynamic.h>
+
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
+namespace react = facebook::react;
 
 namespace expo {
 
@@ -22,11 +32,287 @@ jsi::Value convert(
 /**
  * Convert a string with FollyDynamicExtensionConverter support.
  */
-std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, const std::string& string);
+std::optional<jsi::Value>
+convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, const std::string &string);
 
 /**
  * Decorate jsi::Value with FollyDynamicExtensionConverter support.
  */
-std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value);
+std::optional<jsi::Value>
+decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value);
 
+template<typename T, typename = void>
+struct has_cthis : std::false_type {
+};
+
+template<typename T>
+struct has_cthis<T, std::void_t<decltype(std::declval<T &>()->cthis())>> : std::true_type {
+};
+
+template<typename T, typename = void>
+struct has_toStdString : std::false_type {
+};
+
+template<typename T>
+struct has_toStdString<T, std::void_t<decltype(std::declval<T &>()->toStdString())>>
+  : std::true_type {
+};
+
+template<typename T, typename = void>
+struct has_value : std::false_type {
+};
+
+template<typename T>
+struct has_value<T, std::void_t<decltype(std::declval<T &>()->value())>>
+  : std::true_type {
+};
+
+template<typename T>
+struct deref {
+  typedef T type;
+};
+
+template<typename T>
+struct deref<jni::local_ref<T>> {
+  typedef T type;
+};
+
+template<typename T>
+struct deref<jni::global_ref<T>> {
+  typedef T type;
+};
+
+template<typename T>
+struct deref<jni::alias_ref<T>> {
+  typedef T type;
+};
+
+template<typename T>
+inline auto unwrapJNIRef(
+  const T &value
+) {
+
+  if constexpr (has_cthis<T>::value) {
+    return value->cthis();
+  } else if constexpr (has_toStdString<T>::value) {
+    return value->toStdString();
+  } else if constexpr (std::is_same<typename deref<T>::type, jni::JBoolean>::value) {
+    return (bool)value->value();
+  } else if constexpr (has_value<T>::value) {
+    return value->value();
+
+  } else {
+    return value;
+  }
+}
+
+template<class T>
+using is_trivially_convertible = std::enable_if_t<std::is_constructible_v<jsi::Value, T>>;
+
+template<typename T, typename Enable = void>
+class JNIToJSIConverter;
+
+struct SimpleConverter;
+struct RefConverter;
+
+template<typename T>
+class JNIToJSIConverter<T, is_trivially_convertible<T>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, T value) {
+    return {value};
+  }
+};
+
+template<typename T>
+using is_convertible_using_runtime = std::enable_if_t<
+  std::is_constructible_v<jsi::Value, jsi::Runtime &, T> &&
+  !std::is_constructible_v<jsi::Value, T>
+>;
+
+template<typename T>
+class JNIToJSIConverter<T, is_convertible_using_runtime<T>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, T value) {
+    return {rt, value};
+  }
+};
+
+template<typename T>
+class JNIToJSIConverter<T, std::enable_if_t<std::is_same_v<T, std::nullptr_t>>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, T value) {
+    return jsi::Value::null();
+  }
+};
+
+template<>
+class JNIToJSIConverter<long> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, long value) {
+    return {static_cast<double>(value)};
+  }
+};
+
+template<>
+class JNIToJSIConverter<long long> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, long long value) {
+    return {static_cast<double>(value)};
+  }
+};
+
+template<>
+class JNIToJSIConverter<JavaScriptModuleObject *> {
+public:
+  typedef RefConverter converterType;
+
+  static inline jsi::Value convert(
+    jsi::Runtime &rt, JavaScriptModuleObject *value,
+    const jni::local_ref<JavaScriptModuleObject::javaobject> &ref
+  ) {
+    auto jsiObject = value->getJSIObject(rt);
+
+    jni::global_ref<jobject> globalRef = jni::make_global(ref);
+
+    common::setDeallocator(
+      rt,
+      jsiObject,
+      [globalRef = std::move(globalRef)]() mutable {
+        globalRef.reset();
+      }
+    );
+
+    return {rt, *jsiObject};
+  }
+};
+
+template<>
+class JNIToJSIConverter<jni::local_ref<JSharedObject::javaobject>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value
+  convert(jsi::Runtime &rt, const jni::local_ref<JSharedObject::javaobject> &value) {
+    JSIContext *jsiContext = getJSIContext(rt);
+    return convertSharedObject(value, rt, jsiContext);
+  }
+};
+
+template<>
+class JNIToJSIConverter<jni::global_ref<JSharedObject::javaobject>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value
+  convert(jsi::Runtime &rt, const jni::global_ref<JSharedObject::javaobject> &value) {
+    JSIContext *jsiContext = getJSIContext(rt);
+    return convertSharedObject(jni::make_local(value), rt, jsiContext);
+  }
+};
+
+template<>
+class JNIToJSIConverter<jni::alias_ref<JSharedObject::javaobject>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value
+  convert(jsi::Runtime &rt, const jni::alias_ref<JSharedObject::javaobject> &value) {
+    JSIContext *jsiContext = getJSIContext(rt);
+    return convertSharedObject(jni::make_local(value), rt, jsiContext);
+  }
+};
+
+template<>
+class JNIToJSIConverter<JavaScriptTypedArray *> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, JavaScriptTypedArray *value) {
+    auto jsTypedArray = value->get();
+    return {rt, *jsTypedArray};
+  }
+};
+
+template<>
+class JNIToJSIConverter<react::WritableNativeArray *> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, react::WritableNativeArray *value) {
+    auto dynamic = value->consume();
+    auto arg = jsi::valueFromDynamic(rt, dynamic);
+    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
+    if (enhancedArg) {
+      arg = std::move(*enhancedArg);
+    }
+    return arg;
+  }
+};
+
+template<>
+class JNIToJSIConverter<react::WritableNativeMap *> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, react::WritableNativeMap *value) {
+    auto dynamic = value->consume();
+    auto arg = jsi::valueFromDynamic(rt, dynamic);
+    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
+    if (enhancedArg) {
+      arg = std::move(*enhancedArg);
+    }
+    return arg;
+  }
+};
+
+template<>
+class JNIToJSIConverter<std::string> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, const std::string &value) {
+    auto enhancedValue = convertStringToFollyDynamicIfNeeded(rt, value);
+    return enhancedValue ? std::move(*enhancedValue) : jsi::String::createFromUtf8(rt, value);
+  }
+};
+
+template<>
+class JNIToJSIConverter<folly::dynamic> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, const folly::dynamic &value) {
+    auto arg = jsi::valueFromDynamic(rt, value);
+    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
+    if (enhancedArg) {
+      arg = std::move(*enhancedArg);
+    }
+    return arg;
+  }
+};
+
+template<typename T>
+inline jsi::Value convertToJS(jsi::Runtime &rt, const T &value) {
+  if constexpr (std::is_same_v<SimpleConverter, typename JNIToJSIConverter<
+    decltype(unwrapJNIRef(std::declval<const T &>()))
+  >::converterType>) {
+    return JNIToJSIConverter<
+      decltype(unwrapJNIRef(std::declval<const T &>()))
+    >::convert(rt, unwrapJNIRef(value));
+  } else {
+    return JNIToJSIConverter<
+      decltype(unwrapJNIRef(std::declval<const T &>()))
+    >::convert(rt, unwrapJNIRef(value), value);
+  }
+}
 } // namespace expo

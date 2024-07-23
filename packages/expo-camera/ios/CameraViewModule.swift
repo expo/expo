@@ -142,6 +142,14 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("mirror") { (view, mirror: Bool?) in
+        if let mirror {
+          view.mirror = mirror
+          return
+        }
+        view.mirror = false
+      }
+
       OnViewDidUpdateProps { view in
         view.initCamera()
       }

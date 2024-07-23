@@ -11,6 +11,7 @@
 - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Add the ability to change the name of the exported shared object. ([#30040](https://github.com/expo/expo/pull/30040) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Supported returning of the `SharedObject` from functions. ([#30426](https://github.com/expo/expo/pull/30426) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -32,7 +33,9 @@
 - [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
 - [Android] When a `SharedObject` that was passed as an argument is returned, it no longer creates a new object. ([#30231](https://github.com/expo/expo/pull/30231) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed some types weren't correctly converted when using coroutines. ([#30227](https://github.com/expo/expo/pull/30227) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix getExternalPathPermissions returns no read/write permissions. ([#30540](https://github.com/expo/expo/pull/30540) by [@dispelpowerone](https://github.com/dispelpowerone))
 - [Android] Fixed not throwing when setting read-only properties. ([#30428](https://github.com/expo/expo/pull/30428) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `expo.modules.kotlin.jni.tests.RuntimeHolder` class not found crash when R8 is enabled. ([#30572](https://github.com/expo/expo/pull/30572) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

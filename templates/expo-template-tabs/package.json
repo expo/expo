@@ -2,6 +2,7 @@
   "name": "expo-template-tabs",
   "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
+  "license": "0BSD",
   "version": "51.0.28",
   "scripts": {
     "start": "expo start",

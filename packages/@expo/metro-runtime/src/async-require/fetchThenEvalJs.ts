@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { fetchAsync } from './fetchAsync';
 import { MetroServerError } from './errors';
+import { fetchAsync } from './fetchAsync';
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
  *
