@@ -7,9 +7,11 @@ import { View } from 'react-native';
 export default function Route() {
   return (
     <View style={{ flex: 1 }}>
-      <Auth01 />
-      <Dashboard01 />
-      <Charts />
+      <Auth01
+        webview={{
+          scrollEnabled: false,
+        }}
+      />
     </View>
   );
 }

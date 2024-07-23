@@ -1,48 +1,6 @@
 'use dom';
+
 import '@/global.css';
-import type { WebViewProps } from 'expo/dom';
-import { StyleNoSelect } from 'expo/dom';
-
-import { Link } from 'expo-router';
-import {
-  Bell,
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
-  File,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreVertical,
-  Package,
-  Package2,
-  PanelLeft,
-  Search,
-  Settings,
-  ShoppingCart,
-  Truck,
-  Users2,
-} from 'lucide-react';
-
-import {
-  Area,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Label,
-  LabelList,
-  Line,
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
-  Rectangle,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from 'recharts';
-
-import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -62,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -86,16 +45,41 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Link } from 'expo-router';
+import { StyleNoSelect } from 'expo/dom';
+import {
+  Bell,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  CreditCard,
+  File,
+  Home,
+  LineChart,
+  ListFilter,
+  MoreVertical,
+  Package,
+  Package2,
+  PanelLeft,
+  Search,
+  Settings,
+  ShoppingCart,
+  Truck,
+  Users2,
+} from 'lucide-react';
+import { Area, AreaChart, XAxis, YAxis } from 'recharts';
+
 import { ChartContainer } from '../ui/chart';
-import { AreaChart } from 'recharts';
+
+import type { WebViewProps } from 'expo/dom';
 import type { NotificationContentInput } from 'expo-notifications';
 
-export default function Dashboard({
-  requestNotificationsPermissions,
-}: {
-  webview?: WebViewProps;
-  requestNotificationsPermissions: (content: NotificationContentInput) => Promise<void>;
-}) {
+export default function Dashboard() {
+  // {
+  //   requestNotificationsPermissions,
+  // }: {
+  //   requestNotificationsPermissions: (content: NotificationContentInput) => Promise<void>;
+  // }
   return (
     <TooltipProvider>
       <StyleNoSelect />
@@ -112,24 +96,14 @@ export default function Dashboard({
               <TooltipTrigger asChild>
                 <Link
                   href="/"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
                   <Home className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Dashboard</TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/orders"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
-                  <ShoppingCart className="h-5 w-5" />
-                  <span className="sr-only">Orders</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Orders</TooltipContent>
-            </Tooltip>
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -195,15 +169,9 @@ export default function Dashboard({
                     <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
                     <span className="sr-only">Acme Inc</span>
                   </Link>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground">
+                  <Link href="/" className="flex items-center gap-4 px-2.5 text-foreground">
                     <Home className="h-5 w-5" />
                     Dashboard
-                  </Link>
-                  <Link href="/orders" className="flex items-center gap-4 px-2.5 text-foreground">
-                    <ShoppingCart className="h-5 w-5" />
-                    Orders
                   </Link>
                   <Link
                     href="/products"
@@ -391,25 +359,13 @@ export default function Dashboard({
                 <Card x-chunk="dashboard-05-chunk-2">
                   <CardHeader className="pb-2">
                     <CardDescription>This Month</CardDescription>
+
                     <CardTitle className="text-4xl">$5,329</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">+10% from last month</div>
                   </CardContent>
-                  <CardFooter className="gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 gap-1 text-sm"
-                      onClick={() => {
-                        requestNotificationsPermissions({
-                          title: 'New Order',
-                          body: 'Liam Johnson has placed a new order.',
-                        });
-                      }}>
-                      <Bell className="h-3.5 w-3.5" />
-                      <span className="sr-only sm:not-sr-only">Notify</span>
-                    </Button>
+                  <CardFooter>
                     <Progress value={12} aria-label="12% increase" />
                   </CardFooter>
                 </Card>
@@ -628,7 +584,16 @@ export default function Dashboard({
                     <CardDescription>Date: November 23, 2023</CardDescription>
                   </div>
                   <div className="ml-auto flex items-center gap-1">
-                    <Button size="sm" variant="outline" className="h-8 gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1"
+                      onClick={() => {
+                        requestNotificationsPermissions({
+                          title: 'New Order',
+                          body: 'Liam Johnson has placed a new order.',
+                        });
+                      }}>
                       <Truck className="h-3.5 w-3.5" />
                       <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
                         Track Order
