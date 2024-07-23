@@ -44,7 +44,8 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/'
+      '/',
+      100
     );
 
     const images = [
@@ -81,7 +82,8 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/'
+      '/',
+      100
     );
 
     const images = [
@@ -113,7 +115,8 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/'
+      '/',
+      100
     );
 
     const images = [
