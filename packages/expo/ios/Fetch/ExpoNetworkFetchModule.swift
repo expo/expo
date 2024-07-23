@@ -2,25 +2,19 @@
 
 import ExpoModulesCore
 
-public final class ExpoNetworkFetchModule: Module {
-  private static let queue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
+private let queue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
 
+public final class ExpoNetworkFetchModule: Module {
   private var urlSession: URLSession?
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
   public required init(appContext: AppContext) {
-    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: Self.queue)
+    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: queue)
     super.init(appContext: appContext)
   }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNetworkFetchModule")
-
-    Events(
-      "didReceiveResponseData",
-      "didComplete",
-      "didFailWithError"
-    )
 
     OnCreate {
       urlSession = createDefaultURLSession()
@@ -33,20 +27,18 @@ public final class ExpoNetworkFetchModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(NativeResponse.self) {
       Constructor {
-        return NativeResponse(dispatchQueue: Self.queue)
+        return NativeResponse(dispatchQueue: queue)
       }
 
       AsyncFunction("startStreaming") { (response: NativeResponse) in
         response.startStreaming()
-      }.runOnQueue(Self.queue)
+      }.runOnQueue(queue)
 
       AsyncFunction("cancelStreaming") { (response: NativeResponse, _ reason: String) in
         response.cancelStreaming()
-      }.runOnQueue(Self.queue)
+      }.runOnQueue(queue)
 
-      Property("bodyUsed") { (response: NativeResponse) in
-        return response.bodyUsed
-      }
+      Property("bodyUsed", \.bodyUsed)
 
       Property("headers") { (response: NativeResponse) in
         return response.responseInit?.headers ?? []
@@ -64,24 +56,22 @@ public final class ExpoNetworkFetchModule: Module {
         return response.responseInit?.url ?? ""
       }
 
-      Property("redirected") { (response: NativeResponse) in
-        return response.redirected
-      }
+      Property("redirected", \.redirected)
 
       AsyncFunction("arrayBuffer") { (response: NativeResponse, promise: Promise) in
         response.waitFor(states: [.bodyCompleted]) { _ in
-          let data = response.ref.finalize()
+          let data = response.sink.finalize()
           promise.resolve(data)
         }
-      }.runOnQueue(Self.queue)
+      }.runOnQueue(queue)
 
       AsyncFunction("text") { (response: NativeResponse, promise: Promise) in
         response.waitFor(states: [.bodyCompleted]) { _ in
-          let data = response.ref.finalize()
+          let data = response.sink.finalize()
           let text = String(decoding: data, as: UTF8.self)
           promise.resolve(text)
         }
-      }.runOnQueue(Self.queue)
+      }.runOnQueue(queue)
     }
 
     Class(NativeRequest.self) {
@@ -107,16 +97,16 @@ public final class ExpoNetworkFetchModule: Module {
             promise.reject(request.response.error ?? NetworkFetchUnknownException())
           }
         }
-      }.runOnQueue(Self.queue)
+      }.runOnQueue(queue)
 
       AsyncFunction("cancel") { (request: NativeRequest) in
         request.cancel(urlSessionDelegate: self.urlSessionDelegate)
-      }.runOnQueue(Self.queue)
+      }.runOnQueue(queue)
     }
   }
 
   public func setCustomURLSessionConfigurationProvider(provider: NSURLSessionConfigurationProvider?) {
-    Self.queue.async {
+    queue.async {
       if let provider, let config = provider() {
         self.urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
       } else {

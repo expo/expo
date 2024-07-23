@@ -35,7 +35,8 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     for tuple in requestInit.headers {
       request.addValue(tuple[1], forHTTPHeaderField: tuple[0])
     }
-    if request.allHTTPHeaderFields?["Content-Encoding"] == "gzip", let gzipBody = RCTGzipData(requestBody, -1 /* default */) {
+    if request.value(forHTTPHeaderField: "content-encoding") == "gzip",
+      let gzipBody = RCTGzipData(requestBody, -1 /* default */) {
       request.httpBody = gzipBody
       request.setValue(String(gzipBody.count), forHTTPHeaderField: "Content-Length")
     } else {

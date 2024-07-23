@@ -3,14 +3,15 @@
 import ExpoModulesCore
 
 /**
- A SharedRef for request.
+ A SharedObject for request.
  */
-internal final class NativeRequest: SharedRef<ExpoURLSessionTask> {
+internal final class NativeRequest: SharedObject {
   internal let response: NativeResponse
+  internal let task: ExpoURLSessionTask
 
   init(response: NativeResponse) {
     self.response = response
-    super.init(ExpoURLSessionTask(delegate: self.response))
+    self.task = ExpoURLSessionTask(delegate: self.response)
   }
 
   func start(
@@ -20,7 +21,7 @@ internal final class NativeRequest: SharedRef<ExpoURLSessionTask> {
     requestInit: NativeRequestInit,
     requestBody: Data?
   ) {
-    self.ref.start(
+    self.task.start(
       urlSession: urlSession,
       urlSessionDelegate: urlSessionDelegate,
       url: url,
@@ -30,29 +31,7 @@ internal final class NativeRequest: SharedRef<ExpoURLSessionTask> {
   }
 
   func cancel(urlSessionDelegate: URLSessionSessionDelegateProxy) {
-    self.ref.cancel(urlSessionDelegate: urlSessionDelegate)
+    self.task.cancel(urlSessionDelegate: urlSessionDelegate)
     self.response.emitRequestCanceled()
   }
-}
-
-/**
- Enum for RequestInit.credentials.
- */
-internal enum NativeRequestCredentials: String, Enumerable {
-  case include
-  case omit
-}
-
-/**
- Record for RequestInit.
- */
-internal struct NativeRequestInit: Record {
-  @Field
-  var credentials: NativeRequestCredentials = .include
-
-  @Field
-  var headers: [[String]] = []
-
-  @Field
-  var method: String = "GET"
 }

@@ -3,9 +3,11 @@
 import ExpoModulesCore
 
 /**
- A SharedRef for response.
+ A SharedObject for response.
  */
-internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTaskDelegate {
+internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
+  internal let sink: ResponseSink
+
   private let dispatchQueue: DispatchQueue
 
   private(set) var state: ResponseState = .intialized {
@@ -26,12 +28,12 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
   private(set) var error: Error?
 
   var bodyUsed: Bool {
-    return self.ref.bodyUsed
+    return self.sink.bodyUsed
   }
 
   init(dispatchQueue: DispatchQueue) {
+    self.sink = ResponseSink()
     self.dispatchQueue = dispatchQueue
-    super.init(ResponseSink())
   }
 
   func startStreaming() {
@@ -39,7 +41,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
       return
     }
     state = .bodyStreamingStarted
-    let queuedData = self.ref.finalize()
+    let queuedData = self.sink.finalize()
     emit(event: "didReceiveResponseData", arguments: queuedData)
   }
 
@@ -135,7 +137,7 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
     }
 
     if state == .responseReceived {
-      self.ref.appendBufferBody(data: data)
+      self.sink.appendBufferBody(data: data)
     } else if state == .bodyStreamingStarted {
       emit(event: "didReceiveResponseData", arguments: data)
     }
@@ -166,53 +168,4 @@ internal final class NativeResponse: SharedRef<ResponseSink>, ExpoURLSessionTask
       state = .bodyCompleted
     }
   }
-}
-
-/**
- A data structure to store response body chunks
- */
-internal final class ResponseSink {
-  private var bodyQueue: [Data] = []
-  private var isFinalized = false
-  private(set) var bodyUsed = false
-
-  fileprivate func appendBufferBody(data: Data) {
-    bodyUsed = true
-    bodyQueue.append(data)
-  }
-
-  func finalize() -> Data {
-    let size = bodyQueue.reduce(0) { $0 + $1.count }
-    var result = Data(capacity: size)
-    while !bodyQueue.isEmpty {
-      let data = bodyQueue.removeFirst()
-      result.append(data)
-    }
-    bodyUsed = true
-    isFinalized = true
-    return result
-  }
-}
-
-/**
- States represent for native response.
- */
-internal enum ResponseState: Int {
-  case intialized = 0
-  case started
-  case responseReceived
-  case bodyCompleted
-  case bodyStreamingStarted
-  case bodyStreamingCanceled
-  case errorReceived
-}
-
-/**
- Native data for ResponseInit.
- */
-internal struct NativeResponseInit {
-  let headers: [[String]]
-  let status: Int
-  let statusText: String
-  let url: String
 }
