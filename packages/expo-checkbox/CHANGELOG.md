@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react`/`react-native` peer dependencies.
+
 ### 💡 Others
 
 ## 3.0.0 — 2024-04-18
