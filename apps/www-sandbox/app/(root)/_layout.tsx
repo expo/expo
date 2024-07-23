@@ -5,9 +5,9 @@ import SideBarNav from '@/components/www/side-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Layout() {
-  return <Slot />;
-  if (process.env.EXPO_OS === 'web') {
-  }
+  // return <Slot />;
+  // if (process.env.EXPO_OS === 'web') {
+  // }
   return (
     <Tabs
       screenOptions={{
