@@ -67,23 +67,36 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
     async (config) => {
       const { projectRoot } = config.modRequest;
 
-      const configFiles = ['babel.config.json', '.babelrc.json', 'babel.config.js', '.babelrc.js'];
+      const babelConfigFiles = [
+        'babel.config.json',
+        'babel.config.js',
+        'babel.config.cjs',
+        'babel.config.mjs',
+        'babel.config.cts',
+        '.babelrc.json',
+        '.babelrc.js',
+        '.babelrc.cjs',
+        '.babelrc.mjs',
+        '.babelrc.cts',
+        '.babelrc',
+      ];
 
-      const foundConfig = configFiles.find((configFile) =>
-        fs.existsSync(path.join(projectRoot, configFile)),
-      );
+      for (const configFile of babelConfigFiles) {
+        const babelConfigPath = path.join(projectRoot, configFile);
 
-      if (foundConfig) {
-        const configPath = path.join(projectRoot, foundConfig);
+        if (!fs.existsSync(babelConfigPath)) {
+          continue;
+        }
 
-        let contents = await fs.promises.readFile(configPath, 'utf8');
+        let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
         contents = updateBabelConfig(contents);
-        await fs.promises.writeFile(configPath, contents);
-      } else {
-        console.warn(
-          '⚠️  Could not find `babel.config.json`, `.babelrc.json`, `babel.config.js`, or `.babelrc.js` in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
-        );
+        await fs.promises.writeFile(babelConfigPath, contents);
+        return config;
       }
+
+      console.warn(
+        '⚠️  Could not find `babel.config.json`, `.babelrc.json`, `babel.config.js`, or `.babelrc.js` in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
+      );
       return config;
     },
   ]);
