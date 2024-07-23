@@ -3,6 +3,7 @@ export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'def
 export type PlatformSelect = <T>(specifics: {
     [platform in PlatformSelectOSType]?: T;
 }) => T;
+/** @hidden */
 declare const Platform: {
     /**
      * Denotes the currently running platform.

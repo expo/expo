@@ -35,6 +35,7 @@ const nativeSelect =
         return undefined;
       };
 
+/** @hidden */
 const Platform = {
   /**
    * Denotes the currently running platform.
