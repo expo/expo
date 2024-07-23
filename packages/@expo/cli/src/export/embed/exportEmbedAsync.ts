@@ -151,6 +151,8 @@ export async function exportEmbedBundleAndAssetsAsync(
 
     const files: ExportAssetMap = new Map();
 
+    const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
+
     await Promise.all(
       bundles.artifacts.map(async (artifact) => {
         // TODO: Remove duplicates...
@@ -161,7 +163,6 @@ export async function exportEmbedBundleAndAssetsAsync(
 
             // MUST MATCH THE BABEL PLUGIN!
             const hash = crypto.createHash('sha1').update(ref).digest('hex');
-            const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
             const outputName = `${rootDir}/${hash}/index.html`;
             const generatedEntryPath = await devServer.getWebviewProxyEntry(ref);
             const baseUrl = `/${rootDir}/${hash}`;
@@ -175,7 +176,7 @@ export async function exportEmbedBundleAndAssetsAsync(
               serializerIncludeMaps: !!sourceMapUrl,
               bytecode: false,
               reactCompiler: !!exp.experiments?.reactCompiler,
-              // baseUrl,
+              baseUrl: hash,
             });
 
             const html = await serializeHtmlWithAssets({
@@ -203,14 +204,23 @@ export async function exportEmbedBundleAndAssetsAsync(
               contents: html,
             });
 
-            // Save assets like a typical bundler, preserving the file paths on web.
-            // TODO: Update React Native Web to support loading files from asset hashes.
-            await persistMetroAssetsAsync(projectRoot, bundle.assets, {
-              files,
-              platform: 'web',
-              outputDirectory: options.assetsDest!,
-              baseUrl,
-            });
+            if (options.assetsDest) {
+              const outputDirectory = path.join(options.assetsDest, rootDir);
+              // Save assets like a typical bundler, preserving the file paths on web.
+              // TODO: Update React Native Web to support loading files from asset hashes.
+              await persistMetroAssetsAsync(
+                projectRoot,
+                bundle.assets.map((asset) => ({
+                  ...asset,
+                  httpServerLocation: path.join(rootDir, asset.httpServerLocation),
+                })),
+                {
+                  files,
+                  platform: 'web',
+                  outputDirectory: options.assetsDest,
+                }
+              );
+            }
           }
         }
       })

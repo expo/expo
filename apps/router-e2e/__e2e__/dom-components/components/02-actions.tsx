@@ -1,7 +1,6 @@
 'use dom';
 
 import { useState } from 'react';
-import '../global.css';
 
 export default function Page({
   showAlert,

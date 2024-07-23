@@ -628,7 +628,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     if (!exists) {
       // Give time for watchman to compute the file...
-      await new Promise((res) => setTimeout(res, 500));
+      // TODO: Virtual modules which can have dependencies.
+      await new Promise((res) => setTimeout(res, 1000));
     }
 
     return generatedEntry;
