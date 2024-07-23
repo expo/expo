@@ -1,9 +1,9 @@
 import {
   AndroidConfig,
-  ConfigPlugin,
+  type ConfigPlugin,
   withInfoPlist,
   withAndroidManifest,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 
 type WithExpoVideoOptions = {
   supportsBackgroundPlayback?: boolean;

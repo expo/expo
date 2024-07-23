@@ -1,1 +1,1 @@
-// The contents of this file are added in Babel.
+// The contents of this file are added in Metro.
