@@ -1,5 +1,5 @@
 import { Options as BadginOptions } from 'badgin';
-import { ProxyNativeModule } from 'expo/internal';
+import type { ProxyNativeModule } from 'expo/internal';
 
 export type WebSetBadgeCountOptions = BadginOptions;
 type SetBadgeCountOptions = WebSetBadgeCountOptions | undefined;
