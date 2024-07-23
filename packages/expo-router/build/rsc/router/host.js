@@ -57,6 +57,7 @@ if (BASE_PATH === '/') {
     throw new Error(`Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${(0, getDevServer_1.getDevServer)().fullBundleUrl}`);
 }
 const checkStatus = async (responsePromise) => {
+    // TODO: Combine with metro async fetch logic.
     const response = await responsePromise;
     if (!response.ok) {
         // NOTE(EvanBacon): Transform the Metro development error into a JS error that can be used by LogBox.

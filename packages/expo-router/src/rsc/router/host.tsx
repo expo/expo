@@ -52,6 +52,7 @@ if (BASE_PATH === '/') {
 }
 
 const checkStatus = async (responsePromise: Promise<Response>): Promise<Response> => {
+  // TODO: Combine with metro async fetch logic.
   const response = await responsePromise;
   if (!response.ok) {
     // NOTE(EvanBacon): Transform the Metro development error into a JS error that can be used by LogBox.
