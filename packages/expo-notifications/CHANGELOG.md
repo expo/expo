@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Notification's textInput content would contain `placeholder` instead of the actual user input ([#27479](https://github.com/expo/expo/pull/27479) by [@Victor-FT](https://github.com/Victor-FT))
+
 ### 💡 Others
 
 ## 0.28.11 — 2024-07-22
