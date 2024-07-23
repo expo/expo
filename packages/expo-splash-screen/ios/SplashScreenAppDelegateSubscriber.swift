@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 public class SplashScreenAppDelegateSubscriber: ExpoAppDelegateSubscriber {
-  public func customiseRootView(rctView: RCTRootView) {
-    SplashScreenManager.shared.initWithStoryboard(view: rctView)
+  public func customizeRootView(_ rootView: UIView) {
+    SplashScreenManager.shared.initWith(rootView: rootView)
   }
 }

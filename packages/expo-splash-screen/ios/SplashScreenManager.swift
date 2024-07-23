@@ -10,7 +10,7 @@ public class SplashScreenManager: NSObject {
 
   private override init() {}
 
-  public func initWithStoryboard(view: RCTRootView) {
+  public func initWith(rootView: UIView) {
     if RCTRunningInAppExtension() {
       return
     }
@@ -19,18 +19,18 @@ public class SplashScreenManager: NSObject {
       self.nativeHidden = true
     }
 
-    rootView = view
+    self.rootView = rootView
     if let vc = UIStoryboard(name: "SplashScreen", bundle: nil).instantiateInitialViewController() {
       loadingView = vc.view
       loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-      if let bounds = rootView?.bounds {
+      if let bounds = self.rootView?.bounds {
         loadingView?.frame = bounds
         loadingView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
       }
       loadingView?.isHidden = false
       if let loadingView {
-        rootView?.addSubview(loadingView)
+        self.rootView?.addSubview(loadingView)
       }
     }
   }
