@@ -169,7 +169,8 @@ export async function exportEmbedBundleAndAssetsAsync(
             // Run metro bundler and create the JS bundles/source maps.
             const bundle = await devServer.legacySinglePageExportBundleAsync({
               platform: 'web',
-              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
+              isDOM: true,
+              splitChunks: false, //!env.EXPO_NO_BUNDLE_SPLITTING,
               mainModuleName: resolveRealEntryFilePath(projectRoot, generatedEntryPath),
               mode: options.dev ? 'development' : 'production',
               engine: isHermes ? 'hermes' : undefined,
@@ -205,7 +206,6 @@ export async function exportEmbedBundleAndAssetsAsync(
             });
 
             if (options.assetsDest) {
-              const outputDirectory = path.join(options.assetsDest, rootDir);
               // Save assets like a typical bundler, preserving the file paths on web.
               // TODO: Update React Native Web to support loading files from asset hashes.
               await persistMetroAssetsAsync(

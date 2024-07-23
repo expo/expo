@@ -753,11 +753,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const metroUrl = new URL(
           createBundleUrlPath({
             ...instanceMetroOptions,
+            isDOM: true,
             mainModuleName: path.relative(serverRoot, generatedEntry),
             bytecode: false,
             platform: 'web',
             isExporting: false,
-
             engine: 'hermes',
             // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
             lazy: true,
