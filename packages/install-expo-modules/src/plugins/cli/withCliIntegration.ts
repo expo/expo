@@ -65,8 +65,6 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const { projectRoot } = config.modRequest;
-
       const babelConfigFiles = [
         'babel.config.json',
         'babel.config.js',
@@ -82,7 +80,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
       ];
 
       for (const configFile of babelConfigFiles) {
-        const babelConfigPath = path.join(projectRoot, configFile);
+        const babelConfigPath = path.join(config.modRequest.projectRoot, configFile);
 
         if (!fs.existsSync(babelConfigPath)) {
           continue;
