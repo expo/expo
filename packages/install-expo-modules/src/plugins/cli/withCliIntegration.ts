@@ -73,7 +73,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
         await fs.promises.writeFile(babelConfigJsPath, contents);
         return config;
       }
-      
+
       const babelConfigJsonPath = path.join(config.modRequest.projectRoot, 'babel.config.json');
 
       if (await fs.promises.exists(babelConfigJsonPath)) {
@@ -132,7 +132,7 @@ export function updateAndroidGradleFile(contents: string): string {
 }
 
 export function updateBabelConfig(contents: string): string {
-  return contents.replace(/['"]module:metro-react-native-babel-preset['"]/g, `'babel-preset-expo'`);
+  return contents.replace(/(['"])module:metro-react-native-babel-preset(['"])/g, `$1babel-preset-expo$2`);
 }
 
 export function updateMetroConfig(contents: string): string {
