@@ -12,7 +12,7 @@ export type SplashScreenConfig = {
 
 export type AndroidPluginConfig = {
   backgroundColor: string;
-  logoWidth: number;
+  logoWidth?: number;
   image?: string | null;
 };
 

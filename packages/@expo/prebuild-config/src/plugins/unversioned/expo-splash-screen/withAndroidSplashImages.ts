@@ -94,14 +94,15 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin<AndroidPluginConfig> = (
-  config,
-  { logoWidth = 100 }
-) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidPluginConfig> = (config, props) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot, logoWidth);
+      await setSplashImageDrawablesAsync(
+        config,
+        config.modRequest.projectRoot,
+        props?.logoWidth ?? 100
+      );
       return config;
     },
   ]);
@@ -160,7 +161,8 @@ export async function setSplashImageDrawablesForThemeAsync(
   await Promise.all(
     sizes.map(async (imageKey) => {
       // @ts-ignore
-      const image = await Jimp.read(config[imageKey]);
+      const url = config[imageKey];
+      const image = await Jimp.read(url).catch(() => null);
 
       if (image) {
         const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;

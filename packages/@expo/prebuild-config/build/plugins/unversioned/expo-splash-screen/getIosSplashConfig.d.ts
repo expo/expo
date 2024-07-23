@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>;
 export type IOSPluginConfig = {
-    logoWidth: number | null;
+    logoWidth?: number;
 } & IOSSplashConfig;
 export interface IOSSplashConfig {
     image?: string | null;

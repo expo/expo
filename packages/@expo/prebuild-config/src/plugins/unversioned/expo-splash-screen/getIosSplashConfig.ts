@@ -6,7 +6,7 @@ const defaultResizeMode = 'contain';
 const defaultBackgroundColor = '#ffffff';
 
 export type IOSPluginConfig = {
-  logoWidth: number | null;
+  logoWidth?: number;
 } & IOSSplashConfig;
 
 export interface IOSSplashConfig {

@@ -6,17 +6,17 @@ import {
   ImageContentMode,
   removeImageFromSplashScreen,
 } from './InterfaceBuilder';
-import { IOSSplashConfig } from './getIosSplashConfig';
+import { IOSPluginConfig } from './getIosSplashConfig';
 import { withIosSplashScreenStoryboard } from './withIosSplashScreenStoryboard';
 
-export const withIosSplashScreenImage: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
+export const withIosSplashScreenImage: ConfigPlugin<IOSPluginConfig> = (config, splash) => {
   return withIosSplashScreenStoryboard(config, (config) => {
     config.modResults = applySplashScreenStoryboard(config.modResults, splash);
     return config;
   });
 };
 
-export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash: IOSSplashConfig) {
+export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash: IOSPluginConfig) {
   const resizeMode = splash?.resizeMode;
   const splashScreenImagePresent = Boolean(splash?.image);
   const imageName = 'SplashScreenLogo';
@@ -27,6 +27,7 @@ export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash:
       contentMode,
       imageName,
       backgroundColor: splash.backgroundColor,
+      logoWidth: splash.logoWidth,
     });
   }
 

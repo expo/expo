@@ -10,7 +10,7 @@ export type SplashScreenConfig = {
 };
 export type AndroidPluginConfig = {
     backgroundColor: string;
-    logoWidth: number;
+    logoWidth?: number;
     image?: string | null;
 };
 export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): SplashScreenConfig | null;

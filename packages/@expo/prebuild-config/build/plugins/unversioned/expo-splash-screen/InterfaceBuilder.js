@@ -77,11 +77,12 @@ function getAbsoluteConstraints(childId, parentId) {
 function applyImageToSplashScreenXML(xml, {
   imageName,
   contentMode,
-  backgroundColor
+  backgroundColor,
+  logoWidth = 100
 }) {
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-  const width = 100;
-  const height = 100;
+  const width = logoWidth;
+  const height = logoWidth;
   const x = (mainView.rect[0].$.width - width) / 2;
   const y = (mainView.rect[0].$.height - height) / 2;
   const imageView = {

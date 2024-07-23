@@ -113,11 +113,9 @@ const DRAWABLES_CONFIGS = {
     dimensionsMultiplier: 4
   }
 };
-const withAndroidSplashImages = (config, {
-  logoWidth = 100
-}) => {
+const withAndroidSplashImages = (config, props) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot, logoWidth);
+    await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot, props?.logoWidth ?? 100);
     return config;
   }]);
 };
@@ -156,7 +154,8 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
   await Promise.all(sizes.map(async imageKey => {
     // @ts-ignore
-    const image = await _jimpCompact().default.read(config[imageKey]);
+    const url = config[imageKey];
+    const image = await _jimpCompact().default.read(url).catch(() => null);
     if (image) {
       const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
       const width = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
