@@ -36,7 +36,7 @@ export default function DevLoadingView() {
       setAnimationClass('__expo_popupHide');
       timer.current = setTimeout(() => {
         setIsAnimating(false);
-      }, 250);
+      }, MIN_DURATION - ANIMATION_DURATION);
     }
     return () => {
       timer.current && clearTimeout(timer.current);
@@ -64,12 +64,12 @@ export default function DevLoadingView() {
   padding: 8px;
   border-radius: 8px;
   
-  animation: __fastrefreshtoast 250ms forwards;
+  animation: __fastrefreshtoast ${ANIMATION_DURATION}ms forwards;
   
   opacity: 0; filter: blur(4px); transform: translateY(20%);
 }
 
-.__expo_popupHide { animation: __fastrefreshtoastDown 250ms forwards; }
+.__expo_popupHide { animation: __fastrefreshtoastDown ${ANIMATION_DURATION}ms forwards; }
 
 @keyframes __fastrefreshtoast {
   0% { opacity: 0; filter: blur(4px); transform: translateY(20%); }
@@ -93,25 +93,42 @@ const emitter = new NativeEventEmitter({
   removeListeners() {},
 });
 
+const MIN_DURATION = 400;
+const ANIMATION_DURATION = 150;
+
 function useFastRefresh() {
   const [isAnimating, setIsAnimating] = useState(false);
   const duration = useRef<number | null>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!emitter) return;
     function handleShowMessage() {
       setIsAnimating(true);
       duration.current = Date.now();
     }
+
     function handleHide() {
-      const min = Math.max(0, 400 - ((duration.current ?? 0) - Date.now()));
-      setTimeout(() => {
+      // Bail out if the timeout is already set
+      if (timeout.current) {
+        return;
+      }
+
+      const timeVisible = duration.current ? Date.now() - duration.current : 0;
+
+      const min = Math.max(0, MIN_DURATION - timeVisible);
+
+      timeout.current = setTimeout(() => {
+        timeout.current = null;
         setIsAnimating(false);
       }, min);
     }
     const show = emitter.addListener('devLoadingView:showMessage', handleShowMessage);
     const hide = emitter.addListener('devLoadingView:hide', handleHide);
     return () => {
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+        timeout.current = null;
+      }
       show.remove();
       hide.remove();
     };
