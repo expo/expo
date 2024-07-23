@@ -1,10 +1,10 @@
 // A webview without babel to test faster.
-import type { BridgeMessage } from './www-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
-
 import { WebView } from 'react-native-webview';
+
 import { _emitGlobalEvent } from './global-events';
+import type { BridgeMessage } from './www-types';
 
 // const outputKey =
 //   'file://' + process.env.EXPO_PROJECT_ROOT + '/__e2e__/tailwind-postcss/components/thing.tsx';

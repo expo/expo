@@ -1,6 +1,6 @@
-import { BridgeMessage, JSONValue } from './www-types';
 import type WebView from 'react-native-webview';
 import type { WebViewMessageEvent } from 'react-native-webview';
+import { BridgeMessage, JSONValue } from './www-types';
 export type WebViewProps = Omit<import('react-native-webview').WebViewProps, 'source'>;
 export declare const emit: <TData extends JSONValue>(message: BridgeMessage<TData>) => never;
 export declare const useBridge: <TData extends JSONValue>(onSubscribe: (message: BridgeMessage<TData>) => void) => readonly [(detail: BridgeMessage<TData>) => void, {

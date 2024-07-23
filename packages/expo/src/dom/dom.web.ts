@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { BridgeMessage, JSONValue } from './www-types';
 
 export { StyleNoSelect } from './webview-wrapper';
@@ -102,9 +103,9 @@ export function _getActionsObject(): Record<string, (...args: any[]) => void | P
             } else if (typeof arg === 'object') {
               try {
                 JSON.stringify(arg);
-              } catch (e) {
+              } catch (cause) {
                 console.error('Functions are not supported in arguments');
-                throw new Error(`Argument at index ${index} is not serializable`);
+                throw new Error(`Argument at index ${index} is not serializable`, { cause });
               }
             }
           });
