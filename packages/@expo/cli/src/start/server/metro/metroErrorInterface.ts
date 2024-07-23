@@ -279,6 +279,7 @@ export async function getErrorOverlayHtmlAsync({
       platform: 'web',
       minify: false,
       optimize: false,
+      usedExports: false,
       baseUrl: '',
       routerRoot,
       isExporting: false,

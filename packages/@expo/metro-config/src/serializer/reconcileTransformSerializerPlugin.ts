@@ -35,7 +35,7 @@ const FORCE_REQUIRE_NAME_HINTS = false;
 
 // Some imports may change order during the transform, so we need to resort them.
 // Resort the dependencies to match the current order of the AST.
-function sortDependencies(
+export function sortDependencies(
   dependencies: readonly Dependency[],
   accordingTo: Module['dependencies']
 ): Map<string, Dependency> {
