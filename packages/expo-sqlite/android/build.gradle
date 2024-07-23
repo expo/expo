@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'de.undercouch.download'
 
 group = 'host.exp.exponent'
-version = '14.0.4'
+version = '14.0.5'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -57,7 +57,7 @@ android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "14.0.4"
+    versionName "14.0.5"
 
     externalNativeBuild {
       cmake {
