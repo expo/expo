@@ -67,7 +67,7 @@ function expoWebviewDirectiveProxy(api) {
                 proxyModule.push(!isUseWebviewSource
                     ? `
                 import React from 'react';
-              import { WebView } from 'expo/dom';
+              import { WebView } from 'expo/dom/internal';
               export default React.forwardRef((props, ref) => {
                 return React.createElement(WebView, { ref, ...props, $$source: proxy });
             });

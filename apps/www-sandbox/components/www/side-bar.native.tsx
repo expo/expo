@@ -4,10 +4,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Link } from 'expo-router';
 import { Home, LineChart, Package, Package2, Settings, ShoppingCart, Users2 } from 'lucide-react';
 
-import type { WebViewProps } from 'expo/dom';
+import type { DOMProps } from 'expo/dom';
 import { View, Text } from 'react-native';
 
-export default function SideBarNav({}: { webview?: WebViewProps }) {
+export default function SideBarNav({}: { dom?: DOMProps }) {
   return (
     <View>
       <Text>Hey</Text>

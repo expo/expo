@@ -22,7 +22,7 @@ function mergeRefs(...props) {
   };
 }
 
-const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }: any, ref) => {
+const RawWebView = React.forwardRef(({ dom, $$source, ...marshallProps }: any, ref) => {
   const webviewRef = React.useRef<WebView>(null);
 
   const setRef = React.useMemo(() => mergeRefs(webviewRef, {}, ref), [webviewRef, ref]);
@@ -66,11 +66,11 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }: an
       allowFileAccessFromFileURLs
       allowsAirPlayForMediaPlayback
       allowsFullscreenVideo
-      {...webview}
+      {...dom}
       injectedJavaScriptBeforeContentLoaded={[
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
-        webview?.injectedJavaScriptBeforeContentLoaded,
+        dom?.injectedJavaScriptBeforeContentLoaded,
         'true;',
       ]
         .filter(Boolean)
@@ -78,10 +78,10 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }: an
       ref={setRef}
       source={$$source}
       style={[
-        webview?.style
+        dom?.style
           ? { flex: 1, backgroundColor: 'transparent' }
           : { backgroundColor: 'transparent' },
-        webview?.style,
+        dom?.style,
       ]}
       onMessage={(event) => {
         const { type, data } = JSON.parse(event.nativeEvent.data);
@@ -142,7 +142,7 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }: an
             return emitError(error);
           }
         } else {
-          webview?.onMessage?.(event);
+          dom?.onMessage?.(event);
         }
         _emitGlobalEvent({ type, data });
       }}

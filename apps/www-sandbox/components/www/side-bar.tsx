@@ -6,9 +6,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Link } from 'expo-router';
 import { Home, LineChart, Package, Package2, Settings, ShoppingCart, Users2 } from 'lucide-react';
 
-import type { WebViewProps } from 'expo/dom';
+import type { DOMProps } from 'expo/dom';
 
-export default function SideBarNav({}: { webview?: WebViewProps }) {
+export default function SideBarNav({}: { dom?: DOMProps }) {
   return (
     <TooltipProvider>
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">

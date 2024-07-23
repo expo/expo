@@ -18,7 +18,8 @@ export function buildUrlForBundle(bundlePath: string): string {
 
   if (
     // @ts-expect-error
-    typeof window.ReactNativeWebView !== 'undefined') {
+    typeof window.ReactNativeWebView !== 'undefined'
+  ) {
     // In a webview, you cannot read from an absolute path.
     return bundlePath;
   }

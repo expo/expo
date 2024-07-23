@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export default function ThreeThing({}: { webview: import('expo/dom').WebViewProps }) {
+export default function ThreeThing({}: { dom: import('expo/dom').DOMProps }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!ref.current) return;

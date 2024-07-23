@@ -3,7 +3,7 @@ import '@expo/metro-runtime';
 
 // Add web error box
 import { renderRootComponent } from 'expo-router/build/renderRootComponent';
-import { _getActionsObject, addEventListener } from 'expo/dom';
+import { _getActionsObject, addEventListener } from 'expo/dom/internal';
 import React from 'react';
 
 const actions = _getActionsObject();

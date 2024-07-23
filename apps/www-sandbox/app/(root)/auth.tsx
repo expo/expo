@@ -8,7 +8,7 @@ export default function Route() {
   return (
     <View style={{ flex: 1 }}>
       <Auth01
-        webview={{
+        dom={{
           scrollEnabled: false,
         }}
       />

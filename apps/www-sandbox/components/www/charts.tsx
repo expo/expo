@@ -33,7 +33,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Separator } from '@/components/ui/separator';
 import { isWebview } from 'expo/dom';
 
-export default function Charts({}: { webview: import('expo/dom').WebViewProps }) {
+export default function Charts({}: { dom: import('expo/dom').DOMProps }) {
   return (
     <>
       {isWebview() && (

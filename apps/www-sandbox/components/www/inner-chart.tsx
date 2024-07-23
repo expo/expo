@@ -31,7 +31,7 @@ function useSize(callback: (size: [number, number]) => void) {
 export default function Route({
   updateSize,
 }: {
-  webview: import('expo/dom').WebViewProps;
+  webview: import('expo/dom').DOMProps;
   updateSize(size: [number, number]);
 }) {
   useSize(updateSize);

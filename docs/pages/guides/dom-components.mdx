@@ -10,7 +10,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo offers a novel approach to working with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app, simply moving on a per-component basis.
 
-The Expo native runtime generally does not support using `<div>` or `<img>` tags, but you may find that you want to quickly drop in some web components. This is where webviews come in.
+The Expo native runtime generally does not support using `<div>` or `<img>` tags, but you may find that you want to quickly drop in some web components. This is where DOM components come in.
 
 ## Usage
 
@@ -42,7 +42,7 @@ export default function App() {
 ## Features
 
 - Shared bundler config across web native and webviews.
-- React, TypeScript, CSS, and all other Metro features are enabled in webview components.
+- React, TypeScript, CSS, and all other Metro features are enabled in dom components.
 - Logging in the terminal.
 - Fast Refresh and HMR.
 - Embedded exports for offline support.
@@ -53,12 +53,12 @@ export default function App() {
 
 ## WebView props
 
-To pass props to the underlying webview, add a `webview` object to the component:
+To pass props to the underlying WebView, add a `dom` object to the component:
 
 ```tsx my-components.tsx (web)
 'use dom';
 
-export default function MyComponent({}: { webview: import('expo/dom').WebViewProps }) {
+export default function MyComponent({}: { dom: import('expo/dom').DOMProps }) {
   return (
     <div>
       <h1>Hello, world!</h1>
@@ -67,7 +67,7 @@ export default function MyComponent({}: { webview: import('expo/dom').WebViewPro
 }
 ```
 
-Now you can pass [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) to the webview component:
+Now you can pass [`WebView` props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) to the dom component:
 
 ```tsx App.tsx (native)
 import MyComponent from './my-component';
@@ -75,7 +75,7 @@ import MyComponent from './my-component';
 export default function App() {
   return (
     <MyComponent
-      webview={{
+      dom={{
         scrollEnabled: false,
       }}
     />
@@ -85,7 +85,7 @@ export default function App() {
 
 ## Native Actions
 
-You can send type-safe native functions to webview components by passing async functions as props to the webview component:
+You can send type-safe native functions to DOM components by passing async functions as props to the DOM component:
 
 ```ts App.tsx (native)
 import MyWebView from './my-component';
@@ -109,11 +109,11 @@ export default function MyComponent({ hello }: { hello: (data: string) => Promis
 }
 ```
 
-> You cannot pass functions as nested props to webview components. They must be top-level props.
+> You cannot pass functions as nested props to DOM components. They must be top-level props.
 
-Native actions are always asynchronous and only accept serializable arguments (i.e. no functions). This is because the data is sent over a bridge to the webview.
+Native actions are always asynchronous and only accept serializable arguments (i.e. no functions). This is because the data is sent over a bridge to the WebView.
 
-Native actions can return serializable data to the webview, this is useful for getting data back from the native side.
+Native actions can return serializable data to the WebView, this is useful for getting data back from the native side.
 
 ```tsx
 getDeviceName(): Promise<string> {
@@ -121,11 +121,11 @@ getDeviceName(): Promise<string> {
 }
 ```
 
-Think of these functions like React Server Actions, but instead of living on the server they live locally in the native app and communicate with the webview. This is a powerful way to inject truly native functionality into your webviews.
+Think of these functions like React Server Actions, but instead of living on the server they live locally in the native app and communicate with the WebView. This is a powerful way to inject truly native functionality into your WebViews.
 
 ## Marshalled props
 
-You can also send data to the webview through serializable props:
+You can also send data to the WebView through serializable props:
 
 ```tsx App.tsx (native)
 export default function App() {
@@ -143,65 +143,6 @@ export default function MyComponent({ hello }: { hello: string }) {
 
 These props are sent over an async bridge so they won't be updated synchronously. They're passed as props to the React root component meaning they re-render the entire React tree.
 
-## Communication
-
-You can also send and receive serializable data between your native app and webviews using the `useBridge` API from `expo/dom`:
-
-```js App.js (native)
-import MyComponent from './my-component';
-import { useBridge } from 'expo/dom';
-
-export default function App() {
-  const [emit, webview] = useBridge(data => {
-    console.log('Message from webview:', data);
-  });
-  return (
-    <>
-      <MyComponent webview={webview} />
-      <Text onPress={() => emit({ type: 'hello', data: 'world' })}>Send message</Text>
-    </>
-  );
-}
-```
-
-```js my-component.js (web)
-'use dom';
-
-import { useBridge } from 'expo/dom';
-
-export default function MyComponent() {
-  const [emit] = useBridge(data => {
-    console.log('Message from native:', data);
-  });
-  return (
-    <div>
-      <h1>Hello, world!</h1>
-      <button onClick={() => emit({ type: 'hello', data: 'world' })}>Send message to native</button>
-    </div>
-  );
-}
-```
-
-Data cannot contain functions or circular references. On the web-side you can use the imperative APIs `emit` and `addEventListener` without having to go through React. The native side is more limited since it can host multiple webviews and therefore needs to attach different instances of the event emitters.
-
-```js my-api.js (web)
-import { emit, addEventListener } from 'expo/dom';
-
-export function sendData() {
-  emit({ type: 'hello', data: 'world' });
-}
-
-// Observe any data from the native side.
-const remove = addEventListener('hello', data => {
-  console.log('Message from native:', data);
-});
-
-// unsubscribe from events:
-remove();
-```
-
-All communication is currently global and not scoped to a single webview. This could be changed in the future if needed.
-
 ## Feature detection
 
 Because webview components are simply web components, you may find yourself needing extra qualifiers to better support libraries. You can detect if a component is running in a webview with the following:
@@ -218,13 +159,13 @@ if (
 
 ## Debugging
 
-By default, all `console.log` methods are extended in WebViews to forward logs to the terminal. This makes it fast and easy to see what's happening in your webview components.
+By default, all `console.log` methods are extended in WebViews to forward logs to the terminal. This makes it fast and easy to see what's happening in your DOM components.
 
-Expo also enables WebView inspection and debugging when bundling in development mode. This means you can open Safari > Develop > Simulator > `@iframe` to see the webview's console and inspect elements.
+Expo also enables WebView inspection and debugging when bundling in development mode. This means you can open Safari > Develop > Simulator > `MyComponent.tsx` to see the webview's console and inspect elements.
 
 ## Manual WebViews
 
-You can still create a manual webview using the `WebView` component from `react-native-webview`:
+You can still create a manual WebView using the `WebView` component from `react-native-webview`:
 
 ```js App.js (native)
 import { WebView } from 'react-native-webview';
@@ -238,7 +179,7 @@ This can be useful for rendering websites from a remote server.
 
 ## Measuring WebViews
 
-You may want to measure the size of a webview component and report it back to the native side. This can be done using a native action:
+You may want to measure the size of a DOM component and report it back to the native side. This can be done using a native action:
 
 ```tsx App.tsx (native)
 import MyComponent from './my-component';
@@ -253,7 +194,7 @@ export default function Route() {
           setHeight(size[1]);
         }
       }}
-      webview={{
+      dom={{
         style: { height },
       }}
     />
@@ -287,7 +228,7 @@ function useSize(callback: (size: [number, number]) => void) {
 export default function Route({
   onLayout,
 }: {
-  webview: import('expo/dom').WebViewProps;
+  dom: import('expo/dom').DOMProps;
   onLayout(size: [number, number]);
 }) {
   useSize(onLayout);
@@ -298,11 +239,11 @@ export default function Route({
 
 ## Architecture
 
-Built-in webview support only renders content as single-page applications (e.g. no SSR or SSG). This is because it's a bit simpler to work with and because you don't need browser indexing techniques in your embedded JS code.
+Built-in DOM support only renders content as single-page applications (e.g. no SSR or SSG). This is because it's a bit simpler to work with and because you don't need browser indexing techniques in your embedded JS code.
 
-When a module is marked with `'use dom'`, the module is replaced with a proxy reference which is imported at runtime. This feature is primarily just a number of bundler and CLI magic tricks. You can always use a webview with the stnadard approach by passing raw HTML to a webview component if you'd like.
+When a module is marked with `'use dom'`, the module is replaced with a proxy reference which is imported at runtime. This feature is primarily just a number of bundler and CLI magic tricks. You can always use a WebView with the standard approach by passing raw HTML to a WebView component if you'd like.
 
-If you import a webview component from another webview, the component will just be one large webview. This is because web content is passed directly through and not wrapped in an iframe.
+If you import a DOM component from another webview, the component will just be one large webview. This is because web content is passed directly through and not wrapped in an iframe.
 
 Overall, this system shares a lot of similarities with Expo's React Server Components implementation.
 
@@ -332,4 +273,4 @@ Many large apps also use WebViews for auxiliary routes such as settings pages, h
 
 Ultimately, universal architecture is the most exciting direction. Our extensive universal tooling is the only reason we can even offer a feature as intricate and valuable as this one.
 
-While webview components help with migration and moving quickly, we recommend using universal views whenever possible.
+While DOM components help with migration and moving quickly, we recommend using universal views whenever possible.
