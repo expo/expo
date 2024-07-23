@@ -28,21 +28,9 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
 
     var headers = requestInit.headers.toHeaders()
     val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()
-    val shouldGzipRequestBody =
-      headers["Content-Encoding"]?.equals("gzip", ignoreCase = true) == true
-    val body: ByteArray? = if (shouldGzipRequestBody) {
-      requestBody?.toGzipByteArray()
-    } else {
-      requestBody
-    }
-    if (shouldGzipRequestBody && body != null) {
-      headers = headers.newBuilder()
-        .add("Content-Length", body.size.toString())
-        .build()
-    }
     val request = Request.Builder()
       .headers(headers)
-      .method(requestInit.method, body?.toRequestBody(mediaType))
+      .method(requestInit.method, requestBody?.toRequestBody(mediaType))
       .url(url)
       .build()
     this.requestHolder.request = request
