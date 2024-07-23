@@ -65,7 +65,7 @@ class ExpoNetworkFetchModule : Module() {
         response.bodyUsed
       }
 
-      Property("headers") { response: NativeResponse ->
+      Property("_rawHeaders") { response: NativeResponse ->
         response.responseInit?.headers ?: emptyList()
       }
 
