@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `react-native` peer dependency.
+- Add missing `react-native` peer dependency. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
