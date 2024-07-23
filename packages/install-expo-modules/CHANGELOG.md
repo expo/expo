@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added support for `babel.config.json` when upgrading plain React Native project. ([#30356](https://github.com/expo/expo/pull/30356) by [@wojtekmaj](https://github.com/wojtekmaj))
+- Added support for Babel config files other than `babel.config.js` when upgrading plain React Native project. ([#30356](https://github.com/expo/expo/pull/30356) by [@wojtekmaj](https://github.com/wojtekmaj))
 
 ### 🐛 Bug fixes
 
