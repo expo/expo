@@ -268,7 +268,7 @@ describe(updatePkgDependencies, () => {
       'react-native': 'version-from-project', // add-only package, do not overwrite
       expo: 'version-from-project',
     });
-    expect(Log.warn).toBeCalledWith(
+    expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining(
         `instead of recommended ${[
           `expo@version-from-template`,
@@ -282,11 +282,25 @@ describe(updatePkgDependencies, () => {
 });
 
 describe(updatePkgScripts, () => {
-  it(`modifies the default values`, () => {
+  it(`modifies the default Expo project values`, () => {
     const pkg = {
       scripts: {
         android: 'expo start --android',
         ios: 'expo start --ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('expo run:android');
+    expect(pkg.scripts.ios).toBe('expo run:ios');
+  });
+
+  it(`modifies the default RN CLI project values`, () => {
+    const pkg = {
+      scripts: {
+        android: 'react-native run-android',
+        ios: 'react-native run-ios',
       },
     };
 

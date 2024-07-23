@@ -247,11 +247,19 @@ export function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
   if (!pkg.scripts) {
     pkg.scripts = {};
   }
-  if (!pkg.scripts.android || pkg.scripts.android === 'expo start --android') {
+  if (
+    !pkg.scripts.android ||
+    pkg.scripts.android === 'expo start --android' ||
+    pkg.scripts.android === 'react-native run-android'
+  ) {
     pkg.scripts.android = 'expo run:android';
     hasChanged = true;
   }
-  if (!pkg.scripts.ios || pkg.scripts.ios === 'expo start --ios') {
+  if (
+    !pkg.scripts.ios ||
+    pkg.scripts.ios === 'expo start --ios' ||
+    pkg.scripts.ios === 'react-native run-ios'
+  ) {
     pkg.scripts.ios = 'expo run:ios';
     hasChanged = true;
   }
