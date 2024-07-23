@@ -2,6 +2,8 @@
 
 #ifdef __cplusplus
 
+#pragma once
+
 #import <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;

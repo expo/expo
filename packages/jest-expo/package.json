@@ -9,6 +9,10 @@
     "url": "git://github.com/expo/expo.git",
     "directory": "packages/jest-expo"
   },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo",
   "files": [
     "rsc",
     "android",
@@ -36,6 +40,7 @@
     "@expo/json-file": "^8.3.0",
     "@jest/create-cache-key-function": "^29.2.1",
     "babel-jest": "^29.2.1",
+    "fbemitter": "^3.0.0",
     "find-up": "^5.0.0",
     "jest-environment-jsdom": "^29.2.1",
     "jest-watch-select-projects": "^2.0.0",
@@ -46,8 +51,8 @@
     "stacktrace-js": "^2.0.2",    
     "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo"
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  }
 }

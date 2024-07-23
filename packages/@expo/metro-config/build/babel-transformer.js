@@ -43,7 +43,7 @@ function getBabelCaller({ filename, options, }) {
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer,
-        // Enable React Server Component rules for AST.
+        // Enable React Server Component rules for AST. The naming maps to the resolver property `--conditions=react-server`.
         isReactServer,
         // The base url to make requests from, used for hosting from non-standard locations.
         baseUrl: typeof options.customTransformOptions?.baseUrl === 'string'

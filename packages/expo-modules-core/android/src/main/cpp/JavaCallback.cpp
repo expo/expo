@@ -129,7 +129,7 @@ void JavaCallback::invokeJSFunction(T arg) {
       jsi::Function &jsFunction,
       T arg
     ) {
-      jsFunction.call(rt, {jsi::Value(rt, arg)});
+      jsFunction.call(rt, convertToJS(rt, arg));
     },
     arg
   );
@@ -165,102 +165,19 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  invokeJSFunction<std::string>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      std::string arg
-    ) {
-      std::optional<jsi::Value> extendedString = convertStringToFollyDynamicIfNeeded(
-        rt,
-        arg
-      );
-
-      if (extendedString.has_value()) {
-        const jsi::Value &jsValue = extendedString.value();
-        jsFunction.call(
-          rt,
-          (const jsi::Value *) &jsValue,
-          (size_t) 1
-        );
-        return;
-      }
-
-      jsFunction.call(rt, {jsi::String::createFromUtf8(rt, arg)});
-    },
-    result->toStdString()
-  );
+  invokeJSFunction(result->toStdString());
 }
 
 void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
-  invokeJSFunction<folly::dynamic>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      folly::dynamic arg
-    ) {
-      jsi::Value convertedArg = jsi::valueFromDynamic(rt, arg);
-      auto enhancedArg = decorateValueForDynamicExtension(rt, convertedArg);
-      if (enhancedArg) {
-        convertedArg = std::move(*enhancedArg);
-      }
-
-      jsFunction.call(
-        rt,
-        (const jsi::Value *) &convertedArg,
-        (size_t) 1
-      );
-    },
-    result->cthis()->consume()
-  );
+  invokeJSFunction(result->cthis()->consume());
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
-  invokeJSFunction<folly::dynamic>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      folly::dynamic arg
-    ) {
-      jsi::Value convertedArg = jsi::valueFromDynamic(rt, arg);
-      auto enhancedArg = decorateValueForDynamicExtension(rt, convertedArg);
-      if (enhancedArg) {
-        convertedArg = std::move(*enhancedArg);
-      }
-
-      jsFunction.call(
-        rt,
-        (const jsi::Value *) &convertedArg,
-        (size_t) 1
-      );
-    },
-    result->cthis()->consume()
-  );
+  invokeJSFunction(result->cthis()->consume());
 }
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
-  invokeJSFunction<jni::global_ref<JSharedObject::javaobject>>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      jni::global_ref<JSharedObject::javaobject> arg
-    ) {
-      const auto jsiContext = getJSIContext(rt);
-
-      auto ret = convertSharedObject(
-        jni::make_local(arg),
-        rt,
-        jsiContext
-      );
-
-      jsFunction.call(
-        rt,
-        (const jsi::Value *) &ret,
-        (size_t) 1
-      );
-    },
-    jni::make_global(result)
-  );
+  invokeJSFunction(jni::make_global(result));
 }
 
 void JavaCallback::invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage) {

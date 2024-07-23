@@ -13,7 +13,7 @@ describe('findSharpInstanceAsync', () => {
   });
 
   it(`resolves global sharp-cli path with yarn`, async () => {
-    await spawnAsync('yarn', ['global', 'add', 'sharp-cli@1.15.0']);
+    await spawnAsync('yarn', ['global', 'add', 'sharp-cli@^2.1.0']);
     const { findSharpInstanceAsync } = require('../../src');
     await expect(findSharpInstanceAsync()).resolves.not.toThrow();
   });

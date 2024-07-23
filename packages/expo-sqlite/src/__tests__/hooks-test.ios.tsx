@@ -82,7 +82,7 @@ describe(useSQLiteContext, () => {
       });
     });
     expect(screen.queryByText(loadingText)).toBeNull();
-  });
+  }, 10000);
 
   it('should call onError from SQLiteProvider if failed to open database', async () => {
     const mockErrorHandler = jest.fn();

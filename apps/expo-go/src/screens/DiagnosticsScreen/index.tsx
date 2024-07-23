@@ -61,15 +61,16 @@ function DiagnosticsScreen({
   navigation,
 }: StackScreenProps<DiagnosticsStackRoutes, 'Diagnostics'>) {
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing[4] }}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: spacing[4] }}>
+      <Spacer.Vertical size="large" />
       <AudioDiagnostic navigation={navigation} />
-      <Spacer.Vertical size="medium" />
+      <Spacer.Vertical size="large" />
       {Environment.IsIOSRestrictedBuild ? (
         <ForegroundLocationDiagnostic navigation={navigation} />
       ) : (
         <BackgroundLocationDiagnostic navigation={navigation} />
       )}
-      <Spacer.Vertical size="medium" />
+      <Spacer.Vertical size="large" />
       <GeofencingDiagnostic navigation={navigation} />
     </ScrollView>
   );

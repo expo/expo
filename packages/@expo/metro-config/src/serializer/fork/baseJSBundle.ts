@@ -35,6 +35,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
     skipWrapping?: boolean;
+    usedExports?: boolean;
     splitChunks?: boolean;
     output?: string;
     includeSourceMaps?: boolean;
