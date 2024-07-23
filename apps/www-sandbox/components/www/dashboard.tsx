@@ -5,6 +5,7 @@ import { StyleNoSelect } from 'expo/dom';
 
 import { Link } from 'expo-router';
 import {
+  Bell,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -87,8 +88,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChartContainer } from '../ui/chart';
 import { AreaChart } from 'recharts';
+import type { NotificationContentInput } from 'expo-notifications';
 
-export default function Dashboard({}: { webview?: WebViewProps }) {
+export default function Dashboard({
+  requestNotificationsPermissions,
+}: {
+  webview?: WebViewProps;
+  requestNotificationsPermissions: (content: NotificationContentInput) => Promise<void>;
+}) {
   return (
     <TooltipProvider>
       <StyleNoSelect />
@@ -381,6 +388,32 @@ export default function Dashboard({}: { webview?: WebViewProps }) {
                     </Button>
                   </CardFooter> */}
                 </Card>
+                <Card x-chunk="dashboard-05-chunk-2">
+                  <CardHeader className="pb-2">
+                    <CardDescription>This Month</CardDescription>
+                    <CardTitle className="text-4xl">$5,329</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-xs text-muted-foreground">+10% from last month</div>
+                  </CardContent>
+                  <CardFooter className="gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 gap-1 text-sm"
+                      onClick={() => {
+                        requestNotificationsPermissions({
+                          title: 'New Order',
+                          body: 'Liam Johnson has placed a new order.',
+                        });
+                      }}>
+                      <Bell className="h-3.5 w-3.5" />
+                      <span className="sr-only sm:not-sr-only">Notify</span>
+                    </Button>
+                    <Progress value={12} aria-label="12% increase" />
+                  </CardFooter>
+                </Card>
+
                 <Link href="/product/123">
                   <Card x-chunk="dashboard-05-chunk-1">
                     <CardHeader className="pb-2">
@@ -395,18 +428,6 @@ export default function Dashboard({}: { webview?: WebViewProps }) {
                     </CardFooter>
                   </Card>
                 </Link>
-                <Card x-chunk="dashboard-05-chunk-2">
-                  <CardHeader className="pb-2">
-                    <CardDescription>This Month</CardDescription>
-                    <CardTitle className="text-4xl">$5,329</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xs text-muted-foreground">+10% from last month</div>
-                  </CardContent>
-                  <CardFooter>
-                    <Progress value={12} aria-label="12% increase" />
-                  </CardFooter>
-                </Card>
               </div>
               <Tabs defaultValue="week">
                 <div className="flex items-center">
