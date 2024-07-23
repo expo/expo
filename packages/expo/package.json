@@ -32,6 +32,8 @@
     "devtools.d.ts",
     "fetch.js",
     "fetch.d.ts",
+    "internal.js",
+    "internal.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json"
