@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import {
@@ -58,7 +57,20 @@ export class DirectoryCheck implements DoctorCheck {
         body: JSON.stringify({ packages: packageNames }),
       });
 
-      const packageMetadata = await response.json();
+      if (!response.ok) {
+        return {
+          isSuccessful: false,
+          issues: [
+            `Directory check failed with unexpected server response: ${response.statusText}`,
+          ],
+          advice: undefined,
+        };
+      }
+
+      const packageMetadata = (await response.json()) as Record<
+        string,
+        ReactNativeDirectoryCheckResult
+      >;
 
       packageNames.forEach((packageName) => {
         const metadata = packageMetadata[packageName];
@@ -139,3 +151,10 @@ export class DirectoryCheck implements DoctorCheck {
     };
   }
 }
+
+// See: https://github.com/react-native-community/directory/blob/1fb5e7b899e021a18f14b3c32b79d8d5995022d6/pages/api/libraries/check.ts#L8-L17
+type ReactNativeDirectoryCheckResult = {
+  unmaintained: boolean;
+  // See: https://github.com/react-native-community/directory/blob/1fb5e7b899e021a18f14b3c32b79d8d5995022d6/util/newArchStatus.ts#L3-L7
+  newArchitecture: 'supported' | 'unsupported' | 'untested';
+};
