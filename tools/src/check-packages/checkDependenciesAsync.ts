@@ -33,28 +33,20 @@ const IGNORED_PACKAGES = [
   '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
   '@expo/prebuild-config', // package: jimp-compact, xcode
   'babel-preset-expo', // package: @babel/*, debug, expo, react-native-reanimated, resolve-from
-  'expo-apple-authentication', // package: react, react-native
   'expo-asset', // package: @react-native/assets-registry, expo-updates (types only)
-  'expo-auth-session', // package: react, react-native
   'expo-av', // package: expo-asset, react-native-web
   'expo-camera', // package: react-native-web
-  'expo-checkbox', // package: react, react-native
-  'expo-clipboard', // package: react
-  'expo-dev-client-components', // package: react, react-native
+  'expo-checkbox', // package: react-native-web
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated, react-native-web
   'expo-image', // package: @react-native/assets-registry, react-native-web
   'expo-modules-core', // package: react, react-native
   'expo-modules-test-core', // package: typescript - TODO
-  'expo-navigation-bar', // package: react, react-native
   'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
   'expo-sqlite', // package: expo-asset
-  'expo-status-bar', // package: react, react-native
   'expo-store-review', // package: expo-constants
-  'expo-symbols', // package: react-native (types only, without marking)
   'expo-system-ui', // package: react-native-web
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
-  'jest-expo', // package: expo, fbemitter, react-native
 ];
 
 /**
