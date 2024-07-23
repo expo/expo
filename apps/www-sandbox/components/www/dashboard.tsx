@@ -71,7 +71,6 @@ import { Area, AreaChart, XAxis, YAxis } from 'recharts';
 
 import { ChartContainer } from '../ui/chart';
 
-import type { WebViewProps } from 'expo/dom';
 import type { NotificationContentInput } from 'expo-notifications';
 
 export default function Dashboard({
