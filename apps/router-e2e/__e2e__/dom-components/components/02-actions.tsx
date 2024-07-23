@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import '../global.css';
 
-// TODO: Magically make this a prop of the component in the root HTML.
-// const actions = _getActionsObject();
-
 export default function Page({
   showAlert,
   throwError,
