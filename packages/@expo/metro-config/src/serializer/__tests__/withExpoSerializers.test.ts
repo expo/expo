@@ -211,10 +211,10 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]{32}\.js\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=431b98e2-c997-4975-a3d9-2987710abd44/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=4447d9ad-77e0-47ef-916e-bd72fd1ad0aa/);
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = '431b98e2-c997-4975-a3d9-2987710abd44';
+      const debugId = '4447d9ad-77e0-47ef-916e-bd72fd1ad0aa';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }) =>
@@ -252,10 +252,10 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]{32}\.hbc\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=431b98e2-c997-4975-a3d9-2987710abd44/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=4447d9ad-77e0-47ef-916e-bd72fd1ad0aa/);
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = '431b98e2-c997-4975-a3d9-2987710abd44';
+      const debugId = '4447d9ad-77e0-47ef-916e-bd72fd1ad0aa';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }) =>
@@ -603,15 +603,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-f691569b43bf60b98587650a8aef72d2.js",
-        "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+        "_expo/static/js/web/index-478fdadb2a389d7da8a3562cc0d0a992.js",
+        "_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-f691569b43bf60b98587650a8aef72d2.js",
+          "filename": "_expo/static/js/web/index-478fdadb2a389d7da8a3562cc0d0a992.js",
           "metadata": {
             "isAsync": false,
             "modulePaths": [
@@ -622,12 +622,12 @@ describe('serializes', () => {
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         dependencyMap[0];
-      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js"}});
+      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+          "filename": "_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js",
           "metadata": {
             "isAsync": true,
             "modulePaths": [
@@ -669,15 +669,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-f0606e9a7a39437c8958b4d8e3e9ff34.js",
-        "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+        "_expo/static/js/web/index-d4d015cad1caef433eabf84c7d7e5576.js",
+        "_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-f0606e9a7a39437c8958b4d8e3e9ff34.js",
+          "filename": "_expo/static/js/web/index-d4d015cad1caef433eabf84c7d7e5576.js",
           "metadata": {
             "isAsync": false,
             "modulePaths": [
@@ -688,12 +688,12 @@ describe('serializes', () => {
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./foo");
-      },"/app/index.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js"}});
+      },"/app/index.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+          "filename": "_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js",
           "metadata": {
             "isAsync": true,
             "modulePaths": [
@@ -740,11 +740,11 @@ describe('serializes', () => {
     });
 
     expect(artifacts.map((art) => art.filename)).toEqual([
-      '_expo/static/js/web/index-7dc6e73b19cad01f360b7d820c351f6c.js',
-      '_expo/static/js/web/index-c054379d08b2cfa157d6fc1caa8f4802.js',
-      '_expo/static/js/web/[foo]-8da94e949dff8f4bf13e6e6c77d68d3f.js',
-      '_expo/static/js/web/{foo}-8da94e949dff8f4bf13e6e6c77d68d3f.js',
-      '_expo/static/js/web/+foo-8da94e949dff8f4bf13e6e6c77d68d3f.js',
+      '_expo/static/js/web/index-04a64c0ffb487581ce228c8891ac7a28.js',
+      '_expo/static/js/web/index-bf6cd3b94b02892ee3c4ef23bc7f274a.js',
+      '_expo/static/js/web/[foo]-a387f30209e86a0120edb65180728fc7.js',
+      '_expo/static/js/web/{foo}-a865646e59f08a27288aaf5124f76a04.js',
+      '_expo/static/js/web/+foo-fc257e8635983fb79f0d70797fb6b149.js',
     ]);
 
     // Split bundle
@@ -771,15 +771,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-b0f278bb5fc494c16eecc93bd05c55c6.js",
-        "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+        "_expo/static/js/web/index-13858a9c3af9682c1d91d27d238a0c6e.js",
+        "_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-b0f278bb5fc494c16eecc93bd05c55c6.js",
+          "filename": "_expo/static/js/web/index-13858a9c3af9682c1d91d27d238a0c6e.js",
           "metadata": {
             "isAsync": false,
             "modulePaths": [
@@ -794,12 +794,12 @@ describe('serializes', () => {
       },"/app/index.js",["/app/two.js"]);
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./foo");
-      },"/app/two.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js"}});
+      },"/app/two.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
+          "filename": "_expo/static/js/web/foo-2e5e55cd3caaecc5f0307f86ea98ea1f.js",
           "metadata": {
             "isAsync": true,
             "modulePaths": [
@@ -851,16 +851,16 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-bd9fb82a51c035b74188cf502f39f808.js",
-        "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
-        "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
+        "_expo/static/js/web/index-d6f9a314ecdc04e1ba0449c4326c22e0.js",
+        "_expo/static/js/web/math-05ed1c99ba33d99d7aff2e074b9d0a49.js",
+        "_expo/static/js/web/shapes-10e09fe9385c919670df0f85f4102561.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-bd9fb82a51c035b74188cf502f39f808.js",
+          "filename": "_expo/static/js/web/index-d6f9a314ecdc04e1ba0449c4326c22e0.js",
           "metadata": {
             "isAsync": false,
             "modulePaths": [
@@ -873,7 +873,7 @@ describe('serializes', () => {
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./math");
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[2], dependencyMap.paths, "./shapes");
-      },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js","/app/shapes.js":"/_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js"}});
+      },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-05ed1c99ba33d99d7aff2e074b9d0a49.js","/app/shapes.js":"/_expo/static/js/web/shapes-10e09fe9385c919670df0f85f4102561.js"}});
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         Object.defineProperty(exports, '__esModule', {
           value: true
@@ -885,7 +885,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
+          "filename": "_expo/static/js/web/math-05ed1c99ba33d99d7aff2e074b9d0a49.js",
           "metadata": {
             "isAsync": true,
             "modulePaths": [
@@ -905,7 +905,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
+          "filename": "_expo/static/js/web/shapes-10e09fe9385c919670df0f85f4102561.js",
           "metadata": {
             "isAsync": true,
             "modulePaths": [
