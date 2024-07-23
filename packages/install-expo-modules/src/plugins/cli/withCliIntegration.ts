@@ -93,7 +93,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
       }
 
       console.warn(
-        '⚠️  Could not find `babel.config.json`, `.babelrc.json`, `babel.config.js`, or `.babelrc.js` in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
+        '⚠️  Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
       );
       return config;
     },
