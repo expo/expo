@@ -6,14 +6,11 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 
-// Below import must be kept unversioned even in versioned code to provide a redirection from
-// versioned code realm to unversioned code realm.
-// Without this import any `SplashScreen.anyMethodName(...)` invocation on JS side ends up
-// in versioned SplashScreen kotlin object that stores no information about the ExperienceActivity.
-
 class SplashScreenOptions : Record {
   @Field
   val duration: Long = 400L
+  @Field
+  var fade: Boolean = true
 }
 
 class SplashScreenModule : Module() {
