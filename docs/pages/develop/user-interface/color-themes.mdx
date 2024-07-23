@@ -27,6 +27,8 @@ Here is an example configuration:
 }
 ```
 
+You can also configure `userInterfaceStyle` property for a specific platforms by setting either [`android.userInterfaceStyle`](/versions/latest/config/app/#userinterfacestyle-2) or [`ios.userInterfaceStyle`](/versions/latest/config/app/#userinterfacestyle-1) to the preferred value.
+
 > **info** The app will default to the `light` style if this property is absent.
 
 When you are creating a development build, you have to install [`expo-system-ui`](/versions/latest/sdk/system-ui/#installation) to support the appearance styles for Android. Otherwise, the `userInterfaceStyle` property is ignored.
