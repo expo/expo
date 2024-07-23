@@ -238,9 +238,8 @@ export default (props: { theme: ColorTheme }) => {
                 name="Account"
                 component={AccountModal}
                 options={({ route, navigation }) => ({
-                  title: 'Account',
+                  headerShown: false,
                   ...(Platform.OS === 'ios' && {
-                    headerShown: false,
                     gestureEnabled: true,
                     cardOverlayEnabled: true,
                     headerStatusBarHeight:

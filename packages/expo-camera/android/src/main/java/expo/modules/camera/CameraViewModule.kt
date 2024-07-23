@@ -199,6 +199,14 @@ class CameraViewModule : Module() {
         }
       }
 
+      Prop("mirror") { view, mirror: Boolean? ->
+        mirror?.let {
+          view.mirror = it
+          return@Prop
+        }
+        view.mirror = false
+      }
+
       OnViewDidUpdateProps { view ->
         view.createCamera()
       }

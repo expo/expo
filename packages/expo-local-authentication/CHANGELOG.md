@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `isEnrolledAsync()` returns correct value when biometry is locked out. ([#30565](https://github.com/expo/expo/pull/30565) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 14.0.1 — 2024-04-23

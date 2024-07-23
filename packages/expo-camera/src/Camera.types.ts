@@ -158,6 +158,7 @@ export type CameraPictureOptions = {
    * @default false
    * @platform ios
    * @platform android
+   * @deprecated Use `mirror` prop on `CameraView` instead.
    */
   mirror?: boolean;
   /**
@@ -187,7 +188,7 @@ export type CameraRecordingOptions = {
   /**
    * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
    * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
-   * @platform ios
+   * @deprecated Use `mirror` prop on `CameraView` instead.
    */
   mirror?: boolean;
   /**
@@ -323,6 +324,11 @@ export type CameraProps = ViewProps & {
    * @default false
    */
   mute?: boolean;
+  /**
+   * A boolean that determines whether the camera should mirror the image when using the front camera.
+   * @default false
+   */
+  mirror?: boolean;
   /**
    * Indicates the focus mode to use.
    * @default off

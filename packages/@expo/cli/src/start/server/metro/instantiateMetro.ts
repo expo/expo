@@ -246,7 +246,7 @@ export async function instantiateMetroAsync(
   }
 
   // Attach Expo Atlas if enabled
-  const atlas = await attachAtlasAsync({
+  await attachAtlasAsync({
     isExporting,
     exp,
     projectRoot,
@@ -271,9 +271,6 @@ export async function instantiateMetroAsync(
       mockServer: isExporting,
     }
   );
-
-  // If Atlas is enabled, and can register to Metro, attach it to listen for changes
-  atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent

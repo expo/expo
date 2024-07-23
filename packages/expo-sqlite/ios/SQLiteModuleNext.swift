@@ -265,7 +265,8 @@ public final class SQLiteModuleNext: Module {
   private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
-    if sqlite3_prepare_v2(database.pointer, source, Int32(source.count), &statement.pointer, nil) != SQLITE_OK {
+    let sourceString = source.cString(using: .utf8)
+    if sqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     maybeAddCachedStatement(database: database, statement: statement)
