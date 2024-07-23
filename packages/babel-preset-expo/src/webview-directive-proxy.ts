@@ -3,6 +3,7 @@
  */
 import { ConfigAPI, template } from '@babel/core';
 import url from 'url';
+import { basename } from 'path';
 import crypto from 'crypto';
 import { getIsProd } from './common';
 
@@ -63,7 +64,8 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
           }
         } else {
           proxyModule = [
-            `const proxy = { uri: new URL("/_expo/@iframe?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`,
+            // Add the basename to improve the Safari debug preview option.
+            `const proxy = { uri: new URL("/_expo/@dom/${basename(filePath)}?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`,
           ];
         }
 

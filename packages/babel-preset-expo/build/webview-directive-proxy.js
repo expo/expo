@@ -9,6 +9,7 @@ exports.expoWebviewDirectiveProxy = void 0;
  */
 const core_1 = require("@babel/core");
 const url_1 = __importDefault(require("url"));
+const path_1 = require("path");
 const crypto_1 = __importDefault(require("crypto"));
 const common_1 = require("./common");
 function expoWebviewDirectiveProxy(api) {
@@ -59,7 +60,8 @@ function expoWebviewDirectiveProxy(api) {
                 }
                 else {
                     proxyModule = [
-                        `const proxy = { uri: new URL("/_expo/@iframe?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`,
+                        // Add the basename to improve the Safari debug preview option.
+                        `const proxy = { uri: new URL("/_expo/@dom/${(0, path_1.basename)(filePath)}?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`,
                     ];
                 }
                 proxyModule.push(!isUseWebviewSource

@@ -616,7 +616,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const hash = crypto.createHash('sha1').update(filePath).digest('hex');
 
-    const generatedEntry = path.join(this.projectRoot, '.expo/@iframe', hash + '.js');
+    const generatedEntry = path.join(this.projectRoot, '.expo/@dom', hash + '.js');
 
     const entryFile = getWebviewProxyForFilepath(generatedEntry, filePath);
 
@@ -726,8 +726,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         const url = coreceUrl(req.url);
 
-        // Match `/_expo/@iframe`
-        if (!url.pathname.startsWith('/_expo/@iframe')) {
+        // Match `/_expo/@dom`
+        if (!url.pathname.startsWith('/_expo/@dom')) {
           return next();
         }
 
