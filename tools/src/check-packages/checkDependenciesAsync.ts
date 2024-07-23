@@ -22,8 +22,12 @@ type SourceFileImportRef = {
   isTypeOnly?: boolean;
 };
 
+type ParsedSourceFile = SourceFile & {
+  ast: ts.SourceFile;
+};
+
 // We are incrementally rolling this out, the imports in this list are expected to be invalid
-const IGNORED_IMPORTS = ['expo-modules-core', 'typescript'];
+const IGNORED_IMPORTS = ['typescript'];
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
   '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
@@ -161,20 +165,24 @@ function getSourceFilePaths(pkg: Package, type: PackageCheckType): string {
 function getSourceFileImports(sourceFile: SourceFile): SourceFileImportRef[] {
   const importRefs: SourceFileImportRef[] = [];
   const compiler = createTypescriptCompiler();
-  const source = compiler.getSourceFile(sourceFile.path, ts.ScriptTarget.Latest, (message) => {
+  const ast = compiler.getSourceFile(sourceFile.path, ts.ScriptTarget.Latest, (message) => {
     throw new Error(`Failed to parse ${sourceFile.path}: ${message}`);
   });
 
-  if (source) {
-    return collectTypescriptImports(source, importRefs);
+  if (ast) {
+    return collectTypescriptImports({ ...sourceFile, ast }, ast, importRefs);
   }
 
   return importRefs;
 }
 
 /** Iterate the parsed TypeScript AST and collect all imports or require statements */
-function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImportRef[]) {
-  if (ts.isImportDeclaration(node)) {
+function collectTypescriptImports(
+  source: ParsedSourceFile,
+  node: ts.Node | ts.SourceFile,
+  imports: SourceFileImportRef[]
+) {
+  if (ts.isImportDeclaration(node) && !typescriptNodeHasLeadingIgnoreComment(source, node)) {
     // Collect `import` statements
     imports.push(
       createTypescriptImportRef(node.moduleSpecifier.getText(), node.importClause?.isTypeOnly)
@@ -182,17 +190,32 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require' &&
-    node.arguments.every((arg) => ts.isStringLiteral(arg)) // Filter `require(requireFrom(...))
+    node.arguments.every((arg) => ts.isStringLiteral(arg)) && // Filter `require(requireFrom(...))
+    !typescriptNodeHasLeadingIgnoreComment(source, node.parent) // Filter `// @ts-ignore` / `// @ts-expect-error`
   ) {
     // Collect `require` statement
     imports.push(createTypescriptImportRef(node.arguments[0].getText()));
   } else {
     ts.forEachChild(node, (child) => {
-      collectTypescriptImports(child, imports);
+      collectTypescriptImports(source, child, imports);
     });
   }
 
   return imports;
+}
+
+/** Check if the provided node has a leading comment that tells typescript to ignore or expect issues  */
+function typescriptNodeHasLeadingIgnoreComment(source: ParsedSourceFile, node: ts.Node) {
+  const contents = source.ast.getFullText();
+  const leadingComments = ts.getLeadingCommentRanges(contents, node.pos) ?? [];
+
+  if (!leadingComments.length) {
+    return false;
+  }
+
+  return leadingComments
+    .map((comment) => contents.substring(comment.pos, comment.end))
+    .some((comment) => comment.endsWith('@ts-ignore') || comment.endsWith('@ts-expect-error'));
 }
 
 /** Analyze the import and return the import ref object */

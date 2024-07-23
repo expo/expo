@@ -278,6 +278,7 @@ try {
 }
 
 // Installs web implementations of global things that are normally installed through JSI.
+// @ts-ignore
 require('expo-modules-core/src/web/index.web');
 
 // Ensure the environment globals are installed before the first test runs.
