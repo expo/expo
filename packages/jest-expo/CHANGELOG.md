@@ -12,6 +12,7 @@
 
 - Fixes jest spitting console error caused by ref stubbing. ([#29420](https://github.com/expo/expo/pull/29420) by [@aleqsio](https://github.com/aleqsio))
 - Avoid adding typescript wildcard paths as jest module mapping. ([#29836](https://github.com/expo/expo/pull/29836) by [@byCedric](https://github.com/byCedric))
+- Add missing `fbemitter` dependency and `expo`/`react-native` peer dependencies.
 
 ### 💡 Others
 
