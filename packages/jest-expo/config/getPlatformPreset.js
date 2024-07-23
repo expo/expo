@@ -106,14 +106,10 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     preset.setupFiles.push(require.resolve('../src/preset/setup-rsc.js'));
 
     // Setup custom expect matchers
-    preset.setupFilesAfterEnv ?? = [];
-
+    preset.setupFilesAfterEnv ??= [];
     preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
 
-    if (!preset.testEnvironmentOptions) {
-      preset.testEnvironmentOptions = {};
-    }
-
+    preset.testEnvironmentOptions ??= {};
     // Matches withMetroMultiPlatform, e.g. resolution for RSC.
     preset.testEnvironmentOptions.customExportConditions = [
       'node',
