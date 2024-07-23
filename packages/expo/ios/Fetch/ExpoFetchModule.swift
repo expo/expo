@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
-internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider? = nil
+internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
 
 public final class ExpoFetchModule: Module {
   private lazy var urlSession = createURLSession()

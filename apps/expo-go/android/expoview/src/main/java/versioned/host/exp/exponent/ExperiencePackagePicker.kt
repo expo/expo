@@ -53,6 +53,7 @@ import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.navigationbar.NavigationBarModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
+import expo.modules.networkfetch.ExpoNetworkFetchModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.notifications.badge.BadgeModule
 import expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule
@@ -159,6 +160,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
     ExpoLinkingModule::class.java,
+    ExpoNetworkFetchModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
     FontLoaderModule::class.java,
