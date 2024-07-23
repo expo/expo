@@ -5,27 +5,16 @@ import { WebView } from 'react-native-webview';
 
 import { _emitGlobalEvent } from './global-events';
 import type { BridgeMessage } from './www-types';
+import { getInjectEventScript, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
 
-// const outputKey =
-//   'file://' + process.env.EXPO_PROJECT_ROOT + '/__e2e__/tailwind-postcss/components/thing.tsx';
-
-// const proxy = { uri: new URL('/_expo/@iframe?file=' + outputKey, window.location.href).toString() };
-
-const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, ref) => {
+const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }: any, ref) => {
   const webviewRef = React.useRef<WebView>(null);
 
   const setRef = useMergeRefs(webviewRef, {}, ref);
 
   const emit = React.useCallback(
     (detail: BridgeMessage<any>) => {
-      console.log('emit', detail);
-      const msg = `;(function() {
-  try { 
-  window.dispatchEvent(new CustomEvent("$dom-event",${JSON.stringify({ detail })})); 
-  } catch (e) {}
-  })();
-  true;`;
-      webviewRef.current?.injectJavaScript(msg);
+      webviewRef.current?.injectJavaScript(getInjectEventScript(detail));
     },
     [webviewRef]
   );
@@ -82,7 +71,7 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
       onMessage={(event) => {
         const { type, data } = JSON.parse(event.nativeEvent.data);
 
-        if (type === '$$native_action') {
+        if (type === NATIVE_ACTION) {
           if (!marshallProps || !marshallProps[data.actionId]) {
             throw new Error(`Native action "${data.actionId}" is not defined.`);
           }
@@ -91,12 +80,12 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
           }
 
           const action = marshallProps[data.actionId];
-          const fnName = `${data.actionId}(${data.args})`;
+          // const fnName = `${data.actionId}(${data.args})`;
 
           const emitError = (error) => {
-            console.log('[Native] error:', fnName, error);
+            // console.log('[Native] error:', fnName, error);
             emit({
-              type: '$$native_action_result',
+              type: NATIVE_ACTION_RESULT,
               data: {
                 uid: data.uid,
                 actionId: data.actionId,
@@ -105,10 +94,10 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
             });
           };
           const emitResolve = (result?: any) => {
-            console.log('[Native] resolve:', fnName, result);
+            // console.log('[Native] resolve:', fnName, result);
             // Send async results back to the webview proxy for return values.
             emit({
-              type: '$$native_action_result',
+              type: NATIVE_ACTION_RESULT,
               data: {
                 uid: data.uid,
                 actionId: data.actionId,
@@ -117,10 +106,10 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
             });
           };
           try {
-            console.log(`[Native] Invoke: ${fnName}`);
+            // console.log(`[Native] Invoke: ${fnName}`);
             const value = action(...data.args);
             if (value instanceof Promise) {
-              console.log(`[Native] Async: ${fnName}`, value);
+              // console.log(`[Native] Async: ${fnName}`, value);
               return value
                 .then((result) => {
                   emitResolve(result);
@@ -129,7 +118,7 @@ const RawWebView = React.forwardRef(({ webview, $$source, ...marshallProps }, re
                   emitError(error);
                 });
             } else {
-              console.log(`[Native] Sync: ${fnName}`, value);
+              // console.log(`[Native] Sync: ${fnName}`, value);
 
               // Send async results back to the webview proxy for return values.
               return emitResolve(value);

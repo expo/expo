@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { DOM_EVENT, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
 import { BridgeMessage, JSONValue } from './www-types';
 
 export { StyleNoSelect } from './webview-wrapper';
@@ -22,9 +23,9 @@ export const addEventListener = <TData extends JSONValue>(
   };
 
   // TODO: Add component ID to the event name to prevent conflicts with other components.
-  window.addEventListener('$dom-event', listener);
+  window.addEventListener(DOM_EVENT, listener);
   return () => {
-    window.removeEventListener('$dom-event', listener);
+    window.removeEventListener(DOM_EVENT, listener);
   };
 };
 
@@ -47,13 +48,13 @@ export function _invokeNativeAction(actionId: string, args: any[]): Promise<any>
       result?: any;
       error?: any;
     }>((message) => {
-      console.log('[web] GOT:', message, Object.keys(message));
+      // console.log('[web] GOT:', message, Object.keys(message));
       if (
-        message.type === '$$native_action_result' &&
+        message.type === NATIVE_ACTION_RESULT &&
         message.data.uid === uid &&
         message.data.actionId === actionId
       ) {
-        console.log('[web] Complete:', message);
+        // console.log('[web] Complete:', message);
         // Unsubscribe from the event listener
         sub();
         if ('error' in message.data) {
@@ -63,7 +64,7 @@ export function _invokeNativeAction(actionId: string, args: any[]): Promise<any>
       }
     });
     emit({
-      type: '$$native_action',
+      type: NATIVE_ACTION,
       data: {
         uid,
         actionId,
@@ -78,7 +79,7 @@ export function _getActionsObject(): Record<string, (...args: any[]) => void | P
     {},
     {
       get(target, prop) {
-        console.log('actions.get', prop.toString());
+        // console.log('actions.get', prop.toString());
         return async (...args) => {
           const resolvedProps = await Promise.all(
             args.map((arg, index) => {
@@ -95,7 +96,7 @@ export function _getActionsObject(): Record<string, (...args: any[]) => void | P
           resolvedProps.forEach((arg, index) => {
             if (!arg) return;
 
-            console.log('actions.validate.' + index, arg);
+            // console.log('actions.validate.' + index, arg);
 
             if (typeof arg === 'function') {
               console.error('Functions are not supported in arguments');

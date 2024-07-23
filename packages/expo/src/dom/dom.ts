@@ -3,6 +3,7 @@ import type WebView from 'react-native-webview';
 import type { WebViewMessageEvent } from 'react-native-webview';
 
 import { BridgeMessage, JSONValue } from './www-types';
+import { getInjectEventScript } from './injection';
 
 export type WebViewProps = Omit<import('react-native-webview').WebViewProps, 'source'>;
 
@@ -20,11 +21,7 @@ export const useBridge = <TData extends JSONValue>(
 
   const emit = useCallback(
     (detail: BridgeMessage<TData>) => {
-      const msg = `(function() {
-  try { window.dispatchEvent(new CustomEvent("$dom-event",${JSON.stringify({ detail })})); } catch {}
-  return true;
-  })()`;
-      ref.current?.injectJavaScript(msg);
+      ref.current?.injectJavaScript(getInjectEventScript(detail));
     },
     [ref]
   );
