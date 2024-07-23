@@ -25,7 +25,7 @@ export type NativeResponseEvents = {
 
 export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
   readonly bodyUsed: boolean;
-  readonly headers: NativeHeadersType;
+  readonly _rawHeaders: NativeHeadersType;
   readonly status: number;
   readonly statusText: string;
   readonly url: string;

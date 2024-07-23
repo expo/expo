@@ -1,15 +1,12 @@
-import { requireNativeModule } from 'expo-modules-core';
-
 import { NetworkFetchError } from './FetchErrors';
 import { FetchResponse } from './FetchResponse';
-import { NativeRequest, NativeRequestInit, NativeResponse } from './NativeRequest';
+import { NativeRequest, NativeRequestInit } from './NativeRequest';
+import { NetworkFetchModule } from './NetworkFetchModule';
 import { normalizeBodyInitAsync, normalizeHeadersInit } from './RequestUtils';
 import type { FetchRequestInit } from './fetch.types';
 
-const NetworkFetchModule = requireNativeModule('ExpoNetworkFetchModule');
-
 export async function fetch(url: string, init?: FetchRequestInit): Promise<FetchResponse> {
-  const response = new NetworkFetchModule.NativeResponse() as NativeResponse;
+  const response = new FetchResponse();
   const request = new NetworkFetchModule.NativeRequest(response) as NativeRequest;
 
   const headers = normalizeHeadersInit(init?.headers);
@@ -43,5 +40,5 @@ export async function fetch(url: string, init?: FetchRequestInit): Promise<Fetch
   } finally {
     init?.signal?.removeEventListener('abort', abortHandler);
   }
-  return new FetchResponse(response);
+  return response;
 }

@@ -40,7 +40,7 @@ public final class ExpoNetworkFetchModule: Module {
 
       Property("bodyUsed", \.bodyUsed)
 
-      Property("headers") { (response: NativeResponse) in
+      Property("_rawHeaders") { (response: NativeResponse) in
         return response.responseInit?.headers ?? []
       }
 

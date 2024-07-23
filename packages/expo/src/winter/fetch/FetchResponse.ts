@@ -1,15 +1,16 @@
 import { ReadableStream } from 'web-streams-polyfill';
 
-import { NativeResponse } from './NativeRequest';
+import type { NativeResponse } from './NativeRequest';
+import { NetworkFetchModule } from './NetworkFetchModule';
+
+const ConcreteNativeResponse = NetworkFetchModule.NativeResponse as typeof NativeResponse;
 
 /**
  * A response implementation for the `fetch.Response` API.
  */
-export class FetchResponse implements Response {
-  constructor(private readonly response: NativeResponse) {}
-
+export class FetchResponse extends ConcreteNativeResponse implements Response {
   get body(): ReadableStream<Uint8Array> | null {
-    const response = this.response;
+    const response = this;
     return new ReadableStream({
       start(controller) {
         response.addListener('didReceiveResponseData', (data: Uint8Array) => {
@@ -32,39 +33,15 @@ export class FetchResponse implements Response {
     });
   }
 
-  get bodyUsed(): boolean {
-    return this.response.bodyUsed;
-  }
-
   get headers(): Headers {
-    return new Headers(this.response.headers);
+    return new Headers(this._rawHeaders);
   }
 
   get ok(): boolean {
-    return this.response.status >= 200 && this.response.status < 300;
-  }
-
-  get status(): number {
-    return this.response.status;
-  }
-
-  get statusText(): string {
-    return this.response.statusText;
+    return this.status >= 200 && this.status < 300;
   }
 
   public readonly type = 'default';
-
-  get url(): string {
-    return this.response.url;
-  }
-
-  get redirected(): boolean {
-    return this.response.redirected;
-  }
-
-  async arrayBuffer(): Promise<ArrayBuffer> {
-    return this.response.arrayBuffer();
-  }
 
   async blob(): Promise<Blob> {
     const buffer = await this.arrayBuffer();
@@ -86,10 +63,6 @@ export class FetchResponse implements Response {
   async json(): Promise<any> {
     const text = await this.text();
     return JSON.parse(text);
-  }
-
-  async text(): Promise<string> {
-    return this.response.text();
   }
 
   toString(): string {
