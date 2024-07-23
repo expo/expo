@@ -3,9 +3,10 @@
 import ExpoModulesCore
 
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
+internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider? = nil
 
 public final class ExpoFetchModule: Module {
-  private var urlSession: URLSession?
+  private lazy var urlSession = createURLSession()
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
   public required init(appContext: AppContext) {
@@ -16,12 +17,8 @@ public final class ExpoFetchModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoFetchModule")
 
-    OnCreate {
-      urlSession = createDefaultURLSession()
-    }
-
     OnDestroy {
-      urlSession?.invalidateAndCancel()
+      urlSession.invalidateAndCancel()
     }
 
     // swiftlint:disable:next closure_body_length
@@ -80,9 +77,6 @@ public final class ExpoFetchModule: Module {
       }
 
       AsyncFunction("start") { (request: NativeRequest, url: URL, requestInit: NativeRequestInit, requestBody: Data?, promise: Promise) in
-        guard let urlSession else {
-          throw FetchURLSessionLostException()
-        }
         request.start(
           urlSession: urlSession,
           urlSessionDelegate: urlSessionDelegate,
@@ -105,25 +99,20 @@ public final class ExpoFetchModule: Module {
     }
   }
 
-  public func setCustomURLSessionConfigurationProvider(provider: NSURLSessionConfigurationProvider?) {
-    fetchRequestQueue.async {
-      if let provider, let config = provider() {
-        self.urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
-      } else {
-        self.urlSession = self.createDefaultURLSession()
+  private func createURLSession() -> URLSession {
+    let config: URLSessionConfiguration
+    if let urlSessionConfigurationProvider, let concreteConfig = urlSessionConfigurationProvider() {
+      config = concreteConfig
+    } else {
+      config = URLSessionConfiguration.default
+      config.httpShouldSetCookies = true
+      config.httpCookieAcceptPolicy = .always
+      config.httpCookieStorage = HTTPCookieStorage.shared
+
+      let useWifiOnly = Bundle.main.infoDictionary?["ReactNetworkForceWifiOnly"] as? Bool ?? false
+      if useWifiOnly {
+        config.allowsCellularAccess = !useWifiOnly
       }
-    }
-  }
-
-  private func createDefaultURLSession() -> URLSession {
-    let config = URLSessionConfiguration.default
-    config.httpShouldSetCookies = true
-    config.httpCookieAcceptPolicy = .always
-    config.httpCookieStorage = HTTPCookieStorage.shared
-
-    let useWifiOnly = Bundle.main.infoDictionary?["ReactNetworkForceWifiOnly"] as? Bool ?? false
-    if useWifiOnly {
-      config.allowsCellularAccess = !useWifiOnly
     }
     return URLSession(configuration: config, delegate: urlSessionDelegate, delegateQueue: nil)
   }

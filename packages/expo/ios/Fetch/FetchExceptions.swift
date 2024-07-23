@@ -2,12 +2,6 @@
 
 import ExpoModulesCore
 
-internal class FetchURLSessionLostException: Exception {
-  override var reason: String {
-    "The URL session has been lost"
-  }
-}
-
 internal class FetchUnknownException: Exception {
   override var reason: String {
     "Unknown error"

@@ -7,7 +7,9 @@
 #import <React/RCTInspectorPackagerConnection.h>
 #import <SocketRocket/SRWebSocket.h>
 
+#import <ExpoModulesCore/ExpoModulesCore.h>
 #import "ExpoModulesCore-Swift.h"
+#import "Expo-Swift.h"
 
 #pragma mark - RCTInspectorPackagerConnection category interface
 
@@ -34,22 +36,30 @@
     self.inspectorPackgerConnection = inspectorPackgerConnection;
     [EXRequestCdpInterceptor.shared setDelegate:self];
 
-    Class requestInterceptorClass = [EXRequestInterceptorProtocol class];
     RCTSetCustomNSURLSessionConfigurationProvider(^{
-      NSURLSessionConfiguration *urlSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-      NSMutableArray<Class> *protocolClasses = [urlSessionConfiguration.protocolClasses mutableCopy];
-      if (![protocolClasses containsObject:requestInterceptorClass]) {
-        [protocolClasses insertObject:requestInterceptorClass atIndex:0];
-      }
-      urlSessionConfiguration.protocolClasses = protocolClasses;
-
-      [urlSessionConfiguration setHTTPShouldSetCookies:YES];
-      [urlSessionConfiguration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-      [urlSessionConfiguration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
-      return urlSessionConfiguration;
+      return [self createDefaultURLSessionConfiguration];
     });
+    [EXNetworkFetchCustomExtension setCustomURLSessionConfigurationProvider:^{
+      return [self createDefaultURLSessionConfiguration];
+    }];
   }
   return self;
+}
+
+- (NSURLSessionConfiguration *)createDefaultURLSessionConfiguration
+{
+  Class requestInterceptorClass = [EXRequestInterceptorProtocol class];
+  NSURLSessionConfiguration *urlSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSMutableArray<Class> *protocolClasses = [urlSessionConfiguration.protocolClasses mutableCopy];
+  if (![protocolClasses containsObject:requestInterceptorClass]) {
+    [protocolClasses insertObject:requestInterceptorClass atIndex:0];
+  }
+  urlSessionConfiguration.protocolClasses = protocolClasses;
+
+  [urlSessionConfiguration setHTTPShouldSetCookies:YES];
+  [urlSessionConfiguration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+  [urlSessionConfiguration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
+  return urlSessionConfiguration;
 }
 
 - (void)dealloc
