@@ -48,6 +48,7 @@
     "@react-native-community/slider": "4.5.2",
     "@react-native-masked-view/masked-view": "0.3.1",
     "@react-native-picker/picker": "2.7.5",
+    "@react-native-segmented-control/segmented-control": "2.5.2",
     "@shopify/flash-list": "1.6.4",
     "expo": "~51.0.0",
     "expo-camera": "~15.0.0",
