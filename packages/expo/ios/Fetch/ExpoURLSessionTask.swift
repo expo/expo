@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import React
 
 /**
  An URLSessionDataTask wrapper.
@@ -35,13 +34,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     for tuple in requestInit.headers {
       request.addValue(tuple[1], forHTTPHeaderField: tuple[0])
     }
-    if request.value(forHTTPHeaderField: "content-encoding") == "gzip",
-      let gzipBody = RCTGzipData(requestBody, -1 /* default */) {
-      request.httpBody = gzipBody
-      request.setValue(String(gzipBody.count), forHTTPHeaderField: "Content-Length")
-    } else {
-      request.httpBody = requestBody
-    }
+    request.httpBody = requestBody
 
     let task = urlSession.dataTask(with: request)
     urlSessionDelegate.addDelegate(task: task, delegate: self)

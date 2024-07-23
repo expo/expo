@@ -1,5 +1,4 @@
 import { fetch } from 'expo/fetch';
-import { Platform } from 'react-native';
 
 export const name = 'Fetch';
 
@@ -70,26 +69,6 @@ export function test({ describe, expect, it, ...t }) {
       const json = await resp.json();
       expect(json.form).toEqual({ foo: 'foo' });
       expect(json.headers['Content-Type'].startsWith('multipart/form-data; boundary=')).toBe(true);
-    });
-
-    it('should support gzip request', async () => {
-      if (Platform.OS === 'web') {
-        // gzip request is not whatwg-fetch standard and not supported in browser runtimes.
-        return;
-      }
-      const body = '{"foo":"foo"}';
-      const expectedBytesNumber = 29; // echo -n '{"foo":"foo"}' | gzip | wc -c
-      const resp = await fetch('https://httpbin.org/anything', {
-        method: 'POST',
-        headers: {
-          'Content-Encoding': 'gzip',
-          'Content-Type': 'application/json',
-        },
-        body,
-      });
-      const json = await resp.json();
-      expect(json.headers['Content-Encoding']).toBe('gzip');
-      expect(json.headers['Content-Length']).toBe(String(expectedBytesNumber));
     });
   });
 
