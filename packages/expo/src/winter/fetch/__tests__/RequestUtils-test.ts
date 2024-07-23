@@ -12,6 +12,7 @@ import {
   createBoundary,
   normalizeBodyInitAsync,
   normalizeHeadersInit,
+  overrideHeaders,
 } from '../RequestUtils';
 
 describe(convertFormData, () => {
@@ -134,7 +135,7 @@ describe(normalizeBodyInitAsync, () => {
     const result = await normalizeBodyInitAsync(body);
     const resultBodyString = new TextDecoder().decode(result.body);
     expect(resultBodyString).toMatch(/------ExpoFetchFormBoundary[\w]{16}/);
-    const overrideHeaders = result.overrideHeaders;
+    const overrideHeaders = result.overriddenHeaders;
     expect(overrideHeaders?.length).toBe(1);
     expect(overrideHeaders?.[0][0]).toBe('Content-Type');
     expect(overrideHeaders?.[0][1]).toMatch(
@@ -234,4 +235,58 @@ describe(normalizeHeadersInit, () => {
 
     return true;
   }
+});
+
+describe(overrideHeaders, () => {
+  it('should add new headers if they do not exist', () => {
+    const headers: NativeHeadersType = [
+      ['Content-Type', 'application/json'],
+      ['Accept', 'application/json'],
+    ];
+    const newHeaders: NativeHeadersType = [
+      ['Authorization', 'Bearer token'],
+      ['Cache-Control', 'no-cache'],
+    ];
+    const result = overrideHeaders(headers, newHeaders);
+    const expected = [
+      ['Content-Type', 'application/json'],
+      ['Accept', 'application/json'],
+      ['Authorization', 'Bearer token'],
+      ['Cache-Control', 'no-cache'],
+    ];
+    expect(result).toEqual(expected);
+  });
+
+  it('should remove headers if new header has same key', () => {
+    const headers: NativeHeadersType = [
+      ['Content-Type', 'application/json'],
+      ['Content-Type', 'application/json2'],
+      ['Accept', 'application/json'],
+      ['Authorization', 'Bearer token'],
+    ];
+    const newHeaders: NativeHeadersType = [['Content-Type', 'text/plain']];
+    const result = overrideHeaders(headers, newHeaders);
+    const expected = [
+      ['Accept', 'application/json'],
+      ['Authorization', 'Bearer token'],
+      ['Content-Type', 'text/plain'],
+    ];
+    expect(result).toEqual(expected);
+  });
+
+  it('should remove headers if new header has same case-insensitive key', () => {
+    const headers: NativeHeadersType = [
+      ['content-type', 'application/json'],
+      ['Accept', 'application/json'],
+      ['Authorization', 'Bearer token'],
+    ];
+    const newHeaders: NativeHeadersType = [['Content-Type', 'text/plain']];
+    const result = overrideHeaders(headers, newHeaders);
+    const expected = [
+      ['Accept', 'application/json'],
+      ['Authorization', 'Bearer token'],
+      ['Content-Type', 'text/plain'],
+    ];
+    expect(result).toEqual(expected);
+  });
 });

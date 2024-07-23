@@ -86,7 +86,7 @@ export function createBoundary(): string {
  */
 export async function normalizeBodyInitAsync(
   body: BodyInit | null | undefined
-): Promise<{ body: Uint8Array | null; overrideHeaders?: NativeHeadersType }> {
+): Promise<{ body: Uint8Array | null; overriddenHeaders?: NativeHeadersType }> {
   if (body == null) {
     return { body: null };
   }
@@ -123,7 +123,7 @@ export async function normalizeBodyInitAsync(
     const encoder = new TextEncoder();
     return {
       body: encoder.encode(result),
-      overrideHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
+      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
     };
   }
 
@@ -148,4 +148,24 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
     return results;
   }
   return Object.entries(headers);
+}
+
+/**
+ * Create a new header array by overriding the existing headers with new headers (by header key).
+ */
+export function overrideHeaders(
+  headers: NativeHeadersType,
+  newHeaders: NativeHeadersType
+): NativeHeadersType {
+  const newKeySet = new Set(newHeaders.map(([key]) => key.toLocaleLowerCase()));
+  const result: NativeHeadersType = [];
+  for (const [key, value] of headers) {
+    if (!newKeySet.has(key.toLocaleLowerCase())) {
+      result.push([key, value]);
+    }
+  }
+  for (const [key, value] of newHeaders) {
+    result.push([key, value]);
+  }
+  return result;
 }
