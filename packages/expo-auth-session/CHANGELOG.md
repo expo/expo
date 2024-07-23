@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react`/`react-native` peer dependencies.
+
 ### 💡 Others
 
 - Add a standard main package entry point (`index.ts`). ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
