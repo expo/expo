@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed invalid characters for prepared statements on iOS. ([#30579](https://github.com/expo/expo/pull/30579) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 14.0.4 — 2024-06-27
