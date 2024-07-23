@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoSQLiteNext.native.js","sourceRoot":"","sources":["../../src/next/ExpoSQLiteNext.native.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,gBAAgB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoSQLiteNext');\n"]}

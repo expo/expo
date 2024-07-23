@@ -31,6 +31,7 @@ import { SectionHeader } from '../../components/SectionHeader';
 import ThemedStatusBar from '../../components/ThemedStatusBar';
 import UserReviewSection from '../../components/UserReviewSection';
 import {
+  AppPlatform,
   HomeScreenDataDocument,
   HomeScreenDataQuery,
   HomeScreenDataQueryVariables,
@@ -39,7 +40,6 @@ import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import HistoryActions from '../../redux/HistoryActions';
 import { DevSession, HistoryList } from '../../types';
 import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCallback';
-import getSnackId from '../../utils/getSnackId';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -247,15 +247,13 @@ export class HomeScreenView extends React.Component<Props, State> {
       const [projects, graphQLResponse] = await Promise.all([
         api.sendAuthenticatedApiV2Request<DevSession[]>('development-sessions', {
           method: 'GET',
-          searchParams: {
-            deviceId: getSnackId(),
-          },
         }),
         accountName
           ? ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
               query: HomeScreenDataDocument,
               variables: {
                 accountName,
+                platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
               },
               fetchPolicy: 'network-only',
             })

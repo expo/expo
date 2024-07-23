@@ -211,17 +211,17 @@ object ThumbhashDecoder {
 
         // Decode A
         if (hasAlpha) {
-          var cy = 0
-          var j = 0
-          while (cy < 5) {
-            val fy2 = fy[cy] * 2.0f
-            var cx = if (cy > 0) 0 else 1
-            while (cx < 5 - cy) {
-              a += a_ac!![j] * fx[cx] * fy2
+          var cyAlpha = 0
+          var k = 0
+          while (cyAlpha < 5) {
+            val fy2 = fy[cyAlpha] * 2.0f
+            var cx = if (cyAlpha > 0) 0 else 1
+            while (cx < 5 - cyAlpha) {
+              a += a_ac!![k] * fx[cx] * fy2
               cx++
-              j++
+              k++
             }
-            cy++
+            cyAlpha++
           }
         }
 
@@ -346,22 +346,22 @@ object ThumbhashDecoder {
     }
 
     fun decode(hash: ByteArray, start: Int, index: Int, scale: Float): Int {
-      var index = index
+      var currentIndex = index
       for (i in ac.indices) {
-        val data = hash[start + (index shr 1)].toInt() shr (index and 1 shl 2)
+        val data = hash[start + (currentIndex shr 1)].toInt() shr (currentIndex and 1 shl 2)
         ac[i] = ((data and 15).toFloat() / 7.5f - 1.0f) * scale
-        index++
+        currentIndex++
       }
-      return index
+      return currentIndex
     }
 
     fun writeTo(hash: ByteArray, start: Int, index: Int): Int {
-      var index = index
+      var currentIndex = index
       for (v in ac) {
-        hash[start + (index shr 1)] = (hash[start + (index shr 1)].toInt() or (Math.round(15.0f * v) shl (index and 1 shl 2))).toByte()
-        index++
+        hash[start + (currentIndex shr 1)] = (hash[start + (currentIndex shr 1)].toInt() or (Math.round(15.0f * v) shl (currentIndex and 1 shl 2))).toByte()
+        currentIndex++
       }
-      return index
+      return currentIndex
     }
   }
 }

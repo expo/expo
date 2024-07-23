@@ -1,4 +1,4 @@
-import { TransformOptions } from './babel-core';
+import type { TransformOptions } from './babel-core';
 /**
  * Returns a memoized function that checks for the existence of a
  * project-level .babelrc file. If it doesn't exist, it reads the

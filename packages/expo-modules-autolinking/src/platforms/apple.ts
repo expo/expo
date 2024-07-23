@@ -2,12 +2,16 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import {
+import type {
+  ExtraDependencies,
   ModuleDescriptorIos,
   ModuleIosPodspecInfo,
   PackageRevision,
   SearchOptions,
 } from '../types';
+
+const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
+const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 
 const indent = '  ';
 
@@ -66,6 +70,22 @@ export async function resolveModuleAsync(
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
   };
+}
+
+export async function resolveExtraBuildDependenciesAsync(
+  projectNativeRoot: string
+): Promise<ExtraDependencies | null> {
+  const propsFile = path.join(projectNativeRoot, APPLE_PROPERTIES_FILE);
+  try {
+    const contents = await fs.readFile(propsFile, 'utf8');
+    const podfileJson = JSON.parse(contents);
+    if (podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]) {
+      // expo-build-properties would serialize the extraPods as JSON string, we should parse it again.
+      const extraPods = JSON.parse(podfileJson[APPLE_EXTRA_BUILD_DEPS_KEY]);
+      return extraPods;
+    }
+  } catch {}
+  return null;
 }
 
 /**

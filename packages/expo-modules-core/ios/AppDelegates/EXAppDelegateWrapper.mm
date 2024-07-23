@@ -2,7 +2,26 @@
 
 #import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
+#import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <ExpoModulesCore/Swift.h>
+
+#if __has_include(<React-RCTAppDelegate/RCTRootViewFactory.h>)
+#import <React-RCTAppDelegate/RCTRootViewFactory.h>
+#elif __has_include(<React_RCTAppDelegate/RCTRootViewFactory.h>)
+// for importing the header from framework, the dash will be transformed to underscore
+#import <React_RCTAppDelegate/RCTRootViewFactory.h>
+#endif
+
+#import <ReactCommon/RCTTurboModuleManager.h>
+
+@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
+@end
+
+@interface RCTRootViewFactoryConfiguration ()
+
+- (void)setCustomizeRootView:(void (^)(UIView *rootView))customizeRootView;
+
+@end
 
 @interface EXAppDelegateWrapper()
 
@@ -41,48 +60,59 @@
   return _expoAppDelegate;
 }
 
-#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
-
 #if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [super application:application didFinishLaunchingWithOptions:launchOptions];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-result"
   [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
+#pragma clang diagnostic pop
   return YES;
 }
 #endif // !TARGET_OS_OSX
-
-- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
-{
-  return [self.reactDelegate createBridgeWithDelegate:delegate launchOptions:launchOptions];
-}
-
-- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
-                          moduleName:(NSString *)moduleName
-                           initProps:(NSDictionary *)initProps
-{
-  BOOL enableFabric = NO;
-#if RN_FABRIC_ENABLED
-  enableFabric = self.fabricEnabled;
-#endif
-
-  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
-                                                       moduleName:moduleName
-                                                initialProperties:initProps
-                                                    fabricEnabled:enableFabric];
-#if TARGET_OS_IOS
-  rootView.backgroundColor = UIColor.systemBackgroundColor;
-#elif TARGET_OS_OSX
-  rootView.wantsLayer = YES;
-  rootView.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
-#endif
-  return rootView;
-}
 
 - (UIViewController *)createRootViewController
 {
   return [self.reactDelegate createRootViewController];
 }
-#endif // __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
+
+- (RCTRootViewFactory *)createRCTRootViewFactory
+{
+  __weak __typeof(self) weakSelf = self;
+  RCTBundleURLBlock bundleUrlBlock = ^{
+    RCTAppDelegate *strongSelf = weakSelf;
+    return strongSelf.bundleURL;
+  };
+
+  RCTRootViewFactoryConfiguration *configuration =
+      [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
+                                                       newArchEnabled:self.fabricEnabled
+                                                   turboModuleEnabled:self.turboModuleEnabled
+                                                    bridgelessEnabled:self.bridgelessEnabled];
+
+  configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
+  {
+    return [weakSelf createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
+  };
+
+  configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
+  {
+    return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
+  };
+
+  // TODO(kudo,20240706): Remove respondsToSelector and set the property directly when we upgrade to react-native 0.75
+  if ([configuration respondsToSelector:@selector(setCustomizeRootView:)]) {
+    [configuration setCustomizeRootView:^(UIView *_Nonnull rootView) {
+      [weakSelf customizeRootView:(RCTRootView *)rootView];
+    }];
+  }
+
+  return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
+}
+
+- (void)customizeRootView:(UIView *)rootView {
+  [_expoAppDelegate customizeRootView:rootView];
+}
 
 @end

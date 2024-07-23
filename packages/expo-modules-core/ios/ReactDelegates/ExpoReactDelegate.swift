@@ -12,25 +12,32 @@ public class ExpoReactDelegate: NSObject {
   }
 
   @objc
-  public func createBridge(delegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge {
-    self.handlers.forEach { $0.bridgeWillCreate() }
-    let result = self.handlers.lazy
-      .compactMap { $0.createBridge(reactDelegate: self, bridgeDelegate: delegate, launchOptions: launchOptions) }
-      .first(where: { _ in true }) ?? RCTBridge(delegate: delegate, launchOptions: launchOptions)!
-    self.handlers.forEach { $0.bridgeDidCreate(bridge: result) }
-    return result
+  public func createReactRootView(
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView {
+    return self.handlers.lazy
+      .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
+      .first(where: { _ in true })
+      ?? {
+        guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
+          fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
+        }
+        return rctAppDelegate.recreateRootView(
+          withBundleURL: nil,
+          moduleName: moduleName,
+          initialProps: initialProperties,
+          launchOptions: launchOptions
+        )
+      }()
   }
 
   @objc
-  public func createRootView(
-    bridge: RCTBridge,
-    moduleName: String,
-    initialProperties: [AnyHashable: Any]?,
-    fabricEnabled: Bool = EXAppDefines.APP_NEW_ARCH_ENABLED
-  ) -> UIView {
+  public func bundleURL() -> URL? {
     return self.handlers.lazy
-      .compactMap { $0.createRootView(reactDelegate: self, bridge: bridge, moduleName: moduleName, initialProperties: initialProperties) }
-      .first(where: { _ in true }) ?? EXAppSetupDefaultRootView(bridge, moduleName, initialProperties, fabricEnabled)
+      .compactMap { $0.bundleURL(reactDelegate: self) }
+      .first(where: { _ in true })
   }
 
   @objc

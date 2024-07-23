@@ -18,7 +18,7 @@ const homeDirectories = [
   'config-plugins',
   'debugging',
   'deploy',
-  'routing',
+  'review',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
@@ -50,21 +50,31 @@ const generalDirectories = fs
 // --- Navigation ---
 
 const home = [
-  makeSection('', [makePage('overview.mdx')]),
   makeSection('Get started', [
-    makePage('get-started/installation.mdx'),
-    makePage('get-started/expo-go.mdx'),
+    makePage('get-started/introduction.mdx'),
     makePage('get-started/create-a-project.mdx'),
+    makePage('get-started/set-up-your-environment.mdx'),
+    makePage('get-started/start-developing.mdx'),
+    makePage('get-started/next-steps.mdx'),
   ]),
   makeSection('Develop', [
-    makePage('develop/project-structure.mdx'),
+    makePage('develop/tools.mdx'),
+    makeGroup(
+      'Navigation',
+      [
+        makePage('develop/file-based-routing.mdx'),
+        makePage('develop/dynamic-routes.mdx'),
+        makePage('develop/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
     makeGroup(
       'User interface',
       [
-        makePage('develop/user-interface/splash-screen.mdx'),
-        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
+        makePage('develop/user-interface/assets.mdx'),
         makePage('develop/user-interface/color-themes.mdx'),
         makePage('develop/user-interface/animation.mdx'),
         makePage('develop/user-interface/store-data.mdx'),
@@ -107,6 +117,7 @@ const home = [
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
+  makeSection('Review', [makePage('review/overview.mdx'), makePage('review/with-orbit.mdx')]),
   makeSection('Deploy', [
     makePage('deploy/build-project.mdx'),
     makePage('deploy/submit-to-app-stores.mdx'),
@@ -123,6 +134,7 @@ const general = [
     makePage('workflow/configuration.mdx'),
     makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
+    makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
     makePage('guides/linking.mdx'),
@@ -156,6 +168,18 @@ const general = [
       ],
       { expanded: false }
     ),
+    makeSection('Existing React Native apps', [
+      makePage('bare/overview.mdx'),
+      makePage('bare/installing-expo-modules.mdx'),
+      makePage('bare/using-expo-cli.mdx'),
+      makePage('bare/installing-updates.mdx'),
+      makePage('bare/install-dev-builds-in-bare.mdx'),
+      makePage('bare/upgrade.mdx'),
+    ]),
+    makeSection('Existing native apps', [
+      makePage('brownfield/overview.mdx'),
+      makePage('brownfield/installing-expo-modules.mdx'),
+    ]),
     makeGroup(
       'Reference',
       [
@@ -178,21 +202,24 @@ const general = [
     makePage('router/layouts.mdx'),
     makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
-    makeGroup('Advanced', [
+    makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
-      makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+    ]),
+    makeGroup('Advanced', [
+      makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/reference/hooks.mdx'),
-      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
@@ -200,6 +227,7 @@ const general = [
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/not-found.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
@@ -256,6 +284,7 @@ const general = [
         makePage('app-signing/existing-credentials.mdx'),
         makePage('app-signing/syncing-credentials.mdx'),
         makePage('app-signing/security.mdx'),
+        makePage('app-signing/apple-developer-program-roles-and-permissions.mdx'),
       ],
       { expanded: false }
     ),
@@ -305,9 +334,10 @@ const general = [
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
-    makePage('eas-update/github-actions.mdx'),
+    makePage('eas-update/publish.mdx'),
     makePage('eas-update/eas-cli.mdx'),
     makePage('eas-update/develop-faster.mdx'),
+    makePage('eas-update/github-actions.mdx'),
     makePage('eas-update/faq.mdx'),
     makeGroup('Concepts', [
       makePage('eas-update/how-it-works.mdx'),
@@ -319,6 +349,7 @@ const general = [
       makePage('eas-update/debug-advanced.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/build-locally.mdx'),
+      makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('eas-update/optimize-assets.mdx'),
@@ -327,13 +358,12 @@ const general = [
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/continuous-deployment.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
-      makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
@@ -355,10 +385,13 @@ const general = [
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
+    makePage('push-notifications/fcm-credentials.mdx'),
     makeGroup(
       'Reference',
       [
+        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
@@ -377,7 +410,6 @@ const general = [
       makePage('eas/webhooks.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/troubleshooting-proxies.mdx'),
         makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
@@ -393,7 +425,6 @@ const general = [
         makePage('guides/facebook-authentication.mdx'),
         makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
-        makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
@@ -407,18 +438,23 @@ const general = [
         makePage('accounts/account-types.mdx'),
         makePage('accounts/two-factor.mdx'),
         makePage('accounts/programmatic-access.mdx'),
-        makePage('accounts/working-together.mdx'),
         makePage('accounts/sso.mdx'),
       ]),
-      makeSection('Bare React Native', [
-        makePage('bare/overview.mdx'),
-        makePage('bare/installing-expo-modules.mdx'),
-        makePage('bare/using-expo-cli.mdx'),
-        makePage('bare/installing-updates.mdx'),
-        makePage('bare/using-expo-client.mdx'),
-        makePage('bare/install-dev-builds-in-bare.mdx'),
-        makePage('bare/error-recovery.mdx'),
-        makePage('bare/upgrade.mdx'),
+      makeSection('Billing', [
+        makePage('billing/overview.mdx'),
+        makePage('billing/plans.mdx'),
+        makePage('billing/manage.mdx'),
+        makePage('billing/invoices-and-receipts.mdx'),
+        makePage('billing/usage-based-pricing.mdx'),
+        makePage('billing/faq.mdx'),
+      ]),
+      makeSection('Troubleshooting', [
+        makePage('troubleshooting/overview.mdx'),
+        makePage('troubleshooting/application-has-not-been-registered.mdx'),
+        makePage('troubleshooting/clear-cache-macos-linux.mdx'),
+        makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/react-native-version-mismatch.mdx'),
+        makePage('troubleshooting/proxies.mdx'),
       ]),
     ],
     { expanded: true }
@@ -432,6 +468,7 @@ const general = [
 ];
 
 const learn = [
+  makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
     'Get started',
     [
@@ -445,6 +482,25 @@ const learn = [
       makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'EAS tutorial',
+    [
+      makePage('tutorial/eas/introduction.mdx'),
+      makePage('tutorial/eas/configure-development-build.mdx'),
+      makePage('tutorial/eas/android-development-build.mdx'),
+      makePage('tutorial/eas/ios-development-build-for-simulators.mdx'),
+      makePage('tutorial/eas/ios-development-build-for-devices.mdx'),
+      makePage('tutorial/eas/multiple-app-variants.mdx'),
+      makePage('tutorial/eas/internal-distribution-builds.mdx'),
+      makePage('tutorial/eas/manage-app-versions.mdx'),
+      makePage('tutorial/eas/android-production-build.mdx'),
+      makePage('tutorial/eas/ios-production-build.mdx'),
+      makePage('tutorial/eas/team-development.mdx'),
+      makePage('tutorial/eas/using-github.mdx'),
+      makePage('tutorial/eas/next-steps.mdx'),
     ],
     { expanded: true }
   ),
@@ -467,8 +523,7 @@ const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
-    makePage('preview/support.mdx'),
-    makePage('router/reference/not-found.mdx'),
+    makePage('preview/react-compiler.mdx'),
     { expanded: true },
   ]),
 ];
@@ -502,6 +557,9 @@ const archive = [
     makePage('archive/notification-channels.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
+    makePage('archive/using-expo-client.mdx'),
+    makePage('archive/using-flipper.mdx'),
+    makePage('archive/e2e-tests.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];
@@ -515,14 +573,27 @@ const versionsReference = VERSIONS.reduce(
       makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), {
         expanded: true,
       }),
-      makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
+      makeSection(
+        'Expo SDK',
+        shiftEntryToFront(pagesFromDir(`versions/${version}/sdk`), entry => entry.name === 'Expo'),
+        { expanded: true }
+      ),
       makeSection('Technical specs', [
         makePage('technical-specs/expo-updates-1.mdx'),
         makePage('technical-specs/expo-sfv-0.mdx'),
       ]),
-      makeSection('More', [makePage('more/expo-cli.mdx'), makePage('more/glossary-of-terms.mdx')], {
-        expanded: true,
-      }),
+      makeSection(
+        'More',
+        [
+          makePage('more/expo-cli.mdx'),
+          makePage('more/create-expo.mdx'),
+          makePage('more/qr-codes.mdx'),
+          makePage('more/glossary-of-terms.mdx'),
+        ],
+        {
+          expanded: true,
+        }
+      ),
       makeSection(
         'React Native',
         [
@@ -627,4 +698,8 @@ function pageUrl(file) {
   return pathname
     .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
     .replace(/\/$/, '');
+}
+
+function shiftEntryToFront(array, findFunction) {
+  return [...array.filter(findFunction), ...array.filter(item => !findFunction(item))];
 }

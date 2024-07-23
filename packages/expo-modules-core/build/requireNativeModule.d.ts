@@ -1,20 +1,3 @@
-type ExpoObject = {
-    modules: undefined | {
-        [key: string]: any;
-    };
-    uuidv4: () => string;
-    uuidv5: (name: string, namespace: string) => string;
-    getViewConfig(viewName: string): ExpoViewConfig | null;
-};
-type ExpoViewConfig = {
-    validAttributes: Record<string, any>;
-    directEventTypes: Record<string, {
-        registrationName: string;
-    }>;
-};
-declare global {
-    var expo: ExpoObject | undefined;
-}
 /**
  * Imports the native module registered with given name. In the first place it tries to load
  * the module installed through the JSI host object and then falls back to the bridge proxy module.
@@ -33,5 +16,4 @@ export declare function requireNativeModule<ModuleType = any>(moduleName: string
  * @returns Object representing the native module or `null` when it cannot be found.
  */
 export declare function requireOptionalNativeModule<ModuleType = any>(moduleName: string): ModuleType | null;
-export {};
 //# sourceMappingURL=requireNativeModule.d.ts.map

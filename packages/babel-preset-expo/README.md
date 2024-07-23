@@ -42,6 +42,42 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 ## Options
 
+### `react-compiler`
+
+Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. As of SDK 51, you must also enable `experiments.reactCompiler: true` in the `app.json`.
+
+```js
+[
+  'babel-preset-expo',
+  {
+    'react-compiler': {
+      sources: (filename) => {
+        // Match file names to include in the React Compiler.
+        return filename.includes('src/path/to/dir');
+      },
+    },
+  },
+];
+```
+
+### `minifyTypeofWindow`
+
+Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your code, e.g. `if (typeof window === 'undefined')` -> `if (true)` in servers. This is useful when you're using libraries that mock the window object on native or in the server.
+
+```js
+[
+  'babel-preset-expo',
+  {
+    // If your native app doesn't polyfill `window` then setting this to `false` can reduce bundle size.
+    native: {
+      minifyTypeofWindow: true,
+    },
+  },
+];
+```
+
+Defaults to `false` for server environments and web, `true` for native platforms to support legacy browser polyfills.
+
 ### `reanimated`
 
 `boolean`, defaults to `true`. Set `reanimated: false` to disable adding the `react-native-reanimated/plugin` when `react-native-reanimated` is installed.

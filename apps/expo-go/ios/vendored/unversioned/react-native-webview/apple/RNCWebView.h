@@ -3,7 +3,13 @@
 #import <React/RCTViewComponentView.h>
 #import <React/RCTConversions.h>
 #import <WebKit/WKDataDetectorTypes.h>
+
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#else
+#import <React/RCTUIKit.h>
+#endif // !TARGET_OS_OSX
+
 #import <react/renderer/components/RNCWebViewSpec/Props.h>
 
 #ifndef NativeComponentExampleComponentView_h

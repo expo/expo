@@ -15,6 +15,8 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
+class JavaScriptObject;
+
 /**
  * Represents any JavaScript function. Its purpose is to expose the `jsi::Function` API back to Kotlin.
  */
@@ -27,7 +29,7 @@ public:
   static void registerNatives();
 
   static jni::local_ref<JavaScriptFunction::javaobject> newInstance(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    JSIContext *jsiContext,
     std::weak_ptr<JavaScriptRuntime> runtime,
     std::shared_ptr<jsi::Function> jsFunction
   );
@@ -52,6 +54,7 @@ private:
   std::shared_ptr<jsi::Function> jsFunction;
 
   jobject invoke(
+    jni::alias_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> jsThis,
     jni::alias_ref<jni::JArrayClass<jni::JObject>> args,
     jni::alias_ref<ExpectedType::javaobject> expectedReturnType
   );

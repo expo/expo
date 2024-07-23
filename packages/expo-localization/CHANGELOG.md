@@ -8,9 +8,39 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
+- Add missing `react` peer dependencies for isolated modules. ([#30474](https://github.com/expo/expo/pull/30474) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.3 — 2024-05-06
+
+### 🎉 New features
+
+- Added a `forcesRTL` manifest flag for forcing RTL to be on. ([#28129](https://github.com/expo/expo/pull/28129) by [@aleqsio](https://github.com/aleqsio))
+
+## 15.0.2 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
+- [Web] Gracefully handle unsupported language tags. ([#27403](https://github.com/expo/expo/pull/27403) by [@mary-ext](https://github.com/mary-ext))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
 
 ## 14.8.3 - 2024-01-18
 

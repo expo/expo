@@ -45,6 +45,11 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  /** Disable detaching telemetry to separate process */
+  get EXPO_NO_TELEMETRY_DETACH() {
+    return boolish('EXPO_NO_TELEMETRY_DETACH', false);
+  }
+
   /** local directory to the universe repo for testing locally */
   get EXPO_UNIVERSE_DIR() {
     return string('EXPO_UNIVERSE_DIR', '');
@@ -178,6 +183,31 @@ class Env {
   /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
   get EXPO_ADB_USER(): string {
     return string('EXPO_ADB_USER', '0');
+  }
+
+  /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
+  get __EXPO_E2E_TEST(): boolean {
+    return boolish('__EXPO_E2E_TEST', false);
+  }
+
+  /** Unstable: Force single-bundle exports in production. */
+  get EXPO_NO_BUNDLE_SPLITTING(): boolean {
+    return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
+  }
+
+  /** Enable unstable/experimental Atlas to gather bundle information during development or export */
+  get EXPO_UNSTABLE_ATLAS() {
+    return boolish('EXPO_UNSTABLE_ATLAS', false);
+  }
+
+  /** Unstable: Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and less optimized for development bundling. */
+  get EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH() {
+    return boolish('EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH', false);
+  }
+
+  /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
+  get EXPO_USE_METRO_REQUIRE() {
+    return boolish('EXPO_USE_METRO_REQUIRE', false);
   }
 }
 

@@ -28,7 +28,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers
-import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -54,7 +53,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.math.BigInteger
-import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -368,7 +366,7 @@ open class FileSystemModule : Module() {
       }
     }
 
-    AsyncFunction("getTotalDiskCapacityAsync") {
+    AsyncFunction<Double>("getTotalDiskCapacityAsync") {
       val root = StatFs(Environment.getDataDirectory().absolutePath)
       val blockCount = root.blockCountLong
       val blockSize = root.blockSizeLong
@@ -377,7 +375,7 @@ open class FileSystemModule : Module() {
       return@AsyncFunction capacity.toDouble().coerceAtMost(2.0.pow(53.0) - 1)
     }
 
-    AsyncFunction("getFreeDiskStorageAsync") {
+    AsyncFunction<Double>("getFreeDiskStorageAsync") {
       val external = StatFs(Environment.getDataDirectory().absolutePath)
       val availableBlocks = external.availableBlocksLong
       val blockSize = external.blockSizeLong
@@ -997,10 +995,7 @@ open class FileSystemModule : Module() {
           .connectTimeout(60, TimeUnit.SECONDS)
           .readTimeout(60, TimeUnit.SECONDS)
           .writeTimeout(60, TimeUnit.SECONDS)
-        val cookieHandler: CookieHandler = appContext.legacyModule()
-          ?: throw CookieHandlerNotFoundException()
 
-        builder.cookieJar(JavaNetCookieJar(cookieHandler))
         client = builder.build()
       }
       return client

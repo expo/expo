@@ -73,6 +73,7 @@ export function getApiRoutesForDirectory(cwd: string) {
   return globSync('**/*+api.@(ts|tsx|js|jsx)', {
     cwd,
     absolute: true,
+    dot: true,
   });
 }
 
@@ -80,6 +81,7 @@ export function getApiRoutesForDirectory(cwd: string) {
 export function getRoutePaths(cwd: string) {
   return globSync('**/*.@(ts|tsx|js|jsx)', {
     cwd,
+    dot: true,
   }).map((p) => './' + normalizePaths(p));
 }
 

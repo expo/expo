@@ -137,19 +137,20 @@ function createControlledEnvironment() {
   function _expandEnv(parsedEnv) {
     const expandedEnv = {};
 
-    // When not ignoring `process.env`, values from the parsed env are overwritten by the current env if defined.
-    // We handle this ourselves, expansion should always use the current state of "current + parsed env".
+    // Pass a clone of `process.env` to avoid mutating the original environment.
+    // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
     const allExpandedEnv = (0, _dotenvExpand().expand)({
-      parsed: {
-        ...process.env,
-        ...parsedEnv
-      },
-      ignoreProcessEnv: true
+      parsed: parsedEnv,
+      processEnv: {
+        ...process.env
+      }
     });
     if (allExpandedEnv.error) {
       console.error(`Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`);
       return parsedEnv;
     }
+
+    // Only store the values that were initially parsed, from `parsedEnv`.
     for (const key of Object.keys(parsedEnv)) {
       if (allExpandedEnv.parsed?.[key]) {
         expandedEnv[key] = allExpandedEnv.parsed[key];

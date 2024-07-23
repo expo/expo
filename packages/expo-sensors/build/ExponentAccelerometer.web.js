@@ -1,4 +1,4 @@
-import { DeviceEventEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 import { assertSensorEventEnabledAsync, getPermissionsAsync, isSensorEnabledAsync, requestPermissionsAsync, } from './utils/isSensorEnabledAsync.web';
 const scalar = Math.PI / 180;
 const eventName = 'deviceorientation';
@@ -9,11 +9,12 @@ export default {
         }
         return await isSensorEnabledAsync(eventName);
     },
-    _handleMotion({ alpha, beta, gamma }) {
+    _handleMotion({ alpha, beta, gamma, timeStamp }) {
         DeviceEventEmitter.emit('accelerometerDidUpdate', {
             x: gamma * scalar,
             y: beta * scalar,
             z: alpha * scalar,
+            timestamp: timeStamp / 1000,
         });
     },
     getPermissionsAsync,

@@ -2,7 +2,9 @@ import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
+import { loadConfigAsync } from './Config';
 import type { NormalizedOptions, Options } from './Fingerprint.types';
+import { SourceSkips } from './sourcer/SourceSkips';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -11,21 +13,30 @@ export const DEFAULT_IGNORE_PATHS = [
   // Android
   '**/android/build/**/*',
   '**/android/.cxx/**/*',
+  '**/android/.gradle/**/*',
   '**/android/app/build/**/*',
   '**/android/app/.cxx/**/*',
+  '**/android/app/.gradle/**/*',
   '**/android-annotation/build/**/*',
   '**/android-annotation/.cxx/**/*',
+  '**/android-annotation/.gradle/**/*',
   '**/android-annotation-processor/build/**/*',
   '**/android-annotation-processor/.cxx/**/*',
+  '**/android-annotation-processor/.gradle/**/*',
+
+  // Often has different line endings, thus we have to ignore it
+  '**/android/gradlew.bat',
 
   // Android gradle plugins
   '**/*-gradle-plugin/build/**/*',
-  '**/*-gradle-plugin/.gradle/**/*',
   '**/*-gradle-plugin/.cxx/**/*',
+  '**/*-gradle-plugin/.gradle/**/*',
 
   // iOS
   '**/ios/Pods/**/*',
   '**/ios/build/**/*',
+  '**/ios/.xcode.env.local',
+  '**/ios/**/project.xcworkspace',
   '**/ios/*.xcworkspace/xcuserdata/**/*',
 
   // System files that differ from machine to machine
@@ -44,6 +55,7 @@ export const DEFAULT_IGNORE_PATHS = [
   '**/node_modules/expo/config.js',
   '**/node_modules/expo/config-plugins.js',
   `**/node_modules/{${[
+    'chalk',
     'debug',
     'escape-string-regexp',
     'getenv',
@@ -52,6 +64,7 @@ export const DEFAULT_IGNORE_PATHS = [
     'imurmurhash',
     'js-tokens',
     'json5',
+    'picocolors',
     'lines-and-columns',
     'require-from-string',
     'resolve-from',
@@ -63,15 +76,25 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
+export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
+
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
 ): Promise<NormalizedOptions> {
+  const config = await loadConfigAsync(projectRoot, options?.silent ?? false);
   return {
+    // Defaults
+    platforms: ['android', 'ios'],
+    concurrentIoLimit: os.cpus().length,
+    hashAlgorithm: 'sha1',
+    sourceSkips: DEFAULT_SOURCE_SKIPS,
+    enableReactImportsPatcher: true,
+    // Options from config
+    ...config,
+    // Explicit options
     ...options,
-    platforms: options?.platforms ?? ['android', 'ios'],
-    concurrentIoLimit: options?.concurrentIoLimit ?? os.cpus().length,
-    hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
+    // These options are computed by both default and explicit options, so we put them last.
     ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
   };
 }

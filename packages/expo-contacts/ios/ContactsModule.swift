@@ -2,10 +2,13 @@ import ExpoModulesCore
 import Contacts
 import ContactsUI
 
-public class ContactsModule: Module {
+public class ContactsModule: Module, OnContactPickingResultHandler {
   private let contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
+  private var contactPickerDelegate: ContactPickerControllerDelegate?
+  private var contactPickingPromise: Promise?
+  private var contactManipulationPromise: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoContacts")
@@ -22,9 +25,9 @@ public class ContactsModule: Module {
 
     AsyncFunction("writeContactToFileAsync") { (options: ContactsQuery) -> String? in
       let keys = contactKeysToFetch(from: options.fields)
-      let payload = fetchContactsData(options: options, keys: keys)
+      let payload = fetchContactsData(options: options, keys: keys, isWriting: true)
 
-      if let error = payload["error"] {
+      if payload["error"] != nil {
         throw FailedToFetchContactsException()
       }
 
@@ -70,22 +73,28 @@ public class ContactsModule: Module {
       }
     }.runOnQueue(.main)
 
-    AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact, options: FormOptions, promise: Promise) in
+    // swiftlint:disable closure_body_length
+    AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact?, options: FormOptions, promise: Promise) in
+      // swiftlint:enable closure_body_length
+      if contactManipulationPromise != nil {
+        throw ContactManipulationInProgressException()
+      }
+
       var controller: ContactsViewController?
-      var contact: CNMutableContact
 
       if let identifier {
-        if let foundContact = try getContact(withId: identifier) as? CNMutableContact {
-          contact = foundContact
-          controller = ContactsViewController.init(forNewContact: contact)
+        if let foundContact = try? getContact(withId: identifier) {
+          controller = ContactsViewController.init(forNewContact: foundContact)
         }
       } else {
-        contact = CNMutableContact()
-        try mutateContact(&contact, with: data)
-        if options.isNew == true {
-          controller = ContactsViewController.init(forNewContact: contact)
-        } else {
-          controller = ContactsViewController.init(forUnknownContact: contact)
+        var contact = CNMutableContact()
+        if let data {
+          try mutateContact(&contact, with: data)
+          if options.isNew == true {
+            controller = ContactsViewController.init(forNewContact: contact)
+          } else {
+            controller = ContactsViewController.init(forUnknownContact: contact)
+          }
         }
       }
 
@@ -94,7 +103,8 @@ public class ContactsModule: Module {
         return
       }
 
-      let cancelButtonTitle = options.cancelButtonTitle != nil ? options.cancelButtonTitle : "Cancel"
+      let cancelButtonTitle = options.cancelButtonTitle ?? "Cancel"
+      controller.setCloseButton(title: cancelButtonTitle)
       controller.contactStore = contactStore
       controller.delegate = delegate
 
@@ -128,16 +138,36 @@ public class ContactsModule: Module {
 
       controller.onViewDisappeared = {
         promise.resolve()
+        self.contactManipulationPromise = nil
       }
 
+      contactManipulationPromise = promise
       parent?.present(navController, animated: animated)
+    }.runOnQueue(.main)
+
+    AsyncFunction("presentContactPickerAsync") { (promise: Promise) in
+      if contactPickingPromise != nil {
+        throw ContactPickingInProgressException()
+      }
+
+      let pickerController = CNContactPickerViewController()
+
+      contactPickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
+
+      pickerController.delegate = self.contactPickerDelegate
+
+      let currentController = appContext?.utilities?.currentViewController()
+
+      contactPickingPromise = promise
+
+      currentController?.present(pickerController, animated: true)
     }.runOnQueue(.main)
 
     AsyncFunction("addExistingContactToGroupAsync") { (identifier: String, groupId: String) in
       let saveRequest = CNSaveRequest()
       let keysToFetch = contactKeysToFetch(from: nil)
 
-      if var contact = try getContact(with: identifier, keysToFetch: keysToFetch) {
+      if let contact = try getContact(with: identifier, keysToFetch: keysToFetch) {
         let group = try group(with: groupId)
         saveRequest.addMember(contact, to: group)
         try executeSaveRequest(saveRequest)
@@ -180,7 +210,7 @@ public class ContactsModule: Module {
     AsyncFunction("updateGroupNameAsync") { (groupName: String, groupId: String) in
       let saveRequest = CNSaveRequest()
       let group = try group(with: groupId)
-      guard var mutatbleGroup = group as? CNMutableGroup else {
+      guard let mutatbleGroup = group as? CNMutableGroup else {
         return
       }
       mutatbleGroup.name = groupName
@@ -200,7 +230,7 @@ public class ContactsModule: Module {
 
     AsyncFunction("createGroupAsync") { (name: String, containerId: String) -> String in
       let saveRequest = CNSaveRequest()
-      var group = CNMutableGroup()
+      let group = CNMutableGroup()
       group.name = name
       saveRequest.add(group, toContainerWithIdentifier: containerId)
       try executeSaveRequest(saveRequest)
@@ -296,6 +326,20 @@ public class ContactsModule: Module {
     }
   }
 
+  func didPickContact(contact: CNContact) throws {
+    defer {
+      contactPickingPromise = nil
+    }
+
+    let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
+    contactPickingPromise?.resolve(serializedContact)
+  }
+
+  func didCancelPickingContact() {
+    contactPickingPromise?.resolve()
+    contactPickingPromise = nil
+  }
+
   private func getContact(withId identifier: String) throws -> CNContact {
     do {
       let keysToFetch = [CNContactViewController.descriptorForRequiredKeys()]
@@ -338,7 +382,7 @@ public class ContactsModule: Module {
   }
 
   private func serializeContactPayload(payload: [String: Any], keys: [String], options: ContactsQuery) throws -> [String: Any]? {
-    if let error = payload["error"] {
+    if payload["error"] != nil {
       return nil
     }
     var mutablePayload = payload
@@ -367,7 +411,6 @@ public class ContactsModule: Module {
 
   private func group(with identifier: String) throws -> CNGroup {
     let predicate = CNGroup.predicateForGroups(withIdentifiers: [identifier])
-    var error: NSError?
 
     do {
       let groups = try contactStore.groups(matching: predicate)
@@ -505,7 +548,7 @@ public class ContactsModule: Module {
     }
   }
 
-  private func fetchContactsData(options: ContactsQuery, keys: [String]) -> [String: Any] {
+  private func fetchContactsData(options: ContactsQuery, keys: [String], isWriting: Bool = false) -> [String: Any] {
     var predicate: NSPredicate?
 
     if let id = options.id {
@@ -518,13 +561,13 @@ public class ContactsModule: Module {
       predicate = CNContact.predicateForContacts(withIdentifiers: [containerId])
     }
 
-    var descriptors = getDescriptors(for: keys)
+    let descriptors = getDescriptors(for: keys, isWriting: isWriting)
     return queryContacts(with: predicate, keys: descriptors, options: options)
   }
 
   private func queryContacts(with predicate: NSPredicate?, keys: [CNKeyDescriptor], options: ContactsQuery) -> [String: Any] {
-    var pageOffset = options.pageOffset ?? 0
-    var pageSize = options.pageSize ?? 0
+    let pageOffset = options.pageOffset ?? 0
+    let pageSize = options.pageSize ?? 0
 
     let fetchRequest = buildFetchRequest(sort: options.sort, keys: keys)
     fetchRequest.predicate = predicate
@@ -535,9 +578,8 @@ public class ContactsModule: Module {
     }
 
     var currentIndex = 0
-    var error: NSError
     var response = [CNContact]()
-    var endIndex = pageOffset + pageSize
+    let endIndex = pageOffset + pageSize
 
     do {
       try contactStore.enumerateContacts(with: fetchRequest) { contact, _ in

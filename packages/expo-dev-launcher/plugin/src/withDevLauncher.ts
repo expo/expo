@@ -13,14 +13,24 @@ export default createRunOncePlugin<PluginConfigType>(
   (config, props = {}) => {
     validateConfig(props);
 
-    if ((props.ios?.launchModeExperimental || props.launchModeExperimental) === 'launcher') {
+    const iOSLaunchMode =
+      props.ios?.launchMode ??
+      props.launchMode ??
+      props.ios?.launchModeExperimental ??
+      props.launchModeExperimental;
+    if (iOSLaunchMode === 'launcher') {
       config = withInfoPlist(config, (config) => {
         config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
         return config;
       });
     }
 
-    if ((props.android?.launchModeExperimental || props.launchModeExperimental) === 'launcher') {
+    const androidLaunchMode =
+      props.android?.launchMode ??
+      props.launchMode ??
+      props.android?.launchModeExperimental ??
+      props.launchModeExperimental;
+    if (androidLaunchMode === 'launcher') {
       config = withAndroidManifest(config, (config) => {
         const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 

@@ -6,15 +6,15 @@ packageName: 'expo-calendar'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -122,7 +122,6 @@ async function createCalendar() {
   console.log(`Your new calendar ID is: ${newCalendarID}`);
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -131,7 +130,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

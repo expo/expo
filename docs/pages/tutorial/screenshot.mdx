@@ -3,12 +3,13 @@ title: Take a screenshot
 description: In this tutorial, learn how to capture a screenshot using a third-party library and Expo Media Library.
 ---
 
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
-import { A } from '~/ui/components/Text';
-import { Step } from '~/ui/components/Step';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { A } from '~/ui/components/Text';
 
 In this chapter, we will learn how to take a screenshot using a third-party library and save it on the device's media library.
 We'll use the following libraries [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) that allows taking a screenshot,
@@ -85,7 +86,7 @@ The `react-native-view-shot` library provides a method called `captureRef()` tha
 To capture a `<View>`, wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass a reference to it. Using the `useRef()` hook from React, let's create an `imageRef` variable inside `<App>`.
 
 {/* prettier-ignore */}
-```jsx App.js
+```jsx App.js|collapseHeight=440
 import { useState, /* @info Import the useRef hook from React. */useRef/* @end */ } from 'react';
 
 export default function App() {
@@ -148,7 +149,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```jsx
+```jsx collapseHeight=440
 export default function App() {
   /* @info Replace the comment with the code to capture the screenshot and save the image. */
   const onSaveImageAsync = async () => {
@@ -175,7 +176,7 @@ export default function App() {
 
 Now, choose a photo and add a sticker. Then tap the “Save” button. We should see the following result:
 
-<Video file="tutorial/saving-screenshot.mp4" />
+<ContentSpotlight file="tutorial/saving-screenshot.mp4" />
 
 </Step>
 

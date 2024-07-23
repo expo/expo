@@ -62,6 +62,7 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Locales.withLocales,
     // Dangerous
     withIosIcons,
+    IOSConfig.PrivacyInfo.withPrivacyInfo,
   ]);
 };
 

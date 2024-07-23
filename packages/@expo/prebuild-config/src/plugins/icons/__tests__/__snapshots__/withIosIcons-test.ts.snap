@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`e2e: iOS icons with fallback image writes all the image files expected 1`] = `
+[
+  {
+    "filename": "App-Icon-1024x1024@1x.png",
+    "idiom": "universal",
+    "platform": "ios",
+    "size": "1024x1024",
+  },
+]
+`;
+
 exports[`e2e: iOS icons writes all the image files expected 1`] = `
 [
   {

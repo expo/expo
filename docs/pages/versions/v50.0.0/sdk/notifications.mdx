@@ -6,19 +6,18 @@ packageName: 'expo-notifications'
 iconUrl: '/static/images/packages/expo-notifications.png'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
-import { AndroidPermissions } from '~/components/plugins/permissions';
-import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 import { Collapsible } from '~/ui/components/Collapsible';
-import APISection from '~/components/plugins/APISection';
-import { PlatformTags } from '~/ui/components/Tag';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
-
 
 <PlatformsSection title="Push notifications Platform Compatibility" android ios />
 
@@ -533,10 +532,10 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
   src="/static/images/notification-sound-ios.jpeg"
-  style={{ maxWidth: 305 }}
+  className="max-w-[305px]"
 />
 
 </Collapsible>
@@ -575,9 +574,9 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/sdk/notifications/categories.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
   alt="Image of notification categories on Android and iOS"
 />
 

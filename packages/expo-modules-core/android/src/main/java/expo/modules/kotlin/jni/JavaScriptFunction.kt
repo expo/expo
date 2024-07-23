@@ -17,9 +17,9 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
 
   fun isValid() = mHybridData.isValid
 
-  private external fun invoke(args: Array<Any?>, expectedReturnType: ExpectedType): Any?
+  private external fun invoke(thisValue: JavaScriptObject?, args: Array<Any?>, expectedReturnType: ExpectedType): Any?
 
-  operator fun invoke(vararg args: Any?, appContext: AppContext? = null): ReturnType {
+  operator fun invoke(vararg args: Any?, thisValue: JavaScriptObject? = null, appContext: AppContext? = null): ReturnType {
     // TODO(@lukmccall): check current thread
     val convertedArgs = args
       .map { JSTypeConverter.convertToJSValue(it) }
@@ -35,7 +35,7 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
       )
 
     val expectedReturnType = converter.getCppRequiredTypes()
-    val result = invoke(convertedArgs, expectedReturnType)
+    val result = invoke(thisValue, convertedArgs, expectedReturnType)
     @Suppress("UNCHECKED_CAST")
     return converter.convert(result, appContext) as ReturnType
   }

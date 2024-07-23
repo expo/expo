@@ -26,7 +26,7 @@ public:
   static void registerNatives();
 
   static jni::local_ref<JavaScriptTypedArray::javaobject> newInstance(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    JSIContext *jSIContext,
     std::weak_ptr<JavaScriptRuntime> runtime,
     std::shared_ptr<jsi::Object> jsObject
   );

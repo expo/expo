@@ -97,16 +97,6 @@
         android:resource="@xml/provider_paths" />
     </provider>
 
-    <provider
-      android:name="versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewFileProvider"
-      android:authorities="${applicationId}.fileprovider"
-      android:exported="false"
-      android:grantUriPermissions="true">
-      <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/provider_paths" />
-    </provider>
-
     <meta-data
       tools:replace="android:value"
       android:name="org.unimodules.core.AppLoader#react-native-headless"

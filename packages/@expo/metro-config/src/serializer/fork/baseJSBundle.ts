@@ -23,12 +23,19 @@ export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
+  paths: Record<
+    // Module ID
+    string,
+    // Split paths { moduleId: URL }
+    Record<string, string>
+  >;
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
     skipWrapping?: boolean;
+    splitChunks?: boolean;
     output?: string;
     includeSourceMaps?: boolean;
   };
@@ -54,14 +61,6 @@ export function getPlatformOption(
     : options.sourceUrl;
   const url = new URL(sourceUrl, 'https://expo.dev');
   return url.searchParams.get('platform') ?? null;
-}
-
-export function getSplitChunksOption(
-  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
-  options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>
-): boolean {
-  // Only enable when the entire bundle is being split, and only run on web.
-  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
 }
 
 export function getBaseUrlOption(
@@ -93,7 +92,7 @@ export function baseJSBundle(
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
     baseUrl: getBaseUrlOption(graph, options),
-    splitChunks: getSplitChunksOption(graph, options),
+    splitChunks: !!options.serializerOptions?.splitChunks,
     platform,
     skipWrapping: !!options.serializerOptions?.skipWrapping,
     computedAsyncModulePaths: null,
@@ -160,8 +159,9 @@ export function baseJSBundleWithDependencies(
     sourceMapUrl,
     // This directive doesn't make a lot of sense in the context of a large single bundle that represent
     // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
-    // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
-    sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl,
+    // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
+    sourceUrl:
+      options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
   });
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
@@ -202,5 +202,13 @@ export function baseJSBundleWithDependencies(
       id,
       typeof code === 'number' ? code : code.src,
     ]) as ModuleMap,
+    paths: Object.fromEntries(
+      (
+        mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length) as [
+          string,
+          { src: string; paths: Record<string, string> },
+        ][]
+      ).map(([id, code]) => [id, code.paths])
+    ),
   };
 }

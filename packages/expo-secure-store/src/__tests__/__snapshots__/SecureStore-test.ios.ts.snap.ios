@@ -12,4 +12,4 @@ exports[`exports accessibility options: WHEN_PASSCODE_SET_THIS_DEVICE_ONLY 1`] =
 
 exports[`exports accessibility options: WHEN_UNLOCKED 1`] = `5`;
 
-exports[`exports accessibility options: WHEN_UNLOCKED_THIS_DEVICE_ONLY 1`] = `3`;
+exports[`exports accessibility options: WHEN_UNLOCKED_THIS_DEVICE_ONLY 1`] = `6`;

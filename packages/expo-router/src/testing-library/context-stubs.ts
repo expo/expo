@@ -3,6 +3,15 @@ import path from 'path';
 import requireContext from './require-context-ponyfill';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
+export type NativeIntentStub = {
+  redirectSystemPath?: (event: {
+    path: string | null;
+    initial: boolean;
+  }) => Promise<string | null | undefined> | string | null | undefined;
+  subscribe?: (
+    listener: (path: string) => void
+  ) => Promise<() => void | void> | (() => void) | void;
+};
 export type FileStub =
   | (Record<string, unknown> & {
       default: ReactComponent;
@@ -10,11 +19,15 @@ export type FileStub =
     })
   | ReactComponent;
 
+export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
+  '+native-intent'?: NativeIntentStub;
+};
+
 export { requireContext };
 
 const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export function inMemoryContext(context: Record<string, FileStub>) {
+export function inMemoryContext(context: MemoryContext) {
   return Object.assign(
     function (id: string) {
       id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
@@ -33,7 +46,7 @@ export function inMemoryContext(context: Record<string, FileStub>) {
   );
 }
 
-export function requireContextWithOverrides(dir: string, overrides: Record<string, FileStub>) {
+export function requireContextWithOverrides(dir: string, overrides: MemoryContext) {
   const existingContext = requireContext(path.resolve(process.cwd(), dir));
 
   return Object.assign(

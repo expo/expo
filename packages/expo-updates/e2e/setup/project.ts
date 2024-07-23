@@ -3,7 +3,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
-import glob from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -20,14 +19,8 @@ function getExpoDependencyChunks({
   return [
     ['@expo/config-types', '@expo/env'],
     ['@expo/config'],
-    [
-      '@expo/cli',
-      '@expo/config-plugins',
-      'expo',
-      'expo-asset',
-      'expo-modules-core',
-      'expo-modules-autolinking',
-    ],
+    ['@expo/config-plugins'],
+    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-core', 'expo-modules-autolinking'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
     [
       'babel-preset-expo',
@@ -48,7 +41,18 @@ function getExpoDependencyChunks({
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
     ...(includeTV
-      ? [['expo-av', 'expo-blur', 'expo-image', 'expo-linear-gradient', 'expo-localization']]
+      ? [
+          [
+            'expo-av',
+            'expo-blur',
+            'expo-image',
+            'expo-linear-gradient',
+            'expo-localization',
+            'expo-crypto',
+            'expo-network',
+            'expo-video',
+          ],
+        ]
       : []),
   ];
 }
@@ -105,26 +109,13 @@ async function packExpoDependency(
     )
   );
 
+  let dependencyTarballPath: string;
   try {
-    await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
-      cwd: dependencyPath,
-      stdio: 'pipe',
-    });
+    dependencyTarballPath = await spawnNpmPackAsync({ cwd: dependencyPath, outputDir: destPath });
   } finally {
     // Restore the original package JSON
     await fs.copyFile(packageJsonCopyPath, packageJsonPath);
     await fs.rm(packageJsonCopyPath);
-  }
-
-  // Ensure the file was created as expected
-  const dependencyTarballName =
-    dependencyComponents[0] === '@expo'
-      ? `expo-${dependencyComponents[1]}`
-      : `${dependencyComponents[0]}`;
-  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyTarballName}-*.tgz`))[0];
-
-  if (!dependencyTarballPath) {
-    throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
   }
 
   // Return the dependency in the form needed by package.json, as a relative path
@@ -134,6 +125,30 @@ async function packExpoDependency(
     dependency,
     e2eVersion,
   };
+}
+
+async function spawnNpmPackAsync({
+  cwd,
+  outputDir,
+}: {
+  cwd: string;
+  outputDir: string;
+}): Promise<string> {
+  const { stdout } = await spawnAsync(
+    'npm',
+    // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
+    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
+    { cwd, stdio: 'pipe' }
+  );
+
+  // Validate the tarball output data
+  const output = JSON.parse(stdout);
+  if (output.length !== 1) {
+    throw new Error(`Expected a single tarball to be created, received: ${output.length}`);
+  }
+
+  // Return the absolute path to the tarball
+  return path.join(outputDir, output[0].filename);
 }
 
 async function copyCommonFixturesToProject(
@@ -337,8 +352,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.73.4-0',
-        '@react-native-tvos/config-tv': '^0.0.6',
+        'react-native': 'npm:react-native-tvos@~0.74.2-0',
+        '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
         install: {
@@ -595,16 +610,10 @@ export async function initAsync(
   // pack typescript template
   const templateName = 'expo-template-blank-typescript';
   const localTSTemplatePath = path.join(repoRoot, 'templates', templateName);
-  await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
+  const localTSTemplatePathName = await spawnNpmPackAsync({
     cwd: localTSTemplatePath,
-    stdio: 'ignore',
+    outputDir: repoRoot,
   });
-
-  const localTSTemplatePathName = glob.sync(path.join(repoRoot, `${templateName}-*.tgz`))[0];
-
-  if (!localTSTemplatePathName) {
-    throw new Error(`Failed to locate packed template in ${repoRoot}`);
-  }
 
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
@@ -660,18 +669,10 @@ export async function initAsync(
   const prebuildTemplateName = 'expo-template-bare-minimum';
 
   const localTemplatePath = path.join(repoRoot, 'templates', prebuildTemplateName);
-  await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {
+  const localTemplatePathName = await spawnNpmPackAsync({
     cwd: localTemplatePath,
-    stdio: 'ignore',
+    outputDir: projectRoot,
   });
-
-  const localTemplatePathName = glob.sync(
-    path.join(projectRoot, `${prebuildTemplateName}-*.tgz`)
-  )[0];
-
-  if (!localTemplatePathName) {
-    throw new Error(`Failed to locate packed template in ${projectRoot}`);
-  }
 
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
@@ -718,6 +719,7 @@ export async function initAsync(
       '-dontwarn javax.lang.model.element.Modifier',
       '-dontwarn org.checkerframework.checker.nullness.qual.EnsuresNonNullIf',
       '-dontwarn org.checkerframework.dataflow.qual.Pure',
+      '-keep class com.google.common.util.concurrent.ListenableFuture { *; }',
       '',
     ].join('\n'),
     'utf-8'
@@ -815,6 +817,29 @@ export async function setupUpdatesDisabledE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-disabled.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesErrorRecoveryE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
-import fs from 'fs/promises';
+import * as fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -12,7 +12,7 @@ import {
   execute,
   projectRoot,
   getRoot,
-  setupTestProjectAsync,
+  setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
 } from './utils';
 
@@ -30,13 +30,22 @@ function getTemplatePath() {
   return results[0];
 }
 
+let cachedTemplatePath: string | null = null;
+
 async function ensureTemplatePathAsync() {
-  let templatePath = getTemplatePath();
-  if (templatePath) return templatePath;
+  // let templatePath = getTemplatePath();
+  if (cachedTemplatePath) return cachedTemplatePath;
   await execa('npm', ['pack'], { cwd: templateFolder });
 
-  templatePath = getTemplatePath();
-  if (templatePath) return templatePath;
+  cachedTemplatePath = getTemplatePath();
+
+  const tmpTemplate = path.join(projectRoot, 'template.tgz');
+  // Move to tmp directory
+  await fs.rename(cachedTemplatePath, tmpTemplate);
+
+  cachedTemplatePath = tmpTemplate;
+
+  if (cachedTemplatePath) return cachedTemplatePath;
 
   throw new Error('Could not find template tarball');
 }
@@ -101,15 +110,198 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
   );
 });
 
+/**
+ * Asserts that the placeholder values for the app name have been renamed to the
+ * values configured by the user
+ *
+ * @see packages/create-expo/README.md for an explanation of placeholder values.
+ */
+async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
+  // We could read the files in parallel to save a tiny bit of time, but the
+  // test code and stack trace is far easier to follow when arranged like this.
+  const read = (filePath: string) => fs.readFile(path.resolve(projectRoot, filePath), 'utf-8');
+  let contents: string;
+
+  // For each of these tests, we provide both positive and negative test cases.
+  // - We expect it *not to match* the template's initial value.
+  //   - … This guards against renaming some, but not all cases of the string.
+  // - We expect it *to match* the renamed value configured by the user.
+  //   - … This guards against renaming the string, but to the wrong value.
+
+  contents = await read('app.json');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/settings.gradle');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basic-prebuild');
+
+  // Although renameTemplateAppName() renames to "com.basicprebuild"
+  // post-extraction, there seems to be a follow-up step that (correctly)
+  // renames it once again to the value configured in `exp.android.package`.
+  contents = await read('android/app/build.gradle');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/app/src/main/java/com/example/minimal/MainApplication.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('android/app/src/main/java/com/example/minimal/MainActivity.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
+
+  contents = await read('ios/Podfile');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read('ios/basicprebuild.xcodeproj/project.pbxproj');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read(
+    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme'
+  );
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  // In case this template ever changes in future, other typical files to look
+  // out for include:
+  // android/app/BUCK
+  // android/app/src/main/AndroidManifest.xml
+  // android/app/src/main/res/values/strings.xml
+  // android/app/src/debug/java/com/minimal/ReactNativeFlipper.java
+  // android/app/src/main/java/com/minimal/MainActivity.java
+  // android/app/src/main/java/com/minimal/MainApplication.java
+}
+
 it(
   'runs `npx expo prebuild`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
     const templateFolder = await ensureTemplatePathAsync();
     console.log('Using local template:', templateFolder);
 
     await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
+      cwd: projectRoot,
+    });
+
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(projectRoot)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(projectRoot, entry.path);
+      })
+      .filter(Boolean);
+
+    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+    await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+
+    // Added new packages
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+      'expo',
+      'react',
+      'react-native',
+    ]);
+
+    // Updated scripts
+    expect(pkg.scripts).toStrictEqual({
+      android: 'expo run:android',
+      ios: 'expo run:ios',
+    });
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toMatchInlineSnapshot(`
+      [
+        "App.js",
+        "android/.gitignore",
+        "android/app/build.gradle",
+        "android/app/debug.keystore",
+        "android/app/proguard-rules.pro",
+        "android/app/src/debug/AndroidManifest.xml",
+        "android/app/src/main/AndroidManifest.xml",
+        "android/app/src/main/java/com/example/minimal/MainActivity.kt",
+        "android/app/src/main/java/com/example/minimal/MainApplication.kt",
+        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
+        "android/app/src/main/res/drawable/splashscreen.xml",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+        "android/app/src/main/res/values/colors.xml",
+        "android/app/src/main/res/values/strings.xml",
+        "android/app/src/main/res/values/styles.xml",
+        "android/app/src/main/res/values-night/colors.xml",
+        "android/build.gradle",
+        "android/gradle/wrapper/gradle-wrapper.jar",
+        "android/gradle/wrapper/gradle-wrapper.properties",
+        "android/gradle.properties",
+        "android/gradlew",
+        "android/gradlew.bat",
+        "android/settings.gradle",
+        "app.json",
+        "bun.lockb",
+        "ios/.gitignore",
+        "ios/.xcode.env",
+        "ios/Podfile",
+        "ios/Podfile.properties.json",
+        "ios/basicprebuild/AppDelegate.h",
+        "ios/basicprebuild/AppDelegate.mm",
+        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
+        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
+        "ios/basicprebuild/Images.xcassets/Contents.json",
+        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
+        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
+        "ios/basicprebuild/Info.plist",
+        "ios/basicprebuild/SplashScreen.storyboard",
+        "ios/basicprebuild/Supporting/Expo.plist",
+        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
+        "ios/basicprebuild/basicprebuild.entitlements",
+        "ios/basicprebuild/main.m",
+        "ios/basicprebuild/noop-file.swift",
+        "ios/basicprebuild.xcodeproj/project.pbxproj",
+        "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+        "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
+        "metro.config.js",
+        "package.json",
+      ]
+    `);
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo prebuild --template <github-url>`',
+  async () => {
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'github-template-prebuild',
+      'with-blank'
+    );
+
+    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+    if (!expoSdkVersion) {
+      throw new Error('Could not determine Expo SDK major version from template');
+    }
+
+    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
+    console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
+
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
       cwd: projectRoot,
     });
 
@@ -181,121 +373,9 @@ it(
         "ios/.xcode.env",
         "ios/Podfile",
         "ios/Podfile.properties.json",
-        "ios/basicprebuild/AppDelegate.h",
-        "ios/basicprebuild/AppDelegate.mm",
-        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
-        "ios/basicprebuild/Images.xcassets/Contents.json",
-        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
-        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
-        "ios/basicprebuild/Info.plist",
-        "ios/basicprebuild/SplashScreen.storyboard",
-        "ios/basicprebuild/Supporting/Expo.plist",
-        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
-        "ios/basicprebuild/basicprebuild.entitlements",
-        "ios/basicprebuild/main.m",
-        "ios/basicprebuild/noop-file.swift",
-        "ios/basicprebuild.xcodeproj/project.pbxproj",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-        "package.json",
-      ]
-    `);
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
-
-it(
-  'runs `npx expo prebuild --template <github-url>`',
-  async () => {
-    const projectRoot = await setupTestProjectAsync('github-template-prebuild', 'with-blank');
-
-    const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-    const expoSdkVersion = semver.minVersion(expoPackage)?.major;
-    if (!expoSdkVersion) {
-      throw new Error('Could not determine Expo SDK major version from template');
-    }
-
-    const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
-    console.log('Using github template for SDK', expoSdkVersion, ':', templateUrl);
-
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateUrl], {
-      cwd: projectRoot,
-    });
-
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
-
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'react',
-      'react-native',
-    ]);
-
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-    });
-
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchInlineSnapshot(`
-      [
-        "App.js",
-        "android/.gitignore",
-        "android/app/build.gradle",
-        "android/app/debug.keystore",
-        "android/app/proguard-rules.pro",
-        "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/debug/java/com/example/minimal/ReactNativeFlipper.java",
-        "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/example/minimal/MainActivity.java",
-        "android/app/src/main/java/com/example/minimal/MainApplication.java",
-        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
-        "android/app/src/main/res/drawable/splashscreen.xml",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/values/colors.xml",
-        "android/app/src/main/res/values/strings.xml",
-        "android/app/src/main/res/values/styles.xml",
-        "android/app/src/main/res/values-night/colors.xml",
-        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
-        "android/build.gradle",
-        "android/gradle/wrapper/gradle-wrapper.jar",
-        "android/gradle/wrapper/gradle-wrapper.properties",
-        "android/gradle.properties",
-        "android/gradlew",
-        "android/gradlew.bat",
-        "android/settings.gradle",
-        "app.json",
-        "bun.lockb",
-        "ios/.gitignore",
-        "ios/.xcode.env",
-        "ios/Podfile",
-        "ios/Podfile.properties.json",
         "ios/githubtemplateprebuild/AppDelegate.h",
         "ios/githubtemplateprebuild/AppDelegate.mm",
+        "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
         "ios/githubtemplateprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
         "ios/githubtemplateprebuild/Images.xcassets/Contents.json",
         "ios/githubtemplateprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
@@ -311,6 +391,7 @@ it(
         "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/githubtemplateprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/githubtemplateprebuild.xcodeproj/xcshareddata/xcschemes/githubtemplateprebuild.xcscheme",
+        "metro.config.js",
         "package.json",
       ]
     `);

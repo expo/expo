@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { type ShareOptions } from 'react-native';
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;
@@ -73,12 +73,14 @@ export type PhoneNumber = {
     isPrimary?: boolean;
     /**
      * Phone number without format.
-     * @example `8674305`
+     * @example
+     * `8674305`
      */
     digits?: string;
     /**
      * Country code.
-     * @example `us`
+     * @example
+     * `us`
      */
     countryCode?: string;
     /**
@@ -259,11 +261,11 @@ export type Contact = {
      */
     maidenName?: string;
     /**
-     * Dr. Mr. Mrs. ect…
+     * Dr., Mr., Mrs., and so on.
      */
     namePrefix?: string;
     /**
-     * Jr. Sr. ect…
+     * Jr., Sr., an so on.
      */
     nameSuffix?: string;
     /**
@@ -296,7 +298,7 @@ export type Contact = {
     department?: string;
     /**
      * Additional information.
-     * > On iOS 13+, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+     * > The `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
      * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
      * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
      */
@@ -522,7 +524,7 @@ export type Container = {
     id: string;
     type: ContainerType;
 };
-export { PermissionStatus, PermissionResponse };
+export { PermissionStatus, PermissionResponse, PermissionExpiration };
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
  * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.
@@ -717,6 +719,13 @@ export declare function removeContactFromGroupAsync(contactId: string, groupId: 
  * @platform ios
  */
 export declare function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]>;
+/**
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
+ */
+export declare function presentContactPickerAsync(): Promise<Contact | null>;
 /**
  * Get the default container's ID.
  * @return A promise that fulfills with default container ID.

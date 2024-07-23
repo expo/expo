@@ -3,10 +3,10 @@ title: metro.config.js
 description: A reference of available configurations in Metro.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -104,7 +104,7 @@ Here, we'll define a global style for the class name `.container`:
 
 We can then use the class name in our component by importing the stylesheet and using `.container`:
 
-```js App.js
+```js App.js|collapseHeight=470
 import './styles.css';
 import { View } from 'react-native';
 
@@ -157,7 +157,7 @@ Flipping the extension, for example, `App.ios.module.css` will not work and resu
 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
-```js App.js
+```js App.js|collapseHeight=470
 import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
@@ -394,7 +394,7 @@ module.exports.transform = async ({ src, filename, options }) => {
 
 Expo CLI extends the default Metro resolver to add features like Web, Server, and tsconfig aliases support. You can similarly customize the default resolution behavior of Metro by chaining the `config.resolver.resolveRequest` function.
 
-```tsx metro.config.js
+```tsx metro.config.js|collapseHeight=470
 const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -587,7 +587,7 @@ The `debugId` is a deterministic hash of the bundle's contents without the exter
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
 
-{/* If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work. */}
+{/* If this isn't done, then features like [aliases](/guides/typescript/#path-aliases-optional), [absolute imports](/guides/typescript/#absolute-imports-optional), asset hashing, and more will not work. */}
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start` respectively.
 
@@ -695,7 +695,7 @@ By default, React Native only supports using a root `index.js` file as the entry
 
 #### Development
 
-Development mode entry files can be enabled by using the [`expo-dev-client`](/clients/introduction.mdx) package. Alternatively you can add the following configuration:
+Development mode entry files can be enabled by using the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. Alternatively you can add the following configuration:
 
 In the `ios/[project]/AppDelegate.mm` file:
 

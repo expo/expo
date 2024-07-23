@@ -99,7 +99,9 @@ public final class UpdatesUtils: NSObject {
         let absolutePath = path(forBundledAsset: asset)
         let message = "AppLauncherWithDatabase: embedded asset key = \(asset.key ?? ""), main bundle filename = \(asset.mainBundleFilename ?? ""), path = \(absolutePath ?? "")"
         logger.debug(message: message)
-        assetFilesMap[assetKey] = absolutePath
+        if let absolutePath = absolutePath {
+          assetFilesMap[assetKey] = URL(fileURLWithPath: absolutePath).absoluteString
+        }
       }
     }
 

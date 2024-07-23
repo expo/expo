@@ -1,14 +1,17 @@
 import { PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
 
 export function renderQueryProviders(data?: string | string[]) {
-  const dataStr = Array.isArray(data) ? data.join(';') : data;
-  return dataStr ? { $: { 'android:authorities': dataStr } } : undefined;
-}
-
-export function renderQueryPackages(data: string | string[]) {
   return (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
     $: {
-      'android:name': datum,
+      'android:authorities': datum as string,
+    },
+  }));
+}
+
+export function renderQueryPackages(data?: string | string[]) {
+  return (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
+    $: {
+      'android:name': datum as string,
     },
   }));
 }

@@ -31,13 +31,25 @@ async function createFingerprintForBuildAsync(platform, possibleProjectRoot, des
         // normal runtime versions don't need fingerprinting
         return;
     }
-    if (runtimeVersion.policy !== 'fingerprintExperimental') {
+    if (runtimeVersion.policy !== 'fingerprint') {
         // not a policy that needs fingerprinting
         return;
     }
-    const workflow = await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
-    const fingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, {});
-    console.log(JSON.stringify(fingerprint.sources));
+    let fingerprint;
+    const fingerprintOverride = process.env.EXPO_UPDATES_FINGERPRINT_OVERRIDE;
+    if (fingerprintOverride) {
+        console.log(`Using fingerprint from EXPO_UPDATES_FINGERPRINT_OVERRIDE: ${fingerprintOverride}`);
+        fingerprint = { hash: fingerprintOverride };
+    }
+    else {
+        const workflowOverride = process.env.EXPO_UPDATES_WORKFLOW_OVERRIDE;
+        const workflow = workflowOverride
+            ? (0, workflow_1.validateWorkflow)(workflowOverride)
+            : await (0, workflow_1.resolveWorkflowAsync)(projectRoot, platform);
+        const createdFingerprint = await (0, createFingerprintAsync_1.createFingerprintAsync)(projectRoot, platform, workflow, {});
+        console.log(JSON.stringify(createdFingerprint.sources));
+        fingerprint = createdFingerprint;
+    }
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'fingerprint'), fingerprint.hash);
 }
 exports.createFingerprintForBuildAsync = createFingerprintForBuildAsync;

@@ -23,7 +23,13 @@ config.resolver.blockList = [
 ];
 
 // Copied from expo-yarn-workspaces
-config.resolver.assetExts.push('db');
 config.transformer.enableBabelRCLookup = false;
+
+config.transformer.getTransformOptions = () => ({
+  transform: {
+    experimentalImportSupport: require('getenv').boolish('EXPO_USE_METRO_REQUIRE', false),
+    inlineRequires: false,
+  },
+});
 
 module.exports = config;

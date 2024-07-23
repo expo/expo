@@ -68,6 +68,9 @@ function getRewriteRequestUrl(projectRoot) {
             if (!ensured.searchParams.has('transform.routerRoot')) {
                 ensured.searchParams.set('transform.routerRoot', getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
             }
+            if (!ensured.searchParams.has('transform.reactCompiler') && exp.experiments?.reactCompiler) {
+                ensured.searchParams.set('transform.reactCompiler', String(!!exp.experiments?.reactCompiler));
+            }
             if (!ensured.searchParams.has('transform.engine')) {
                 const isHermesEnabled = isEnableHermesManaged(exp, platform);
                 if (isHermesEnabled) {

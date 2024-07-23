@@ -1,18 +1,16 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Divider, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
+import { SectionHeader } from 'src/components/SectionHeader';
 
 import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
-import { EmptySection } from './EmptySection';
-import { LegacyLaunchSection } from './LegacyLaunchSection';
 import { ProjectHeader } from './ProjectHeader';
-import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
 import ShareProjectButton from '../../components/ShareProjectButton';
-import { WebContainerProjectPage_Query } from '../../graphql/types';
+import { ProjectsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 const ERROR_TEXT = dedent`
@@ -23,10 +21,8 @@ const ERROR_TEXT = dedent`
 type Props = {
   loading: boolean;
   error?: Error;
-  data?: WebContainerProjectPage_Query;
+  data?: ProjectsQuery;
 } & StackScreenProps<HomeStackRoutes, 'ProjectDetails'>;
-
-type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 
 export function ProjectView({ loading, error, data, navigation }: Props) {
   const theme = useExpoTheme();
@@ -55,42 +51,9 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {appHasEASUpdates(app) && (
-            <>
-              <EASUpdateLaunchSection app={app} />
-              <Spacer.Vertical size="xl" />
-            </>
-          )}
-          {appHasLegacyUpdate(app) && (
-            <>
-              <LegacyLaunchSection app={app} />
-              <Spacer.Vertical size="xl" />
-            </>
-          )}
-          {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && (
-            <>
-              <EmptySection />
-              <Spacer.Vertical size="xl" />
-            </>
-          )}
-          <View bg="default" border="default" overflow="hidden" rounded="large">
-            <ConstantItem title="Owner" value={app.username} />
-            {app.sdkVersion !== '0.0.0' && (
-              <>
-                <Divider style={{ height: 1 }} />
-                <ConstantItem title="SDK Version" value={app.sdkVersion} />
-              </>
-            )}
-            {app.latestReleaseForReleaseChannel?.runtimeVersion && (
-              <>
-                <Divider style={{ height: 1 }} />
-                <ConstantItem
-                  title="Runtime Version"
-                  value={app.latestReleaseForReleaseChannel?.runtimeVersion}
-                />
-              </>
-            )}
-          </View>
+          <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
+          <EASUpdateLaunchSection app={app} />
+          <Spacer.Vertical size="xl" />
         </View>
       </ScrollView>
     );
@@ -108,12 +71,4 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
   }, [navigation, data?.app?.byId]);
 
   return <View flex="1">{contents}</View>;
-}
-
-function appHasLegacyUpdate(app: ProjectPageApp): boolean {
-  return app.published;
-}
-
-function appHasEASUpdates(app: ProjectPageApp): boolean {
-  return app.updateBranches.some((branch) => branch.updates.length > 0);
 }

@@ -4,12 +4,13 @@ import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 import { Text, TextProps, GestureResponderEvent, Platform } from 'react-native';
 
-import { Href, resolveHref } from './href';
+import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
 import { useRouter } from '../hooks';
+import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 
-interface WebAnchorProps {
+export interface WebAnchorProps {
   /**
    * **Web only:** Specifies where to open the `href`.
    *
@@ -61,9 +62,11 @@ interface WebAnchorProps {
   download?: string;
 }
 
-export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
+export interface LinkProps<T extends string | object>
+  extends Omit<TextProps, 'href'>,
+    WebAnchorProps {
   /** Path to route to. */
-  href: Href;
+  href: Href<T>;
 
   // TODO(EvanBacon): This may need to be extracted for React Native style support.
   /** Forward props to child component. Useful for custom buttons. */
@@ -71,14 +74,19 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
 
   /** Should replace the current route without adding to the history. */
   replace?: boolean;
-
-  /** Should push the current route, always adding to the history. */
+  /** Should push the current route  */
   push?: boolean;
 
   /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
   className?: string;
 
   onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+}
+
+export interface LinkComponent {
+  <T extends string | object>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+  /** Helper method to resolve an Href object into a string. */
+  resolveHref: (href: Href) => string;
 }
 
 /** Redirects to the href as soon as the component is mounted. */
@@ -92,12 +100,6 @@ export function Redirect({ href }: { href: Href }) {
     }
   });
   return null;
-}
-
-export interface LinkComponent {
-  (props: React.PropsWithChildren<LinkProps>): JSX.Element;
-  /** Helper method to resolve an Href object into a string. */
-  resolveHref: typeof resolveHref;
 }
 
 /**
@@ -139,9 +141,9 @@ function useInteropClassName(props: { style?: TextProps['style']; className?: st
 }
 
 const useHrefAttrs = Platform.select<
-  (props: Partial<LinkProps>) => { hrefAttrs?: any } & Partial<LinkProps>
+  (props: Partial<LinkProps<any>>) => { hrefAttrs?: any } & Partial<LinkProps<any>>
 >({
-  web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps>) {
+  web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps<any>>) {
     return React.useMemo(() => {
       const hrefAttrs = {
         rel,
@@ -172,7 +174,7 @@ function ExpoRouterLink(
     target,
     download,
     ...rest
-  }: LinkProps,
+  }: LinkProps<any>,
   ref: React.ForwardedRef<Text>
 ) {
   // Mutate the style prop to add the className on web.

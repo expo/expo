@@ -15,8 +15,7 @@ class ErrorManagerModule : Module() {
   }
 
   fun reportExceptionToLogBox(codedException: CodedException) {
-    val eventEmitter = appContext.eventEmitter(this) ?: return
-    eventEmitter.emit(
+    sendEvent(
       onNewException,
       Bundle().apply {
         putString("message", codedException.message ?: codedException.toString())
@@ -25,8 +24,7 @@ class ErrorManagerModule : Module() {
   }
 
   fun reportWarningToLogBox(warning: String) {
-    val eventEmitter = appContext.eventEmitter(this) ?: return
-    eventEmitter.emit(
+    sendEvent(
       onNewWarning,
       Bundle().apply {
         putString("message", warning)

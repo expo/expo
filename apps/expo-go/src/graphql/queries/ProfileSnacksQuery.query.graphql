@@ -1,8 +1,0 @@
-query Home_ProfileSnacks($limit: Int!, $offset: Int!) {
-  meUserActor {
-    id
-    snacks(limit: $limit, offset: $offset) {
-      ...CommonSnackData
-    }
-  }
-}

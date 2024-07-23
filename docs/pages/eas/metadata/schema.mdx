@@ -5,9 +5,9 @@ maxHeadingDepth: 4
 description: A reference of store config in EAS Metadata.
 ---
 
+import { MetadataTable, MetadataSubcategories } from '~/components/plugins/EasMetadataTable';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { markdownComponents as MD } from '~/ui/components/Markdown';
-import { MetadataTable, MetadataSubcategories } from '~/components/plugins/EasMetadataTable';
 
 > **warning** EAS Metadata is in beta and subject to breaking changes.
 
@@ -518,6 +518,8 @@ You can localize your App Store presence in [multiple languages](#apple-info-lan
 
 </Collapsible>
 
+{/* <!-- vale off --> */}
+
 <MetadataTable>
   {[
     {
@@ -694,6 +696,7 @@ You can localize your App Store presence in [multiple languages](#apple-info-lan
     { name: 'Vietnamese', description: 'vi' },
   ]}
 </MetadataTable>
+{/* <!-- vale on --> */}
 
 ### Apple release
 

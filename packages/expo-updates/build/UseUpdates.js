@@ -23,8 +23,8 @@ import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext
  *
  *   useEffect(() => {
  *     if (isUpdatePending) {
- *       // Update has successfully downloaded
- *       runUpdate();
+ *       // Update has successfully downloaded; apply it now
+ *       Updates.reloadAsync();
  *     }
  *   }, [isUpdatePending]);
  *

@@ -4,7 +4,7 @@ sidebar_title: Advanced
 description: Learn advanced strategies on how to debug EAS Update.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 After verifying our EAS Update configuration in our [basic guide](/eas-update/debug), we can move on to more advanced debugging strategies. The following sections describe common classes of problems and strategies on how to tackle them.
@@ -53,31 +53,27 @@ If our project does not have **android** or **ios** directories, we can make com
 
 In each, we expect to see configuration for the EAS Update URL and the runtime version. Here are the properties we'd expect to see in each file:
 
-**AndroidManifest.xml**
-
-```xml
-...
+```xml AndroidManifest.xml
+<!-- @hide ... --><!-- @end -->
 <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="your-runtime-version-here"/>
 <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/your-project-id-here"/>
-...
+<!-- @hide ... --><!-- @end -->
 ```
 
-**Expo.plist**
-
-```xml
-...
+```xml Expo.plist
+<!-- @hide ... --><!-- @end -->
 <key>EXUpdatesRuntimeVersion</key>
 <string>your-runtime-version-here</string>
 <key>EXUpdatesURL</key>
 <string>https://u.expo.dev/your-project-id-here</string>
-...
+<!-- @hide ... --><!-- @end -->
 ```
 
 ### Configuration without EAS Build
 
 If we aren't using EAS Build, this section will walk through debugging the state of EAS Update in our project. We'll need to look at multiple spots in the system. Below is a diagram of how EAS Update works and the spots that are useful to inspect when finding the root cause of an issue. In the sections following, we'll inspect and verify these spots and more.
 
-<ImageSpotlight alt="Map of debugging spots" src="/static/images/eas-update/debug-map.png" />
+<ContentSpotlight alt="Map of debugging spots" src="/static/images/eas-update/debug-map.png" />
 
 #### Verify build configuration
 
@@ -91,13 +87,13 @@ Once a build has a channel name, we can make sure that EAS servers know about it
 
 We'd expect the page to display the same channel name that our build has. If it's not there, we can create the channel on EAS servers with:
 
+{/* prettier-ignore */}
 <Terminal
   cmd={[
     '# eas channel:create [channel-name]',
     '',
-    '',
     '# Example',
-    'eas channel:create production',
+    '$ eas channel:create production',
   ]}
 />
 
@@ -107,10 +103,10 @@ There is a link that is defined by the developer between a channel and a branch.
 
 The [Channels page](https://expo.dev/accounts/[account]/projects/[project]/channels) will display the channel to branch mapping if it exists.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Linked branches on the Channels page"
   src="/static/images/eas-update/channels-linked-branches.png"
-  style={{ maxWidth: 400 }}
+  className="max-w-[400px]"
 />
 
 If the channel is not linked to the branch we expect, we can change the link with:
@@ -119,9 +115,8 @@ If the channel is not linked to the branch we expect, we can change the link wit
   cmd={[
     '# eas channel:edit [channel-name] --branch [branch-name]',
     '',
-    '',
     '# Example',
-    'eas channel:edit production --branch release-1.0',
+    '$ eas channel:edit production --branch release-1.0',
   ]}
 />
 
@@ -133,10 +128,10 @@ To inspect which updates are on a branch, we can go to the [Branches page](https
 
 The Branch Detail page will show us a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="List of updates on the Branch Detail page"
   src="/static/images/eas-update/branch-update-list.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 ## Debugging EAS Update
@@ -146,29 +141,6 @@ After verifying `expo-updates` and EAS Update configurations, we can move on to 
 ### In-app debugging
 
 The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates. See the code example to [check for updates manually](/versions/latest/sdk/updates/#use-expo-updates-with-a-custom-server).
-
-### Viewing network requests
-
-Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
-
-With either program, we'll need to follow their instructions for installing an SSL certificate, so that the program can decode HTTPS requests. Once that's set up in a simulator or on an actual device, we can open our app and watch requests.
-
-The requests we're interested in are from https://u.expo.dev and https://assets.eascdn.net. Responses from https://u.expo.dev will contain an update manifest, which specifies which assets the app will need to fetch to run the update. Responses from https://assets.eascdn.net will contain assets, like images, font files, and so on, that are required for the update to run.
-
-When inspecting the request to https://u.expo.dev, we can look for the following request headers:
-
-- `Expo-Runtime-Version`: this should make the runtime version we made our build and update with.
-- `expo-channel-name`: this should be the channel name specified in the **eas.json** build profile.
-- `Expo-Platform`: this should be either "android" or "ios".
-
-As for all requests, we expect to see either `200` response codes, or `304` if nothing has changed.
-
-Below is a screenshot showing the request of a successful update manifest request:
-
-<ImageSpotlight
-  alt="Successful manifest request"
-  src="/static/images/eas-update/network-request.png"
-/>
 
 ### Inspecting a build manually
 
@@ -183,8 +155,8 @@ Here are the steps for inspecting an iOS Simulator build on macOS:
 
 Inside the **Expo.plist** file, we expect to see the following configurations:
 
-```xml
-...
+```xml Expo.plist
+<!-- @hide ... --><!-- @end -->
 <key>EXUpdatesRequestHeaders</key>
 <dict>
   <key>expo-channel-name</key>
@@ -194,7 +166,7 @@ Inside the **Expo.plist** file, we expect to see the following configurations:
 <string>your-runtime-version</string>
 <key>EXUpdatesURL</key>
 <string>https://u.expo.dev/your-project-id</string>
-...
+<!-- @hide ... --><!-- @end -->
 ```
 
 ### Inspecting manifests manually
@@ -205,7 +177,7 @@ Inside our project's app config (**app.json**/**app.config.json**), the URL we c
 
 This `url` is EAS' "https://u.expo.dev" domain, followed by the project's ID on EAS servers. If we go to the URL directly, we'll see an error about missing a header. We can view a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production` and a platform of `android`, the full URL we could visit would be similar to this:
 
-```
+```text
 https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production&platform=android
 ```
 
@@ -227,7 +199,7 @@ As for all requests, we expect to see either `200` response codes, or `304` if n
 
 Below is a screenshot showing the request of a successful update manifest request:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Successful manifest request"
   src="/static/images/eas-update/network-request.png"
 />
@@ -250,11 +222,11 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
 - [Ensure the desired channel is set in our **Expo.plist**](/eas-update/updating-your-app/#configuring-the-channel-manually)
 - Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
-
-```
-sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj
-```
-
+  <Terminal
+    cmd={[
+      "$ sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/<project name>.xcodeproj/project.pbxproj",
+    ]}
+  />
 - Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds
@@ -297,7 +269,7 @@ We are not able to publish an update, or parts of our update are not being publi
 
 When we publish an update with EAS Update, it creates a **/dist** folder in the root of our project locally, which includes the assets that were uploaded as a part of the update.
 
-<ImageSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
+<ContentSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
 
 ### Viewing all assets included in an update
 
@@ -313,22 +285,22 @@ Once we've found the root cause of the issue, there are various mitigation steps
 
 The fastest way to "undo" a bad publish is to re-publish a known good update. Imagine we have a branch with two updates:
 
-```bash
-branch: "production"
-updates: [
-  update 2 (id: xyz2) "fixes typo"     // bad update
-  update 1 (id: abc1) "updates color"  // good update
-]
-```
+<Terminal
+  cmd={[
+    'branch: "production"',
+    'updates: [',
+    '  update 2 (id: xyz2) "fixes typo"     // bad update',
+    '  update 1 (id: abc1) "updates color"  // good update',
+    ']',
+  ]}
+/>
 
 If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
 
 <Terminal
   cmd={[
     '# eas update:republish --group [update-group-id]',
-    '',
     '# eas update:republish --branch [branch-name]',
-    '',
     '',
     '# Example',
     '$ eas update:republish --group abc1',
@@ -338,14 +310,16 @@ If "update 2" turned out to be a bad update, we can re-publish "update 1" with a
 
 The example command above would result in a branch that now appears like this:
 
-```bash
-branch: "production"
-updates: [
-  update 3 (id: def3) "updates color"  // re-publish of update 1 (id: abc1)
-  update 2 (id: xyz2) "fixes typo"     // bad update
-  update 1 (id: abc1) "updates color"  // good update
-]
-```
+<Terminal
+  cmd={[
+    'branch: "production"',
+    'updates: [',
+    '  update 3 (id: def3) "updates color"  // re-publish of update 1 (id: abc1)',
+    '  update 2 (id: xyz2) "fixes typo"     // bad update',
+    '  update 1 (id: abc1) "updates color"  // good update',
+    ']',
+  ]}
+/>
 
 Since "update 3" is now the most recent update on the "production" branch, all users who query for an update in the future will receive "update 3" instead of the bad update, "update 2".
 

@@ -1,0 +1,57 @@
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Step } from '~/ui/components/Step';
+
+## Set up an emulator
+
+<Step label="1">
+On the Android Studio main screen, click **More Actions**, then **Virtual Device Manager** in the dropdown.
+
+<ContentSpotlight
+  alt="Android Studio configure."
+  src="/static/images/android-studio/virtual-device.png"
+  className="max-w-[640px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+Click the **Create device** button.
+
+<ContentSpotlight
+  alt="Android Studio create virtual device."
+  src="/static/images/android-studio/create-device.png"
+  className="max-w-[640px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+Under **Select Hardware**, choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
+
+<ContentSpotlight
+  alt="Android Studio create virtual device hardware selection."
+  src="/static/images/android-studio/select-hardware.png"
+  className="max-w-[640px]"
+/>
+
+</Step>
+
+<Step label="4">
+
+Select an OS version to load on the emulator (probably one of the system images in the **Recommended** tab), and download the image.
+
+<ContentSpotlight
+  alt="Android Studio create virtual device os selection."
+  src="/static/images/android-studio/select-os.png"
+  className="max-w-[640px]"
+/>
+
+</Step>
+
+<Step label="5">
+
+Change any other settings you'd like, and press **Finish** to create the emulator. You can now run this emulator anytime by pressing the Play button in the AVD Manager window.
+
+</Step>

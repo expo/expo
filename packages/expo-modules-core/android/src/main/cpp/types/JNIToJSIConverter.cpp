@@ -2,16 +2,10 @@
 
 #include "JNIToJSIConverter.h"
 #include "../JavaReferencesCache.h"
-#include "ObjectDeallocator.h"
-
-#include <react/jni/ReadableNativeMap.h>
-#include <react/jni/ReadableNativeArray.h>
-#include <react/jni/WritableNativeArray.h>
-#include <react/jni/WritableNativeMap.h>
 
 namespace react = facebook::react;
 
-namespace {
+namespace expo {
 
 // This value should be synced with the value in **FollyDynamicExtensionConverter.kt**
 constexpr char DYNAMIC_EXTENSION_PREFIX[] = "__expo_dynamic_extension__#";
@@ -47,12 +41,7 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
   return std::nullopt;
 }
 
-} // namespace
-
-namespace expo {
-
 jsi::Value convert(
-  JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
   jni::local_ref<jobject> value
@@ -62,96 +51,26 @@ jsi::Value convert(
   }
   auto unpackedValue = value.get();
   auto cache = JavaReferencesCache::instance();
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/Double").clazz)) {
-    return {jni::static_ref_cast<jni::JDouble>(value)->value()};
-  }
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/Integer").clazz)) {
-    return {jni::static_ref_cast<jni::JInteger>(value)->value()};
-  }
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/Long").clazz)) {
-    return {(double) jni::static_ref_cast<jni::JLong>(value)->value()};
-  }
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/String").clazz)) {
-    std::string string = jni::static_ref_cast<jni::JString>(value)->toStdString();
-    auto enhancedValue = convertStringToFollyDynamicIfNeeded(rt, string);
-    return enhancedValue ? std::move(*enhancedValue) : jsi::String::createFromUtf8(rt, string);
-  }
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/Boolean").clazz)) {
-    return {(bool) jni::static_ref_cast<jni::JBoolean>(value)->value()};
-  }
-  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/Float").clazz)) {
-    return {(double) jni::static_ref_cast<jni::JFloat>(value)->value()};
-  }
-  if (env->IsInstanceOf(
-    unpackedValue,
-    cache->getJClass("com/facebook/react/bridge/WritableNativeArray").clazz
-  )) {
-    auto dynamic = jni::static_ref_cast<react::WritableNativeArray::javaobject>(value)
-      ->cthis()
-      ->consume();
-    auto arg = jsi::valueFromDynamic(rt, dynamic);
-    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
-    if (enhancedArg) {
-      arg = std::move(*enhancedArg);
-    }
-    return arg;
-  }
-  if (env->IsInstanceOf(
-    unpackedValue,
-    cache->getJClass("com/facebook/react/bridge/WritableNativeMap").clazz
-  )) {
-    auto dynamic = jni::static_ref_cast<react::WritableNativeMap::javaobject>(value)
-      ->cthis()
-      ->consume();
-    auto arg = jsi::valueFromDynamic(rt, dynamic);
-    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
-    if (enhancedArg) {
-      arg = std::move(*enhancedArg);
-    }
-    return arg;
-  }
-  if (env->IsInstanceOf(unpackedValue, JavaScriptModuleObject::javaClassStatic().get())) {
-    auto anonymousObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(value)
-      ->cthis();
-    anonymousObject->jsiInteropModuleRegistry = moduleRegistry;
-    auto jsiObject = anonymousObject->getJSIObject(rt);
 
-    jni::global_ref<jobject> globalRef = jni::make_global(value);
+#define CAST_AND_RETURN(type, classId) \
+  if (env->IsInstanceOf(unpackedValue, cache->getJClass(#classId).clazz)) { \
+    return convertToJS(rt, jni::static_ref_cast<type>(value)); \
+  }
 
-    common::setDeallocator(
-      rt,
-      jsiObject,
-      [globalRef = std::move(globalRef)]() mutable {
-        globalRef.reset();
-      }
-    );
-
-    return jsi::Value(rt, *jsiObject);
-  }
-  if (env->IsInstanceOf(
-    unpackedValue,
-    cache->getJClass(
-      "expo/modules/kotlin/sharedobjects/SharedObject").clazz
-  )) {
-    auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
-    auto jsObjectRef = JavaScriptObject::newInstance(
-      moduleRegistry,
-      moduleRegistry->runtimeHolder,
-      jsObject
-    );
-    moduleRegistry->registerSharedObject(jni::make_local(unpackedValue), jsObjectRef);
-    return jsi::Value(rt, *jsObject);
-  }
-  if (env->IsInstanceOf(
-    unpackedValue,
-    cache->getJClass("expo/modules/kotlin/jni/JavaScriptTypedArray").clazz
-  )) {
-    auto typedArray = jni::static_ref_cast<JavaScriptTypedArray::javaobject>(value);
-    auto jsTypedArray = typedArray->cthis()->get();
-    return jsi::Value(rt, *jsTypedArray);
-  }
+  CAST_AND_RETURN(jni::JDouble, java/lang/Double)
+  CAST_AND_RETURN(jni::JInteger, java/lang/Integer)
+  CAST_AND_RETURN(jni::JLong, java/lang/Long)
+  CAST_AND_RETURN(jni::JString, java/lang/String)
+  CAST_AND_RETURN(jni::JBoolean, java/lang/Boolean)
+  CAST_AND_RETURN(jni::JFloat, java/lang/Float)
+  CAST_AND_RETURN(react::WritableNativeArray::javaobject, com/facebook/react/bridge/WritableNativeArray)
+  CAST_AND_RETURN(react::WritableNativeMap::javaobject, com/facebook/react/bridge/WritableNativeMap)
+  CAST_AND_RETURN(JavaScriptModuleObject::javaobject, expo/modules/kotlin/jni/JavaScriptModuleObject)
+  CAST_AND_RETURN(JSharedObject::javaobject, expo/modules/kotlin/sharedobjects/SharedObject)
+  CAST_AND_RETURN(JavaScriptTypedArray::javaobject, expo/modules/kotlin/jni/JavaScriptTypedArray)
 
   return jsi::Value::undefined();
+#undef CAST_AND_RETURN
 }
 
 std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value) {

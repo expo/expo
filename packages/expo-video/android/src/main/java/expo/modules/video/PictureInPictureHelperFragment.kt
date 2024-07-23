@@ -13,6 +13,7 @@ class PictureInPictureHelperFragment(private val videoView: VideoView) : Fragmen
       videoView.layoutForPiPEnter()
       videoView.onPictureInPictureStart(Unit)
     } else {
+      videoView.willEnterPiP = false
       videoView.layoutForPiPExit()
       videoView.onPictureInPictureStop(Unit)
     }

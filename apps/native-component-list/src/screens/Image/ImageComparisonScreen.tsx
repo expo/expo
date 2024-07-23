@@ -1,15 +1,28 @@
 import * as React from 'react';
-import { SectionList, StyleSheet, Text, View } from 'react-native';
+import { Animated, SectionList, StyleSheet, Text, View } from 'react-native';
 
-import ImageTestListItem from './ImageTestListItem';
+import { ImageTestListItem } from './ImageTestListItem';
 import imageTests from './tests';
 import { ImageTest } from './types';
 import Colors from '../../constants/Colors';
 
-export default function ImageComparisonScreen() {
-  const renderItem = ({ item }: any) => {
-    const test: ImageTest = item;
-    return <ImageTestListItem test={test} />;
+export function ImageComparisonBody({
+  useAnimatedComponent,
+  animValue,
+  sections,
+}: {
+  useAnimatedComponent?: boolean;
+  animValue?: Animated.Value;
+  sections: { title: string; data: ImageTest[] }[];
+}) {
+  const renderItem = ({ item }: { item: ImageTest }) => {
+    return (
+      <ImageTestListItem
+        test={item}
+        animValue={animValue}
+        useAnimatedComponent={!!useAnimatedComponent}
+      />
+    );
   };
 
   const renderSectionHeader = ({ section }: any) => {
@@ -24,12 +37,6 @@ export default function ImageComparisonScreen() {
     return item + index;
   };
 
-  const sections = imageTests.tests.map((test) => ({
-    title: test.name,
-    // @ts-ignore
-    data: test.tests,
-  }));
-
   return (
     <View style={styles.container}>
       <SectionList
@@ -41,6 +48,14 @@ export default function ImageComparisonScreen() {
       />
     </View>
   );
+}
+
+export default function ImageComparisonScreen() {
+  const sections = imageTests.tests.map((test) => ({
+    title: test.name,
+    data: test.tests,
+  }));
+  return <ImageComparisonBody sections={sections} />;
 }
 
 const styles = StyleSheet.create({

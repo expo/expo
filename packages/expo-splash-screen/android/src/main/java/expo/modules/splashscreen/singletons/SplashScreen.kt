@@ -149,4 +149,21 @@ object SplashScreen : SingletonModule {
   fun hide(activity: Activity) {
     hide(activity, {}, {})
   }
+
+  /**
+   * An internal helper to make sure splash screen is shown when startup.
+   */
+  internal fun ensureShown(
+    activity: Activity,
+    resizeMode: SplashScreenImageResizeMode,
+    rootViewClass: Class<out ViewGroup>,
+    statusBarTranslucent: Boolean
+  ) {
+    val controller = controllers[activity]
+    if (controller == null) {
+      show(activity, resizeMode, rootViewClass, statusBarTranslucent)
+    } else {
+      controller.showSplashScreen { }
+    }
+  }
 }

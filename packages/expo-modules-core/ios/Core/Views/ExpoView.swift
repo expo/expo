@@ -2,11 +2,14 @@
 
 import React
 
+#if RN_FABRIC_ENABLED
+public typealias ExpoView = ExpoFabricView
+#else
 /**
  The view that extends `RCTView` which handles some styles (e.g. borders) and accessibility.
  Inherit from `ExpoView` to keep this behavior and let your view use the associated `AppContext`.
  */
-open class ExpoView: RCTView, AnyExpoView {
+open class ExpoClassicView: RCTView, AnyExpoView {
   /**
    A weak pointer to the associated `AppContext`.
    */
@@ -27,3 +30,6 @@ open class ExpoView: RCTView, AnyExpoView {
     fatalError("init(coder:) has not been implemented")
   }
 }
+
+public typealias ExpoView = ExpoClassicView
+#endif

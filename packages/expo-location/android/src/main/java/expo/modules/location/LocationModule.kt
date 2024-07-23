@@ -161,7 +161,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return@AsyncFunction getCurrentPositionAsync(options, promise)
     }
 
-    AsyncFunction("getProviderStatusAsync") {
+    AsyncFunction<LocationProviderStatus>("getProviderStatusAsync") {
       val state = SmartLocation.with(mContext).location().state()
 
       return@AsyncFunction LocationProviderStatus().apply {
@@ -253,7 +253,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
 
-    AsyncFunction("hasServicesEnabledAsync") {
+    AsyncFunction<Boolean>("hasServicesEnabledAsync") {
       return@AsyncFunction LocationHelpers.isAnyProviderAvailable(mContext)
     }
 
@@ -339,7 +339,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
 
       locationPermission.android = PermissionDetailsLocationAndroid(
-        scope = accuracy,
         accuracy = accuracy
       )
 

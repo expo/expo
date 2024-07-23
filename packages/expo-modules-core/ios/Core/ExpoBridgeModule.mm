@@ -23,6 +23,14 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   return self;
 }
 
+- (instancetype)initWithAppContext:(EXAppContext *) appContext
+{
+  if (self = [super init]) {
+    _appContext = appContext;
+  }
+  return self;
+}
+
 + (BOOL)requiresMainQueueSetup
 {
   // We do want to run the initialization (`setBridge`) on the JS thread.

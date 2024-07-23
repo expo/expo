@@ -11,7 +11,7 @@ import android.util.Log
  * `releaseDatabase` in every possible case (success, error) as soon as it is finished.
  *
  * On iOS we use GCD queues as a more sophisticated way of achieving the same thing; we may also
- * eventually want to migrate to a coroutine- or [Handler]-based system in lieu of this class.
+ * eventually want to migrate to a coroutine-based or Handler-based system in lieu of this class.
  */
 class DatabaseHolder(private val mDatabase: UpdatesDatabase) {
   private var isInUse = false

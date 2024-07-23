@@ -33,7 +33,8 @@ function isValidJsonFile(filePath) {
 function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
     return linkedPackages
         .map((glob) => {
-        return (0, glob_1.sync)(path_1.default.join(glob, 'package.json').replace(/\\/g, '/'), {
+        // Globs should only contain `/` as separator, even on Windows.
+        return (0, glob_1.globSync)(path_1.default.posix.join(glob, 'package.json').replace(/\\/g, '/'), {
             cwd: workspaceProjectRoot,
             absolute: true,
             ignore: ['**/@(Carthage|Pods|node_modules)/**'],

@@ -38,7 +38,7 @@ class BrightnessModule : Module() {
       currentActivity.window.attributes = lp // must be done on UI thread
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBrightnessAsync") {
+    AsyncFunction<Float>("getBrightnessAsync") {
       val lp = currentActivity.window.attributes
       val brightness = if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
         // system brightness is not overridden by the current activity, so just resolve with it
@@ -50,7 +50,7 @@ class BrightnessModule : Module() {
       return@AsyncFunction brightness
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getSystemBrightnessAsync") {
+    AsyncFunction<Float>("getSystemBrightnessAsync") {
       return@AsyncFunction getSystemBrightness()
     }
 
@@ -79,12 +79,12 @@ class BrightnessModule : Module() {
       currentActivity.window.attributes = lp // must be done on UI thread
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("isUsingSystemBrightnessAsync") {
+    AsyncFunction<Boolean>("isUsingSystemBrightnessAsync") {
       val lp = currentActivity.window.attributes
       return@AsyncFunction lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getSystemBrightnessModeAsync") {
+    AsyncFunction<Int>("getSystemBrightnessModeAsync") {
       val brightnessMode = Settings.System.getInt(
         currentActivity.contentResolver,
         Settings.System.SCREEN_BRIGHTNESS_MODE

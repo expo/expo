@@ -1,12 +1,10 @@
-import { EventEmitter, UnavailabilityError, uuid } from 'expo-modules-core';
+import { UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExponentFileSystem from './ExponentFileSystem';
 import { FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
-// Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';
@@ -158,8 +156,7 @@ export async function readDirectoryAsync(fileUri) {
 }
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2^53^ - 1 bytes.
+ * @return Returns a Promise that resolves to the number of bytes available on the internal disk.
  */
 export async function getFreeDiskStorageAsync() {
     if (!ExponentFileSystem.getFreeDiskStorageAsync) {
@@ -169,8 +166,7 @@ export async function getFreeDiskStorageAsync() {
 }
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2^53^ - 1 bytes.
+ * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
  */
 export async function getTotalDiskCapacityAsync() {
     if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
@@ -272,7 +268,6 @@ export function createUploadTask(url, fileUri, options, callback) {
 export class FileSystemCancellableNetworkTask {
     _uuid = uuid.v4();
     taskWasCanceled = false;
-    emitter = new EventEmitter(ExponentFileSystem);
     subscription;
     // @docsMissing
     async cancelAsync() {
@@ -297,7 +292,7 @@ export class FileSystemCancellableNetworkTask {
         if (this.subscription) {
             return;
         }
-        this.subscription = this.emitter.addListener(this.getEventName(), (event) => {
+        this.subscription = ExponentFileSystem.addListener(this.getEventName(), (event) => {
             if (event.uuid === this.uuid) {
                 const callback = this.getCallback();
                 if (callback) {
@@ -310,7 +305,7 @@ export class FileSystemCancellableNetworkTask {
         if (!this.subscription) {
             return;
         }
-        this.emitter.removeSubscription(this.subscription);
+        this.subscription.remove();
         this.subscription = null;
     }
 }

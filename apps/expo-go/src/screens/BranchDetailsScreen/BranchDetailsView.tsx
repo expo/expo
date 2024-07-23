@@ -57,10 +57,7 @@ export function BranchDetailsView({ error, data, refetch, branchName, networkSta
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background.screen }}>
-      <BranchHeader
-        name={branchName}
-        manifestPermalink={data.app.byId.updateBranchByName.updates[0].manifestPermalink}
-      />
+      <BranchHeader name={branchName} latestUpdate={data.app.byId.updateBranchByName.updates[0]} />
       <FlatList
         data={data.app.byId.updateBranchByName.updates}
         refreshControl={<RefreshControl onRefresh={refetch} refreshing={refetching} />}
@@ -71,10 +68,8 @@ export function BranchDetailsView({ error, data, refetch, branchName, networkSta
         ListEmptyComponent={() => <EmptySection />}
         renderItem={({ item: update, index }) => (
           <UpdateListItem
-            id={update.id}
-            message={update.message ?? undefined}
-            manifestPermalink={update.manifestPermalink}
-            createdAt={update.createdAt}
+            key={update.id}
+            update={update}
             first={index === 0}
             last={index === (data.app.byId.updateBranchByName?.updates ?? []).length - 1}
           />

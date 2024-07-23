@@ -1,12 +1,15 @@
 package expo.modules.taskManager
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskServiceInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.lang.ref.WeakReference
 
 class TaskManagerModule : Module() {
   private val _taskService: TaskServiceInterface? by lazy {
@@ -29,7 +32,27 @@ class TaskManagerModule : Module() {
       "EVENT_NAME" to TaskManagerInterface.EVENT_NAME
     )
 
-    AsyncFunction("isAvailableAsync") {
+    OnCreate {
+      // Slightly hacky way to be able to emit events using the new event emitter from legacy modules.
+      val weakModule = WeakReference(this@TaskManagerModule)
+      val emitEvent = { name: String, body: Bundle ->
+        try {
+          // It may throw, because RN event emitter may not be available
+          // we can just ignore those cases
+          weakModule.get()?.sendEvent(name, body)
+        } catch (error: Throwable) {
+          Log.e("ExpoTaskManager", "Failed to emit event $name using the module's event emitter: ${error.message}")
+        }
+        Unit
+      }
+
+      // For compatibility reasons, we don't want to edit TaskManagerInterface, as it's in the expo-modules-core package.
+      // There is only one usage of the TaskManagerInterface and it's the TaskManagerInternalModule, so we can safely cast
+      // to it and set it's emitEventWrapper.
+      (appContext.legacyModule<TaskManagerInterface>() as? TaskManagerInternalModule)?.setEmitEventWrapper(emitEvent)
+    }
+
+    AsyncFunction<Boolean>("isAvailableAsync") {
       return@AsyncFunction true
     }
 
@@ -45,7 +68,7 @@ class TaskManagerModule : Module() {
       taskService.getTaskOptions(taskName, appScopeKey)
     }
 
-    AsyncFunction("getRegisteredTasksAsync") {
+    AsyncFunction<List<Bundle>>("getRegisteredTasksAsync") {
       taskService.getTasksForAppScopeKey(appScopeKey)
     }
 
@@ -53,7 +76,7 @@ class TaskManagerModule : Module() {
       taskService.unregisterTask(taskName, appScopeKey, null)
     }
 
-    AsyncFunction("unregisterAllTasksAsync") {
+    AsyncFunction<Unit>("unregisterAllTasksAsync") {
       taskService.unregisterAllTasksForAppScopeKey(appScopeKey)
     }
 

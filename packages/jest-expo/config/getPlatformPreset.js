@@ -4,7 +4,16 @@ const { getBareExtensions } = require('@expo/config/paths');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
 
-function getPlatformPreset(displayOptions, extensions) {
+function getUpstreamBabelJest(transform) {
+  const upstreamBabelJest = Object.keys(transform).find((key) =>
+    Array.isArray(transform[key])
+      ? transform[key][0] === 'babel-jest'
+      : transform[key] === 'babel-jest'
+  );
+  return upstreamBabelJest;
+}
+
+function getPlatformPreset(displayOptions, extensions, platform, isServer) {
   const moduleFileExtensions = getBareExtensions(extensions, {
     isTS: true,
     isReact: true,
@@ -20,7 +29,26 @@ function getPlatformPreset(displayOptions, extensions) {
     ];
   });
 
+  const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
+
   return withWatchPlugins({
+    transform: {
+      ...expoPreset.transform,
+      [upstreamBabelJest]: [
+        'babel-jest',
+        {
+          caller: {
+            name: 'metro',
+            bundler: 'metro',
+            // Add support for the `platform` babel transforms and inlines such as
+            // Platform.OS and `process.env.EXPO_OS`.
+            platform,
+            // Add support for removing server related code from the bundle.
+            isServer,
+          },
+        },
+      ],
+    },
     displayName: displayOptions,
     testMatch,
     moduleFileExtensions,
@@ -52,27 +80,31 @@ module.exports = {
   getWebPreset() {
     return {
       ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web']),
+      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web'),
       testEnvironment: 'jsdom',
     };
   },
   getNodePreset() {
     return {
       ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web']),
+      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', true),
       testEnvironment: 'node',
     };
   },
   getIOSPreset() {
     return {
       ...expoPreset,
-      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native']),
+      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios'),
     };
   },
   getAndroidPreset() {
     return {
       ...expoPreset,
-      ...getPlatformPreset({ name: 'Android', color: 'blueBright' }, ['android', 'native']),
+      ...getPlatformPreset(
+        { name: 'Android', color: 'blueBright' },
+        ['android', 'native'],
+        'android'
+      ),
     };
   },
 };

@@ -26,7 +26,7 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
     jsi::PropNameID::forAscii(runtime, "release"),
     1,
     [releaser](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-      jsi::Object thisObject = args[0].asObject(runtime);
+      jsi::Object thisObject = thisValue.getObject(runtime);
 
       if (thisObject.hasNativeState<NativeState>(runtime)) {
         auto nativeState = thisObject.getNativeState<NativeState>(runtime);
@@ -52,16 +52,12 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
     }
   });
 
-  runtime
-    .global()
-    .getPropertyAsObject(runtime, "expo")
+  common::getCoreObject(runtime)
     .setProperty(runtime, "SharedObject", klass);
 }
 
 jsi::Function getBaseClass(jsi::Runtime &runtime) {
-  return runtime
-    .global()
-    .getPropertyAsObject(runtime, "expo")
+  return common::getCoreObject(runtime)
     .getPropertyAsFunction(runtime, "SharedObject");
 }
 

@@ -13,7 +13,7 @@ export interface ExpoConfig {
    */
   description?: string;
   /**
-   * The friendly URL name for publishing. For example, `myAppName` will refer to the `expo.dev/@project-owner/myAppName` project.
+   * A URL-friendly name for your project that is unique across your account.
    */
   slug: string;
   /**
@@ -29,22 +29,15 @@ export interface ExpoConfig {
    */
   originalFullName?: string;
   /**
-   * Defaults to `unlisted`. `unlisted` hides the project from search results. `hidden` restricts access to the project page to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `hidden`.
-   */
-  privacy?: 'public' | 'unlisted' | 'hidden';
-  /**
    * The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
    */
   sdkVersion?: string;
   /**
-   * **Note: Don't use this property unless you are sure what you're doing**
-   *
-   * The runtime version associated with this manifest.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+   * Property indicating compatibility between a build's native code and an OTA update.
    */
   runtimeVersion?:
     | string
-    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental' };
+    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
   /**
    * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
@@ -172,19 +165,19 @@ export interface ExpoConfig {
     [k: string]: any;
   };
   /**
-   * Configuration for how and when the app should request OTA JavaScript updates
+   * Configuration for the expo-updates library
    */
   updates?: {
     /**
-     * If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through app store review. Defaults to true. (Note: This will not work out of the box with ExpoKit projects)
+     * Whether the updates system will run. Defaults to true. If set to false, builds will only use code and assets bundled at time of build.
      */
     enabled?: boolean;
     /**
-     * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+     * By default, expo-updates will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to disable automatic checking. Valid values: `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, `NEVER`
      */
     checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
     /**
-     * How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 0. Must be between 0 and 300000 (5 minutes).
+     * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
      */
     fallbackToCacheTimeout?: number;
     /**
@@ -192,7 +185,7 @@ export interface ExpoConfig {
      */
     url?: string;
     /**
-     * Local path of a PEM-formatted X.509 certificate used for requiring and verifying signed Expo updates
+     * Local path of a PEM-formatted X.509 certificate used for verifying codesigned updates. When provided, all updates downloaded by expo-updates must be signed.
      */
     codeSigningCertificate?: string;
     /**
@@ -200,7 +193,7 @@ export interface ExpoConfig {
      */
     codeSigningMetadata?: {
       /**
-       * Algorithm used to generate manifest code signing signature.
+       * Algorithm used to generate manifest code signing signature. Valid values: `rsa-v1_5-sha256`
        */
       alg?: 'rsa-v1_5-sha256';
       /**
@@ -209,7 +202,7 @@ export interface ExpoConfig {
       keyid?: string;
     };
     /**
-     * Extra HTTP headers to include in HTTP requests made by `expo-updates`. These may override preset headers.
+     * Extra HTTP headers to include in HTTP requests made by `expo-updates` when fetching manifests or assets. These may override preset headers.
      */
     requestHeaders?: {
       [k: string]: any;
@@ -226,7 +219,7 @@ export interface ExpoConfig {
         };
   };
   /**
-   * An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
+   * @deprecated Follow [the guide to select and exclude assets](https://docs.expo.dev/eas-update/asset-selection/) for EAS Update instead. An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
    */
   assetBundlePatterns?: string[];
   /**
@@ -241,13 +234,6 @@ export interface ExpoConfig {
   ios?: IOS;
   android?: Android;
   web?: Web;
-  /**
-   * Configuration for scripts to run to hook into the publish process
-   */
-  hooks?: {
-    postPublish?: PublishHook[];
-    postExport?: PublishHook[];
-  };
   /**
    * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
    */
@@ -272,6 +258,14 @@ export interface ExpoConfig {
      * Enables Turbo Modules, which are a type of native modules that use a different way of communicating between JS and platform code. When installing a Turbo Module you will need to enable this experimental option (the library still needs to be a part of Expo SDK already, like react-native-reanimated v2). Turbo Modules do not support remote debugging and enabling this option will disable remote debugging.
      */
     turboModules?: boolean;
+    /**
+     * Experimentally use a vendored canary build of React for testing upcoming features.
+     */
+    reactCanary?: boolean;
+    /**
+     * Experimentally enable React Compiler.
+     */
+    reactCompiler?: boolean;
   };
   /**
    * Internal properties for developer tools
@@ -405,6 +399,41 @@ export interface IOS {
     [k: string]: any;
   };
   /**
+   * Dictionary of privacy manifest definitions to add to your app's native PrivacyInfo.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files)
+   */
+  privacyManifests?: {
+    /**
+     * A list of required reasons of why your app uses restricted API categories. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api)
+     */
+    NSPrivacyAccessedAPITypes?: {
+      /**
+       * A string that identifies the category of required reason APIs your app uses
+       */
+      NSPrivacyAccessedAPIType: string;
+      /**
+       * A list of reasons for a specific category.
+       */
+      NSPrivacyAccessedAPITypeReasons: string[];
+    }[];
+    /**
+     * A list of domains that your app uses for tracking.
+     */
+    NSPrivacyTrackingDomains?: string[];
+    /**
+     * A Boolean that indicates whether your app or third-party SDK uses data for tracking.
+     */
+    NSPrivacyTracking?: boolean;
+    /**
+     * A list of collected data types that your app uses.
+     */
+    NSPrivacyCollectedDataTypes?: {
+      NSPrivacyCollectedDataType: string;
+      NSPrivacyCollectedDataTypeLinked: boolean;
+      NSPrivacyCollectedDataTypeTracking: boolean;
+      NSPrivacyCollectedDataTypePurposes: string[];
+    }[];
+  };
+  /**
    * An array that contains Associated Domains for the standalone app. [Learn more](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
    */
   associatedDomains?: string[];
@@ -469,14 +498,11 @@ export interface IOS {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * **Note: Don't use this property unless you are sure what you're doing**
-   *
-   * The runtime version associated with this manifest for the iOS platform. If provided, this will override the top level runtimeVersion key.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+   * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
    */
   runtimeVersion?:
     | string
-    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental' };
+    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
 }
 /**
  * Configuration that is specific to the Android platform.
@@ -699,14 +725,11 @@ export interface Android {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * **Note: Don't use this property unless you are sure what you're doing**
-   *
-   * The runtime version associated with this manifest for the Android platform. If provided, this will override the top level runtimeVersion key.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+   * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
    */
   runtimeVersion?:
     | string
-    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental' };
+    | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
 }
 export interface AndroidIntentFiltersData {
   /**
@@ -852,15 +875,8 @@ export interface Web {
     [k: string]: any;
   };
   /**
-   * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`.
+   * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`. Defaults to `webpack` if the `@expo/webpack-config` package is installed, if not, it defaults to `metro`.
    */
   bundler?: 'webpack' | 'metro';
-  [k: string]: any;
-}
-export interface PublishHook {
-  file?: string;
-  config?: {
-    [k: string]: any;
-  };
   [k: string]: any;
 }

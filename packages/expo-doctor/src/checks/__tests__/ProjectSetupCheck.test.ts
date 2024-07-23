@@ -20,12 +20,38 @@ const additionalProjectProps = {
   dynamicConfigPath: null,
 };
 
+/**
+ * Helper to mock the results of git rev-parse and git check-ignore based on whether the file should be ignored or not.
+ * Only works when checking a single file.
+ */
+function mockIsGitIgnoredResult(isFileIgnored: boolean) {
+  jest
+    .mocked(spawnAsync)
+    .mockImplementationOnce(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          status: 0,
+          stdout: '',
+        })
+      )
+    )
+    .mockImplementationOnce(() => {
+      if (isFileIgnored) {
+        return mockSpawnPromise(Promise.resolve({ status: 0, stdout: '' }));
+      }
+      const error: any = new Error();
+      error.status = -1; // git check-ignore errors if file is not ignored
+      return mockSpawnPromise(Promise.reject(error));
+    });
+}
+
 describe('runAsync', () => {
   afterEach(() => {
     vol.reset();
+    jest.resetAllMocks();
   });
-  // unintentionally bare check
-  it('returns result with isSuccessful = true if no ios/ android folders and no config plugins', async () => {
+  // ignoring native files for local modules check
+  it('returns result with isSuccessful = true if no local expo modules are present', async () => {
     const check = new ProjectSetupCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
@@ -34,7 +60,69 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  it('returns result with isSuccessful = true if ios/ android folders but no config plugins', async () => {
+  it('returns result with isSuccessful = true if local module with ios folder and ios folder is not gitignored', async () => {
+    mockIsGitIgnoredResult(false);
+    vol.fromJSON({
+      [projectRoot + '/modules/HelloModule/ios/HelloModule.podspec']: 'test',
+    });
+    const check = new ProjectSetupCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('returns result with isSuccessful = true if local module with android folder and android folder is not gitignored', async () => {
+    mockIsGitIgnoredResult(false);
+    vol.fromJSON({
+      [projectRoot + '/modules/HelloModule/android/build.gradle']: 'test',
+    });
+    const check = new ProjectSetupCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('returns result with isSuccessful = false if local module with ios folder and ios folder is gitignored', async () => {
+    mockIsGitIgnoredResult(true);
+    vol.fromJSON({
+      [projectRoot + '/modules/HelloModule/ios/HelloModule.podspec']: 'test',
+    });
+    const check = new ProjectSetupCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+  });
+
+  it('returns result with isSuccessful = false if local module with android folder and android folder is gitignored', async () => {
+    mockIsGitIgnoredResult(true);
+    vol.fromJSON({
+      [projectRoot + '/modules/HelloModule/android/build.gradle']: 'test',
+    });
+    const check = new ProjectSetupCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+  });
+
+  // unintentionally bare check
+  it('returns result with isSuccessful = true if no ios/android folders and no config plugins', async () => {
+    const check = new ProjectSetupCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('returns result with isSuccessful = true if ios/android folders but no config plugins', async () => {
     vol.fromJSON({
       [projectRoot + '/ios/something.pbxproj']: 'test',
     });
@@ -47,21 +135,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false with ios/ android folders and config plugins present, not in gitignore', async () => {
-    jest
-      .mocked(spawnAsync)
-      .mockImplementationOnce(() =>
-        mockSpawnPromise(
-          Promise.resolve({
-            status: 0,
-            stdout: '',
-          })
-        )
-      )
-      .mockImplementationOnce(() => {
-        const error: any = new Error();
-        error.status = -1;
-        return mockSpawnPromise(Promise.reject(error));
-      });
+    mockIsGitIgnoredResult(false);
 
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
@@ -80,14 +154,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore', async () => {
-    jest.mocked(spawnAsync).mockImplementation(() =>
-      mockSpawnPromise(
-        Promise.resolve({
-          status: 0,
-          stdout: '',
-        })
-      )
-    );
+    mockIsGitIgnoredResult(true);
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
     });

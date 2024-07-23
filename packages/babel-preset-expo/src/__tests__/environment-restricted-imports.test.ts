@@ -61,7 +61,7 @@ describe('forbidden server imports', () => {
 
     it(`does not assert importing client-side modules in client components (react server mode)`, () => {
       // This test covers the order of server registry running before the assertion to remove the import.
-      expect(runServerPass(`"use client"; import 'client-only';`).code).toMatch(
+      expect(runServerPass(`"use client"; import 'client-only';`)!.code).toMatch(
         'react-server-dom-webpack'
       );
     });

@@ -43,6 +43,7 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   }
 
   external fun getPropertyNames(): Array<String>
+
   external fun createWeak(): JavaScriptWeakObject
 
   private external fun setBoolProperty(name: String, value: Boolean)
@@ -87,8 +88,8 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
 
   // Needed to handle untyped null value
   // Without it setProperty(name, null) won't work
-  fun setProperty(name: String, `null`: Nothing?) = unsetProperty(name)
-  operator fun set(name: String, `null`: Nothing?) = unsetProperty(name)
+  fun setProperty(name: String, @Suppress("UNUSED_PARAMETER") `null`: Nothing?) = unsetProperty(name)
+  operator fun set(name: String, @Suppress("UNUSED_PARAMETER") `null`: Nothing?) = unsetProperty(name)
 
   fun defineProperty(
     name: String,
@@ -129,7 +130,7 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   // Needed to handle untyped null value
   fun defineProperty(
     name: String,
-    `null`: Nothing?,
+    @Suppress("UNUSED_PARAMETER") `null`: Nothing?,
     options: List<PropertyDescriptor> = emptyList()
   ) = defineJSObjectProperty(name, null, options.toCppOptions())
 

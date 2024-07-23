@@ -18,6 +18,7 @@ import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
+import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
@@ -101,6 +102,44 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function createNumericModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+function createStableModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+  // This is an absolute file path.
+  return (modulePath: string): number => {
+    // TODO: We may want a hashed version for production builds in the future.
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+      if (modulePath == null) {
+        id = 'MODULE_NOT_FOUND';
+      } else if (isVirtualModule(modulePath)) {
+        // Virtual modules should be stable.
+        id = modulePath;
+      } else if (path.isAbsolute(modulePath)) {
+        id = path.relative(root, modulePath);
+      } else {
+        id = modulePath;
+      }
+      fileToIdMap.set(modulePath, id);
+    }
+    // @ts-expect-error: we patch this to support being a string.
+    return id;
+  };
+}
+
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
@@ -116,22 +155,13 @@ export function getDefaultConfig(
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
     console.log(
-      chalk.gray(`\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} is no longer supported.`)
+      chalk.gray(
+        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
+      )
     );
   }
 
   const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
-
-  try {
-    // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
-    // This hack is used because there doesn't appear to be anyway to resolve
-    // `babel-preset-fbjs` relative to the project root later (in `metro-expo-babel-transformer`).
-    const babelPresetFbjsPath = resolveFrom(projectRoot, 'babel-preset-fbjs/package.json');
-    process.env.EXPO_METRO_CACHE_KEY_VERSION = String(require(babelPresetFbjsPath).version);
-  } catch {
-    // noop -- falls back to a hardcoded value.
-  }
-
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
@@ -180,6 +210,8 @@ export function getDefaultConfig(
     root: path.join(os.tmpdir(), 'metro-cache'),
   });
 
+  const serverRoot = getServerRoot(projectRoot);
+
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
@@ -197,7 +229,9 @@ export function getDefaultConfig(
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.
-          ['heic', 'avif']
+          ['heic', 'avif'],
+          // Add default support for `expo-sqlite` file types.
+          ['db']
         )
         .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
@@ -209,13 +243,29 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
+      isThirdPartyModule(module) {
+        // Block virtual modules from appearing in the source maps.
+        if (isVirtualModule(module.path)) return true;
+
+        // Generally block node modules
+        if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+          // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+          return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
+        }
+        return false;
+      },
+
+      createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
+        ? createStableModuleIdFactory.bind(null, projectRoot)
+        : createNumericModuleIdFactory,
+
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter');
         if (stdRuntime) {
           preModules.push(stdRuntime);
         }
@@ -229,14 +279,30 @@ export function getDefaultConfig(
 
         return preModules;
       },
-      getPolyfills: () => require('@react-native/js-polyfills')(),
+      getPolyfills: ({ platform }) => {
+        // Do nothing for nullish platforms.
+        if (!platform) {
+          return [];
+        }
+
+        if (platform === 'web') {
+          return [
+            // Ensure that the error-guard polyfill is included in the web polyfills to
+            // make metro-runtime work correctly.
+            require.resolve('@react-native/js-polyfills/error-guard'),
+          ];
+        }
+
+        // Native behavior.
+        return require('@react-native/js-polyfills')();
+      },
     },
     server: {
       rewriteRequestUrl: getRewriteRequestUrl(projectRoot),
       port: Number(env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
-      unstable_serverRoot: getServerRoot(projectRoot),
+      unstable_serverRoot: serverRoot,
     },
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
@@ -245,6 +311,7 @@ export function getDefaultConfig(
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       // @ts-expect-error: not on type.
+      unstable_renameRequire: false,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg.browserslist
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
@@ -252,7 +319,9 @@ export function getDefaultConfig(
       sassVersion,
       // Ensure invalidation when the version changes due to the Babel plugin.
       reanimatedVersion,
-
+      // Ensure invalidation when using identical projects in monorepos
+      _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
+      unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

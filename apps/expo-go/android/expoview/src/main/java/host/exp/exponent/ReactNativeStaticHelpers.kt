@@ -106,7 +106,7 @@ object ReactNativeStaticHelpers {
 
   @DoNotStrip
   @JvmStatic fun handleReactNativeError(
-    errorMessage: String?,
+    errorMessage: String,
     stackUnversioned: Any?,
     exceptionId: Int?,
     isFatal: Boolean?
@@ -127,7 +127,7 @@ object ReactNativeStaticHelpers {
   @DoNotStrip
   @JvmStatic fun handleReactNativeError(
     throwable: Throwable?,
-    errorMessage: String?,
+    errorMessage: String,
     stackUnversioned: Any?,
     exceptionId: Int?,
     isFatal: Boolean?

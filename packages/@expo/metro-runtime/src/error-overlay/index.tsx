@@ -1,10 +1,4 @@
 import React from 'react';
-// TODO: This will break tree shaking due to how we transpile this package.
-import { Platform } from 'react-native';
-
-import ErrorToastContainer from './toast/ErrorToastContainer';
-
-declare const process: any;
 
 if (!global.setImmediate) {
   global.setImmediate = function (fn) {
@@ -12,18 +6,19 @@ if (!global.setImmediate) {
   };
 }
 
-if (process.env.NODE_ENV === 'development') {
-  if (Platform.OS === 'web') {
-    // Stack traces are big with React Navigation
-
-    require('./LogBox').default.install();
-  }
+if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {
+  // Stack traces are big with React Navigation
+  require('./LogBox').default.install();
 }
 
 export function withErrorOverlay(Comp: React.ComponentType<any>) {
   if (process.env.NODE_ENV === 'production') {
     return Comp;
   }
+
+  const { default: ErrorToastContainer } =
+    require('./toast/ErrorToastContainer') as typeof import('./toast/ErrorToastContainer');
+
   return function ErrorOverlay(props: any) {
     return (
       <ErrorToastContainer>

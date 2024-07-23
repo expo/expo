@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+- Add a standard main package entry point (`index.ts`). ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+- Prefer using `type` for describing the shape of objects. ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+
+## 5.5.2 — 2024-05-02
+
+### 🛠 Breaking changes
+
+- Drop deprecated `expoClientId` field from auth proxy. ([#28590](https://github.com/expo/expo/pull/28590) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.5.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 5.5.0 — 2024-04-18
+
+### 💡 Others
+
 - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
 
 ## 5.4.0 — 2023-12-12

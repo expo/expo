@@ -5,16 +5,20 @@ import * as React from 'react';
 import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
 import TabIcon from '../components/TabIcon';
+import { AudioScreens } from '../screens/Audio/AudioScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
+import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
+import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
 
-export const Screens = [
+export const Screens: ScreenConfig[] = [
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ExpoModulesScreen'));
+      return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));
     },
-    name: 'ExpoModules',
+    name: 'ModulesCore',
+    options: { title: 'Expo Modules Core' },
   },
   {
     getComponent() {
@@ -74,7 +78,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/AudioScreen'));
+      return optionalRequire(() => require('../screens/Audio/AudioScreen'));
     },
     name: 'Audio',
   },
@@ -197,6 +201,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ImageManipulatorScreenLegacy'));
+    },
+    name: 'ImageManipulator (legacy)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ImagePicker/ImagePickerScreen'));
     },
     name: 'ImagePicker',
@@ -308,19 +318,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/RecordingScreen'));
-    },
-    name: 'Recording',
-    options: { title: 'Audio Recording' },
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/RandomScreen'));
-    },
-    name: 'Random',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/RemindersScreen'));
     },
     name: 'Reminders',
@@ -414,10 +411,18 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/VideoThumbnailsScreen'));
+    },
+    name: 'Video Thumbnails',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ViewShotScreen'));
     },
     name: 'ViewShot',
   },
+  ...ModulesCoreScreens,
+  ...AudioScreens,
 ];
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
@@ -426,7 +431,7 @@ function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any
       <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
 
       {Screens.map(({ name, options, getComponent }) => (
-        <Stack.Screen name={name} key={name} getComponent={getComponent} options={options || {}} />
+        <Stack.Screen name={name} key={name} getComponent={getComponent} options={options ?? {}} />
       ))}
     </Stack.Navigator>
   );

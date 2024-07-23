@@ -1,21 +1,16 @@
 fragment CommonAppData on App {
   id
-  fullName
   name
-  iconUrl
-  packageName
-  username
-  description
-  sdkVersion
-  privacy
-  updateBranches(limit: 100, offset: 0) {
+  fullName
+  ownerAccount {
+    name
+  }
+  firstTwoBranches: updateBranches(limit: 2, offset: 0) {
     id
     name
-    updates(
-      limit: 1
-      offset: 0
-    ) {
+    updates(limit: 1, offset: 0, filter: { platform: $platform }) {
       id
+      ...UpdateData
     }
   }
 }

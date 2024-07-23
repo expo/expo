@@ -49,7 +49,7 @@ function useThemeBorderColor(props: Props, colorName: ThemedColors) {
 }
 
 export const StyledScrollView = React.forwardRef(
-  (props: StyledScrollViewProps, ref?: React.Ref<ScrollView>) => {
+  (props: StyledScrollViewProps, ref?: React.Ref<typeof ScrollView>) => {
     const { style, ...otherProps } = props;
     const backgroundColor = useThemeBackgroundColor(props, 'absolute');
 

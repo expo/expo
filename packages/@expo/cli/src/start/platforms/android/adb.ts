@@ -18,6 +18,8 @@ export enum DeviceABI {
   arm64 = 'arm64',
   x64 = 'x64',
   x86 = 'x86',
+  x8664 = 'x86_64',
+  arm64v8a = 'arm64-v8a',
   armeabiV7a = 'armeabi-v7a',
   armeabi = 'armeabi',
   universal = 'universal',
@@ -35,6 +37,8 @@ export type Device = {
   isBooted: boolean;
   /** Is device authorized for developing. https://expo.fyi/authorize-android-device */
   isAuthorized: boolean;
+  /** The connection type to ADB, only available when `type: device` */
+  connectionType?: 'USB' | 'Network';
 };
 
 type DeviceContext = Pick<Device, 'pid'>;
@@ -229,13 +233,24 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
 export async function getAttachedDevicesAsync(): Promise<Device[]> {
   const output = await getServer().runAsync(['devices', '-l']);
 
-  const splitItems = output.trim().replace(/\n$/, '').split(os.EOL);
+  const splitItems = output
+    .trim()
+    .replace(/\n$/, '')
+    .split(os.EOL)
+    // Filter ADB trace logs from the output, e.g.
+    // adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:393] adb_query: host:devices-l
+    // 03-04 12:29:44.557 16415 16415 D adb     : commandline.cpp:1646 Using server socket: tcp:172.27.192.1:5037
+    // 03-04 12:29:44.557 16415 16415 D adb     : adb_client.cpp:160 _adb_connect: host:version
+    .filter((line) => !line.match(/\.cpp:[0-9]+/));
+
   // First line is `"List of devices attached"`, remove it
   // @ts-ignore: todo
   const attachedDevices: {
     props: string[];
     type: Device['type'];
     isAuthorized: Device['isAuthorized'];
+    isBooted: Device['isBooted'];
+    connectionType?: Device['connectionType'];
   }[] = splitItems
     .slice(1, splitItems.length)
     .map((line) => {
@@ -243,10 +258,22 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
       const props = line.split(' ').filter(Boolean);
-
-      const isAuthorized = props[1] !== 'unauthorized';
       const type = line.includes('emulator') ? 'emulator' : 'device';
-      return { props, type, isAuthorized };
+
+      let connectionType;
+      if (type === 'device' && line.includes('usb:')) {
+        connectionType = 'USB';
+      } else if (type === 'device' && line.includes('_adb-tls-connect.')) {
+        connectionType = 'Network';
+      }
+
+      const isBooted = type === 'emulator' || props[1] !== 'offline';
+      const isAuthorized =
+        connectionType === 'Network'
+          ? line.includes('model:') // Network connected devices show `model:<name>` when authorized
+          : props[1] !== 'unauthorized';
+
+      return { props, type, isAuthorized, isBooted, connectionType };
     })
     .filter(({ props: [pid] }) => !!pid);
 
@@ -255,6 +282,7 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       type,
       props: [pid, ...deviceInfo],
       isAuthorized,
+      isBooted,
     } = props;
 
     let name: string | null = null;
@@ -278,13 +306,9 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       name = (await getAdbNameForDeviceIdAsync({ pid })) ?? '';
     }
 
-    return {
-      pid,
-      name,
-      type,
-      isAuthorized,
-      isBooted: true,
-    };
+    return props.connectionType
+      ? { pid, name, type, isAuthorized, isBooted, connectionType: props.connectionType }
+      : { pid, name, type, isAuthorized, isBooted };
   });
 
   return Promise.all(devicePromises);

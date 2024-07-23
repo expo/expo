@@ -11,9 +11,15 @@
 #import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/EventEmitter.h>
+#import <ExpoModulesCore/NativeModule.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
+
+/**
+ Property name of the core object in the global scope of the Expo JS runtime.
+ */
+NSString *const EXGlobalCoreObjectPropertyName = @"expo";
 
 /**
  Property name used to define the modules host object in the main object of the Expo JS runtime.
@@ -54,6 +60,8 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 }
 #endif // React Native >=0.74
 
+#pragma mark - Installing JSI bindings
+
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
   EXRuntime *runtime = [appContext _runtime];
@@ -64,7 +72,9 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   }
 
   EXJavaScriptObject *global = [runtime global];
-  EXJavaScriptObject *coreObject = [runtime coreObject];
+  EXJavaScriptValue *coreProperty = [global getProperty:EXGlobalCoreObjectPropertyName];
+  NSAssert([coreProperty isObject], @"The global core property should be an object");
+  EXJavaScriptObject *coreObject = [coreProperty getObject];
 
   if ([coreObject hasProperty:modulesHostObjectPropertyName]) {
     return false;
@@ -91,6 +101,11 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 + (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
 {
   expo::EventEmitter::installClass(*[runtime get]);
+}
+
++ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime
+{
+  expo::NativeModule::installClass(*[runtime get]);
 }
 
 @end

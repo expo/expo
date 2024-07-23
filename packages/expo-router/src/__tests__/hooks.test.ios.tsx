@@ -2,7 +2,7 @@ import { renderHook as tlRenderHook } from '@testing-library/react-native';
 import React from 'react';
 import { expectType } from 'tsd';
 
-import { ExpoRoot, router } from '../exports';
+import { ExpoRoot, Slot, router } from '../exports';
 import { useGlobalSearchParams, useLocalSearchParams, usePathname, useSegments } from '../hooks';
 import Stack from '../layouts/Stack';
 import { act, renderRouter } from '../testing-library';
@@ -232,6 +232,39 @@ describe(useLocalSearchParams, () => {
       shape: 'circle',
       veg: ['carrot'],
     });
+  });
+
+  it('passes values down navigators', () => {
+    const results1: object[] = [];
+    const results2: object[] = [];
+
+    renderRouter(
+      {
+        index: () => null,
+        '[id]/_layout': () => <Slot />,
+        '[id]/index': function Protected() {
+          results1.push(useLocalSearchParams());
+          return null;
+        },
+        '[id]/[fruit]/_layout': () => <Slot />,
+        '[id]/[fruit]/index': function Protected() {
+          results2.push(useLocalSearchParams());
+          return null;
+        },
+      },
+      {
+        initialUrl: '/1',
+      }
+    );
+
+    expect(results1).toEqual([{ id: '1' }]);
+    act(() => router.push('/2'));
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+
+    act(() => router.push('/3/apple'));
+    // The first screen has not rerendered
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+    expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
   it(`defaults abstract types`, () => {

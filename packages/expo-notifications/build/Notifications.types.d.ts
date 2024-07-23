@@ -1,10 +1,9 @@
-import type { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
+import type { PermissionExpiration, PermissionResponse, PermissionStatus, EventSubscription } from 'expo-modules-core';
 /**
  * An object represents a notification delivered by a push notification system.
  *
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
- * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
- * On web there is no extra data.
+ * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html).
  */
 export type PushNotificationTrigger = {
     type: 'push';
@@ -373,6 +372,7 @@ export type NotificationContentIos = {
      * The value your app uses to determine which scene to display to handle the notification.
      */
     targetContentIdentifier?: string;
+    interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 /**
  * @platform ios
@@ -502,6 +502,7 @@ export type NotificationContentInput = {
      * @platform ios
      */
     attachments?: NotificationContentAttachmentIos[];
+    interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 /**
  * An object represents a notification request you can pass into `scheduleNotificationAsync`.
@@ -637,5 +638,5 @@ export type NotificationCategoryOptions = {
      */
     allowAnnouncement?: boolean;
 };
-export type { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export type { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionExpiration, };
 //# sourceMappingURL=Notifications.types.d.ts.map

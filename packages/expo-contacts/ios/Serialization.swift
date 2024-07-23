@@ -49,7 +49,7 @@ func decodePhoneLabel(_ label: String?) -> String? {
     return nil
   }
 
-  var decodedLabel = decodeLabel(label: label)
+  let decodedLabel = decodeLabel(label: label)
   switch decodedLabel {
   case CNLabeledValue<NSString>.localizedString(forLabel: CNLabelPhoneNumberMain):
     return CNLabelPhoneNumberMain
@@ -182,9 +182,12 @@ func contactKeysToFetch(from fields: [String]?) -> [String] {
   return results
 }
 
-func getDescriptors(for fields: [String]?) -> [CNKeyDescriptor] {
+func getDescriptors(for fields: [String]?, isWriting: Bool = false) -> [CNKeyDescriptor] {
   let keys = contactKeysToFetch(from: fields)
   var descriptors = keys as [CNKeyDescriptor]
+  if isWriting {
+    descriptors.append(CNContactVCardSerialization.descriptorForRequiredKeys())
+  }
 
   if keys.contains(ContactsKey.name) {
     descriptors.append(CNContactFormatter.descriptorForRequiredKeys(for: .fullName))
@@ -197,7 +200,7 @@ func getDescriptors(for fields: [String]?) -> [CNKeyDescriptor] {
 }
 
 func serializeContact(person: CNContact, keys: [String]?, directory: URL?) throws -> [String: Any] {
-  var keysToFetch = keys ?? contactKeysToFetch(from: nil)
+  let keysToFetch = keys ?? contactKeysToFetch(from: nil)
   var contact = [String: Any]()
 
   contact[ContactsKey.id] = person.identifier
@@ -233,7 +236,7 @@ func serializeContact(person: CNContact, keys: [String]?, directory: URL?) throw
     contact[ContactsKey.jobTitle] = person.jobTitle
   }
   if fieldHasValue(field: person.departmentName) {
-    contact[ContactsKey.department] = person.dates
+    contact[ContactsKey.department] = person.departmentName
   }
 
   if keysToFetch.contains(CNContactNamePrefixKey) && fieldHasValue(field: person.namePrefix) {
@@ -406,7 +409,7 @@ private func socialProfilesFor(contact person: CNContact) -> [[String: Any]]? {
     profile["userId"] = val.userIdentifier
     profile["id"] = container.identifier
     if let label = container.label {
-      profile["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label) ?? label
+      profile["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
     }
     results.append(profile)
   }
@@ -563,7 +566,7 @@ private func calendarFormatToString(_ identifier: Calendar.Identifier) -> String
 
 func encodeContainer(_ container: CNContainer) -> [String: Any] {
   return [
-    "name": container.name ?? "",
+    "name": container.name,
     "id": container.identifier,
     "type": encodeContainerType(container.type)
   ]

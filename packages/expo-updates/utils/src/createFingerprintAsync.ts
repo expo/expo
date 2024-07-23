@@ -1,9 +1,11 @@
 import * as Fingerprint from '@expo/fingerprint';
 
+import { Workflow } from './workflow';
+
 export async function createFingerprintAsync(
   projectRoot: string,
   platform: 'ios' | 'android',
-  workflow: 'managed' | 'generic',
+  workflow: Workflow,
   options: Fingerprint.Options
 ): Promise<Fingerprint.Fingerprint> {
   if (workflow === 'generic') {

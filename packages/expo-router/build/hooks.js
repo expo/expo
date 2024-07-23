@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
+const Route_1 = require("./Route");
 const router_store_1 = require("./global-state/router-store");
 function useRootNavigationState() {
     return (0, router_store_1.useStoreRootState)();
@@ -76,27 +76,12 @@ function usePathname() {
     return (0, router_store_1.useStoreRouteInfo)().pathname;
 }
 exports.usePathname = usePathname;
-/**
- * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
- * Useful for analytics or other background operations that don't draw to the screen.
- *
- * When querying search params in a stack, opt-towards using `useLocalSearchParams` as these will only
- * update when the route is focused.
- *
- * @see `useLocalSearchParams`
- */
 function useGlobalSearchParams() {
     return (0, router_store_1.useStoreRouteInfo)().params;
 }
 exports.useGlobalSearchParams = useGlobalSearchParams;
-/**
- * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
- * This is useful for stacks where you may push a new screen that changes the query parameters.
- *
- * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
- */
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(native_1.NavigationRouteContext)?.params ?? {};
+    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [

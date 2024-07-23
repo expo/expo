@@ -4,7 +4,7 @@ exports.resolveHref = void 0;
 /** Resolve an href object into a fully qualified, relative href. */
 const resolveHref = (href) => {
     if (typeof href === 'string') {
-        return (0, exports.resolveHref)({ pathname: href ?? '' });
+        return (0, exports.resolveHref)({ pathname: href });
     }
     const path = href.pathname ?? '';
     if (!href?.params) {

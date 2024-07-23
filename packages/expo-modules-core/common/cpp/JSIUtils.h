@@ -9,12 +9,21 @@ namespace jsi = facebook::jsi;
 
 namespace expo::common {
 
+#pragma mark - Helpers
+
+/**
+ Gets the core Expo object, i.e. `global.expo`.
+ */
+inline jsi::Object getCoreObject(jsi::Runtime &runtime) {
+  return runtime.global().getPropertyAsObject(runtime, "expo");
+}
+
 #pragma mark - Classes
 
 /**
  Type of the native constructor of the JS classes.
  */
-typedef std::function<void(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count)> ClassConstructor;
+typedef std::function<jsi::Value(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count)> ClassConstructor;
 
 /**
  Creates a class with the given name and native constructor.
@@ -47,7 +56,7 @@ struct PropertyDescriptor {
   const bool configurable = false;
   const bool enumerable = false;
   const bool writable = false;
-  const jsi::Value value = 0;
+  const jsi::Value value = jsi::Value::undefined();
   const std::function<jsi::Value(jsi::Runtime &runtime, jsi::Object thisObject)> get = 0;
   const std::function<void(jsi::Runtime &runtime, jsi::Object thisObject, jsi::Value newValue)> set = 0;
 }; // PropertyDescriptor

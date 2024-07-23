@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -13,7 +14,7 @@ describe('server-output', () => {
 
   beforeAll(
     async () => {
-      await ensurePortFreeAsync(8081);
+      console.time('export-server');
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
         cwd: projectRoot,
         env: {
@@ -24,10 +25,25 @@ describe('server-output', () => {
           EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
+      console.timeEnd('export-server');
     },
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
   );
+
+  function getFiles() {
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    return klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+  }
 
   describe('requests', () => {
     beforeAll(async () => {
@@ -111,6 +127,9 @@ describe('server-output', () => {
       expect(await fetch('http://localhost:3000/beta').then((res) => res.text())).toMatch(
         /<div data-testid="alpha-beta-text">/
       );
+      expect(await fetch('http://localhost:3000/(alpha)/').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-index">/
+      );
       expect(await fetch('http://localhost:3000/(alpha)/beta').then((res) => res.text())).toMatch(
         /<div data-testid="alpha-beta-text">/
       );
@@ -124,6 +143,72 @@ describe('server-output', () => {
       expect(
         await fetch('http://localhost:3000/clearly-missing').then((res) => res.text())
       ).toMatch(/<div id="root">/);
+    });
+
+    it(`can serve up static html in array group`, async () => {
+      expect(getFiles()).not.toContain('server/multi-group.html');
+      expect(getFiles()).not.toContain('server/(a,b)/multi-group.html');
+      expect(getFiles()).toContain('server/(a)/multi-group.html');
+      expect(getFiles()).toContain('server/(b)/multi-group.html');
+      expect(await fetch('http://localhost:3000/multi-group').then((res) => res.text())).toMatch(
+        /<div data-testid="multi-group">/
+      );
+    });
+
+    it(`can serve up static html in specific array group`, async () => {
+      expect(
+        await fetch('http://localhost:3000/(a)/multi-group').then((res) => res.text())
+      ).toMatch(/<div data-testid="multi-group">/);
+
+      expect(
+        await fetch('http://localhost:3000/(b)/multi-group').then((res) => res.text())
+      ).toMatch(/<div data-testid="multi-group">/);
+    });
+
+    it(`can not serve up static html in retained array group syntax`, async () => {
+      // Should not be able to match the array syntax
+      expect(
+        await fetch('http://localhost:3000/(a,b)/multi-group').then((res) => res.status)
+      ).toEqual(404);
+    });
+
+    it(`can serve up API route in array group`, async () => {
+      const files = getFiles();
+      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+      expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
+      expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+      expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
+
+      expect(
+        await fetch('http://localhost:3000/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+
+      // Load the sourcemap and check that the paths are relative
+      const map = JSON.parse(
+        await fs.readFile(
+          path.join(outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
+          { encoding: 'utf8' }
+        )
+      );
+
+      expect(map.sources).toContain('__e2e__/server/app/(a,b)/multi-group-api+api.ts');
+    });
+
+    it(`can serve up API route in specific array group`, async () => {
+      // Should be able to match all the group variations
+      expect(
+        await fetch('http://localhost:3000/(a)/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+      expect(
+        await fetch('http://localhost:3000/(b)/multi-group-api').then((res) => res.json())
+      ).toEqual({ value: 'multi-group-api-get' });
+    });
+
+    it(`can not serve up API route in retained array group syntax`, async () => {
+      // Should not be able to match the array syntax
+      expect(
+        await fetch('http://localhost:3000/(a,b)/multi-group-api').then((res) => res.status)
+      ).toEqual(404);
     });
 
     it(
@@ -175,8 +260,9 @@ describe('server-output', () => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ hello: 'world' }),
-          }).then((r) => r.json());
-          expect(res).toEqual({ hello: 'world' });
+          });
+          expect(res.status).toBe(200);
+          expect(await res.json()).toEqual({ hello: 'world' });
         },
         5 * 1000
       );
@@ -269,14 +355,7 @@ describe('server-output', () => {
       // List output files with sizes for snapshotting.
       // This is to make sure that any changes to the output are intentional.
       // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
+      const files = getFiles();
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('server/+html.html');
@@ -287,13 +366,18 @@ describe('server-output', () => {
 
       // Has functions
       expect(files).toContain('server/_expo/functions/methods+api.js');
+      expect(files).toContain('server/_expo/functions/methods+api.js.map');
       expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
+      expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
       expect(files).toContain('server/_expo/functions/api/externals+api.js');
+      expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
       // TODO: We shouldn't export this
       expect(files).toContain('server/_expo/functions/api/empty+api.js');
+      expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
 
       // Has single variation of group file
+      expect(files).toContain('server/(alpha)/index.html');
       expect(files).toContain('server/(alpha)/beta.html');
       expect(files).not.toContain('server/beta.html');
 

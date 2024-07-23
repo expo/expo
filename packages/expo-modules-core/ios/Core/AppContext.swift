@@ -1,3 +1,5 @@
+import React
+
 /**
  The app context is an interface to a single Expo app.
  */
@@ -121,14 +123,7 @@ public final class AppContext: NSObject {
   // MARK: - UI
 
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    let view: UIView? = reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag))
-
-    #if RN_FABRIC_ENABLED
-    if let view = view as? ExpoFabricViewObjC {
-      return view.contentView as? ViewType
-    }
-    #endif
-    return view as? ViewType
+    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
   }
 
   // MARK: - Running on specific queues
@@ -211,10 +206,10 @@ public final class AppContext: NSObject {
   }
 
   /**
-   Provides access to the event emitter from legacy module registry.
+   Provides an event emitter that is compatible with the legacy interface.
    */
   public var eventEmitter: EXEventEmitterService? {
-    return legacyModule(implementing: EXEventEmitterService.self)
+    return LegacyEventEmitterCompat(appContext: self)
   }
 
   /**
@@ -394,13 +389,12 @@ public final class AppContext: NSObject {
 
   internal func prepareRuntime() throws {
     let runtime = try runtime
-    let coreObject = try coreModuleHolder.definition.build(appContext: self)
+    let coreObject = runtime.createObject()
+
+    try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
     // Initialize `global.expo`.
     try runtime.initializeCoreObject(coreObject)
-
-    // Install the modules host object as the `global.expo.modules`.
-    EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
 
     // Install `global.expo.EventEmitter`.
     EXJavaScriptRuntimeManager.installEventEmitterClass(runtime)
@@ -409,6 +403,12 @@ public final class AppContext: NSObject {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)
+
+    // Install the modules host object as the `global.expo.modules`.
+    EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
   }
 
   /**

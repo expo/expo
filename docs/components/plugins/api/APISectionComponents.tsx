@@ -15,11 +15,13 @@ import {
   STYLES_APIBOX,
   getTagNamesList,
   H3Code,
+  getPossibleComponentPropsNames,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
+  sdkVersion: string;
   componentsProps: PropsDefinitionData[];
 };
 
@@ -48,6 +50,7 @@ const getComponentTypeParameters = ({
 
 const renderComponent = (
   { name, comment, type, extendedTypes, children, signatures }: GeneratedData,
+  sdkVersion: string,
   componentsProps?: PropsDefinitionData[]
 ): JSX.Element => {
   const resolvedType = getComponentType({ signatures });
@@ -55,8 +58,8 @@ const renderComponent = (
   const resolvedName = getComponentName(name, children);
   const extractedComment = getComponentComment(comment, signatures);
   return (
-    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
-      <APISectionDeprecationNote comment={extractedComment} />
+    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX} className="!shadow-none">
+      <APISectionDeprecationNote comment={extractedComment} sticky />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {resolvedName}
@@ -67,10 +70,10 @@ const renderComponent = (
           <DEMI theme="secondary">Type:</DEMI>{' '}
           <CODE>
             {extendedTypes ? (
-              <>React.{resolveTypeName(resolvedTypeParameters)}</>
+              <>React.{resolveTypeName(resolvedTypeParameters, sdkVersion)}</>
             ) : (
               <>
-                {resolvedType}&lt;{resolveTypeName(resolvedTypeParameters)}&gt;
+                {resolvedType}&lt;{resolveTypeName(resolvedTypeParameters, sdkVersion)}&gt;
               </>
             )}
           </CODE>
@@ -79,23 +82,25 @@ const renderComponent = (
       <CommentTextBlock comment={extractedComment} />
       {componentsProps && componentsProps.length ? (
         <APISectionProps
+          sdkVersion={sdkVersion}
           data={componentsProps}
-          header={componentsProps.length === 1 ? 'Props' : `${resolvedName}Props`}
+          header={`${resolvedName}Props`}
         />
       ) : null}
     </div>
   );
 };
 
-const APISectionComponents = ({ data, componentsProps }: APISectionComponentsProps) =>
+const APISectionComponents = ({ data, sdkVersion, componentsProps }: APISectionComponentsProps) =>
   data?.length ? (
     <>
       <H2 key="components-header">{data.length === 1 ? 'Component' : 'Components'}</H2>
       {data.map(component =>
         renderComponent(
           component,
+          sdkVersion,
           componentsProps.filter(cp =>
-            cp.name.includes(getComponentName(component.name, component.children))
+            getPossibleComponentPropsNames(component.name, component.children).includes(cp.name)
           )
         )
       )}

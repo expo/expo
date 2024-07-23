@@ -10,6 +10,8 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   fix?: boolean;
   /** Should disable install output, used for commands like `prebuild` that run install internally. */
   silent?: boolean;
+  /** Should be installed as dev dependencies */
+  dev?: boolean;
 };
 
 function resolveOptions(options: Options): Options {

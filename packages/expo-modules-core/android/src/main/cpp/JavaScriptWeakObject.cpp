@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #include "JavaScriptWeakObject.h"
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 
 namespace expo {
 
@@ -9,6 +9,10 @@ void JavaScriptWeakObject::registerNatives() {
   registerHybrid({
       makeNativeMethod("lock", JavaScriptWeakObject::lock),
   });
+}
+
+std::shared_ptr<jsi::WeakObject> JavaScriptWeakObject::getWeak() {
+  return _weakObject;
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptWeakObject::lock() {
@@ -23,18 +27,18 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptWeakObject::lock() {
   if (!objectPtr) {
     return nullptr;
   }
-  return JavaScriptObject::newInstance(_runtimeHolder.getModuleRegistry(),
+  return JavaScriptObject::newInstance(_runtimeHolder.getJSIContext(),
                                        _runtimeHolder, objectPtr);
 }
 
 jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject>
 JavaScriptWeakObject::newInstance(
-    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    JSIContext *jSIContext,
     std::weak_ptr<JavaScriptRuntime> runtime,
     std::shared_ptr<jsi::Object> jsObject) {
   auto weakObject = JavaScriptWeakObject::newObjectCxxArgs(std::move(runtime),
                                                            std::move(jsObject));
-  jsiInteropModuleRegistry->jniDeallocator->addReference(weakObject);
+  jSIContext->jniDeallocator->addReference(weakObject);
   return weakObject;
 }
 

@@ -32,7 +32,6 @@ export UPDATES_PORT=4747
 export PROJECT_ROOT=$PWD
 
 export EX_UPDATES_NATIVE_DEBUG=1
-export NO_FLIPPER=1
 
 mkdir ./logs
 

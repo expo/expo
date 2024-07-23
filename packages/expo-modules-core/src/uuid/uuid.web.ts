@@ -3,16 +3,23 @@ import v35 from './lib/v35';
 import { UUID, Uuidv5Namespace } from './uuid.types';
 
 function uuidv4(): string {
-  // Crypto needs to be required when run in Node.js environment.
-  const cryptoObject =
-    typeof crypto === 'undefined' || typeof crypto.randomUUID === 'undefined'
-      ? require('crypto')
-      : crypto;
-
-  if (!cryptoObject?.randomUUID) {
-    throw Error("The browser doesn't support `crypto.randomUUID` function");
+  if (
+    // We use this code path in jest-expo.
+    process.env.NODE_ENV === 'test' ||
+    // Node.js has supported global crypto since v15.
+    (typeof crypto === 'undefined' &&
+      // Only use abstract imports in server environments.
+      typeof window === 'undefined')
+  ) {
+    // NOTE: Metro statically extracts all `require` statements to resolve them for environments
+    // that don't support `require` natively. Here we check if we're running in a server environment
+    // by using the standard `typeof window` check, then running `eval` to skip Metro's static
+    // analysis and keep the `require` statement intact for runtime evaluation.
+    // eslint-disable-next-line no-eval
+    return eval('require')('node:crypto').randomUUID();
   }
-  return cryptoObject.randomUUID();
+
+  return crypto.randomUUID();
 }
 
 const uuid: UUID = {

@@ -16,7 +16,11 @@ namespace expo::EventEmitter {
 class Listeners {
 private:
   friend class NativeState;
-  friend void installClass(jsi::Runtime &runtime);
+  friend void addListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
+  friend void removeListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener);
+  friend void removeAllListeners(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName);
+  friend void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
+  friend size_t getListenerCount(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName);
 
   /**
    Type of the list containing listeners for the specific event name.
@@ -83,8 +87,14 @@ public:
    Gets event emitter's native state from the given object.
    If `createIfMissing` is set to `true`, the state will be automatically created.
    */
-  static Shared get(jsi::Runtime &runtime, jsi::Object &object, bool createIfMissing = false);
+  static Shared get(jsi::Runtime &runtime, const jsi::Object &object, bool createIfMissing = false);
 };
+
+/**
+ Emits an event with the given name and arguments to the emitter object.
+ Does nothing if the given object is not an instance of the EventEmitter class.
+ */
+void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
 
 /**
  Gets `expo.EventEmitter` class from the given runtime.

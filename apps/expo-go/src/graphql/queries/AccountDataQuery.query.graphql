@@ -1,4 +1,4 @@
-query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!) {
+query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!, $platform: AppPlatform!) {
   account {
     byName(accountName: $accountName) {
       id

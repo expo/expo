@@ -36,11 +36,11 @@ class SpeechModule : Module() {
       textToSpeech.shutdown()
     }
 
-    AsyncFunction("isSpeaking") {
+    AsyncFunction<Boolean>("isSpeaking") {
       textToSpeech.isSpeaking
     }
 
-    AsyncFunction("getVoices") {
+    AsyncFunction<List<VoiceRecord>>("getVoices") {
       val nativeVoices = try {
         textToSpeech.voices.toList()
       } catch (_: Exception) {
@@ -63,7 +63,7 @@ class SpeechModule : Module() {
       }
     }
 
-    AsyncFunction("stop") {
+    AsyncFunction<Unit>("stop") {
       textToSpeech.stop()
     }
 

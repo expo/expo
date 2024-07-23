@@ -9,7 +9,7 @@ import { Pressable, Platform } from 'react-native';
 
 import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
-import { Href } from '../link/href';
+import { Href } from '../types';
 
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;

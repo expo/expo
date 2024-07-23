@@ -7,14 +7,17 @@ import {
   getInlineEnvVarsEnabled,
   getIsDev,
   getIsFastRefreshEnabled,
+  getIsNodeModule,
   getIsProd,
   getIsReactServer,
+  getIsServer,
+  getReactCompiler,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
-import { expoInlineEnvVars, expoInlineTransformEnvVars } from './inline-env-vars';
+import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 
@@ -38,6 +41,60 @@ type BabelPresetExpoPlatformOptions = {
   enableBabelRuntime?: boolean;
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+
+  /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
+  'react-compiler'?:
+    | false
+    | {
+        // TODO: Add full types and doc blocks.
+        enableUseMemoCachePolyfill?: boolean;
+        compilationMode?: 'infer' | 'strict';
+        panicThreshold?: 'none' | 'all_errors' | 'critical_errors';
+        logger?: any;
+        environment?: {
+          customHooks?: unknown;
+          enableResetCacheOnSourceFileChanges?: boolean;
+          enablePreserveExistingMemoizationGuarantees?: boolean;
+          /** @default true */
+          validatePreserveExistingMemoizationGuarantees?: boolean;
+          enableForest?: boolean;
+          enableUseTypeAnnotations?: boolean;
+          /** @default true */
+          enableReactiveScopesInHIR?: boolean;
+          /** @default true */
+          validateHooksUsage?: boolean;
+          validateRefAccessDuringRender?: boolean;
+          /** @default true */
+          validateNoSetStateInRender?: boolean;
+          validateMemoizedEffectDependencies?: boolean;
+          validateNoCapitalizedCalls?: string[] | null;
+          /** @default true */
+          enableAssumeHooksFollowRulesOfReact?: boolean;
+          /** @default true */
+          enableTransitivelyFreezeFunctionExpressions: boolean;
+          enableEmitFreeze?: unknown;
+          enableEmitHookGuards?: unknown;
+          enableEmitInstrumentForget?: unknown;
+          assertValidMutableRanges?: boolean;
+          enableChangeVariableCodegen?: boolean;
+          enableMemoizationComments?: boolean;
+          throwUnknownException__testonly?: boolean;
+          enableTreatFunctionDepsAsConditional?: boolean;
+          /** Automatically enabled when reanimated plugin is added. */
+          enableCustomTypeDefinitionForReanimated?: boolean;
+          /** @default `null` */
+          hookPattern?: string | null;
+        };
+        gating?: unknown;
+        noEmit?: boolean;
+        runtimeModule?: string | null;
+        eslintSuppressionRules?: unknown | null;
+        flowSuppressions?: boolean;
+        ignoreUseNoForget?: boolean;
+      };
+
+  /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
+  minifyTypeofWindow?: boolean;
 };
 
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
@@ -65,12 +122,16 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const isNodeModule = api.caller(getIsNodeModule);
+  const isServer = api.caller(getIsServer);
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
+  const isReactCompilerEnabled = api.caller(getReactCompiler);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
   );
+  const isServerEnv = isServer || isReactServer;
 
   // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
   // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
@@ -84,6 +145,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   const platformOptions = getOptions(options, platform);
+
+  if (platformOptions.useTransformReactJSXExperimental != null) {
+    throw new Error(
+      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
+    );
+  }
 
   if (platformOptions.disableImportExportTransform == null) {
     if (platform === 'web') {
@@ -105,28 +172,80 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   const extraPlugins: PluginItem[] = [];
 
+  // Add compiler as soon as possible to prevent other plugins from modifying the code.
+  if (
+    isReactCompilerEnabled &&
+    // Don't run compiler on node modules, it can only safely be run on the user's code.
+    !isNodeModule &&
+    // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
+    // NOTE: We might want to allow running it to prevent hydration errors.
+    !isServerEnv &&
+    // Give users the ability to opt-out of the feature, per-platform.
+    platformOptions['react-compiler'] !== false
+  ) {
+    extraPlugins.push([
+      require('babel-plugin-react-compiler'),
+      {
+        runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
+        // enableUseMemoCachePolyfill: true,
+        // compilationMode: 'infer',
+        environment: {
+          enableResetCacheOnSourceFileChanges: !isProduction,
+          ...(platformOptions['react-compiler']?.environment ?? {}),
+        },
+        panicThreshold: isDev ? undefined : 'NONE',
+        ...platformOptions['react-compiler'],
+      },
+    ]);
+  }
+
   if (engine !== 'hermes') {
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
     extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
   } else {
-    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-    // JSX is used in a function body. This is technically not required in production, but we
-    // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    if (platform !== 'web' && !isServerEnv) {
+      // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+      // JSX is used in a function body. This is technically not required in production, but we
+      // should retain the same behavior since it's hard to debug the differences.
+      extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    }
   }
 
-  if (isProduction && hasModule('metro-transform-plugins')) {
-    // Metro applies this plugin too but it does it after the imports have been transformed which breaks
-    // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
-    // is replaced with a string literal and `__DEV__` is converted to a boolean.
-    // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
+  const inlines: Record<string, null | boolean | string> = {
+    'process.env.EXPO_OS': platform,
+    // 'typeof document': isServerEnv ? 'undefined' : 'object',
+    'process.env.EXPO_SERVER': !!isServerEnv,
+  };
+
+  // `typeof window` is left in place for native + client environments.
+  const minifyTypeofWindow =
+    (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
+
+  if (minifyTypeofWindow !== false) {
+    // This nets out slightly faster in development when considering the cost of bundling server dependencies.
+    inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
+  }
+
+  if (isProduction) {
+    inlines['process.env.NODE_ENV'] = 'production';
+    inlines['__DEV__'] = false;
+    inlines['Platform.OS'] = platform;
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    inlines['process.env.EXPO_BASE_URL'] = baseUrl;
+  }
+
+  extraPlugins.push([require('./define-plugin'), inlines]);
+
+  if (isProduction) {
+    // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
+    // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
     extraPlugins.push([
-      require('metro-transform-plugins/src/inline-plugin.js'),
+      require('./minify-platform-select-plugin'),
       {
-        dev: isDev,
-        inlinePlatform: true,
         platform,
       },
     ]);
@@ -136,18 +255,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     throw new Error(
       `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
     );
-  }
-
-  // Allow jest tests to redefine the environment variables.
-  if (process.env.NODE_ENV !== 'test') {
-    extraPlugins.push([
-      expoInlineTransformEnvVars,
-      {
-        // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
-        // squat user-defined environment variables.
-        EXPO_BASE_URL: baseUrl,
-      },
-    ]);
   }
 
   // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
@@ -193,6 +300,13 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     ]);
   }
 
+  if (platformOptions.disableImportExportTransform) {
+    extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
+  }
+
+  // Use the simpler babel preset for web and server environments (both web and native SSR).
+  const isModernEngine = platform === 'web' || isServerEnv;
+
   return {
     presets: [
       [
@@ -200,7 +314,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // specifically use the `@react-native/babel-preset` installed by this package (ex:
         // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
         // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-        require('@react-native/babel-preset'),
+        isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
         {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,

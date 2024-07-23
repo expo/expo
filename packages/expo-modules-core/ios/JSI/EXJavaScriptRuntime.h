@@ -16,6 +16,8 @@ namespace react = facebook::react;
 @class EXJavaScriptObject;
 @class EXJavaScriptSharedObject;
 
+typedef void (^JSRuntimeExecutionBlock)();
+
 typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      NSArray<EXJavaScriptValue *> * _Nonnull arguments,
                                      RCTPromiseResolveBlock _Nonnull resolve,
@@ -114,5 +116,12 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
  Evaluates given JavaScript source code.
  */
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource NS_REFINED_FOR_SWIFT;
+
+#pragma mark - Runtime execution
+
+/**
+ Schedules a block to be executed with granted synchronized access to the JS runtime.
+ */
+- (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority NS_REFINED_FOR_SWIFT;
 
 @end

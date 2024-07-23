@@ -32,7 +32,7 @@ internal class FailedToSaveException: Exception {
 
 internal class FilePermissionException: GenericException<String?> {
   override var reason: String {
-    "File '\(param)' isn't readable."
+    "File '\(String(describing: param))' isn't readable."
   }
 }
 
@@ -75,5 +75,17 @@ internal class FailedToCreateViewControllerException: Exception {
 internal class FailedToFindContactException: Exception {
   override var reason: String {
     "Failed to find contact"
+  }
+}
+
+internal class ContactPickingInProgressException: Exception {
+  override var reason: String {
+    "Different contact picking in progress. Await other contact picking first"
+  }
+}
+
+internal class ContactManipulationInProgressException: Exception {
+  override var reason: String {
+    "Different contact manipulation in progress. Await other contact manipulation first"
   }
 }

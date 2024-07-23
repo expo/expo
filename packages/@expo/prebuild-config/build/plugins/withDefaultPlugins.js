@@ -138,7 +138,7 @@ const withIosExpoPlugins = (config, {
   // XcodeProject
   _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
   // Dangerous
-  _withIosIcons().withIosIcons]);
+  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
 };
 
 /**

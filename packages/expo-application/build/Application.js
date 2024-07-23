@@ -7,7 +7,8 @@ import ExpoApplication from './ExpoApplication';
  * This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set
  * by `version` in `app.json` on Android at the time the native app was built.
  * On web, this value is `null`.
- * @example `"2.11.0"`
+ * @example
+ * `"2.11.0"`
  */
 export const nativeApplicationVersion = ExpoApplication
     ? ExpoApplication.nativeApplicationVersion || null
@@ -19,7 +20,8 @@ export const nativeApplicationVersion = ExpoApplication
  * `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by
  * `android.versionCode` in `app.json` on Android at the time the native app was built. On web, this
  * value is `null`. The return type on Android and iOS is `string`.
- * @example iOS: `"2.11.0"`, Android: `"114"`
+ * @example
+ * Android: `"114"`, iOS: `"2.11.0"`
  */
 export const nativeBuildVersion = ExpoApplication
     ? ExpoApplication.nativeBuildVersion || null
@@ -29,7 +31,8 @@ export const nativeBuildVersion = ExpoApplication
  * The human-readable name of the application that is displayed with the app's icon on the device's
  * home screen or desktop. On Android and iOS, this value is a `string` unless the name could not be
  * retrieved, in which case this value will be `null`. On web this value is `null`.
- * @example `"Expo"`, `"Yelp"`, `"Instagram"`
+ * @example
+ * `"Expo"`, `"Yelp"`, `"Instagram"`
  */
 export const applicationName = ExpoApplication
     ? ExpoApplication.applicationName || null
@@ -38,7 +41,8 @@ export const applicationName = ExpoApplication
 /**
  * The ID of the application. On Android, this is the application ID. On iOS, this is the bundle ID.
  * On web, this is `null`.
- * @example `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
+ * @example
+ * `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
  */
 export const applicationId = ExpoApplication
     ? ExpoApplication.applicationId || null
@@ -54,7 +58,8 @@ export const applicationId = ExpoApplication
  * > In versions of the platform lower than Android 8.0 (API level 26), this value remains constant
  * > for the lifetime of the user's device. See the [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID)
  * > official docs for more information.
- * @example `"dd96dec43fb81c97"`
+ * @example
+ * `"dd96dec43fb81c97"`
  * @platform android
  */
 export function getAndroidId() {

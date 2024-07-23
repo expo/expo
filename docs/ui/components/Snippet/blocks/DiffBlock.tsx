@@ -1,9 +1,11 @@
-import { Copy07Icon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { Copy07Icon } from '@expo/styleguide-icons/outline/Copy07Icon';
 import { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
 import { PermalinkedSnippetHeader } from '../PermalinkedSnippetHeader';
 import { Snippet } from '../Snippet';
+import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 
@@ -25,6 +27,7 @@ type Props = PropsWithChildren<{
   source?: string;
   raw?: string;
   filenameModifier?: (filename: string) => string;
+  filenameToLinkUrl?: (filename: string) => string;
   showOperation?: boolean;
   collapseDeletedFiles?: boolean;
   SnippetHeaderComponent?: typeof SnippetHeader | typeof PermalinkedSnippetHeader;
@@ -34,6 +37,7 @@ export const DiffBlock = ({
   source,
   raw,
   filenameModifier = str => str,
+  filenameToLinkUrl,
   showOperation = false,
   collapseDeletedFiles = false,
   SnippetHeaderComponent = SnippetHeader,
@@ -76,6 +80,15 @@ export const DiffBlock = ({
           operationType={type}
           showOperation={showOperation}
           float={collapseDeletedFiles && type === 'delete'}>
+          {newPath && filenameToLinkUrl && type !== 'delete' ? (
+            <SnippetAction
+              rightSlot={<ArrowUpRightIcon className="text-icon-secondary shrink-0 icon-sm" />}
+              onClick={() => {
+                window.open(filenameToLinkUrl(newPath), '_blank');
+              }}>
+              Raw
+            </SnippetAction>
+          ) : null}
           <SettingsAction />
         </SnippetHeaderComponent>
         {!collapseDeletedFiles || type !== 'delete' ? (

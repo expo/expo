@@ -6,7 +6,6 @@ import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.annotation.Config
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
@@ -74,8 +73,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCachedConverters(false)
   private val nullableCachedConverters = createCachedConverters(true)
 
-  private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
-  private val cachedCustomConverters = mutableMapOf<KType, TypeConverter<*>>()
+  private val cachedRecordConverters = mutableMapOf<KType, TypeConverter<*>>()
 
   private fun getCachedConverter(inputType: KType): TypeConverter<*>? {
     return if (inputType.isMarkedNullable) {
@@ -118,14 +116,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
-    val cachedConverter = cachedRecordConverters[kClass]
+    val cachedConverter = cachedRecordConverters[type]
     if (cachedConverter != null) {
       return cachedConverter
     }
 
     if (Record::class.java.isAssignableFrom(jClass)) {
       val converter = RecordTypeConverter<Record>(this, type)
-      cachedRecordConverters[kClass] = converter
+      cachedRecordConverters[type] = converter
       return converter
     }
 
@@ -142,7 +140,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     }
 
     return handelEither(type, jClass)
-      ?: handelCustomConverter(type, kClass)
       ?: throw MissingTypeConverter(type)
   }
 
@@ -159,29 +156,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     }
 
     return null
-  }
-
-  private fun handelCustomConverter(type: KType, kClass: KClass<*>): TypeConverter<*>? {
-    val cachedConverter = cachedCustomConverters[type]
-    if (cachedConverter != null) {
-      return cachedConverter
-    }
-
-    val typeName = kClass.java.canonicalName ?: return null
-
-    val converterProviderName = "${Config.packageNamePrefix}$typeName${Config.classNameSuffix}"
-    return try {
-      val converterClazz = Class.forName(converterProviderName)
-      val converterProvider = converterClazz.newInstance()
-      val method = converterProvider.javaClass.getMethod(Config.converterProviderFunctionName, KType::class.java)
-
-      (method.invoke(converterProvider, type) as TypeConverter<*>)
-        .also {
-          cachedCustomConverters[type] = it
-        }
-    } catch (e: Throwable) {
-      null
-    }
   }
 
   private fun createCachedConverters(isOptional: Boolean): Map<KClass<*>, TypeConverter<*>> {
@@ -295,7 +269,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Any::class to AnyTypeConverter(isOptional),
 
-      Unit::class to UnitTypeConverter(isOptional),
+      // Unit converter doesn't care about nullability.
+      // It will always return Unit
+      Unit::class to UnitTypeConverter(),
 
       ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional)
     )

@@ -33,6 +33,8 @@ public protocol UpdatesExternalInterface {
     success successBlock: @escaping UpdatesUpdateSuccessBlock,
     error errorBlock: @escaping UpdatesErrorBlock
   )
+
+  @objc func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool
 }
 
 /**

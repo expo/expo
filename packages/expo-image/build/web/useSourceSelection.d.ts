@@ -1,14 +1,10 @@
-import { ImageProps, ImageSource } from '../Image.types';
+import React from 'react';
+import { ImageSource } from '../Image.types';
 export interface SrcSetSource extends ImageSource {
     srcset: string;
     sizes: string;
     uri: string;
     type: 'srcset';
 }
-type UseSourceSelectionReturn = {
-    containerRef: (element: HTMLDivElement) => void;
-    source: ImageSource | SrcSetSource | null;
-};
-export default function useSourceSelection(sources?: ImageSource[], responsivePolicy?: ImageProps['responsivePolicy'], measurementCallback?: ((target: HTMLElement, size: DOMRect) => void) | null): UseSourceSelectionReturn;
-export {};
+export default function useSourceSelection(sources: ImageSource[] | undefined, responsivePolicy: "live" | "initial" | "static" | undefined, containerRef: React.MutableRefObject<HTMLDivElement | null>, measurementCallback?: ((target: HTMLElement, size: DOMRect) => void) | null): ImageSource | SrcSetSource | null;
 //# sourceMappingURL=useSourceSelection.d.ts.map

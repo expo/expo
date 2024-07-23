@@ -6,15 +6,15 @@ packageName: 'expo-camera'
 iconUrl: '/static/images/packages/expo-camera.png'
 ---
 
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import PrereleaseNotice from '~/components/PrereleaseNotice';
+import APISection from '~/components/plugins/APISection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 <PrereleaseNotice>
@@ -98,14 +98,11 @@ export default function App() {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
 
-  /* @hide if (!permission) ... */
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
-  /* @end */
 
-  /* @hide if (!permission.granted) ... */
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
@@ -115,7 +112,6 @@ export default function App() {
       </View>
     );
   }
-  /* @end */
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
@@ -134,7 +130,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -160,7 +155,6 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
-/* @end */
 ```
 
 ## Web support
@@ -183,7 +177,7 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 import { CameraView } from 'expo-camera/next';
 ```
 
-<APISection packageName="expo-camera-next" apiName="Camera" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-camera-next" apiName="Camera" exposeAllClassPropsInSidebar />
 
 ## Permissions
 

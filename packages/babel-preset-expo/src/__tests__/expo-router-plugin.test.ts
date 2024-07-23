@@ -29,14 +29,6 @@ beforeEach(() => {
   jest.mocked(getConfig).mockClear();
 
   process.env._EXPO_INTERNAL_TESTING = '1';
-  delete process.env.EXPO_ROUTER_ABS_APP_ROOT;
-  delete process.env.EXPO_ROUTER_IMPORT_MODE;
-  delete process.env.EXPO_PROJECT_ROOT;
-});
-
-afterEach(() => {
-  delete process.env._EXPO_INTERNAL_TESTING;
-  process.env.NODE_ENV = 'test';
 });
 
 const DEF_OPTIONS = {

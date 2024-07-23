@@ -21,19 +21,25 @@ export default function DocumentationElements(props: DocumentationElementsProps)
     headings: props.headings,
   });
 
+  if (!props.meta) {
+    return props.children;
+  }
+
   return (
     <AnchorContext.Provider value={slugger}>
       <HeadingsContext.Provider value={manager}>
         <PageMetadataContext.Provider value={props.meta}>
           <PageApiVersionProvider>
             <DocumentationPage
-              title={props.meta.title || ''}
-              description={props.meta.description || ''}
+              title={props.meta.title ?? ''}
+              description={props.meta.description ?? ''}
               sourceCodeUrl={props.meta.sourceCodeUrl}
-              tocVisible={!props.meta.hideTOC}
+              hideTOC={props.meta.hideTOC}
               hideFromSearch={props.meta.hideFromSearch}
               packageName={props.meta.packageName}
-              iconUrl={props.meta.iconUrl}>
+              iconUrl={props.meta.iconUrl}
+              modificationDate={props.meta.modificationDate}
+              platforms={props.meta.platforms}>
               {props.children}
             </DocumentationPage>
           </PageApiVersionProvider>

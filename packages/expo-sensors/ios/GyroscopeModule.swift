@@ -27,13 +27,14 @@ public final class GyroscopeModule: Module {
         return
       }
       motionManager.startGyroUpdates(to: operationQueue) { [weak self] data, _ in
-        guard let rotationRate = data?.rotationRate else {
+        guard let rotationRate = data?.rotationRate, let timestamp = data?.timestamp else {
           return
         }
         self?.sendEvent(EVENT_GYROSCOPE_DID_UPDATE, [
           "x": rotationRate.x,
           "y": rotationRate.y,
-          "z": rotationRate.z
+          "z": rotationRate.z,
+          "timestamp": timestamp
         ])
       }
     }

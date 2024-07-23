@@ -52,6 +52,16 @@ class ImageViewWrapperTarget(
    */
   var sourceWidth = -1
 
+  /**
+   * The placeholder height where -1 means unknown
+   */
+  var placeholderHeight = -1
+
+  /**
+   * The placeholder width where -1 means unknown
+   */
+  var placeholderWidth = -1
+
   private var cookie = -1
 
   fun setCookie(newValue: Int) {
@@ -325,6 +335,7 @@ internal class SizeDeterminer(private val imageViewHolder: WeakReference<ExpoIma
     var maxDisplayLength: Int? = null
 
     // Use the maximum to avoid depending on the device's current orientation.
+    @Suppress("DEPRECATION") // We have copied this code from Glide and are waiting for them to remove the deprecated APIs.
     private fun getMaxDisplayLength(context: Context): Int {
       if (maxDisplayLength == null) {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

@@ -3,6 +3,7 @@ import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
 import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
@@ -116,6 +117,14 @@ export async function cloneTemplateAndCopyToProjectAsync({
       platforms,
     });
 
+    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    await renameTemplateAppNameAsync({
+      cwd: projectRoot,
+      files,
+      name: exp.name,
+    });
+
+    // Says: "Created native directories"
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));
 
     return {

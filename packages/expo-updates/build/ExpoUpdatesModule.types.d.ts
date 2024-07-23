@@ -1,10 +1,14 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo-modules-core';
 import { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, UpdateCheckResultRollBack, UpdateFetchResultRollBackToEmbedded, UpdateFetchResultFailure, UpdateFetchResultSuccess, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
+type UpdatesEvents = {
+    'Expo.nativeUpdatesStateChangeEvent'(params: any): any;
+};
 /**
  * @internal
  */
-export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener' | 'removeListeners'> {
-    isEmergencyLaunch?: boolean;
+export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> {
+    isEmergencyLaunch: boolean;
+    emergencyLaunchReason: string | null;
     isEmbeddedLaunch: boolean;
     isEnabled: boolean;
     isUsingEmbeddedAssets?: boolean;
@@ -44,6 +48,9 @@ export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener'
     } | {
         manifest: Manifest;
     })) | UpdateFetchResultFailure | UpdateFetchResultRollBackToEmbedded>;
+    /**
+     * @hidden
+     */
     getNativeStateMachineContextAsync: () => Promise<UpdatesNativeStateMachineContext & {
         latestManifestString?: string;
         downloadedManifestString?: string;
@@ -51,4 +58,5 @@ export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener'
         rollbackString?: string;
     }>;
 }
+export {};
 //# sourceMappingURL=ExpoUpdatesModule.types.d.ts.map

@@ -183,7 +183,7 @@ data class ResponseReceivedParams(
   val response: Response,
   val hasExtraInfo: Boolean = false
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, okhttpResponse: okhttp3.Response) : this(
+  constructor(now: BigDecimal, requestId: RequestId, okhttpResponse: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
     type = ResourceType.fromMimeType(okhttpResponse.header("Content-Type", "") ?: ""),
@@ -207,7 +207,7 @@ data class LoadingFinishedParams(
   val timestamp: MonotonicTime,
   val encodedDataLength: Long
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, response: okhttp3.Response) : this(
+  constructor(now: BigDecimal, requestId: RequestId, response: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
     encodedDataLength = response.body?.contentLength() ?: 0
@@ -227,15 +227,17 @@ data class ExpoReceivedResponseBodyParams(
   var body: String,
   var base64Encoded: Boolean
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, response: okhttp3.Response) : this(
+  constructor(
+    requestId: RequestId,
+    body: okhttp3.ResponseBody
+  ) : this(
     requestId = requestId,
     body = "",
     base64Encoded = false
   ) {
-    val rawBody = response.peekBody(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE)
-    val contentType = rawBody.contentType()
+    val contentType = body.contentType()
     val isText = contentType?.type == "text" || (contentType?.type == "application" && contentType.subtype == "json")
-    val bodyString = if (isText) rawBody.string() else rawBody.source().readByteString().base64()
+    val bodyString = if (isText) body.string() else body.source().readByteString().base64()
 
     this.body = bodyString
     this.base64Encoded = !isText

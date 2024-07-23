@@ -34,7 +34,7 @@ class LocalAuthenticationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalAuthentication")
 
-    AsyncFunction("supportedAuthenticationTypesAsync") {
+    AsyncFunction<Set<Int>>("supportedAuthenticationTypesAsync") {
       val results = mutableSetOf<Int>()
       if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
         return@AsyncFunction results
@@ -52,15 +52,15 @@ class LocalAuthenticationModule : Module() {
       return@AsyncFunction results
     }
 
-    AsyncFunction("hasHardwareAsync") {
+    AsyncFunction<Boolean>("hasHardwareAsync") {
       canAuthenticateUsingWeakBiometrics() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
     }
 
-    AsyncFunction("isEnrolledAsync") {
+    AsyncFunction<Boolean>("isEnrolledAsync") {
       canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS
     }
 
-    AsyncFunction("getEnrolledLevelAsync") {
+    AsyncFunction<Int>("getEnrolledLevelAsync") {
       var level = SECURITY_LEVEL_NONE
       if (isDeviceSecure) {
         level = SECURITY_LEVEL_SECRET

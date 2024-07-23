@@ -10,6 +10,7 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
+  public let isActiveController = false
   public private(set) var isStarted: Bool = false
   public var shouldEmitJsEvents = false
 
@@ -20,7 +21,6 @@ public class DisabledAppController: InternalAppControllerInterface {
   // disabled controller state machine can only be idle or restarting
   private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
 
-  internal private(set) var isEmergencyLaunch: Bool = false
   private let initializationError: Error?
   private var launcher: AppLauncher?
 
@@ -28,7 +28,6 @@ public class DisabledAppController: InternalAppControllerInterface {
 
   required init(error: Error?) {
     self.initializationError = error
-    self.isEmergencyLaunch = error != nil
   }
 
   public func start() {
@@ -65,7 +64,7 @@ public class DisabledAppController: InternalAppControllerInterface {
     return UpdatesModuleConstants(
       launchedUpdate: launchedUpdate(),
       embeddedUpdate: nil,
-      isEmergencyLaunch: self.isEmergencyLaunch,
+      emergencyLaunchException: self.initializationError,
       isEnabled: false,
       isUsingEmbeddedAssets: launcher?.isUsingEmbeddedAssets() ?? false,
       runtimeVersion: nil,

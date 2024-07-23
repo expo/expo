@@ -27,7 +27,7 @@ upload_crashlytics_symbols() {
 
 if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "VersionedRelease"
+    upload_crashlytics_symbols "Release"
   fi
 
   SLUG="release-client"
@@ -50,7 +50,7 @@ fi
 
 if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "VersionedRelease"
+    upload_crashlytics_symbols "Release"
   fi
 
   SLUG="publish-client"

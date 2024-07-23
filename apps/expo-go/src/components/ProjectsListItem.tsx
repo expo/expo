@@ -3,60 +3,55 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
-import { Platform, StyleSheet, Linking } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { CommonAppDataFragment } from 'src/graphql/types';
+import {
+  isUpdateCompatibleWithThisExpoGo,
+  openUpdateManifestPermalink,
+} from 'src/utils/UpdateUtils';
 
-import { CommonAppDataFragment } from '../graphql/types';
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 import { AppIcon } from '../screens/HomeScreen/AppIcon';
-import * as UrlUtils from '../utils/UrlUtils';
-import { useSDKExpired } from '../utils/useSDKExpired';
-
-type UpdateBranches = CommonAppDataFragment['updateBranches'];
-type UpdateBranch = UpdateBranches[number];
 
 type Props = {
-  imageURL?: string;
   name: string;
-  fullName: string;
+  firstTwoBranches: CommonAppDataFragment['firstTwoBranches'];
   subtitle?: string;
-  sdkVersion?: string;
   id: string;
   first: boolean;
   last: boolean;
-  updateBranches: UpdateBranches;
 };
-
-function hasEASUpdates(updateBranches: UpdateBranches): boolean {
-  return updateBranches.some((branch: UpdateBranch) => branch.updates.length > 0);
-}
 
 /**
  * This component is used to render a list item for the projects section on the homescreen and on
  * the projects list page for an account.
  */
 
-export function ProjectsListItem({
-  imageURL,
-  name,
-  subtitle,
-  sdkVersion,
-  id,
-  first,
-  last,
-  updateBranches,
-  fullName,
-}: Props) {
+export function ProjectsListItem({ name, subtitle, firstTwoBranches, id, first, last }: Props) {
   const theme = useExpoTheme();
-  const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onPress() {
-    if (hasEASUpdates(updateBranches)) {
-      navigation.push('ProjectDetails', { id });
+    // if there's only one branch for the project and there's only one update on that branch and
+    // it is compatible with this version of Expo Go, just launch it upon tapping the row instead of entering
+    // a drill-down UI for exploring branches/updates.
+    if (firstTwoBranches.length === 1) {
+      const branch = firstTwoBranches[0];
+      if (branch.updates.length === 1) {
+        const updateToOpen = branch.updates[0];
+        const isCompatibleWithThisExpoGo = isUpdateCompatibleWithThisExpoGo(updateToOpen);
+        if (isCompatibleWithThisExpoGo) {
+          openUpdateManifestPermalink(updateToOpen);
+        } else {
+          navigation.push('ProjectDetails', { id });
+        }
+      } else {
+        navigation.push('ProjectDetails', { id });
+      }
     } else {
-      Linking.openURL(UrlUtils.normalizeUrl(fullName));
+      navigation.push('ProjectDetails', { id });
     }
   }
 
@@ -80,7 +75,7 @@ export function ProjectsListItem({
           roundedBottom={last ? 'large' : undefined}>
           <Row align="center" justify="between">
             <Row align="center" flex="1">
-              <AppIcon image={imageURL} />
+              <AppIcon />
               <View flex="1">
                 <Text
                   type="InterSemiBold"
@@ -99,20 +94,6 @@ export function ProjectsListItem({
                       ellipsizeMode="tail"
                       numberOfLines={1}>
                       {subtitle}
-                    </Text>
-                  </>
-                ) : null}
-                {sdkVersionNumber ? (
-                  <>
-                    <Spacer.Vertical size="micro" />
-                    <Text
-                      type="InterRegular"
-                      size="small"
-                      color="secondary"
-                      ellipsizeMode="tail"
-                      numberOfLines={1}>
-                      SDK {sdkVersionNumber}
-                      {isExpired ? ': Not supported' : ''}
                     </Text>
                   </>
                 ) : null}

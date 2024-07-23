@@ -318,8 +318,8 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`webpack supports reanimated worklets 1`] = `
-"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,YAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\"}",version:"[GLOBAL]"};var
-someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
+"const _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,YAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\"}",version:"[GLOBAL]"};const
+someWorklet=function(){const _e=[new global.Error(),1,-27];const someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
 };someWorklet.__closure={};someWorklet.__workletHash=549132292534;someWorklet.__initData=_worklet_549132292534_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"

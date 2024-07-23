@@ -23,6 +23,7 @@
     result[@"exists"] = @(YES);
     result[@"isDirectory"] = @(NO);
     result[@"uri"] = fileUri;
+    // Uses required reason API based on the following reason: 3B52.1
     result[@"modificationTime"] = @(asset.modificationDate.timeIntervalSince1970);
     if (options[@"md5"] || options[@"size"]) {
       [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:asset options:nil resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, CGImagePropertyOrientation orientation, NSDictionary * _Nullable info) {
@@ -120,9 +121,11 @@
   }
 
   NSString *description = [NSString stringWithFormat:@"Invalid URL provided, expected scheme to be either 'ph' or 'assets-library', was '%@'.", url.scheme];
-  *error = [[NSError alloc] initWithDomain:NSURLErrorDomain
-                                      code:NSURLErrorUnsupportedURL
-                                  userInfo:@{NSLocalizedDescriptionKey: description}];
+  if (error != NULL) {
+    *error = [[NSError alloc] initWithDomain:NSURLErrorDomain
+                                        code:NSURLErrorUnsupportedURL
+                                    userInfo:@{NSLocalizedDescriptionKey: description}];
+  }
   return nil;
 }
 

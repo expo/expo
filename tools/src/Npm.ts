@@ -1,9 +1,10 @@
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 
 import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
+export const EXPO_BOT_ACCOUNT_NAME = 'expo-bot';
 
 export type PackageViewType = null | {
   name: string;
@@ -112,9 +113,13 @@ export async function downloadPackageTarballAsync(
  * Creates a tarball from a package.
  */
 export async function packToTarballAsync(packageDir: string): Promise<PackResult> {
-  const [result] = await spawnJSONCommandAsync<PackResult[]>('npm', ['pack', '--json'], {
-    cwd: packageDir,
-  });
+  const [result] = await spawnJSONCommandAsync<PackResult[]>(
+    'npm',
+    ['pack', '--json', '--foreground-scripts=false'],
+    {
+      cwd: packageDir,
+    }
+  );
   return result;
 }
 
@@ -156,16 +161,21 @@ export async function publishPackageAsync(
 export async function addTagAsync(
   packageName: string,
   version: string,
-  tagName: string
+  tagName: string,
+  spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'add', `${packageName}@${version}`, tagName]);
+  await spawnAsync('npm', ['dist-tag', 'add', `${packageName}@${version}`, tagName], spawnOptions);
 }
 
 /**
  * Removes package's tag with given name.
  */
-export async function removeTagAsync(packageName: string, tagName: string): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName]);
+export async function removeTagAsync(
+  packageName: string,
+  tagName: string,
+  spawnOptions?: SpawnOptions
+): Promise<void> {
+  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName], spawnOptions);
 }
 
 /**

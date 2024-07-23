@@ -5,7 +5,7 @@ package expo.modules.font
 import android.content.Context
 import android.graphics.Typeface
 import android.net.Uri
-import expo.modules.interfaces.font.FontManagerInterface
+import com.facebook.react.common.assets.ReactFontManager
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -14,18 +14,12 @@ import java.io.File
 
 private const val ASSET_SCHEME = "asset://"
 
-private class FontManagerInterfaceNotFoundException :
-  CodedException("FontManagerInterface not found")
-
 private class FileNotFoundException(uri: String) :
   CodedException("File '$uri' doesn't exist")
 
 open class FontLoaderModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-  @Suppress("MemberVisibilityCanBePrivate")
-  open val prefix = ""
 
   override fun definition() = ModuleDefinition {
     Name("ExpoFontLoader")
@@ -48,10 +42,7 @@ open class FontLoaderModule : Module() {
         Typeface.createFromFile(file)
       }
 
-      val fontManager = appContext.legacyModule<FontManagerInterface>()
-        ?: throw FontManagerInterfaceNotFoundException()
-
-      fontManager.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface)
+      ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, typeface)
     }
   }
 

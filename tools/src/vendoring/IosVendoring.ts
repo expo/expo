@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import inquirer from 'inquirer';
 import path from 'path';
 
@@ -102,5 +102,5 @@ function createFilesPatterns(podspec: Podspec): string[] {
     );
   }
 
-  return result;
+  return result.filter(Boolean);
 }

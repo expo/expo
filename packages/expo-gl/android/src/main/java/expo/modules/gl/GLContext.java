@@ -29,7 +29,6 @@ import javax.microedition.khronos.egl.EGLSurface;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.JavaScriptContextProvider;
-import expo.modules.core.interfaces.RuntimeEnvironmentInterface;
 import expo.modules.core.interfaces.services.UIManager;
 import expo.modules.gl.utils.FileSystemUtils;
 import expo.modules.kotlin.Promise;
@@ -87,8 +86,6 @@ public class GLContext {
     ModuleRegistry moduleRegistry = mManager.getAppContext().getLegacyModuleRegistry();
     final UIManager uiManager = moduleRegistry.getModule(UIManager.class);
     final JavaScriptContextProvider jsContextProvider = moduleRegistry.getModule(JavaScriptContextProvider.class);
-    final RuntimeEnvironmentInterface environment = moduleRegistry.getModule(RuntimeEnvironmentInterface.class);
-
     uiManager.runOnClientCodeQueueThread(new Runnable() {
       @Override
       public void run() {

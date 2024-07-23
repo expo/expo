@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { CheckIcon, XIcon } from '@expo/styleguide-icons';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
@@ -60,7 +61,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
           )}>
           <div className="fixed inset-0 bg-[#00000080]" />
         </Dialog.Overlay>
-        <div className="fixed left-0 top-0 z-[1000] flex h-[100vh] w-[100vw] items-center justify-center">
+        <div className="fixed left-0 top-0 z-[1000] flex h-dvh w-dvw items-center justify-center">
           <Dialog.Content
             className={mergeClasses(
               'dialog-content',

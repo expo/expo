@@ -58,7 +58,7 @@ class ClipboardModule : Module() {
       return@AsyncFunction true
     }
 
-    AsyncFunction("hasStringAsync") {
+    AsyncFunction<Boolean>("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
         ?.hasTextContent
@@ -102,7 +102,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("hasImageAsync") {
+    AsyncFunction<Boolean>("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion

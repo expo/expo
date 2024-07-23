@@ -6,9 +6,31 @@
 
 ### 🎉 New features
 
+- Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Upgrade `glob@7` to `glob@10`. ([#30425](https://github.com/expo/expo/pull/30425) by [@byCedric](https://github.com/byCedric))
+
+## 9.0.2 — 2024-05-16
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.1 — 2024-04-24
+
+### 🎉 New features
+
+- Added warning when extraneous top-level keys are ignored in the final config. ([#28399](https://github.com/expo/expo/pull/28399) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.0.0 — 2024-04-18
+
+### 💡 Others
+
+- Update unversioned expo config types. ([#28220](https://github.com/expo/expo/pull/28220) by [@wschurman](https://github.com/wschurman))
+
+## 9.0.0-beta.0 — 2024-04-17
 
 ### 📚 3rd party library updates
 

@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+
+group = 'expo.modules.asset'
+version = '10.0.6'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+android {
+  namespace "expo.modules.asset"
+  defaultConfig {
+    versionCode 1
+    versionName "10.0.6"
+  }
+}

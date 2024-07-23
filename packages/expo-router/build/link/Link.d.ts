@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
-import { Href, resolveHref } from './href';
-interface WebAnchorProps {
+import { Href } from '../types';
+export interface WebAnchorProps {
     /**
      * **Web only:** Specifies where to open the `href`.
      *
@@ -50,28 +50,28 @@ interface WebAnchorProps {
      */
     download?: string;
 }
-export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
+export interface LinkProps<T extends string | object> extends Omit<TextProps, 'href'>, WebAnchorProps {
     /** Path to route to. */
-    href: Href;
+    href: Href<T>;
     /** Forward props to child component. Useful for custom buttons. */
     asChild?: boolean;
     /** Should replace the current route without adding to the history. */
     replace?: boolean;
-    /** Should push the current route, always adding to the history. */
+    /** Should push the current route  */
     push?: boolean;
     /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
     className?: string;
     onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 }
+export interface LinkComponent {
+    <T extends string | object>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+    /** Helper method to resolve an Href object into a string. */
+    resolveHref: (href: Href) => string;
+}
 /** Redirects to the href as soon as the component is mounted. */
 export declare function Redirect({ href }: {
     href: Href;
 }): null;
-export interface LinkComponent {
-    (props: React.PropsWithChildren<LinkProps>): JSX.Element;
-    /** Helper method to resolve an Href object into a string. */
-    resolveHref: typeof resolveHref;
-}
 /**
  * Component to render link to another route using a path.
  * Uses an anchor tag on the web.
@@ -84,5 +84,4 @@ export interface LinkComponent {
  * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
 export declare const Link: LinkComponent;
-export {};
 //# sourceMappingURL=Link.d.ts.map

@@ -90,13 +90,7 @@ export function getReactNavigationScreensConfig(
   );
 }
 
-export function getReactNavigationConfig(
-  routes: RouteNode,
-  metaOnly: boolean
-): {
-  initialRouteName?: string;
-  screens: Record<string, Screen>;
-} {
+export function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean) {
   return {
     initialRouteName: routes.initialRouteName,
     screens: getReactNavigationScreensConfig(routes.children, metaOnly),

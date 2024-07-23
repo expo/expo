@@ -11,18 +11,20 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer)
+ExpoModulesHostObject::ExpoModulesHostObject(JSIContext *installer)
   : installer(installer) {}
 
 /**
  * Clears jsi references held by JSRegistry and JavaScriptRuntime. 
  */
 ExpoModulesHostObject::~ExpoModulesHostObject() {
+#if REACT_NATIVE_TARGET_VERSION >= 75
+  auto &runtime = installer->runtimeHolder->get();
+  facebook::react::LongLivedObjectCollection::get(runtime).clear();
+#else
   facebook::react::LongLivedObjectCollection::get().clear();
-  installer->jsRegistry.reset();
-  installer->runtimeHolder.reset();
-  installer->jsInvoker.reset();
-  installer->jniDeallocator.reset();
+#endif
+  installer->prepareForDeallocation();
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
@@ -39,8 +41,14 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
   // Create a lazy object for the specific module. It defers initialization of the final module object.
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(
     [this, cName](jsi::Runtime &rt) {
+      // Check if the installer has been deallocated.
+      // If so, return nullptr to avoid a "field operation on NULL object" crash.
+      // As it's probably the best we can do in this case.
+      if (installer->wasDeallocated()) {
+        return std::shared_ptr<jsi::Object>(nullptr);
+      }
+
       auto module = installer->getModule(cName);
-      module->cthis()->jsiInteropModuleRegistry = installer;
       return module->cthis()->getJSIObject(rt);
     });
 

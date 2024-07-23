@@ -1,20 +1,12 @@
-export const IS_ENV_WITH_UPDATES_ENABLED = false;
+export const IS_ENV_WITH_LOCAL_ASSETS = false;
 
-// Compute manifest base URL if available
-export const manifestBaseUrl = null;
-
-export async function downloadAsync(
-  url: string,
-  _hash: string | null,
-  _type: string
-): Promise<string> {
-  return url;
-}
-
-export function getManifest() {
+export function getLocalAssets(): Record<string, string> {
   return {};
 }
 
 export function getManifest2() {
   return {};
 }
+
+// Compute manifest base URL if available
+export const manifestBaseUrl = null;

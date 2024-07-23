@@ -115,7 +115,13 @@ open class NotificationsHandler : Module(), NotificationListener {
    */
   override fun onNotificationReceived(notification: Notification) {
     val context = appContext.reactContext ?: return
-    val task = SingleNotificationHandlerTask(context, handler, moduleRegistry, notification, this)
+    val task = SingleNotificationHandlerTask(
+      context,
+      appContext.eventEmitter(this),
+      handler,
+      notification,
+      this
+    )
     tasksMap[task.identifier] = task
     task.start()
   }

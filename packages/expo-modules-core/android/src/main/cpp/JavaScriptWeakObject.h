@@ -32,11 +32,13 @@ public:
 
   static jni::local_ref<
       jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject>
-  newInstance(JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  newInstance(JSIContext *jSIContext,
               std::weak_ptr<JavaScriptRuntime> runtime,
               std::shared_ptr<jsi::Object> jsObject);
 
   jni::local_ref<JavaScriptObject::javaobject> lock();
+
+  std::shared_ptr<jsi::WeakObject> getWeak();
 
 private:
   JavaScriptWeakObject(WeakRuntimeHolder runtime,

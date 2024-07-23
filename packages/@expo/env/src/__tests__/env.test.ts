@@ -282,6 +282,25 @@ describe('_getForce', () => {
     });
   });
 
+  it('expands variables safely without recursive loop', () => {
+    process.env.USER_DEFINED = 'user-defined';
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        // This should not expand to itself, causing a recursive loop
+        '.env': 'TEST_EXPAND=${TEST_EXPAND}',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({
+      files: ['/.env'],
+      env: {
+        TEST_EXPAND: '${TEST_EXPAND}',
+      },
+    });
+  });
+
   it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
     process.env.EXPO_NO_DOTENV = '1';
     const envRuntime = createControlledEnvironment();

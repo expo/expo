@@ -9,7 +9,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const ignore_1 = __importDefault(require("ignore"));
 const path_1 = __importDefault(require("path"));
 async function getVCSClientAsync(projectDir) {
-    if (await isGitInstalledAsync()) {
+    if (await isGitInstalledAndConfiguredAsync()) {
         return new GitClient();
     }
     else {
@@ -47,7 +47,7 @@ class NoVCSClient {
         return ignore.ignores(filePath);
     }
 }
-async function isGitInstalledAsync() {
+async function isGitInstalledAndConfiguredAsync() {
     try {
         await (0, spawn_async_1.default)('git', ['--help']);
     }
@@ -56,6 +56,12 @@ async function isGitInstalledAsync() {
             return false;
         }
         throw error;
+    }
+    try {
+        await (0, spawn_async_1.default)('git', ['rev-parse', '--show-toplevel']);
+    }
+    catch {
+        return false;
     }
     return true;
 }

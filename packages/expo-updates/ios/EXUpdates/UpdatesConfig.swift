@@ -56,7 +56,6 @@ public enum UpdatesConfigurationValidationResult {
 public final class UpdatesConfig: NSObject {
   public static let PlistName = "Expo"
 
-  public static let EXUpdatesConfigEnableAutoSetupKey = "EXUpdatesAutoSetup"
   public static let EXUpdatesConfigEnabledKey = "EXUpdatesEnabled"
   public static let EXUpdatesConfigScopeKeyKey = "EXUpdatesScopeKey"
   public static let EXUpdatesConfigUpdateUrlKey = "EXUpdatesURL"

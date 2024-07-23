@@ -12,7 +12,12 @@ object BadgeHelper {
 
   fun setBadgeCount(context: Context, badgeCount: Int): Boolean {
     return try {
-      ShortcutBadger.applyCountOrThrow(context.applicationContext, badgeCount)
+      if (badgeCount == 0) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        notificationManager.cancelAll()
+      } else {
+        ShortcutBadger.applyCountOrThrow(context.applicationContext, badgeCount)
+      }
       BadgeHelper.badgeCount = badgeCount
       true
     } catch (e: ShortcutBadgeException) {

@@ -6,6 +6,8 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/JSIUtils.h>
+#import <ExpoModulesCore/NativeModule.h>
+#import <ExpoModulesCore/EventEmitter.h>
 
 namespace expo {
 
@@ -14,16 +16,12 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
   auto weakResolveWrapper = react::CallbackWrapper::createWeak(promise->resolve_.getFunction(runtime), runtime, jsInvoker);
   auto weakRejectWrapper = react::CallbackWrapper::createWeak(promise->reject_.getFunction(runtime), runtime, jsInvoker);
 
-  __block BOOL resolveWasCalled = NO;
-  __block BOOL rejectWasCalled = NO;
+  __block BOOL isSettled = NO;
 
   RCTPromiseResolveBlock resolveBlock = ^(id result) {
-    if (rejectWasCalled) {
-      throw std::runtime_error("Tried to resolve a promise after it's already been rejected.");
-    }
-
-    if (resolveWasCalled) {
-      throw std::runtime_error("Tried to resolve a promise more than once.");
+    if (isSettled) {
+      // The promise is already either resolved or rejected.
+      return;
     }
 
     auto strongResolveWrapper = weakResolveWrapper.lock();
@@ -47,16 +45,13 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
       strongRejectWrapper2->destroy();
     });
 
-    resolveWasCalled = YES;
+    isSettled = YES;
   };
 
   RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
-    if (resolveWasCalled) {
-      throw std::runtime_error("Tried to reject a promise after it's already been resolved.");
-    }
-
-    if (rejectWasCalled) {
-      throw std::runtime_error("Tried to reject a promise more than once.");
+    if (isSettled) {
+      // The promise is already either resolved or rejected.
+      return;
     }
 
     auto strongResolveWrapper = weakResolveWrapper.lock();
@@ -81,7 +76,7 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
       strongRejectWrapper2->destroy();
     });
 
-    rejectWasCalled = YES;
+    isSettled = YES;
   };
 
   setupBlock(resolveBlock, rejectBlock);
@@ -134,3 +129,22 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
 }
 
 } // namespace expo
+
+@implementation EXJSIUtils
+
++ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime
+{
+  std::shared_ptr<jsi::Object> nativeModule = std::make_shared<jsi::Object>(expo::NativeModule::createInstance(*[runtime get]));
+  return [[EXJavaScriptObject alloc] initWith:nativeModule runtime:runtime];
+}
+
++ (void)emitEvent:(nonnull NSString *)eventName
+         toObject:(nonnull EXJavaScriptObject *)object
+    withArguments:(nonnull NSArray<id> *)arguments
+        inRuntime:(nonnull EXJavaScriptRuntime *)runtime
+{
+  const std::vector<jsi::Value> argumentsVector(expo::convertNSArrayToStdVector(*[runtime get], arguments));
+  expo::EventEmitter::emitEvent(*[runtime get], *[object get], [eventName UTF8String], std::move(argumentsVector));
+}
+
+@end

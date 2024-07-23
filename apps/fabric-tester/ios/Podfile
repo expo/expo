@@ -26,6 +26,8 @@ target 'fabrictester' do
     :fabric_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
+    # Temporary workaround for failing post-install hook
+    privacy_file_aggregation_enabled: false,
   )
 
   post_install do |installer|

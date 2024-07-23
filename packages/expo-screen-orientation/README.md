@@ -11,8 +11,8 @@ Allows you to manage the orientation of your app's interface.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/screen-orientation.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/screen-orientation/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/screen-orientation/)
 
 # Installation in managed Expo projects
 
@@ -28,6 +28,10 @@ For bare React Native projects, you must ensure that you have [installed and con
 npm install expo-screen-orientation
 ```
 
+### Configure for Android
+
+No additional set up necessary.
+
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.
@@ -38,10 +42,6 @@ The default [UIInterfaceOrientationMask](https://developer.apple.com/documentati
 <key>EXDefaultScreenOrientationMask</key>
 <string>UIInterfaceOrientationMaskAllButUpsideDown</string>
 ```
-
-### Configure for Android
-
-No additional set up necessary.
 
 # Contributing
 

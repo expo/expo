@@ -3,9 +3,9 @@ title: Publish websites with Webpack
 description: Different ways to publish the Expo web app with third-party services with webpack.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
 import { NoIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 > **warning** **Deprecated**: In SDK 50 and above, publishing with `webpack` is deprecated in favor of `metro`. Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
 
@@ -69,7 +69,7 @@ Configure redirects for single-page applications.
 
 If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
-Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
+Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with following rule:
 
 ```bash web/_redirects
 /*    /index.html   200

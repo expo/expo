@@ -13,6 +13,5 @@ protocol UpdatesBindingDelegate {
   func assetFilesMapForScopeKey(_ scopeKey: String) -> [String: Any]?
   func isUsingEmbeddedAssetsForScopeKey(_ scopeKey: String) -> Bool
   func isStartedForScopeKey(_ scopeKey: String) -> Bool
-  func isEmergencyLaunchForScopeKey(_ scopeKey: String) -> Bool
   func requestRelaunchForScopeKey(_ scopeKey: String, withCompletion completion: UpdatesAppRelaunchCompletionBlock)
 }

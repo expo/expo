@@ -1,7 +1,7 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo-modules-core';
 
 import ExpoImageManipulator from './ExpoImageManipulator';
-import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
+import { Action, Context, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
 import { validateArguments } from './validators';
 
 // @needsAudit
@@ -15,20 +15,50 @@ import { validateArguments } from './validators';
  * __only one__ of the keys that corresponds to specific transformation.
  * @param saveOptions A map defining how modified image should be saved.
  * @return Promise which fulfils with [`ImageResult`](#imageresult) object.
+ * @deprecated It has been replaced by the new, contextual and object-oriented API.
+ * Use [`ImageManipulator.manipulate`](#manipulateuri) or [`useImageManipulator`](#useimagemanipulatoruri) instead.
  */
 export async function manipulateAsync(
   uri: string,
   actions: Action[] = [],
   saveOptions: SaveOptions = {}
 ): Promise<ImageResult> {
-  if (!ExpoImageManipulator.manipulateAsync) {
-    throw new UnavailabilityError('ImageManipulator', 'manipulateAsync');
-  }
-
   validateArguments(uri, actions, saveOptions);
 
   const { format = SaveFormat.JPEG, ...rest } = saveOptions;
-  return await ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
+
+  if (ExpoImageManipulator.manipulateAsync) {
+    // Fall back to the module on Android and web where the new API is not available yet.
+    return ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
+  }
+
+  const context = ExpoImageManipulator.manipulate(uri);
+
+  for (const action of actions) {
+    if ('resize' in action) {
+      context.resize(action.resize);
+    } else if ('rotate' in action) {
+      context.rotate(action.rotate);
+    } else if ('flip' in action) {
+      context.flip(action.flip);
+    } else if ('crop' in action) {
+      context.crop(action.crop);
+    } else if ('extent' in action && context.extent) {
+      context.extent(action.extent);
+    }
+  }
+  const image = await context.renderAsync();
+  const result = await image.saveAsync({ format, ...rest });
+
+  // These shared objects will not be used anymore, so free up some memory.
+  context.release();
+  image.release();
+
+  return result;
 }
 
-export * from './ImageManipulator.types';
+export function useImageManipulator(uri: string): Context {
+  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(uri), [uri]);
+}
+
+export { ExpoImageManipulator as ImageManipulator };

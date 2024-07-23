@@ -1,4 +1,4 @@
-import { Platform, Subscription } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo-modules-core';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, Text, SafeAreaView } from 'react-native';
@@ -19,7 +19,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
 
   readonly state: State = {};
 
-  listener?: Subscription;
+  listener?: EventSubscription;
 
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(

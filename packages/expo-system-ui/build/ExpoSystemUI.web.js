@@ -1,16 +1,13 @@
-// @ts-ignore: untyped
-import normalizeColor from 'react-native-web/dist/cjs/modules/normalizeColor';
 export default {
     getBackgroundColorAsync() {
-        if (typeof document !== 'undefined') {
-            return normalizeColor(document.body.style.backgroundColor);
-        }
-        else {
+        if (typeof window === 'undefined') {
             return null;
         }
+        const normalizeColor = require('react-native-web/dist/cjs/modules/normalizeColor');
+        return normalizeColor(document.body.style.backgroundColor);
     },
     setBackgroundColorAsync(color) {
-        if (typeof document !== 'undefined') {
+        if (typeof window !== 'undefined') {
             document.body.style.backgroundColor = color ?? 'white';
         }
     },

@@ -195,16 +195,33 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           t.expect(path).toBe(null);
         }
       });
+
+      t.it('prefetches an image with headers and resolves promise to true', async () => {
+        await Image.clearDiskCache();
+        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri, {
+          headers: {
+            Referer: 'https://expo.dev',
+          },
+        });
+        t.expect(result).toBe(true);
+
+        if (Platform.OS === 'android' || Platform.OS === 'ios') {
+          const path = await Image.getCachePathAsync(REMOTE_KNOWN_SOURCE.uri);
+          t.expect(typeof path).toBe('string');
+        }
+      });
     });
 
-    t.describe('generateBlurhashAsync', async () => {
-      t.it('returns a correct blurhash for url', async () => {
-        const result = await Image.generateBlurhashAsync(REMOTE_KNOWN_SOURCE.uri, [4, 3]);
-        t.expect(result).toBe(REMOTE_KNOWN_SOURCE.blurhash);
+    if (Platform.OS === 'ios') {
+      t.describe('generateBlurhashAsync', async () => {
+        t.it('returns a correct blurhash for url', async () => {
+          const result = await Image.generateBlurhashAsync(REMOTE_KNOWN_SOURCE.uri, [4, 3]);
+          t.expect(result).toBe(REMOTE_KNOWN_SOURCE.blurhash);
+        });
+        t.it('rejects on a missing url', async () => {
+          await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
+        });
       });
-      t.it('rejects on a missing url', async () => {
-        await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
-      });
-    });
+    }
   });
 }

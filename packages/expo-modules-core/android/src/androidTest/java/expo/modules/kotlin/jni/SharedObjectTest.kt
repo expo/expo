@@ -3,6 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
 import expo.modules.kotlin.sharedobjects.sharedObjectIdPropertyName
@@ -53,7 +54,7 @@ class SharedObjectTest {
     val sharedObject = callClass("SharedObjectExampleClass")
     val sharedObjectId = sharedObject.getObject().getProperty(sharedObjectIdPropertyName).getInt()
     val containSharedObject = jsiInterop
-      .appContextHolder
+      .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
       ?.pairs
@@ -80,6 +81,81 @@ class SharedObjectTest {
     Truth.assertThat(releaseFunction.isFunction()).isTrue()
   }
 
+  @Test
+  fun sends_events() = withExampleSharedClass {
+    val jsObject = evaluateScript(
+      "sharedObject = new $moduleRef.SharedObjectExampleClass()"
+    ).getObject()
+
+    // Add a listener that adds three arguments
+    evaluateScript(
+      "total = 0",
+      "sharedObject.addListener('test event', (a, b, c) => { total = a + b + c })"
+    )
+
+    // Get the native instance
+    val nativeObject = jsiInterop
+      .runtimeContextHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.toNativeObject(jsObject)
+
+    // Send an event from the native object to JS
+    nativeObject?.emit("test event", 1, 2, 3)
+
+    // Check the value that is set by the listener
+    val total = evaluateScript("total")
+
+    Truth.assertThat(total.isNumber()).isTrue()
+    Truth.assertThat(total.getInt()).isEqualTo(6)
+  }
+
+  @Test
+  fun should_be_able_to_throw_from_constructor() = withSingleModule({
+    Class("ThrowingSharedObject") {
+      Constructor {
+        throw CodedException("Code", "This is a test exception", null)
+      }
+    }
+  }) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        new $moduleRef.ThrowingSharedObject()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("Code")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("This is a test exception")
+  }
+
+  @Test
+  fun should_be_able_to_return_new_instance_from_function() = withSingleModule({
+    Function("createSharedObject") {
+      SharedObjectExampleClass()
+    }
+    Class<SharedObjectExampleClass> {
+      Constructor { SharedObjectExampleClass() }
+    }
+  }) {
+    val hasCorrectPrototype = evaluateScript(
+      """
+      const sharedObjectFromFunction = $moduleRef.createSharedObject();
+      const sharedObjectFromConstructor = new $moduleRef.SharedObjectExampleClass();
+      sharedObjectFromFunction.prototype === sharedObjectFromConstructor.prototype;
+      """.trimIndent()
+    ).getBool()
+
+    Truth.assertThat(hasCorrectPrototype).isTrue()
+  }
+
   private class SharedObjectExampleClass : SharedObject()
 
   private fun withExampleSharedClass(
@@ -90,5 +166,5 @@ class SharedObjectTest {
         SharedObjectExampleClass()
       }
     }
-  }, block)
+  }, numberOfReloads = 1, block)
 }

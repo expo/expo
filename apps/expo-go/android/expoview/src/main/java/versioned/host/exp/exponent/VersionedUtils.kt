@@ -9,7 +9,6 @@ import com.facebook.common.logging.FLog
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactInstanceManagerBuilder
-import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.LifecycleState
@@ -26,7 +25,6 @@ import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
-import java.util.*
 
 object VersionedUtils {
   private fun toggleExpoDevMenu() {
@@ -201,10 +199,8 @@ object VersionedUtils {
     // Build the instance manager
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
-      .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder? ->
-        emptyList()
-      }
       .addPackage(MainReactPackage())
+      .addPackage(ExpoReanimatedPackage())
       .addPackage(
         ExponentPackage(
           instanceManagerBuilderProperties.experienceProperties,

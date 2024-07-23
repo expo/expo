@@ -10,8 +10,8 @@ public class StoreReviewModule: Module {
     }
 
     AsyncFunction("requestReview") {
-      if #available(iOS 15, *) {
-        guard let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+      if #available(iOS 14, *) {
+        guard let currentScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else {
           throw MissingCurrentWindowSceneException()
         }
 

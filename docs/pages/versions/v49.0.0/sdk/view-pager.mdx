@@ -7,13 +7,13 @@ packageName: 'react-native-pager-view'
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '~/components/plugins/Video';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](/get-started/expo-go/). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
-**`react-native-pager-view`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
+`react-native-pager-view` exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
-<Video file={'sdk/viewpager.mp4'} loop={false} />
+<ContentSpotlight file="sdk/viewpager.mp4" loop={false} />
 
 <PlatformsSection android emulator ios simulator />
 
@@ -27,8 +27,7 @@ See full documentation at [callstack/react-native-pager-view](https://github.com
 
 ## Example
 
-```js
-import React from 'react';
+```jsx App.js
 import { StyleSheet, View, Text } from 'react-native';
 import PagerView from 'react-native-pager-view';
 

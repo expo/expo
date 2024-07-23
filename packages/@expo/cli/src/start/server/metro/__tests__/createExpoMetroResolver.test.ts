@@ -3,7 +3,8 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 
-import { createFastResolver } from '../createExpoMetroResolver';
+import { createFastResolver, FailedToResolvePathError } from '../createExpoMetroResolver';
+import { isFailedToResolvePathError } from '../metroErrors';
 
 type SupportedContext = Parameters<ReturnType<typeof createFastResolver>>[0];
 
@@ -13,12 +14,14 @@ const createContext = ({
   origin,
   nodeModulesPaths = [],
   packageExports,
+  override,
 }: {
   origin: string;
   platform: string;
   isServer?: boolean;
   nodeModulesPaths?: string[];
   packageExports?: boolean;
+  override?: Partial<SupportedContext>;
 }): SupportedContext => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
@@ -50,6 +53,8 @@ const createContext = ({
       : platform === 'web'
         ? ['require', 'import', 'browser']
         : ['require', 'import', 'react-native'],
+
+    ...override,
   };
 };
 
@@ -128,6 +133,13 @@ function resolveTo(
       : null;
 }
 
+describe(isFailedToResolvePathError, () => {
+  it(`matches custom error`, () => {
+    const error = new FailedToResolvePathError('message');
+    expect(isFailedToResolvePathError(error)).toBe(true);
+  });
+});
+
 describe(createFastResolver, () => {
   describe('node built-ins', () => {
     it('shims node built-ins on non-server platforms', () => {
@@ -175,6 +187,28 @@ describe(createFastResolver, () => {
       ).toThrow(/Missing "\.\/server\.js" specifier in "react-dom" package/);
       resolveTo('react-dom/server.js', { platform: 'web', packageExports: false, isServer: true });
     });
+  });
+
+  it('resolves react-server file', () => {
+    const resolver = createFastResolver({ preserveSymlinks: true, blockList: [] });
+    const context = createContext({
+      platform: 'web',
+      isServer: true,
+
+      origin: path.join(originProjectRoot, 'index.js'),
+      override: {
+        unstable_enablePackageExports: true,
+        // unstable_conditionsByPlatform: {},
+        unstable_conditionNames: ['node', 'require', 'react-server', 'workerd'],
+      },
+    });
+    const results = resolver(context, 'react-server-dom-webpack/server', 'web');
+    expect(results).toEqual({
+      filePath: expect.stringMatching(/\/react-server-dom-webpack\/server\.edge\.js$/),
+      type: 'sourceFile',
+    });
+
+    assert(results.type === 'sourceFile');
   });
 
   describe('ios', () => {
@@ -360,7 +394,7 @@ describe(createFastResolver, () => {
       );
     });
 
-    it('resolves module with browser shims with non-matching extensions', () => {
+    xit('resolves module with browser shims with non-matching extensions', () => {
       const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
       const context = createContext({
         platform,

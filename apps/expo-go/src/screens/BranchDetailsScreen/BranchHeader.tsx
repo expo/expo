@@ -1,18 +1,39 @@
 import { BranchIcon, iconSize, spacing } from '@expo/styleguide-native';
 import { Row, useExpoTheme, View, Text, Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
-import * as UrlUtils from '../../utils/UrlUtils';
+import { BranchDetailsQuery } from 'src/graphql/types';
+import {
+  isUpdateCompatibleWithThisExpoGo,
+  openUpdateManifestPermalink,
+} from 'src/utils/UpdateUtils';
 
 type Props = {
   name: string;
-  manifestPermalink?: string;
+  latestUpdate?: NonNullable<BranchDetailsQuery['app']['byId']['updateBranchByName']>['updates'][0];
 };
 
 export function BranchHeader(props: Props) {
   const theme = useExpoTheme();
+
+  const latestUpdate = props.latestUpdate;
+  const openButton =
+    latestUpdate && isUpdateCompatibleWithThisExpoGo(latestUpdate) ? (
+      <TouchableOpacity
+        onPress={() => {
+          openUpdateManifestPermalink(latestUpdate);
+        }}
+        style={{
+          backgroundColor: theme.button.tertiary.background,
+          paddingHorizontal: spacing[4],
+          paddingVertical: spacing[2],
+          borderRadius: 4,
+        }}>
+        <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }}>
+          Open
+        </Text>
+      </TouchableOpacity>
+    ) : null;
 
   return (
     <View
@@ -30,22 +51,7 @@ export function BranchHeader(props: Props) {
             {props.name}
           </Text>
         </Row>
-        {props.manifestPermalink && (
-          <TouchableOpacity
-            onPress={() => {
-              Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(props.manifestPermalink!)));
-            }}
-            style={{
-              backgroundColor: theme.button.tertiary.background,
-              paddingHorizontal: spacing[4],
-              paddingVertical: spacing[2],
-              borderRadius: 4,
-            }}>
-            <Text type="InterSemiBold" style={{ color: theme.button.tertiary.foreground }}>
-              Open
-            </Text>
-          </TouchableOpacity>
-        )}
+        {openButton}
       </Row>
     </View>
   );
