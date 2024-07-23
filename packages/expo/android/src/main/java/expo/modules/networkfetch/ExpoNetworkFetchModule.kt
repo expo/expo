@@ -33,12 +33,6 @@ class ExpoNetworkFetchModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoNetworkFetchModule")
 
-    Events(
-      "didReceiveResponseData",
-      "didComplete",
-      "didFailWithError"
-    )
-
     OnCreate {
       cookieJarContainer.setCookieJar(JavaNetCookieJar(cookieHandler))
     }
@@ -56,7 +50,7 @@ class ExpoNetworkFetchModule : Module() {
 
     Class(NativeResponse::class) {
       Constructor {
-        return@Constructor NativeResponse(moduleCoroutineScope)
+        return@Constructor NativeResponse(appContext, moduleCoroutineScope)
       }
 
       AsyncFunction("startStreaming") { response: NativeResponse ->
@@ -93,14 +87,14 @@ class ExpoNetworkFetchModule : Module() {
 
       AsyncFunction("arrayBuffer") { response: NativeResponse, promise: Promise ->
         response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
-          val data = response.ref.finalize()
+          val data = response.sink.finalize()
           promise.resolve(data)
         }
       }
 
       AsyncFunction("text") { response: NativeResponse, promise: Promise ->
         response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
-          val data = response.ref.finalize()
+          val data = response.sink.finalize()
           val text = data.toString(Charsets.UTF_8)
           promise.resolve(text)
         }
@@ -109,7 +103,7 @@ class ExpoNetworkFetchModule : Module() {
 
     Class(NativeRequest::class) {
       Constructor { response: NativeResponse ->
-        return@Constructor NativeRequest(response)
+        return@Constructor NativeRequest(appContext, response)
       }
 
       AsyncFunction("start") {

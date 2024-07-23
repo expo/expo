@@ -2,10 +2,8 @@
 
 package expo.modules.networkfetch
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.sharedobjects.SharedRef
-import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.sharedobjects.SharedObject
 import okhttp3.Call
 import okhttp3.CookieJar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -14,8 +12,11 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-internal class NativeRequest(internal val response: NativeResponse) :
-  SharedRef<RequestHolder>(RequestHolder(null)) {
+private data class RequestHolder(var request: Request?)
+
+internal class NativeRequest(appContext: AppContext, internal val response: NativeResponse) :
+  SharedObject(appContext) {
+  private val requestHolder = RequestHolder(null)
   private var task: Call? = null
 
   fun start(client: OkHttpClient, url: URL, requestInit: NativeRequestInit, requestBody: ByteArray?) {
@@ -44,7 +45,7 @@ internal class NativeRequest(internal val response: NativeResponse) :
       .method(requestInit.method, body?.toRequestBody(mediaType))
       .url(url)
       .build()
-    this.ref.request = request
+    this.requestHolder.request = request
 
     this.task = newClient.newCall(request)
     this.task?.enqueue(this.response)
@@ -56,16 +57,3 @@ internal class NativeRequest(internal val response: NativeResponse) :
     response.emitRequestCancelled()
   }
 }
-
-internal data class RequestHolder(var request: Request?)
-
-internal enum class NativeRequestCredentials(val value: String) : Enumerable {
-  INCLUDE("include"),
-  OMIT("omit")
-}
-
-internal data class NativeRequestInit(
-  @Field val credentials: NativeRequestCredentials = NativeRequestCredentials.INCLUDE,
-  @Field val headers: List<Pair<String, String>> = emptyList(),
-  @Field val method: String = "GET"
-) : Record
