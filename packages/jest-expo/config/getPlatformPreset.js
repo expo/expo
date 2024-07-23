@@ -106,9 +106,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     preset.setupFiles.push(require.resolve('../src/preset/setup-rsc.js'));
 
     // Setup custom expect matchers
-    if (!preset.setupFilesAfterEnv) {
-      preset.setupFilesAfterEnv = [];
-    }
+    preset.setupFilesAfterEnv ?? = [];
 
     preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
 
