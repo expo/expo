@@ -8,6 +8,7 @@ export { isRunningInExpoGo, getExpoGoProjectConfig } from './environment/ExpoGo'
 export {
   // Core classes
   EventEmitter,
+  type EventSubscription,
   SharedObject,
   SharedRef,
   NativeModule,
