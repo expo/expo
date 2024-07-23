@@ -163,21 +163,21 @@ export async function exportEmbedBundleAndAssetsAsync(
 
             // MUST MATCH THE BABEL PLUGIN!
             const hash = crypto.createHash('sha1').update(ref).digest('hex');
-            const outputName = `${rootDir}/${hash}/index.html`;
+            const outputName = `${rootDir}/${hash}.html`;
             const generatedEntryPath = await devServer.getWebviewProxyEntry(ref);
-            const baseUrl = `/${rootDir}/${hash}`;
+            const baseUrl = `/${rootDir}`;
             // Run metro bundler and create the JS bundles/source maps.
             const bundle = await devServer.legacySinglePageExportBundleAsync({
               platform: 'web',
               isDOM: true,
-              splitChunks: false, //!env.EXPO_NO_BUNDLE_SPLITTING,
+              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
               mainModuleName: resolveRealEntryFilePath(projectRoot, generatedEntryPath),
               mode: options.dev ? 'development' : 'production',
               engine: isHermes ? 'hermes' : undefined,
               serializerIncludeMaps: !!sourceMapUrl,
               bytecode: false,
               reactCompiler: !!exp.experiments?.reactCompiler,
-              baseUrl: hash,
+              baseUrl: "./",
             });
 
             const html = await serializeHtmlWithAssets({

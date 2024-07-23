@@ -1418,7 +1418,7 @@ export function getWebviewProxyHtml(src?: string, { title }: { title?: string } 
       <noscript>
       WebView requires <code>javaScriptEnabled</code>
       </noscript>
-      <!-- The root element for your Expo app. -->
+      <!-- Root element for the DOM component. -->
       <div id="root"></div>
       ${src ? `<script crossorigin src="${src}"></script>` : ''}
       </body>

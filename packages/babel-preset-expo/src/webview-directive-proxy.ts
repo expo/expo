@@ -2,9 +2,10 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, template } from '@babel/core';
-import url from 'url';
-import { basename } from 'path';
 import crypto from 'crypto';
+import { basename } from 'path';
+import url from 'url';
+
 import { getIsProd } from './common';
 
 export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
@@ -50,10 +51,10 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
           const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
 
           if (platform === 'ios') {
-            const outputName = `www.bundle/${hash}/index.html`;
+            const outputName = `www.bundle/${hash}.html`;
             proxyModule = [`const proxy = { uri: ${JSON.stringify(outputName)} };`];
           } else if (platform === 'android') {
-            const outputName = `www/${hash}/index.html`;
+            const outputName = `www/${hash}.html`;
             proxyModule = [
               `const proxy = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`,
             ];

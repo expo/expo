@@ -8,9 +8,9 @@ exports.expoWebviewDirectiveProxy = void 0;
  * Copyright © 2024 650 Industries.
  */
 const core_1 = require("@babel/core");
-const url_1 = __importDefault(require("url"));
-const path_1 = require("path");
 const crypto_1 = __importDefault(require("crypto"));
+const path_1 = require("path");
+const url_1 = __importDefault(require("url"));
 const common_1 = require("./common");
 function expoWebviewDirectiveProxy(api) {
     // TODO: Is exporting
@@ -45,11 +45,11 @@ function expoWebviewDirectiveProxy(api) {
                     // MUST MATCH THE EXPORT COMMAND!
                     const hash = crypto_1.default.createHash('sha1').update(outputKey).digest('hex');
                     if (platform === 'ios') {
-                        const outputName = `www.bundle/${hash}/index.html`;
+                        const outputName = `www.bundle/${hash}.html`;
                         proxyModule = [`const proxy = { uri: ${JSON.stringify(outputName)} };`];
                     }
                     else if (platform === 'android') {
-                        const outputName = `www/${hash}/index.html`;
+                        const outputName = `www/${hash}.html`;
                         proxyModule = [
                             `const proxy = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`,
                         ];
