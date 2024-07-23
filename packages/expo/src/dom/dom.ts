@@ -2,8 +2,8 @@ import { useCallback, useRef } from 'react';
 import type WebView from 'react-native-webview';
 import type { WebViewMessageEvent } from 'react-native-webview';
 
-import { BridgeMessage, JSONValue } from './www-types';
 import { getInjectEventScript } from './injection';
+import { BridgeMessage, JSONValue } from './www-types';
 
 export type WebViewProps = Omit<import('react-native-webview').WebViewProps, 'source'>;
 

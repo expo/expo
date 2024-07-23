@@ -3,8 +3,8 @@ import React from 'react';
 import { WebView } from 'react-native-webview';
 
 import { _emitGlobalEvent } from './global-events';
-import type { BridgeMessage } from './www-types';
 import { getInjectEventScript, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
+import type { BridgeMessage } from './www-types';
 
 function mergeRefs(...props) {
   return function forwardRef(node) {
@@ -162,7 +162,11 @@ function serializeError(error: any) {
 }
 
 export function StyleNoSelect() {
-  if (typeof window.ReactNativeWebView === 'undefined') return null;
+  if (
+    // @ts-expect-error: Added via react-native-webview
+    typeof window.ReactNativeWebView === 'undefined'
+  )
+    return null;
   return (
     <style
       dangerouslySetInnerHTML={{
