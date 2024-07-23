@@ -70,41 +70,43 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
       const babelConfigJsPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
       const babelrcJsPath = path.join(config.modRequest.projectRoot, '.babelrc.js');
 
-      const [babelConfigJsonExists,
-        babelrcExists,
-        babelConfigJsExists,
-        babelrcJsExists] = Promise.all([
-        fs.existsSync(babelConfigJsonPath),
-        fs.existsSync(babelrcPath),
-        fs.existsSync(babelConfigJsPath),
-        fs.existsSync(babelrcJsPath)
-      ]);
+      const [babelConfigJsonExists, babelrcExists, babelConfigJsExists, babelrcJsExists] =
+        Promise.all([
+          fs.existsSync(babelConfigJsonPath),
+          fs.existsSync(babelrcPath),
+          fs.existsSync(babelConfigJsPath),
+          fs.existsSync(babelrcJsPath),
+        ]);
 
       switch (true) {
-        case babelConfigJsonExists:{
+        case babelConfigJsonExists: {
           let contents = await fs.promises.readFile(babelConfigJsonPath, 'utf8');
           contents = updateBabelConfig(contents);
           await fs.promises.writeFile(babelConfigJsonPath, contents);
-          return config;}
-        case babelrcExists:{
+          return config;
+        }
+        case babelrcExists: {
           let contents = await fs.promises.readFile(babelrcPath, 'utf8');
           contents = updateBabelConfig(contents);
           await fs.promises.writeFile(babelrcPath, contents);
-          return config;}
-        case babelConfigJsExists:{
+          return config;
+        }
+        case babelConfigJsExists: {
           let contents = await fs.promises.readFile(babelConfigJsPath, 'utf8');
           contents = updateBabelConfig(contents);
           await fs.promises.writeFile(babelConfigJsPath, contents);
-          return config;}
-        case babelrcJsExists:{
+          return config;
+        }
+        case babelrcJsExists: {
           let contents = await fs.promises.readFile(babelrcJsPath, 'utf8');
           contents = updateBabelConfig(contents);
           await fs.promises.writeFile(babelrcJsPath, contents);
-          return config;}
+          return config;
+        }
       }
 
       console.warn(
-        '⚠️  Could not find `babel.config.json`, `.babelrc.json`, `babel.config.js`, or `.babelrc.js` in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
+        '⚠️  Could not find `babel.config.json`, `.babelrc.json`, `babel.config.js`, or `.babelrc.js` in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
       );
 
       return config;
@@ -152,7 +154,10 @@ export function updateAndroidGradleFile(contents: string): string {
 }
 
 export function updateBabelConfig(contents: string): string {
-  return contents.replace(/(['"])module:metro-react-native-babel-preset(['"])/g, `$1babel-preset-expo$2`);
+  return contents.replace(
+    /(['"])module:metro-react-native-babel-preset(['"])/g,
+    `$1babel-preset-expo$2`,
+  );
 }
 
 export function updateMetroConfig(contents: string): string {
@@ -160,7 +165,7 @@ export function updateMetroConfig(contents: string): string {
     /^const \{\s*getDefaultConfig, mergeConfig\s*\} = require\('@react-native\/metro-config'\);$/m;
   if (!contents.match(searchPattern)) {
     console.warn(
-      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'
+      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.',
     );
     return contents;
   }
@@ -168,7 +173,7 @@ export function updateMetroConfig(contents: string): string {
     searchPattern,
     `\
 const { getDefaultConfig } = require('expo/metro-config');
-const { mergeConfig } = require('@react-native/metro-config');`
+const { mergeConfig } = require('@react-native/metro-config');`,
   );
 }
 
@@ -179,12 +184,12 @@ export function updateVirtualMetroEntryAndroid(contents: string): string {
 export function updateVirtualMetroEntryIos(contents: string): string {
   return contents.replace(
     /^(\s*return.*RCTBundleURLProvider.*jsBundleURLForBundleRoot:@")(index)(".*;)$/m,
-    `$1.expo/.virtual-metro-entry$3`
+    `$1.expo/.virtual-metro-entry$3`,
   );
 }
 
 export function updateIosXcodeProjectBuildPhase(
-  section: PBXShellScriptBuildPhase
+  section: PBXShellScriptBuildPhase,
 ): PBXShellScriptBuildPhase {
   if (section.name === 'Start Packager') {
     section.shellScript = `\
