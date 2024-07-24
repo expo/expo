@@ -41,6 +41,7 @@ exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = expo
 const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
+// import { fetch } from 'react-native-fetch-api';
 const fetch_1 = require("expo/fetch");
 const errors_1 = require("./errors");
 const getDevServer_1 = require("../../getDevServer");
@@ -152,8 +153,9 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
             }
             const response = (0, fetch_1.fetch)(reqPath, {
                 method: 'POST',
-                // duplex: 'half',
-                // reactNative: { textStreaming: true },
+                // @ts-expect-error: non-standard feature for streaming.
+                duplex: 'half',
+                reactNative: { textStreaming: true },
                 ...requestOpts,
                 headers: {
                     ...requestOpts.headers,
@@ -181,7 +183,8 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
-            // reactNative: { textStreaming: true },
+            // @ts-expect-error: TODO: Add expo streaming fetch
+            reactNative: { textStreaming: true },
         });
     delete prefetched[url];
     const data = createFromFetch(checkStatus(response), options);
@@ -222,6 +225,8 @@ const prefetchRSC = (input, searchParamsString) => {
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
+            // @ts-expect-error: non-standard feature for streaming.
+            reactNative: { textStreaming: true },
         });
     }
 };

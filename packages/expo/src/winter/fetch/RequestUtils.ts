@@ -146,7 +146,7 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
     throw new Error('Native Headers API is not available in this environment');
   }
 
-  if (headers instanceof Headers) {
+  if ('forEach' in headers) {
     const results: [string, string][] = [];
     headers.forEach((value, key) => {
       results.push([key, value]);

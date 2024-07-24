@@ -25,6 +25,7 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
+// import { fetch } from 'react-native-fetch-api';
 import { fetch } from 'expo/fetch';
 
 import { MetroServerError, ReactServerError } from './errors';
@@ -174,8 +175,9 @@ export const fetchRSC = (
 
       const response = fetch(reqPath, {
         method: 'POST',
-        // duplex: 'half',
-        // reactNative: { textStreaming: true },
+        // @ts-expect-error: non-standard feature for streaming.
+        duplex: 'half',
+        reactNative: { textStreaming: true },
         ...requestOpts,
         headers: {
           ...requestOpts.headers,
@@ -206,8 +208,8 @@ export const fetchRSC = (
       headers: {
         'expo-platform': process.env.EXPO_OS!,
       },
-
-      // reactNative: { textStreaming: true },
+      // @ts-expect-error: TODO: Add expo streaming fetch
+      reactNative: { textStreaming: true },
     });
   delete prefetched[url];
   const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
@@ -258,6 +260,8 @@ export const prefetchRSC = (input: string, searchParamsString: string): void => 
       headers: {
         'expo-platform': process.env.EXPO_OS!,
       },
+      // @ts-expect-error: non-standard feature for streaming.
+      reactNative: { textStreaming: true },
     });
   }
 };

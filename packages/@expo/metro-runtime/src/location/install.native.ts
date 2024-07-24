@@ -97,17 +97,17 @@ function installBuiltin(name: string, getValue: () => any) {
   installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
 
-// try {
-//   require('web-streams-polyfill');
-//   // NOTE: Fetch is polyfilled in expo/metro-runtime
-//   installBuiltin(
-//     'ReadableStream',
-//     () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
-//   );
-// } catch {}
+try {
+  require('web-streams-polyfill');
+  // NOTE: Fetch is polyfilled in expo/metro-runtime
+  installBuiltin(
+    'ReadableStream',
+    () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
+  );
+} catch {}
 
 try {
-  installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
+  // installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
   // installBuiltin('Request', () => require('react-native-fetch-api').Request);
   // installBuiltin('Response', () => require('react-native-fetch-api').Response);
 } catch {}
