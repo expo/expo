@@ -166,8 +166,8 @@ private struct RequestIdProvider {
   private var value: UInt64 = 0
 
   mutating func create() -> String {
-    // We could ensure the increment thread safety,
-    // because we access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
+    // We can ensure it is thread-safe to increment this value,
+    // because we always access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
     value += 1
     return String(value)
   }

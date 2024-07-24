@@ -4,7 +4,7 @@ import ExpoModulesCore
 
 internal class NetworkFetchURLSessionLostException: Exception {
   override var reason: String {
-    "The url session has been lost"
+    "The URL session has been lost"
   }
 }
 
