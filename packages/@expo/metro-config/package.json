@@ -3,6 +3,7 @@
   "version": "0.18.4",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
+  "types": "build/ExpoMetroConfig.d.ts",
   "scripts": {
     "build": "expo-module tsc",
     "clean": "expo-module clean",

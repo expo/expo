@@ -3,7 +3,7 @@ package expo.modules.devlauncher.rncompatibility
 import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
@@ -25,7 +25,7 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     devLoadingViewManager: DevLoadingViewManager?
   ): DevSupportManager {
     return if (!enableOnCreate) {
-      DisabledDevSupportManager()
+      ReleaseDevSupportManager()
     } else {
       DevLauncherBridgeDevSupportManager(
         applicationContext,

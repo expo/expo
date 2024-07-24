@@ -79,7 +79,7 @@ class RuntimeContext(
           jsiContext.installJSIForBridgeless(
             this,
             jsRuntimePointer,
-            reactContext.runtimeExecutor!!
+            reactContext.catalystInstance.runtimeExecutor!!
           )
         } else {
           jsiContext.installJSI(

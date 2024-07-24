@@ -14,7 +14,6 @@ import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.devsupport.DevMenuReactInternalSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
@@ -54,7 +53,6 @@ object DevMenuReactHost {
         jsRuntimeFactory = jsRuntimeFactory,
         turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       )
-    val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
     val componentFactory = ComponentFactory()
     DefaultComponentsRegistry.register(componentFactory)
     var originalDevFlag: Boolean? = null
@@ -66,7 +64,6 @@ object DevMenuReactHost {
       defaultReactHostDelegate,
       componentFactory,
       useDeveloperSupport,
-      reactJsExceptionHandler,
       useDeveloperSupport
     )
       .apply {

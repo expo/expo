@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "json5": "^2.2.2",
+    "json5": "^2.2.3",
     "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {

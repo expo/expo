@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import androidx.annotation.NonNull;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.ExpoModulesHelper;
@@ -75,6 +76,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     return mKotlinInteropModuleRegistry;
   }
 
+  @NonNull
   @Override
   public String getName() {
     return NAME;
