@@ -33,7 +33,8 @@ export type ExpoMetroOptions = {
   inlineSourceMap?: boolean;
   clientBoundaries?: string[];
   splitChunks?: boolean;
-  /** Enable optimized bundling (tree shaking). */
+  usedExports?: boolean;
+  /** Enable optimized bundling (required for tree shaking). */
   optimize?: boolean;
 };
 
@@ -41,6 +42,7 @@ export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  usedExports?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -90,6 +92,7 @@ function withDefaults({
     minify,
     preserveEnvVars,
     optimize,
+    usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     ...props,
   };
@@ -149,6 +152,7 @@ export function getMetroDirectBundleOptions(
     isExporting,
     inlineSourceMap,
     splitChunks,
+    usedExports,
     reactCompiler,
     optimize,
   } = withDefaults(options);
@@ -205,6 +209,7 @@ export function getMetroDirectBundleOptions(
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
     },
@@ -251,6 +256,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     isExporting,
     clientBoundaries,
     splitChunks,
+    usedExports,
     optimize,
   } = withDefaults(options);
 
@@ -314,6 +320,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
   if (splitChunks) {
     queryParams.append('serializer.splitChunks', String(splitChunks));
+  }
+  if (usedExports) {
+    queryParams.append('serializer.usedExports', String(usedExports));
   }
   if (optimize) {
     queryParams.append('transform.optimize', String(optimize));

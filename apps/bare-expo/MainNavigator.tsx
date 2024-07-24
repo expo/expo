@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { registerDevMenuItems } from 'expo-dev-menu';
 import * as Linking from 'expo-linking';
 import React from 'react';
 import { ToastAndroid, Platform } from 'react-native';
@@ -49,6 +48,8 @@ const Redirect = optionalRequire(() =>
 const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
+
+const DevMenu = optionalRequire(() => require('expo-dev-menu')) as any;
 
 const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
@@ -162,7 +163,9 @@ export default () => {
         },
       ];
 
-      await registerDevMenuItems(devMenuItems);
+      if (DevMenu) {
+        await DevMenu.registerDevMenuItems(devMenuItems);
+      }
       return persistenceEnabled;
     };
     const restoreState = async () => {

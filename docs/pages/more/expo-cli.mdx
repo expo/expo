@@ -5,7 +5,6 @@ description: The Expo CLI is a command-line tool that is the primary interface b
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 import { StatusTag } from '~/ui/components/Tag';
 
 > **info** This documentation refers to the Local Expo CLI. For information on legacy CLI, see [Global Expo CLI](/archive/expo-cli).
@@ -258,10 +257,6 @@ The following options are provided:
 
 > Experimental functionality. Available from SDK 50.
 
-<Tabs>
-
-<Tab label="SDK 50 and above">
-
 You can configure the prefix for static assets by setting the `experiments.baseUrl` field in your [app config](/workflow/configuration/):
 
 ```json app.json
@@ -319,16 +314,6 @@ export default function Blog() {
   return <img src="/my-root/assets/image.png" />;
 }
 ```
-
-</Tab>
-
-<Tab label="SDK 49 and below">
-
-    Exporting for a sub-path is not supported in SDK 49 and below.
-
-</Tab>
-
-</Tabs>
 
 ### Exporting with webpack
 
@@ -511,6 +496,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_NO_BUNDLE_SPLITTING`           | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 51+" /></div>Disable Metro splitting chunks on async imports in production (web-only).                                                                                                                                                                                                                                      |
 | `EXPO_USE_METRO_REQUIRE`             | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 52+" /></div>Enable the use of Expo's custom Metro `require` implementation and `string` based module IDs. This enables better debugging and deterministic IDs for React Server Components. Does not support legacy RAM bundles.                                                                                                                               |
 | `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH` | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and is less optimized for development bundling.                                                                                                                |
+| `EXPO_UNSTABLE_TREE_SHAKING`         | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable unstable tree shaking support across all platforms. See [tree shaking](/guides/tree-shaking) for more details.                                                                                                                                                                                          |
 
 ## Telemetry
 
