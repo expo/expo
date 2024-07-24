@@ -17,6 +17,12 @@ Here are some **important rules** that apply to all authentication providers:
 - You can only invoke `promptAsync` in user interaction on the web.
 - Expo Go cannot be used for local development and testing of OAuth or OpenID Connect-enabled apps due to the inability to customize your app scheme. You can instead use a [Development Build](/develop/development-builds/introduction/), which enables an Expo Go-like development experience and supports OAuth redirects back to your app after login in a manner that works just like it would in production.
 
+## Obtaining access tokens
+
+Most provides in this guide use he [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
+
+Since [your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a context (for example, your server). This will allow you to securely store and use a client secret to access the provider's token endpoint.
+
 ## Guides
 
 **AuthSession** can be used for any OAuth or OpenID Connect provider, we've assembled guides for using the most requested services!
