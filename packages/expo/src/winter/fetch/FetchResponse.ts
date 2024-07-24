@@ -1,9 +1,9 @@
 import { ReadableStream } from 'web-streams-polyfill';
 
 import type { NativeResponse } from './NativeRequest';
-import { NetworkFetchModule } from './NetworkFetchModule';
+import { ExpoFetchModule } from './ExpoFetchModule';
 
-const ConcreteNativeResponse = NetworkFetchModule.NativeResponse as typeof NativeResponse;
+const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
 
 /**
  * A response implementation for the `fetch.Response` API.

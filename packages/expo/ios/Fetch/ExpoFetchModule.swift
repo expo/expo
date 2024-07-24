@@ -2,9 +2,9 @@
 
 import ExpoModulesCore
 
-private let fetchRequestQueue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
+private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
 
-public final class ExpoNetworkFetchModule: Module {
+public final class ExpoFetchModule: Module {
   private var urlSession: URLSession?
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
@@ -14,7 +14,7 @@ public final class ExpoNetworkFetchModule: Module {
   }
 
   public func definition() -> ModuleDefinition {
-    Name("ExpoNetworkFetchModule")
+    Name("ExpoFetchModule")
 
     OnCreate {
       urlSession = createDefaultURLSession()
@@ -81,7 +81,7 @@ public final class ExpoNetworkFetchModule: Module {
 
       AsyncFunction("start") { (request: NativeRequest, url: URL, requestInit: NativeRequestInit, requestBody: Data?, promise: Promise) in
         guard let urlSession else {
-          throw NetworkFetchURLSessionLostException()
+          throw FetchURLSessionLostException()
         }
         request.start(
           urlSession: urlSession,
@@ -94,7 +94,7 @@ public final class ExpoNetworkFetchModule: Module {
           if state == .responseReceived {
             promise.resolve()
           } else if state == .errorReceived {
-            promise.reject(request.response.error ?? NetworkFetchUnknownException())
+            promise.reject(request.response.error ?? FetchUnknownException())
           }
         }
       }.runOnQueue(fetchRequestQueue)

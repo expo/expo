@@ -53,7 +53,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   }
 
   func emitRequestCanceled() {
-    error = NetworkFetchRequestCanceledException()
+    error = FetchRequestCanceledException()
     state = .errorReceived
   }
 

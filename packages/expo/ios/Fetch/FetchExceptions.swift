@@ -2,19 +2,19 @@
 
 import ExpoModulesCore
 
-internal class NetworkFetchURLSessionLostException: Exception {
+internal class FetchURLSessionLostException: Exception {
   override var reason: String {
     "The URL session has been lost"
   }
 }
 
-internal class NetworkFetchUnknownException: Exception {
+internal class FetchUnknownException: Exception {
   override var reason: String {
     "Unknown error"
   }
 }
 
-internal class NetworkFetchRequestCanceledException: Exception {
+internal class FetchRequestCanceledException: Exception {
   override var reason: String {
     "Fetch request has been canceled"
   }

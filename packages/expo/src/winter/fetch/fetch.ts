@@ -1,13 +1,13 @@
-import { NetworkFetchError } from './FetchErrors';
+import { FetchError } from './FetchErrors';
 import { FetchResponse } from './FetchResponse';
 import { NativeRequest, NativeRequestInit } from './NativeRequest';
-import { NetworkFetchModule } from './NetworkFetchModule';
+import { ExpoFetchModule } from './ExpoFetchModule';
 import { normalizeBodyInitAsync, normalizeHeadersInit, overrideHeaders } from './RequestUtils';
 import type { FetchRequestInit } from './fetch.types';
 
 export async function fetch(url: string, init?: FetchRequestInit): Promise<FetchResponse> {
   const response = new FetchResponse();
-  const request = new NetworkFetchModule.NativeRequest(response) as NativeRequest;
+  const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
   let headers = normalizeHeadersInit(init?.headers);
 
@@ -23,7 +23,7 @@ export async function fetch(url: string, init?: FetchRequestInit): Promise<Fetch
   };
 
   if (init?.signal && init.signal.aborted) {
-    throw new NetworkFetchError('The operation was aborted.');
+    throw new FetchError('The operation was aborted.');
   }
   const abortHandler = () => {
     request.cancel();
@@ -33,9 +33,9 @@ export async function fetch(url: string, init?: FetchRequestInit): Promise<Fetch
     await request.start(url, nativeRequestInit, requestBody);
   } catch (e: unknown) {
     if (e instanceof Error) {
-      throw NetworkFetchError.createFromError(e);
+      throw FetchError.createFromError(e);
     } else {
-      throw new NetworkFetchError(String(e));
+      throw new FetchError(String(e));
     }
   } finally {
     init?.signal?.removeEventListener('abort', abortHandler);
