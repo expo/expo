@@ -97,8 +97,8 @@ public class ModuleRegistry {
     List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>(mInternalModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
-			RegistryLifecycleListener listener = ref.get();
-			if (listener != null) {
+      RegistryLifecycleListener listener = ref.get();
+      if (listener != null) {
         lifecycleListeners.add(listener);
       }
     }
@@ -112,8 +112,8 @@ public class ModuleRegistry {
     List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>(mInternalModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
-		RegistryLifecycleListener listener = ref.get();
-		if (listener != null) {
+      RegistryLifecycleListener listener = ref.get();
+      if (listener != null) {
         lifecycleListeners.add(listener);
       }
     }

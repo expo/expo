@@ -4,10 +4,6 @@
 # When it's set, all paths passed as arguments to the command are ignored.
 
 # SwiftLint by default isn't efficient in excluding, `--use-alternative-excluding` flag makes it faster.
-
-trailing_comma:
-  mandatory_comma: true
-
 excluded:
   - .direnv
   - android
