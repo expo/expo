@@ -28,7 +28,7 @@ describe(getMetroDirectBundleOptions, () => {
       })
     ).toEqual({
       customResolverOptions: {},
-      customTransformOptions: { preserveEnvVars: 'false', baseUrl: '/foo/' },
+      customTransformOptions: { baseUrl: '/foo/' },
       serializerOptions: {},
       dev: true,
       entryFile: '/index.js',
@@ -53,7 +53,7 @@ describe(getMetroDirectBundleOptions, () => {
       sourceUrl:
         'http://localhost:8081/index.js.bundle?platform=ios&dev=true&hot=false&serializer.map=true',
       customResolverOptions: {},
-      customTransformOptions: { preserveEnvVars: 'false' },
+      customTransformOptions: {},
       serializerOptions: {
         includeSourceMaps: true,
       },
