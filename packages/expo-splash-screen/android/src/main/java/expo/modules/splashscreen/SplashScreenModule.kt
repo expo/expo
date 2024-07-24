@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 class SplashScreenOptions : Record {
   @Field
   val duration: Long = 400L
+
   @Field
   var fade: Boolean = true
 }
