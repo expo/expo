@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for React Server environments.
+- Add support for React Server environments. ([#30586](https://github.com/expo/expo/pull/30586) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
