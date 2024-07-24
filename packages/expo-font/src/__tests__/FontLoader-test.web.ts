@@ -34,6 +34,10 @@ describe('loadSingleFontAsync', () => {
 });
 
 describe('getAssetForSource', () => {
+  it('works for FontSource object', () => {
+    expect(FontLoader.getAssetForSource({ uri: 40 })).toEqual({});
+  });
+
   it(`parses font display`, () => {
     expect((FontLoader.getAssetForSource('foo') as any).display).toBe(Font.FontDisplay.AUTO);
     expect((FontLoader.getAssetForSource({ uri: 'foo' }) as any).display).toBe(
