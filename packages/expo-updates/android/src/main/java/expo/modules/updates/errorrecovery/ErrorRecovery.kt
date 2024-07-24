@@ -9,7 +9,7 @@ import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
@@ -112,14 +112,14 @@ class ErrorRecovery(
   }
 
   private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
-    if (devSupportManager !is DisabledDevSupportManager) {
+    if (devSupportManager !is ReleaseDevSupportManager) {
       Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
     }
 
     val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
-      override fun handleException(e: Exception?) {
-        this@ErrorRecovery.handleException(e!!)
+      override fun handleException(e: Exception) {
+        this@ErrorRecovery.handleException(e)
       }
     }
     val devSupportManagerClass = devSupportManager.javaClass
@@ -146,7 +146,7 @@ class ErrorRecovery(
 
   private fun unregisterErrorHandlerImplBridge() {
     weakDevSupportManager?.get()?.let { devSupportManager ->
-      if (devSupportManager !is DisabledDevSupportManager) {
+      if (devSupportManager !is ReleaseDevSupportManager) {
         Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
       }

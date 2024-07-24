@@ -333,7 +333,7 @@ async function transformJS(
   if (optimize && !options.experimentalImportSupport) {
     // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
     throw new Error(
-      'Experimental tree shaking support only works with experimentalImportSupport enabled.'
+      'Experimental graph optimizations only work with experimentalImportSupport enabled.'
     );
   }
 

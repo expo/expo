@@ -242,7 +242,7 @@ async function transformJS(file, { config, options }) {
     const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
     if (optimize && !options.experimentalImportSupport) {
         // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
-        throw new Error('Experimental tree shaking support only works with experimentalImportSupport enabled.');
+        throw new Error('Experimental graph optimizations only work with experimentalImportSupport enabled.');
     }
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
