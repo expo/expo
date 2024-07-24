@@ -22,11 +22,7 @@ Here are some **important rules** that apply to all authentication providers:
 
 ## Obtaining access tokens
 
-The vast majority of providers described here implement the [OAuth 2](https://oauth.net/2/) standard for secure authentication/authorization.
-In the authorization code grant, the identity provider returns a one-time code which is then exchanged for the user's access token. Because
-[your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to
-exchange the authorization code in a context (e.g., your server) where you can securely store and use a client secret to access the provider's
-token endpoint.
+The vast majority of providers described here implement the [OAuth 2](https://oauth.net/2/) standard for secure authentication/authorization. In the authorization code grant, the identity provider returns a one-time code, which is exchanged for the user's access token. Since [your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a context (for example, your server) where you can securely store and use a client secret to access the provider's token endpoint.
 
 ## Guides
 
