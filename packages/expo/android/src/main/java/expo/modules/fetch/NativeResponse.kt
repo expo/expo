@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.networkfetch
+package expo.modules.fetch
 
 import android.util.Log
 import expo.modules.kotlin.AppContext
@@ -65,7 +65,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun emitRequestCancelled() {
-    error = NetworkFetchRequestCancelledException()
+    error = FetchRequestCancelledException()
     state = ResponseState.ERROR_RECEIVED
   }
 

@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "android": {
-    "modules": ["expo.modules.networkfetch.ExpoNetworkFetchModule"]
+    "modules": ["expo.modules.fetch.ExpoFetchModule"]
   },
   "apple": {
     "modules": ["ExpoFetchModule"],

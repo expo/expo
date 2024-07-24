@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.networkfetch
+package expo.modules.fetch
 
 internal enum class ResponseState(val intValue: Int) {
   INITIALIZED(0),

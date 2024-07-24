@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.networkfetch
+package expo.modules.fetch
 
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
@@ -20,7 +20,7 @@ import okhttp3.JavaNetCookieJar
 import java.net.URL
 
 @Suppress("unused")
-class ExpoNetworkFetchModule : Module() {
+class ExpoFetchModule : Module() {
   private val client by lazy { OkHttpClientProvider.createClient(reactContext) }
   private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
   private val cookieJarContainer by lazy { client.cookieJar as CookieJarContainer }
@@ -31,7 +31,7 @@ class ExpoNetworkFetchModule : Module() {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
 
   override fun definition() = ModuleDefinition {
-    Name("ExpoNetworkFetchModule")
+    Name("ExpoFetchModule")
 
     OnCreate {
       cookieJarContainer.setCookieJar(JavaNetCookieJar(cookieHandler))
@@ -122,7 +122,7 @@ class ExpoNetworkFetchModule : Module() {
           if (state == ResponseState.RESPONSE_RECEIVED) {
             promise.resolve()
           } else if (state == ResponseState.ERROR_RECEIVED) {
-            promise.reject(request.response.error?.toCodedException() ?: NetworkFetchUnknownException())
+            promise.reject(request.response.error?.toCodedException() ?: FetchUnknownException())
           }
         }
       }
@@ -134,6 +134,6 @@ class ExpoNetworkFetchModule : Module() {
   }
 
   companion object {
-    private val TAG = ExpoNetworkFetchModule::class.java.simpleName
+    private val TAG = ExpoFetchModule::class.java.simpleName
   }
 }
