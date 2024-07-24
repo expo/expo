@@ -4,6 +4,8 @@ import { boolish, int, string } from 'getenv';
 
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
 
+import { Log } from '../log';
+
 class Env {
   /** Enable profiling metrics */
   get EXPO_PROFILE() {
@@ -99,9 +101,15 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
-  /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
-  get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean {
-    return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
+  /** Disable auto server root detection for Metro. This will change the server root to the workspace root. */
+  get EXPO_NO_METRO_WORKSPACE_ROOT(): boolean {
+    if (string('EXPO_USE_METRO_WORKSPACE_ROOT', '')) {
+      Log.warn(
+        'EXPO_USE_METRO_WORKSPACE_ROOT is enabled by default, use EXPO_NO_METRO_WORKSPACE_ROOT instead to disable.'
+      );
+    }
+
+    return boolish('EXPO_NO_METRO_WORKSPACE_ROOT', false);
   }
 
   /**
