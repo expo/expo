@@ -25,9 +25,8 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
-import { fetch } from './fetch';
-
 import { MetroServerError, ReactServerError } from './errors';
+import { fetch } from './fetch';
 import { getDevServer } from '../../getDevServer';
 
 const { createFromFetch, encodeReply } = RSDWClient;
