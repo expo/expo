@@ -44,7 +44,7 @@ export const LOCATION_ID = '/LOCATION';
 // TODO revisit shouldSkip API
 export type ShouldSkip = (readonly [
   componentId: string,
-  readonly [
+  components: readonly [
     path?: boolean, // if we compare path
     keys?: string[], // searchParams keys to compare
   ],

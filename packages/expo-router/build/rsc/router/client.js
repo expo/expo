@@ -12,12 +12,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerRouter = exports.Router = void 0;
 const react_1 = require("react");
-const common_1 = require("./common");
-const host_1 = require("./host");
+const common_js_1 = require("./common.js");
+const host_js_1 = require("./host.js");
 const parseRoute = (url) => {
     const { pathname, searchParams } = url;
-    if (searchParams.has(common_1.PARAM_KEY_SKIP)) {
-        console.warn(`The search param "${common_1.PARAM_KEY_SKIP}" is reserved`);
+    if (searchParams.has(common_js_1.PARAM_KEY_SKIP)) {
+        console.warn(`The search param "${common_js_1.PARAM_KEY_SKIP}" is reserved`);
     }
     return { path: pathname, searchParams };
 };
@@ -27,14 +27,14 @@ const getHref = () => process.env.EXPO_OS === 'web'
         'http://localhost:8081/';
 const RouterContext = (0, react_1.createContext)(null);
 function InnerRouter() {
-    const refetch = (0, host_1.useRefetch)();
+    const refetch = (0, host_js_1.useRefetch)();
     const [route] = (0, react_1.useState)(() => parseRoute(new URL(getHref())));
-    const componentIds = (0, common_1.getComponentIds)(route.path);
+    const componentIds = (0, common_js_1.getComponentIds)(route.path);
     // TODO: strip when "is exporting".
     if (process.env.NODE_ENV === 'development') {
         const refetchRoute = () => {
             const loc = parseRoute(new URL(getHref()));
-            const input = (0, common_1.getInputString)(loc.path);
+            const input = (0, common_js_1.getInputString)(loc.path);
             refetch(input, loc.searchParams);
         };
         globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
@@ -47,14 +47,16 @@ function InnerRouter() {
         }
         globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
     }
-    return (0, react_1.createElement)(RouterContext.Provider, { value: { route } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
+    return (0, react_1.createElement)(RouterContext.Provider, { value: { route } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(
+    // @ts-expect-error
+    host_js_1.Slot, { id, fallback: acc }, acc), null));
 }
 function Router() {
     const route = parseRoute(new URL(getHref()));
-    const initialInput = (0, common_1.getInputString)(route.path);
+    const initialInput = (0, common_js_1.getInputString)(route.path);
     const initialSearchParamsString = route.searchParams.toString();
     const unstable_onFetchData = () => { };
-    return (0, react_1.createElement)(host_1.Root, { initialInput, initialSearchParamsString, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter));
+    return (0, react_1.createElement)(host_js_1.Root, { initialInput, initialSearchParamsString, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter));
 }
 exports.Router = Router;
 /**

@@ -13,9 +13,9 @@
 import { createElement, createContext, useState, Fragment } from 'react';
 import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 
-import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common';
-import type { RouteProps } from './common';
-import { Root, Slot, useRefetch } from './host';
+import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
+import type { RouteProps } from './common.js';
+import { Root, Slot, useRefetch } from './host.js';
 
 const parseRoute = (url: URL): RouteProps => {
   const { pathname, searchParams } = url;
@@ -62,8 +62,14 @@ function InnerRouter() {
   return createElement(
     RouterContext.Provider,
     { value: { route } },
-    componentIds.reduceRight(
-      (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
+    componentIds.reduceRight<null | ReactNode>(
+      (acc: ReactNode, id) =>
+        createElement(
+          // @ts-expect-error
+          Slot,
+          { id, fallback: acc },
+          acc
+        ),
       null
     )
   );

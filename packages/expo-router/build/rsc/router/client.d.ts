@@ -8,7 +8,7 @@
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
 import type { ReactNode } from 'react';
-import type { RouteProps } from './common';
+import type { RouteProps } from './common.js';
 export declare function Router(): import("react").FunctionComponentElement<Omit<{
     initialInput?: string | undefined;
     initialSearchParamsString?: string | undefined;

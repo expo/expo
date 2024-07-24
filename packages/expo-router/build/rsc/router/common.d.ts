@@ -17,7 +17,7 @@ export declare const SHOULD_SKIP_ID = "/SHOULD_SKIP";
 export declare const LOCATION_ID = "/LOCATION";
 export type ShouldSkip = (readonly [
     componentId: string,
-    readonly [
+    components: readonly [
         path?: boolean,
         keys?: string[]
     ]
