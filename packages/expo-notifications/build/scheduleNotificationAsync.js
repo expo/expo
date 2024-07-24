@@ -1,5 +1,4 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { Platform, UnavailabilityError, uuid } from 'expo-modules-core';
 import NotificationScheduler from './NotificationScheduler';
 /**
  * Schedules a notification to be triggered in the future.
@@ -60,7 +59,7 @@ export default async function scheduleNotificationAsync(request) {
     if (!NotificationScheduler.scheduleNotificationAsync) {
         throw new UnavailabilityError('Notifications', 'scheduleNotificationAsync');
     }
-    return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuidv4(), request.content, parseTrigger(request.trigger));
+    return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuid.v4(), request.content, parseTrigger(request.trigger));
 }
 const DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS = [
     'hour',

@@ -1,9 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { registerDevMenuItems } from 'expo-dev-menu';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { Platform } from 'react-native';
+import { ToastAndroid, Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
 
 import Colors from './src/constants/Colors';
@@ -84,11 +86,6 @@ const linking: LinkingOptions<object> = {
       },
     },
   },
-  // react-navigation internally has a 150ms timeout for `Linking.getInitialURL`.
-  // https://github.com/react-navigation/react-navigation/blob/f93576624282c3d65e359cca2826749f56221e8c/packages/native/src/useLinking.native.tsx#L29-L37
-  // The timeout is too short for GitHub Actions CI with Hermes and causes test failures.
-  // For detox testing, we use the raw `Linking.getInitialURL` instead.
-  ...(global.DETOX ? { getInitialURL: Linking.getInitialURL } : null),
 };
 
 function TabNavigator() {
@@ -114,13 +111,97 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
+const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 
-export default () => (
-  <NavigationContainer linking={linking}>
-    <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
-      {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-      {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-      <Switch.Screen name="main" component={TabNavigator} />
-    </Switch.Navigator>
-  </NavigationContainer>
-);
+export default () => {
+  const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
+  const [initialState, setInitialState] = React.useState();
+
+  React.useEffect(() => {
+    if (isReady) {
+      return;
+    }
+    const setupDevMenuItems = async () => {
+      const key = 'PERSIST_NAV_STATE';
+      const persistenceEnabled = !!(await AsyncStorage.getItem(key));
+
+      // on Android, we need to keep the title of the item the same
+      // because updating dev menu items currently doesn't work
+      // TODO https://linear.app/expo/issue/ENG-12786
+      const label = Platform.select({
+        ios: persistenceEnabled
+          ? '✗  Disable navigation state persistence'
+          : '✓  Enable navigation state persistence',
+        default: 'Toggle navigation state persistence',
+      });
+      const devMenuItems = [
+        {
+          shouldCollapse: true,
+          name: label,
+          callback: async () => {
+            if (Platform.OS === 'android') {
+              // because the label is always the same, we show a toast to inform
+              // whether the persistence is going to be enabled or disabled
+              const message = persistenceEnabled
+                ? 'Navigation state persistence disabled'
+                : 'Navigation state persistence enabled';
+              ToastAndroid.show(message, ToastAndroid.LONG);
+            }
+            try {
+              if (persistenceEnabled) {
+                await AsyncStorage.removeItem(key);
+              } else {
+                await AsyncStorage.setItem(key, 'true');
+              }
+              // refresh the dev menu labels with latest preference
+              await setupDevMenuItems();
+            } catch (err) {
+              console.error(err);
+            }
+          },
+        },
+      ];
+
+      await registerDevMenuItems(devMenuItems);
+      return persistenceEnabled;
+    };
+    const restoreState = async () => {
+      const persistenceEnabled = await setupDevMenuItems();
+
+      if (persistenceEnabled) {
+        const initialUrl = await Linking.getInitialURL();
+
+        if (initialUrl == null) {
+          // Only restore state if there's no deep link
+          const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
+          const state = savedStateString ? JSON.parse(savedStateString) : undefined;
+
+          if (state !== undefined) {
+            setInitialState(state);
+          }
+        }
+      }
+    };
+    restoreState()
+      .catch(console.error)
+      .finally(() => setIsReady(true));
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+  return (
+    <NavigationContainer
+      linking={linking}
+      initialState={initialState}
+      onStateChange={(state) => {
+        AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
+      }}>
+      <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
+        {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+        {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+        <Switch.Screen name="main" component={TabNavigator} />
+      </Switch.Navigator>
+    </NavigationContainer>
+  );
+};

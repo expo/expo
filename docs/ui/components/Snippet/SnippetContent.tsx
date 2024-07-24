@@ -1,68 +1,32 @@
-import { css } from '@emotion/react';
-import { borderRadius, theme, spacing } from '@expo/styleguide';
+import { mergeClasses, Themes } from '@expo/styleguide';
 import { forwardRef, PropsWithChildren } from 'react';
+
+import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 
 export type SnippetContentProps = PropsWithChildren<{
   alwaysDark?: boolean;
   hideOverflow?: boolean;
-  skipPadding?: boolean;
   className?: string;
 }>;
 
 export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
-  (
-    {
-      children,
-      className,
-      alwaysDark = false,
-      hideOverflow = false,
-      skipPadding = false,
-    }: SnippetContentProps,
-    ref
-  ) => (
-    <div
-      ref={ref}
-      css={[
-        contentStyle,
-        alwaysDark && contentDarkStyle,
-        hideOverflow && contentHideOverflow,
-        skipPadding && skipPaddingStyle,
-      ]}
-      className={className}>
-      {children}
-    </div>
-  )
+  ({ children, className, alwaysDark = false, hideOverflow = false }: SnippetContentProps, ref) => {
+    const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
+
+    return (
+      <div
+        ref={ref}
+        className={mergeClasses(
+          preferredTheme === Themes.DARK && 'dark-theme',
+          wordWrap && '!whitespace-pre-wrap !break-words',
+          'relative text-default bg-subtle border border-default rounded-b-md overflow-x-auto p-4 !leading-[19px]',
+          'prose-code:!px-0',
+          alwaysDark && 'dark-theme bg-palette-black border-transparent whitespace-nowrap',
+          hideOverflow && 'overflow-hidden prose-code:!whitespace-nowrap',
+          className
+        )}>
+        {children}
+      </div>
+    );
+  }
 );
-
-const contentStyle = css`
-  color: ${theme.text.default};
-  background-color: ${theme.background.subtle};
-  border: 1px solid ${theme.border.default};
-  border-bottom-left-radius: ${borderRadius.md}px;
-  border-bottom-right-radius: ${borderRadius.md}px;
-  padding: ${spacing[4]}px;
-  overflow-x: auto;
-
-  code {
-    padding-left: 0;
-    padding-right: 0;
-  }
-`;
-
-const contentDarkStyle = css`
-  background-color: ${theme.palette.black};
-  border-color: transparent;
-  white-space: nowrap;
-`;
-
-const contentHideOverflow = css`
-  overflow: hidden;
-
-  code {
-    white-space: nowrap;
-  }
-`;
-
-const skipPaddingStyle = css({
-  padding: 0,
-});

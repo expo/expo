@@ -24,7 +24,9 @@ class DevMenuDevOptionsDelegate {
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
 
-    bridge?.requestReload()
+    DispatchQueue.main.async {
+      RCTTriggerReloadCommandListeners("Dev menu - reload")
+    }
   }
 
   internal func toggleElementInsector() {
@@ -37,7 +39,7 @@ class DevMenuDevOptionsDelegate {
     }
     let port = bundleURL.port ?? Int(RCT_METRO_PORT)
     let host = bundleURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/inspector?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
+    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
     guard let url = URL(string: openURL) else {
       NSLog("[DevMenu] Invalid openJSInspector URL: $@", openURL)
       return
@@ -53,7 +55,7 @@ class DevMenuDevOptionsDelegate {
     }
 
     DevMenuManager.shared.hideMenu()
-    
+
     DispatchQueue.main.async {
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
       (DevMenuManager.shared.window?.rootViewController as? DevMenuViewController)?.updateProps() // We have to force props to reflect changes on the UI

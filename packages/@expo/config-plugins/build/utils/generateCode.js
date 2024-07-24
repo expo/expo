@@ -24,8 +24,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function getGeneratedSectionIndexes(src, tag) {
   const contents = src.split('\n');
-  const start = contents.findIndex(line => line.includes(`@generated begin ${tag}`));
-  const end = contents.findIndex(line => line.includes(`@generated end ${tag}`));
+  const start = contents.findIndex(line => new RegExp(`@generated begin ${tag} -`).test(line));
+  const end = contents.findIndex(line => new RegExp(`@generated end ${tag}$`).test(line));
   return {
     contents,
     start,
@@ -55,7 +55,7 @@ function mergeContents({
     // Ensure the old generated contents are removed.
     const sanitizedTarget = removeGeneratedContents(src, tag);
     return {
-      contents: addLines(sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src, anchor, offset, [header, ...newSrc.split('\n'), `${comment} @generated end ${tag}`]),
+      contents: addLines(sanitizedTarget ?? src, anchor, offset, [header, ...newSrc.split('\n'), `${comment} @generated end ${tag}`]),
       didMerge: true,
       didClear: !!sanitizedTarget
     };
@@ -73,7 +73,7 @@ function removeContents({
   // Ensure the old generated contents are removed.
   const sanitizedTarget = removeGeneratedContents(src, tag);
   return {
-    contents: sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src,
+    contents: sanitizedTarget ?? src,
     didMerge: false,
     didClear: !!sanitizedTarget
   };

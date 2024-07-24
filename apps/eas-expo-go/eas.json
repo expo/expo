@@ -1,37 +1,35 @@
 {
   "cli": {
     "version": ">= 0.52.0",
-    "requireCommit": true
+    "requireCommit": true,
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "base": {
       "credentialsSource": "local",
       "android": {
-        "image": "ubuntu-20.04-jdk-11-ndk-r21e",
-        "cache": {
-          "customPaths": [
-            "../../android/prebuiltHermes"
-          ]
-        },
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
-          "EXPO_ROOT_DIR": "/home/expo/workingdir/build"
+          "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
         }
       },
       "ios": {
         "cache": {
-          "key": "sdk48-0.71.3",
-          "cacheDefaultPaths": false,
-          "customPaths": [
-            "../../ios/Pods"
-          ]
+          "key": "sdk51-0.74.3",
+          "customPaths": ["../expo-go/ios/Pods"]
         },
-        "resourceClass": "m1-medium",
+        "image": "macos-ventura-13.6-xcode-15.0",
+        "cocoapods": "1.14.2",
+        "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
-          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"
+          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
         }
       }
     },
@@ -41,36 +39,13 @@
         "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleVersionedDebug",
+        "gradleCommand": ":app:assembleDebug",
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(versioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
-      }
-    },
-    "versioned-client-signed": {
-      "extends": "versioned-client",
-      "env": {
-        "EAS_BUILD_PROFILE": "versioned-client-signed"
-      },
-      "android": {
-        "withoutCredentials": false,
-        "gradleCommand": ":app:bundleVersionedRelease"
-      },
-      "ios": {
-        "credentialsSource": "remote",
-        "simulator": false
-      }
-    },
-    "versioned-client-signed-apk": {
-      "extends": "versioned-client-signed",
-      "env": {
-        "EAS_BUILD_PROFILE": "versioned-client-signed-apk"
-      },
-      "android": {
-        "gradleCommand": ":app:assembleVersionedRelease"
       }
     },
     "versioned-client-add-sdk": {
@@ -85,13 +60,71 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleUnversionedDebug",
+        "gradleCommand": ":app:assembleDebug",
         "withoutCredentials": true
       },
       "ios": {
-        "scheme": "Expo Go \\(unversioned\\)",
+        "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
+      }
+    },
+    "release-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "release-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:bundleRelease"
+      },
+      "ios": {
+        "autoIncrement": "buildNumber",
+        "resourceClass": "large",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": false
+      }
+    },
+    "publish-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "publish-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "resourceClass": "large",
+        "autoIncrement": "buildNumber",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": true
+      }
+    }
+  },
+  "submit": {
+    "release-client": {
+      "ios": {
+        "ascApiKeyPath": "./credentials/secrets/ios-AuthKey-2A94XP6D72.p8",
+        "ascApiKeyId": "2A94XP6D72",
+        "ascApiKeyIssuerId": "69a6de7e-ee52-47e3-e053-5b8c7c11a4d1",
+        "ascAppId": "982107779"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./credentials/secrets/android-service-account-key.json",
+        "track": "production"
       }
     }
   }

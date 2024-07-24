@@ -12,7 +12,7 @@ import kotlin.reflect.KType
 
 class PairTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val pairType: KType,
+  private val pairType: KType
 ) : DynamicAwareTypeConverters<Pair<*, *>>(pairType.isMarkedNullable) {
   private val converters = listOf(
     converterProvider.obtainTypeConverter(
@@ -50,7 +50,7 @@ class PairTypeConverter(
   private fun convertElement(array: ReadableArray, index: Int): Any? {
     return array.getDynamic(index).recycle {
       exceptionDecorator({ cause ->
-        CollectionElementCastException(pairType, pairType.arguments[index].type!!, type, cause)
+        CollectionElementCastException(pairType, pairType.arguments[index].type!!, getType(), cause)
       }) {
         converters[index].convert(this)
       }

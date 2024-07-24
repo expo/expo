@@ -1,6 +1,6 @@
 # expo-screen-capture
 
-**`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
+**`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded, and notifies if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
 
 - If a screen is displaying sensitive information (password, credit card data, etc.)
 - You are displaying paid content that you don't want recorded and shared
@@ -13,7 +13,7 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ## Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/screen-capture/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/screen-capture/).
 
 ## Installation in bare React Native projects
 
@@ -21,13 +21,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Add the package to your npm dependencies
 
-```sh
-expo install expo-screen-capture
+```
+npx expo install expo-screen-capture
 ```
 
 ### Configure for iOS
 
-```sh
+```
 npx pod-install
 ```
 

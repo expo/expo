@@ -103,10 +103,9 @@ export type VideoProps = {
    * Note that this can also be set on the `ref` via `loadAsync()`. See the [AV documentation](./av) for further information.
    *
    * @see
-   * - The [Android developer documentation](https://developer.android.com/guide/topics/media/media-formats#video-formats)
-   * lists of the video formats supported on Android.
-   * - The [iOS developer documentation](https://developer.apple.com/documentation/coremedia/1564239-video_codec_constants)
-   * lists of the video formats supported on iOS.
+   * The [Android developer documentation](https://developer.android.com/guide/topics/media/platform/supported-formats#video-formats)
+   * and the [iOS developer documentation](https://developer.apple.com/documentation/coremedia/1564239-video_codec_constants)
+   * lists of the video formats supported on Android and iOS.
    */
   source?: AVPlaybackSource;
   /**
@@ -127,7 +126,7 @@ export type VideoProps = {
   // Callbacks
   /**
    * A function to be called regularly with the `AVPlaybackStatus` of the video. You will likely be using this a lot.
-   * See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
+   * See the [AV documentation](./av) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
    * @param status
    */
   onPlaybackStatusUpdate?: (status: AVPlaybackStatus) => void;
@@ -168,7 +167,7 @@ export type VideoProps = {
   useNativeControls?: boolean;
   /**
    * A string describing how the video should be scaled for display in the component view bounds.
-   * Must be one of the [`ResizeMode`](#resizemode) enum values.
+   * Must be one of the [`ResizeMode`](#resizemode-1) enum values.
    */
   resizeMode?: ResizeMode;
   /**

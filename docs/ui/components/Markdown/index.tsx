@@ -46,11 +46,11 @@ const markdownStyles: Record<string, Config | null> = {
   },
   ul: {
     Component: UL,
-    style: { marginBottom: '0.5ch', paddingLeft: `1ch` },
+    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
   },
   ol: {
     Component: OL,
-    style: { marginBottom: '0.5ch', paddingLeft: `1ch` },
+    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
   },
   li: {
     Component: LI,
@@ -96,7 +96,9 @@ const markdownStyles: Record<string, Config | null> = {
   },
 };
 
-export const markdownComponents = Object.keys(markdownStyles).reduce(
+type MarkdownComponent = Record<keyof typeof markdownStyles, any>;
+
+export const markdownComponents: MarkdownComponent = Object.keys(markdownStyles).reduce(
   (all, key) => ({
     ...all,
     [key]: markdownStyles[key] ? createMarkdownComponent(markdownStyles[key]!) : null,
@@ -109,7 +111,7 @@ function componentName({ Component }: Config) {
   return Component.displayName || Component.name || 'Anonymous';
 }
 
-function createMarkdownComponent(config: Config) {
+function createMarkdownComponent(config: Config): ComponentType<ComponentProps> {
   const { Component, css: cssClassname, style } = config;
   const MDXComponent = (props: ComponentProps) => (
     <Component {...props} css={css(cssClassname)} style={style}>

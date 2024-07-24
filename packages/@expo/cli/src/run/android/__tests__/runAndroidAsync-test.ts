@@ -51,6 +51,7 @@ describe(resolveOptionsAsync, () => {
       buildCache: false,
       port: 8081,
       variant: 'debug',
+      architectures: '',
     });
 
     expect(installAsync).toBeCalledWith('/android', {

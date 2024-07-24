@@ -1,4 +1,7 @@
-import { AndroidIcon, AppleIcon, AtSignIcon, ExpoGoLogo, iconSize, theme } from '@expo/styleguide';
+import { ExpoGoLogo, mergeClasses } from '@expo/styleguide';
+import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
+import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
 
 import { PlatformName } from '~/types/common';
 
@@ -7,24 +10,25 @@ export type PlatformIconProps = {
 };
 
 export const PlatformIcon = ({ platform }: PlatformIconProps) => {
-  const size = iconSize['2xs'];
-
   switch (platform) {
     case 'ios':
-      return <AppleIcon color={theme.palette.blue12} size={size} />;
-    case 'android':
-      return <AndroidIcon color={theme.palette.green12} size={size} />;
-    case 'web':
-      return <AtSignIcon color={theme.palette.orange12} size={size} />;
-    case 'expo':
+    case 'macos':
+    case 'tvos':
       return (
-        <ExpoGoLogo
-          width={iconSize['2xs']}
-          height={iconSize['2xs']}
-          color={theme.palette.purple12}
-          size={size}
+        <AppleIcon
+          className={mergeClasses(
+            'opacity-80 icon-xs text-palette-blue12',
+            platform === 'macos' && 'text-palette-purple12',
+            platform === 'tvos' && 'text-palette-pink12'
+          )}
         />
       );
+    case 'android':
+      return <AndroidIcon className="opacity-80 icon-xs text-palette-green12" />;
+    case 'web':
+      return <AtSignIcon className="opacity-80 icon-xs text-palette-orange12" />;
+    case 'expo':
+      return <ExpoGoLogo className="opacity-80 icon-xs text-palette-purple12" />;
     default:
       return null;
   }

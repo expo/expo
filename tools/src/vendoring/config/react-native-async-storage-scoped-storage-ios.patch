@@ -1,27 +1,27 @@
 --- ios/RNCAsyncStorage.h
 +++ ios/RNCAsyncStorage.h
-@@ -31,12 +31,12 @@
- 
+@@ -42,12 +42,12 @@
+
  @property (nonatomic, readonly, getter=isValid) BOOL valid;
- 
+
 +// NOTE(nikki): Added to allow scoped per Expo app
 +- (instancetype)initWithStorageDirectory:(NSString *)storageDirectory;
 +
  // Clear the RNCAsyncStorage data from native code
  - (void)clearAllData;
- 
+
 -// For clearing data when the bridge may not exist, e.g. when logging out.
 -+ (void)clearAllData;
 -
  // Grab data from the cache. ResponseBlock result array will have an error at position 0, and an
  // array of arrays at position 1.
  - (void)multiGet:(NSArray<NSString *> *)keys callback:(RCTResponseSenderBlock)callback;
---- ios/RNCAsyncStorage.m
-+++ ios/RNCAsyncStorage.m
+--- ios/RNCAsyncStorage.mm
++++ RNCAsyncStorage.mm
 @@ -14,7 +14,9 @@
  #import <React/RCTLog.h>
  #import <React/RCTUtils.h>
- 
+
 -static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 +// NOTE(kudo): Use Expo storage directory for backward compatibility
 +//static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
@@ -29,15 +29,19 @@
  static NSString *const RCTOldStorageDirectory = @"RNCAsyncLocalStorage_V1";
  static NSString *const RCTExpoStorageDirectory = @"RCTAsyncLocalStorage";
  static NSString *const RCTManifestFileName = @"manifest.json";
-@@ -150,31 +152,11 @@ static NSString *RCTCreateStorageDirectoryPath(NSString *storageDir)
+@@ -150,35 +152,11 @@
      return storageDirectoryPath;
  }
- 
+
 -static NSString *RCTGetStorageDirectory()
 -{
 -    static NSString *storageDirectory = nil;
 -    static dispatch_once_t onceToken;
 -    dispatch_once(&onceToken, ^{
+-#if TARGET_OS_TV
+-      RCTLogWarn(
+-          @"Persistent storage is not supported on tvOS, your data may be removed at any point.");
+-#endif
 -      storageDirectory = RCTCreateStorageDirectoryPath(RCTStorageDirectory);
 -    });
 -    return storageDirectory;
@@ -47,7 +51,7 @@
  {
      return [storageDirectory stringByAppendingPathComponent:RCTManifestFileName];
  }
- 
+
 -static NSString *RCTGetManifestFilePath()
 -{
 -    static NSString *manifestFilePath = nil;
@@ -61,10 +65,10 @@
  // Only merges objects - all other types are just clobbered (including arrays)
  static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
  {
-@@ -203,51 +185,27 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
+@@ -207,54 +185,27 @@
      return modified;
  }
- 
+
 -static dispatch_queue_t RCTGetMethodQueue()
 -{
 -    // We want all instances to share the same queue since they will be reading/writing the same
@@ -122,16 +126,19 @@
 -    NSError *error;
 -    [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDirectory() error:&error];
 -    RCTHasCreatedStorageDirectory = NO;
--    return error ? RCTMakeError(@"Failed to delete storage directory.", error, nil) : nil;
+-    if (error && error.code != NSFileNoSuchFileError) {
+-        return RCTMakeError(@"Failed to delete storage directory.", error, nil);
+-    }
+-    return nil;
 +  NSError *error;
 +  [[NSFileManager defaultManager] removeItemAtPath:storageDirectory error:&error];
 +  return error ? RCTMakeError(@"Failed to delete storage directory.", error, nil) : nil;
  }
 +#define RCTDeleteStorageDirectory() RCTDeleteStorageDirectory(_storageDirectory)
- 
+
  static NSDate *RCTManifestModificationDate(NSString *manifestFilePath)
  {
-@@ -285,35 +243,7 @@ static void RCTStorageDirectoryMigrate(NSString *oldDirectoryPath,
+@@ -292,35 +243,7 @@
                                         NSString *newDirectoryPath,
                                         BOOL shouldCleanupOldDirectory)
  {
@@ -166,12 +173,12 @@
 -    }
 +  assert(false);
  }
- 
+
  /**
-@@ -406,12 +336,49 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
- 
+@@ -413,12 +336,49 @@
+
  #pragma mark - RNCAsyncStorage
- 
+
 +@interface RNCAsyncStorage ()
 +
 +@property (nonatomic, copy) NSString *storageDirectory;
@@ -216,20 +223,20 @@
 +  });
 +  return _cache;
  }
- 
+
  + (BOOL)requiresMainQueueSetup
-@@ -421,6 +388,7 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
- 
+@@ -428,6 +388,7 @@
+
  - (instancetype)init
  {
 +  assert(false);
      if (!(self = [super init])) {
          return nil;
      }
-@@ -444,13 +412,6 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
+@@ -451,13 +412,6 @@
      return self;
  }
- 
+
 -RCT_EXPORT_MODULE()
 -
 -- (dispatch_queue_t)methodQueue
@@ -240,10 +247,10 @@
  - (void)clearAllData
  {
      dispatch_async(RCTGetMethodQueue(), ^{
-@@ -460,14 +421,6 @@ RCT_EXPORT_MODULE()
+@@ -467,14 +421,6 @@
      });
  }
- 
+
 -+ (void)clearAllData
 -{
 -    dispatch_async(RCTGetMethodQueue(), ^{
@@ -255,9 +262,9 @@
  - (void)invalidate
  {
      if (_clearOnInvalidate) {
-@@ -505,12 +458,13 @@ RCT_EXPORT_MODULE()
- #endif
- 
+@@ -507,12 +453,13 @@
+     RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
+
      NSError *error = nil;
 -    if (!RCTHasCreatedStorageDirectory) {
 -        _createStorageDirectory(RCTGetStorageDirectory(), &error);
@@ -273,9 +280,9 @@
 +    if (error) {
 +      return RCTMakeError(@"Failed to create storage directory.", error, nil);
      }
- 
+
      if (!_haveSetup) {
-@@ -521,11 +475,14 @@ RCT_EXPORT_MODULE()
+@@ -523,11 +470,14 @@
              // by default, we want to exclude AsyncStorage data from backup
              isExcludedFromBackup = @YES;
          }
@@ -284,7 +291,7 @@
 +        // NOTE(kudo): We don't enable iCloud backup for Expo Go
 +        // RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
 +        //                                      isExcludedFromBackup);
- 
+
          NSDictionary *errorOut = nil;
 -        NSString *serialized = RCTReadFile(RCTCreateStorageDirectoryPath(RCTGetManifestFilePath()),
 +        // NOTE(kudo): Keep data in Documents rather than Application Support for backward compatibility
@@ -293,7 +300,7 @@
                                             RCTManifestFileName,
                                             &errorOut);
          if (!serialized) {
-@@ -561,7 +518,9 @@ RCT_EXPORT_MODULE()
+@@ -563,7 +513,9 @@
  {
      NSError *error;
      NSString *serialized = RCTJSONStringify(_manifest, &error);

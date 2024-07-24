@@ -29,19 +29,14 @@
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
 
-@property (nonatomic, strong, nullable) UIView *contentView;
-
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
 - (void)viewDidUpdateProps;
 
+- (BOOL)supportsPropWithName:(nonnull NSString *)name;
+
 - (void)prepareForRecycle;
-
-#pragma mark - Methods injected to the class in runtime
-
-- (nullable EXAppContext *)__injectedAppContext;
-- (nonnull NSString *)__injectedModuleName;
 
 @end

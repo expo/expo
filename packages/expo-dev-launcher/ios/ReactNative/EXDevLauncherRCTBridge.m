@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherRCTBridge.h"
-#import "EXDevLauncherController.h"
-#import "RCTCxxBridge+Private.h"
+#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
+#import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXDevLauncher/RCTCxxBridge+Private.h>
 
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTDevSettings.h>
@@ -42,16 +42,17 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-  NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
+  NSArray<NSString *> *allowedModules = @[
+    @"RCT",
+    @"DevMenu",
+    @"ExpoBridgeModule",
+    @"EXNativeModulesProxy",
+    @"ViewManagerAdapter_",
+    @"ExpoModulesCore",
+    @"EXReactNativeEventEmitter",
+    @"EXDevLauncherDevMenuExtensions"
+  ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
-    if ([clazz conformsToProtocol:@protocol(DevMenuExtensionProtocol)]) {
-      return true;
-    }
-    
-    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
-      return true;
-    }
-    
     NSString* clazzName = NSStringFromClass(clazz);
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
@@ -60,7 +61,7 @@
     }
     return false;
   }]];
-  
+
   return filteredModuleList;
 }
 

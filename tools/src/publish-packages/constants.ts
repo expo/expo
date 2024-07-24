@@ -1,7 +1,7 @@
 import path from 'path';
 
-import { EXPOTOOLS_DIR } from '../Constants';
 import { ReleaseType } from './types';
+import { EXPOTOOLS_DIR } from '../Constants';
 
 /**
  * File name of the backup file.
@@ -29,11 +29,6 @@ export const BACKUPABLE_OPTIONS_FIELDS = [
   'commitMessage',
   'dry',
 ] as const;
-
-/**
- * An array of directories treated as containing native code.
- */
-export const NATIVE_DIRECTORIES = ['ios', 'android', 'cpp'];
 
 /**
  * An array of release types in the order from patch to major.

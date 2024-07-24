@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { GradleProps } from './resolveGradlePropsAsync';
 import { Device, DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb';
-import { GradleProps } from './resolveGradleProps';
 
 const debug = require('debug')('expo:run:android:resolveInstallApkName') as typeof console.log;
 

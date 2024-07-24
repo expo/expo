@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import {
   Heading,
   Text,
@@ -12,7 +13,6 @@ import {
   TerminalIcon,
   ChevronRightIcon,
   InfoIcon,
-  scale,
   useExpoPalette,
   BranchIcon,
 } from 'expo-dev-client-components';
@@ -28,6 +28,7 @@ import { ScreenContainer } from '../components/ScreenContainer';
 import { Toasts } from '../components/Toasts';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { formatUpdateUrl } from '../functions/formatUpdateUrl';
+import { getServerUrlFromDevSession } from '../functions/getServerUrlFromDevSession';
 import { loadApp, loadUpdate } from '../native-modules/DevLauncherInternal';
 import { useCrashReport } from '../providers/CrashReportProvider';
 import { useDevSessions } from '../providers/DevSessionsProvider';
@@ -38,18 +39,12 @@ import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
-  fetchOnMount?: boolean;
   pollInterval?: number;
   pollAmount?: number;
   navigation?: any;
 };
 
-export function HomeScreen({
-  fetchOnMount = false,
-  pollInterval = 1000,
-  pollAmount = 5,
-  navigation,
-}: HomeScreenProps) {
+export function HomeScreen({ pollInterval = 1000, pollAmount = 5, navigation }: HomeScreenProps) {
   const modalStack = useModalStack();
   const [inputValue, setInputValue] = React.useState('');
   const [loadingUrl, setLoadingUrl] = React.useState('');
@@ -60,13 +55,14 @@ export function HomeScreen({
 
   const crashReport = useCrashReport();
 
-  const initialDevSessionData = React.useRef(devSessions);
-
-  React.useEffect(() => {
-    if (initialDevSessionData.current.length === 0 && fetchOnMount) {
-      pollAsync({ pollAmount, pollInterval });
-    }
-  }, [fetchOnMount, pollInterval, pollAmount, pollAsync]);
+  const hasDevSessions = devSessions?.length > 0;
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!hasDevSessions) {
+        pollAsync({ pollAmount, pollInterval });
+      }
+    }, [hasDevSessions, pollAmount, pollInterval])
+  );
 
   const onLoadUrl = async (url: string) => {
     setLoadingUrl(url);
@@ -113,18 +109,14 @@ export function HomeScreen({
   };
 
   return (
-    <View testID="DevLauncherMainScreen">
-      <AppHeader navigation={navigation} />
-      <ScrollView
-        style={{}}
-        contentContainerStyle={{
-          paddingBottom: scale['48'],
-        }}>
-        <ScreenContainer>
-          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+    <View testID="DevLauncherMainScreen" flex="1">
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <AppHeader navigation={navigation} />
+        <ScrollView>
+          <ScreenContainer>
             {crashReport && (
               <View px="medium" py="small" mt="small">
-                <Button.ScaleOnPressContainer
+                <Button.FadeOnPressContainer
                   onPress={onCrashReportPress}
                   bg="default"
                   rounded="large">
@@ -134,7 +126,7 @@ export function HomeScreen({
                       get more information.
                     </Button.Text>
                   </Row>
-                </Button.ScaleOnPressContainer>
+                </Button.FadeOnPressContainer>
               </View>
             )}
             <View py="large">
@@ -146,16 +138,15 @@ export function HomeScreen({
 
                 <Spacer.Horizontal />
 
-                {devSessions.length > 0 && (
-                  <Button.ScaleOnPressContainer
+                {devSessions?.length > 0 && (
+                  <Button.FadeOnPressContainer
                     bg="ghost"
                     rounded="full"
-                    minScale={0.85}
                     onPress={onDevServerQuestionPress}>
                     <View rounded="full" padding="tiny">
                       <InfoIcon />
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
                 )}
               </Row>
 
@@ -163,7 +154,7 @@ export function HomeScreen({
 
               <View px="medium">
                 <View>
-                  {devSessions.length === 0 && (
+                  {devSessions?.length === 0 && (
                     <>
                       <View padding="medium" bg="default" roundedTop="large">
                         <Text>Start a local development server with:</Text>
@@ -171,7 +162,7 @@ export function HomeScreen({
 
                         <View bg="secondary" border="default" rounded="medium" padding="medium">
                           <Text type="mono" size="small">
-                            npx expo start --dev-client
+                            npx expo start
                           </Text>
                         </View>
 
@@ -210,9 +201,9 @@ export function HomeScreen({
 
               <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
             </View>
-          </KeyboardAvoidingView>
-        </ScreenContainer>
-      </ScrollView>
+          </ScreenContainer>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -227,7 +218,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer
+    <Button.FadeOnPressContainer
       onPress={onRefetchPress}
       disabled={isFetching}
       bg="default"
@@ -243,7 +234,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
         <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
       </Row>
-    </Button.ScaleOnPressContainer>
+    </Button.FadeOnPressContainer>
   );
 }
 
@@ -260,9 +251,11 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
   return (
     <View>
       {devSessions.map((devSession) => {
+        const showUrl = devSession.url && devSession.description !== devSession.url;
+
         return (
           <View key={devSession.url}>
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               onPress={() => onDevSessionPress(devSession)}
               roundedTop="large"
               roundedBottom="none"
@@ -274,11 +267,16 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
                   <Button.Text color="default" numberOfLines={1}>
                     {devSession.description}
                   </Button.Text>
+                  {showUrl ? (
+                    <Text size="small" color="secondary" numberOfLines={1}>
+                      {getServerUrlFromDevSession(devSession)}
+                    </Text>
+                  ) : null}
                 </View>
                 <Spacer.Horizontal size="small" />
                 <ChevronRightIcon />
               </Row>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
             <Divider />
           </View>
         );
@@ -299,12 +297,7 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
     if (app.isEASUpdate && app.updateMessage != null) {
       return (
-        <RecentEASUpdateRow
-          label={label}
-          url={app.url}
-          message={app.updateMessage}
-          branchName={app.branchName}
-        />
+        <RecentEASUpdateRow url={app.url} message={app.updateMessage} branchName={app.branchName} />
       );
     }
 
@@ -319,13 +312,13 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
         <Heading color="secondary">Recently opened</Heading>
         <Spacer.Horizontal />
 
-        <Button.ScaleOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+        <Button.FadeOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
           <View rounded="medium" px="small" py="micro">
             <Heading size="small" weight="semibold" color="secondary">
               Reset
             </Heading>
           </View>
-        </Button.ScaleOnPressContainer>
+        </Button.FadeOnPressContainer>
       </Row>
 
       <View>
@@ -336,14 +329,14 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
           return (
             <LoadingContainer key={app.id} isLoading={isLoading}>
-              <Button.ScaleOnPressContainer
+              <Button.FadeOnPressContainer
                 onPress={() => onRecentAppPress(app)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 py="small"
                 bg="default">
                 {renderRow(app)}
-              </Button.ScaleOnPressContainer>
+              </Button.FadeOnPressContainer>
               {!isLast && <Divider />}
             </LoadingContainer>
           );
@@ -389,7 +382,7 @@ function RecentLocalPackagerRow({ label, url }) {
   );
 }
 
-function RecentEASUpdateRow({ label, url, branchName, message }) {
+function RecentEASUpdateRow({ url, branchName, message }) {
   const palette = useExpoPalette();
   return (
     <View>

@@ -2,23 +2,32 @@ import { ExpoConfig } from '@expo/config';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { updateTSConfigAsync } from './updateTSConfig';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
-import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
+import { memoize } from '../../../utils/fn';
+import { everyMatchAsync } from '../../../utils/glob';
 import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
-import { updateTSConfigAsync } from './updateTSConfig';
 
 const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
 
+const warnDisabled = memoize(() => {
+  Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
+});
+
 /** Ensure the project has the required TypeScript support settings. */
-export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
-  /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
-  async assertImplementation(): Promise<void> {
+export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> {
+  /**
+   * Ensure a project that hasn't explicitly disabled typescript support has all the required packages for running in the browser.
+   *
+   * @returns `true` if the setup finished and no longer needs to be run again.
+   */
+  async assertImplementation(): Promise<boolean> {
     if (env.EXPO_NO_TYPESCRIPT_SETUP) {
-      Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
-      return;
+      warnDisabled();
+      return true;
     }
     debug('Ensuring TypeScript support is setup');
 
@@ -27,14 +36,33 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
     // Ensure the project is TypeScript before continuing.
     const intent = await this._getSetupRequirements();
     if (!intent) {
-      return;
+      return false;
     }
 
     // Ensure TypeScript packages are installed
     await this._ensureDependenciesInstalledAsync();
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
+    await updateTSConfigAsync({ tsConfigPath });
+
+    return true;
+  }
+
+  async bootstrapAsync(): Promise<void> {
+    if (env.EXPO_NO_TYPESCRIPT_SETUP) {
+      warnDisabled();
+      return;
+    }
+    // Ensure TypeScript packages are installed
+    await this._ensureDependenciesInstalledAsync({
+      skipPrompt: true,
+      isProjectMutable: true,
+    });
+
+    const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
+
+    // Update the config
+    await updateTSConfigAsync({ tsConfigPath });
   }
 
   /** Exposed for testing. */
@@ -65,10 +93,20 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
   }
 
   /** Exposed for testing. */
-  async _ensureDependenciesInstalledAsync({ exp }: { exp?: ExpoConfig } = {}): Promise<boolean> {
+  async _ensureDependenciesInstalledAsync({
+    exp,
+    skipPrompt,
+    isProjectMutable,
+  }: {
+    exp?: ExpoConfig;
+    skipPrompt?: boolean;
+    isProjectMutable?: boolean;
+  } = {}): Promise<boolean> {
     try {
       return await ensureDependenciesAsync(this.projectRoot, {
         exp,
+        skipPrompt,
+        isProjectMutable,
         installMessage: `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`,
         warningMessage:
           "If you're not using TypeScript, please remove the TypeScript files from your project",
@@ -88,24 +126,26 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
 
   /** Return the first TypeScript file in the project. */
   async _queryFirstTypeScriptFileAsync(): Promise<null | string> {
-    const results = await wrapGlobWithTimeout(
-      () =>
-        // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
-        everyMatchAsync('**/*.@(ts|tsx)', {
-          cwd: this.projectRoot,
-          ignore: [
-            '**/@(Carthage|Pods|node_modules)/**',
-            '**/*.d.ts',
-            '@(ios|android|web|web-build|dist)/**',
-          ],
-        }),
-      5000
-    );
+    try {
+      // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
+      const results = await everyMatchAsync('**/*.@(ts|tsx)', {
+        cwd: this.projectRoot,
+        signal: AbortSignal.timeout(5000),
+        ignore: [
+          '**/@(Carthage|Pods|node_modules)/**',
+          '**/*.d.ts',
+          '@(ios|android|web|web-build|dist)/**',
+        ],
+      });
 
-    if (results === false) {
-      return null;
+      return results[0] ?? null;
+    } catch (error: any) {
+      if (error.name === 'TimeoutError') {
+        return null;
+      }
+
+      throw error;
     }
-    return results[0] ?? null;
   }
 
   async _hasTSConfig(): Promise<string | null> {

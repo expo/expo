@@ -10,11 +10,11 @@ import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.throwableContentResolver
-import expo.modules.test.core.PromiseMock
-import expo.modules.test.core.assertRejected
-import expo.modules.test.core.assertRejectedWithCode
-import expo.modules.test.core.promiseResolved
-import expo.modules.test.core.promiseResolvedWithType
+import expo.modules.test.core.legacy.PromiseMock
+import expo.modules.test.core.legacy.assertRejected
+import expo.modules.test.core.legacy.assertRejectedWithCode
+import expo.modules.test.core.legacy.promiseResolved
+import expo.modules.test.core.legacy.promiseResolvedWithType
 import io.mockk.justRun
 import io.mockk.mockkStatic
 import io.mockk.slot

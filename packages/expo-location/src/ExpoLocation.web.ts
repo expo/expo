@@ -1,10 +1,10 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 
 import {
+  LocationAccuracy,
   LocationLastKnownOptions,
   LocationObject,
   LocationOptions,
-  LocationAccuracy,
 } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 
@@ -49,39 +49,81 @@ function isLocationValid(location: LocationObject, options: LocationLastKnownOpt
 }
 
 /**
- * Gets the permission details. The implementation is not very good as it actually requests
- * for the current location, but there is no better way on web so far :(
+ * Gets the permission details. The implementation is not very good as it's not
+ * possible to query for permission on all browsers, apparently only the
+ * latest versions will support this.
  */
-async function getPermissionsAsync(): Promise<PermissionResponse> {
-  return new Promise<PermissionResponse>((resolve) => {
-    const resolveWithStatus = (status) =>
-      resolve({
-        status,
-        granted: status === PermissionStatus.GRANTED,
-        canAskAgain: true,
-        expires: 0,
-      });
+async function getPermissionsAsync(shouldAsk = false): Promise<PermissionResponse> {
+  if (!navigator?.permissions?.query) {
+    throw new UnavailabilityError('expo-location', 'navigator.permissions API is not available');
+  }
 
-    navigator.geolocation.getCurrentPosition(
-      () => resolveWithStatus(PermissionStatus.GRANTED),
-      ({ code }) => {
-        if (code === 1 /* PERMISSION_DENIED */) {
-          resolveWithStatus(PermissionStatus.DENIED);
-        } else {
-          resolveWithStatus(PermissionStatus.UNDETERMINED);
+  const permission = await navigator.permissions.query({ name: 'geolocation' });
+
+  if (permission.state === 'granted') {
+    return {
+      status: PermissionStatus.GRANTED,
+      granted: true,
+      canAskAgain: true,
+      expires: 0,
+    };
+  }
+
+  if (permission.state === 'denied') {
+    return {
+      status: PermissionStatus.DENIED,
+      granted: false,
+      canAskAgain: true,
+      expires: 0,
+    };
+  }
+
+  if (shouldAsk) {
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          resolve({
+            status: PermissionStatus.GRANTED,
+            granted: true,
+            canAskAgain: true,
+            expires: 0,
+          });
+        },
+        (positionError: GeolocationPositionError) => {
+          if (positionError.code === positionError.PERMISSION_DENIED) {
+            resolve({
+              status: PermissionStatus.DENIED,
+              granted: false,
+              canAskAgain: true,
+              expires: 0,
+            });
+            return;
+          }
+
+          resolve({
+            status: PermissionStatus.GRANTED,
+            granted: false,
+            canAskAgain: true,
+            expires: 0,
+          });
         }
-      },
-      { enableHighAccuracy: false, maximumAge: Infinity }
-    );
-  });
+      );
+    });
+  }
+
+  // The permission state is 'prompt' when the permission has not been requested
+  // yet, tested on Chrome.
+  return {
+    status: PermissionStatus.UNDETERMINED,
+    granted: false,
+    canAskAgain: true,
+    expires: 0,
+  };
 }
 
 let lastKnownPosition: LocationObject | null = null;
 
 export default {
-  get name(): string {
-    return 'ExpoLocation';
-  },
   async getProviderStatusAsync(): Promise<{ locationServicesEnabled: boolean }> {
     return {
       locationServicesEnabled: 'geolocation' in navigator,
@@ -135,22 +177,17 @@ export default {
           });
         },
         undefined,
-        // @ts-ignore: the options object needs to be fixed
         options
       );
       resolve(watchId);
     });
   },
 
-  getPermissionsAsync,
-  async requestPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
-  },
   async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
+    return getPermissionsAsync(true);
   },
   async requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
+    return getPermissionsAsync(true);
   },
   async getForegroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync();
@@ -158,8 +195,4 @@ export default {
   async getBackgroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync();
   },
-
-  // no-op
-  startObserving() {},
-  stopObserving() {},
 };

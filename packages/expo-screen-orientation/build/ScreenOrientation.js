@@ -1,8 +1,8 @@
-import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Dimensions } from 'react-native';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, } from './ScreenOrientation.types';
 export { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, };
-const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
 let _orientationChangeSubscribers = [];
 let _lastOrientationLock = OrientationLock.UNKNOWN;
 // @needsAudit
@@ -11,13 +11,6 @@ let _lastOrientationLock = OrientationLock.UNKNOWN;
  * @param orientationLock The orientation lock to apply. See the [`OrientationLock`](#orientationlock)
  * enum for possible values.
  * @return Returns a promise with `void` value, which fulfils when the orientation is set.
- *
- * # Error codes
- * - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - An invalid [`OrientationLock`](#orientationlock)
- *   was passed in.
- * - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - The platform does not support the
- *   orientation lock policy.
- * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
  *
  * @example
  * ```ts
@@ -46,14 +39,6 @@ export async function lockAsync(orientationLock) {
  * object type for the different platform formats.
  * @return Returns a promise with `void` value, resolving when the orientation is set and rejecting
  * if an invalid option or value is passed.
- *
- * # Error codes
- * - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - __iOS Only.__ An invalid [`OrientationLock`](#orientationlock)
- *   was passed in.
- * - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - The platform does not support the
- *   orientation lock policy.
- * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
- *
  */
 export async function lockPlatformAsync(options) {
     if (!ExpoScreenOrientation.lockPlatformAsync) {
@@ -96,9 +81,6 @@ export async function lockPlatformAsync(options) {
 /**
  * Sets the screen orientation back to the `OrientationLock.DEFAULT` policy.
  * @return Returns a promise with `void` value, which fulfils when the orientation is set.
- *
- * # Error codes
- * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
  */
 export async function unlockAsync() {
     if (!ExpoScreenOrientation.lockAsync) {
@@ -109,13 +91,8 @@ export async function unlockAsync() {
 // @needsAudit
 /**
  * Gets the current screen orientation.
- * @return Returns a promise that fulfils with an [`Orientation`](#screenorientationorientation)
+ * @return Returns a promise that fulfils with an [`Orientation`](#orientation)
  * value that reflects the current screen orientation.
- *
- * # Error codes
- * - `ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK` - __Android Only.__ An unknown error occurred
- *   when trying to get the system lock.
- * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
  */
 export async function getOrientationAsync() {
     if (!ExpoScreenOrientation.getOrientationAsync) {
@@ -128,9 +105,6 @@ export async function getOrientationAsync() {
  * Gets the current screen orientation lock type.
  * @return Returns a promise which fulfils with an [`OrientationLock`](#orientationlock)
  * value.
- *
- * # Error codes
- * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
  */
 export async function getOrientationLockAsync() {
     if (!ExpoScreenOrientation.getOrientationLockAsync) {
@@ -143,10 +117,6 @@ export async function getOrientationLockAsync() {
  * Gets the platform specific screen orientation lock type.
  * @return Returns a promise which fulfils with a [`PlatformOrientationInfo`](#platformorientationinfo)
  * value.
- *
- * # Error codes
- * - `ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK`
- * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
  */
 export async function getPlatformOrientationLockAsync() {
     const platformOrientationLock = await ExpoScreenOrientation.getPlatformOrientationLockAsync();
@@ -187,12 +157,6 @@ export async function supportsOrientationLockAsync(orientationLock) {
     }
     return await ExpoScreenOrientation.supportsOrientationLockAsync(orientationLock);
 }
-// Determine the event name lazily so Jest can set up mocks in advance
-function getEventName() {
-    return Platform.OS === 'ios' || Platform.OS === 'web'
-        ? 'expoDidUpdateDimensions'
-        : 'didUpdateDimensions';
-}
 // We rely on RN to emit `didUpdateDimensions`
 // If this method no longer works, it's possible that the underlying RN implementation has changed
 // see https://github.com/facebook/react-native/blob/c31f79fe478b882540d7fd31ee37b53ddbd60a17/ReactAndroid/src/main/java/com/facebook/react/modules/deviceinfo/DeviceInfoModule.java#L90
@@ -209,25 +173,7 @@ export function addOrientationChangeListener(listener) {
     if (typeof listener !== 'function') {
         throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
     }
-    const subscription = _orientationChangeEmitter.addListener(getEventName(), async (update) => {
-        let orientationInfo, orientationLock;
-        if (Platform.OS === 'ios' || Platform.OS === 'web') {
-            // For iOS, RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions`
-            // event, so we emit our own `expoDidUpdateDimensions` event instead
-            orientationLock = update.orientationLock;
-            orientationInfo = update.orientationInfo;
-        }
-        else {
-            // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
-            let orientation;
-            [orientationLock, orientation] = await Promise.all([
-                getOrientationLockAsync(),
-                getOrientationAsync(),
-            ]);
-            orientationInfo = { orientation };
-        }
-        listener({ orientationInfo, orientationLock });
-    });
+    const subscription = createDidUpdateDimensionsSubscription(listener);
     _orientationChangeSubscribers.push(subscription);
     return subscription;
 }
@@ -261,5 +207,20 @@ export function removeOrientationChangeListener(subscription) {
     }
     subscription.remove();
     _orientationChangeSubscribers = _orientationChangeSubscribers.filter((sub) => sub !== subscription);
+}
+function createDidUpdateDimensionsSubscription(listener) {
+    if (Platform.OS === 'web' || Platform.OS === 'ios') {
+        return ExpoScreenOrientation.addListener('expoDidUpdateDimensions', async (update) => {
+            listener(update);
+        });
+    }
+    // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
+    return Dimensions.addEventListener('change', async () => {
+        const [orientationLock, orientation] = await Promise.all([
+            getOrientationLockAsync(),
+            getOrientationAsync(),
+        ]);
+        listener({ orientationInfo: { orientation }, orientationLock });
+    });
 }
 //# sourceMappingURL=ScreenOrientation.js.map

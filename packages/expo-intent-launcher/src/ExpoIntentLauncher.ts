@@ -1,2 +1,1 @@
-import { requireNativeModule } from 'expo-modules-core';
-export default requireNativeModule('ExpoIntentLauncher');
+export default {} as any;

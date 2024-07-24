@@ -1,77 +1,120 @@
 package expo.modules.updates
 
+import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
-import android.util.Log
 import androidx.annotation.UiThread
-import com.facebook.react.ReactInstanceManager
-import expo.modules.core.ExportedModule
+import androidx.annotation.WorkerThread
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
-import expo.modules.core.interfaces.InternalModule
+import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
-
-// these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesController
-/* ktlint-enable no-unused-imports */
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
  * applicable environments.
  */
 class UpdatesPackage : Package {
-  override fun createInternalModules(context: Context): List<InternalModule> {
-    return listOf(UpdatesService(context) as InternalModule)
-  }
-
-  override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(UpdatesModule(context) as ExportedModule)
-  }
+  private val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
-    val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
-      private var mShouldAutoSetup: Boolean? = null
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
-        return if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) UpdatesController.instance.launchAssetFile else null
+        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.launchAssetFile else null
       }
 
       override fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
-        return if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) UpdatesController.instance.bundleAssetName else null
+        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.bundleAssetName else null
       }
 
-      override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
-        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
-          UpdatesController.initialize(context)
-        }
+      override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
+        UpdatesController.initialize(context)
       }
 
-      override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
-        // WHEN_VERSIONING_REMOVE_FROM_HERE
-        // This code path breaks versioning and is not necessary for Expo Go.
-        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
-          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
-        }
-        // WHEN_VERSIONING_REMOVE_TO_HERE
+      override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
+        UpdatesController.instance.onDidCreateDevSupportManager(devSupportManager)
       }
 
-      @UiThread
-      private fun shouldAutoSetup(context: Context): Boolean {
-        if (mShouldAutoSetup == null) {
-          mShouldAutoSetup = try {
-            val pm = context.packageManager
-            val ai = pm.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            ai.metaData.getBoolean("expo.modules.updates.AUTO_SETUP", true)
-          } catch (e: Exception) {
-            Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e)
-            true
-          }
-        }
-        return mShouldAutoSetup!!
+      override fun onDidCreateReactInstance(useDeveloperSupport: Boolean, reactContext: ReactContext) {
+        UpdatesController.instance.onDidCreateReactInstance(reactContext)
+      }
+
+      override fun onReactInstanceException(useDeveloperSupport: Boolean, exception: Exception) {
+        UpdatesController.instance.onReactInstanceException(exception)
       }
     }
     return listOf(handler)
+  }
+
+  override fun createReactActivityHandlers(activityContext: Context): List<ReactActivityHandler> {
+    val handler = object : ReactActivityHandler {
+      override fun getDelayLoadAppHandler(activity: ReactActivity, reactNativeHost: ReactNativeHost): ReactActivityHandler.DelayLoadAppHandler? {
+        if (!BuildConfig.EX_UPDATES_ANDROID_DELAY_LOAD_APP) {
+          return null
+        }
+        val context = activity.applicationContext
+        val useDeveloperSupport = reactNativeHost.useDeveloperSupport
+        if (!useDeveloperSupport || BuildConfig.EX_UPDATES_NATIVE_DEBUG) {
+          return ReactActivityHandler.DelayLoadAppHandler { whenReadyRunnable ->
+            CoroutineScope(Dispatchers.IO).launch {
+              startUpdatesController(context)
+              invokeReadyRunnable(whenReadyRunnable)
+            }
+          }
+        }
+        return null
+      }
+
+      @WorkerThread
+      private suspend fun startUpdatesController(context: Context) {
+        withContext(Dispatchers.IO) {
+          UpdatesController.initialize(context)
+          // Call the synchronous `launchAssetFile()` function to wait for updates ready
+          UpdatesController.instance.launchAssetFile
+        }
+      }
+
+      @UiThread
+      private suspend fun invokeReadyRunnable(whenReadyRunnable: Runnable) {
+        withContext(Dispatchers.Main) {
+          whenReadyRunnable.run()
+        }
+      }
+    }
+
+    return listOf(handler)
+  }
+
+  override fun createApplicationLifecycleListeners(context: Context): List<ApplicationLifecycleListener> {
+    val handler = object : ApplicationLifecycleListener {
+      override fun onCreate(application: Application) {
+        super.onCreate(application)
+        if (isRunningAndroidTest()) {
+          // Preload updates to prevent Detox ANR
+          UpdatesController.initialize(context)
+          UpdatesController.instance.launchAssetFile
+        }
+      }
+    }
+
+    return listOf(handler)
+  }
+
+  private fun isRunningAndroidTest(): Boolean {
+    try {
+      Class.forName("androidx.test.espresso.Espresso")
+      return true
+    } catch (_: ClassNotFoundException) {
+    }
+    return false
   }
 
   companion object {

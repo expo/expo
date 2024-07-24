@@ -12,12 +12,9 @@ jest.mock('../codeSigning/configureCodeSigning');
 
 const fs = jest.requireActual('fs') as typeof import('fs');
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 describe(getXcodeBuildArgsAsync, () => {
   it(`returns fully qualified arguments for a build`, async () => {
-    asMock(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce('my-dev-team');
+    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce('my-dev-team');
     await expect(
       getXcodeBuildArgsAsync({
         projectRoot: '/path/to/project',

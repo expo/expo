@@ -1,45 +1,9 @@
 import { IOSConfig } from '@expo/config-plugins';
-import Minipass from 'minipass';
 import path from 'path';
+import picomatch from 'picomatch';
 import { ReadEntry } from 'tar';
 
-function escapeXMLCharacters(original: string): string {
-  const noAmps = original.replace('&', '&amp;');
-  const noLt = noAmps.replace('<', '&lt;');
-  const noGt = noLt.replace('>', '&gt;');
-  const noApos = noGt.replace('"', '\\"');
-  return noApos.replace("'", "\\'");
-}
-
-class Transformer extends Minipass {
-  data = '';
-
-  constructor(private settings: { name: string; extension: string }) {
-    super();
-  }
-
-  write(data: string) {
-    this.data += data;
-    return true;
-  }
-
-  getNormalizedName(): string {
-    if (['.xml', '.plist'].includes(this.settings.extension)) {
-      return escapeXMLCharacters(this.settings.name);
-    }
-    return this.settings.name;
-  }
-
-  end() {
-    const name = this.getNormalizedName();
-    const replaced = this.data
-      .replace(/Hello App Display Name/g, name)
-      .replace(/HelloWorld/g, IOSConfig.XcodeUtils.sanitizedName(name))
-      .replace(/helloworld/g, IOSConfig.XcodeUtils.sanitizedName(name.toLowerCase()));
-    super.write(replaced);
-    return super.end();
-  }
-}
+const debug = require('debug')('expo:file-transform') as typeof console.log;
 
 export function createEntryResolver(name: string) {
   return (entry: ReadEntry) => {
@@ -62,32 +26,21 @@ export function createEntryResolver(name: string) {
   };
 }
 
-export function createFileTransform(name: string) {
-  return (entry: ReadEntry) => {
-    const extension = path.extname(entry.path);
+export function createGlobFilter(
+  globPattern: picomatch.Glob,
+  options?: picomatch.PicomatchOptions
+) {
+  const matcher = picomatch(globPattern, options);
 
-    // Binary files, don't process these (avoid decoding as utf8)
-    if (
-      ![
-        '.png',
-        '.jpg',
-        '.jpeg',
-        '.gif',
-        '.webp',
-        '.psd',
-        '.tiff',
-        '.svg',
-        '.jar',
-        '.keystore',
+  debug(
+    'filter: created for pattern(s) "%s" (%s)',
+    Array.isArray(globPattern) ? globPattern.join('", "') : globPattern,
+    options
+  );
 
-        // Font files
-        '.otf',
-        '.ttf',
-      ].includes(extension) &&
-      name
-    ) {
-      return new Transformer({ name, extension });
-    }
-    return undefined;
+  return (path: string) => {
+    const included = matcher(path);
+    debug('filter: %s - %s', included ? 'include' : 'exclude', path);
+    return included;
   };
 }

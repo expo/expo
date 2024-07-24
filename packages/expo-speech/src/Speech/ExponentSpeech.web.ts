@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, CodedError } from 'expo-modules-core';
+import { CodedError, createWebModule } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
@@ -23,10 +23,7 @@ async function getVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
-export default {
-  get name(): string {
-    return 'ExponentSpeech';
-  },
+export default createWebModule({
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
     if (text.length > MAX_SPEECH_INPUT_LENGTH) {
       throw new CodedError(
@@ -74,16 +71,16 @@ export default {
     }
 
     message.onstart = (nativeEvent: SpeechSynthesisEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingStarted', { id, nativeEvent });
     };
     message.onend = (nativeEvent: SpeechSynthesisEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingDone', { id, nativeEvent });
     };
     message.onpause = (nativeEvent: SpeechSynthesisEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingStopped', { id, nativeEvent });
     };
     message.onerror = (nativeEvent: SpeechSynthesisErrorEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+      (this as any).emit('Exponent.speakingError', { id, nativeEvent });
     };
 
     message.text = text;
@@ -117,4 +114,4 @@ export default {
     return window.speechSynthesis.resume();
   },
   maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
-};
+});

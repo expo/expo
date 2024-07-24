@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC;AAC1C,cAAc,sBAAsB,CAAC","sourcesContent":["import type { SFSymbol } from 'sf-symbols-typescript';\nexport { SymbolView } from './SymbolView';\nexport * from './SymbolModule.types';\nexport type { SFSymbol };\n"]}

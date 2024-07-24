@@ -1,9 +1,8 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 
 import { StatusBarProps } from './StatusBar.types';
 import styleToBarStyle from './styleToBarStyle';
-import useColorScheme from './useColorScheme';
 
 export default function ExpoStatusBar(props: StatusBarProps) {
   const { style, animated, hidden, hideTransitionAnimation, networkActivityIndicatorVisible } =

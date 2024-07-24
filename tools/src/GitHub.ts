@@ -24,6 +24,15 @@ export async function getAuthenticatedUserAsync() {
 }
 
 /**
+ * Returns public user data by the given username.
+ * @param username - The username of the user to retrieve.
+ */
+export async function getUserAsync(username: string) {
+  const { data } = await octokit.users.getByUsername({ username });
+  return data;
+}
+
+/**
  * Requests for the pull request object.
  */
 export async function getPullRequestAsync(
@@ -43,6 +52,40 @@ export async function getPullRequestAsync(
   });
   cachedPullRequests.set(pull_number, data);
   return data;
+}
+
+/**
+ * Returns the url of the PR that closed an issue.
+ */
+export async function getIssueCloserPrUrlAsync(issueNumber: number): Promise<string> {
+  const { repository } = await octokit.graphql<any>(
+    `query GetIssueCloser($repo: String!, $owner: String!, $issueNumber: Int!) {
+        repository(name: $repo, owner: $owner) {
+          issue(number: $issueNumber) {
+            timelineItems(itemTypes: CLOSED_EVENT, last: 1) {
+              nodes {
+                ... on ClosedEvent {
+                  createdAt
+                  closer {
+                    __typename
+                    ... on PullRequest {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+    {
+      owner,
+      repo,
+      issueNumber,
+    }
+  );
+
+  return repository?.issue?.timelineItems?.nodes?.[0]?.closer?.url;
 }
 
 /**
@@ -185,6 +228,31 @@ export async function getIssueAsync(issue_number: number) {
     owner,
     repo,
     issue_number,
+  });
+  return data;
+}
+
+/**
+ * Returns a list of all open issues. Limited to 10 items.
+ */
+export async function listAllOpenIssuesAsync({
+  limit,
+  offset,
+  labels,
+}: {
+  limit?: number;
+  offset?: number;
+  labels?: string;
+} = {}) {
+  const per_page = limit ?? 10;
+  const page = offset ? offset * per_page : 0;
+  const { data } = await octokit.issues.listForRepo({
+    owner,
+    repo,
+    per_page,
+    labels,
+    page,
+    state: 'open',
   });
   return data;
 }

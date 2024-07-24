@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`addCameraImport modifies the build.gradle 1`] = `
+exports[`addCameraImport adds camera import to build gradle 1`] = `
 "
 buildscript {
     ext {

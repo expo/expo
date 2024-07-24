@@ -1,25 +1,14 @@
-import { Platform } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
-
-import {
-  ExecutionEnvironment,
-  NativeConstants,
-  PlatformManifest,
-  WebManifest,
-} from './Constants.types';
-
-const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
+import { ExecutionEnvironment, NativeConstants, WebManifest } from './Constants.types';
 
 declare let __DEV__: boolean;
 declare let process: { env: any };
 declare let navigator: Navigator;
 declare let location: Location;
-declare let localStorage: Storage;
 
-const _sessionId = uuidv4();
+const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 
 function getBrowserName(): string | undefined {
-  if (Platform.isDOMAvailable) {
+  if (typeof navigator !== 'undefined' && typeof navigator.userAgent === 'string') {
     const agent = navigator.userAgent.toLowerCase();
     if (agent.includes('edge')) {
       return 'Edge';
@@ -42,49 +31,26 @@ function getBrowserName(): string | undefined {
 }
 
 export default {
-  get name(): string {
-    return 'ExponentConstants';
-  },
   get appOwnership() {
     return null;
   },
   get executionEnvironment() {
     return ExecutionEnvironment.Bare;
   },
-  get installationId(): string {
-    let installationId;
-    try {
-      installationId = localStorage.getItem(ID_KEY);
-      if (installationId == null || typeof installationId !== 'string') {
-        installationId = uuidv4();
-        localStorage.setItem(ID_KEY, installationId as string);
-      }
-    } catch {
-      installationId = _sessionId;
-    } finally {
-      return installationId;
-    }
-  },
   get sessionId(): string {
     return _sessionId;
   },
-  get platform(): PlatformManifest {
-    return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
-  },
   get isHeadless(): boolean {
-    if (!Platform.isDOMAvailable) return true;
+    if (typeof navigator === 'undefined') return true;
 
     return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
-  get isDevice(): true {
-    // TODO: Bacon: Possibly want to add information regarding simulators
-    return true;
-  },
+
   get expoVersion(): string | null {
-    return this.manifest!.sdkVersion || null;
+    return (this.manifest as any)!.sdkVersion || null;
   },
   get linkingUri(): string {
-    if (Platform.isDOMAvailable) {
+    if (typeof location !== 'undefined') {
       // On native this is `exp://`
       // On web we should use the protocol and hostname (location.origin)
       return location.origin;
@@ -98,12 +64,6 @@ export default {
   get deviceName(): string | undefined {
     return getBrowserName();
   },
-  get nativeAppVersion(): null {
-    return null;
-  },
-  get nativeBuildVersion(): null {
-    return null;
-  },
   get systemFonts(): string[] {
     // TODO: Bacon: Maybe possible.
     return [];
@@ -116,7 +76,7 @@ export default {
     return null;
   },
   get manifest(): WebManifest {
-    // This is defined by @expo/webpack-config.
+    // This is defined by @expo/webpack-config or babel-preset-expo.
     // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
   },
@@ -124,7 +84,7 @@ export default {
     return null;
   },
   get experienceUrl(): string {
-    if (Platform.isDOMAvailable) {
+    if (typeof location !== 'undefined') {
       return location.origin;
     } else {
       return '';
@@ -134,7 +94,7 @@ export default {
     return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (Platform.isDOMAvailable) {
+    if (typeof navigator !== 'undefined') {
       return navigator.userAgent;
     } else {
       return null;

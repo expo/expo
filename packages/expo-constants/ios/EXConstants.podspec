@@ -10,17 +10,21 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platforms       = {
+    :ios => '13.4',
+    :osx => '10.15',
+    :tvos => '13.4'
+  }
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
 
-  # Swift/Objective-C compatibility	
-  s.pod_target_xcconfig = {	
-    'DEFINES_MODULE' => 'YES',	
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'	
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
@@ -39,7 +43,8 @@ Pod::Spec.new do |s|
   # Generate EXConstants.bundle without existing resources
   # `get-app-config-ios.sh` will generate app.config in EXConstants.bundle
   s.resource_bundles = {
-    'EXConstants' => []
+    'EXConstants' => [],
+    'ExpoConstants_privacy' => ['PrivacyInfo.xcprivacy']
   }
 
 end

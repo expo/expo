@@ -73,6 +73,19 @@ export const designName = ExpoDevice ? ExpoDevice.designName || null : null;
  */
 export const productName = ExpoDevice ? ExpoDevice.productName || null : null;
 /**
+ * The type of the device as a [`DeviceType`](#devicetype) enum value.
+ *
+ * On Android, for devices other than TVs, the device type is determined by the screen resolution (screen diagonal size), so the result may not be completely accurate.
+ * If the screen diagonal length is between 3" and 6.9", the method returns `DeviceType.PHONE`. For lengths between 7" and 18", the method returns `DeviceType.TABLET`.
+ * Otherwise, the method returns `DeviceType.UNKNOWN`.
+ *
+ * @example
+ * ```js
+ * Device.deviceType; // UNKNOWN, PHONE, TABLET, TV, DESKTOP
+ * ```
+ */
+export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
+/**
  * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
  */
 export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass : null;
@@ -261,8 +274,8 @@ export async function isRootedExperimentalAsync() {
     return await ExpoDevice.isRootedExperimentalAsync();
 }
 /**
- * **Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](/config/app#permissions).**
- * Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE)
+ * **Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](./../config/app/#permissions).**
+ * Returns whether applications can be installed for this user via the system's [`ACTION_INSTALL_PACKAGE`](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE)
  * mechanism rather than through the OS's default app store, like Google Play.
  * @return Returns a promise that resolves to a `boolean` that represents whether the calling package is allowed to request package installation.
  * @example

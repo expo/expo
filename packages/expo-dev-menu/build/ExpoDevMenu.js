@@ -1,3 +1,3 @@
-import { NativeModules } from 'react-native';
-export default NativeModules.ExpoDevMenu;
+import { requireOptionalNativeModule } from 'expo-modules-core';
+export default requireOptionalNativeModule('ExpoDevMenu');
 //# sourceMappingURL=ExpoDevMenu.js.map

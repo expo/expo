@@ -11,7 +11,7 @@ import NotificationPermissionsModule from './NotificationPermissionsModule';
  * It lets you verify whether the app is currently allowed to display alerts, play sounds, etc.
  * There is no user-facing effect of calling this.
  * @return It returns a `Promise` resolving to an object represents permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)).
- * On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
+ * On iOS, make sure you [properly interpret the permissions response](#interpret-the-ios-permissions-response).
  * @example Check if the app is allowed to send any type of notifications (interrupting and non-interrupting–provisional on iOS).
  * ```ts
  * import * as Notifications from 'expo-notifications';
@@ -38,7 +38,7 @@ export async function getPermissionsAsync() {
  * setting badge count and playing sounds**.
  * @param permissions An object representing configuration for the request scope.
  * @return It returns a Promise resolving to an object represents permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)).
- * On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
+ * On iOS, make sure you [properly interpret the permissions response](#interpret-the-ios-permissions-response).
  * @example Prompts the user to allow the app to show alerts, play sounds, set badge count and let Siri read out messages through AirPods.
  * ```ts
  * import * as Notifications from 'expo-notifications';

@@ -1,18 +1,19 @@
-import { AndroidConfig } from '@expo/config-plugins';
-import { resolve } from 'path';
+import { AndroidConfig, AndroidManifest, XML } from '@expo/config-plugins';
 
+import rnFixture from '../../../__tests__/fixtures/react-native-project';
 import {
   getGoogleMobileAdsAppId,
   getGoogleMobileAdsAutoInit,
   setAdMobConfig,
 } from '../withAndroidAdMob';
-const { getMainApplicationOrThrow, readAndroidManifestAsync } = AndroidConfig.Manifest;
 
-const sampleManifestPath = resolve(
-  __dirname,
-  '../../../__tests__/fixtures',
-  'react-native-AndroidManifest.xml'
-);
+const { getMainApplicationOrThrow } = AndroidConfig.Manifest;
+
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe('Android permissions', () => {
   it(`returns falsey for both if no android GoogleMobileAds config is provided`, () => {
@@ -30,7 +31,7 @@ describe('Android permissions', () => {
   });
 
   it('add google mobile ads app config to AndroidManifest.xml', async () => {
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setAdMobConfig(
       {
         android: {
@@ -42,13 +43,13 @@ describe('Android permissions', () => {
 
     const mainApplication = getMainApplicationOrThrow(androidManifestJson);
 
-    const apiKeyItem = mainApplication['meta-data'].filter(
+    const apiKeyItem = mainApplication['meta-data']!.filter(
       (e) => e.$['android:name'] === 'com.google.android.gms.ads.APPLICATION_ID'
     );
     expect(apiKeyItem).toHaveLength(1);
     expect(apiKeyItem[0].$['android:value']).toMatch('MY-API-KEY');
 
-    const usesLibraryItem = mainApplication['meta-data'].filter(
+    const usesLibraryItem = mainApplication['meta-data']!.filter(
       (e) => e.$['android:name'] === 'com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT'
     );
     expect(usesLibraryItem).toHaveLength(1);

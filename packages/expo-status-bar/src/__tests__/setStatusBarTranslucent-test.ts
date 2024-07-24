@@ -1,7 +1,7 @@
 import { StatusBar as ReactNativeStatusBar } from 'react-native';
 
-import { setStatusBarTranslucent } from '../StatusBar';
 import { mockProperty } from './Helpers';
+import { setStatusBarTranslucent } from '../StatusBar';
 
 describe('setStatusBarTranslucent', () => {
   it('delegates to the React Native StatusBar equivalent', () => {

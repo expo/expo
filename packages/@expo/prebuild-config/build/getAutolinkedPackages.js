@@ -24,6 +24,7 @@ async function getAutolinkedPackagesAsync(projectRoot, platforms = ['ios', 'andr
   const autolinking = (0, _importExpoModulesAutolinking().importExpoModulesAutolinking)(projectRoot);
   const searchPaths = await autolinking.resolveSearchPathsAsync(null, projectRoot);
   const platformPaths = await Promise.all(platforms.map(platform => autolinking.findModulesAsync({
+    projectRoot,
     platform,
     searchPaths,
     silent: true
@@ -36,7 +37,6 @@ function resolvePackagesList(platformPaths) {
   return uniquePaths.sort();
 }
 function shouldSkipAutoPlugin(config, plugin) {
-  var _config$_internal;
   // Hack workaround because expo-dev-client doesn't use expo modules.
   if (plugin === 'expo-dev-client') {
     return false;
@@ -44,7 +44,7 @@ function shouldSkipAutoPlugin(config, plugin) {
 
   // Only perform the check if `autolinkedModules` is defined, otherwise we assume
   // this is a legacy runner which doesn't support autolinking.
-  if (Array.isArray((_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.autolinkedModules)) {
+  if (Array.isArray(config._internal?.autolinkedModules)) {
     // Resolve the pluginId as a string.
     const pluginId = Array.isArray(plugin) ? plugin[0] : plugin;
     if (typeof pluginId === 'string') {

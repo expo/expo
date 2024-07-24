@@ -15,6 +15,11 @@ class Env {
     return boolish('EXPO_DEBUG', false);
   }
 
+  /** Disable all network requests */
+  get EXPO_OFFLINE() {
+    return boolish('EXPO_OFFLINE', false);
+  }
+
   /** Enable the beta version of Expo (TODO: Should this just be in the beta version of expo releases?) */
   get EXPO_BETA() {
     return boolish('EXPO_BETA', false);
@@ -38,6 +43,11 @@ class Env {
   /** Disable telemetry (analytics) */
   get EXPO_NO_TELEMETRY() {
     return boolish('EXPO_NO_TELEMETRY', false);
+  }
+
+  /** Disable detaching telemetry to separate process */
+  get EXPO_NO_TELEMETRY_DETACH() {
+    return boolish('EXPO_NO_TELEMETRY_DETACH', false);
   }
 
   /** local directory to the universe repo for testing locally */
@@ -76,7 +86,7 @@ class Env {
   }
   /** Skip validating the manifest during `export`. */
   get EXPO_SKIP_MANIFEST_VALIDATION_TOKEN(): boolean {
-    return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN');
+    return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN', '');
   }
 
   /** Public folder path relative to the project root. Default to `public` */
@@ -135,6 +145,74 @@ class Env {
    */
   get HTTP_PROXY(): string {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
+  }
+
+  /**
+   * Use the network inspector by overriding the metro inspector proxy with a custom version.
+   * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
+   */
+  get EXPO_NO_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_NO_INSPECTOR_PROXY', false);
+  }
+
+  /** Disable lazy bundling in Metro bundler. */
+  get EXPO_NO_METRO_LAZY() {
+    return boolish('EXPO_NO_METRO_LAZY', false);
+  }
+
+  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  get EXPO_METRO_UNSTABLE_ERRORS() {
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+  }
+
+  /** Enable the unstable fast resolver for Metro. */
+  get EXPO_USE_FAST_RESOLVER() {
+    return boolish('EXPO_USE_FAST_RESOLVER', false);
+  }
+
+  /** Disable Environment Variable injection in client bundles. */
+  get EXPO_NO_CLIENT_ENV_VARS(): boolean {
+    return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
+  }
+
+  /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
+  get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
+    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
+  }
+
+  /** Set the default `user` that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`. */
+  get EXPO_ADB_USER(): string {
+    return string('EXPO_ADB_USER', '0');
+  }
+
+  /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
+  get __EXPO_E2E_TEST(): boolean {
+    return boolish('__EXPO_E2E_TEST', false);
+  }
+
+  /** Unstable: Force single-bundle exports in production. */
+  get EXPO_NO_BUNDLE_SPLITTING(): boolean {
+    return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
+  }
+
+  /** Enable unstable/experimental Atlas to gather bundle information during development or export */
+  get EXPO_UNSTABLE_ATLAS() {
+    return boolish('EXPO_UNSTABLE_ATLAS', false);
+  }
+
+  /** Unstable: Enable tree shaking for Metro. */
+  get EXPO_UNSTABLE_TREE_SHAKING() {
+    return boolish('EXPO_UNSTABLE_TREE_SHAKING', false);
+  }
+
+  /** Unstable: Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and less optimized for development bundling. */
+  get EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH() {
+    return boolish('EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH', false);
+  }
+
+  /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
+  get EXPO_USE_METRO_REQUIRE() {
+    return boolish('EXPO_USE_METRO_REQUIRE', false);
   }
 }
 

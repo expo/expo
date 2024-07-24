@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import NotificationCategoriesModule from './NotificationCategoriesModule.native';
+import NotificationCategoriesModule from './NotificationCategoriesModule';
 /**
  * Deletes the category associated with the provided identifier.
  * @param identifier Identifier initially provided to `setNotificationCategoryAsync` when creating the category.

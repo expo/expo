@@ -1,3 +1,7 @@
+export async function createSquareAsync() {
+  return Buffer.from('');
+}
+
 export async function generateImageAsync(input: any, { src }) {
   const fs = require('fs');
   return { source: fs.readFileSync(src) };

@@ -1,37 +1,21 @@
-import { CodedError, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
-import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
-const loaded = {};
-const loadPromises = {};
+import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
+import { loaded, loadPromises } from './memory';
+import { registerStaticFont } from './server';
 // @needsAudit
-// note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
 /**
  * Used to transform font family names to the scoped name. This does not need to
- * be called in standalone or bare apps but it will return unscoped font family
+ * be called in standalone or bare apps, but it will return unscoped font family
  * names if it is called in those contexts.
  *
  * @param fontFamily Name of font to process.
- * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/introduction/managed-vs-bare/).
+ * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/archive/managed-vs-bare/).
+ * @deprecated This method is not needed anymore and will be removed in the future.
  */
 export function processFontFamily(fontFamily) {
-    if (!fontFamily || !fontFamilyNeedsScoping(fontFamily)) {
-        return fontFamily;
-    }
-    if (!isLoaded(fontFamily)) {
-        if (__DEV__) {
-            if (isLoading(fontFamily)) {
-                console.error(`You started loading the font "${fontFamily}", but used it before it finished loading. You need to wait for Font.loadAsync to complete before using the font.`);
-            }
-            else {
-                console.error(`fontFamily "${fontFamily}" is not a system font and has not been loaded through Font.loadAsync.\n
-- If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.\n
-- If this is a custom font, be sure to load it with Font.loadAsync.`);
-            }
-        }
-        return 'System';
-    }
-    return `ExpoFont-${getNativeFontName(fontFamily)}`;
+    return fontFamily;
 }
 // @needsAudit
 /**
@@ -41,7 +25,10 @@ export function processFontFamily(fontFamily) {
  * @return Returns `true` if the font has fully loaded.
  */
 export function isLoaded(fontFamily) {
-    return fontFamily in loaded;
+    if (Platform.OS === 'web') {
+        return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
+    }
+    return fontFamily in loaded || ExpoFontLoader.customNativeFonts?.includes(fontFamily);
 }
 // @needsAudit
 /**
@@ -59,24 +46,35 @@ export function isLoading(fontFamily) {
  * with the platform's native text elements. In the browser this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
  *
- * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://reactnative.dev/docs/text#style)
- * style prop with React Native Text elements.
- * @param source the font asset that should be loaded into the `fontFamily` namespace.
+ * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
+ * with React Native `Text` elements.
+ * @param source The font asset that should be loaded into the `fontFamily` namespace.
  *
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.
  */
-export async function loadAsync(fontFamilyOrFontMap, source) {
+export function loadAsync(fontFamilyOrFontMap, source) {
+    // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
+    // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
+    // standard Expo SDK style guide.
+    const isServer = Platform.OS === 'web' && typeof window === 'undefined';
     if (typeof fontFamilyOrFontMap === 'object') {
         if (source) {
-            throw new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`);
+            return Promise.reject(new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`));
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
-        await Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
-        return;
+        if (isServer) {
+            names.map((name) => registerStaticFont(name, fontMap[name]));
+            return Promise.resolve();
+        }
+        return Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name]))).then(() => { });
     }
-    return await loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
+    if (isServer) {
+        registerStaticFont(fontFamilyOrFontMap, source);
+        return Promise.resolve();
+    }
+    return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 async function loadFontInNamespaceAsync(fontFamily, source) {
     if (!source) {
@@ -155,11 +153,10 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
     // promise. If we're here, we haven't created the promise yet. To ensure we create only one
     // promise in the program, we need to create the promise synchronously without yielding the event
     // loop from this point.
-    const nativeFontName = getNativeFontName(fontFamily);
-    if (!nativeFontName) {
+    if (!fontFamily) {
         throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
     }
-    await ExpoFontLoader.unloadAsync(nativeFontName, options);
+    await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 export { FontDisplay };
 //# sourceMappingURL=Font.js.map

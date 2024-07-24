@@ -1,7 +1,9 @@
+.cache
 .next
 node_modules
 out/
 *.tsbuildinfo
+.eslintcache
 
 # copied in next.config.js
 pages/versions/latest/

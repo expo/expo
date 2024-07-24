@@ -1,7 +1,6 @@
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { IOptions as GlobOptions } from 'glob';
-import glob from 'glob-promise';
+import { glob, GlobOptions } from 'glob';
 import ora from 'ora';
 
 import { EXPO_DIR } from './Constants';
@@ -118,7 +117,7 @@ export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
 export async function searchFilesAsync(
   rootPath: string,
   patterns: string | string[],
-  options?: GlobOptions
+  options?: Omit<GlobOptions, 'withFileTypes'>
 ): Promise<Set<string>> {
   const files = await Promise.all(
     arrayize(patterns).map((pattern) =>
@@ -187,7 +186,7 @@ export async function runWithSpinner<Result>(
   try {
     const result = await action(step);
 
-    if (succeedText) {
+    if (step.isSpinning && succeedText) {
       step.succeed(succeedText);
     }
     return result;

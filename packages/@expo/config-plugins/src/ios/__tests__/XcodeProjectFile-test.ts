@@ -1,27 +1,16 @@
-import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { createBuildSourceFile } from '../XcodeProjectFile';
 import { getPbxproj } from '../utils/Xcodeproj';
-
-const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 
 describe(createBuildSourceFile, () => {
   const projectRoot = '/alpha';
   beforeAll(async () => {
-    vol.fromJSON(
-      {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/testproject/AppDelegate.m': '',
-      },
-      projectRoot
-    );
+    vol.fromJSON(rnFixture, projectRoot);
   });
 
   afterAll(() => {
@@ -34,21 +23,21 @@ describe(createBuildSourceFile, () => {
     createBuildSourceFile({
       project,
       nativeProjectRoot: path.join(projectRoot, 'ios'),
-      filePath: 'testproject/myfile.swift',
+      filePath: 'HelloWorld/myfile.swift',
       fileContents: '// hello',
     });
 
-    expect(project.hasFile('testproject/myfile.swift')).toStrictEqual({
+    expect(project.hasFile('HelloWorld/myfile.swift')).toStrictEqual({
       explicitFileType: undefined,
       fileEncoding: 4,
       includeInIndex: 0,
       isa: 'PBXFileReference',
       lastKnownFileType: 'sourcecode.swift',
       name: '"myfile.swift"',
-      path: '"testproject/myfile.swift"',
+      path: '"HelloWorld/myfile.swift"',
       sourceTree: '"<group>"',
     });
 
-    expect(vol.existsSync(path.join(projectRoot, 'ios/testproject/myfile.swift'))).toBe(true);
+    expect(vol.existsSync(path.join(projectRoot, 'ios/HelloWorld/myfile.swift'))).toBe(true);
   });
 });

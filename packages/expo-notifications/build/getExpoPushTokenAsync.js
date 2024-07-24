@@ -45,19 +45,13 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
 export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
-    const experienceId = options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
-    const projectId = options.projectId ||
-        Constants.expoConfig?.extra?.eas?.projectId ||
-        Constants.manifest?.projectId;
+    const projectId = options.projectId || Constants.easConfig?.projectId;
     if (!projectId) {
-        console.warn('Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+');
-    }
-    if (!experienceId && !projectId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself.");
+        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', `No "projectId" found. If "projectId" can't be inferred from the manifest (for instance, in bare workflow), you have to pass it in yourself.`);
     }
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_APPLICATION_ID', "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.");
+        throw new CodedError('ERR_NOTIFICATIONS_NO_APPLICATION_ID', `No "applicationId" found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.`);
     }
     const type = options.type || getTypeOfToken(devicePushToken);
     const development = options.development || (await shouldUseDevelopmentNotificationService());
@@ -69,7 +63,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
         development,
         appId: applicationId,
         deviceToken: getDeviceToken(devicePushToken),
-        ...(projectId ? { projectId } : { experienceId }),
+        projectId,
     };
     const response = await fetch(url, {
         method: 'POST',

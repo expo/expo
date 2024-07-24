@@ -22,39 +22,11 @@ type CommandOptions = {
 // Object containing configs for custom workflows.
 // Custom workflows extends common workflows by providing specific inputs.
 const CUSTOM_WORKFLOWS = {
-  'ad-hoc-client-shell-app-ios-upload': {
-    name: 'Ad-hoc iOS Client Shell App (with Upload to S3)',
-    baseWorkflowSlug: 'ad-hoc-client-shell-app-ios',
+  'client-android-eas-release': {
+    name: 'Android Expo Go Release',
+    baseWorkflowSlug: 'client-android-eas',
     inputs: {
-      upload: 'upload',
-    },
-  },
-  'client-android-release': {
-    name: 'Android Client Release',
-    baseWorkflowSlug: 'client-android',
-    inputs: {
-      releaseGooglePlay: 'release-google-play',
-    },
-  },
-  'client-android-simulator': {
-    name: 'Android Client Simulator Release',
-    baseWorkflowSlug: 'client-android',
-    inputs: {
-      releaseAPK: 'release-apk',
-    },
-  },
-  'client-ios-simulator': {
-    name: 'iOS Client Simulator Release',
-    baseWorkflowSlug: 'client-ios',
-    inputs: {
-      releaseSimulator: 'release-simulator',
-    },
-  },
-  'shell-app-ios-upload': {
-    name: 'iOS Shell App (with newest SDK version and Upload to S3)',
-    baseWorkflowSlug: 'shell-app-ios',
-    inputs: {
-      upload: 'upload',
+      buildType: 'versioned-client',
     },
   },
   'sdk-all': {

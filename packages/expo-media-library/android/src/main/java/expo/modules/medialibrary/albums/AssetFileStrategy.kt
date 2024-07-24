@@ -26,7 +26,8 @@ internal fun interface AssetFileStrategy {
       val newFile = MediaLibraryUtils.safeMoveFile(src, dir)
       context.contentResolver.delete(
         EXTERNAL_CONTENT_URI,
-        "${MediaStore.MediaColumns.DATA}=?", arrayOf(src.path)
+        "${MediaStore.MediaColumns.DATA}=?",
+        arrayOf(src.path)
       )
       newFile
     }

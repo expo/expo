@@ -5,7 +5,7 @@ import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMac
 import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const GENERATED_DIR = path.join(ANDROID_DIR, 'expoview/src/main/java/host/exp/exponent/generated');
 const TEMPLATE_FILES_DIR = path.join(EXPO_DIR, 'template-files');
 

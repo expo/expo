@@ -1,10 +1,9 @@
 import {
   AndroidConfig,
-  ConfigPlugin,
+  type ConfigPlugin,
   createRunOncePlugin,
-  InfoPlist,
-  withInfoPlist,
-} from '@expo/config-plugins';
+  IOSConfig,
+} from 'expo/config-plugins';
 
 const pkg = require('expo-image-picker/package.json');
 
@@ -17,31 +16,6 @@ type Props = {
   cameraPermission?: string | false;
   microphonePermission?: string | false;
 };
-
-export function setImagePickerInfoPlist(
-  infoPlist: InfoPlist,
-  { cameraPermission, microphonePermission, photosPermission }: Props
-): InfoPlist {
-  if (photosPermission === false) {
-    delete infoPlist.NSPhotoLibraryUsageDescription;
-  } else {
-    infoPlist.NSPhotoLibraryUsageDescription =
-      photosPermission || infoPlist.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
-  }
-  if (cameraPermission === false) {
-    delete infoPlist.NSCameraUsageDescription;
-  } else {
-    infoPlist.NSCameraUsageDescription =
-      cameraPermission || infoPlist.NSCameraUsageDescription || CAMERA_USAGE;
-  }
-  if (microphonePermission === false) {
-    delete infoPlist.NSMicrophoneUsageDescription;
-  } else {
-    infoPlist.NSMicrophoneUsageDescription =
-      microphonePermission || infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
-  }
-  return infoPlist;
-}
 
 export const withAndroidImagePickerPermissions: ConfigPlugin<Props | void> = (
   config,
@@ -71,13 +45,14 @@ const withImagePicker: ConfigPlugin<Props | void> = (
   config,
   { photosPermission, cameraPermission, microphonePermission } = {}
 ) => {
-  config = withInfoPlist(config, (config) => {
-    config.modResults = setImagePickerInfoPlist(config.modResults, {
-      photosPermission,
-      cameraPermission,
-      microphonePermission,
-    });
-    return config;
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSPhotoLibraryUsageDescription: READ_PHOTOS_USAGE,
+    NSCameraUsageDescription: CAMERA_USAGE,
+    NSMicrophoneUsageDescription: MICROPHONE_USAGE,
+  })(config, {
+    NSPhotoLibraryUsageDescription: photosPermission,
+    NSCameraUsageDescription: cameraPermission,
+    NSMicrophoneUsageDescription: microphonePermission,
   });
 
   if (microphonePermission !== false) {

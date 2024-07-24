@@ -1,0 +1,254 @@
+---
+title: Use ESLint and Prettier
+description: A guide on configuring ESLint and Prettier to format Expo apps.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
+
+<TabsGroup>
+
+[ESLint](https://eslint.org/) is a JavaScript linter that helps you find and fix errors in your code. It's a great tool to help you write better code and catch mistakes before they make it to production. In conjunction, you can use [Prettier](https://prettier.io/docs/en/), a code formatter that ensures all the code files follow a consistent styling.
+
+This guide provides steps to set up and configure ESLint and Prettier.
+
+## ESLint
+
+### Setup
+
+To set up ESLint in your Expo project, you can use the Expo CLI to install the necessary dependencies. Running this command also creates a **.eslintrc.js** file at the root of your project which extends configuration from [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
+
+<Terminal cmd={['# Install and configure ESLint', '$ npx expo lint']} />
+
+<Collapsible summary="Setup instructions for SDK 50 and below">
+
+<Step label="1">
+
+Install ESLint, and [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo) in your project.
+
+<Terminal
+  cmd={[
+    '# Install required ESLint configuration manually',
+    '',
+    '# For other package managers',
+    '$ npx expo install -- --save-dev eslint@8 eslint-config-expo',
+    '',
+    '# For yarn only',
+    '$ yarn add -D eslint eslint-config-expo',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+Create an ESLint configuration file called **.eslintrc.js** at the root of your project. The configuration in **.eslintrc.js** extends [`eslint-config-expo`](https://github.com/expo/expo/tree/main/packages/eslint-config-expo).
+
+```js .eslintrc.js
+module.exports = {
+  extends: 'expo',
+};
+```
+
+</Step>
+
+<Step label="3">
+
+Add a `script` to your **package.json** to run ESLint.
+
+```json package.json
+{
+  "scripts": {
+    "lint": "eslint ."
+  }
+}
+```
+
+You can replace the `.` with specific directories or files to lint. For example, if you use Expo Router, you can use the `eslint app` command to lint only your routes inside the **app** directory.
+
+</Step>
+
+</Collapsible>
+
+### Usage
+
+> **info** **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
+
+You can lint your code manually from the command line with the `expo lint` script:
+
+<Tabs>
+
+<Tab label="For SDK 51 and above">
+
+<Terminal
+  cmd={[
+    '# After ESLint has been configured, run the command again to lint your code.',
+    '$ npx expo lint',
+  ]}
+/>
+
+Running the above command will run the `lint` script from **package.json**.
+
+<Terminal
+  cmd={[
+    '# Example output for npx expo lint command',
+    '',
+    '$ npm run eslint .',
+    '/app/node_modules/.bin/eslint .',
+    '',
+    '/app/components/HelloWave.tsx',
+    '  22:6 warning React Hook useEffect has a missing dependency: "rotateAnimation".',
+    '       Either include it or remove the dependency array react-hooks/exhaustive-deps',
+    '',
+    '✖ 1 problem (0 errors, 1 warning)',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="For SDK 50 and below">
+
+<Terminal cmd={['$ npm run lint']} />
+
+</Tab>
+
+</Tabs>
+
+### Environment configuration
+
+ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
+
+You can add the `eslint-env` comment directive to the top of a file to tell ESLint which environment the file is running in. For example, to tell ESLint that a file is run in Node.js, add the following comment to the top of the file:
+
+```js metro.config.js
+/* eslint-env node */
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(
+  /* @info This will no longer assert linting errors */ __dirname /* @end */
+);
+
+module.exports = config;
+```
+
+## Prettier
+
+### Installation
+
+To install Prettier in your project:
+
+<Terminal
+  cmd={[
+    '# For other package managers',
+    '$ npx expo install -- --save-dev prettier eslint-config-prettier eslint-plugin-prettier',
+    '',
+    '# For yarn only',
+    '$ yarn add -D prettier eslint-config-prettier eslint-plugin-prettier',
+  ]}
+/>
+
+### Setup
+
+To integrate Prettier with ESlint, update your **.eslintrc.js**:
+
+```js .eslintrc.js
+module.exports = {
+  extends: ['expo', 'prettier'],
+  plugins: ['prettier'],
+  rules: {
+    'prettier/prettier': 'error',
+  },
+};
+```
+
+Now, when you run `npx expo lint`, anything that is not aligned with Prettier formatting will be caught as an error.
+
+> **Note:** In the above configuration, you can use `"prettier/prettier": "warn"` if you prefer these formatting issues as warnings instead of errors.
+
+To customize Prettier settings, create a **.prettierrc** file at the root of your project and add your configuration.
+
+<BoxLink
+  title="Custom Prettier configuration"
+  description="Learn more about customizing Prettier configuration."
+  href="https://github.com/expo/expo/tree/main/packages/eslint-config-universe#customizing-prettier"
+/>
+
+## Troubleshooting
+
+### ESLint is not updating in VS Code
+
+If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type. You can try restarting the ESLint server by running the command `ESLint: Restart ESLint Server` from the [command palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette).
+
+### ESLint is slow
+
+ESLint can be slow to run on large projects. The easiest way to speed up the process is to lint fewer files. Add a **.eslintignore** file to your project root to ignore certain files and directories such as:
+
+```sh .eslintignore
+# @info Ignore the root <b>.expo</b> directory. #
+/.expo
+# @end #
+node_modules
+```
+
+## Migration to `eslint-config-expo`
+
+If you're migrating from an older version of Expo SDK that has `eslint-config-universe` installed, install `eslint-config-expo` library and update your ESLint configuration to extend it from the new library.
+
+<Step label="1">
+
+Remove the `eslint-config-universe` library and install the `eslint-config-expo` manually:
+
+<Terminal
+  cmd={[
+    '# For other package managers',
+    '$ npx expo install -- --save-dev eslint-config-expo',
+    '',
+    '# For yarn only',
+    '$ yarn add -D eslint-config-expo',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+Update your ESLint configuration to extend the `eslint-config-expo`:
+
+```js .eslintrc.js
+module.exports = {
+  /* @info Replace the extends key with the new configuration. */
+  extends: 'expo',
+  /* @end */
+  /* @hide ...*/ /* @end */
+};
+```
+
+You can continue using your existing ESLint configuration with the new library and the `lint` script in your **package.json**. If your project uses SDK 51 and above, you can switch to using `npx expo lint` by following the next step.
+
+</Step>
+
+<Step label="3">
+
+To use `npx expo lint` command to lint your code, update the `lint` script in your **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    /* @info */
+    "lint": "expo lint"
+    /* @end */
+  }
+}
+```
+
+> **Note:** The above configuration will work only for SDK 51 and above.
+
+Now you can run `npx expo lint` to lint your code.
+
+</Step>
+
+</TabsGroup>

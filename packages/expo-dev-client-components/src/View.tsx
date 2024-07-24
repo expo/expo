@@ -186,6 +186,12 @@ const Horizontal = create(RNView, {
       xl: { width: scale.xl, flex: 0 },
     },
   },
+
+  selectors: {
+    dark: {
+      bg: bgDark,
+    },
+  },
 });
 
 const Vertical = create(RNView, {
@@ -201,6 +207,12 @@ const Vertical = create(RNView, {
       medium: { height: scale.medium, flex: 0 },
       large: { height: scale.large, flex: 0 },
       xl: { height: scale.xl, flex: 0 },
+    },
+  },
+
+  selectors: {
+    dark: {
+      bg: bgDark,
     },
   },
 });

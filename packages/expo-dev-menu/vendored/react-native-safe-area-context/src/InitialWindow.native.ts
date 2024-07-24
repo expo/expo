@@ -1,15 +1,10 @@
-import { UIManager } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
 import { Metrics } from './SafeArea.types';
 
-const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig(
-  'RNCSafeAreaProvider',
-) as any;
+const RNCSafeAreaProviderConstants = requireNativeModule('RNCSafeAreaProvider');
 
 export const initialWindowMetrics = (
-  RNCSafeAreaProviderConfig != null &&
-  RNCSafeAreaProviderConfig.Constants != null
-    ? RNCSafeAreaProviderConfig.Constants.initialWindowMetrics
-    : null
+  RNCSafeAreaProviderConstants != null ? RNCSafeAreaProviderConstants.initialWindowMetrics : null
 ) as Metrics | null;
 
 /**

@@ -1,2 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoImageManipulator || {};
+import { requireNativeModule } from 'expo-modules-core';
+
+import { ImageManipulator } from './ImageManipulator.types';
+
+export default requireNativeModule<ImageManipulator>('ExpoImageManipulator');

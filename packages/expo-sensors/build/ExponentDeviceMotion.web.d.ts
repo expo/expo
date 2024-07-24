@@ -1,6 +1,5 @@
 import { getPermissionsAsync, requestPermissionsAsync } from './utils/isSensorEnabledAsync.web';
 declare const _default: {
-    readonly name: string;
     /**
      * Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
      */

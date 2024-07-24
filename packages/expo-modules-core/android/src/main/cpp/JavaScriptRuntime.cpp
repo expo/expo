@@ -4,114 +4,24 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
-
-#if UNIT_TEST
-
-#if USE_HERMES
-
-#include <hermes/hermes.h>
-
-#include <utility>
-
-#else
-
-#if REACT_NATIVE_TARGET_VERSION >= 71
-#include <jsc/JSCRuntime.h>
-#else
-#include <jsi/JSCRuntime.h>
-#endif // REACT_NATIVE_TARGET_VERSION >= 71
-
-#endif
-
-#endif // UNIT_TEST
+#include "JSIContext.h"
+#include "JSIUtils.h"
 
 namespace jsi = facebook::jsi;
 
 namespace expo {
 
-void SyncCallInvoker::invokeAsync(std::function<void()> &&func) {
-  func();
-}
-
-void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
-  func();
-}
-
-JavaScriptRuntime::JavaScriptRuntime()
-  : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    nativeInvoker(std::make_shared<SyncCallInvoker>()) {
-#if !UNIT_TEST
-  throw std::logic_error(
-    "The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
-#else
-#if USE_HERMES
-  auto config = ::hermes::vm::RuntimeConfig::Builder()
-    .withEnableSampleProfiling(false);
-  runtime = facebook::hermes::makeHermesRuntime(config.build());
-
-  // This version of the Hermes uses a Promise implementation that is provided by the RN.
-  // The `setImmediate` function isn't defined, but is required by the Promise implementation.
-  // That's why we inject it here.
-  auto setImmediatePropName = jsi::PropNameID::forUtf8(*runtime, "setImmediate");
-  runtime->global().setProperty(
-    *runtime,
-    setImmediatePropName,
-    jsi::Function::createFromHostFunction(
-      *runtime,
-      setImmediatePropName,
-      1,
-      [](jsi::Runtime &rt,
-         const jsi::Value &thisVal,
-         const jsi::Value *args,
-         size_t count) {
-        args[0].asObject(rt).asFunction(rt).call(rt);
-        return jsi::Value::undefined();
-      }
-    )
-  );
-#else
-  runtime = facebook::jsc::makeJSCRuntime();
-#endif
-
-  // By default "global" property isn't set.
-  runtime->global().setProperty(
-    *runtime,
-    jsi::PropNameID::forUtf8(*runtime, "global"),
-    runtime->global()
-  );
-
-  // Mock the CodedError that in a typical scenario will be defined by the `expo-modules-core`.
-  // Note: we can't use `class` syntax here, because Hermes doesn't support it.
-  runtime->evaluateJavaScript(
-    std::make_shared<jsi::StringBuffer>(
-      "function CodedError(code, message) {\n"
-      "    this.code = code;\n"
-      "    this.message = message;\n"
-      "    this.stack = (new Error).stack;\n"
-      "}\n"
-      "CodedError.prototype = new Error;\n"
-      "global.ExpoModulesCore_CodedError = CodedError"
-    ),
-    "<<evaluated>>"
-  );
-
-  installMainObject();
-#endif // !UNIT_TEST
-}
-
 JavaScriptRuntime::JavaScriptRuntime(
   jsi::Runtime *runtime,
-  std::shared_ptr<react::CallInvoker> jsInvoker,
-  std::shared_ptr<react::CallInvoker> nativeInvoker
-) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)) {
+  std::shared_ptr<react::CallInvoker> jsInvoker
+) : jsInvoker(std::move(jsInvoker)) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
-  installMainObject();
 }
 
-jsi::Runtime &JavaScriptRuntime::get() const {
+jsi::Runtime &JavaScriptRuntime::get() const noexcept {
   return *runtime;
 }
 
@@ -119,7 +29,8 @@ jni::local_ref<JavaScriptValue::javaobject>
 JavaScriptRuntime::evaluateScript(const std::string &script) {
   auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
   try {
-    return JavaScriptValue::newObjectCxxArgs(
+    return JavaScriptValue::newInstance(
+      getJSIContext(get()),
       weak_from_this(),
       std::make_shared<jsi::Value>(runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"))
     );
@@ -140,14 +51,14 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
   }
 }
 
-jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
+jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() noexcept {
   auto global = std::make_shared<jsi::Object>(runtime->global());
-  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), global);
+  return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), global);
 }
 
-jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
+jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() noexcept {
   auto newObject = std::make_shared<jsi::Object>(*runtime);
-  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), newObject);
+  return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), newObject);
 }
 
 void JavaScriptRuntime::drainJSEventLoop() {
@@ -155,27 +66,31 @@ void JavaScriptRuntime::drainJSEventLoop() {
 }
 
 void JavaScriptRuntime::installMainObject() {
+  auto coreModule = getJSIContext(get())->getCoreModule();
+
+  // As opposed to other modules, the core module is represented by a raw JS object instead of an instance of NativeModule class.
   mainObject = std::make_shared<jsi::Object>(*runtime);
+
+  // Decorate the core object based on the module definition.
+  for (const auto &decorator : coreModule->cthis()->decorators) {
+    decorator->decorate(*runtime, *mainObject);
+  }
+
   auto global = runtime->global();
-  auto objectClass = global.getPropertyAsObject(*runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
-    *runtime,
-    "defineProperty"
-  );
 
   jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
 
   descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
 
-  definePropertyFunction.callWithThis(*runtime, objectClass, {
-    jsi::Value(*runtime, global),
-    jsi::String::createFromUtf8(*runtime, "expo"),
+  common::defineProperty(
+    *runtime,
+    &global,
+    "expo",
     std::move(descriptor)
-  });
+  );
 }
 
-std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {
+std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() noexcept {
   return mainObject;
 }
-
 } // namespace expo

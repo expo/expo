@@ -1,6 +1,5 @@
-import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import ExponentFileSystem from './ExponentFileSystem';
 import {
@@ -31,8 +30,6 @@ if (!ExponentFileSystem) {
     "No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?"
   );
 }
-// Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 
 function normalizeEndingSlash(p: string | null): string | null {
   if (p != null) {
@@ -55,13 +52,15 @@ export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documen
  */
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
-// @docsMissing
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export const bundleDirectory = normalizeEndingSlash(ExponentFileSystem.bundleDirectory);
 
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
- * @param options A map of options represented by [`GetInfoAsyncOptions`](#getinfoasyncoptions) type.
+ * @param options A map of options represented by [`InfoOptions`](#infooptions) type.
  * @return A Promise that resolves to a `FileInfo` object. If no item exists at this URI,
  * the returned Promise resolves to `FileInfo` object in form of `{ exists: false, isDirectory: false }`.
  */
@@ -201,13 +200,12 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
   if (!ExponentFileSystem.readDirectoryAsync) {
     throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
   }
-  return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
+  return await ExponentFileSystem.readDirectoryAsync(fileUri);
 }
 
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * @return Returns a Promise that resolves to the number of bytes available on the internal disk.
  */
 export async function getFreeDiskStorageAsync(): Promise<number> {
   if (!ExponentFileSystem.getFreeDiskStorageAsync) {
@@ -218,8 +216,7 @@ export async function getFreeDiskStorageAsync(): Promise<number> {
 
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
  */
 export async function getTotalDiskCapacityAsync(): Promise<number> {
   if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
@@ -344,19 +341,12 @@ export function createUploadTask(
   return new UploadTask(url, fileUri, options, callback);
 }
 
-function isUploadProgressData(
-  data: DownloadProgressData | UploadProgressData
-): data is UploadProgressData {
-  return 'totalBytesSent' in data;
-}
-
 export abstract class FileSystemCancellableNetworkTask<
-  T extends DownloadProgressData | UploadProgressData
+  T extends DownloadProgressData | UploadProgressData,
 > {
-  private _uuid = uuidv4();
+  private _uuid = uuid.v4();
   protected taskWasCanceled = false;
-  private emitter = new EventEmitter(ExponentFileSystem);
-  private subscription?: Subscription | null;
+  private subscription?: EventSubscription | null;
 
   // @docsMissing
   public async cancelAsync(): Promise<void> {
@@ -391,34 +381,24 @@ export abstract class FileSystemCancellableNetworkTask<
       return;
     }
 
-    this.subscription = this.emitter.addListener(this.getEventName(), (event: ProgressEvent<T>) => {
-      if (event.uuid === this.uuid) {
-        const callback = this.getCallback();
-        if (callback) {
-          if (isUploadProgressData(event.data)) {
-            const data = {
-              ...event.data,
-              get totalByteSent() {
-                console.warn(
-                  'Key "totalByteSent" in File System UploadProgressData is deprecated and will be removed in SDK 49, use "totalBytesSent" instead'
-                );
-                return this.totalBytesSent;
-              },
-            };
-            return callback(data);
+    this.subscription = ExponentFileSystem.addListener(
+      this.getEventName(),
+      (event: ProgressEvent<T>) => {
+        if (event.uuid === this.uuid) {
+          const callback = this.getCallback();
+          if (callback) {
+            callback(event.data as T);
           }
-
-          callback(event.data);
         }
       }
-    });
+    );
   }
 
   protected removeSubscription() {
     if (!this.subscription) {
       return;
     }
-    this.emitter.removeSubscription(this.subscription);
+    this.subscription.remove();
     this.subscription = null;
   }
 }
@@ -716,7 +696,7 @@ export namespace StorageAccessFramework {
         'StorageAccessFramework.readDirectoryAsync'
       );
     }
-    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri);
   }
 
   /**
@@ -770,7 +750,7 @@ export namespace StorageAccessFramework {
    */
   export const moveAsync = baseMoveAsync;
   /**
-   * Alias fro [`copyAsync`](#filesystemcopyasyncoptions) method.
+   * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
    */
   export const copyAsync = baseCopyAsync;
 }

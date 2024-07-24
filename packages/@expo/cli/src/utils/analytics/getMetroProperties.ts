@@ -1,6 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
-
-import { resolveMetroVersionFromProject } from '../../start/server/metro/resolveFromProject';
+import { ExpoConfig } from '@expo/config';
 
 /**
  * Get the unstable / experimental properties used within the Metro config.
@@ -15,7 +13,7 @@ export function getMetroProperties(
 ) {
   return {
     sdkVersion: exp.sdkVersion,
-    metroVersion: resolveMetroVersionFromProject(projectRoot),
+    metroVersion: require('metro/package.json').version,
 
     fileMapCacheManagerFactory:
       Boolean(metroConfig.unstable_fileMapCacheManagerFactory) || undefined, // CacheManagerFactory
@@ -27,7 +25,7 @@ export function getMetroProperties(
     resolverEnablePackageExports: metroConfig.resolver?.unstable_enablePackageExports, // boolean
 
     serverImportBundleSupport: metroConfig.server?.experimentalImportBundleSupport, // boolean
-    serverServerRoot: metroConfig.server?.unstable_serverRoot, // string | null
+    serverServerRoot: Boolean(metroConfig.server?.unstable_serverRoot) || undefined, // string | null
 
     transformerCollectDependenciesPath: metroConfig.transformer?.unstable_collectDependenciesPath, // string
     transformerDependencyMapReservedName:

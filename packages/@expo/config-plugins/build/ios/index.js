@@ -17,7 +17,7 @@ Object.defineProperty(exports, "InfoPlist", {
     return _IosConfig().InfoPlist;
   }
 });
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Swift = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
+exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Swift = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
 function Bitcode() {
   const data = _interopRequireWildcard(require("./Bitcode"));
   Bitcode = function () {
@@ -194,6 +194,19 @@ Object.defineProperty(exports, "Permissions", {
     return Permissions();
   }
 });
+function PrivacyInfo() {
+  const data = _interopRequireWildcard(require("./PrivacyInfo"));
+  PrivacyInfo = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "PrivacyInfo", {
+  enumerable: true,
+  get: function () {
+    return PrivacyInfo();
+  }
+});
 function ProvisioningProfile() {
   const data = _interopRequireWildcard(require("./ProvisioningProfile"));
   ProvisioningProfile = function () {
@@ -324,6 +337,6 @@ Object.defineProperty(exports, "XcodeUtils", {
     return XcodeUtils();
   }
 });
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 //# sourceMappingURL=index.js.map

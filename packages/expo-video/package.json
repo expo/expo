@@ -1,0 +1,41 @@
+{
+  "name": "expo-video",
+  "title": "Expo Video",
+  "version": "1.1.9",
+  "description": "A cross-platform, performant video component for React Native and Expo with Web support",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/video/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-video"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "video",
+    "player"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^3.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

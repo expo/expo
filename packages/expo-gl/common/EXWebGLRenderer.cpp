@@ -37,7 +37,7 @@ void installConstants(jsi::Runtime &runtime, jsi::Object &gl);
 void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl);
 void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl);
 
-void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContext viewport, jsi::Object&& global) {
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, glesContext viewport, jsi::Object&& global) {
   ensurePrototypes(runtime);
   jsi::Object gl = ctx->supportsWebGL2
     ? createWebGLObject(
@@ -51,13 +51,6 @@ void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContex
   gl.setProperty(runtime, "drawingBufferHeight", viewport.viewportHeight);
   gl.setProperty(runtime, "supportsWebGL2", ctx->supportsWebGL2);
   gl.setProperty(runtime, "contextId", static_cast<double>(ctx->ctxId));
-
-  // Legacy case for older SDKs in Expo Go
-  bool legacyJs = !runtime.global().getProperty(runtime, "__EXGLConstructorReady").isBool();
-  if (legacyJs) {
-    installConstants(runtime, gl);
-    ctx->supportsWebGL2 ? installWebGL2Methods(runtime, gl) : installWebGLMethods(runtime, gl);
-  }
 
   jsi::Value jsContextMap = global.getProperty(runtime, EXGLContextsMapPropertyName);
   if (jsContextMap.isNull() || jsContextMap.isUndefined()) {

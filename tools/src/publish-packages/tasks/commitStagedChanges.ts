@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { blue } = chalk;
 

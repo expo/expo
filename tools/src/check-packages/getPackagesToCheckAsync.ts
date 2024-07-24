@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
+import { ActionOptions } from './types';
 import { formatCommitHash } from '../Formatter';
 import Git from '../Git';
 import logger from '../Logger';
 import { getListOfPackagesAsync } from '../Packages';
-import { ActionOptions } from './types';
 
 const { yellow } = chalk;
 

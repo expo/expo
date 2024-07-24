@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ViewStyle, ImageStyle, TextStyle } from 'react-native';
+import { StyleSheet, type ViewStyle, type ImageStyle, type TextStyle } from 'react-native';
 
 import { useTheme } from './useExpoTheme';
 
@@ -41,7 +41,7 @@ export function create<T extends object, O extends Options>(
 
   const Component = React.forwardRef<
     T,
-    React.PropsWithChildren<T> & Nested<typeof config['variants']> & { selectors?: SelectorProps }
+    React.PropsWithChildren<T> & Nested<(typeof config)['variants']> & { selectors?: SelectorProps }
   >((props, ref) => {
     const theme = useTheme();
 

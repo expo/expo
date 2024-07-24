@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
 
-const DevMenuPreferences = NativeModules.DevMenuPreferences;
+const DevMenuPreferences = requireNativeModule('DevMenuPreferences');
 
 export type DevMenuPreferencesType = Partial<{
   motionGestureEnabled: boolean;

@@ -1,5 +1,3 @@
-import { NativeModules } from 'react-native';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 
-import { ExpoDevMenu } from './ExpoDevMenu.types';
-
-export default NativeModules.ExpoDevMenu as ExpoDevMenu;
+export default requireOptionalNativeModule('ExpoDevMenu');

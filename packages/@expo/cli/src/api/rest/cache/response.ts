@@ -1,4 +1,4 @@
-import { CacheObject } from 'cacache';
+import type { CacheObject } from 'cacache';
 import { BodyInit, Response, ResponseInit } from 'node-fetch';
 
 const responseInternalSymbol = Object.getOwnPropertySymbols(new Response())[1];

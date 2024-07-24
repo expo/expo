@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.AnyType
 
 enum class Queues {
   MAIN,
-  DEFAULT,
+  DEFAULT
 }
 
 abstract class BaseAsyncFunctionComponent(
@@ -17,7 +17,7 @@ abstract class BaseAsyncFunctionComponent(
 
   protected var queue = Queues.DEFAULT
 
-  abstract fun call(holder: ModuleHolder, args: ReadableArray, promise: Promise)
+  abstract fun call(holder: ModuleHolder<*>, args: ReadableArray, promise: Promise)
 
   fun runOnQueue(queue: Queues) = apply {
     this.queue = queue

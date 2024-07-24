@@ -22,13 +22,6 @@ function _debug() {
   };
   return data;
 }
-function _getAutolinkedPackages() {
-  const data = require("../getAutolinkedPackages");
-  _getAutolinkedPackages = function () {
-    return data;
-  };
-  return data;
-}
 function _withAndroidIcons() {
   const data = require("./icons/withAndroidIcons");
   _withAndroidIcons = function () {
@@ -53,13 +46,6 @@ function _expoAdsAdmob() {
 function _expoAppleAuthentication() {
   const data = _interopRequireDefault(require("./unversioned/expo-apple-authentication"));
   _expoAppleAuthentication = function () {
-    return data;
-  };
-  return data;
-}
-function _expoBranch() {
-  const data = _interopRequireDefault(require("./unversioned/expo-branch/expo-branch"));
-  _expoBranch = function () {
     return data;
   };
   return data;
@@ -120,6 +106,13 @@ function _reactNativeMaps() {
   };
   return data;
 }
+function _getAutolinkedPackages() {
+  const data = require("../getAutolinkedPackages");
+  _getAutolinkedPackages = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * These are the versioned first-party plugins with some of the future third-party plugins mixed in for legacy support.
@@ -145,7 +138,7 @@ const withIosExpoPlugins = (config, {
   // XcodeProject
   _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
   // Dangerous
-  _withIosIcons().withIosIcons]);
+  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
 };
 
 /**
@@ -167,7 +160,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // app/build.gradle
   _configPlugins().AndroidConfig.GoogleServices.withApplyPlugin, _configPlugins().AndroidConfig.Package.withPackageGradle, _configPlugins().AndroidConfig.Version.withVersion,
   // AndroidManifest.xml
-  _configPlugins().AndroidConfig.Package.withPackageManifest, _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
+  _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
   // Note: The withAndroidIntentFilters plugin must appear before the withScheme
   // plugin or withScheme will override the output of withAndroidIntentFilters.
   _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions,
@@ -184,13 +177,9 @@ const withAndroidExpoPlugins = (config, props) => {
 
 // Must keep in sync with `withVersionedExpoSDKPlugins`
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
-const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-branch', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
-const withVersionedExpoSDKPlugins = (config, {
-  expoUsername
-}) => {
-  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, [_expoUpdates().default, {
-    expoUsername
-  }], _expoBranch().default, _expoDocumentPicker().default,
+const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
+const withVersionedExpoSDKPlugins = config => {
+  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
   // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
   _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default]);

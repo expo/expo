@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import nprogress from 'nprogress';
 import { useEffect } from 'react';
 
@@ -13,14 +13,14 @@ export function useNProgress() {
   const router = useRouter();
 
   useEffect(function didMount() {
-    router.events.on('routeChangeStart', nprogress.start);
-    router.events.on('routeChangeComplete', nprogress.done);
-    router.events.on('routeChangeError', nprogress.done);
+    router?.events.on('routeChangeStart', nprogress.start);
+    router?.events.on('routeChangeComplete', nprogress.done);
+    router?.events.on('routeChangeError', nprogress.done);
 
     return function didUnmount() {
-      router.events.off('routeChangeStart', nprogress.start);
-      router.events.off('routeChangeComplete', nprogress.done);
-      router.events.off('routeChangeError', nprogress.done);
+      router?.events.off('routeChangeStart', nprogress.start);
+      router?.events.off('routeChangeComplete', nprogress.done);
+      router?.events.off('routeChangeError', nprogress.done);
     };
   }, []);
 }

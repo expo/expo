@@ -3,8 +3,25 @@ import { DeviceEventEmitter } from 'react-native';
 import ExpoDevMenu from './ExpoDevMenu';
 import { ExpoDevMenuItem } from './ExpoDevMenu.types';
 
+/**
+ * A method that opens development client menu when called.
+ */
 export function openMenu(): void {
   ExpoDevMenu.openMenu();
+}
+
+/**
+ * A method that hides development client menu when called.
+ */
+export function hideMenu(): void {
+  ExpoDevMenu.hideMenu();
+}
+
+/**
+ * A method that closes development client menu when called.
+ */
+export function closeMenu(): void {
+  ExpoDevMenu.closeMenu();
 }
 
 let hasRegisteredCallbackListener = false;
@@ -26,18 +43,17 @@ registerCallbackListener();
 
 let handlers = new Map<string, () => void>();
 
-export async function registerDevMenuItems(items: ExpoDevMenuItem[]) {
-  if (!__DEV__) {
-    // resolve undefined
-    return;
-  }
-
+/**
+ * A method that allows to specify custom entries in the development client menu.
+ * @param items
+ */
+export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void> {
   handlers = new Map();
-  const callbackNames: string[] = [];
+  const callbackNames: { name: string; shouldCollapse?: boolean }[] = [];
 
   items.forEach((item) => {
     handlers.set(item.name, item.callback);
-    callbackNames.push(item.name);
+    callbackNames.push({ name: item.name, shouldCollapse: item.shouldCollapse });
   });
 
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);

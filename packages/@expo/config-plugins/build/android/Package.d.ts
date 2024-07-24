@@ -1,7 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ConfigPlugin } from '../Plugin.types';
-import { AndroidManifest } from './Manifest';
-export declare const withPackageManifest: ConfigPlugin<void>;
 export declare const withPackageGradle: ConfigPlugin;
 export declare const withPackageRefactor: ConfigPlugin;
 export declare function getPackage(config: Pick<ExpoConfig, 'android'>): string | null;
@@ -17,5 +15,9 @@ export declare function renamePackageOnDiskForType({ projectRoot, type, packageN
     packageName: string;
 }): Promise<void>;
 export declare function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, buildGradle: string): string;
-export declare function setPackageInAndroidManifest(config: Pick<ExpoConfig, 'android'>, androidManifest: AndroidManifest): AndroidManifest;
 export declare function getApplicationIdAsync(projectRoot: string): Promise<string | null>;
+/**
+ * Make a package name safe to use in a kotlin file,
+ * e.g. is.pvin.hello -> `is`.pvin.hello
+ */
+export declare function kotlinSanitized(packageName: string): string;

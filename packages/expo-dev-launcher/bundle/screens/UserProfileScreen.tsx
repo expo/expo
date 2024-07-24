@@ -1,6 +1,5 @@
 import {
   Button,
-  Image,
   Heading,
   Text,
   Row,
@@ -14,6 +13,7 @@ import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Avatar } from '../components/Avatar';
 import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { useModalStack } from '../providers/ModalStackProvider';
@@ -60,7 +60,7 @@ export function UserProfileScreen({ navigation }) {
   const isAuthenticated = userData != null;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }}>
         <View>
           <AccountScreenHeader onClosePress={onClosePress} />
@@ -100,16 +100,15 @@ function AccountScreenHeader({ onClosePress }) {
 
         <Spacer.Horizontal />
 
-        <Button.ScaleOnPressContainer
+        <Button.FadeOnPressContainer
           onPress={onClosePress}
           accessibilityLabel="Go Back"
           rounded="full"
-          bg="ghost"
-          minScale={0.9}>
+          bg="ghost">
           <View padding="medium" rounded="full">
             <XIcon />
           </View>
-        </Button.ScaleOnPressContainer>
+        </Button.FadeOnPressContainer>
       </Row>
     </View>
   );
@@ -124,7 +123,7 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
 
       <Spacer.Vertical size="medium" />
 
-      <Button.ScaleOnPressContainer
+      <Button.FadeOnPressContainer
         bg="tertiary"
         rounded="medium"
         onPress={onLoginPress}
@@ -135,11 +134,11 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
             Log In
           </Button.Text>
         </View>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
 
       <Spacer.Vertical size="small" />
 
-      <Button.ScaleOnPressContainer
+      <Button.FadeOnPressContainer
         bg="secondary"
         rounded="medium"
         onPress={onSignupPress}
@@ -150,7 +149,7 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
             Sign Up
           </Button.Text>
         </View>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
 
       {isLoading && (
         <View
@@ -187,8 +186,8 @@ function UserAccountSelector({
   const orgs: UserAccount[] = [];
 
   for (const account of userData.accounts) {
-    if (account != null) {
-      if (account.owner != null) {
+    if (account) {
+      if (account.ownerUserActor) {
         accounts.push(account);
       } else {
         orgs.push(account);
@@ -207,44 +206,47 @@ function UserAccountSelector({
           const isSelected = account.id === selectedAccount?.id;
 
           return (
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               key={account.id}
               onPress={() => onSelectAccount(account)}
               bg="default"
               roundedBottom={isLast ? 'large' : 'none'}
               roundedTop={isFirst ? 'large' : 'none'}>
               <Row align="center" py="small" px="medium" bg="default">
-                <View rounded="full" bg="secondary">
-                  <Image
-                    size="large"
-                    rounded="full"
-                    source={{ uri: account.owner?.profilePhoto }}
-                  />
-                </View>
+                <Avatar
+                  profilePhoto={account?.ownerUserActor?.profilePhoto}
+                  name={
+                    account?.ownerUserActor?.fullName
+                      ? account.ownerUserActor.fullName
+                      : account?.name
+                  }
+                  isOrganization={account?.ownerUserActor === null}
+                  size="large"
+                />
                 <Spacer.Horizontal size="small" />
 
                 <View>
-                  <Heading>{account.owner?.username ?? account.name}</Heading>
+                  <Heading>{account.ownerUserActor?.username ?? account.name}</Heading>
                 </View>
 
                 <Spacer.Vertical />
                 {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
               </Row>
               {!isLast && <Divider />}
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           );
         })}
       </View>
 
       <Spacer.Vertical size="medium" />
 
-      <Button.ScaleOnPressContainer bg="tertiary" rounded="medium" onPress={onLogoutPress}>
+      <Button.FadeOnPressContainer bg="tertiary" rounded="medium" onPress={onLogoutPress}>
         <View py="small" rounded="medium">
           <Button.Text color="tertiary" weight="bold" align="center">
             Log Out
           </Button.Text>
         </View>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
     </View>
   );
 }

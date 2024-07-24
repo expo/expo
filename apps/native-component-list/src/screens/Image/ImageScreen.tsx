@@ -13,6 +13,14 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Animated styles',
+    route: 'image/animated-styles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimatedStyles'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},
@@ -63,6 +71,20 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Background',
+    route: 'image/background',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBackgroundScreen'));
+    },
+  },
+  {
+    name: 'Static responsiveness using srcSet',
+    route: 'image/srcset',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSrcSetScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {
@@ -70,10 +92,17 @@ export const ImageScreens = [
     },
   },
   {
-    name: 'Blurhash',
-    route: 'image/blurhash',
+    name: 'Tinting',
+    route: 'image/tinting',
     getComponent() {
-      return optionalRequire(() => require('./ImageBlurhashScreen'));
+      return optionalRequire(() => require('./ImageTintingScreen'));
+    },
+  },
+  {
+    name: 'Hash Placeholders',
+    route: 'image/hash-placeholders',
+    getComponent() {
+      return optionalRequire(() => require('./ImageHashPlaceholdersScreen'));
     },
   },
   {
@@ -88,6 +117,13 @@ export const ImageScreens = [
     route: 'image/gifs',
     getComponent() {
       return optionalRequire(() => require('./ImageGifsScreen'));
+    },
+  },
+  {
+    name: 'MediaLibrary and ImagePicker integration',
+    route: 'image/media-library',
+    getComponent() {
+      return optionalRequire(() => require('./ImageMediaLibraryScreen'));
     },
   },
 ];

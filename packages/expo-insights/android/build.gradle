@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+
+group = 'expo.modules.insights'
+version = '0.7.0'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+android {
+  namespace "expo.modules.insights"
+  defaultConfig {
+    versionCode 1
+    versionName "0.7.0"
+  }
+}
+
+dependencies {
+  implementation project(':expo-eas-client')
+}

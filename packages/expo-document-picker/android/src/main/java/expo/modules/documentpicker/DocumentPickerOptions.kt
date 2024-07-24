@@ -10,5 +10,8 @@ data class DocumentPickerOptions(
 
   @Field
   @IsNotEmpty
-  val type: List<String>
+  val type: List<String>,
+
+  @Field
+  val multiple: Boolean
 ) : Record

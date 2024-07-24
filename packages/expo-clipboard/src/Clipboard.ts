@@ -1,15 +1,14 @@
-import { EventEmitter, Subscription, UnavailabilityError, Platform } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modules-core';
 
-import {
+import type {
   ClipboardImage,
   ContentType,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
+import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard from './ExpoClipboard';
-
-const emitter = new EventEmitter(ExpoClipboard);
 
 const onClipboardEventName = 'onClipboardChanged';
 
@@ -24,7 +23,7 @@ type ClipboardEvent = {
   contentTypes: ContentType[];
 };
 
-export { Subscription, ClipboardEvent };
+export { EventSubscription as Subscription, ClipboardEvent };
 
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
@@ -210,7 +209,7 @@ export async function hasImageAsync(): Promise<boolean> {
  * });
  * ```
  */
-export function addClipboardListener(listener: (event: ClipboardEvent) => void): Subscription {
+export function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription {
   // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
   const listenerWrapper = (event: ClipboardEvent) => {
     const wrappedEvent: ClipboardEvent = {
@@ -224,7 +223,7 @@ export function addClipboardListener(listener: (event: ClipboardEvent) => void):
     };
     listener(wrappedEvent);
   };
-  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listenerWrapper);
+  return ExpoClipboard.addListener(onClipboardEventName, listenerWrapper);
 }
 
 /**
@@ -240,8 +239,21 @@ export function addClipboardListener(listener: (event: ClipboardEvent) => void):
  * removeClipboardListener(subscription);
  * ```
  */
-export function removeClipboardListener(subscription: Subscription) {
-  emitter.removeSubscription(subscription);
+export function removeClipboardListener(subscription: EventSubscription) {
+  subscription.remove();
 }
 
+/**
+ * Property that determines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export const isPasteButtonAvailable: boolean =
+  Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
+
 export * from './Clipboard.types';
+export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
+
+export { ClipboardPasteButton };

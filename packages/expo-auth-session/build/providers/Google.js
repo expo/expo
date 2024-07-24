@@ -1,10 +1,13 @@
 import * as Application from 'expo-application';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
+import { AuthRequest } from '../AuthRequest';
+import { Prompt, ResponseType, } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
-import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
+import { makeRedirectUri } from '../AuthSession';
+import { generateHexStringAsync } from '../PKCE';
 import { AccessTokenRequest } from '../TokenRequest';
-import { applyRequiredScopes, invariantClientId, useProxyEnabled } from './ProviderUtils';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
     minimumScopes: [
@@ -86,8 +89,7 @@ class GoogleAuthRequest extends AuthRequest {
  * @param redirectUriOptions
  */
 export function useIdTokenAuthRequest(config, redirectUriOptions = {}) {
-    const useProxy = useProxyEnabled(redirectUriOptions);
-    const isWebAuth = useProxy || Platform.OS === 'web';
+    const isWebAuth = Platform.OS === 'web';
     return useAuthRequest({
         ...config,
         responseType: 
@@ -97,7 +99,7 @@ export function useIdTokenAuthRequest(config, redirectUriOptions = {}) {
             isWebAuth
             ? ResponseType.IdToken
             : undefined,
-    }, { ...redirectUriOptions, useProxy });
+    }, { ...redirectUriOptions });
 }
 /**
  * Load an authorization request.
@@ -110,26 +112,16 @@ export function useIdTokenAuthRequest(config, redirectUriOptions = {}) {
  * @param redirectUriOptions
  */
 export function useAuthRequest(config = {}, redirectUriOptions = {}) {
-    const useProxy = useProxyEnabled(redirectUriOptions);
     const clientId = useMemo(() => {
-        const propertyName = useProxy
-            ? 'expoClientId'
-            : Platform.select({
-                ios: 'iosClientId',
-                android: 'androidClientId',
-                default: 'webClientId',
-            });
+        const propertyName = Platform.select({
+            ios: 'iosClientId',
+            android: 'androidClientId',
+            default: 'webClientId',
+        });
         const clientId = config[propertyName] ?? config.clientId;
         invariantClientId(propertyName, clientId, 'Google');
         return clientId;
-    }, [
-        useProxy,
-        config.expoClientId,
-        config.iosClientId,
-        config.androidClientId,
-        config.webClientId,
-        config.clientId,
-    ]);
+    }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
     const responseType = useMemo(() => {
         // Allow overrides.
         if (typeof config.responseType !== 'undefined') {
@@ -137,25 +129,24 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         }
         // You can only use `response_token=code` on installed apps (iOS, Android without proxy).
         // Installed apps can auto exchange without a client secret and get the token and id-token (Firebase).
-        const isInstalledApp = Platform.OS !== 'web' && !useProxy;
+        const isInstalledApp = Platform.OS !== 'web';
         // If the user provided the client secret (they shouldn't!) then use code exchange by default.
         if (config.clientSecret || isInstalledApp) {
             return ResponseType.Code;
         }
         // This seems the most pragmatic option since it can result in a full authentication on web and proxy platforms as expected.
         return ResponseType.Token;
-    }, [config.responseType, config.clientSecret, useProxy]);
+    }, [config.responseType, config.clientSecret]);
     const redirectUri = useMemo(() => {
         if (typeof config.redirectUri !== 'undefined') {
             return config.redirectUri;
         }
         return makeRedirectUri({
             native: `${Application.applicationId}:/oauthredirect`,
-            useProxy,
             ...redirectUriOptions,
             // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
         });
-    }, [useProxy, config.redirectUri, redirectUriOptions]);
+    }, [config.redirectUri, redirectUriOptions]);
     const extraParams = useMemo(() => {
         const output = config.extraParams ? { ...config.extraParams } : {};
         if (config.language) {
@@ -177,7 +168,6 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         redirectUri,
     }, discovery, GoogleAuthRequest);
     const [result, promptAsync] = useAuthRequestResult(request, discovery, {
-        useProxy,
         windowFeatures: settings.windowFeatures,
     });
     const [fullResult, setFullResult] = useState(null);

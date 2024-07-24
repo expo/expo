@@ -2,37 +2,66 @@
 // modified from https://gist.github.com/WorldMaker/a3cbe0059acd827edee568198376b95a
 // https://github.com/woltapp/react-blurhash/issues/3
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import decode from './decode';
+import { isBlurhashString } from '../resolveSources';
+
+const DEFAULT_SIZE = {
+  width: 32,
+  height: 32,
+};
+
+// We scale up the canvas to avoid an irritating visual glitch when animating in Chrome.
+const scaleRatio = 10;
 
 export function useBlurhash(
-  blurhash: string | undefined | null,
-  width: number = 32,
-  height: number = 32,
+  blurhash: { uri?: string; width?: number; height?: number } | undefined | null,
   punch: number = 1
 ) {
   punch = punch || 1;
 
-  const [url, setUrl] = useState<string | null>(null);
-
+  const [uri, setUri] = useState<string | null>(null);
+  const isBlurhash = (blurhash?.uri && isBlurhashString(blurhash.uri)) ?? false;
   useEffect(() => {
     let isCanceled = false;
 
-    if (!blurhash) return;
+    if (!blurhash || !blurhash.uri || !isBlurhash) {
+      return;
+    }
+    const strippedBlurhashString = blurhash.uri.replace(/blurhash:\//, '');
 
-    const pixels = decode(blurhash, width, height, punch);
+    const pixels = decode(
+      strippedBlurhashString,
+      blurhash.width ?? DEFAULT_SIZE.width,
+      blurhash.height ?? DEFAULT_SIZE.height,
+      punch
+    );
 
     const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
+    const upscaledCanvas = document.createElement('canvas');
+    canvas.width = blurhash.width ?? DEFAULT_SIZE.width;
+    canvas.height = blurhash.height ?? DEFAULT_SIZE.height;
+    upscaledCanvas.width = (blurhash.width ?? DEFAULT_SIZE.width) * scaleRatio;
+    upscaledCanvas.height = (blurhash.height ?? DEFAULT_SIZE.height) * scaleRatio;
     const context = canvas.getContext('2d');
-    const imageData = context!.createImageData(width, height);
+    if (!context) {
+      console.warn('Failed to decode blurhash');
+      return;
+    }
+    const imageData = context.createImageData(canvas.width, canvas.height);
     imageData.data.set(pixels);
-    context!.putImageData(imageData, 0, 0);
-    canvas.toBlob((blob) => {
+    context.putImageData(imageData, 0, 0);
+    const upscaledContext = upscaledCanvas.getContext('2d');
+    if (!upscaledContext) {
+      console.warn('Failed to decode blurhash');
+      return;
+    }
+    upscaledContext.scale(scaleRatio, scaleRatio);
+    upscaledContext.drawImage(canvas, 0, 0);
+    upscaledCanvas.toBlob((blob) => {
       if (!isCanceled) {
-        setUrl((oldUrl) => {
+        setUri((oldUrl) => {
           if (oldUrl) {
             URL.revokeObjectURL(oldUrl);
           }
@@ -43,14 +72,14 @@ export function useBlurhash(
 
     return function cleanupBlurhash() {
       isCanceled = true;
-      setUrl((oldUrl) => {
+      setUri((oldUrl) => {
         if (oldUrl) {
           URL.revokeObjectURL(oldUrl);
         }
         return null;
       });
     };
-  }, [blurhash, height, width, punch]);
-
-  return url;
+  }, [blurhash?.uri, blurhash?.height, blurhash?.width, punch, isBlurhash]);
+  const source = useMemo(() => (uri ? { uri } : null), [uri]);
+  return [source, isBlurhash] as const;
 }

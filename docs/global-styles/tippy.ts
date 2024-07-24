@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { palette, typography } from '@expo/styleguide';
+import { typography } from '@expo/styleguide';
+import { palette } from '@expo/styleguide-base';
 
 export const globalTippy = css`
   div.tippy-box {

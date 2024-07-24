@@ -1,12 +1,44 @@
 import React from 'react';
+import { View } from 'react-native-web';
 
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
-import AnimationManager from './web/AnimationManager';
+import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
-import loadStyle from './web/style';
+import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
+
+export const ExpoImageModule = {
+  async prefetch(urls: string | string[], _, __): Promise<boolean> {
+    const urlsArray = Array.isArray(urls) ? urls : [urls];
+
+    return new Promise<boolean>((resolve) => {
+      let imagesLoaded = 0;
+
+      urlsArray.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+          imagesLoaded++;
+
+          if (imagesLoaded === urlsArray.length) {
+            resolve(true);
+          }
+        };
+        img.onerror = () => resolve(false);
+      });
+    });
+  },
+
+  async clearMemoryCache(): Promise<boolean> {
+    return false;
+  },
+
+  async clearDiskCache(): Promise<boolean> {
+    return false;
+  },
+};
 
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -31,10 +63,20 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
-const setCssVariables = (element: HTMLElement, size: DOMRect) => {
+// Used for flip transitions to mimic native animations
+function setCssVariablesForFlipTransitions(element: HTMLElement, size: DOMRect) {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
-};
+}
+
+function isFlipTransition(transition: ImageNativeProps['transition']) {
+  return (
+    transition?.effect === 'flip-from-bottom' ||
+    transition?.effect === 'flip-from-top' ||
+    transition?.effect === 'flip-from-left' ||
+    transition?.effect === 'flip-from-right'
+  );
+}
 
 export default function ExpoImage({
   source,
@@ -42,6 +84,7 @@ export default function ExpoImage({
   contentFit,
   contentPosition,
   placeholderContentFit,
+  cachePolicy,
   onLoad,
   transition,
   onError,
@@ -49,85 +92,94 @@ export default function ExpoImage({
   onLoadEnd,
   priority,
   blurRadius,
+  recyclingKey,
+  style,
+  nativeViewRef,
+  containerViewRef,
   ...props
 }: ImageNativeProps) {
-  const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
-  const blurhashStyle = {
+  const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
-  const { containerRef, source: selectedSource } = useSourceSelection(
+  const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
-    setCssVariables
+    containerViewRef as React.MutableRefObject<HTMLDivElement | null>,
+    isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
+  const initialNodeAnimationKey =
+    (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
+
+  const initialNode: AnimationManagerNode | null = placeholder?.[0]?.uri
+    ? [
+        initialNodeAnimationKey,
+        ({ onAnimationFinished }) =>
+          (className, style) => (
+            <ImageWrapper
+              {...props}
+              ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
+              source={placeholder?.[0]}
+              style={{
+                objectFit: imagePlaceholderContentFit,
+                ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+                ...style,
+              }}
+              className={className}
+              events={{
+                onTransitionEnd: [onAnimationFinished],
+              }}
+              contentPosition={{ left: '50%', top: '50%' }}
+              hashPlaceholderContentPosition={contentPosition}
+              hashPlaceholderStyle={imageHashStyle}
+            />
+          ),
+      ]
+    : null;
+
+  const currentNodeAnimationKey =
+    (recyclingKey
+      ? `${recyclingKey}-${selectedSource?.uri ?? placeholder?.[0]?.uri}`
+      : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
+
+  const currentNode: AnimationManagerNode = [
+    currentNodeAnimationKey,
+    ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
+      (className, style) => (
+        <ImageWrapper
+          {...props}
+          ref={nativeViewRef as React.Ref<HTMLImageElement> | undefined}
+          source={selectedSource || placeholder?.[0]}
+          events={{
+            onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
+            onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+            onMount: [onMount],
+            onTransitionEnd: [onAnimationFinished],
+          }}
+          style={{
+            objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
+            ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+            ...style,
+          }}
+          className={className}
+          cachePolicy={cachePolicy}
+          priority={priority}
+          contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+          hashPlaceholderContentPosition={contentPosition}
+          hashPlaceholderStyle={imageHashStyle}
+          accessibilityLabel={props.accessibilityLabel}
+        />
+      ),
+  ];
   return (
-    <div
-      ref={containerRef}
-      className="expo-image-container"
-      style={{
-        aspectRatio: String(aspectRatio),
-        backgroundColor: backgroundColor?.toString(),
-        transform: transform?.toString(),
-        borderColor: borderColor?.toString(),
-        ...style,
-        overflow: 'hidden',
-        position: 'relative',
-      }}>
-      <AnimationManager
-        transition={transition}
-        initial={
-          placeholder?.[0]?.uri
-            ? [
-                placeholder?.[0]?.uri || '',
-                ({ onAnimationFinished }) =>
-                  (className, style) =>
-                    (
-                      <ImageWrapper
-                        source={placeholder?.[0]}
-                        style={{
-                          objectFit: imagePlaceholderContentFit,
-                          ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
-                          ...style,
-                        }}
-                        className={className}
-                        events={{
-                          onTransitionEnd: [onAnimationFinished],
-                        }}
-                        contentPosition={{ left: '50%', top: '50%' }}
-                        blurhashContentPosition={contentPosition}
-                        blurhashStyle={blurhashStyle}
-                      />
-                    ),
-              ]
-            : null
-        }>
-        {(selectedSource as any)?.uri || placeholder?.[0]?.uri}
-        {({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
-          (className, style) =>
-            (
-              <ImageWrapper
-                source={selectedSource || placeholder?.[0]}
-                events={{
-                  onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
-                  onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
-                  onMount: [onMount],
-                  onTransitionEnd: [onAnimationFinished],
-                }}
-                style={{
-                  objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
-                  ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
-                  ...style,
-                }}
-                className={className}
-                priority={priority}
-                contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
-                blurhashContentPosition={contentPosition}
-                blurhashStyle={blurhashStyle}
-              />
-            )}
+    <View
+      ref={containerViewRef}
+      dataSet={{ expoimage: true }}
+      style={[{ overflow: 'hidden' }, style]}>
+      <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
+        {currentNode}
       </AnimationManager>
-    </div>
+    </View>
   );
 }

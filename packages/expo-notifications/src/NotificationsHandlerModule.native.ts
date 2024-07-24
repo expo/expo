@@ -1,5 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
 import { NotificationsHandlerModule } from './NotificationsHandlerModule.types';
 
-export default NativeModulesProxy.ExpoNotificationsHandlerModule as any as NotificationsHandlerModule;
+export default requireNativeModule<NotificationsHandlerModule>('ExpoNotificationsHandlerModule');

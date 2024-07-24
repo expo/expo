@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, SyntheticPlatformEmitter } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
 import type { RecordingStatus } from './Audio/Recording.types';
@@ -121,6 +122,9 @@ async function setStatusForMedia(
   if (status.rate !== undefined) {
     media.playbackRate = status.rate;
   }
+  if (status.shouldCorrectPitch !== undefined) {
+    media.preservesPitch = status.shouldCorrectPitch;
+  }
   if (status.volume !== undefined) {
     media.volume = status.volume;
   }
@@ -148,9 +152,6 @@ function getAudioRecorderDurationMillis() {
 }
 
 export default {
-  get name(): string {
-    return 'ExponentAV';
-  },
   async getStatusForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus> {
     return getStatusFromMedia(element);
   },
@@ -190,14 +191,14 @@ export default {
     const media = new Audio(source);
 
     media.ontimeupdate = () => {
-      SyntheticPlatformEmitter.emit('didUpdatePlaybackStatus', {
+      DeviceEventEmitter.emit('didUpdatePlaybackStatus', {
         key: media,
         status: getStatusFromMedia(media),
       });
     };
 
     media.onerror = () => {
-      SyntheticPlatformEmitter.emit('ExponentAV.onError', {
+      DeviceEventEmitter.emit('ExponentAV.onError', {
         key: media,
         error: media.error!.message,
       });

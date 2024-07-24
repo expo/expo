@@ -5,6 +5,7 @@ import expo.modules.devlauncher.helpers.await
 import expo.modules.devlauncher.helpers.fetch
 import expo.modules.manifests.core.Manifest
 import okhttp3.Headers
+import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import java.io.Reader
@@ -39,10 +40,13 @@ class DevLauncherManifestParser(
   }
 
   private fun getHeaders(): Headers {
-    val headersMap = mutableMapOf("expo-platform" to "android")
+    val headersMap = mutableMapOf(
+      "expo-platform" to "android",
+      "accept" to "application/expo+json,application/json"
+    )
     if (installationID != null) {
       headersMap["expo-dev-client-id"] = installationID
     }
-    return Headers.of(headersMap)
+    return headersMap.toHeaders()
   }
 }

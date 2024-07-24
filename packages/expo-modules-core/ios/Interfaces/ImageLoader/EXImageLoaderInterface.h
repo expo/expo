@@ -1,6 +1,6 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
 
 typedef void (^EXImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 

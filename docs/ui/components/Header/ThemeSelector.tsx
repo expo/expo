@@ -1,18 +1,9 @@
-import { css } from '@emotion/react';
-import {
-  useTheme,
-  theme,
-  ChevronDownIcon,
-  ThemeAutoIcon,
-  ThemeDarkIcon,
-  ThemeLightIcon,
-  iconSize,
-  shadows,
-  spacing,
-  typography,
-  borderRadius,
-} from '@expo/styleguide';
-import React, { useEffect, useState } from 'react';
+import { useTheme, mergeClasses } from '@expo/styleguide';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
+import { Contrast02SolidIcon } from '@expo/styleguide-icons/solid/Contrast02SolidIcon';
+import { Moon01SolidIcon } from '@expo/styleguide-icons/solid/Moon01SolidIcon';
+import { SunSolidIcon } from '@expo/styleguide-icons/solid/SunSolidIcon';
+import { useEffect, useState } from 'react';
 
 export const ThemeSelector = () => {
   const { themeName, setAutoMode, setDarkMode, setLightMode } = useTheme();
@@ -22,16 +13,19 @@ export const ThemeSelector = () => {
     setLoaded(true);
   }, []);
 
-  if (!isLoaded) return <div css={containerStyle} />;
-
   return (
-    <div css={containerStyle}>
+    <div className="relative">
       <select
-        css={selectStyle}
+        aria-label="Theme selector"
+        title="Select theme"
+        className={mergeClasses(
+          'flex items-center justify-center h-9 text-default leading-[1.3] p-0 m-0 w-[50px] border border-default shadow-xs rounded-md indent-[-9999px] appearance-none bg-default text-sm',
+          'hocus:bg-element',
+          'max-lg-gutters:w-auto max-lg-gutters:min-w-[100px] max-lg-gutters:px-2 max-lg-gutters:text-secondary max-lg-gutters:indent-0 max-lg-gutters:pl-8'
+        )}
         value={themeName}
         onChange={e => {
           const option = e.target.value;
-
           if (option === 'auto') setAutoMode();
           if (option === 'dark') setDarkMode();
           if (option === 'light') setLightMode();
@@ -40,54 +34,16 @@ export const ThemeSelector = () => {
         <option value="light">Light</option>
         <option value="dark">Dark</option>
       </select>
-      <div css={selectIconStyle}>
-        {themeName === 'auto' && <ThemeAutoIcon size={iconSize.sm} />}
-        {themeName === 'dark' && <ThemeDarkIcon size={iconSize.sm} />}
-        {themeName === 'light' && <ThemeLightIcon size={iconSize.sm} />}
-      </div>
-      <div css={themeIconStyle}>
-        <ChevronDownIcon size={iconSize.sm} />
-      </div>
+      {isLoaded && (
+        <>
+          {themeName === 'auto' && <Contrast02SolidIcon className={ICON_CLASSES} />}
+          {themeName === 'dark' && <Moon01SolidIcon className={ICON_CLASSES} />}
+          {themeName === 'light' && <SunSolidIcon className={ICON_CLASSES} />}
+        </>
+      )}
+      <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
     </div>
   );
 };
 
-const containerStyle = css`
-  position: relative;
-  min-width: 120px;
-`;
-
-const selectStyle = css`
-  ${typography.fontSizes[14]}
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  color: ${theme.text.default};
-  line-height: 1.3;
-  padding: 0 ${spacing[9]}px;
-  width: 100%;
-  margin: 0;
-  border: 1px solid ${theme.border.default};
-  box-shadow: ${shadows.xs};
-  border-radius: ${borderRadius.md}px;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  appearance: none;
-  background-color: ${theme.background.default};
-  cursor: pointer;
-`;
-
-const selectIconStyle = css`
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  pointer-events: none;
-`;
-
-const themeIconStyle = css`
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  pointer-events: none;
-`;
+const ICON_CLASSES = 'icon-sm absolute left-2.5 top-2.5 text-icon-secondary pointer-events-none';

@@ -10,6 +10,74 @@
 
 ### 💡 Others
 
+## 12.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 11.10.0 — 2023-12-12
+
+### 💡 Others
+
+- [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
+
+## 11.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 11.7.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 11.6.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 11.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.2 — 2023-04-20
+
+### 🐛 Bug fixes
+
+- On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.1 — 2023-04-14
+
+### 🐛 Bug fixes
+
+- On iOS, fixed an issue where file permissions were not checked correctly. ([#22112](https://github.com/expo/expo/pull/22112) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.0 — 2023-04-12
+
+### 🎉 New features
+
+- On iOS, switched from using `UIDocumentInteractionController` to `UIActivityViewController` which provides more features. ([#22012](https://github.com/expo/expo/pull/22012) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 11.2.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
@@ -24,13 +92,14 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes))
+- Migrated module to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) and ([#20969](https://github.com/expo/expo/pull/20969) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.1 — 2022-10-27
 
 ### 🐛 Bug fixes
 
 - On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
+- Fixed `shareAsync` not resolving on Android. ([#21432](https://github.com/expo/expo/pull/21432) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.0 — 2022-10-25
 

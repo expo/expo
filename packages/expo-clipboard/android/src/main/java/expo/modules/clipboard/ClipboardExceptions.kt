@@ -17,7 +17,7 @@ internal class CopyFailureException(cause: Throwable?, kind: String = "item") :
 internal class InvalidImageException(image: String, cause: Throwable?) :
   CodedException(
     "Invalid base64 image: ${
-    image.run { substring(0, minOf(length, 32)) + if (length > 32) "..." else ""}
+      image.run { substring(0, minOf(length, 32)) + if (length > 32) "..." else ""}
     }",
     cause
   )

@@ -28,6 +28,7 @@ export { withPlugins } from './plugins/withPlugins';
 export { withRunOnce, createRunOncePlugin } from './plugins/withRunOnce';
 
 export { withDangerousMod } from './plugins/withDangerousMod';
+export { withFinalizedMod } from './plugins/withFinalizedMod';
 export { withMod, withBaseMod } from './plugins/withMod';
 
 export {
@@ -36,6 +37,7 @@ export {
   withEntitlementsPlist,
   withExpoPlist,
   withXcodeProject,
+  withPodfile,
   withPodfileProperties,
 } from './plugins/ios-plugins';
 

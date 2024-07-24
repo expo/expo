@@ -20,6 +20,6 @@ public class SharedCookiesDataSourceFactoryProvider implements InternalModule, D
 
   @Override
   public DataSource.Factory createFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders, TransferListener transferListener) {
-    return new SharedCookiesDataSourceFactory(reactApplicationContext, moduleRegistry, userAgent, requestHeaders, transferListener);
+    return new SharedCookiesDataSourceFactory(reactApplicationContext, userAgent, requestHeaders, transferListener);
   }
 }

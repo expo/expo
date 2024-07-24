@@ -88,7 +88,7 @@ export interface NotificationChannel {
   enableVibrate: boolean;
 }
 
-type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
+export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
 
 /**
  * An object represents a notification channel to be set.

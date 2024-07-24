@@ -9,8 +9,9 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
-const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
+const utils_1 = require("./utils");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**
@@ -21,9 +22,10 @@ async function findModulesAsync(providedOptions) {
     const results = new Map();
     const nativeModuleNames = new Set();
     // custom native modules should be resolved first so that they can override other modules
-    const searchPaths = options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
+    const searchPaths = new Set(options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...options.searchPaths]
-        : options.searchPaths;
+        : options.searchPaths);
+    // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
     for (const searchPath of searchPaths) {
         const isNativeModulesDir = searchPath === options.nativeModulesDir;
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
@@ -33,6 +35,10 @@ async function findModulesAsync(providedOptions) {
             const { name, version } = resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,
             });
+            const maybeIsolatedModulesPath = (0, utils_1.getIsolatedModulesPath)(packagePath, name);
+            if (maybeIsolatedModulesPath) {
+                searchPaths.add(maybeIsolatedModulesPath);
+            }
             // we ignore the `exclude` option for custom native modules
             if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
                 !expoModuleConfig.supportsPlatform(options.platform)) {
@@ -56,10 +62,10 @@ async function findModulesAsync(providedOptions) {
     // (excluding custom native modules path)
     // Workspace root usually doesn't specify all its dependencies (see Expo Go),
     // so in this case we should link everything.
-    if (options.searchPaths.length <= 1) {
+    if (options.searchPaths.length <= 1 || options.onlyProjectDeps === false) {
         return searchResults;
     }
-    return filterToProjectDependencies(searchResults, {
+    return await filterToProjectDependenciesAsync(searchResults, {
         ...providedOptions,
         // Custom native modules are not filtered out
         // when they're not specified in package.json dependencies.
@@ -148,7 +154,7 @@ function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(results, options = {}) {
+async function filterToProjectDependenciesAsync(results, options) {
     const filteredResults = {};
     const visitedPackages = new Set();
     // iterate through always included package names and add them to the visited packages
@@ -201,7 +207,8 @@ function filterToProjectDependencies(results, options = {}) {
         }
     }
     // Visit project's package.
-    visitPackage(mergeLinkingOptions_1.projectPackageJsonPath);
+    const projectPackageJsonPath = await (0, mergeLinkingOptions_1.getProjectPackageJsonPathAsync)(options.projectRoot);
+    visitPackage(projectPackageJsonPath);
     return filteredResults;
 }
 //# sourceMappingURL=findModules.js.map

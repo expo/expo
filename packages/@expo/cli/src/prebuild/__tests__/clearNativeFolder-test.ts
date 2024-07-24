@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
-import { clearNativeFolder, getMalformedNativeProjectsAsync } from '../clearNativeFolder';
 import rnFixture from './fixtures/react-native-project';
+import { clearNativeFolder, getMalformedNativeProjectsAsync } from '../clearNativeFolder';
 
 describe(clearNativeFolder, () => {
   it(`clears folders`, async () => {
@@ -48,6 +48,30 @@ describe(getMalformedNativeProjectsAsync, () => {
       projectRoot
     );
     const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['android', 'ios']);
+    expect(malformed).toStrictEqual([]);
+  });
+
+  it(`skips arbitrary platforms without verifiers`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        ...Object.entries(rnFixture).reduce((prev, [key, value]) => {
+          // Skip ios project files
+          if (key.startsWith('ios')) return prev;
+          return {
+            ...prev,
+            [key]: value,
+          };
+        }, {}),
+      },
+      projectRoot
+    );
+    const malformed = await getMalformedNativeProjectsAsync(projectRoot, [
+      'windows',
+      'macos',
+      'tvos',
+      'androidtv',
+    ] as any);
     expect(malformed).toStrictEqual([]);
   });
 

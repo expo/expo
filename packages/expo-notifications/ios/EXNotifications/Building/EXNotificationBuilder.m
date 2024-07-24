@@ -47,7 +47,27 @@ EX_REGISTER_MODULE();
     }
   }];
   [content setAttachments:attachments];
+  if (@available(iOS 15.0, *)) {
+    NSString *interruptionLevel = [request objectForKey:@"interruptionLevel" verifyingClass:[NSString class]];
+    if (interruptionLevel) {
+      content.interruptionLevel = [EXNotificationBuilder deserializeInterruptionLevel:interruptionLevel];
+    }
+  }
   return content;
+}
+
++ (UNNotificationInterruptionLevel)deserializeInterruptionLevel:(NSString *)interruptionLevel API_AVAILABLE(ios(15.0)) {
+  static NSDictionary *interruptionLevelMap;
+  if (!interruptionLevelMap) {
+    interruptionLevelMap = @{
+      @"passive": @(UNNotificationInterruptionLevelPassive),
+      @"active": @(UNNotificationInterruptionLevelActive),
+      @"timeSensitive": @(UNNotificationInterruptionLevelTimeSensitive),
+      @"critical": @(UNNotificationInterruptionLevelCritical)
+    };
+  }
+  
+  return [interruptionLevelMap[interruptionLevel] integerValue];
 }
 
 - (UNNotificationAttachment *)attachmentFromRequest:(NSDictionary *)request

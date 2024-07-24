@@ -1,24 +1,16 @@
-import { css } from '@emotion/react';
-import { theme, spacing } from '@expo/styleguide';
-import * as React from 'react';
+import type { ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
-import { CALLOUT } from '../Text';
+import { LABEL } from '../Text';
 
-type SidebarTitleProps = React.PropsWithChildren<object>;
+type SidebarTitleProps = {
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+} & PropsWithChildren;
 
-export const SidebarTitle = ({ children }: SidebarTitleProps) => (
-  <div css={STYLES_TITLE}>
-    <CALLOUT weight="medium">{children}</CALLOUT>
+export const SidebarTitle = ({ children, Icon }: SidebarTitleProps) => (
+  <div className="flex gap-2 items-center relative ml-3 -mr-4 pb-1 select-none">
+    {Icon && <Icon className="icon-sm" />}
+    <LABEL weight="medium" crawlable={false}>
+      {children}
+    </LABEL>
   </div>
 );
-
-const STYLES_TITLE = css({
-  display: 'block',
-  position: 'relative',
-  marginBottom: spacing[2],
-  borderBottom: `1px solid ${theme.border.default}`,
-  marginLeft: spacing[5] + spacing[0.5],
-  marginRight: -spacing[4],
-  paddingBottom: spacing[2],
-  userSelect: 'none',
-});

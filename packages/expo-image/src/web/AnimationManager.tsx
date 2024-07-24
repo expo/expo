@@ -9,11 +9,11 @@ type Callbacks = {
   onError?: (() => void) | null;
 };
 
-type AnimationManagerNode = [
+export type AnimationManagerNode = [
   key: string,
   renderFunction: (
     renderProps: NonNullable<Callbacks>
-  ) => (className: string, style: React.CSSProperties) => React.ReactElement
+  ) => (className: string, style: React.CSSProperties) => React.ReactElement,
 ];
 
 const SUPPORTED_ANIMATIONS: ImageTransition['effect'][] = [
@@ -107,10 +107,12 @@ export default function AnimationManager({
   children: renderFunction,
   initial,
   transition,
+  recyclingKey,
 }: {
   children: AnimationManagerNode;
   initial: AnimationManagerNode | null;
   transition: ImageTransition | null | undefined;
+  recyclingKey?: string | null | undefined;
 }) {
   const animation = getAnimatorFromTransition(transition);
 
@@ -119,6 +121,12 @@ export default function AnimationManager({
   const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
     initialNode ? [initialNode] : []
   );
+
+  const [prevRecyclingKey, setPrevRecyclingKey] = React.useState<string>(recyclingKey ?? '');
+  if (prevRecyclingKey !== (recyclingKey ?? '')) {
+    setPrevRecyclingKey(recyclingKey ?? '');
+    setNodes(initialNode ? [initialNode] : []);
+  }
 
   const removeAllNodesOfKeyExceptShowing = (key?: string) => {
     setNodes((n) =>
@@ -140,9 +148,15 @@ export default function AnimationManager({
       }
       const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
       if (existingNodeIndex >= 0) {
-        const copy = [...n];
-        copy.splice(existingNodeIndex, 1, newNode);
-        return copy;
+        if (animation) {
+          return n.map((n2) =>
+            n2.animationKey === newNode.animationKey
+              ? { ...newNode, status: 'in' }
+              : { ...n2, status: 'out' }
+          );
+        } else {
+          return [{ ...newNode, status: 'in' }];
+        }
       }
       return [...n, newNode];
     });

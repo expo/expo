@@ -2,12 +2,18 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { FileNotifier } from '../../utils/FileNotifier';
-import { logEventAsync } from '../../utils/analytics/rudderstackClient';
-import { ProjectPrerequisite } from '../doctor/Prerequisite';
-import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import DevToolsPluginManager from './DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
+import { Log } from '../../log';
+import { FileNotifier } from '../../utils/FileNotifier';
+import { env } from '../../utils/env';
+import { logEventAsync } from '../../utils/telemetry';
+import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
+import { printItem } from '../interface/commandsTable';
+import * as AndroidDebugBridge from '../platforms/android/adb';
+import { resolveSchemeAsync } from '../resolveOptions';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -29,7 +35,20 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
-  private projectPrerequisites: ProjectPrerequisite[] = [];
+  static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
+    const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    await devServerManager.startAsync([
+      {
+        type: 'metro',
+        options: startOptions,
+      },
+    ]);
+    return devServerManager;
+  }
+
+  private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
+  public readonly devtoolsPluginManager: DevToolsPluginManager;
 
   private notifier: FileNotifier | null = null;
 
@@ -38,7 +57,10 @@ export class DevServerManager {
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.notifier = this.watchBabelConfig();
+    if (!options.isExporting) {
+      this.notifier = this.watchBabelConfig();
+    }
+    this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
   }
 
   private watchBabelConfig() {
@@ -62,7 +84,7 @@ export class DevServerManager {
   }
 
   /** Lazily load and assert a project-level prerequisite. */
-  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite) {
+  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite<any, any>) {
     let prerequisite = this.projectPrerequisites.find(
       (prerequisite) => prerequisite instanceof PrerequisiteClass
     );
@@ -70,7 +92,7 @@ export class DevServerManager {
       prerequisite = new PrerequisiteClass(this.projectRoot);
       this.projectPrerequisites.push(prerequisite);
     }
-    await prerequisite.assertAsync();
+    return await prerequisite.assertAsync();
   }
 
   /**
@@ -115,7 +137,7 @@ export class DevServerManager {
       skipPlugins: true,
       skipSDKVersionRequirement: true,
     });
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
@@ -125,24 +147,46 @@ export class DevServerManager {
     ]);
   }
 
+  /** Switch between Expo Go and Expo Dev Clients. */
+  async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
+    const nextMode = isUsingDevClient ? '--dev-client' : '--go';
+    Log.log(printItem(chalk`Switching to {bold ${nextMode}}`));
+
+    const nextScheme = await resolveSchemeAsync(this.projectRoot, {
+      devClient: isUsingDevClient,
+      // NOTE: The custom `--scheme` argument is lost from this point on.
+    });
+
+    this.options.location.scheme = nextScheme;
+    this.options.devClient = isUsingDevClient;
+    for (const devServer of devServers) {
+      devServer.isDevClient = isUsingDevClient;
+      const urlCreator = devServer.getUrlCreator();
+      urlCreator.defaults ??= {};
+      urlCreator.defaults.scheme = nextScheme;
+    }
+
+    debug(`New runtime options (runtime: ${nextMode}):`, this.options);
+    return true;
+  }
+
   /** Start all dev servers. */
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
-    const { exp } = getConfig(this.projectRoot);
+    const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
 
     await logEventAsync('Start Project', {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
-    const platformBundlers = getPlatformBundlers(exp);
+    const platformBundlers = getPlatformBundlers(this.projectRoot, exp);
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
-      const server = new BundlerDevServerClass(
-        this.projectRoot,
-        platformBundlers,
-        !!options?.devClient
-      );
+      const server = new BundlerDevServerClass(this.projectRoot, platformBundlers, {
+        devToolsPluginManager: this.devtoolsPluginManager,
+        isDevClient: !!options?.devClient,
+      });
       await server.startAsync(options ?? this.options);
       devServers.push(server);
     }
@@ -150,14 +194,51 @@ export class DevServerManager {
     return exp;
   }
 
+  async bootstrapTypeScriptAsync() {
+    const typescriptPrerequisite = await this.ensureProjectPrerequisiteAsync(
+      TypeScriptProjectPrerequisite
+    );
+
+    if (env.EXPO_NO_TYPESCRIPT_SETUP) {
+      return;
+    }
+
+    // Optionally, wait for the user to add TypeScript during the
+    // development cycle.
+    const server = devServers.find((server) => server.name === 'metro');
+    if (!server) {
+      return;
+    }
+
+    // The dev server shouldn't wait for the typescript services
+    if (!typescriptPrerequisite) {
+      server.waitForTypeScriptAsync().then(async (success) => {
+        if (success) {
+          server.startTypeScriptServices();
+        }
+      });
+    } else {
+      server.startTypeScriptServices();
+    }
+  }
+
+  async watchEnvironmentVariables() {
+    await devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
+  }
+
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
       this.notifier?.stopObserving(),
-      // Stop all dev servers
-      ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
       AndroidDebugBridge.getServer().stopAsync(),
+      // Stop all dev servers
+      ...devServers.map((server) =>
+        server.stopAsync().catch((error) => {
+          Log.error(`Failed to stop dev server (bundler: ${server.name})`);
+          Log.exception(error);
+        })
+      ),
     ]);
   }
 }

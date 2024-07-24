@@ -1,5 +1,7 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
 import { NotificationCategoriesModule } from './NotificationCategoriesModule.types';
 
-export default NativeModulesProxy.ExpoNotificationCategoriesModule as NotificationCategoriesModule;
+export default requireNativeModule<NotificationCategoriesModule>(
+  'ExpoNotificationCategoriesModule'
+);

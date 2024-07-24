@@ -2,7 +2,6 @@ import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { simulatorBuildRequiresCodeSigning } from '../simulatorCodeSigning';
 
 jest.mock('fs');
@@ -20,7 +19,7 @@ describe(simulatorBuildRequiresCodeSigning, () => {
   afterEach(() => vol.reset());
 
   it(`returns false if the entitlements file cannot be found`, () => {
-    asMock(IOSConfig.Entitlements.getEntitlementsPath).mockReturnValue(null);
+    jest.mocked(IOSConfig.Entitlements.getEntitlementsPath).mockReturnValue(null);
     expect(simulatorBuildRequiresCodeSigning(projectRoot)).toBe(false);
   });
   it(`returns false if the entitlements file contains values which don't need to be signed`, () => {
@@ -33,7 +32,7 @@ describe(simulatorBuildRequiresCodeSigning, () => {
       projectRoot
     );
 
-    asMock(IOSConfig.Entitlements.getEntitlementsPath).mockReturnValue('/entitlements.xml');
+    jest.mocked(IOSConfig.Entitlements.getEntitlementsPath).mockReturnValue('/entitlements.xml');
     expect(simulatorBuildRequiresCodeSigning(projectRoot)).toBe(false);
   });
   it(`returns true if the entitlements file contains values which require signing`, () => {
@@ -46,7 +45,7 @@ describe(simulatorBuildRequiresCodeSigning, () => {
       projectRoot
     );
 
-    asMock(IOSConfig.Entitlements.getEntitlementsPath).mockReturnValue('/entitlements.xml');
+    jest.mocked(IOSConfig.Entitlements.getEntitlementsPath).mockReturnValue('/entitlements.xml');
     expect(simulatorBuildRequiresCodeSigning(projectRoot)).toBe(true);
   });
 });

@@ -5,7 +5,7 @@ import EXManifests
 
 let RECENTLY_OPENED_APPS_REGISTRY_KEY = "expo.devlauncher.recentlyopenedapps"
 
-let TIME_TO_REMOVE = 1_000 * 60 * 60 * 24 * 3 // 3 days
+let TIME_TO_REMOVE = 1000 * 60 * 60 * 24 * 3 // 3 days
 
 @objc(EXDevLauncherRecentlyOpenedAppsRegistry)
 public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
@@ -19,47 +19,47 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: EXManifestsManifestBehavior?) {
-    
+  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: Manifest?) {
     var appEntry: [String: Any] = [:]
-    
+
     // reloading the same url - update the old entry w/ any new fields instead of creating a new one
     if let previousMatchingEntry = appRegistry[url] {
-      appEntry = previousMatchingEntry as! [String : Any]
+      // swiftlint:disable:next force_cast
+      appEntry = previousMatchingEntry as! [String: Any]
     }
-    
+
     let timestamp = getCurrentTimestamp()
-        
+
     var isEASUpdate = false
-    
-    if let host = URL(string:url)?.host {
+
+    if let host = URL(string: url)?.host {
       isEASUpdate = host == "u.expo.dev" || host == "staging-u.expo.dev"
     }
-    
+
     appEntry["isEASUpdate"] = isEASUpdate
-    
-    if (isEASUpdate) {      
+
+    if isEASUpdate {
       if let updateMessage = queryParams["updateMessage"] {
         appEntry["updateMessage"] = updateMessage
       }
     }
-    
+
     if let manifest = manifest {
       appEntry["name"] = manifest.name()
-      
+
       // TODO - expose metadata object in expo-manifests
       let json = manifest.rawManifestJSON()
-      
-      if (isEASUpdate) {
-        if let metadata: [String: Any] = json["metadata"] as? [String : Any], let branchName = metadata["branchName"] {
-          appEntry["branchName"] = branchName;
+
+      if isEASUpdate {
+        if let metadata: [String: Any] = json["metadata"] as? [String: Any], let branchName = metadata["branchName"] {
+          appEntry["branchName"] = branchName
         }
       }
     }
-    
+
     appEntry["timestamp"] = timestamp
     appEntry["url"] = url
-    
+
     var registry = appRegistry
     registry[url] = appEntry
     appRegistry = registry
@@ -70,10 +70,10 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     guard let registry = appRegistry as? [String: [String: Any]] else {
       return []
     }
-    
+
     var apps: [[String: Any]] = []
 
-    appRegistry = registry.filter { (url: String, appEntry: [String: Any]) in
+    appRegistry = registry.filter { (_: String, appEntry: [String: Any]) in
       if getCurrentTimestamp() - (appEntry["timestamp"] as! Int64) > TIME_TO_REMOVE {
         return false
       }
@@ -81,8 +81,19 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
       apps.append(appEntry)
       return true
     }
-    
+
     return apps
+  }
+
+  @objc
+  public func mostRecentApp() -> [String: Any]? {
+    let recentlyOpenedApps = self.recentlyOpenedApps()
+
+    if let mostRecentApp = recentlyOpenedApps.max(by: { ($0["timestamp"] as? Int64) ?? 0 < ($1["timestamp"] as? Int64) ?? 0 }) {
+      return mostRecentApp
+    }
+
+    return nil
   }
 
   @objc
@@ -91,7 +102,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   func getCurrentTimestamp() -> Int64 {
-    return Int64(Date().timeIntervalSince1970 * 1_000)
+    return Int64(Date().timeIntervalSince1970 * 1000)
   }
 
   func resetStorage() {

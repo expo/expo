@@ -12,7 +12,7 @@ add_library(fabric STATIC
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 target_compile_options(fabric PRIVATE
-  "-std=c++17"
+  "-std=c++20"
   ${folly_FLAGS}
 )
 
@@ -43,6 +43,7 @@ target_link_libraries(fabric
   ReactAndroid::react_render_debug
   ReactAndroid::react_render_graphics
   ReactAndroid::react_render_mapbuffer
+  ReactAndroid::react_utils
   ReactAndroid::rrc_view
   ReactAndroid::runtimeexecutor
   ReactAndroid::yoga

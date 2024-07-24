@@ -5,11 +5,7 @@ import { View, StyleSheet, Image } from 'react-native';
 
 export default function ImagePickerAssetsList(result: ImagePickerResult): JSX.Element | void {
   return (
-    <View>
-      {result.assets?.map((asset, index) => (
-        <AssetView key={index} asset={asset} />
-      ))}
-    </View>
+    <View>{result.assets?.map((asset, index) => <AssetView key={index} asset={asset} />)}</View>
   );
 }
 

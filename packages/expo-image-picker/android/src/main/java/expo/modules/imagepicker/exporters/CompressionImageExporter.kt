@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException
 class CompressionImageExporter(
   private val appContextProvider: AppContextProvider,
   @FloatRange(from = 0.0, to = 1.0)
-  quality: Double,
+  quality: Double
 ) : ImageExporter {
   private val compressQuality = (quality * 100).toInt()
 

@@ -1,15 +1,12 @@
 import {
   AndroidConfig,
-  withProjectBuildGradle,
-  ConfigPlugin,
+  type ConfigPlugin,
   createRunOncePlugin,
-  withInfoPlist,
-} from '@expo/config-plugins';
-import {
-  createGeneratedHeaderComment,
-  MergeResults,
-  removeGeneratedContents,
-} from '@expo/config-plugins/build/utils/generateCode';
+  IOSConfig,
+  withProjectBuildGradle,
+} from 'expo/config-plugins';
+
+import { appendGeneratedCodeContents, type CodeMergeResults } from './appendCode';
 
 const pkg = require('expo-camera/package.json');
 
@@ -35,70 +32,39 @@ const withAndroidCameraGradle: ConfigPlugin = (config) => {
   });
 };
 
-export function addCameraImport(src: string): MergeResults {
-  return appendContents({
+/** @internal Exposed for testing */
+export function addCameraImport(src: string): CodeMergeResults {
+  return appendGeneratedCodeContents({
     tag: 'expo-camera-import',
     src,
-    newSrc: gradleMaven,
+    generatedCode: gradleMaven,
     comment: '//',
   });
 }
 
-// Fork of config-plugins mergeContents, but appends the contents to the end of the file.
-function appendContents({
-  src,
-  newSrc,
-  tag,
-  comment,
-}: {
-  src: string;
-  newSrc: string;
-  tag: string;
-  comment: string;
-}): MergeResults {
-  const header = createGeneratedHeaderComment(newSrc, tag, comment);
-  if (!src.includes(header)) {
-    // Ensure the old generated contents are removed.
-    const sanitizedTarget = removeGeneratedContents(src, tag);
-    const contentsToAdd = [
-      // @something
-      header,
-      // contents
-      newSrc,
-      // @end
-      `${comment} @generated end ${tag}`,
-    ].join('\n');
-
-    return {
-      contents: sanitizedTarget ?? src + contentsToAdd,
-      didMerge: true,
-      didClear: !!sanitizedTarget,
-    };
-  }
-  return { contents: src, didClear: false, didMerge: false };
-}
-
 const withCamera: ConfigPlugin<
   {
-    cameraPermission?: string;
-    microphonePermission?: string;
+    cameraPermission?: string | false;
+    microphonePermission?: string | false;
+    recordAudioAndroid?: boolean;
   } | void
-> = (config, { cameraPermission, microphonePermission } = {}) => {
-  config = withInfoPlist(config, (config) => {
-    config.modResults.NSCameraUsageDescription =
-      cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;
-
-    config.modResults.NSMicrophoneUsageDescription =
-      microphonePermission || config.modResults.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
-
-    return config;
+> = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSCameraUsageDescription: CAMERA_USAGE,
+    NSMicrophoneUsageDescription: MICROPHONE_USAGE,
+  })(config, {
+    NSCameraUsageDescription: cameraPermission,
+    NSMicrophoneUsageDescription: microphonePermission,
   });
 
-  config = AndroidConfig.Permissions.withPermissions(config, [
-    'android.permission.CAMERA',
-    // Optional
-    'android.permission.RECORD_AUDIO',
-  ]);
+  config = AndroidConfig.Permissions.withPermissions(
+    config,
+    [
+      'android.permission.CAMERA',
+      // Optional
+      recordAudioAndroid && 'android.permission.RECORD_AUDIO',
+    ].filter(Boolean) as string[]
+  );
 
   return withAndroidCameraGradle(config);
 };

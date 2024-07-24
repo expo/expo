@@ -36,7 +36,7 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   });
 
   loadJClass(env, "expo/modules/kotlin/jni/PromiseImpl", {
-    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"}
+    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;)V"}
   });
 
   loadJClass(env, "java/lang/Object", {});
@@ -48,6 +48,9 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
   loadJClass(env, "com/facebook/react/bridge/WritableNativeArray", {});
   loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
+
+  loadJClass(env, "expo/modules/kotlin/sharedobjects/SharedObject", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptModuleObject", {});
 }
 
 void JavaReferencesCache::loadJClass(

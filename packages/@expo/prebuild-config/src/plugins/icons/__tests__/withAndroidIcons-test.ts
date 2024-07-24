@@ -12,6 +12,8 @@ import {
   LIST_OF_ANDROID_ADAPTIVE_ICON_FILES_FINAL,
   SAMPLE_COLORS_XML,
 } from '../../__tests__/fixtures/androidIcons';
+import rnFixture from '../../__tests__/fixtures/react-native-project';
+import { getDirFromFS } from '../../__tests__/getDirFromFS';
 import {
   createAdaptiveIconXmlString,
   getAdaptiveIcon,
@@ -19,14 +21,8 @@ import {
   setIconAsync,
   setRoundIconManifest,
 } from '../withAndroidIcons';
-import { getDirFromFS } from './utils/getDirFromFS';
-const { getMainApplicationOrThrow, readAndroidManifestAsync } = AndroidConfig.Manifest;
 
-const sampleManifestPath = path.resolve(
-  __dirname,
-  '../../__tests__/fixtures',
-  'react-native-AndroidManifest.xml'
-);
+const { getMainApplicationOrThrow, readAndroidManifestAsync } = AndroidConfig.Manifest;
 const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
@@ -40,7 +36,7 @@ function setUpMipmapDirectories() {
 }
 
 describe(setRoundIconManifest, () => {
-  vol.fromJSON({ './AndroidManifest.xml': fsReal.readFileSync(sampleManifestPath, 'utf-8') });
+  vol.fromJSON({ './AndroidManifest.xml': rnFixture['android/app/src/main/AndroidManifest.xml'] });
   it(`adds the round icon property when an adaptive icon is present`, async () => {
     const manifest = await readAndroidManifestAsync('./AndroidManifest.xml');
     const results = setRoundIconManifest({ android: { adaptiveIcon: {} } }, manifest);

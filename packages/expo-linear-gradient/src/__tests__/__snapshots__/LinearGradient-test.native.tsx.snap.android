@@ -15,25 +15,29 @@ exports[`renders a complex gradient 1`] = `
         0,
       ]
     }
-    proxiedProperties={
-      {
-        "colors": [
-          -65536,
-          -16776961,
-        ],
-        "endPoint": [
-          1,
-          1,
-        ],
-        "locations": [
-          0.5,
-          1,
-        ],
-        "startPoint": [
-          0,
-          0,
-        ],
-      }
+    colors={
+      [
+        -65536,
+        -16776961,
+      ]
+    }
+    endPoint={
+      [
+        1,
+        1,
+      ]
+    }
+    locations={
+      [
+        0.5,
+        1,
+      ]
+    }
+    startPoint={
+      [
+        0,
+        0,
+      ]
     }
     style={
       {

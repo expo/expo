@@ -11,12 +11,12 @@ Provides access to the system's web browser and supports handling redirects. On 
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/webbrowser.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/webbrowser/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/).
 
 # Installation in bare React Native projects
 
@@ -25,16 +25,16 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-web-browser
+npx expo install expo-web-browser
 ```
-
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

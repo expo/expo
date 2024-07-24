@@ -1,35 +1,36 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
+import { theme, typography, LinkBase, LinkBaseProps, mergeClasses } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
-import { LinkBase, LinkProps } from './Link';
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
-import Permalink from '~/components/Permalink';
+import { Permalink } from '~/ui/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
-export { LinkBase } from './Link';
 export { AnchorContext } from './withAnchor';
 
 const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
 const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
 
 type PermalinkedComponentProps = React.PropsWithChildren<
-  { level?: number; id?: string } & AdditionalProps
+  { level?: number; id?: string } & AdditionalProps & TextComponentProps
 >;
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const createPermalinkedComponent = (
-  BaseComponent: React.ComponentType<React.PropsWithChildren<any>>,
+  BaseComponent: React.ComponentType<React.PropsWithChildren<TextComponentProps>>,
   options?: {
     baseNestingLevel?: number;
     sidebarType?: HeadingType;
+    iconSize?: 'sm' | 'xs';
+    className?: string;
   }
 ) => {
-  const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.Text } = options || {};
+  return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
@@ -43,29 +44,50 @@ export const createPermalinkedComponent = (
     });
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
-      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }} id={id}>
+      <Permalink
+        nestingLevel={nestingLevel}
+        additionalProps={{
+          ...props,
+          sidebarType,
+          iconSize,
+          className: mergeClasses(className, options?.className),
+        }}
+        id={id}>
         <BaseComponent>{cleanChildren}</BaseComponent>
       </Permalink>
     );
   };
 };
 
-export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
+export function createTextComponent(
+  Element: TextElement,
+  textStyle?: SerializedStyles,
+  skipBaseStyle: boolean = false
+) {
   function TextComponent(props: TextComponentProps) {
-    const { testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
+    const {
+      testID,
+      tag,
+      className,
+      weight: textWeight,
+      theme: textTheme,
+      crawlable = true,
+      ...rest
+    } = props;
     const TextElementTag = tag ?? Element;
 
     return (
       <TextElementTag
+        className={className}
         css={[
-          baseTextStyle,
+          !skipBaseStyle && baseTextStyle,
           textStyle,
           textWeight && { fontWeight: typography.utility.weight[textWeight].fontWeight },
           textTheme && { color: theme.text[textTheme] },
         ]}
         data-testid={testID}
-        data-heading={CRAWLABLE_HEADINGS.includes(TextElementTag) || undefined}
-        data-text={CRAWLABLE_TEXT.includes(TextElementTag) || undefined}
+        data-heading={(crawlable && CRAWLABLE_HEADINGS.includes(TextElementTag)) || undefined}
+        data-text={(crawlable && CRAWLABLE_TEXT.includes(TextElementTag)) || undefined}
         {...rest}
       />
     );
@@ -108,14 +130,10 @@ const linkStyled = css({
   },
 });
 
-const listStyle = css({
-  marginLeft: '1.5rem',
-});
-
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
-  verticalAlign: 'initial',
+  wordBreak: 'unset',
 });
 
 export const kbdStyle = css({
@@ -133,11 +151,11 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[2],
   marginBottom: spacing[2],
   ...codeInHeaderStyle,
@@ -145,17 +163,19 @@ const h1Style = {
 
 const h2Style = {
   ...h2,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[8],
-  marginBottom: spacing[3],
+  marginBottom: spacing[3.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
 const h3Style = {
   ...h3,
   fontWeight: 600,
-  marginTop: spacing[6],
-  marginBottom: spacing[1.5],
+  marginTop: spacing[7],
+  marginBottom: spacing[3],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -163,7 +183,7 @@ const h4Style = {
   ...h4,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1],
+  marginBottom: spacing[2],
   ...codeInHeaderStyle,
 };
 
@@ -173,6 +193,12 @@ const h5Style = {
   marginTop: spacing[4],
   marginBottom: spacing[1],
   ...codeInHeaderStyle,
+};
+
+const paragraphStyle = {
+  strong: {
+    wordBreak: 'break-word',
+  },
 };
 
 export const H1 = createTextComponent(TextElement.H1, css(h1Style));
@@ -185,35 +211,47 @@ export const H4 = createPermalinkedComponent(RawH4, { baseNestingLevel: 4 });
 export const RawH5 = createTextComponent(TextElement.H5, css(h5Style));
 export const H5 = createPermalinkedComponent(RawH5, { baseNestingLevel: 5 });
 
-export const P = createTextComponent(TextElement.P);
+export const P = createTextComponent(TextElement.P, css(paragraphStyle as CSSObject));
 export const CODE = createTextComponent(
   TextElement.CODE,
-  css([typography.utility.inlineCode, codeStyle])
+  css([typography.utility.inlineCode, codeStyle]),
+  true
 );
 export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
 export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
+export const CAPTION = createTextComponent(TextElement.P, css(typography.body.caption));
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
-export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
-export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
+export const SPAN = createTextComponent(TextElement.SPAN, css(typography.body.callout));
+
+export const UL = createTextComponent(
+  TextElement.UL,
+  css([typography.body.ul, { listStyle: 'disc' }])
+);
+export const OL = createTextComponent(
+  TextElement.OL,
+  css([typography.body.ol, { listStyle: 'decimal' }])
+);
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre as CSSObject));
 export const KBD = createTextComponent(
   TextElement.KBD,
   css([typography.utility.pre as CSSObject, kbdStyle])
 );
-export const MONOSPACE = createTextComponent(TextElement.CODE, css({ fontWeight: 500 }));
+export const MONOSPACE = createTextComponent(TextElement.CODE);
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
-export const A = (props: LinkProps & { isStyled?: boolean }) => {
-  const { isStyled, ...rest } = props;
+export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferrer?: boolean }) => {
+  const { isStyled, openInNewTab, shouldLeakReferrer, ...rest } = props;
+
   return (
     <LinkBase
       css={[link, !isStyled && linkStyled]}
-      openInNewTab={isExternalLink(props.href)}
+      {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
+      openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
       {...rest}
     />
   );

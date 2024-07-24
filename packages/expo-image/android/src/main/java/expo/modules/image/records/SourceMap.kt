@@ -10,6 +10,7 @@ import com.bumptech.glide.signature.ApplicationVersionSignature
 import expo.modules.image.GlideBlurhashModel
 import expo.modules.image.GlideModel
 import expo.modules.image.GlideRawModel
+import expo.modules.image.GlideThumbhashModel
 import expo.modules.image.GlideUriModel
 import expo.modules.image.GlideUrlModel
 import expo.modules.image.ResourceIdHelper
@@ -39,15 +40,20 @@ data class SourceMap(
 
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
-  internal fun createGlideModel(context: Context): GlideModel? {
-    if (uri == null) {
-      return null
-    }
+  fun isThumbhash() = parsedUri?.scheme?.startsWith("thumbhash") ?: false
 
+  private fun parseUri(context: Context) {
     if (parsedUri == null) {
       parsedUri = computeUri(context)
     }
+  }
 
+  internal fun createGlideModel(context: Context): GlideModel? {
+    if (uri.isNullOrBlank()) {
+      return null
+    }
+
+    parseUri(context)
     if (isContentUrl() || isDataUrl()) {
       return GlideRawModel(uri)
     }
@@ -57,6 +63,12 @@ data class SourceMap(
         parsedUri!!,
         width,
         height
+      )
+    }
+
+    if (isThumbhash()) {
+      return GlideThumbhashModel(
+        parsedUri!!
       )
     }
 
@@ -85,13 +97,10 @@ data class SourceMap(
   }
 
   internal fun createOptions(context: Context): RequestOptions {
+    parseUri(context)
     return RequestOptions()
       .apply {
-        if (parsedUri == null) {
-          parsedUri = computeUri(context)
-        }
-
-        // Override the size for local assets. This ensures that
+        // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
         if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())

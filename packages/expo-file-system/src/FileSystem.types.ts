@@ -140,7 +140,7 @@ export type FileSystemUploadResult = FileSystemHttpResult & {
 
 // @docsMissing
 export type FileSystemNetworkTaskProgressCallback<
-  T extends DownloadProgressData | UploadProgressData
+  T extends DownloadProgressData | UploadProgressData,
 > = (data: T) => void;
 
 /**
@@ -165,10 +165,6 @@ export type UploadProgressData = {
    * The total bytes sent by the upload operation.
    */
   totalBytesSent: number;
-  /**
-   * @deprecated Use `totalBytesSent` instead.
-   */
-  totalByteSent: number;
   /**
    * The total bytes expected to be sent by the upload operation.
    */

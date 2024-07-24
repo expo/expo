@@ -1,0 +1,5 @@
+{
+  "extends": "expo-module-scripts/tsconfig.base",
+  "include": ["./app"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}

@@ -1,6 +1,7 @@
 package expo.modules.updates.selectionpolicy
 
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONObject
 
 /**
@@ -23,7 +24,7 @@ class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
       return listOf()
     }
     val updatesToDelete = mutableListOf<UpdateEntity>()
-    // keep the launched update and one other, to be safe and make rollbacks faster
+    // keep the launched update and one other, to be safe and make roll backs faster
     // keep the next newest update that matches all the manifest filters, unless no other updates do
     // in which case, keep the next newest across all updates
     var nextNewestUpdate: UpdateEntity? = null
@@ -50,6 +51,8 @@ class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
     } else if (nextNewestUpdate != null) {
       updatesToDelete.remove(nextNewestUpdate)
     }
-    return updatesToDelete
+
+    // don't delete embedded update
+    return updatesToDelete.filter { it.status != UpdateStatus.EMBEDDED }
   }
 }

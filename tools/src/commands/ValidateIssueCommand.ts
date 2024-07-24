@@ -1,6 +1,11 @@
 import { Command } from '@expo/commander';
 
-import { getIssueAsync, addIssueLabelsAsync } from '../GitHub';
+import {
+  getIssueAsync,
+  listAllOpenIssuesAsync,
+  addIssueLabelsAsync,
+  removeIssueLabelAsync,
+} from '../GitHub';
 import logger from '../Logger';
 
 type ActionOptions = {
@@ -17,14 +22,18 @@ export default (program: Command) => {
 };
 
 async function action(options: ActionOptions) {
-  if (isNaN(Number(options.issue))) {
-    throw new Error('Flag `--issue` must be provided with a number value.');
+  if (options.issue !== '*' && isNaN(Number(options.issue))) {
+    throw new Error('Flag `--issue` must be provided with a number value or *.');
   }
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('Environment variable `GITHUB_TOKEN` is required for this command.');
   }
   try {
-    await validateIssueAsync(+options.issue);
+    if (options.issue === '*') {
+      await validateAllOpenIssuesAsync();
+    } else {
+      await validateIssueAsync(+options.issue);
+    }
   } catch (error) {
     logger.error(error);
     throw error;
@@ -47,6 +56,25 @@ const SKIP_VALIDATION_LABELS = [
   'docs',
 ];
 
+const GITHUB_API_PAGE_SIZE = 10;
+async function validateAllOpenIssuesAsync() {
+  let issues = await listAllOpenIssuesAsync({
+    limit: GITHUB_API_PAGE_SIZE,
+    labels: 'needs validation',
+  });
+  let page = 0;
+  while (issues.length > 0) {
+    for (const issue of issues) {
+      await validateIssueAsync(issue.number);
+    }
+    issues = await listAllOpenIssuesAsync({
+      limit: GITHUB_API_PAGE_SIZE,
+      offset: ++page,
+      labels: 'needs validation',
+    });
+  }
+}
+
 async function validateIssueAsync(issueNumber: number) {
   const issue = await getIssueAsync(issueNumber);
   if (!issue) {
@@ -56,7 +84,15 @@ async function validateIssueAsync(issueNumber: number) {
   // Skip if we already applied some other label
   for (const label of issue.labels) {
     const labelName = typeof label === 'string' ? label : label.name;
-    if (labelName && SKIP_VALIDATION_LABELS.includes(labelName)) {
+    if (labelName && labelName === 'needs validation') {
+      // Remove the validation label since we've started validation
+      console.log('found needs validation label, removing it.');
+      try {
+        await removeIssueLabelAsync(issueNumber, 'needs validation');
+      } catch (e) {
+        console.log(e);
+      }
+    } else if (labelName && SKIP_VALIDATION_LABELS.includes(labelName)) {
       console.log(`Issue is labeled with ${labelName}, skipping validation.`);
       return;
     }
@@ -71,8 +107,19 @@ async function validateIssueAsync(issueNumber: number) {
 
   if (includesReproUri) {
     console.log('Issue includes a reprodible example URI.');
+    console.log('adding needs review label.');
+    await addIssueLabelsAsync(issueNumber, ['needs review']);
   } else {
-    addIssueLabelsAsync(issueNumber, ['incomplete issue: missing or invalid repro']);
+    console.log(issue.labels);
+    if (issue.labels?.includes('needs review')) {
+      console.log('needs review label found, removing it.');
+      try {
+        await removeIssueLabelAsync(issueNumber, 'needs review');
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    await addIssueLabelsAsync(issueNumber, ['incomplete issue: missing or invalid repro']);
     console.log('No reproducible example provided, marked for closing.');
   }
 }

@@ -1,10 +1,13 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { PropsWithChildren } from 'react';
 
+import { cleanCopyValue } from '~/components/base/code';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
+import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -37,11 +40,11 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
   return (
     <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
-        <Snippet key={index} css={snippetWrapperStyle}>
-          <SnippetHeader title={tabNames[index]} />
-          <SnippetContent skipPadding css={snippetContentStyle}>
-            {codeBlock}
-          </SnippetContent>
+        <Snippet key={index} className="last:mb-4 max-xl:!mb-0">
+          <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
+            <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
+          </SnippetHeader>
+          <SnippetContent className="p-0 h-full">{codeBlock}</SnippetContent>
         </Snippet>
       ))}
     </div>
@@ -86,18 +89,4 @@ const codeBlockConnectedWrapperStyle = css({
       },
     },
   },
-});
-
-const snippetWrapperStyle = css({
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    marginBottom: 0,
-
-    '&:last-of-type': {
-      marginBottom: spacing[4],
-    },
-  },
-});
-
-const snippetContentStyle = css({
-  height: '100%',
 });

@@ -25,6 +25,11 @@ export const checkEnvironmentTask = new Task<TaskArgs>(
       return Task.STOP;
     }
 
+    // `npm team ls` command fails on the access token that we use on the CI.
+    // We're actually sure that expo-bot account is in the team, so we can skip this check.
+    if (process.env.CI && npmUser === Npm.EXPO_BOT_ACCOUNT_NAME) {
+      return;
+    }
     const teamMembers = await Npm.getTeamMembersAsync(Npm.EXPO_DEVELOPERS_TEAM_NAME);
 
     if (!teamMembers.includes(npmUser)) {

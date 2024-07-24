@@ -18,7 +18,7 @@ const headers = {
   'content-type': 'application/json',
 };
 
-export function restClient<T = any>(endpoint: string, options: RequestInit = {}) {
+export async function restClient<T = any>(endpoint: string, options: RequestInit = {}) {
   const config = {
     method: options.body ? 'POST' : 'GET',
     ...options,
@@ -35,14 +35,31 @@ export function restClient<T = any>(endpoint: string, options: RequestInit = {})
 
   const url = `${restEndpoint}${endpoint}`;
 
-  return fetch(url, config).then(async (response) => {
-    if (response.ok) {
-      return (await response.json()) as T;
-    } else {
-      const errorMessage = await response.text();
-      return Promise.reject(new Error(errorMessage));
-    }
-  });
+  const response = await fetch(url, config);
+
+  if (response.ok) {
+    return (await response.json()) as T;
+  } else {
+    const errorMessage = await response.text();
+    return Promise.reject(new Error(errorMessage));
+  }
+}
+
+export async function restClientWithTimeout<T = any>(
+  endpoint: string,
+  timeout: number,
+  options: RequestInit = {}
+) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    return await restClient<T>(endpoint, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(id);
+  }
 }
 
 export async function setSessionAsync(session: string | null) {

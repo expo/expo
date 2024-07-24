@@ -44,6 +44,8 @@ export function AndroidPermissions({ permissions }: AndroidPermissionsProps) {
 
 const PermissionPermalink = createPermalinkedComponent(P, {
   baseNestingLevel: 4,
+  iconSize: 'xs',
+  className: 'inline-flex items-center',
 });
 
 function AndroidPermissionRow({

@@ -7,7 +7,7 @@ import path from 'path';
 import { installDependencies } from './packageManager';
 import { PackageManagerName } from './resolvePackageManager';
 import { SubstitutionData } from './types';
-import { newStep } from './utils';
+import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:createExampleApp') as typeof console.log;
 
@@ -99,7 +99,7 @@ async function moveFiles(fromPath: string, toPath: string): Promise<void> {
 }
 
 /**
- * Adds missing configuration that are required to run `expo prebuild`.
+ * Adds missing configuration that are required to run `npx expo prebuild`.
  */
 async function addMissingAppConfigFields(appPath: string, data: SubstitutionData): Promise<void> {
   const appConfigPath = path.join(appPath, 'app.json');

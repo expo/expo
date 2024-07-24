@@ -1,6 +1,8 @@
 package expo.modules.kotlin.types
 
 import android.graphics.Color
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.exception.UnexpectedException
@@ -166,18 +168,19 @@ private val namedColors = mapOf(
   value.map { it.toFloat() / 255f }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 class ColorTypeConverter(
   isOptional: Boolean
 ) : DynamicAwareTypeConverters<Color>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Color {
-    return when (value.type) {
+    return when (value.getType()) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(value.asString())
       ReadableType.Array -> {
         val colorsArray = value.asArray().toArrayList().map { it as Double }.toDoubleArray()
         colorFromDoubleArray(colorsArray)
       }
-      else -> throw UnexpectedException("Unknown argument type: ${value.type}")
+      else -> throw UnexpectedException("Unknown argument type: ${value.getType()}")
     }
   }
 

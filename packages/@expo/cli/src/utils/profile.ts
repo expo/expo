@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
-import * as Log from '../log';
 import { env } from './env';
+import * as Log from '../log';
 
 /**
  * Wrap a method and profile the time it takes to execute the method using `EXPO_PROFILE`.

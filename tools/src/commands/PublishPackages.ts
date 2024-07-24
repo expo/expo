@@ -11,10 +11,12 @@ import { TaskRunner, Task, TasksRunnerBackup } from '../TasksRunner';
 import { PackagesGraph } from '../packages-graph';
 import { BACKUP_PATH, BACKUP_EXPIRATION_TIME } from '../publish-packages/constants';
 import { pickBackupableOptions, shouldUseBackupAsync } from '../publish-packages/helpers';
+import { assignTagForSdkRelease } from '../publish-packages/tasks/assignTagForSdkRelease';
 import { checkPackagesIntegrity } from '../publish-packages/tasks/checkPackagesIntegrity';
 import { grantTeamAccessToPackages } from '../publish-packages/tasks/grantTeamAccessToPackages';
 import { listUnpublished } from '../publish-packages/tasks/listUnpublished';
 import { getCachedParcel } from '../publish-packages/tasks/loadRequestedParcels';
+import { publishCanaryPipeline } from '../publish-packages/tasks/publishCanary';
 import { publishPackagesPipeline } from '../publish-packages/tasks/publishPackagesPipeline';
 import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
 
@@ -64,6 +66,12 @@ export default (program: Command) => {
       'Checks integrity of packages. These checks must pass to clearly identify changes that have been made since previous publish.',
       false
     )
+    .option(
+      '--assign-sdk-tag',
+      'Assigns the SDK tag to packages when run on the release branch.',
+      false
+    )
+    .option('-C, --canary', 'Whether to publish all packages as canary versions.', false)
 
     /* debug options */
     .option(
@@ -205,6 +213,12 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   }
   if (options.checkIntegrity) {
     return [checkPackagesIntegrity];
+  }
+  if (options.assignSdkTag) {
+    return [assignTagForSdkRelease];
+  }
+  if (options.canary) {
+    return [publishCanaryPipeline];
   }
   return [publishPackagesPipeline];
 }

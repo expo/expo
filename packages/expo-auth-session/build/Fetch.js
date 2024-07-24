@@ -1,5 +1,4 @@
 import { Platform } from 'expo-modules-core';
-import qs from 'qs';
 // TODO(Bacon): pending react-native-adapter publish after sdk 38
 const isDOMAvailable = Platform.OS === 'web' &&
     typeof window !== 'undefined' &&
@@ -26,7 +25,7 @@ export async function requestAsync(requestUrl, fetchRequest) {
     }
     if (fetchRequest.body) {
         if (fetchRequest.method?.toUpperCase() === 'POST') {
-            request.body = qs.stringify(fetchRequest.body);
+            request.body = new URLSearchParams(fetchRequest.body).toString();
         }
         else {
             for (const key of Object.keys(fetchRequest.body)) {

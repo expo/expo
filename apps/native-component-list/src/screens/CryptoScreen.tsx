@@ -1,6 +1,5 @@
 import * as Crypto from 'expo-crypto';
 import { CryptoDigestAlgorithm, CryptoEncoding } from 'expo-crypto';
-import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import FunctionDemo, { FunctionDescription } from '../components/FunctionDemo';

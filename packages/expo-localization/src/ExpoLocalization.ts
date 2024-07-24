@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
@@ -18,6 +18,43 @@ type ExtendedLocale = Intl.Locale &
     timeZone: string;
     calendars: string[];
   }>;
+
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+// https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
+const USES_FAHRENHEIT = [
+  'AG',
+  'BZ',
+  'VG',
+  'FM',
+  'MH',
+  'MS',
+  'KN',
+  'BS',
+  'CY',
+  'TC',
+  'US',
+  'LR',
+  'PW',
+  'KY',
+];
+
+export function addLocaleListener(listener: (event) => void): EventSubscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function addCalendarListener(listener: (event) => void): EventSubscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function removeSubscription(subscription: EventSubscription) {
+  subscription.remove();
+}
 
 export default {
   get currency(): string | null {
@@ -92,17 +129,33 @@ export default {
     return locales?.map((languageTag) => {
       // TextInfo is an experimental API that is not available in all browsers.
       // We might want to consider using a locale lookup table instead.
-      const locale =
-        typeof Intl !== 'undefined'
-          ? (new Intl.Locale(languageTag) as unknown as ExtendedLocale)
-          : { region: null, textInfo: null, language: null };
-      const { region, textInfo, language } = locale;
+
+      let locale = {} as ExtendedLocale;
 
       // Properties added only for compatibility with native, use `toLocaleString` instead.
-      const digitGroupingSeparator =
-        Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
-        null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
-      const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
+      let digitGroupingSeparator: string | null = null;
+      let decimalSeparator: string | null = null;
+      let temperatureUnit: 'fahrenheit' | 'celsius' | null = null;
+
+      // Gracefully handle language codes like `en-GB-oed` which is unsupported
+      // but is otherwise a valid language tag (grandfathered)
+      try {
+        digitGroupingSeparator =
+          Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
+          null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
+
+        decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
+
+        if (typeof Intl !== 'undefined') {
+          locale = new Intl.Locale(languageTag) as unknown as ExtendedLocale;
+        }
+      } catch {}
+
+      const { region, textInfo, language } = locale;
+
+      if (region) {
+        temperatureUnit = regionToTemperatureUnit(region);
+      }
 
       return {
         languageTag,
@@ -114,18 +167,14 @@ export default {
         currencyCode: null,
         currencySymbol: null,
         regionCode: region || null,
+        temperatureUnit,
       };
     });
   },
   getCalendars(): Calendar[] {
-    // Prefer locales with region codes as they contain more info about calendar.
-    // They seem to always exist in the list for each locale without region
-    const locales = [...getNavigatorLocales()].sort((a, b) =>
-      a.includes('-') === b.includes('-') ? 0 : a.includes('-') ? -1 : 1
-    );
-    const locale = (locales[0] && typeof Intl !== 'undefined'
-      ? new Intl.Locale(locales[0])
-      : null) as unknown as null | ExtendedLocale;
+    const locale = ((typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions()
+      : null) ?? null) as unknown as null | ExtendedLocale;
     return [
       {
         calendar: ((locale?.calendar || locale?.calendars?.[0]) as CalendarIdentifier) || null,
@@ -135,6 +184,7 @@ export default {
       },
     ];
   },
+
   async getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>> {
     const {
       currency,
@@ -162,3 +212,7 @@ export default {
     };
   },
 };
+
+function regionToTemperatureUnit(region: string) {
+  return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}

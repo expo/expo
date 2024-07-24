@@ -70,13 +70,18 @@ export async function test({ describe, it, expect, jasmine }) {
         }
       });
 
-      describe(`doesn't get Android-only constants`, () => {
-        it('Application.androidId is null', () => {
-          expect(Application.androidId).toBeNull();
-        });
-      });
-
       describe(`doesn't call Android-only methods`, () => {
+        it(`Application.getAndroidId() doesn't get called`, () => {
+          let androidId;
+          let error = null;
+          try {
+            androidId = Application.getAndroidId();
+          } catch (e) {
+            error = e;
+          }
+          expect(error).toBeDefined();
+          expect(androidId).toBeUndefined();
+        });
         it(`Application.getLastUpdateTimeAsync() doesn't get called`, async () => {
           let lastUpdateTime;
           let error = null;
@@ -103,11 +108,16 @@ export async function test({ describe, it, expect, jasmine }) {
     });
   } else if (Platform.OS === 'android') {
     describe(`Android device tests`, () => {
-      it(`gets Application.androidId as a String`, () => {
-        const androidId = Application.androidId;
-
-        expect(androidId).toBeDefined();
+      it(`Application.getAndroidId() returns String`, () => {
+        let error = null;
+        let androidId;
+        try {
+          androidId = Application.getAndroidId();
+        } catch (e) {
+          error = e;
+        }
         expect(androidId).toEqual(jasmine.any(String));
+        expect(error).toBeNull();
       });
 
       if (ExponentTest && !ExponentTest.isInCI) {

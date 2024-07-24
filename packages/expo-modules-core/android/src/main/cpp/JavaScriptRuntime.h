@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "JNIDeallocator.h"
+
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/CallInvoker.h>
@@ -11,22 +13,12 @@ namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
+
 class JavaScriptValue;
 
 class JavaScriptObject;
 
-/**
- * Dummy CallInvoker that invokes everything immediately.
- * Used in the test environment to check the async flow.
- */
-class SyncCallInvoker : public react::CallInvoker {
-public:
-  void invokeAsync(std::function<void()> &&func) override;
-
-  void invokeSync(std::function<void()> &&func) override;
-
-  ~SyncCallInvoker() override = default;
-};
+class JSIContext;
 
 /**
  * A wrapper for the jsi::Runtime.
@@ -38,55 +30,48 @@ public:
  */
 class JavaScriptRuntime : public std::enable_shared_from_this<JavaScriptRuntime> {
 public:
-  /**
-   * Initializes a runtime that is independent from React Native and its runtime initialization.
-   * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
-   */
-  JavaScriptRuntime();
-
   JavaScriptRuntime(
     jsi::Runtime *runtime,
-    std::shared_ptr<react::CallInvoker> jsInvoker,
-    std::shared_ptr<react::CallInvoker> nativeInvoker
+    std::shared_ptr<react::CallInvoker> jsInvoker
   );
 
   /**
    * Returns the underlying runtime object.
    */
-  jsi::Runtime &get() const;
+  jsi::Runtime &get() const noexcept;
 
   /**
    * Evaluates given JavaScript source code.
    * @throws if the input format is unknown, or evaluation causes an error,
    * a jni::JniException<JavaScriptEvaluateException> will be thrown.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptValue>::javaobject> evaluateScript(
+  jni::local_ref<jni::HybridClass<JavaScriptValue, Destructible>::javaobject> evaluateScript(
     const std::string &script
   );
 
   /**
    * Returns the runtime global object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> global();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global() noexcept;
 
   /**
    * Creates a new object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> createObject();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject() noexcept;
 
   /**
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
    */
   void drainJSEventLoop();
 
-  std::shared_ptr<react::CallInvoker> jsInvoker;
-  std::shared_ptr<react::CallInvoker> nativeInvoker;
+  void installMainObject();
 
-  std::shared_ptr<jsi::Object> getMainObject();
+  std::shared_ptr<react::CallInvoker> jsInvoker;
+
+  std::shared_ptr<jsi::Object> getMainObject() noexcept;
+
 private:
   std::shared_ptr<jsi::Runtime> runtime;
   std::shared_ptr<jsi::Object> mainObject;
-
-  void installMainObject();
 };
 } // namespace expo

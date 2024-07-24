@@ -1,5 +1,8 @@
 import chalk from 'chalk';
 
+import { KeyPressHandler } from './KeyPressHandler';
+import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
+import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
@@ -8,9 +11,6 @@ import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../server/DevServerManager';
-import { KeyPressHandler } from './KeyPressHandler';
-import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
-import { DevServerManagerActions } from './interactiveActions';
 
 const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
 
@@ -36,9 +36,9 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'platforms'>
 ) {
-  const actions = new DevServerManagerActions(devServerManager);
+  const actions = new DevServerManagerActions(devServerManager, options);
 
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
 
@@ -136,6 +136,14 @@ export async function startInterfaceAsync(
     }
 
     switch (key) {
+      case 's': {
+        Log.clear();
+        if (await devServerManager.toggleRuntimeMode()) {
+          usageOptions.devClient = devServerManager.options.devClient;
+          return actions.printDevServerInfo(usageOptions);
+        }
+        break;
+      }
       case 'w': {
         try {
           await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);

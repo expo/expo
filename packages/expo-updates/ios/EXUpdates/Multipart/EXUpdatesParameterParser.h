@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface EXUpdatesParameterParser : NSObject
 
-- (NSDictionary<NSString *, NSString *> *)parseParameterString:(NSString *)parameterString withDelimiter:(unichar)delimiter;
+- (NSDictionary *)parseParameterString:(NSString *)parameterString withDelimiter:(unichar)delimiter;
 
 @end
 

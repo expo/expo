@@ -1,4 +1,4 @@
-import { getRandomBytes } from 'expo-random';
+import { getRandomValues as expoCryptoGetRandomValues } from 'expo-crypto';
 const MAX_RANDOM_BYTES = 65536;
 /**
  * An implementation of Crypto.getRandomValues that uses expo-random's secure random generator if
@@ -23,22 +23,15 @@ export default function getRandomValues(values) {
     if (values.byteLength > MAX_RANDOM_BYTES) {
         throw new QuotaExceededError(`The ArrayBuffer view's byte length (${values.byteLength}) exceeds the number of bytes of entropy available via this API (${MAX_RANDOM_BYTES})`);
     }
-    let randomBytes;
     try {
         // NOTE: Consider implementing `fillRandomBytes` to populate the given TypedArray directly
-        randomBytes = getRandomBytes(values.byteLength);
+        expoCryptoGetRandomValues(values);
     }
     catch {
         // TODO: rethrow the error if it's not due to a lack of synchronous methods
         console.warn(`Random.getRandomBytes is not supported; falling back to insecure Math.random`);
         return getRandomValuesInsecure(values);
     }
-    // Create a new TypedArray that is of the same type as the given TypedArray but is backed with the
-    // array buffer containing random bytes. This is cheap and copies no data.
-    const TypedArrayConstructor = values.constructor;
-    const randomValues = new TypedArrayConstructor(randomBytes.buffer, randomBytes.byteOffset, values.length);
-    // Copy the data into the given TypedArray, letting the VM optimize the copy if possible
-    values.set(randomValues);
     return values;
 }
 export function getRandomValuesInsecure(values) {

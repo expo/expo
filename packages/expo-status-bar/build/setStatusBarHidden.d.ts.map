@@ -1,1 +1,1 @@
-{"version":3,"file":"setStatusBarHidden.d.ts","sourceRoot":"","sources":["../src/setStatusBarHidden.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAGvD;;;;GAIG;AACH,MAAM,CAAC,OAAO,UAAU,kBAAkB,CAAC,MAAM,EAAE,OAAO,EAAE,SAAS,EAAE,kBAAkB,QAExF"}
+{"version":3,"file":"setStatusBarHidden.d.ts","sourceRoot":"","sources":["../src/setStatusBarHidden.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAGvD;;;;GAIG;AACH,MAAM,CAAC,OAAO,UAAU,kBAAkB,CAAC,MAAM,EAAE,OAAO,EAAE,SAAS,CAAC,EAAE,kBAAkB,QAEzF"}

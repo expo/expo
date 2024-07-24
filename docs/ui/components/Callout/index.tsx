@@ -1,22 +1,24 @@
 import { css } from '@emotion/react';
+import { mergeClasses, theme, typography } from '@expo/styleguide';
+import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
+import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
+import { XSquareSolidIcon } from '@expo/styleguide-icons/solid/XSquareSolidIcon';
 import {
-  borderRadius,
-  iconSize,
-  theme,
-  spacing,
-  ErrorIcon,
-  InfoIcon,
-  WarningIcon,
-  typography,
-} from '@expo/styleguide';
-import { IconProps } from '@expo/styleguide/dist/types';
-import { Children, ComponentType, PropsWithChildren, isValidElement, ReactNode } from 'react';
+  Children,
+  HTMLAttributes,
+  isValidElement,
+  type ComponentType,
+  type PropsWithChildren,
+  type ReactNode,
+} from 'react';
 
 type CalloutType = 'default' | 'warning' | 'error' | 'info';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
-  icon?: ComponentType<IconProps> | string;
+  className?: string;
+  icon?: ComponentType<any> | string;
+  size?: 'sm' | 'md';
 }>;
 
 const extractType = (childrenArray: ReactNode[]) => {
@@ -34,7 +36,13 @@ const extractType = (childrenArray: ReactNode[]) => {
   return false;
 };
 
-export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
+export const Callout = ({
+  type = 'default',
+  size = 'md',
+  icon,
+  children,
+  className,
+}: CalloutProps) => {
   const content = Children.toArray(children).filter(child => isValidElement(child))[0];
   const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
@@ -43,15 +51,31 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
   const Icon = icon || getCalloutIcon(finalType);
 
   return (
-    <blockquote css={[containerStyle, getCalloutColor(finalType)]} data-testid="callout-container">
-      <div css={iconStyle}>
+    <blockquote
+      css={[containerStyle, getCalloutColor(finalType)]}
+      className={mergeClasses(
+        'flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
+        '[table_&]:last-of-type:mb-0',
+        // TODO(simek): remove after migration to new components is completed
+        '[&_p]:!mb-0',
+        className
+      )}
+      data-testid="callout-container">
+      <div
+        className={mergeClasses(
+          'select-none mt-[5px]',
+          '[table_&]:mt-[3px]',
+          size === 'sm' && 'mt-[3px]'
+        )}>
         {typeof icon === 'string' ? (
           icon
         ) : (
-          <Icon size={iconSize.sm} color={getCalloutIconColor(finalType)} />
+          <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
         )}
       </div>
-      <div css={contentStyle}>
+      <div
+        css={size === 'sm' ? contentSmStyle : contentMdStyle}
+        className={mergeClasses('text-default w-full', 'last:mb-0')}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>
     </blockquote>
@@ -71,68 +95,45 @@ function getCalloutColor(type: CalloutType) {
   }
 }
 
-function getCalloutIcon(type: CalloutType) {
+function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement>) => JSX.Element {
   switch (type) {
     case 'warning':
-      return WarningIcon;
+      return AlertTriangleSolidIcon;
     case 'error':
-      return ErrorIcon;
+      return XSquareSolidIcon;
     default:
-      return InfoIcon;
+      return InfoCircleSolidIcon;
   }
 }
 
 function getCalloutIconColor(type: CalloutType) {
   switch (type) {
     case 'warning':
-      return theme.text.warning;
+      return 'text-warning';
     case 'error':
-      return theme.text.danger;
+      return 'text-danger';
     case 'info':
-      return theme.text.info;
+      return 'text-info';
     default:
-      return theme.icon.default;
+      return 'text-icon-default';
   }
 }
 
 const containerStyle = css({
   backgroundColor: theme.background.subtle,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.md,
-  display: 'flex',
-  padding: `${spacing[3]}px ${spacing[4]}px`,
-  marginBottom: spacing[4],
-
-  'table &': {
-    ':last-of-type': {
-      marginBottom: 0,
-    },
-  },
 
   code: {
     backgroundColor: theme.background.element,
   },
-
-  // TODO(simek): remove after migration to new components is completed
-  p: {
-    marginBottom: `0 !important`,
-  },
 });
 
-const iconStyle = css({
-  fontStyle: 'normal',
-  marginRight: spacing[2],
-  marginTop: spacing[1],
-  userSelect: 'none',
-});
-
-const contentStyle = css({
+const contentMdStyle = css({
   ...typography.fontSizes[16],
-  color: theme.text.default,
+});
 
-  '*:last-child': {
-    marginBottom: 0,
-  },
+const contentSmStyle = css({
+  ...typography.fontSizes[14],
 });
 
 const warningColorStyle = css({

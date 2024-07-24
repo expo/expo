@@ -8,7 +8,10 @@ export type CameraPermissionResponse = PermissionResponse;
  */
 export type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
-     * @platform ios
+     * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+     * - `'all'` if the user granted your app access to the whole photo library
+     * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
+     * - `'none'` if user denied or hasn't yet granted the permission
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
@@ -158,9 +161,38 @@ export declare enum UIImagePickerPresentationStyle {
      * The default presentation style chosen by the system.
      * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
      *
-     * @platform ios 13+
+     * @platform ios
      */
     AUTOMATIC = "automatic"
+}
+/**
+ * Picker preferred asset representation mode. Its values are directly mapped to the [`PHPickerConfigurationAssetRepresentationMode`](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode).
+ *
+ * @platform ios
+ */
+export declare enum UIImagePickerPreferredAssetRepresentationMode {
+    /**
+     * A mode that indicates that the system chooses the appropriate asset representation.
+     */
+    Automatic = "automatic",
+    /**
+     * A mode that uses the most compatible asset representation.
+     */
+    Compatible = "compatible",
+    /**
+     * A mode that uses the current representation to avoid transcoding, if possible.
+     */
+    Current = "current"
+}
+export declare enum CameraType {
+    /**
+     * Back/rear camera.
+     */
+    back = "back",
+    /**
+     * Front camera
+     */
+    front = "front"
 }
 /**
  * @hidden
@@ -203,13 +235,11 @@ export type ImagePickerAsset = {
      * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
      * or user gave limited permission to access the media library.
      *
-     * @platform ios
      */
     fileName?: string | null;
     /**
      * File size of the picked image or video, in bytes.
      *
-     * @platform ios
      */
     fileSize?: number;
     /**
@@ -234,6 +264,10 @@ export type ImagePickerAsset = {
      * Length of the video in milliseconds or `null` if the asset is not a video.
      */
     duration?: number | null;
+    /**
+     * The MIME type of the selected asset or `null` if could not be determined.
+     */
+    mimeType?: string;
 };
 export type ImagePickerErrorResult = {
     /**
@@ -294,8 +328,9 @@ export type ImagePickerOptions = {
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
      * rotate the image and on iOS simply crop it.
      *
-     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
-     * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     * > - Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+     * > - On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     * > - On iOS cropping a `.bmp` image will convert it to `.png`.
      *
      * @default false
      * @platform ios
@@ -366,6 +401,7 @@ export type ImagePickerOptions = {
      * Setting the value to `0` sets the selection limit to the maximum that the system supports.
      *
      * @platform ios 14+
+     * @platform android
      * @default 0
      */
     selectionLimit?: number;
@@ -396,6 +432,28 @@ export type ImagePickerOptions = {
      * @platform ios
      */
     presentationStyle?: UIImagePickerPresentationStyle;
+    /**
+     * Selects the camera-facing type. The `CameraType` enum provides two options:
+     * `front` for the front-facing camera and `back` for the back-facing camera.
+     * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
+     * @default CameraType.back
+     * @platform ios
+     * @platform android
+     */
+    cameraType?: CameraType;
+    /**
+     * Choose [preferred asset representation mode](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode)
+     * to use when loading assets.
+     * @default ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic
+     * @platform ios 14+
+     */
+    preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
+    /**
+     * Uses the legacy image picker on Android. This will allow media to be selected from outside the users photo library.
+     * @platform android
+     * @default false
+     */
+    legacy?: boolean;
 };
 export type OpenFileBrowserOptions = {
     /**

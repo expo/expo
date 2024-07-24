@@ -6,11 +6,13 @@ export declare enum TargetType {
     WATCH = "com.apple.product-type.application.watchapp",
     APP_CLIP = "com.apple.product-type.application.on-demand-install-capable",
     STICKER_PACK_EXTENSION = "com.apple.product-type.app-extension.messages-sticker-pack",
+    FRAMEWORK = "com.apple.product-type.framework",
     OTHER = "other"
 }
 export interface Target {
     name: string;
     type: TargetType;
+    signable: boolean;
     dependencies?: Target[];
 }
 export declare function getXCBuildConfigurationFromPbxproj(project: XcodeProject, { targetName, buildConfiguration, }?: {

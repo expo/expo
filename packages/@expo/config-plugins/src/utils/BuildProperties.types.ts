@@ -7,11 +7,11 @@ import type { ExpoConfig } from '@expo/config-types';
  * ```ts
  * {
  *   propName: 'expo.jsEngine',
- *   propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'hermes',
+ *   propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'hermes',
  * }
  * ```
- * Will lookup a value through the `propValueGetter` and update to `android/gradle.properties` / `ios/Podfile.properties.json`
- * with the `expo.jsEngine` property name and the lookuped value.
+ * Will lookup a value through the `propValueGetter`, and update to `hermesEnabled` key-value in **android/gradle.properties**
+ * or `expo.jsEngine` key-value in **ios/Podfile.properties.json**.
  *
  */
 

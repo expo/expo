@@ -16,6 +16,11 @@ module.exports = {
       files: ['*.ts', '*.tsx', '*.d.ts'],
       extends: ['plugin:import/typescript'],
       parser: '@typescript-eslint/parser',
+      parserOptions: {
+        // eslint-plugin-react@7.32.2 accesses superTypeParameters, which is deprecated by
+        // typescript-estree and prints a warning by default
+        suppressDeprecatedPropertyWarnings: true,
+      },
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/array-type': ['warn', { default: 'array' }],
@@ -63,6 +68,12 @@ module.exports = {
 
         'no-redeclare': 'off',
         '@typescript-eslint/no-redeclare': 'warn',
+
+        'no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [
+          'warn',
+          { allowShortCircuit: true, enforceForJSX: true },
+        ],
 
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': [

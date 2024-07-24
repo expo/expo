@@ -1,60 +1,114 @@
-import { css } from '@emotion/react';
-import { breakpoints, spacing, theme } from '@expo/styleguide';
-import { useRouter } from 'next/router';
+import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { useRouter } from 'next/compat/router';
 
-import { ForumsLink, GitHubLink, IssuesLink, NpmLink, SourceCodeLink } from './Links';
+import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
+import { NewsletterSignUp } from './NewsletterSignUp';
+import { PageVote } from './PageVote';
 
-import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
-import { PageVote } from '~/ui/components/Footer/PageVote';
-import { UL } from '~/ui/components/Text';
-
-const NEWSLETTER_DISABLED = true as const;
+import { NavigationRouteWithSection } from '~/types/common';
+import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 type Props = {
-  title: string;
+  title?: string;
   sourceCodeUrl?: string;
   packageName?: string;
+  previousPage?: NavigationRouteWithSection;
+  nextPage?: NavigationRouteWithSection;
+  modificationDate?: string;
 };
 
-export const Footer = ({ title, sourceCodeUrl, packageName }: Props) => {
-  const { pathname } = useRouter();
-  const isAPIPage = pathname.includes('/sdk/');
-  const isExpoPackage = packageName && packageName.startsWith('expo-');
+const isDev = process.env.NODE_ENV === 'development';
+
+export const Footer = ({
+  title,
+  sourceCodeUrl,
+  packageName,
+  previousPage,
+  nextPage,
+  modificationDate,
+}: Props) => {
+  const router = useRouter();
+  const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
+  const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
+  const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
+
+  const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
 
   return (
-    <footer css={footerStyle}>
-      <UL css={linksListStyle}>
-        <ForumsLink isAPIPage={isAPIPage} title={title} />
-        {isAPIPage && (
-          <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
-        )}
-        {isAPIPage && sourceCodeUrl && (
-          <SourceCodeLink title={title} sourceCodeUrl={sourceCodeUrl} />
-        )}
-        {packageName && <NpmLink packageName={packageName} />}
-        <GitHubLink pathname={pathname} />
-      </UL>
-      <PageVote />
-      {!NEWSLETTER_DISABLED && <NewsletterSignUp />}
+    <footer className={mergeClasses('flex flex-col gap-10', title && 'pt-10', !title && 'pt-6')}>
+      {title && (previousPage || nextPage) && (
+        <div
+          className={mergeClasses(
+            'flex gap-4',
+            'max-xl-gutters:flex-col-reverse',
+            'max-lg-gutters:flex-row',
+            'max-md-gutters:flex-col-reverse'
+          )}>
+          {previousPage ? (
+            <LinkBase
+              href={previousPage.href}
+              className={mergeClasses(
+                'flex border items-center gap-3 border-solid border-default rounded-md py-3 px-4 w-full transition',
+                'hocus:shadow-xs hocus:bg-subtle'
+              )}>
+              <ArrowLeftIcon className="text-icon-secondary shrink-0" />
+              <div>
+                <FOOTNOTE theme="secondary">
+                  Previous{previousPage.section ? ` (${previousPage.section})` : ''}
+                </FOOTNOTE>
+                <P weight="medium">{previousPage.sidebarTitle ?? previousPage.name}</P>
+              </div>
+            </LinkBase>
+          ) : (
+            <div className="w-full" />
+          )}
+          {nextPage ? (
+            <LinkBase
+              href={nextPage.href}
+              className={mergeClasses(
+                'flex border justify-between items-center gap-3 border-solid border-default rounded-md py-3 px-4 w-full transition',
+                'hocus:shadow-xs hocus:bg-subtle'
+              )}>
+              <div>
+                <FOOTNOTE theme="secondary">
+                  Next{nextPage?.section ? ` (${nextPage.section})` : ''}
+                </FOOTNOTE>
+                <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
+              </div>
+              <ArrowRightIcon className="text-icon-secondary shrink-0" />
+            </LinkBase>
+          ) : (
+            <div className="w-full" />
+          )}
+        </div>
+      )}
+      <div
+        className={mergeClasses('flex flex-row gap-4 justify-between', 'max-md-gutters:flex-col')}>
+        <div>
+          <PageVote />
+          <UL className="flex-1 !mt-0 !ml-0 !list-none">
+            <ShareFeedbackLink pathname={router?.pathname} />
+            {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
+            {title && isAPIPage && (
+              <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
+            )}
+            {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+            {!isDev && shouldShowModifiedDate && modificationDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated on {modificationDate}
+              </LI>
+            )}
+            {isDev && shouldShowModifiedDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated data is not available in dev mode
+              </LI>
+            )}
+          </UL>
+        </div>
+        <NewsletterSignUp />
+      </div>
     </footer>
   );
 };
-
-const footerStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-  borderTop: `1px solid ${theme.border.default}`,
-  marginTop: spacing[10],
-  paddingTop: spacing[10],
-
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
-    flexDirection: 'column',
-  },
-});
-
-const linksListStyle = css({
-  flex: 1,
-  listStyle: 'none',
-  marginLeft: 0,
-  marginBottom: spacing[5],
-});

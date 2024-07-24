@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoIntentLauncher.web.js","sourceRoot":"","sources":["../src/ExpoIntentLauncher.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,oBAAoB,CAAC;IAC9B,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoIntentLauncher';\n  },\n};\n"]}

@@ -2,9 +2,9 @@ import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 
+import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
-import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -18,8 +18,6 @@ const FILES = [
 const WAIT_TIME = 1000;
 const IMG_NUMBER = 3;
 const VIDEO_NUMBER = 1;
-const F_SIZE = IMG_NUMBER + VIDEO_NUMBER;
-// const MEDIA_TYPES = [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video];
 const DEFAULT_MEDIA_TYPES = [MediaLibrary.MediaType.photo];
 const DEFAULT_PAGE_SIZE = 20;
 const ASSET_KEYS = [
@@ -222,7 +220,6 @@ export async function test(t) {
           const otherAlbum = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
           t.expect(otherAlbum.title).toBe(album.title);
           t.expect(otherAlbum.id).toBe(album.id);
-          t.expect(otherAlbum.assetCount).toBe(F_SIZE);
         });
 
         t.it('getAlbum with not existing album', async () => {
@@ -338,6 +335,29 @@ export async function test(t) {
           });
         });
 
+        t.it('supports sorting in ascending order', async () => {
+          // Get some assets with the largest height.
+          const { assets } = await MediaLibrary.getAssetsAsync({
+            sortBy: [[MediaLibrary.SortBy.height, false]],
+          });
+
+          // Set the first and last items in the list
+          const first = assets[0].height;
+          const last = assets[assets.length - 1].height;
+
+          // Repeat assets request but reverse the order.
+          const { assets: ascendingAssets } = await MediaLibrary.getAssetsAsync({
+            sortBy: [[MediaLibrary.SortBy.height, true]],
+          });
+
+          // Set the first and last items in the new list
+          const ascFirst = ascendingAssets[0].height;
+          const ascLast = ascendingAssets[assets.length - 1].height;
+
+          t.expect(ascFirst).toBe(last);
+          t.expect(ascLast).toBe(first);
+        });
+
         t.it('supports getting assets from specified time range', async () => {
           const assetsToCheck = 7;
 
@@ -448,9 +468,10 @@ export async function test(t) {
         'deleteAssetsAsync',
         async () => {
           const assets = await getAssets(files);
+          const assetsIds = assets.map((asset) => asset?.id);
           const result = await MediaLibrary.deleteAssetsAsync(assets);
           const deletedAssets = await Promise.all(
-            assets.map(async (asset) => await MediaLibrary.getAssetInfoAsync(asset))
+            assetsIds.map(async (id) => await MediaLibrary.getAssetInfoAsync(id))
           );
           t.expect(result).toEqual(true);
           t.expect(assets.length).not.toEqual(0);

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.DynamicFromObject

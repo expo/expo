@@ -4,7 +4,6 @@ type ShareOptions = {
     url?: string;
 };
 declare const _default: {
-    readonly name: string;
     isAvailableAsync(): Promise<boolean>;
     shareAsync(url: string, options?: ShareOptions): Promise<void>;
 };

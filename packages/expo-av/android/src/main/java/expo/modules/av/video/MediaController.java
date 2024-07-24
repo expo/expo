@@ -413,9 +413,9 @@ public class MediaController extends FrameLayout {
     }
 
     if (mPlayer.isPlaying()) {
-      mPauseButton.setImageResource(R.drawable.exo_controls_pause);
+      mPauseButton.setImageResource(com.google.android.exoplayer2.ui.R.drawable.exo_controls_pause);
     } else {
-      mPauseButton.setImageResource(R.drawable.exo_controls_play);
+      mPauseButton.setImageResource(com.google.android.exoplayer2.ui.R.drawable.exo_controls_play);
     }
   }
 

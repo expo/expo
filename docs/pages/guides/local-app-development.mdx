@@ -1,0 +1,86 @@
+---
+title: Local app development
+description: Learn how to compile and build your app locally when using Expo.
+---
+
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
+
+To build your project into an app locally using your machine, you have to manually generate native code before testing the debug build or creating a production build for it to submit to the app store. There are two ways you can build your app locally. This guide provides a brief introduction to both methods and references to other guides that are necessary to create this workflow.
+
+## Prerequisites
+
+You need to install and set up Android Studio and Xcode to compile and run Android and iOS projects on your local machine. See the following on how to set up these tools:
+
+- [Android Studio](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)
+- [Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)
+
+## Local app compilation
+
+To build your project locally you can use compile commands from Expo CLI which generates the **android** and **ios** directories:
+
+<Terminal
+  cmd={[
+    '# Build native Android project',
+    '$ npx expo run:android',
+    '# Build native iOS project',
+    '$ npx expo run:ios',
+  ]}
+/>
+
+The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
+
+- These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
+- You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production version of your app](/deploy/build-project/#production-builds-locally).
+
+To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
+
+To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
+
+To learn more about how compilation and prebuild works, see the following guides:
+
+<BoxLink
+  title="Compiling with Expo CLI"
+  description={
+    <>
+      Learn how Expo CLI uses <CODE>run</CODE> commands to compile your app locally, arguments you
+      can pass to the CLI and more.
+    </>
+  }
+  href="/more/expo-cli/#compiling"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Prebuild"
+  description="Learn how Expo CLI generates native code of your project before compiling it."
+  href="/workflow/prebuild"
+  Icon={BookOpen02Icon}
+/>
+
+## Local builds with `expo-dev-client`
+
+If you install [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) to your project, then a debug build of your project will include the `expo-dev-client` UI and tooling, and we call these development builds.
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+To create a development build, you can use [local app compilation](#local-app-compilation) commands (`npx expo run:[android|ios]`) which will create a debug build and start the development server.
+
+## Local builds with EAS
+
+<BoxLink
+  title="Run builds on your infrastructure"
+  description={
+    <>
+      Learn how to run EAS Build on your custom infrastructure or locally on your machine with the{' '}
+      <CODE>--local</CODE> flag.
+    </>
+  }
+  href="/build-reference/local-builds"
+  Icon={BuildIcon}
+/>

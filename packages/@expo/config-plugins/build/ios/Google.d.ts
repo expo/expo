@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 import { XcodeProject } from 'xcode';
-import { ConfigPlugin, ModProps } from '../Plugin.types';
 import { InfoPlist } from './IosConfig.types';
+import { ConfigPlugin, ModProps } from '../Plugin.types';
 export declare const withGoogle: ConfigPlugin;
 export declare const withGoogleServicesFile: ConfigPlugin;
 export declare function getGoogleSignInReversedClientId(config: Pick<ExpoConfig, 'ios'>, modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>): string | null;

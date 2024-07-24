@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "DevMenuLoadingView.h"
+#import <EXDevMenu/DevMenuLoadingView.h>
 
 #if __has_include(<React/RCTDevLoadingViewProtocol.h>)
 

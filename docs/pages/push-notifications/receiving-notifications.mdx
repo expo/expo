@@ -3,8 +3,6 @@ title: Receive notifications
 description: Learn how to respond to a notification received by your app and take action based on the event.
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
-
 The [`expo-notifications`](/versions/latest/sdk/notifications) library contains event listeners that handle how your app responds when receiving a notification.
 
 ## Notification event listeners
@@ -59,11 +57,3 @@ Notifications.setNotificationHandler({
 ## Closed notification behavior
 
 On Android, users can set certain OS-level settings, usually revolving around performance and battery optimization, that can prevent notifications from being delivered when the app is closed. For example, one such setting is the **Deep Clear** option on OnePlus devices using Android 9 and lower versions.
-
-## Next
-
-<BoxLink
-  title="Common questions and FAQs"
-  description="A collection of common questions about Expo's push notification service."
-  href="/push-notifications/faq"
-/>

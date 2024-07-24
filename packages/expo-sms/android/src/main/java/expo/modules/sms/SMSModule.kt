@@ -35,7 +35,7 @@ class SMSModule : Module(), LifecycleEventListener {
       sendSMSAsync(addresses, message, options, promise)
     }
 
-    AsyncFunction("isAvailableAsync") {
+    AsyncFunction<Boolean>("isAvailableAsync") {
       return@AsyncFunction context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
     }
 

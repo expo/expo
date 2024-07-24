@@ -1,5 +1,5 @@
-import { SyntheticEvent } from 'react';
-import { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
+import type { SyntheticEvent } from 'react';
+import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 
 export type CheckboxEvent = {
   /**

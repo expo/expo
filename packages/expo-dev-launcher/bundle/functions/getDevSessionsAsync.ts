@@ -1,44 +1,54 @@
 import { Platform } from 'react-native';
 
-import { restClient } from '../apiClient';
+import { restClient, restClientWithTimeout } from '../apiClient';
 import { DevSession } from '../types';
 
-// TODO -- move this into context / make it settable via JS
-const baseAddress = Platform.select({
-  ios: 'http://localhost',
-  android: 'http://10.0.2.2',
-});
-
 const statusPage = 'status';
-const portsToCheck = [8081, 8082, 19000, 19001, 19002, 19003, 19004, 19005];
+const portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002];
 
 export async function getDevSessionsAsync({
   isAuthenticated = false,
   installationID = '',
   isDevice = false,
+  timeout,
+}: {
+  isAuthenticated?: boolean;
+  installationID?: string;
+  isDevice?: boolean;
+  timeout?: number;
 }): Promise<DevSession[]> {
   let devSessions: DevSession[] = [];
 
   if (isAuthenticated) {
-    const sessions = await fetchDevSessions();
+    const sessions = await fetchDevSessions(null, timeout);
     devSessions = devSessions.concat(sessions);
   }
 
   if (!devSessions.length && installationID) {
-    const sessions = await fetchDevSessions(installationID);
+    const sessions = await fetchDevSessions(installationID, timeout);
     devSessions = devSessions.concat(sessions);
   }
 
-  if (!devSessions.length && !isDevice) {
-    const localPackagers = await getLocalPackagersAsync();
+  if (
+    !devSessions.length &&
+    // Android physical devices can connect to localhost via adb reverse
+    (!isDevice || (isDevice && Platform.OS === 'android'))
+  ) {
+    const localPackagers = await getLocalPackagersAsync(isDevice);
     devSessions = devSessions.concat(localPackagers);
   }
 
   return devSessions;
 }
 
-export async function getLocalPackagersAsync(): Promise<DevSession[]> {
+export async function getLocalPackagersAsync(isDevice: boolean): Promise<DevSession[]> {
   const onlineDevSessions: DevSession[] = [];
+
+  // TODO -- move this into context / make it settable via JS
+  const baseAddress = Platform.select({
+    ios: 'http://localhost',
+    android: isDevice ? 'http://localhost' : 'http://10.0.2.2',
+  });
 
   await Promise.all(
     portsToCheck.map(async (port) => {
@@ -52,14 +62,14 @@ export async function getLocalPackagersAsync(): Promise<DevSession[]> {
             source: 'desktop',
           });
         }
-      } catch (e) {}
+      } catch {}
     })
   );
 
   return onlineDevSessions;
 }
 
-export async function fetchDevSessions(installationID?: string) {
+export async function fetchDevSessions(installationID?: string | null, timeout?: number) {
   let devSessionsEndpoint = `/development-sessions`;
   const headers = {};
 
@@ -68,6 +78,19 @@ export async function fetchDevSessions(installationID?: string) {
     headers['Expo-Dev-Client-ID'] = installationID;
   }
 
-  const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, { headers });
-  return sessions.data ?? [];
+  if (timeout) {
+    const sessions = await restClientWithTimeout<{ data: DevSession[] }>(
+      devSessionsEndpoint,
+      timeout,
+      {
+        headers,
+      }
+    );
+    return sessions.data ?? [];
+  } else {
+    const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, {
+      headers,
+    });
+    return sessions.data ?? [];
+  }
 }

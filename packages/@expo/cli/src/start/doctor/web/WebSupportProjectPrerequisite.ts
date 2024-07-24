@@ -58,7 +58,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
 
-    const bundler = getPlatformBundlers(exp).web;
+    const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     // Only include webpack-config if bundler is webpack.
     if (bundler === 'webpack') {
       requiredPackages.push(
@@ -69,12 +69,18 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
           dev: true,
         }
       );
+    } else if (bundler === 'metro') {
+      requiredPackages.push({
+        file: '@expo/metro-runtime/package.json',
+        pkg: '@expo/metro-runtime',
+      });
     }
 
     try {
       return await ensureDependenciesAsync(this.projectRoot, {
         // This never seems to work when prompting, installing, and running -- instead just inform the user to run the install command and try again.
         skipPrompt: true,
+        isProjectMutable: false,
         exp,
         installMessage: `It looks like you're trying to use web support but don't have the required dependencies installed.`,
         warningMessage: chalk`If you're not using web, please ensure you remove the {bold "web"} string from the platforms array in the project Expo config.`,
@@ -92,7 +98,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
 export function isWebPlatformExcluded(rootConfig: AppJSONConfig): boolean {
   // Detect if the 'web' string is purposefully missing from the platforms array.
   const isWebExcluded =
-    Array.isArray(rootConfig.expo?.platforms) &&
+    Array.isArray(rootConfig?.expo?.platforms) &&
     !!rootConfig.expo?.platforms.length &&
     !rootConfig.expo?.platforms.includes('web');
   return isWebExcluded;

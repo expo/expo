@@ -39,18 +39,25 @@ export function transformString(
   }, input);
 }
 
-async function getTransformedFileContentAsync(
+async function applyTransformsOnFileContentAsync(
   filePath: string,
   transforms: FileTransform[]
-): Promise<string> {
+): Promise<{
+  content: string;
+  transformsUsed: Set<FileTransform>;
+}> {
   // Transform source content.
   let result = await fs.readFile(filePath, 'utf8');
+  const transformsUsed = new Set<FileTransform>();
   for (const transform of transforms) {
     const beforeTransformation = result;
     result = applySingleTransform(result, transform);
     await maybePrintDebugInfoAsync(beforeTransformation, result, filePath, transform);
+    if (result !== beforeTransformation) {
+      transformsUsed.add(transform);
+    }
   }
-  return result;
+  return { content: result, transformsUsed };
 }
 
 /**
@@ -116,16 +123,25 @@ export async function transformFileAsync(
 /**
  * Transforms multiple files' content in-place.
  */
-export async function transformFilesAsync(files: string[], transforms: FileTransform[]) {
+export async function transformFilesAsync(
+  files: string[],
+  transforms: FileTransform[]
+): Promise<Set<FileTransform>> {
+  const transformsUsed = new Set<FileTransform>();
   for (const file of files) {
     const filteredContentTransforms = getFilteredContentTransforms(transforms ?? [], file);
 
     // Transform source content.
-    const content = await getTransformedFileContentAsync(file, filteredContentTransforms);
+    const transformedFile = await applyTransformsOnFileContentAsync(
+      file,
+      filteredContentTransforms
+    );
+    transformedFile.transformsUsed.forEach((transform) => transformsUsed.add(transform));
 
     // Save transformed content
-    await fs.outputFile(file, content);
+    await fs.outputFile(file, transformedFile.content);
   }
+  return transformsUsed;
 }
 
 /**
@@ -147,7 +163,10 @@ export async function copyFileWithTransformsAsync(
   );
 
   // Transform source content.
-  const content = await getTransformedFileContentAsync(sourcePath, filteredContentTransforms);
+  const { content, transformsUsed } = await applyTransformsOnFileContentAsync(
+    sourcePath,
+    filteredContentTransforms
+  );
 
   if (filteredContentTransforms.length > 0) {
     // Save transformed source file at renamed target path.
@@ -166,6 +185,7 @@ export async function copyFileWithTransformsAsync(
 
   return {
     content,
+    transformsUsed,
     targetFile,
   };
 }

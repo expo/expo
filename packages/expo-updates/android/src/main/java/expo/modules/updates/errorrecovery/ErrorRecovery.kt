@@ -4,15 +4,16 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.DefaultJSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
+import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import java.lang.ref.WeakReference
-import kotlin.Exception
 
 /**
  * Entry point for the error recovery flow. Responsible for initializing the error recovery handler
@@ -34,8 +35,9 @@ class ErrorRecovery(
   internal lateinit var handler: Handler
   internal val logger = UpdatesLogger(context)
 
-  private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
+  private var weakDevSupportManager: WeakReference<DevSupportManager>? = null
   private var previousExceptionHandler: DefaultJSExceptionHandler? = null
+  private var shouldHandleReactInstanceException = false
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
     if (!::handler.isInitialized) {
@@ -44,9 +46,19 @@ class ErrorRecovery(
     }
   }
 
-  fun startMonitoring(reactInstanceManager: ReactInstanceManager) {
+  fun startMonitoring(devSupportManager: DevSupportManager) {
     registerContentAppearedListener()
-    registerErrorHandler(reactInstanceManager)
+    registerErrorHandler(devSupportManager)
+  }
+
+  /**
+   * Exception notifications sending from [expo.modules.core.interfaces.ReactNativeHostHandler]
+   * This is only used for bridgeless mode.
+   */
+  internal fun onReactInstanceException(exception: Exception) {
+    if (shouldHandleReactInstanceException) {
+      handleException(exception)
+    }
   }
 
   fun notifyNewRemoteLoadStatus(newStatus: ErrorRecoveryDelegate.RemoteLoadStatus) {
@@ -61,6 +73,9 @@ class ErrorRecovery(
 
   internal fun handleContentAppeared() {
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.CONTENT_APPEARED))
+
+    unregisterContentAppearedListener()
+
     // wait 10s before unsetting error handlers; even though we won't try to relaunch if our
     // handlers are triggered after now, we still want to give the app a reasonable window of time
     // to start the WAIT_FOR_REMOTE_UPDATE task and check for a new update is there is one
@@ -70,21 +85,38 @@ class ErrorRecovery(
     handler.postDelayed({ unregisterErrorHandler() }, 10000)
   }
 
-  private fun registerContentAppearedListener() {
-    ReactMarker.addListener { name, _, _ ->
-      if (name == ReactMarkerConstants.CONTENT_APPEARED) {
-        handleContentAppeared()
-      }
+  private val contentAppearedListener = MarkerListener { name, _, _ ->
+    if (name == ReactMarkerConstants.CONTENT_APPEARED) {
+      handleContentAppeared()
     }
   }
 
-  private fun registerErrorHandler(reactInstanceManager: ReactInstanceManager) {
-    if (reactInstanceManager.devSupportManager !is DisabledDevSupportManager) {
+  private fun registerContentAppearedListener() {
+    ReactMarker.addListener(contentAppearedListener)
+  }
+
+  private fun unregisterContentAppearedListener() {
+    ReactMarker.removeListener(contentAppearedListener)
+  }
+
+  private fun registerErrorHandler(devSupportManager: DevSupportManager) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      registerErrorHandlerImplBridgeless()
+    } else {
+      registerErrorHandlerImplBridge(devSupportManager)
+    }
+  }
+
+  private fun registerErrorHandlerImplBridgeless() {
+    shouldHandleReactInstanceException = true
+  }
+
+  private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
+    if (devSupportManager !is DisabledDevSupportManager) {
       Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
     }
 
-    val devSupportManager = reactInstanceManager.devSupportManager as DisabledDevSupportManager
     val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
       override fun handleException(e: Exception?) {
         this@ErrorRecovery.handleException(e!!)
@@ -97,12 +129,24 @@ class ErrorRecovery(
       field[devSupportManager] = defaultJSExceptionHandler
       return@let previousValue as DefaultJSExceptionHandler
     }
-    weakReactInstanceManager = WeakReference(reactInstanceManager)
+    weakDevSupportManager = WeakReference(devSupportManager)
   }
 
   private fun unregisterErrorHandler() {
-    weakReactInstanceManager?.get()?.let { reactInstanceManager ->
-      if (reactInstanceManager.devSupportManager !is DisabledDevSupportManager) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      unregisterErrorHandlerImplBridgeless()
+    } else {
+      unregisterErrorHandlerImplBridge()
+    }
+  }
+
+  private fun unregisterErrorHandlerImplBridgeless() {
+    shouldHandleReactInstanceException = false
+  }
+
+  private fun unregisterErrorHandlerImplBridge() {
+    weakDevSupportManager?.get()?.let { devSupportManager ->
+      if (devSupportManager !is DisabledDevSupportManager) {
         Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
       }
@@ -110,13 +154,12 @@ class ErrorRecovery(
         return
       }
 
-      val devSupportManager = reactInstanceManager.devSupportManager as DisabledDevSupportManager
       val devSupportManagerClass = devSupportManager.javaClass
       devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
       }
-      weakReactInstanceManager = null
+      weakDevSupportManager = null
     }
     // quitSafely will wait for processing messages to finish but cancel all messages scheduled for
     // a future time, so delay for a few more seconds in case there are any scheduled messages

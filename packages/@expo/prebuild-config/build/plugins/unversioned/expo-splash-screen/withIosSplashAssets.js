@@ -54,8 +54,8 @@ function _AssetContents() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // @ts-ignore
 
@@ -72,7 +72,6 @@ const withIosSplashAssets = (config, splash) => {
     return config;
   }
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
-    var _splash$dark, _splash$dark2;
     const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
     await createSplashScreenBackgroundImageAsync({
       iosNamedProjectRoot,
@@ -82,9 +81,9 @@ const withIosSplashAssets = (config, splash) => {
       projectRoot: config.modRequest.projectRoot,
       iosNamedProjectRoot,
       image: splash.image,
-      darkImage: (_splash$dark = splash.dark) === null || _splash$dark === void 0 ? void 0 : _splash$dark.image,
+      darkImage: splash.dark?.image,
       tabletImage: splash.tabletImage,
-      darkTabletImage: (_splash$dark2 = splash.dark) === null || _splash$dark2 === void 0 ? void 0 : _splash$dark2.tabletImage
+      darkTabletImage: splash.dark?.tabletImage
     });
     return config;
   }]);
@@ -190,11 +189,10 @@ async function createSplashScreenBackgroundImageAsync({
   iosNamedProjectRoot,
   splash
 }) {
-  var _splash$dark3, _splash$dark4;
   const color = splash.backgroundColor;
-  const darkColor = (_splash$dark3 = splash.dark) === null || _splash$dark3 === void 0 ? void 0 : _splash$dark3.backgroundColor;
+  const darkColor = splash.dark?.backgroundColor;
   const tabletColor = splash.tabletBackgroundColor;
-  const darkTabletColor = (_splash$dark4 = splash.dark) === null || _splash$dark4 === void 0 ? void 0 : _splash$dark4.tabletBackgroundColor;
+  const darkTabletColor = splash.dark?.tabletBackgroundColor;
   const imagesetPath = path().join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
   // Ensure the Images.xcassets/... path exists
   await _fsExtra().default.remove(imagesetPath);
@@ -265,7 +263,7 @@ function buildContentsJsonImages({
   darkTabletImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'ipad',
     appearances: darkAppearances,
-    filename: darkTabletImage !== null && darkTabletImage !== void 0 ? darkTabletImage : undefined,
+    filename: darkTabletImage ?? undefined,
     scale: '1x'
   }), darkTabletImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'ipad',

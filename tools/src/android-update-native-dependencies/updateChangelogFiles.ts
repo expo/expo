@@ -1,6 +1,6 @@
+import { AndroidProjectDependenciesUpdates } from './types';
 import * as Changelogs from '../Changelogs';
 import dependenciesChangelogs from '../data/androidDependenciesChangelogs.json';
-import { AndroidProjectDependenciesUpdates } from './types';
 
 function maybeWrapInChangelogLink(text: string, dependencyName: string) {
   const changelog = dependenciesChangelogs[dependencyName];

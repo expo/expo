@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import { AndroidConfig } from '@expo/config-plugins';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { AndroidAppIdResolver } from '../AndroidAppIdResolver';
 
 jest.mock('@expo/config-plugins', () => ({
@@ -32,7 +31,9 @@ describe('getAppIdAsync', () => {
     const resolver = new AndroidAppIdResolver('/');
     resolver.hasNativeProjectAsync = jest.fn(resolver.hasNativeProjectAsync);
     resolver.getAppIdFromNativeAsync = jest.fn(resolver.getAppIdFromNativeAsync);
-    asMock(AndroidConfig.Package.getApplicationIdAsync).mockResolvedValueOnce('dev.bacon.myapp');
+    jest
+      .mocked(AndroidConfig.Package.getApplicationIdAsync)
+      .mockResolvedValueOnce('dev.bacon.myapp');
     expect(await resolver.getAppIdAsync()).toBe('dev.bacon.myapp');
     expect(resolver.getAppIdFromNativeAsync).toBeCalledTimes(1);
     expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
@@ -43,7 +44,7 @@ describe('getAppIdAsync', () => {
     resolver.hasNativeProjectAsync = jest.fn(async () => false);
     resolver.getAppIdFromConfigAsync = jest.fn(resolver.getAppIdFromConfigAsync);
 
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       exp: {
         android: {
           package: 'dev.bacon.myapp',

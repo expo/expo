@@ -1,5 +1,3 @@
-declare const _default: {
-    readonly name: string;
-};
+declare const _default: {};
 export default _default;
 //# sourceMappingURL=ExpoSecureStore.web.d.ts.map

@@ -1,6 +1,6 @@
 import assert from 'assert';
 import fs from 'fs';
-import { sync as globSync } from 'glob';
+import { globSync } from 'glob';
 import path from 'path';
 
 import { getWorkspaceRoot } from './getModulesPaths';
@@ -33,7 +33,8 @@ export function globAllPackageJsonPaths(
 ): string[] {
   return linkedPackages
     .map((glob) => {
-      return globSync(path.join(glob, 'package.json').replace(/\\/g, '/'), {
+      // Globs should only contain `/` as separator, even on Windows.
+      return globSync(path.posix.join(glob, 'package.json').replace(/\\/g, '/'), {
         cwd: workspaceProjectRoot,
         absolute: true,
         ignore: ['**/@(Carthage|Pods|node_modules)/**'],

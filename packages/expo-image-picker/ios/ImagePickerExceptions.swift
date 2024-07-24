@@ -26,6 +26,12 @@ internal class MissingCameraPermissionException: Exception {
   }
 }
 
+internal class MissingMicrophonePermissionException: Exception {
+  override var reason: String {
+    "Missing microphone permission. Please enable it with the `expo-image-picker` config plugin"
+  }
+}
+
 internal class MissingPhotoLibraryPermissionException: Exception {
   override var reason: String {
     "Missing photo library permission"

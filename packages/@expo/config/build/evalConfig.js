@@ -40,6 +40,13 @@ function _Serialize() {
   };
   return data;
 }
+function _environment() {
+  const data = require("./environment");
+  _environment = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Transpile and evaluate the dynamic config object.
@@ -104,8 +111,7 @@ function extractLocationFromSyntaxError(error) {
 // An example is a module that includes an import statement.
 function extractImportantStackFromNodeError(error) {
   if (isSyntaxError(error)) {
-    var _error$stack;
-    const traces = (_error$stack = error.stack) === null || _error$stack === void 0 ? void 0 : _error$stack.split('\n').filter(line => !line.startsWith('    at '));
+    const traces = error.stack?.split('\n').filter(line => !line.startsWith('    at '));
     if (!traces) return null;
 
     // Remove redundant line
@@ -131,7 +137,13 @@ function isSyntaxError(error) {
  * @param request
  */
 function resolveConfigExport(result, configFile, request) {
-  var _result;
+  // add key to static config that we'll check for after the dynamic is evaluated
+  // to see if the static config was used in determining the dynamic
+  const hasBaseStaticConfig = _environment().NON_STANDARD_SYMBOL;
+  if (request?.config) {
+    // @ts-ignore
+    request.config[hasBaseStaticConfig] = true;
+  }
   if (result.default != null) {
     result = result.default;
   }
@@ -143,15 +155,27 @@ function resolveConfigExport(result, configFile, request) {
     throw new (_Errors().ConfigError)(`Config file ${configFile} cannot return a Promise.`, 'INVALID_CONFIG');
   }
 
+  // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
+  // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
+  // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
+  // to suggest that there *may* be a problem.
+  const mayHaveUnusedStaticConfig =
+  // @ts-ignore
+  request?.config?.[hasBaseStaticConfig] && !result?.[hasBaseStaticConfig];
+  if (result) {
+    delete result._hasBaseStaticConfig;
+  }
+
   // If the expo object exists, ignore all other values.
-  if ((_result = result) !== null && _result !== void 0 && _result.expo) {
+  if (result?.expo) {
     result = (0, _Serialize().serializeSkippingMods)(result.expo);
   } else {
     result = (0, _Serialize().serializeSkippingMods)(result);
   }
   return {
     config: result,
-    exportedObjectType
+    exportedObjectType,
+    mayHaveUnusedStaticConfig
   };
 }
 //# sourceMappingURL=evalConfig.js.map

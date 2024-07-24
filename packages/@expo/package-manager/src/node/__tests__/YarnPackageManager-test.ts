@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
 import { YarnPackageManager } from '../YarnPackageManager';
 
 jest.mock('@expo/spawn-async');
@@ -45,6 +45,19 @@ describe('YarnPackageManager', () => {
         expect.objectContaining({
           env: { ADBLOCK: '0', DISABLE_OPENCOLLECTIVE: '1' },
         })
+      );
+    });
+  });
+
+  describe('runBinAsync', () => {
+    it('executes yarn with the expected command and options', async () => {
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      await yarn.runBinAsync(['eslint', '.']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'yarnpkg',
+        expect.arrayContaining(['eslint', '.']),
+        expect.objectContaining({ cwd: projectRoot })
       );
     });
   });
@@ -104,9 +117,9 @@ describe('YarnPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from yarn', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' })));
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
 
@@ -117,9 +130,11 @@ describe('YarnPackageManager', () => {
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from yarn', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() =>
+          mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+        );
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
 

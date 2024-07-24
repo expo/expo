@@ -1,20 +1,15 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import { AuthRequestConfig } from '../AuthRequest.types';
-import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
-import {
-  AuthRequest,
-  AuthRequestPromptOptions,
-  AuthSessionRedirectUriOptions,
-  AuthSessionResult,
-  DiscoveryDocument,
-  makeRedirectUri,
-  ResponseType,
-} from '../AuthSession';
-import { generateHexStringAsync } from '../PKCE';
 import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, useProxyEnabled } from './ProviderUtils';
+import { applyRequiredScopes } from './ProviderUtils';
+import { AuthRequest } from '../AuthRequest';
+import { AuthRequestConfig, AuthRequestPromptOptions, ResponseType } from '../AuthRequest.types';
+import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
+import { makeRedirectUri } from '../AuthSession';
+import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import { DiscoveryDocument } from '../Discovery';
+import { generateHexStringAsync } from '../PKCE';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -28,7 +23,10 @@ export const discovery: DiscoveryDocument = {
 };
 
 // @needsAudit @docsMissing
-export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
+/**
+ * @deprecated See [Facebook authentication](/guides/facebook-authentication/).
+ */
+export type FacebookAuthRequestConfig = ProviderAuthRequestConfig & {
   /**
    * Expo web client ID for use in the browser.
    */
@@ -41,11 +39,7 @@ export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
    * Android native client ID for use in development builds and bare workflow.
    */
   androidClientId?: string;
-  /**
-   * Proxy client ID for use when testing with Expo Go on Android and iOS.
-   */
-  expoClientId?: string;
-}
+};
 
 // @needsAudit
 /**
@@ -123,27 +117,16 @@ export function useAuthRequest(
 ): [
   FacebookAuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
-  const useProxy = useProxyEnabled(redirectUriOptions);
-
   const clientId = useMemo((): string => {
-    const propertyName = useProxy
-      ? 'expoClientId'
-      : Platform.select({
-          ios: 'iosClientId',
-          android: 'androidClientId',
-          default: 'webClientId',
-        });
+    const propertyName = Platform.select({
+      ios: 'iosClientId',
+      android: 'androidClientId',
+      default: 'webClientId',
+    });
     return config[propertyName as any] ?? config.clientId;
-  }, [
-    useProxy,
-    config.expoClientId,
-    config.iosClientId,
-    config.androidClientId,
-    config.webClientId,
-    config.clientId,
-  ]);
+  }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
 
   const redirectUri = useMemo((): string => {
     if (typeof config.redirectUri !== 'undefined') {
@@ -153,10 +136,9 @@ export function useAuthRequest(
     return makeRedirectUri({
       // The redirect URI should be created using fb + client ID on native.
       native: `fb${clientId}://authorize`,
-      useProxy,
       ...redirectUriOptions,
     });
-  }, [useProxy, clientId, config.redirectUri, redirectUriOptions]);
+  }, [clientId, config.redirectUri, redirectUriOptions]);
 
   const extraParams = useMemo((): FacebookAuthRequestConfig['extraParams'] => {
     const output = config.extraParams ? { ...config.extraParams } : {};
@@ -180,7 +162,6 @@ export function useAuthRequest(
 
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
     windowFeatures: settings.windowFeatures,
-    useProxy,
   });
 
   return [request, result, promptAsync];

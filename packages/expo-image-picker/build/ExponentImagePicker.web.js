@@ -6,9 +6,6 @@ const MediaTypeInput = {
     [MediaTypeOptions.Videos]: 'video/mp4,video/quicktime,video/x-m4v,video/*',
 };
 export default {
-    get name() {
-        return 'ExponentImagePicker';
-    },
     async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
@@ -107,6 +104,8 @@ function readFile(targetFile, options) {
                         uri,
                         width: image.naturalWidth ?? image.width,
                         height: image.naturalHeight ?? image.height,
+                        mimeType: targetFile.type,
+                        fileName: targetFile.name,
                         // The blob's result cannot be directly decoded as Base64 without
                         // first removing the Data-URL declaration preceding the
                         // Base64-encoded data. To retrieve only the Base64 encoded string,

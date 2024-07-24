@@ -13,7 +13,7 @@ exports[`Checkbox renders content matching snapshot 1`] = `
       type="checkbox"
     />
     <div
-      class="css-view-175oi2r r-alignItems-1awozwy r-borderRadius-1jkafct r-borderStyle-1phboty r-borderWidth-d045u9 r-bottom-1p0dtai r-height-1pi2tsx r-justifyContent-1777fci r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-backgroundImage-rs94m5 r-backgroundRepeat-u6sd8q r-pointerEvents-633pao"
+      class="css-view-175oi2r r-alignItems-1awozwy r-borderRadius-1jkafct r-borderStyle-1phboty r-borderWidth-d045u9 r-bottom-1p0dtai r-height-1pi2tsx r-justifyContent-1777fci r-left-1d2f490 r-pointerEvents-633pao r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-backgroundImage-rs94m5 r-backgroundRepeat-u6sd8q"
       style="background-color: rgb(70, 48, 235); border-top-color: rgba(70,48,235,1.00); border-right-color: rgba(70,48,235,1.00); border-bottom-color: rgba(70,48,235,1.00); border-left-color: rgba(70,48,235,1.00);"
     />
   </div>,

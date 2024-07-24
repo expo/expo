@@ -1,31 +1,35 @@
 ---
 title: BuildProperties
+description: A config plugin that allows customizing native build properties during prebuild.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-build-properties'
 packageName: 'expo-build-properties'
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
-`expo-build-properties` is a [config plugin](/guides/config-plugins) configuring the native build properties
+`expo-build-properties` is a [config plugin](/config-plugins/introduction/) configuring the native build properties
 of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/prebuild).
 
 > **info** This config plugin configures how [Prebuild command](/workflow/prebuild) generates the native **android** and **ios** folders
 > and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
 
-<PlatformsSection ios simulator android emulator />
-
 ## Installation
 
-<APIInstallSection hideBareInstructions={true} />
+<APIInstallSection hideBareInstructions />
 
 ## Usage
 
 <ConfigPluginExample>
 
-```json app.json
+<Tabs>
+
+<Tab label="app.json">
+
+```json app.json|collapseHeight=450
 {
   "expo": {
     "plugins": [
@@ -33,12 +37,12 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 31,
-            "targetSdkVersion": 31,
-            "buildToolsVersion": "31.0.0"
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "13.4"
           }
         }
       ]
@@ -47,27 +51,37 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
 }
 ```
 
-</ConfigPluginExample>
+</Tab>
 
-### Example app.config.js usage
+<Tab label="app.config.js">
 
-```js app.config.js
-import { withPlugins } from 'expo/config-plugins';
-import { withBuildProperties } from 'expo-build-properties';
-
-export default withPlugins(config, [
-  [withBuildProperties, {
-    "android": {
-      "compileSdkVersion": 31,
-      "targetSdkVersion": 31,
-      "buildToolsVersion": "31.0.0"
-    },
-    "ios": {
-      "deploymentTarget": "13.0"
-    }
-  }]
-]);
+```js app.config.js|collapseHeight=450
+export default {
+  expo: {
+    plugins: [
+      [
+        'expo-build-properties',
+        {
+          android: {
+            compileSdkVersion: 34,
+            targetSdkVersion: 34,
+            buildToolsVersion: '34.0.0',
+          },
+          ios: {
+            deploymentTarget: '13.4',
+          },
+        },
+      ],
+    ],
+  },
+};
 ```
+
+</Tab>
+
+</Tabs>
+
+</ConfigPluginExample>
 
 ### All configurable properties
 

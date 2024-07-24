@@ -1,67 +1,61 @@
-import { css } from '@emotion/react';
-import {
-  spacing,
-  theme,
-  SnackLogo,
-  ChangelogIcon,
-  DiscordIcon,
-  MessageIcon,
-  iconSize,
-} from '@expo/styleguide';
-import { useRouter } from 'next/router';
+import { SnackLogo } from '@expo/styleguide';
+import { ChangelogIcon } from '@expo/styleguide-icons/custom/ChangelogIcon';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
+import { useRouter } from 'next/compat/router';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';
 import { ArchiveIcon } from './icons/Archive';
 
 import { getPageSection } from '~/common/routes';
-import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
-export const SidebarFooter = () => {
-  const { pathname } = useRouter();
+type SideBarFooterProps = {
+  isMobileMenuVisible?: boolean;
+};
+
+export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
+  const router = useRouter();
+  const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
-    <div css={sidebarFooterContainer}>
+    <div className="flex flex-col p-4 border-t border-t-default bg-default gap-0.5">
       <SidebarSingleEntry
+        secondary
         href="/archive"
         title="Archive"
-        Icon={() => (
-          <div css={[customIconContainerStyle, { width: iconSize.sm }]}>
-            <ArchiveIcon />
-          </div>
-        )}
-        isActive={getPageSection(pathname) === 'archive'}
+        Icon={ArchiveIcon}
+        isActive={isArchive}
       />
       <SidebarSingleEntry
+        secondary
         href="https://snack.expo.dev"
         title="Expo Snack"
         Icon={SnackLogo}
         isExternal
       />
       <SidebarSingleEntry
+        secondary
         href="https://chat.expo.dev"
-        title="Discord"
+        title="Discord and Forums"
         Icon={DiscordIcon}
         isExternal
+        shouldLeakReferrer
       />
       <SidebarSingleEntry
-        href="https://forums.expo.dev"
-        title="Forums"
-        Icon={MessageIcon}
+        secondary
+        href="https://expo.dev/mailing-list/signup"
+        title="Newsletter"
+        Icon={Mail01Icon}
         isExternal
       />
-      <SidebarSingleEntry
-        href="https://expo.dev/changelog"
-        title="Changelog"
-        Icon={ChangelogIcon}
-        isExternal
-      />
+      {isMobileMenuVisible && (
+        <SidebarSingleEntry
+          secondary
+          href="https://expo.dev/changelog"
+          title="Changelog"
+          Icon={ChangelogIcon}
+          isExternal
+        />
+      )}
     </div>
   );
 };
-
-const sidebarFooterContainer = css({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: spacing[4],
-  borderTop: `1px solid ${theme.border.default}`,
-  background: theme.background.default,
-});

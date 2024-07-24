@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
 /**
@@ -12,17 +13,17 @@ import expo.modules.kotlin.jni.ExpectedType
  */
 class AnyTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Any {
-    return when (value.type) {
+    return when (value.getType()) {
       ReadableType.Boolean -> value.asBoolean()
       ReadableType.Number -> value.asDouble()
       ReadableType.String -> value.asString()
-      ReadableType.Map -> value.asMap()
-      ReadableType.Array -> value.asArray()
-      else -> error("Unknown dynamic type: ${value.type}")
+      ReadableType.Map -> value.asMap().toHashMap()
+      ReadableType.Array -> value.asArray().toArrayList()
+      else -> error("Unknown dynamic type: ${value.getType()}")
     }
   }
 
   override fun convertFromAny(value: Any): Any = value
 
-  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forAny()
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.ANY)
 }

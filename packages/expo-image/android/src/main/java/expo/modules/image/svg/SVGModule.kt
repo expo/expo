@@ -21,6 +21,6 @@ class SVGModule : LibraryGlideModule() {
     super.registerComponents(context, glide, registry)
     registry
       .append(InputStream::class.java, SVG::class.java, SVGDecoder())
-      .register(SVG::class.java, Drawable::class.java, SVGDrawableTranscoder())
+      .register(SVG::class.java, Drawable::class.java, SVGDrawableTranscoder(context))
   }
 }

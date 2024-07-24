@@ -2,13 +2,18 @@ import { IOSConfig } from 'expo/config-plugins';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 
-import { setNotificationSounds } from '../withNotificationsIOS';
 import { getDirFromFS } from './withNotificationsAndroid-test';
+import { setNotificationSounds } from '../withNotificationsIOS';
 
 jest.mock('fs');
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
+const template = path.join(
+  __dirname,
+  '../../../../../templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj'
+);
+const pbxproj = fsReal.readFileSync(template, 'utf-8');
 const LIST_OF_GENERATED_FILES = [
   'assets/notificationSound.wav',
   'ios/testproject/notificationSound.wav',
@@ -28,10 +33,7 @@ describe('iOS notifications configuration', () => {
     vol.mkdirpSync('/app/assets');
     vol.mkdirpSync('/app/ios/testproject.xcodeproj/');
     vol.writeFileSync('/app/assets/notificationSound.wav', sound);
-    vol.writeFileSync(
-      '/app/ios/testproject.xcodeproj/project.pbxproj',
-      fsReal.readFileSync(path.join(__dirname, 'fixtures/project.pbxproj'), 'utf-8')
-    );
+    vol.writeFileSync('/app/ios/testproject.xcodeproj/project.pbxproj', pbxproj);
   });
 
   afterAll(() => {

@@ -9,6 +9,18 @@ private const val unknownCode = "UnknownCode"
 interface Promise {
   fun resolve(value: Any?)
 
+  fun resolve() = resolve(null)
+
+  fun resolve(result: Int) = resolve(result as Any?)
+
+  fun resolve(result: Boolean) = resolve(result as Any?)
+
+  fun resolve(result: Double) = resolve(result as Any?)
+
+  fun resolve(result: Float) = resolve(result as Any?)
+
+  fun resolve(result: String) = resolve(result as Any?)
+
   fun reject(code: String, message: String?, cause: Throwable?)
 
   fun reject(exception: CodedException) {
@@ -18,8 +30,8 @@ interface Promise {
 
 fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
   val expoPromise = this
-  val resolveMethod = if (expoPromise is PromiseImpl) {
-    expoPromise.resolveBlock::invoke
+  val resolveMethod: (value: Any?) -> Unit = if (expoPromise is PromiseImpl) {
+    expoPromise.callback::invoke
   } else {
     expoPromise::resolve
   }
@@ -65,6 +77,7 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
       expoPromise.reject(code ?: unknownCode, message, throwable)
     }
 
+    @Deprecated("Use reject(code, message, throwable) instead")
     override fun reject(message: String?) {
       expoPromise.reject(unknownCode, message, null)
     }

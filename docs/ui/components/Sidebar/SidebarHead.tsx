@@ -1,66 +1,83 @@
 import { css } from '@emotion/react';
-import { spacing, theme, PlanEnterpriseIcon, iconSize } from '@expo/styleguide';
+import { theme, DocsLogo, LinkBase } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { BookOpen02DuotoneIcon } from '@expo/styleguide-icons/duotone/BookOpen02DuotoneIcon';
+import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
+import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneIcon';
+import { Stars02DuotoneIcon } from '@expo/styleguide-icons/duotone/Stars02DuotoneIcon';
+import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 
-import { APIIcon, APIInactiveIcon } from './icons/API';
-import { DocumentationIcon, DocumentationInactiveIcon } from './icons/Documentation';
-import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
+import { ApiVersionSelect } from './ApiVersionSelect';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
+import { Search } from '~/ui/components/Search';
 import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
-import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
 type SidebarHeadProps = {
   sidebarActiveGroup: string;
 };
 
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
+  if (sidebarActiveGroup === 'archive') {
+    return (
+      <div css={sidebarHeadContainerStyle} className="!p-1.5">
+        <LinkBase
+          href="/"
+          className="flex gap-3 items-center p-2.5 rounded-md text-secondary hocus:bg-element">
+          <ArrowLeftIcon className="text-icon-secondary" />
+          Back
+        </LinkBase>
+      </div>
+    );
+  }
+
   return (
-    <div css={sidebarHeadContainer}>
-      <SidebarSingleEntry
-        href="/"
-        title="Guides"
-        Icon={sidebarActiveGroup === 'general' ? DocumentationIcon : DocumentationInactiveIcon}
-        isActive={sidebarActiveGroup === 'general'}
-      />
-      <SidebarSingleEntry
-        href="/eas"
-        title="Expo Application Services"
-        Icon={() => (
-          <div css={customIconContainerStyle}>
-            <PlanEnterpriseIcon
-              color={sidebarActiveGroup === 'eas' ? theme.text.link : theme.icon.default}
-              size={iconSize.sm}
-            />
-          </div>
-        )}
-        isActive={sidebarActiveGroup === 'eas'}
-      />
-      <SidebarSingleEntry
-        href="/versions/latest"
-        title="API Reference"
-        Icon={sidebarActiveGroup === 'reference' ? APIIcon : APIInactiveIcon}
-        isActive={sidebarActiveGroup === 'reference'}
-      />
-      {shouldShowFeaturePreviewLink() && (
+    <>
+      <div css={sidebarHeadContainerStyle}>
+        <Search />
         <SidebarSingleEntry
-          href="/feature-preview"
-          title="Feature Preview"
-          Icon={
-            sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'
-              ? PreviewIcon
-              : PreviewInactiveIcon
-          }
-          isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
+          href="/"
+          title="Home"
+          Icon={Home02DuotoneIcon}
+          isActive={sidebarActiveGroup === 'home'}
         />
-      )}
-    </div>
+        <SidebarSingleEntry
+          href="/guides/overview/"
+          title="Guides"
+          Icon={BookOpen02DuotoneIcon}
+          isActive={sidebarActiveGroup === 'general'}
+        />
+        <SidebarSingleEntry
+          href="/versions/latest"
+          title="Reference"
+          Icon={DocsLogo}
+          isActive={sidebarActiveGroup === 'reference'}
+        />
+        <SidebarSingleEntry
+          href="/tutorial/overview/"
+          title="Learn"
+          Icon={GraduationHat02DuotoneIcon}
+          isActive={sidebarActiveGroup === 'learn'}
+        />
+        {shouldShowFeaturePreviewLink() && (
+          <SidebarSingleEntry
+            href="/feature-preview"
+            title="Feature Preview"
+            Icon={Stars02DuotoneIcon}
+            isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
+          />
+        )}
+      </div>
+      <ApiVersionSelect />
+    </>
   );
 };
 
-const sidebarHeadContainer = css({
+const sidebarHeadContainerStyle = css({
   display: 'flex',
   flexDirection: 'column',
   padding: spacing[4],
   borderBottom: `1px solid ${theme.border.default}`,
   background: theme.background.default,
+  gap: spacing[0.5],
 });
