@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders ErrorBoundary 1`] = `
+"1:I["src/views/ErrorBoundary.tsx",[],"ErrorBoundary"]
+0:["$","$L1",null,{},null]"
+`;
