@@ -137,11 +137,9 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
   if (headers == null) {
     return [];
   }
-
   if (Array.isArray(headers)) {
     return headers;
   }
-
   if (headers instanceof Headers) {
     const results: [string, string][] = [];
     headers.forEach((value, key) => {
