@@ -39,7 +39,7 @@
     RCTSetCustomNSURLSessionConfigurationProvider(^{
       return [self createDefaultURLSessionConfiguration];
     });
-    [EXNetworkFetchCustomExtension setCustomURLSessionConfigurationProvider:^{
+    [EXFetchCustomExtension setCustomURLSessionConfigurationProvider:^{
       return [self createDefaultURLSessionConfiguration];
     }];
   }

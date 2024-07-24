@@ -3,8 +3,8 @@
 /**
  For callsites to customize network fetch functionalities like having custom `URLSessionConfiguration`.
  */
-@objc(EXNetworkFetchCustomExtension)
-public class ExpoNetworkFetchCustomExtension: NSObject {
+@objc(EXFetchCustomExtension)
+public class ExpoFetchCustomExtension: NSObject {
   @objc
   public static func setCustomURLSessionConfigurationProvider(_ provider: NSURLSessionConfigurationProvider?) {
     urlSessionConfigurationProvider = provider
