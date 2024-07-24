@@ -137,9 +137,15 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
   if (headers == null) {
     return [];
   }
+
   if (Array.isArray(headers)) {
     return headers;
   }
+
+  if (!Headers) {
+    throw new Error('Native Headers API is not available in this environment');
+  }
+
   if (headers instanceof Headers) {
     const results: [string, string][] = [];
     headers.forEach((value, key) => {

@@ -97,17 +97,19 @@ function installBuiltin(name: string, getValue: () => any) {
   installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
 
-try {
-  require('web-streams-polyfill');
-  // NOTE: Fetch is polyfilled in expo/metro-runtime
-  installBuiltin(
-    'ReadableStream',
-    () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
-  );
+// try {
+//   require('web-streams-polyfill');
+//   // NOTE: Fetch is polyfilled in expo/metro-runtime
+//   installBuiltin(
+//     'ReadableStream',
+//     () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
+//   );
+// } catch {}
 
+try {
   installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
-  installBuiltin('Request', () => require('react-native-fetch-api').Request);
-  installBuiltin('Response', () => require('react-native-fetch-api').Response);
+  // installBuiltin('Request', () => require('react-native-fetch-api').Request);
+  // installBuiltin('Response', () => require('react-native-fetch-api').Response);
 } catch {}
 
 if (manifest?.extra?.router?.origin !== false) {
@@ -120,28 +122,27 @@ if (manifest?.extra?.router?.origin !== false) {
     }
   }
 
-  const fetch = getBestFetch();
-  // Polyfill native fetch to support relative URLs
-  Object.defineProperty(global, 'fetch', {
-    // value: fetch,
-    value: wrapFetchWithWindowLocation(fetch),
-  });
+  // const fetch = getBestFetch();
+  // // Polyfill native fetch to support relative URLs
+  // Object.defineProperty(global, 'fetch', {
+  //   // value: fetch,
+  //   value: wrapFetchWithWindowLocation(fetch),
+  // });
 } else {
-  const fetch = getBestFetch();
-
-  // Polyfill native fetch to support relative URLs
-  Object.defineProperty(global, 'fetch', {
-    value: fetch,
-  });
+  // const fetch = getBestFetch();
+  // // Polyfill native fetch to support relative URLs
+  // Object.defineProperty(global, 'fetch', {
+  //   value: fetch,
+  // });
 }
 
-function getBestFetch() {
-  try {
-    const otherFetch = require('react-native-fetch-api');
-    if (otherFetch) {
-      return otherFetch.fetch;
-    }
-  } catch {
-    return fetch;
-  }
-}
+// function getBestFetch() {
+//   // try {
+//   //   const otherFetch = require('react-native-fetch-api');
+//   //   if (otherFetch) {
+//   //     return otherFetch.fetch;
+//   //   }
+//   // } catch {
+//   return require('expo/fetch').fetch;
+//   // }
+// }

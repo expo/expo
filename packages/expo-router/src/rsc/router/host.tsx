@@ -25,6 +25,8 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
+import { fetch } from 'expo/fetch';
+
 import { MetroServerError, ReactServerError } from './errors';
 import { getDevServer } from '../../getDevServer';
 
@@ -78,6 +80,11 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
     throw new ReactServerError(responseText, response.url, response.status);
   }
   console.log('[Router] Fetched', response.url, response.status);
+
+  // response.text().then((text) => {
+  //   console.log('[Router] Response:', text);
+  // });
+
   return response;
 };
 
@@ -167,9 +174,8 @@ export const fetchRSC = (
 
       const response = fetch(reqPath, {
         method: 'POST',
-        // @ts-expect-error: non-standard feature for streaming.
-        duplex: 'half',
-        reactNative: { textStreaming: true },
+        // duplex: 'half',
+        // reactNative: { textStreaming: true },
         ...requestOpts,
         headers: {
           ...requestOpts.headers,
@@ -200,8 +206,8 @@ export const fetchRSC = (
       headers: {
         'expo-platform': process.env.EXPO_OS!,
       },
-      // @ts-expect-error: TODO: Add expo streaming fetch
-      reactNative: { textStreaming: true },
+
+      // reactNative: { textStreaming: true },
     });
   delete prefetched[url];
   const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
@@ -252,8 +258,6 @@ export const prefetchRSC = (input: string, searchParamsString: string): void => 
       headers: {
         'expo-platform': process.env.EXPO_OS!,
       },
-      // @ts-expect-error: non-standard feature for streaming.
-      reactNative: { textStreaming: true },
     });
   }
 };

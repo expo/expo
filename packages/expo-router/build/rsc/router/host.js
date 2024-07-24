@@ -41,6 +41,7 @@ exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = expo
 const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
+const fetch_1 = require("expo/fetch");
 const errors_1 = require("./errors");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;
@@ -84,6 +85,9 @@ const checkStatus = async (responsePromise) => {
         throw new errors_1.ReactServerError(responseText, response.url, response.status);
     }
     console.log('[Router] Fetched', response.url, response.status);
+    // response.text().then((text) => {
+    //   console.log('[Router] Response:', text);
+    // });
     return response;
 };
 function getCached(c, m, k) {
@@ -146,11 +150,10 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
                     body: JSON.stringify(args),
                 };
             }
-            const response = fetch(reqPath, {
+            const response = (0, fetch_1.fetch)(reqPath, {
                 method: 'POST',
-                // @ts-expect-error: non-standard feature for streaming.
-                duplex: 'half',
-                reactNative: { textStreaming: true },
+                // duplex: 'half',
+                // reactNative: { textStreaming: true },
                 ...requestOpts,
                 headers: {
                     ...requestOpts.headers,
@@ -174,12 +177,11 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
     const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
     console.log('fetch', reqPath);
     const response = prefetched[url] ||
-        fetch(reqPath, {
+        (0, fetch_1.fetch)(reqPath, {
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
-            // @ts-expect-error: TODO: Add expo streaming fetch
-            reactNative: { textStreaming: true },
+            // reactNative: { textStreaming: true },
         });
     delete prefetched[url];
     const data = createFromFetch(checkStatus(response), options);
@@ -216,12 +218,10 @@ const prefetchRSC = (input, searchParamsString) => {
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     const url = getAdjustedFilePath(BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : ''));
     if (!(url in prefetched)) {
-        prefetched[url] = fetch(url, {
+        prefetched[url] = (0, fetch_1.fetch)(url, {
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
-            // @ts-expect-error: non-standard feature for streaming.
-            reactNative: { textStreaming: true },
         });
     }
 };
