@@ -1,4 +1,5 @@
 import 'react-native/Libraries/Core/InitializeCore';
+import 'whatwg-fetch';
 import 'expo';
 export declare function wrapFetchWithWindowLocation(fetch: Function & {
     __EXPO_BASE_URL_POLYFILLED?: boolean;

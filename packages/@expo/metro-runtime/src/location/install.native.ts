@@ -1,5 +1,8 @@
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
 import 'react-native/Libraries/Core/InitializeCore';
+
+// Ensure fetch is installed before adding our fetch polyfill to ensure Headers and Request are available globally.
+import 'whatwg-fetch';
 // This MUST be imported to ensure URL is installed.
 import 'expo';
 // This file configures the runtime environment to increase compatibility with WinterCG.
@@ -104,12 +107,6 @@ try {
     'ReadableStream',
     () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
   );
-} catch {}
-
-try {
-  // installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
-  // installBuiltin('Request', () => require('react-native-fetch-api').Request);
-  // installBuiltin('Response', () => require('react-native-fetch-api').Response);
 } catch {}
 
 if (manifest?.extra?.router?.origin !== false) {

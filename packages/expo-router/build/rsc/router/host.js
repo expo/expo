@@ -41,8 +41,8 @@ exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = expo
 const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
-// import { fetch } from 'react-native-fetch-api';
-const fetch_1 = require("expo/fetch");
+const react_native_fetch_api_1 = require("react-native-fetch-api");
+// import { fetch } from 'expo/fetch';
 const errors_1 = require("./errors");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;
@@ -151,7 +151,7 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
                     body: JSON.stringify(args),
                 };
             }
-            const response = (0, fetch_1.fetch)(reqPath, {
+            const response = (0, react_native_fetch_api_1.fetch)(reqPath, {
                 method: 'POST',
                 // @ts-expect-error: non-standard feature for streaming.
                 duplex: 'half',
@@ -179,7 +179,7 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
     const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
     console.log('fetch', reqPath);
     const response = prefetched[url] ||
-        (0, fetch_1.fetch)(reqPath, {
+        (0, react_native_fetch_api_1.fetch)(reqPath, {
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
@@ -221,7 +221,7 @@ const prefetchRSC = (input, searchParamsString) => {
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     const url = getAdjustedFilePath(BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : ''));
     if (!(url in prefetched)) {
-        prefetched[url] = (0, fetch_1.fetch)(url, {
+        prefetched[url] = (0, react_native_fetch_api_1.fetch)(url, {
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
