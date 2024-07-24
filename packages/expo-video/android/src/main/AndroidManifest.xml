@@ -6,7 +6,7 @@
   <application>
     <activity android:name=".FullscreenPlayerActivity" />
     <service
-      android:name=".ExpoVideoPlaybackService"
+      android:name=".playbackService.ExpoVideoPlaybackService"
       android:exported="false"
       android:foregroundServiceType="mediaPlayback">
       <intent-filter>

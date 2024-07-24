@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependencies for isolated modules. ([#30482](https://github.com/expo/expo/pull/30482) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))

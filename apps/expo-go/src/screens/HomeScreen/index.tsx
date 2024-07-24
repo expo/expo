@@ -52,7 +52,8 @@ export function HomeScreen(props: NavigationProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.background.default, paddingTop: insets.top }}>
+    <View style={{ flex: 1 }}>
+      <View style={{ backgroundColor: theme.background.default, height: insets.top }} />
       <HomeScreenView
         theme={themeType}
         {...props}

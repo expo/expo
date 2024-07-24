@@ -7,11 +7,15 @@
 ### 🎉 New features
 
 - On `Android`, add support for setting the aspect ratio of the camera. ([#29822](https://github.com/expo/expo/pull/29822) by [@alanjhughes](https://github.com/alanjhughes))
+- Support mirroring the output of the front facing camera. ([#30430](https://github.com/expo/expo/pull/30430) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, support mirroring video when using front facing camera. Control mirroring with a prop. Deprecate `mirror` option on `takePictureAsync` and `recordAsync`. ([#30548](https://github.com/expo/expo/pull/30548) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, fix touch interactions when using gesture handler. ([#30338](https://github.com/expo/expo/pull/30338) by [@alanjhughes](https://github.com/alanjhughes))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30462](https://github.com/expo/expo/pull/30462) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

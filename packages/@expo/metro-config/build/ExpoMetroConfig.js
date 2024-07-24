@@ -44,6 +44,7 @@ const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
+const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
@@ -103,7 +104,20 @@ function createStableModuleIdFactory(root) {
         // TODO: We may want a hashed version for production builds in the future.
         let id = fileToIdMap.get(modulePath);
         if (id == null) {
-            id = path_1.default.relative(root, modulePath);
+            // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+            if (modulePath == null) {
+                id = 'MODULE_NOT_FOUND';
+            }
+            else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
+                // Virtual modules should be stable.
+                id = modulePath;
+            }
+            else if (path_1.default.isAbsolute(modulePath)) {
+                id = path_1.default.relative(root, modulePath);
+            }
+            else {
+                id = modulePath;
+            }
             fileToIdMap.set(modulePath, id);
         }
         // @ts-expect-error: we patch this to support being a string.
@@ -193,7 +207,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         serializer: {
             isThirdPartyModule(module) {
                 // Block virtual modules from appearing in the source maps.
-                if (module.path.startsWith('\0'))
+                if ((0, sideEffects_1.isVirtualModule)(module.path))
                     return true;
                 // Generally block node modules
                 if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
@@ -203,7 +217,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 return false;
             },
             createModuleIdFactory: env_1.env.EXPO_USE_METRO_REQUIRE
-                ? createStableModuleIdFactory.bind(null, projectRoot)
+                ? createStableModuleIdFactory.bind(null, serverRoot)
                 : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
                 const preModules = [

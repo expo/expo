@@ -31,6 +31,12 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
     options.quality = 1;
   }
 
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
+  }
+
   if (options.onPictureSaved) {
     const id = _GLOBAL_PICTURE_ID++;
     _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
@@ -44,6 +50,12 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
 function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
   if (!options || typeof options !== 'object') {
     return {};
+  }
+
+  if (options.mirror) {
+    console.warn(
+      'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
+    );
   }
 
   return options;

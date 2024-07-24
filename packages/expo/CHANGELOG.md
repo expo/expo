@@ -13,6 +13,7 @@
 
 - Use `globalThis` instead of `global` in the URL implementation to fix issues in Jest. ([#29895](https://github.com/expo/expo/pull/29895) by [@tsapeta](https://github.com/tsapeta))
 - Fixed `WebSocket was closed before the connection was established` unhandled exceptions from WebSocketWithReconnect. ([#29904](https://github.com/expo/expo/pull/29904) by [@kudo](https://github.com/kudo))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30449](https://github.com/expo/expo/pull/30449) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -20,6 +21,10 @@
 - Keep using the legacy event emitter for the `DevLoadingView` in Expo Go. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 51.0.15 - 2024-06-20
 

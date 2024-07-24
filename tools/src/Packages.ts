@@ -366,6 +366,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
       ignore: [
         '**/example/**',
         '**/node_modules/**',
+        '**/static/**',
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/__fixtures__/**',

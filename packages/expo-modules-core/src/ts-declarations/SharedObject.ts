@@ -10,7 +10,7 @@ export declare class SharedObject<TEventsMap extends EventsMap = Record<never, n
 {
   /**
    * A function that detaches the JS and native objects to let the native object deallocate
-   * before the JS object gets deallocated by the JS garbagge collector. Any subsequent calls to native
+   * before the JS object gets deallocated by the JS garbage collector. Any subsequent calls to native
    * functions of the object will throw an error as it is no longer associated with its native counterpart.
    */
   release(): void;

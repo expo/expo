@@ -17,8 +17,10 @@ export async function loadConfigAsync(
   projectRoot: string,
   silent: boolean = false
 ): Promise<Config | null> {
-  const configFile = await resolveConfigFileAsync(projectRoot);
-  if (!configFile) {
+  let configFile: string;
+  try {
+    configFile = await resolveConfigFileAsync(projectRoot);
+  } catch {
     return null;
   }
   debug('Resolved config file:', configFile);
@@ -53,15 +55,15 @@ export async function loadConfigAsync(
 /**
  * Resolve the config file path from the project root.
  */
-async function resolveConfigFileAsync(projectRoot: string): Promise<string | null> {
-  return await Promise.race(
+async function resolveConfigFileAsync(projectRoot: string): Promise<string> {
+  return await Promise.any(
     CONFIG_FILES.map(async (file) => {
       const configPath = path.resolve(projectRoot, file);
-      try {
-        const stat = await fs.stat(configPath);
-        return stat.isFile() ? configPath : null;
-      } catch {}
-      return null;
+      const stat = await fs.stat(configPath);
+      if (!stat.isFile()) {
+        throw new Error(`Config file is not a file: ${configPath}`);
+      }
+      return configPath;
     })
   );
 }

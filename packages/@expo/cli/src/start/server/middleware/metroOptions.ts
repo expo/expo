@@ -32,12 +32,16 @@ export type ExpoMetroOptions = {
   isExporting: boolean;
   inlineSourceMap?: boolean;
   splitChunks?: boolean;
+  usedExports?: boolean;
+  /** Enable optimized bundling (required for tree shaking). */
+  optimize?: boolean;
 };
 
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  usedExports?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -76,10 +80,18 @@ function withDefaults({
     }
   }
 
+  const optimize =
+    props.optimize ??
+    (props.environment !== 'node' &&
+      mode === 'production' &&
+      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+
   return {
     mode,
     minify,
     preserveEnvVars,
+    optimize,
+    usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     ...props,
   };
@@ -139,7 +151,9 @@ export function getMetroDirectBundleOptions(
     isExporting,
     inlineSourceMap,
     splitChunks,
+    usedExports,
     reactCompiler,
+    optimize,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -174,6 +188,7 @@ export function getMetroDirectBundleOptions(
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
+      optimize: optimize || undefined,
       engine,
       preserveEnvVars,
       asyncRoutes,
@@ -192,6 +207,7 @@ export function getMetroDirectBundleOptions(
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
     },
@@ -237,6 +253,8 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     inlineSourceMap,
     isExporting,
     splitChunks,
+    usedExports,
+    optimize,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -297,6 +315,12 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
   if (splitChunks) {
     queryParams.append('serializer.splitChunks', String(splitChunks));
+  }
+  if (usedExports) {
+    queryParams.append('serializer.usedExports', String(usedExports));
+  }
+  if (optimize) {
+    queryParams.append('transform.optimize', String(optimize));
   }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);

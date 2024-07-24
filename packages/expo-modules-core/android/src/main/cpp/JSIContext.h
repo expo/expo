@@ -116,6 +116,15 @@ public:
     jni::local_ref<JavaScriptObject::javaobject> js
   );
 
+  /**
+   * Gets a shared object from the internal registry
+   * @param objectId
+   * @return
+   */
+  jni::local_ref<JavaScriptObject::javaobject> getSharedObject(
+    int objectId
+  );
+
   static void deleteSharedObject(
     jni::alias_ref<JSIContext::javaobject> javaObject,
     int objectId

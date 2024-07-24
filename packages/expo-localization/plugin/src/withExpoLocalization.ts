@@ -1,5 +1,4 @@
-import { getMainActivityOrThrow } from '@expo/config-plugins/build/android/Manifest';
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   withAndroidManifest,
@@ -30,7 +29,7 @@ function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
 function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps) {
   if (data.allowDynamicLocaleChangesAndroid) {
     config = withAndroidManifest(config, (config) => {
-      const mainActivity = getMainActivityOrThrow(config.modResults);
+      const mainActivity = AndroidConfig.Manifest.getMainActivityOrThrow(config.modResults);
       if (!mainActivity.$['android:configChanges']?.includes('locale')) {
         mainActivity.$['android:configChanges'] += '|locale';
       }

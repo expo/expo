@@ -165,6 +165,9 @@ function babelPresetExpo(api, options = {}) {
             },
         ]);
     }
+    if (platformOptions.disableImportExportTransform) {
+        extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
+    }
     // Use the simpler babel preset for web and server environments (both web and native SSR).
     const isModernEngine = platform === 'web' || isServerEnv;
     return {

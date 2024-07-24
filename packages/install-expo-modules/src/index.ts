@@ -17,6 +17,7 @@ import {
   withIosDeploymentTarget,
 } from './plugins/ios/withIosDeploymentTarget';
 import { withIosModules } from './plugins/ios/withIosModules';
+import { withSwiftVersion } from './plugins/ios/withSwiftVersion';
 import { withXCParseXcodeProjectBaseMod } from './plugins/ios/withXCParseXcodeProject';
 import { getDefaultSdkVersion, getVersionInfo, VersionInfo } from './utils/expoVersionMappings';
 import { learnMore } from './utils/link';
@@ -167,6 +168,7 @@ async function runAsync() {
   config = withIosDeploymentTarget(config, {
     deploymentTarget: iosDeploymentTarget,
   });
+  config = withSwiftVersion(config, '5.0');
 
   if (cliIntegration) {
     config = withCliIntegration(config);

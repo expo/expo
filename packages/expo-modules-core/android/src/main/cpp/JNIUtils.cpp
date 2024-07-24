@@ -5,8 +5,64 @@
 #include "JSIUtils.h"
 #include "types/JNIToJSIConverter.h"
 #include <jsi/JSIDynamic.h>
+#include "JSIContext.h"
 
 namespace expo {
+
+jsi::Value convertSharedObject(
+  jni::local_ref<JSharedObject::javaobject> sharedObject,
+  jsi::Runtime &rt,
+  JSIContext *jsiContext
+) {
+  int id = sharedObject->getId();
+  if (id != 0) {
+    return jsi::Value(rt, *jsiContext->getSharedObject(id)->cthis()->get());
+  }
+
+  auto jsClass = jsiContext->getJavascriptClass(sharedObject->getClass());
+  if (jsClass == nullptr) {
+    // If the shared object is an instance of `ShareRef` and the class was not found,
+    // we can create a new JavaScript object with the empty prototype.
+    // User didn't register SharedRef using Class component.
+    if (sharedObject->isInstanceOf(JSharedRef::javaClassStatic())) {
+      auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
+      auto jsObjectRef = JavaScriptObject::newInstance(
+        jsiContext,
+        jsiContext->runtimeHolder,
+        jsObject
+      );
+      jsiContext->registerSharedObject(sharedObject, jsObjectRef);
+      return jsi::Value(rt, *jsObject);
+    }
+
+    throwNewJavaException(
+      UnexpectedException::create(
+        "Could not find JavaScript class for shared object: " + sharedObject->toString()
+      ).get()
+    );
+
+  }
+  auto prototype = jsClass
+    ->cthis()
+    ->get()
+    ->getProperty(rt, "prototype")
+    .asObject(rt);
+
+  auto objSharedPtr = std::make_shared<jsi::Object>(
+    expo::common::createObjectWithPrototype(rt, &prototype)
+  );
+  auto jsObjectInstance = JavaScriptObject::newInstance(
+    jsiContext,
+    jsiContext->runtimeHolder,
+    objSharedPtr
+  );
+  jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
+    jsObjectInstance
+  );
+  jsiContext->registerSharedObject(sharedObject, jsRef);
+
+  return jsi::Value(rt, *objSharedPtr);
+}
 
 void JNIUtils::registerNatives() {
   javaClassStatic()->registerNatives({
