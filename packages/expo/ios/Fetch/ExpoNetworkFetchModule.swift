@@ -2,14 +2,14 @@
 
 import ExpoModulesCore
 
-private let queue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
+private let fetchRequestQueue = DispatchQueue(label: "expo.modules.networkfetch.RequestQueue")
 
 public final class ExpoNetworkFetchModule: Module {
   private var urlSession: URLSession?
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
   public required init(appContext: AppContext) {
-    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: queue)
+    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: fetchRequestQueue)
     super.init(appContext: appContext)
   }
 
@@ -27,16 +27,16 @@ public final class ExpoNetworkFetchModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(NativeResponse.self) {
       Constructor {
-        return NativeResponse(dispatchQueue: queue)
+        return NativeResponse(dispatchQueue: fetchRequestQueue)
       }
 
       AsyncFunction("startStreaming") { (response: NativeResponse) in
         response.startStreaming()
-      }.runOnQueue(queue)
+      }.runOnQueue(fetchRequestQueue)
 
       AsyncFunction("cancelStreaming") { (response: NativeResponse, _ reason: String) in
         response.cancelStreaming()
-      }.runOnQueue(queue)
+      }.runOnQueue(fetchRequestQueue)
 
       Property("bodyUsed", \.bodyUsed)
 
@@ -63,7 +63,7 @@ public final class ExpoNetworkFetchModule: Module {
           let data = response.sink.finalize()
           promise.resolve(data)
         }
-      }.runOnQueue(queue)
+      }.runOnQueue(fetchRequestQueue)
 
       AsyncFunction("text") { (response: NativeResponse, promise: Promise) in
         response.waitFor(states: [.bodyCompleted]) { _ in
@@ -71,7 +71,7 @@ public final class ExpoNetworkFetchModule: Module {
           let text = String(decoding: data, as: UTF8.self)
           promise.resolve(text)
         }
-      }.runOnQueue(queue)
+      }.runOnQueue(fetchRequestQueue)
     }
 
     Class(NativeRequest.self) {
@@ -97,16 +97,16 @@ public final class ExpoNetworkFetchModule: Module {
             promise.reject(request.response.error ?? NetworkFetchUnknownException())
           }
         }
-      }.runOnQueue(queue)
+      }.runOnQueue(fetchRequestQueue)
 
       AsyncFunction("cancel") { (request: NativeRequest) in
         request.cancel(urlSessionDelegate: self.urlSessionDelegate)
-      }.runOnQueue(queue)
+      }.runOnQueue(fetchRequestQueue)
     }
   }
 
   public func setCustomURLSessionConfigurationProvider(provider: NSURLSessionConfigurationProvider?) {
-    queue.async {
+    fetchRequestQueue.async {
       if let provider, let config = provider() {
         self.urlSession = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
       } else {
