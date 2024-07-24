@@ -1,9 +1,11 @@
 import 'react-native/Libraries/Core/InitializeCore';
 import 'whatwg-fetch';
 import 'expo';
+declare const polyfillSymbol: unique symbol;
 export declare function wrapFetchWithWindowLocation(fetch: Function & {
-    __EXPO_BASE_URL_POLYFILLED?: boolean;
-}): Function & {
-    __EXPO_BASE_URL_POLYFILLED?: boolean | undefined;
-};
+    [polyfillSymbol]?: boolean;
+}): (Function & {
+    [polyfillSymbol]?: boolean | undefined;
+}) | ((...props: any[]) => any);
+export {};
 //# sourceMappingURL=install.native.d.ts.map

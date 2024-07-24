@@ -51,10 +51,10 @@ function getBaseUrl() {
   return productionBaseUrl?.replace(/\/$/, '');
 }
 
-export function wrapFetchWithWindowLocation(
-  fetch: Function & { __EXPO_BASE_URL_POLYFILLED?: boolean }
-) {
-  if (fetch.__EXPO_BASE_URL_POLYFILLED) {
+const polyfillSymbol = Symbol.for('expo.polyfillFetchWithWindowLocation');
+
+export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]?: boolean }) {
+  if (fetch[polyfillSymbol]) {
     return fetch;
   }
 
@@ -77,7 +77,7 @@ export function wrapFetchWithWindowLocation(
     return fetch(...props);
   };
 
-  _fetch.__EXPO_BASE_URL_POLYFILLED = true;
+  _fetch[polyfillSymbol] = true;
 
   return _fetch;
 }
@@ -119,27 +119,14 @@ if (manifest?.extra?.router?.origin !== false) {
     }
   }
 
-  // const fetch = getBestFetch();
-  // // Polyfill native fetch to support relative URLs
-  // Object.defineProperty(global, 'fetch', {
-  //   // value: fetch,
-  //   value: wrapFetchWithWindowLocation(fetch),
-  // });
+  // Polyfill native fetch to support relative URLs
+  Object.defineProperty(global, 'fetch', {
+    // value: fetch,
+    value: wrapFetchWithWindowLocation(fetch),
+  });
 } else {
-  // const fetch = getBestFetch();
-  // // Polyfill native fetch to support relative URLs
-  // Object.defineProperty(global, 'fetch', {
-  //   value: fetch,
-  // });
+  // Polyfill native fetch to support relative URLs
+  Object.defineProperty(global, 'fetch', {
+    value: fetch,
+  });
 }
-
-// function getBestFetch() {
-//   // try {
-//   //   const otherFetch = require('react-native-fetch-api');
-//   //   if (otherFetch) {
-//   //     return otherFetch.fetch;
-//   //   }
-//   // } catch {
-//   return require('expo/fetch').fetch;
-//   // }
-// }

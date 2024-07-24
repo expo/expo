@@ -41,7 +41,7 @@ exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = expo
 const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
-const fetch_1 = require("expo/fetch");
+const fetch_1 = require("./fetch");
 const errors_1 = require("./errors");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;

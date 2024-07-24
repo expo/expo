@@ -25,7 +25,7 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
-import { fetch } from 'expo/fetch';
+import { fetch } from './fetch';
 
 import { MetroServerError, ReactServerError } from './errors';
 import { getDevServer } from '../../getDevServer';
