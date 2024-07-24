@@ -859,7 +859,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           Log.error('[SSR] HMR Error: ' + JSON.stringify(data, null, 2));
 
           if (data.body?.type === 'GraphNotFoundError') {
-            debug(
+            Log.error(
               'Available SSR HMR keys:',
               // @ts-expect-error
               (this.metro?._bundler._revisionsByGraphId as Map).keys()

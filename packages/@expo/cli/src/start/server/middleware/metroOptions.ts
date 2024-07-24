@@ -191,7 +191,7 @@ export function getMetroDirectBundleOptions(
       __proto__: null,
       optimize: optimize || undefined,
       engine,
-      preserveEnvVars: preserveEnvVars === false ? String(preserveEnvVars) : undefined,
+      preserveEnvVars: preserveEnvVars || undefined,
       // Use string to match the query param behavior.
       asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
       environment,

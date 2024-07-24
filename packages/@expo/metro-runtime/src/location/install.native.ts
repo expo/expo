@@ -105,10 +105,9 @@ try {
     () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
   );
 
-  require('react-native-fetch-api');
-  installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
-  installBuiltin('Request', () => require('react-native-fetch-api').Request);
-  installBuiltin('Response', () => require('react-native-fetch-api').Response);
+  // installBuiltin('Headers', () => require('react-native-fetch-api').Headers);
+  // installBuiltin('Request', () => require('react-native-fetch-api').Request);
+  // installBuiltin('Response', () => require('react-native-fetch-api').Response);
 } catch {}
 
 if (manifest?.extra?.router?.origin !== false) {
@@ -137,12 +136,12 @@ if (manifest?.extra?.router?.origin !== false) {
 }
 
 function getBestFetch() {
-  try {
-    const otherFetch = require('react-native-fetch-api');
-    if (otherFetch) {
-      return otherFetch.fetch;
-    }
-  } catch {
-    return fetch;
-  }
+  // try {
+  //   const otherFetch = require('react-native-fetch-api');
+  //   if (otherFetch) {
+  //     return otherFetch.fetch;
+  //   }
+  // } catch {
+  return fetch;
+  // }
 }
