@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, correctly stop the session when the `CameraView` is removed. ([#30580](https://github.com/expo/expo/pull/30580) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.0.14 — 2024-07-16
