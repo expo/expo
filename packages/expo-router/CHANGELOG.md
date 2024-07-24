@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Prevent duplicated `NSUserActivityTypes` strings in prebuild. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))
 - Fix deep linking to Expo Go. ([#30283](https://github.com/expo/expo/pull/30283) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
