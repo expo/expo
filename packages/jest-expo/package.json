@@ -14,6 +14,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo",
   "files": [
+    "rsc",
     "android",
     "bin",
     "config",
@@ -47,7 +48,8 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
     "react-test-renderer": "18.2.0",
-    "stacktrace-js": "^2.0.2"
+    "stacktrace-js": "^2.0.2",    
+    "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610"
   },
   "peerDependencies": {
     "expo": "*",
