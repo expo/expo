@@ -13,7 +13,7 @@ it(`renders Screen`, async () => {
 it(`renders Sitemap`, async () => {
   await expect(<Sitemap />).toMatchFlightSnapshot();
 });
-it(`renders Sitemap`, async () => {
+it(`renders EmptyRoute`, async () => {
   await expect(<EmptyRoute />).toMatchFlightSnapshot();
 });
 
