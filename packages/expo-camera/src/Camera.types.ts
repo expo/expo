@@ -1,10 +1,10 @@
+import type { EventSubscription } from 'expo';
 import {
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription,
-} from 'expo-modules-core';
+  type PermissionExpiration,
+  type PermissionHookOptions,
+} from 'expo/internal';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 

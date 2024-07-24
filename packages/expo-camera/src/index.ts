@@ -1,4 +1,4 @@
-import { createPermissionHook, PermissionResponse } from 'expo-modules-core';
+import { createPermissionHook, type PermissionResponse } from 'expo/internal';
 
 import { BarcodeScanningResult, BarcodeType } from './Camera.types';
 import CameraManager from './ExpoCameraManager';

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { useEffect, useState } from 'react';
 import { EmitterSubscription, Platform } from 'react-native';
 

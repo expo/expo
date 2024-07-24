@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix support for 5G ([#30012](https://github.com/expo/expo/pull/30012) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

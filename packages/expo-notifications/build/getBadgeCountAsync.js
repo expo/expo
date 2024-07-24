@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import BadgeModule from './BadgeModule';
 /**
  * Fetches the number currently set as the badge of the app icon on device's home screen. A `0` value means that the badge is not displayed.

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30455](https://github.com/expo/expo/pull/30455) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

@@ -1,3 +1,3 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo';
 
 export default requireNativeViewManager('ExpoVideo');

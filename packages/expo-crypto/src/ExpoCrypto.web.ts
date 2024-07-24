@@ -1,4 +1,4 @@
-import { CodedError, TypedArray } from 'expo-modules-core';
+import { CodedError, type TypedArray } from 'expo/internal';
 
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
 

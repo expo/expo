@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 import ExpoSQLite from './ExpoSQLiteNext';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';

@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo/internal';
 
 // @needsAudit
 /**

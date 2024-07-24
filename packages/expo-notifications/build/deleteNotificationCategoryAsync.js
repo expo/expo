@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import NotificationCategoriesModule from './NotificationCategoriesModule';
 /**
  * Deletes the category associated with the provided identifier.

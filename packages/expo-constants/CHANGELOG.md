@@ -10,6 +10,7 @@
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30464](https://github.com/expo/expo/pull/30464) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

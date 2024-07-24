@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo/internal';
 
 function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

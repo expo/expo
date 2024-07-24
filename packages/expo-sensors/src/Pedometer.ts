@@ -1,10 +1,10 @@
+import type { EventSubscription } from 'expo';
 import {
-  PermissionExpiration,
-  PermissionResponse,
+  type PermissionExpiration,
+  type PermissionResponse,
   PermissionStatus,
-  type EventSubscription,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo/internal';
 import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';

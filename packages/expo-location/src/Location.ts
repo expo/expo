@@ -1,4 +1,5 @@
-import { PermissionResponse, createPermissionHook, Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { createPermissionHook, type PermissionResponse } from 'expo/internal';
 
 import ExpoLocation from './ExpoLocation';
 import {

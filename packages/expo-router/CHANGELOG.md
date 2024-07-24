@@ -16,6 +16,7 @@
 - Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
 - Fix pushing multiple hashes on web. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

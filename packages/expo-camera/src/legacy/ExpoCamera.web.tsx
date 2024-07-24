@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo/internal';
 import * as React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';

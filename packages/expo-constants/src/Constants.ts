@@ -1,4 +1,6 @@
+import { requireOptionalNativeModule } from 'expo';
 import type { ExpoConfig } from 'expo/config';
+import { CodedError } from 'expo/internal';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
 import type {
@@ -8,7 +10,6 @@ import type {
   ExpoUpdatesManifest,
   // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 } from 'expo-manifests';
-import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { Manifest as UpdatesManifest, ExpoUpdatesModule } from 'expo-updates';
 import { Platform, NativeModules } from 'react-native';

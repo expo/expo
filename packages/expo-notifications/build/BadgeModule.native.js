@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 const nativeModule = requireNativeModule('ExpoBadgeModule');
 export default {
     ...nativeModule,

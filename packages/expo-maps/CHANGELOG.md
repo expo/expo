@@ -10,6 +10,7 @@
 
 - Removed usage of reserved keyword `module`. ([#30010](https://github.com/expo/expo/pull/30010) by [@EvanBacon](https://github.com/EvanBacon))
 Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30475](https://github.com/expo/expo/pull/30475) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

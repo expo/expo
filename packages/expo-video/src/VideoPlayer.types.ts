@@ -1,4 +1,4 @@
-import type { SharedObject } from 'expo-modules-core';
+import type { SharedObject } from 'expo';
 
 /**
  * A class that represents an instance of the video player.

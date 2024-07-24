@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 import { DeviceEventEmitter } from 'react-native';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';

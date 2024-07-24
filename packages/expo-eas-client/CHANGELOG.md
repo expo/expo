@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
+
 ### 💡 Others
 
 ## 0.12.0 — 2024-04-18

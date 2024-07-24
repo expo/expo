@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
+
 ### 💡 Others
 
 - Use the `src` folder as the Metro target. ([#30079](https://github.com/expo/expo/pull/30079) by [@tsapeta](https://github.com/tsapeta))

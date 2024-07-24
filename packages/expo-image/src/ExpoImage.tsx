@@ -1,4 +1,4 @@
-import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
+import { requireNativeViewManager, requireNativeModule } from 'expo';
 import React from 'react';
 import { NativeSyntheticEvent, StyleSheet, Platform, processColor } from 'react-native';
 

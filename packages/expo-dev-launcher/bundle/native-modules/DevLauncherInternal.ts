@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
 import { RecentApp } from '../providers/RecentlyOpenedAppsProvider';

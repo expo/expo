@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { NotificationsHandlerModule } from './NotificationsHandlerModule.types';
 

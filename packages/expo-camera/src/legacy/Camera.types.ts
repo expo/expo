@@ -1,9 +1,9 @@
 import {
-  PermissionResponse,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-} from 'expo-modules-core';
+} from 'expo/internal';
 import type { ViewProps } from 'react-native';
 
 export enum CameraType {

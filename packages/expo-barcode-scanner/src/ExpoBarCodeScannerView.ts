@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo';
 import React from 'react';
 
 const ExpoBarCodeScannerView: React.ComponentType<any> =

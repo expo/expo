@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo';
 import { type ComponentType } from 'react';
 
 import { CameraNativeProps } from './Camera.types';

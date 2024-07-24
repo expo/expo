@@ -1,12 +1,12 @@
+import type { EventSubscription } from 'expo';
 import {
-  PermissionResponse as EXPermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
   createPermissionHook,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type PermissionResponse as EXPermissionResponse,
+  PermissionStatus,
   UnavailabilityError,
-  EventSubscription,
-} from 'expo-modules-core';
+} from 'expo/internal';
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExpoMediaLibrary';

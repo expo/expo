@@ -1,5 +1,5 @@
 import { isRunningInExpoGo } from 'expo';
-import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo/internal';
 import { Platform } from 'react-native';
 
 import ExpoTaskManager from './ExpoTaskManager';

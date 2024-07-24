@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { AppState, Linking, Platform, processColor, } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
 import { WebBrowserResultType, WebBrowserPresentationStyle, } from './WebBrowser.types';

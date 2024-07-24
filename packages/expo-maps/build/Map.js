@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
 import { NativeExpoAppleMapsView, NativeExpoAppleMapsModule, NativeExpoGoogleMapsView, NativeExpoGoogleMapsModule, } from './NativeExpoMapView';

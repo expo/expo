@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 export default {
     async isAvailableAsync() {
         if (typeof navigator === 'undefined') {

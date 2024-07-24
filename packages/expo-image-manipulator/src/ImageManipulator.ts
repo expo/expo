@@ -1,4 +1,4 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo';
 
 import ExpoImageManipulator from './ExpoImageManipulator';
 import { Action, Context, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';

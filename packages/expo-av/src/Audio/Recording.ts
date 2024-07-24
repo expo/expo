@@ -1,12 +1,11 @@
+import { Platform, type EventSubscription } from 'expo';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionHookOptions,
   createPermissionHook,
   LegacyEventEmitter,
-  type EventSubscription,
-  Platform,
-} from 'expo-modules-core';
+} from 'expo/internal';
 
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import {

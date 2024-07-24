@@ -1,6 +1,7 @@
 'use client';
 
-import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { createSnapshotFriendlyRef } from 'expo/internal';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 

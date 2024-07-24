@@ -1,10 +1,9 @@
+import { type EventSubscription, Platform } from 'expo';
 import {
-  PermissionResponse,
+  type PermissionExpiration,
+  type PermissionResponse,
   PermissionStatus,
-  type EventSubscription,
-  Platform,
-  PermissionExpiration,
-} from 'expo-modules-core';
+} from 'expo/internal';
 
 /**
  * @hidden

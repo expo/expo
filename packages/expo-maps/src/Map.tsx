@@ -1,4 +1,5 @@
-import { ProxyNativeModule, requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
+import { ProxyNativeModule } from 'expo/internal';
 import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
 

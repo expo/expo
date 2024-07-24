@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule';
 /**
  * When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification.

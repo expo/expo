@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo/internal';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import ExpoLinking from './ExpoLinking';

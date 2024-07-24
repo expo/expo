@@ -10,6 +10,7 @@
 
 - [Android] Fix `ScreenCaptureModule` was crashing in the dev-client when going back to the home screen. ([#29694](https://github.com/expo/expo/pull/29694) by [@lukmccall](https://github.com/lukmccall))
 - Add missing `react` peer dependencies for isolated modules. ([#30480](https://github.com/expo/expo/pull/30480) by [@byCedric](https://github.com/byCedric))
+- Import from `expo` or `expo/internal` instead of `expo-modules-core`.
 
 ### 💡 Others
 

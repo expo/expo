@@ -1,4 +1,5 @@
-import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { createPermissionHook, UnavailabilityError } from 'expo/internal';
 
 import {
   NotificationPermissionsRequest,

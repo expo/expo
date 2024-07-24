@@ -1,4 +1,5 @@
-import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription } from 'expo';
+import { UnavailabilityError } from 'expo/internal';
 import { useEffect, useState } from 'react';
 
 import ExpoNetwork from './ExpoNetwork';

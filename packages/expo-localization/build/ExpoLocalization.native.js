@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 const ExpoLocalizationModule = requireNativeModule('ExpoLocalization');
 export function addLocaleListener(listener) {
     return ExpoLocalizationModule.addListener('onLocaleSettingsChanged', listener);

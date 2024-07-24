@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { EventEmitter } from 'expo';
 
 import { type NetworkEvents, NetworkState, NetworkStateType } from './Network.types';
 

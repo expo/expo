@@ -1,4 +1,5 @@
-import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform } from 'expo';
+import { CodedError, UnavailabilityError } from 'expo/internal';
 import invariant from 'invariant';
 import * as React from 'react';
 import { Dimensions } from 'react-native';

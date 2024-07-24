@@ -1,7 +1,7 @@
 import './polyfillNextTick';
 
 import customOpenDatabase from '@expo/websql/custom';
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 import { Platform } from 'react-native';
 
 import type {
