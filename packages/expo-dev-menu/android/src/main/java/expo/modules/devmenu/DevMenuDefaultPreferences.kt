@@ -18,6 +18,10 @@ open class DevMenuDefaultPreferences : DevMenuPreferencesInterface {
     get() = true
     set(_) = methodUnavailable()
 
+  override var buttonGestureEnabled: Boolean
+    get() = false
+    set(_) = methodUnavailable()
+
   override var keyCommandsEnabled: Boolean
     get() = true
     set(_) = methodUnavailable()

@@ -30,6 +30,14 @@ class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
     set(value) = saveBoolean("touchGestureEnabled", value)
 
   /**
+   * Whether to enable button tap gesture.
+   */
+  override var buttonGestureEnabled: Boolean
+    /* TODO: enable by default on headsets */
+    get() = sharedPreferences.getBoolean("buttonGestureEnabled", false)
+    set(value) = saveBoolean("buttonGestureEnabled", value)
+
+  /**
    * Whether to enable key commands.
    */
   override var keyCommandsEnabled: Boolean
@@ -59,6 +67,7 @@ class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
       .apply {
         putBoolean("motionGestureEnabled", motionGestureEnabled)
         putBoolean("touchGestureEnabled", touchGestureEnabled)
+        putBoolean("buttonGestureEnabled", buttonGestureEnabled)
         putBoolean("keyCommandsEnabled", keyCommandsEnabled)
         putBoolean("showsAtLaunch", showsAtLaunch)
         putBoolean("isOnboardingFinished", isOnboardingFinished)
@@ -86,6 +95,10 @@ class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
 
     if (settings.hasKey("touchGestureEnabled")) {
       touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
+    }
+
+    if (settings.hasKey("buttonGestureEnabled")) {
+      buttonGestureEnabled = settings.getBoolean("buttonGestureEnabled")
     }
   }
 }
