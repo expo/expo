@@ -1,3 +1,5 @@
+'use client';
+
 import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 
 import { SplashScreen } from './Splash';
