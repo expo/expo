@@ -28,6 +28,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       return [
         `**/__rsc_tests__/**/*spec${platformExtension}${sourceExtension}`,
         `**/__rsc_tests__/**/*test${platformExtension}${sourceExtension}`,
+        `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
       ];
     }
 

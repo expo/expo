@@ -1,5 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`renders EmptyRoute 1`] = `
+"1:I["src/views/EmptyRoute.tsx",[],"EmptyRoute"]
+0:["$","$L1",null,{},null]"
+`;
+
 exports[`renders ErrorBoundary 1`] = `
 "1:I["src/views/ErrorBoundary.tsx",[],"ErrorBoundary"]
 0:["$","$L1",null,{},null]"
@@ -12,10 +17,5 @@ exports[`renders Screen 1`] = `
 
 exports[`renders Sitemap 1`] = `
 "1:I["src/views/Sitemap.tsx",[],"Sitemap"]
-0:["$","$L1",null,{},null]"
-`;
-
-exports[`renders Sitemap 2`] = `
-"1:I["src/views/EmptyRoute.tsx",[],"EmptyRoute"]
 0:["$","$L1",null,{},null]"
 `;
