@@ -1,7 +1,7 @@
+import { ExpoFetchModule } from './ExpoFetchModule';
 import { FetchError } from './FetchErrors';
 import { FetchResponse } from './FetchResponse';
 import { NativeRequest, NativeRequestInit } from './NativeRequest';
-import { ExpoFetchModule } from './ExpoFetchModule';
 import { normalizeBodyInitAsync, normalizeHeadersInit, overrideHeaders } from './RequestUtils';
 import type { FetchRequestInit } from './fetch.types';
 

@@ -1,7 +1,7 @@
 import { ReadableStream } from 'web-streams-polyfill';
 
-import type { NativeResponse } from './NativeRequest';
 import { ExpoFetchModule } from './ExpoFetchModule';
+import type { NativeResponse } from './NativeRequest';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
 
