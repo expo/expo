@@ -37,12 +37,18 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   }
 
   func startStreaming() {
-    if isInvalidState(.responseReceived) {
+    if isInvalidState(.responseReceived, .bodyCompleted) {
       return
     }
-    state = .bodyStreamingStarted
-    let queuedData = self.sink.finalize()
-    emit(event: "didReceiveResponseData", arguments: queuedData)
+    if state == .responseReceived {
+      state = .bodyStreamingStarted
+      let queuedData = self.sink.finalize()
+      emit(event: "didReceiveResponseData", arguments: queuedData)
+    } else if state == .bodyCompleted {
+      let queuedData = self.sink.finalize()
+      emit(event: "didReceiveResponseData", arguments: queuedData)
+      emit(event: "didComplete")
+    }
   }
 
   func cancelStreaming() {
