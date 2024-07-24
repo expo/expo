@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for React Server environments.
+
 ### 🐛 Bug fixes
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30464](https://github.com/expo/expo/pull/30464) by [@byCedric](https://github.com/byCedric))
