@@ -4,7 +4,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactDelegate
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -70,7 +70,7 @@ class CoreModule : Module() {
         ?: return@AsyncFunction
       if (!ReactFeatureFlags.enableBridgelessArchitecture) {
         val reactInstanceManager = reactDelegate.reactInstanceManager
-        if (reactInstanceManager.devSupportManager is DisabledDevSupportManager) {
+        if (reactInstanceManager.devSupportManager is ReleaseDevSupportManager) {
           UiThreadUtil.runOnUiThread {
             reactInstanceManager.recreateReactContextInBackground()
           }

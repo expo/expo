@@ -192,6 +192,13 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
+  // Copy react-native patch
+  await fs.mkdir(path.join(projectRoot, 'patches'));
+  await fs.copyFile(
+    path.resolve(repoRoot, 'patches', 'react-native+0.75.0-rc.5.patch'),
+    path.join(projectRoot, 'patches', 'react-native+0.75.0-rc.5.patch')
+  );
+
   // Modify specific files for TV
   if (isTV) {
     // Modify .detoxrc.json for TV
@@ -295,6 +302,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -311,6 +319,7 @@ async function preparePackageJson(
         'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
+        'patch-package': '^8.0.0',
       }
     : {};
 

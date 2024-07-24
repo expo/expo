@@ -16,10 +16,10 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 class DateTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<LocalDate>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): LocalDate {
-    return when (value.getType()) {
+    return when (value.type) {
       ReadableType.String -> LocalDate.parse(value.asString(), DateTimeFormatter.ISO_DATE_TIME)
       ReadableType.Number -> convertFromLong(value.asDouble().toLong())
-      else -> throw UnexpectedException("Unknown argument type: ${value.getType()}")
+      else -> throw UnexpectedException("Unknown argument type: ${value.type}")
     }
   }
 
