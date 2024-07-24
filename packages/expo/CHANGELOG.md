@@ -8,7 +8,7 @@
 
 - Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
 - Introduced `useEvent` hook for EventEmitter objects (e.g. native modules and shared objects). ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
-- Added fetch API support. ([#30173](https://github.com/expo/expo/pull/30173) by [@kudo](https://github.com/kudo))
+- Added fetch API support. ([#30173](https://github.com/expo/expo/pull/30173), [#30219](https://github.com/expo/expo/pull/30219) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
