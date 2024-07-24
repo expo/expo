@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix snapshot writing for RSC.
+- Fix snapshot writing for RSC. ([#30589](https://github.com/expo/expo/pull/30589) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixes jest spitting console error caused by ref stubbing. ([#29420](https://github.com/expo/expo/pull/29420) by [@aleqsio](https://github.com/aleqsio))
 - Avoid adding typescript wildcard paths as jest module mapping. ([#29836](https://github.com/expo/expo/pull/29836) by [@byCedric](https://github.com/byCedric))
 - Add missing `fbemitter` dependency and `expo`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))

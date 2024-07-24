@@ -19,7 +19,7 @@
 
 ### 💡 Others
 
-- Add basic RSC tests for views.
+- Add basic RSC tests for views. ([#30589](https://github.com/expo/expo/pull/30589) by [@EvanBacon](https://github.com/EvanBacon))
 - Import `@expo/metro-runtime` internals from `src` directory. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Update URL params docblocks ([#29799](https://github.com/expo/expo/pull/29799) by [@aaron-mota](https://github.com/aaron-mota))
 - Update TypeScript types for Screen options function ([#30074](https://github.com/expo/expo/pull/30074) by [@vilnytskyi](https://github.com/vilnytskyi))
