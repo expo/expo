@@ -270,6 +270,11 @@ export type WritingOptions = {
    * @default FileSystem.EncodingType.UTF8
    */
   encoding?: EncodingType | 'utf8' | 'base64';
+  /**
+   * Whether to append the content to the file.
+   * @default false
+   */
+  append?: boolean;
 };
 
 export type DeletingOptions = {

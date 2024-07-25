@@ -204,12 +204,16 @@ open class FileSystemModule : Module() {
       val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       val encoding = options.encoding
-      getOutputStream(uri).use { out ->
+      val append = options.append
+
+      getOutputStream(uri, append).use { out ->
         if (encoding == EncodingType.BASE64) {
           val bytes = Base64.decode(contents, Base64.DEFAULT)
           out.write(bytes)
         } else {
-          OutputStreamWriter(out).use { writer -> writer.write(contents) }
+          OutputStreamWriter(out).use { writer ->
+            writer.write(contents)
+          }
         }
       }
     }
@@ -1056,10 +1060,22 @@ open class FileSystemModule : Module() {
   }
 
   @Throws(IOException::class)
-  private fun getOutputStream(uri: Uri) = when {
-    uri.scheme == "file" -> FileOutputStream(uri.toFile())
-    uri.isSAFUri -> context.contentResolver.openOutputStream(uri)!!
-    else -> throw IOException("Unsupported scheme for location '$uri'.")
+  private fun getOutputStream(uri: Uri, append: Boolean): OutputStream {
+    return when {
+      uri.scheme == "file" -> {
+        if (append) {
+            FileOutputStream(uri.toFile(), true)
+        } else {
+            FileOutputStream(uri.toFile())
+        }
+      }
+      uri.isSAFUri -> {
+        val mode = if (append) Context.MODE_APPEND else Context.MODE_PRIVATE
+        context.contentResolver.openOutputStream(uri, mode)
+            ?: throw IOException("Failed to open output stream for URI: $uri")
+      }
+      else -> throw IOException("Unsupported scheme for location '$uri'.")
+    }
   }
 
   private fun getNearestSAFFile(uri: Uri): DocumentFile? {

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- WriteAsStringAsync Add `append` option
+
 ### 🐛 Bug fixes
 
 - [iOS] fix: `getFreeDiskStorageAsync` returns result that's closer to the value reported by the system. ([#29732](https://github.com/expo/expo/pull/29732) by [@vonovak](https://github.com/vonovak))
