@@ -1,6 +1,6 @@
 import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
-import { mapNotificationResponse } from './utils/mapNotificationResponse';
+import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
 // Web uses SyntheticEventEmitter
 const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
@@ -33,7 +33,10 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
  * @header listen
  */
 export function addNotificationReceivedListener(listener) {
-    return emitter.addListener(didReceiveNotificationEventName, listener);
+    return emitter.addListener(didReceiveNotificationEventName, (notification) => {
+        const mappedNotification = mapNotification(notification);
+        listener(mappedNotification);
+    });
 }
 /**
  * Listeners registered by this method will be called whenever some notifications have been dropped by the server.

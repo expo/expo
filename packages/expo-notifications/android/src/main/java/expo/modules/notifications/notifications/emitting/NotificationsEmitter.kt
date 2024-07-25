@@ -4,6 +4,7 @@ import android.os.Bundle
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.debug.DebugLogging
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
@@ -49,7 +50,9 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @param notification Notification received
    */
   override fun onNotificationReceived(notification: Notification) {
-    sendEvent(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification))
+    val bundle = NotificationSerializer.toBundle(notification)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationReceived:", bundle)
+    sendEvent(NEW_MESSAGE_EVENT_NAME, bundle)
   }
 
   /**
@@ -60,13 +63,17 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @return Whether notification has been handled
    */
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
-    lastNotificationResponseBundle = NotificationSerializer.toBundle(response)
+    val bundle = NotificationSerializer.toBundle(response)
+    DebugLogging.logBundle("DebugLogging.onNotificationResponseReceived:", bundle)
+    lastNotificationResponseBundle = bundle
     sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
     return true
   }
 
   override fun onNotificationResponseIntentReceived(extras: Bundle?) {
-    lastNotificationResponseBundle = NotificationSerializer.toResponseBundleFromExtras(extras)
+    val bundle = NotificationSerializer.toResponseBundleFromExtras(extras)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseIntentReceived", bundle)
+    lastNotificationResponseBundle = bundle
     sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
   }
 

@@ -2,7 +2,7 @@ import { LegacyEventEmitter, type EventSubscription, UnavailabilityError } from 
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
-import { mapNotificationResponse } from './utils/mapNotificationResponse';
+import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
 const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
@@ -41,7 +41,13 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
 export function addNotificationReceivedListener(
   listener: (event: Notification) => void
 ): EventSubscription {
-  return emitter.addListener<Notification>(didReceiveNotificationEventName, listener);
+  return emitter.addListener<Notification>(
+    didReceiveNotificationEventName,
+    (notification: Notification) => {
+      const mappedNotification = mapNotification(notification);
+      listener(mappedNotification);
+    }
+  );
 }
 
 /**
