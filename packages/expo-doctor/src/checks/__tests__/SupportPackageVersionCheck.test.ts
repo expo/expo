@@ -91,7 +91,9 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.advice).toEqual('Upgrade dependencies that are using the invalid package versions.');
+    expect(result.advice).toEqual(
+      'Upgrade dependencies that are using the invalid package versions.'
+    );
   });
 
   it('warns if package.json resolutions are not pinned to a valid version', async () => {
@@ -111,11 +113,13 @@ describe('runAsync', () => {
       pkg: {
         ...additionalProjectProps.pkg,
         resolutions: {
-          'metro': '999.999.999',
-        }
-      }
+          metro: '999.999.999',
+        },
+      },
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.advice).toContain('Upgrade dependencies that are using the invalid package versions and remove resolutions');
+    expect(result.advice).toContain(
+      'Upgrade dependencies that are using the invalid package versions and remove resolutions'
+    );
   });
 });
