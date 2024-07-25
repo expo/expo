@@ -7,3 +7,9 @@ export declare function resolveEntryPoint(projectRoot: string, { platform, pkg, 
     pkg?: PackageJSONConfig;
 }): string;
 export declare function getFileWithExtensions(fromDirectory: string, moduleId: string, extensions: string[]): string | null;
+/**
+ * Resolve the entry point relative to either the server or project root.
+ * This relative entry path should be used to pass non-absolute paths to Metro,
+ * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
+ */
+export declare const resolveRelativeEntryPoint: typeof resolveEntryPoint;

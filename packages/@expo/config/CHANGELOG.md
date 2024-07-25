@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `resolveRelativeEntryPoint` that takes possible server root into account.
 
 ### 🐛 Bug fixes
 
