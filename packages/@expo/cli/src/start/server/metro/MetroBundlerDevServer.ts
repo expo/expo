@@ -763,8 +763,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             lazy: true,
           }),
           // TODO: This doesn't work on all public wifi configurations.
-          publicUrl
-          // this.getDevServerUrlOrAssert()
+          // publicUrl
+          this.getDevServerUrlOrAssert()
         ).toString();
 
         res.statusCode = 200;
