@@ -172,7 +172,7 @@
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
-"@babel/generator@^7.12.5", "@babel/generator@^7.14.0", "@babel/generator@^7.18.13", "@babel/generator@^7.20.0", "@babel/generator@^7.20.5", "@babel/generator@^7.23.6", "@babel/generator@^7.24.7", "@babel/generator@^7.24.8", "@babel/generator@^7.7.2":
+"@babel/generator@^7.12.5", "@babel/generator@^7.14.0", "@babel/generator@^7.18.13", "@babel/generator@^7.20.0", "@babel/generator@^7.20.5", "@babel/generator@^7.23.6", "@babel/generator@^7.24.8", "@babel/generator@^7.7.2":
   version "7.24.10"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.24.10.tgz#a4ab681ec2a78bbb9ba22a3941195e28a81d8e76"
   integrity sha512-o9HBZL1G2129luEUlG1hB4N/nlYNWHnpwlND9eOMclRqqu1YDy2sSYVCFUZwl8I1Gxh+QSRrP2vD7EpUmFVXxg==
@@ -372,7 +372,7 @@
   dependencies:
     "@babel/types" "^7.24.7"
 
-"@babel/helper-string-parser@^7.24.7", "@babel/helper-string-parser@^7.24.8":
+"@babel/helper-string-parser@^7.24.8":
   version "7.24.8"
   resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.24.8.tgz#5b3329c9a58803d5df425e5785865881a81ca48d"
   integrity sha512-pO9KhhRcuUyGnJWwyEgnRJTSIZHiT+vMD0kPeD+so0l7mxkMT19g3pjY9GTnHySck/hDzq+dtW/4VgnMkippsQ==
@@ -1356,7 +1356,7 @@
     debug "^4.3.1"
     globals "^11.1.0"
 
-"@babel/types@^7.0.0", "@babel/types@^7.12.7", "@babel/types@^7.16.8", "@babel/types@^7.18.13", "@babel/types@^7.19.0", "@babel/types@^7.2.0", "@babel/types@^7.20.0", "@babel/types@^7.22.15", "@babel/types@^7.22.5", "@babel/types@^7.24.0", "@babel/types@^7.24.7", "@babel/types@^7.24.8", "@babel/types@^7.24.9", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
+"@babel/types@^7.0.0", "@babel/types@^7.12.7", "@babel/types@^7.16.8", "@babel/types@^7.18.13", "@babel/types@^7.19.0", "@babel/types@^7.2.0", "@babel/types@^7.20.0", "@babel/types@^7.22.15", "@babel/types@^7.24.0", "@babel/types@^7.24.7", "@babel/types@^7.24.8", "@babel/types@^7.24.9", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
   version "7.24.9"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.24.9.tgz#228ce953d7b0d16646e755acf204f4cf3d08cc73"
   integrity sha512-xm8XrMKz0IlUdocVbYJe0Z9xEgidU7msskG8BbhnTPK/HZ2z/7FP7ykqPgrUH+C+r414mNfNWam1f2vqOjqjYQ==
@@ -9150,20 +9150,6 @@ expo-atlas@^0.3.11:
     open "^8.4.2"
     serve-static "^1.15.0"
     stream-json "^1.8.0"
-
-expo-notifications@0.28.11:
-  version "0.28.11"
-  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.28.11.tgz#70aad815ee0c81a39307c3daa44f08045bf29356"
-  integrity sha512-fLWJ+wRcZxEHAJtM/4+bcLzgh5w6+PR9Hu4/BSf65M8ZA6QYX0ALeXi+XawCHWfgua/UOBopBY51OTPfTPei8Q==
-  dependencies:
-    "@expo/image-utils" "^0.5.0"
-    "@ide/backoff" "^1.0.0"
-    abort-controller "^3.0.0"
-    assert "^2.0.0"
-    badgin "^1.1.5"
-    expo-application "~5.9.0"
-    expo-constants "~16.0.0"
-    fs-extra "^9.1.0"
 
 expo-progress@^0.0.2:
   version "0.0.2"

@@ -762,6 +762,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
             lazy: true,
           }),
+          // TODO: This doesn't work on all public wifi configurations.
           publicUrl
           // this.getDevServerUrlOrAssert()
         ).toString();
