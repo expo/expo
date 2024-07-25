@@ -46,13 +46,8 @@ export function isLoaded(fontFamily: string): boolean {
  * This includes fonts that were bundled at build time using the config plugin, as well as those loaded at runtime using `loadAsync`.
  *
  * @returns Returns array of font family names that have been loaded.
- * @platform ios
- * @platform android
  */
 export function getLoadedFonts(): string[] {
-  if (Platform.OS === 'web') {
-    return [];
-  }
   return ExpoFontLoader.loadedFonts;
 }
 

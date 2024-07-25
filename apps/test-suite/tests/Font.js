@@ -24,8 +24,7 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
       expect(Font.isLoaded('cool-font')).toBe(false);
       expect(Font.isLoading('cool-font')).toBe(false);
       const loadedFonts = Font.getLoadedFonts();
-      const expectedNumOfFonts = Platform.OS === 'web' ? 0 : 30;
-      expect(loadedFonts.length >= expectedNumOfFonts).toBe(true);
+      expect(loadedFonts.length >= 25).toBe(true);
 
       try {
         await Font.loadAsync({
@@ -39,9 +38,7 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
       }
       expect(error).toBeNull();
       expect(Font.isLoaded('cool-font')).toBe(true);
-      if (Platform.OS !== 'web') {
-        expect(Font.getLoadedFonts().length).toBe(loadedFonts.length + 1);
-      }
+      expect(Font.getLoadedFonts().length).toBe(loadedFonts.length + 1);
 
       // Test that the font-display css is correctly made and located in a <style/> element with ID `expo-generated-fonts`
       if (Platform.OS === 'web') {

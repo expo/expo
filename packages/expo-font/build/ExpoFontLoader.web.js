@@ -92,6 +92,13 @@ export default {
     resetServerContext() {
         serverContext.clear();
     },
+    get loadedFonts() {
+        if (typeof window === 'undefined') {
+            return [...serverContext.values()].map(({ name }) => name);
+        }
+        const rules = getFontFaceRules();
+        return rules.map(({ rule }) => rule.style.fontFamily);
+    },
     isLoaded(fontFamilyName, resource = {}) {
         if (typeof window === 'undefined') {
             return !![...serverContext.values()].find((asset) => {
