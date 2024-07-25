@@ -3,7 +3,7 @@ import {
   exportEmbedAssetsAsync,
 } from '@expo/cli/build/src/export/embed/exportEmbedAsync';
 import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
-import { resolveEntryPoint } from '@expo/config/paths';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
 import { EmbeddedManifest } from 'expo-manifests';
@@ -23,7 +23,7 @@ export async function createManifestForBuildAsync(
   const entryFile =
     entryFileArg ||
     process.env.ENTRY_FILE ||
-    getRelativeEntryPoint(possibleProjectRoot, platform) ||
+    resolveRelativeEntryPoint(possibleProjectRoot, { platform }) ||
     'index.js';
 
   // Remove projectRoot validation when we no longer support React Native <= 62
@@ -106,17 +106,6 @@ export async function createManifestForBuildAsync(
   });
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
-}
-
-/**
- * Resolve the relative entry file using Expo's resolution method.
- */
-function getRelativeEntryPoint(projectRoot: string, platform: 'ios' | 'android'): string {
-  const entry = resolveEntryPoint(projectRoot, { platform });
-  if (entry) {
-    return path.relative(projectRoot, entry);
-  }
-  return entry;
 }
 
 function getAndroidResourceFolderName(asset: HashedAssetData) {
