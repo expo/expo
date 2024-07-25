@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] fix ClipboardPasteButton's active state 
 - Fixed issue when copying PNG images on Android. ([#29629](https://github.com/expo/expo/pull/29629) by [@weslley75](https://github.com/weslley75))
 - Add missing `react`/`react-native` peer dependencies for isolated modules. ([#30463](https://github.com/expo/expo/pull/30463) by [@byCedric](https://github.com/byCedric))
 

@@ -47,6 +47,24 @@ class ClipboardPasteButton: ExpoView {
     ])
   }
 
+  override func canPaste(_ itemProviders: [NSItemProvider]) -> Bool {
+    guard #available(iOS 14.0, *) else {
+      // never called below iOS 16
+      return true
+    }
+    let hasConformantItem = itemProviders.contains { provider in
+      provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) ||
+      provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) ||
+      provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) ||
+      provider.hasItemConformingToTypeIdentifier(UTType.utf8PlainText.identifier) && !acceptedContentTypes.contains(.html)
+    }
+    if hasConformantItem {
+      return true
+    }
+    // intra-device, when copying simple stuff like images and plain text, `itemProviders` are empty
+    return itemProviders.isEmpty
+  }
+
   override func paste(itemProviders: [NSItemProvider]) {
     guard #available(iOS 14.0, *) else {
       return
