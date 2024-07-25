@@ -277,10 +277,15 @@ describe('in bare workflow', () => {
   it(`does not scope font names`, async () => {
     const fontName = 'test-font';
     const mockAsset = _createMockAsset();
+    expect(Font.isLoaded(fontName)).toBe(false);
     await Font.loadAsync(fontName, mockAsset);
     expect(Font.isLoaded(fontName)).toBe(true);
 
     const processedFontFamily = Font.processFontFamily(fontName);
     expect(processedFontFamily).toEqual(fontName);
+  });
+
+  it('getLoadedFonts is available', () => {
+    expect(Font.getLoadedFonts()).toHaveLength(0);
   });
 });

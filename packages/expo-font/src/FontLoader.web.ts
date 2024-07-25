@@ -35,7 +35,7 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
   }
 
   return {
-    uri: uri!,
+    uri,
     display,
   };
 }

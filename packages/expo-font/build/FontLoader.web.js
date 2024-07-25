@@ -30,7 +30,7 @@ export function getAssetForSource(source) {
         throwInvalidSourceError(uri);
     }
     return {
-        uri: uri,
+        uri,
         display,
     };
 }
