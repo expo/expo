@@ -249,20 +249,6 @@ console.log('Hello on the server!');
 
 </Step>
 
-## Barrel files
-
-> As of Expo SDK 50, there are no built-in optimizations for barrel files.
-
-Barrel files export all the modules in a directory. They are used to make importing modules easier. For example, a component-based icon library does the following:
-
-```js node_modules/<example library>/index.js
-export { default as IconA } from './IconA';
-export { default as IconB } from './IconB';
-export { default as IconC } from './IconC';
-```
-
-To reduce the bundle size, identify which of these modules you are using and try to import them directly. Learn more in [analyzing bundle size](/guides/analyzing-bundles).
-
 ## React Native web imports
 
 `babel-preset-expo` provides a built-in optimization for the `react-native-web` barrel file. If you import `react-native` directly using ESM, then the barrel file will be removed from the production bundle.
@@ -343,11 +329,10 @@ export function ArrowUp() {
 
 This system scales up to automatically optimize all `import` and `export` syntax in your app, across all platforms. While this results in smaller bundles, processing JS still requires time and computer memory so avoid importing millions of modules.
 
-- Tree-shaking only works on modules that use `import` and `export` syntax. Files that use `module.exports` and `require` will not be tree-shaken.
-- Adding a Babel plugins such as `@babel/plugin-transform-modules-commonjs` will convert `import`/`export` to CJS and break tree-shaking across your project.
+- Tree-shaking only runs in production bundles and can only run on modules that use `import` and `export` syntax. Files that use `module.exports` and `require` will not be tree-shaken.
+- Avoid adding Babel plugins such as `@babel/plugin-transform-modules-commonjs` which convert `import`/`export` syntax to CJS. This will break tree-shaking across your project.
 - Modules that are marked as side-effects will not be removed from the graph.
 - `export * from "..."` will be expanded and optimized unless the export uses `module.exports` or `exports`.
-- Tree-shaking only runs in production bundles.
 - All modules in the Expo SDK are shipped as ESM and can be exhaustively tree-shaken.
 
 ## Enabling tree shaking
@@ -410,7 +395,7 @@ Bundle your app in production mode to see the effects of tree shaking.
 
 This feature is very experimental because it changes the fundamental structure of how Metro bundles code. By default, Metro bundles everything on-demand and lazily to ensure the fastest possible development times. In contrast, tree shaking requires some transformation to be delayed until after the entire bundle has been created. This means less code can be cached, which is generally fine because tree shaking is a production-only feature and production bundles often don't use transform caches.
 
-## Barrel modules
+## Barrel files
 
 > Experimentally available in SDK 52 and above.
 
