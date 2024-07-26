@@ -26,6 +26,7 @@
 - Prevent creating params object with null prototype ([#30009](https://github.com/expo/expo/pull/30009) by [@marklawlor](https://github.com/marklawlor))
 - Fix Typed Routes clashing types and allow strict types for hooks. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 - Update `setParams` types to be a `Partial<>` ([#30570](https://github.com/expo/expo/pull/30570) by [@marklawlor](https://github.com/marklawlor))
+- Remove `act` when running `runOnlyPendingTimers` in testing library. ([#30635](https://github.com/expo/expo/pull/30635) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.5.16 - 2024-06-10
 
