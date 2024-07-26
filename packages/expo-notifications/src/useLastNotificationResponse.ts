@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import { NotificationResponse } from './Notifications.types';
 import { addNotificationResponseReceivedListener } from './NotificationsEmitter';
