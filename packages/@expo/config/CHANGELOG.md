@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Move entry point path modifications to Node script instead of Gradle plugin.
+
 ### 💡 Others
 
 - Upgrade `glob@7` to `glob@10`. ([#30425](https://github.com/expo/expo/pull/30425) by [@byCedric](https://github.com/byCedric))
