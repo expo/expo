@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Rename `directoryCheck` to `reactNativeDirectoryCheck`.
+
 ## 1.8.2 — 2024-07-19
 
 ### 💡 Others
