@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add basic React Server Component support. ([#29869](https://github.com/expo/expo/pull/29869) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Added `Image.loadAsync` API. ([#25079](https://github.com/expo/expo/pull/25079) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -17,6 +18,10 @@
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30469](https://github.com/expo/expo/pull/30469) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.12.12 - 2024-06-13
 

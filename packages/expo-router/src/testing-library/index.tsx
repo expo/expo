@@ -68,9 +68,7 @@ export function renderRouter(
    * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
    * (that the app will briefly be in the right state, but then update to an invalid state)
    */
-  store.subscribeToRootState(() => {
-    act(() => jest.runOnlyPendingTimers());
-  });
+  store.subscribeToRootState(() => jest.runOnlyPendingTimers());
 
   return Object.assign(result, {
     getPathname(this: RenderResult): string {

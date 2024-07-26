@@ -183,6 +183,21 @@ public final class ImageModule: Module {
         }
       }
     }
+
+    AsyncFunction("loadAsync") { (source: ImageSource) -> Image? in
+      let image = try await ImageLoadTask(source).load()
+      return Image(image)
+    }
+
+    Class(Image.self) {
+      Property("width", \.ref.size.width)
+      Property("height", \.ref.size.height)
+      Property("scale", \.ref.scale)
+      Property("isAnimated", \.ref.sd_isAnimated)
+      Property("mediaType") { image in
+        return imageFormatToMediaType(image.ref.sd_imageFormat)
+      }
+    }
   }
 
   static func registerCoders() {

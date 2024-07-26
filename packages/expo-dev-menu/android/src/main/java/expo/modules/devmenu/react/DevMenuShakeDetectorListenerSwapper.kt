@@ -15,7 +15,7 @@ class DevMenuShakeDetectorListenerSwapper {
     try {
       val devSupportManager = requireNotNull(reactHost.devSupportManager)
 
-      // We don't want to add handlers into `DisabledDevSupportManager` or other custom classes
+      // We don't want to add handlers into `ReleaseDevSupportManager` or other custom classes
       if (devSupportManager !is DevSupportManagerBase) {
         return
       }

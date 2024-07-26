@@ -35,6 +35,7 @@
   },
   "peerDependencies": {
     "expo": "*",
+    "react": "*",
     "react-native": "*"
   },
   "jest": {

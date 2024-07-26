@@ -52,7 +52,7 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     }
 
     val isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL
-    val isRTLSwap = I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)
+    val isRTLSwap = I18nUtil.instance.doLeftAndRightSwapInRTL(mContext)
     updateCornerRadius(
       CornerRadius.TOP_LEFT,
       BorderRadiusConfig.TOP_LEFT,

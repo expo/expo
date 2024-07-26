@@ -10,6 +10,7 @@
 
 - Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
 - [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Skip dev server websocket connection for expo updates. ([#30535](https://github.com/expo/expo/pull/30535) by [@joeporpeglia](https://github.com/joeporpeglia))
 
 ### 💡 Others
@@ -20,9 +21,9 @@
 - Fixed broken unit test on iOS 17 where `URL()` without scheme returns nil. ([#30178](https://github.com/expo/expo/pull/30178) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
-### 🐛 Bug fixes
+### 📚 3rd party library updates
 
-- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.0.20 - 2024-06-13
 

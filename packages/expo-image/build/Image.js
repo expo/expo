@@ -23,6 +23,10 @@ export class Image extends React.PureComponent {
             return this;
         }
     };
+    /**
+     * @hidden
+     */
+    static Image = ExpoImageModule.Image;
     static async prefetch(urls, options) {
         let cachePolicy = 'memory-disk';
         let headers;
@@ -98,6 +102,14 @@ export class Image extends React.PureComponent {
      */
     async stopAnimating() {
         await this.nativeViewRef.current.stopAnimating();
+    }
+    /**
+     * Loads an image from the given source to memory and resolves to
+     * an object that references the native image instance.
+     * @platform ios
+     */
+    static loadAsync(source) {
+        return ExpoImageModule.loadAsync(source);
     }
     render() {
         const { style, source, placeholder, contentFit, contentPosition, transition, fadeDuration, resizeMode: resizeModeProp, defaultSource, loadingIndicatorSource, ...restProps } = this.props;

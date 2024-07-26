@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addCameraImport = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
-const generateCode_1 = require("@expo/config-plugins/build/utils/generateCode");
+const config_plugins_1 = require("expo/config-plugins");
+const appendCode_1 = require("./appendCode");
 const pkg = require('expo-camera/package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
@@ -24,37 +24,16 @@ const withAndroidCameraGradle = (config) => {
         return config;
     });
 };
+/** @internal Exposed for testing */
 function addCameraImport(src) {
-    return appendContents({
+    return (0, appendCode_1.appendGeneratedCodeContents)({
         tag: 'expo-camera-import',
         src,
-        newSrc: gradleMaven,
+        generatedCode: gradleMaven,
         comment: '//',
     });
 }
 exports.addCameraImport = addCameraImport;
-// Fork of config-plugins mergeContents, but appends the contents to the end of the file.
-function appendContents({ src, newSrc, tag, comment, }) {
-    const header = (0, generateCode_1.createGeneratedHeaderComment)(newSrc, tag, comment);
-    if (!src.includes(header)) {
-        // Ensure the old generated contents are removed.
-        const sanitizedTarget = (0, generateCode_1.removeGeneratedContents)(src, tag);
-        const contentsToAdd = [
-            // @something
-            header,
-            // contents
-            newSrc,
-            // @end
-            `${comment} @generated end ${tag}`,
-        ].join('\n');
-        return {
-            contents: sanitizedTarget ?? src + contentsToAdd,
-            didMerge: true,
-            didClear: !!sanitizedTarget,
-        };
-    }
-    return { contents: src, didClear: false, didMerge: false };
-}
 const withCamera = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
     config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({
         NSCameraUsageDescription: CAMERA_USAGE,

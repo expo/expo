@@ -230,24 +230,33 @@ module.exports = withExpo({
 This is Vercel's preferred method for deploying Next.js projects to production.
 
 <Step label="1">
-  Add a **build** script to your **package.json**:
-  ```json package.json
-  {
-    "scripts": {
-      "build": "next build"
-    }
+
+Add a `build` script to your **package.json**:
+
+```json package.json
+{
+  "scripts": {
+    "build": "next build"
   }
-  ```
+}
+```
+
 </Step>
 
 <Step label="2">
-  Install the Vercel CLI:
-  <Terminal cmd={['$ npm i -g vercel']} />
+
+Install the Vercel CLI:
+
+<Terminal cmd={['$ npm i -g vercel']} />
+
 </Step>
 
 <Step label="3">
-  Deploy to Vercel:
-  <Terminal cmd={['$ vercel']} />
+
+Deploy to Vercel:
+
+<Terminal cmd={['$ vercel']} />
+
 </Step>
 
 ## Limitations or differences compared to the default Expo for Web

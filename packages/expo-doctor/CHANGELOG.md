@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 1.9.0 — 2024-07-26
+
+### 🐛 Bug fixes
+
+- Drop `node-fetch` in favor of Node built-in `fetch` to support Node 22. ([#30551](https://github.com/expo/expo/pull/30551) by [@byCedric](https://github.com/byCedric))
+- Add missing dependencies `fast-glob`, `getenv`, and `terminal-link`. ([#30551](https://github.com/expo/expo/pull/30551) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Rename `directoryCheck` to `reactNativeDirectoryCheck`. ([#30647](https://github.com/expo/expo/pull/30647) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.8.2 — 2024-07-19
+
+### 💡 Others
+
+- Make directory checks more configurable in package.json and improve check message. ([#30538](https://github.com/expo/expo/pull/30538) by [@brentvatne](https://github.com/brentvatne))
+
 ## 1.8.1 — 2024-07-19
 
 ### 🐛 Bug fixes
