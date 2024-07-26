@@ -1,4 +1,4 @@
-import { filterPackages } from '../../checks/reactNativeDirectoryCheck';
+import { filterPackages } from '../../checks/ReactNativeDirectoryCheck';
 
 describe('filterPackages', () => {
   it('returns all packages if no ignored packages are provided', () => {
