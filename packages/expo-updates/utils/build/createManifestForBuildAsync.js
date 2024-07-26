@@ -11,22 +11,11 @@ const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const filterPlatformAssetScales_1 = require("./filterPlatformAssetScales");
-async function createManifestForBuildAsync(platform, possibleProjectRoot, destinationDir, entryFileArg) {
+async function createManifestForBuildAsync(platform, projectRoot, destinationDir, entryFileArg) {
     const entryFile = entryFileArg ||
         process.env.ENTRY_FILE ||
-        (0, paths_1.resolveRelativeEntryPoint)(possibleProjectRoot, { platform }) ||
+        (0, paths_1.resolveRelativeEntryPoint)(projectRoot, { platform }) ||
         'index.js';
-    // Remove projectRoot validation when we no longer support React Native <= 62
-    let projectRoot;
-    if (fs_1.default.existsSync(path_1.default.join(possibleProjectRoot, entryFile))) {
-        projectRoot = path_1.default.resolve(possibleProjectRoot);
-    }
-    else if (fs_1.default.existsSync(path_1.default.join(possibleProjectRoot, '..', entryFile))) {
-        projectRoot = path_1.default.resolve(possibleProjectRoot, '..');
-    }
-    else {
-        throw new Error('Error loading application entry point. If your entry point is not index.js, please set ENTRY_FILE environment variable with your app entry point.');
-    }
     process.chdir(projectRoot);
     const options = {
         platform,

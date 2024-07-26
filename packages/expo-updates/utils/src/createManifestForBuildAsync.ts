@@ -16,27 +16,15 @@ import { filterPlatformAssetScales } from './filterPlatformAssetScales';
 
 export async function createManifestForBuildAsync(
   platform: 'ios' | 'android',
-  possibleProjectRoot: string,
+  projectRoot: string,
   destinationDir: string,
   entryFileArg?: string
 ): Promise<void> {
   const entryFile =
     entryFileArg ||
     process.env.ENTRY_FILE ||
-    resolveRelativeEntryPoint(possibleProjectRoot, { platform }) ||
+    resolveRelativeEntryPoint(projectRoot, { platform }) ||
     'index.js';
-
-  // Remove projectRoot validation when we no longer support React Native <= 62
-  let projectRoot: string;
-  if (fs.existsSync(path.join(possibleProjectRoot, entryFile))) {
-    projectRoot = path.resolve(possibleProjectRoot);
-  } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
-    projectRoot = path.resolve(possibleProjectRoot, '..');
-  } else {
-    throw new Error(
-      'Error loading application entry point. If your entry point is not index.js, please set ENTRY_FILE environment variable with your app entry point.'
-    );
-  }
 
   process.chdir(projectRoot);
 
