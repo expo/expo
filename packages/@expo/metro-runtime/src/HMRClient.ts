@@ -17,6 +17,9 @@ import getDevServer from './getDevServer';
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const pendingEntryPoints: string[] = [];
 
+// @ts-expect-error: Account for multiple versions of pretty-format inside of a monorepo.
+const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
+
 type HMRClientType = {
   send: (msg: string) => void;
   isEnabled: () => boolean;
@@ -125,7 +128,7 @@ const HMRClient: HMRClientNativeInterface = {
           data: data.map((item) =>
             typeof item === 'string'
               ? item
-              : prettyFormat(item, {
+              : prettyFormatFunc(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,
