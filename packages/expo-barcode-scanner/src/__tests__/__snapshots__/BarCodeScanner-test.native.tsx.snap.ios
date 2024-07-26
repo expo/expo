@@ -4,5 +4,6 @@ exports[`renders correctly 1`] = `
 <ViewManagerAdapter_ExpoBarCodeScanner
   barCodeTypes={[]}
   onBarCodeScanned={[Function]}
+  testID="barcodescanner"
 />
 `;
