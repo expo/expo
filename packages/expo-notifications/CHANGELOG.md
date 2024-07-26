@@ -14,6 +14,7 @@
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
 - [Android] Fix serialization of vibration pattern. ([#30495](https://github.com/expo/expo/pull/30495) by [@douglowder](https://github.com/douglowder))
 - [Android] map Expo and Firebase notifications correctly. ([#30615](https://github.com/expo/expo/pull/30615) by [@douglowder](https://github.com/douglowder))
+- useLastNotificationResponse should have only one effect. ([#30653](https://github.com/expo/expo/pull/30653) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
