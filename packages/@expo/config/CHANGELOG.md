@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Move entry point path modifications to Node script instead of Gradle plugin.
+- Move entry point path modifications to Node script instead of Gradle plugin. ([#30654](https://github.com/expo/expo/pull/30654) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
