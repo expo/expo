@@ -55,7 +55,7 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
 
 func exportAssetInfo(asset: PHAsset) -> [String: Any?]? {
   if var assetDict = exportAsset(asset: asset) {
-    assetDict["location"] = exportLocation(location: asset.location) ?? NSNull()
+    assetDict["location"] = exportLocation(location: asset.location)
     assetDict["isFavorite"] = asset.isFavorite
     assetDict["isHidden"] = asset.isHidden
     return assetDict
@@ -218,7 +218,7 @@ func exportCollection(_ collection: PHAssetCollection?, folderName: String? = ni
     "assetCount": assetCountOfCollection(collection),
     "startTime": exportDate(collection.startDate),
     "endTime": exportDate(collection.endDate),
-    "approximateLocation": exportLocation(location: collection.approximateLocation) ?? NSNull(),
+    "approximateLocation": exportLocation(location: collection.approximateLocation),
     "locationNames": collection.localizedLocationNames
   ]
 }
