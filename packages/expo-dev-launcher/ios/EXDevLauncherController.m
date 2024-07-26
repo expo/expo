@@ -576,8 +576,10 @@
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
-    // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+    // Connect to the websocket, ignore downloaded update bundles
+    if (![bundleUrl.scheme isEqualToString:@"file"]) {
+      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+    }
 #endif
 
     if (@available(iOS 12, *)) {
