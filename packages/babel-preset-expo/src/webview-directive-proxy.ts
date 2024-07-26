@@ -54,6 +54,7 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
             const outputName = `www.bundle/${hash}.html`;
             proxyModule = [`const proxy = { uri: ${JSON.stringify(outputName)} };`];
           } else if (platform === 'android') {
+            // TODO: This is a guess.
             const outputName = `www/${hash}.html`;
             proxyModule = [
               `const proxy = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`,
@@ -75,6 +76,7 @@ export function expoWebviewDirectiveProxy(api: ConfigAPI): babel.PluginObj {
             ? `
                 import React from 'react';
               import { WebView } from 'expo/dom/internal';
+
               export default React.forwardRef((props, ref) => {
                 return React.createElement(WebView, { ref, ...props, $$source: proxy });
             });

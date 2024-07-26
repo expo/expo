@@ -177,7 +177,7 @@ export async function exportEmbedBundleAndAssetsAsync(
               serializerIncludeMaps: !!sourceMapUrl,
               bytecode: false,
               reactCompiler: !!exp.experiments?.reactCompiler,
-              baseUrl: "./",
+              baseUrl: './',
             });
 
             const html = await serializeHtmlWithAssets({
