@@ -36,6 +36,7 @@ export function createCorsMiddleware(exp: ExpoConfig) {
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
       maybePreventMetroResetCorsHeader(req, res);
     }
+
     // Block MIME-type sniffing.
     res.setHeader('X-Content-Type-Options', 'nosniff');
 

@@ -445,7 +445,6 @@ export function withExtendedResolver(
           }
         );
       }
-      // const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
       const contents = `module.exports=$$require_external('node:${moduleId}');`;
       debug(`Virtualizing Node.js "${moduleId}"`);
       const virtualModuleId = `\0node:${moduleId}`;
