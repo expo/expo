@@ -166,15 +166,13 @@ public final class VideoModule: Module {
 
       Property("currentDate") { player -> Double in
         let timeInterval = player.pointer.currentItem?.currentDate().timeIntervalSince1970 ?? 0
-        let currentDate = Double(timeInterval * 1000)
-        return currentDate
+        return Double(timeInterval * 1000)
       }
 
       Property("liveLatency") { player -> Double in
         let currentDate = player.pointer.currentItem?.currentDate().timeIntervalSince1970 ?? 0
         let unixTime = Date().timeIntervalSince1970
-        let liveOffset = unixTime - currentDate
-        return liveOffset
+        return unixTime - currentDate
       }
 
       Property("timeOffsetFromLive") { player -> Double in
