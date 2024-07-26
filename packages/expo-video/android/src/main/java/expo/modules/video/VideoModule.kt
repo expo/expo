@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
+import androidx.media3.common.Timeline
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
