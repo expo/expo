@@ -48,6 +48,15 @@ export default function useLastNotificationResponse() {
 
   // useLayoutEffect ensures the listener is registered as soon as possible
   useLayoutEffect(() => {
+    // Get the last response first, in case it was set earlier (even in native code on startup)
+    // before this renders
+    NotificationsEmitterModule.getLastNotificationResponseAsync?.().then((response) => {
+      setLastNotificationResponse(response);
+    });
+
+    // On each mount of this hook we fetch last notification response
+    // from the native module which is an "always active listener"
+    // and always returns the most recent response.
     const subscription = addNotificationResponseReceivedListener((response) => {
       const mappedResponse = mapNotificationResponse(response);
       setLastNotificationResponse(mappedResponse);
@@ -55,15 +64,6 @@ export default function useLastNotificationResponse() {
     return () => {
       subscription.remove();
     };
-  }, []);
-
-  // On each mount of this hook we fetch last notification response
-  // from the native module which is an "always active listener"
-  // and always returns the most recent response.
-  useEffect(() => {
-    NotificationsEmitterModule.getLastNotificationResponseAsync?.().then((response) => {
-      setLastNotificationResponse(response);
-    });
   }, []);
 
   return lastNotificationResponse;
