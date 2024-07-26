@@ -51,7 +51,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
    */
   override fun onNotificationReceived(notification: Notification) {
     val bundle = NotificationSerializer.toBundle(notification)
-    DebugLogging.logBundle("NotificationsEmitter.onNotificationReceived:", bundle)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationReceived", bundle)
     sendEvent(NEW_MESSAGE_EVENT_NAME, bundle)
   }
 
@@ -64,7 +64,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
    */
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
     val bundle = NotificationSerializer.toBundle(response)
-    DebugLogging.logBundle("DebugLogging.onNotificationResponseReceived:", bundle)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseReceived", bundle);
     lastNotificationResponseBundle = bundle
     sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
     return true
@@ -72,7 +72,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
 
   override fun onNotificationResponseIntentReceived(extras: Bundle?) {
     val bundle = NotificationSerializer.toResponseBundleFromExtras(extras)
-    DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseIntentReceived", bundle)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseIntentReceived", bundle);
     lastNotificationResponseBundle = bundle
     sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
   }
@@ -84,4 +84,6 @@ open class NotificationsEmitter : Module(), NotificationListener {
   override fun onNotificationsDropped() {
     sendEvent(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY)
   }
+
 }
+

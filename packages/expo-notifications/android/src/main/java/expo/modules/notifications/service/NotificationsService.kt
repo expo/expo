@@ -645,10 +645,11 @@ open class NotificationsService : BroadcastReceiver() {
         // If we ended up here, the callbacks must have completed successfully
         receiver?.send(SUCCESS_CODE, resultData)
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Action ${intent.action} failed: ${e.message}")
         if (BuildConfig.DEBUG) {
           // Log stack trace for debugging
-          Log.e("ReactNativeJS", "Action ${intent.action} failed: ${e.message}\n${e.stackTraceToString()}")
+          Log.e("expo-notifications", "Action ${intent.action} failed: ${e.message}\n${e.stackTraceToString()}")
+        } else {
+          Log.e("expo-notifications", "Action ${intent.action} failed: ${e.message}")
         }
         e.printStackTrace()
 

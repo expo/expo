@@ -11,12 +11,13 @@ import java.util.function.Consumer
 
 object DebugLogging {
   @JvmStatic
-  fun logBundle(caller: String, bundleToLog: Bundle) {
-    Log.i("ReactNativeJS", "$caller:")
-    logBundle(caller, bundleToLog, "  ")
-  }
+  val indents: List<String> = listOf("  ", "    ", "      ", "        ")
 
-  private fun logBundle(ignoredCaller: String, bundleToLog: Bundle, indent: String) {
+  @JvmStatic
+  val maxIndex = 4
+
+  @JvmStatic
+  fun logBundle(caller: String, bundleToLog: Bundle) {
     if (!BuildConfig.DEBUG) {
       // Do not log in release/production builds
       return
@@ -24,21 +25,26 @@ object DebugLogging {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
       return
     }
-    if (indent == "        ") {
-      return
-    }
-    bundleToLog.keySet().forEach(
-      Consumer { it: String ->
-        val value = bundleToLog[it]
-        if (value is Bundle) {
-          Log.i("ReactNativeJS", indent + it)
-          logBundle(ignoredCaller, value, "$indent  ")
-        } else {
-          val stringValue = value?.toString() ?: "(null)"
-          Log.i("ReactNativeJS", "$indent$it: $stringValue")
+    Log.i("expo-notifications", "$caller:\n${bundleString(caller, bundleToLog, 0)}")
+  }
+
+  @RequiresApi(Build.VERSION_CODES.N)
+  private fun bundleString(ignoredCaller: String, bundleToLog: Bundle, index: Int): String {
+    if (index >= maxIndex) return ""
+    return buildString {
+      bundleToLog.keySet().forEach(
+        Consumer { key: String ->
+          val value = bundleToLog[key]
+          if (value is Bundle) {
+            append("${indents[index]}${key}\n")
+            append(bundleString(ignoredCaller, value, index + 1))
+          } else {
+            val stringValue = value?.toString() ?: "(null)"
+            append("${indents[index]}$key: $stringValue\n")
+          }
         }
-      }
-    )
+      )
+    }
   }
 
   fun logRemoteMessage(caller: String, message: RemoteMessage) {
