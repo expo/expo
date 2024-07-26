@@ -193,6 +193,25 @@ class VideoModule : Module() {
           }
         }
 
+      Property("currentDate")
+        .get { ref: VideoPlayer ->
+          // TODO: we shouldn't block the thread, but there are no events for the player position change,
+          //  so we can't update the currentDate in a non-blocking way like the other properties.
+          //  Until we think of something better we can temporarily do it this way
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            val window = Timeline.Window()
+            if (!ref.player.currentTimeline.isEmpty) {
+              ref.player.currentTimeline.getWindow(ref.player.currentMediaItemIndex, window)
+            }
+            window.windowStartTimeMs + ref.player.currentPosition
+          }
+        }
+
+      Property("liveLatency")
+        .get { ref: VideoPlayer ->
+          ref.liveLatency
+        }
+
       Property("duration")
         .get { ref: VideoPlayer ->
           ref.duration

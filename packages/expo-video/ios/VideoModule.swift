@@ -164,6 +164,27 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("currentDate") { player -> Double in
+        let timeInterval = player.pointer.currentItem?.currentDate().timeIntervalSince1970 ?? 0
+        let currentDate = Double(timeInterval * 1000)
+        return currentDate
+      }
+
+      Property("liveLatency") { player -> Double in
+        let currentDate = player.pointer.currentItem?.currentDate().timeIntervalSince1970 ?? 0
+        let unixTime = Date().timeIntervalSince1970
+        let liveOffset = unixTime - currentDate
+        return liveOffset
+      }
+
+      Property("timeOffsetFromLive") { player -> Double in
+        return player.pointer.currentItem?.configuredTimeOffsetFromLive.seconds ?? 0
+      }
+      .set { (player, timeOffset: Double) in
+        let timeOffset = CMTime(seconds: timeOffset, preferredTimescale: .max)
+        player.pointer.currentItem?.configuredTimeOffsetFromLive = timeOffset
+      }
+
       Property("duration") { player -> Double in
         return player.pointer.currentItem?.duration.seconds ?? 0
       }

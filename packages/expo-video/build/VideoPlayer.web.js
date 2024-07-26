@@ -33,6 +33,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     allowsExternalPlayback = false; // Not supported on web. Dummy to match the interface.
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.
+    currentDate = 0; // Not supported on web. Dummy to match the interface.
+    liveLatency = 0; // Not supported on web. Dummy to match the interface.
+    timeOffsetFromLive = 0; // Not supported on web. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;

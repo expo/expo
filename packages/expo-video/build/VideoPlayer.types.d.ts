@@ -35,6 +35,25 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     currentTime: number;
     /**
+     * The current time of the video as a date. The system calculates this value from the `EXT-X-PROGRAM-DATE-TIME` tag.
+     * > This property is get-only
+     * @platform ios
+     * @platform android
+     */
+    readonly currentDate: number;
+    /**
+     * Float value indicating the latency of the live stream in seconds.
+     * > This property is get-only
+     * @platform ios
+     * @platform android
+     */
+    readonly liveLatency: number;
+    /**
+     * Float value indicating the time offset from the live in seconds.
+     * @platform ios
+     */
+    timeOffsetFromLive: number;
+    /**
      * Float value indicating the duration of the current video in seconds.
      * > This property is get-only
      */
