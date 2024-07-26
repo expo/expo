@@ -17,9 +17,9 @@ type PluginConfig = {
 const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
   const android = {
     ...props,
-    ...props.android,
+    ...props?.android,
   };
-  const ios = { ...props, ...props.ios };
+  const ios = { ...props, ...props?.ios };
 
   config = withAndroidSplashScreen(config, android);
   config = withIosSplashScreen(config, ios);
