@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Rename `directoryCheck` to `reactNativeDirectoryCheck`. ([#30647](https://github.com/expo/expo/pull/30647) by [@brentvatne](https://github.com/brentvatne))
+
 ## 1.8.2 — 2024-07-19
 
 ### 💡 Others
