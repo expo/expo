@@ -58,11 +58,9 @@ class ClipboardPasteButton: ExpoView {
       provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) ||
       provider.hasItemConformingToTypeIdentifier(UTType.utf8PlainText.identifier) && !acceptedContentTypes.contains(.html)
     }
-    if hasConformantItem {
-      return true
-    }
+
     // intra-device, when copying simple stuff like images and plain text, `itemProviders` are empty
-    return itemProviders.isEmpty
+    return hasConformantItem || itemProviders.isEmpty
   }
 
   override func paste(itemProviders: [NSItemProvider]) {
