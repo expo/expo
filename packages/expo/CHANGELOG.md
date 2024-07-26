@@ -18,6 +18,7 @@
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30449](https://github.com/expo/expo/pull/30449) by [@byCedric](https://github.com/byCedric))
 - Fixed fetch streaming error on iOS. ([#30604](https://github.com/expo/expo/pull/30604) by [@kudo](https://github.com/kudo))
 - Fixed fetch import on Web. ([#30605](https://github.com/expo/expo/pull/30605) by [@kudo](https://github.com/kudo))
+- Add support for server root in `expo/scripts/resolveAppEntry.js`.
 
 ### 💡 Others
 
