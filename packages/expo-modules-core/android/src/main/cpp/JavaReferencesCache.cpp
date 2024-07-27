@@ -31,6 +31,12 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(F)V"}
   });
 
+  loadJClass(env, "[D", {});
+  loadJClass(env, "[Z", {});
+  loadJClass(env, "[I", {});
+  loadJClass(env, "[J", {});
+  loadJClass(env, "[F", {});
+
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });

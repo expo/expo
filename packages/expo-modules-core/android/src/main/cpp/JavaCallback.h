@@ -81,14 +81,22 @@ private:
 
   void invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage);
 
+  void invokeIntArray(jni::alias_ref<jni::JArrayInt> result);
+  void invokeLongArray(jni::alias_ref<jni::JArrayLong> result);
+  void invokeDoubleArray(jni::alias_ref<jni::JArrayDouble> result);
+  void invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result);
+
   template<class T>
   using ArgsConverter = std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction, T arg)>;
 
   template<class T>
   inline void invokeJSFunction(
-    ArgsConverter<T> argsConverter,
+    ArgsConverter<typename std::remove_const<T>::type> argsConverter,
     T arg
   );
+
+  template<class T>
+  void invokeJSFunctionForArray(T &arg);
 
   template<class T>
   inline void invokeJSFunction(T arg);
