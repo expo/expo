@@ -13,8 +13,7 @@ import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
-import { addEventListener } from 'expo/dom/internal';
-import { isWebview } from 'expo/dom';
+import { WebContext } from 'expo/dom/internal';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -101,20 +100,6 @@ function ContextNavigator({
     return contextType;
   }, []);
 
-  React.useEffect(() => {
-    if (!isWebview() && process.env.EXPO_OS !== 'web') {
-      console.log('add global listener');
-      return addEventListener<{ href: string; event: string }>((msg) => {
-        const { type, data } = msg;
-        console.log('Linking to', data.href, data.event);
-        if (type === '$$router_link') {
-          store.linkTo(data.href, data.event);
-        }
-      });
-    }
-    return () => {};
-  }, []);
-
   /*
    * The serverUrl is an initial URL used in server rendering environments.
    * e.g Static renders, units tests, etc
@@ -127,6 +112,8 @@ function ContextNavigator({
     ...linking,
     serverUrl,
   });
+
+  const webContext = React.useMemo(() => ({ linkTo: store.linkTo }), [store]);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
@@ -156,7 +143,9 @@ function ContextNavigator({
       }}>
       <ServerContext.Provider value={serverContext}>
         <WrapperComponent>
-          <Component />
+          <WebContext.Provider value={webContext}>
+            <Component />
+          </WebContext.Provider>
         </WrapperComponent>
       </ServerContext.Provider>
     </UpstreamNavigationContainer>

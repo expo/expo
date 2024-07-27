@@ -109,8 +109,6 @@ export default function MyComponent({ hello }: { hello: (data: string) => Promis
 }
 ```
 
-> You cannot pass functions as nested props to DOM components. They must be top-level props.
-
 Native actions are always asynchronous and only accept serializable arguments (i.e. no functions). This is because the data is sent over a bridge to the WebView.
 
 Native actions can return serializable data to the WebView, this is useful for getting data back from the native side.
