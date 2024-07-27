@@ -15,7 +15,7 @@ function getRandomImageUri(): string {
 // In this screen we show the contents of the image object, so `toJSON` needs to be overriden to include prototype's properties.
 // TODO: We may want to override this globally for all shared objects. Keep it here for now until we decide what to do.
 // @ts-expect-error
-ImageRef.prototype.toJSON = function () {
+Image.Image.prototype.toJSON = function () {
   const json: Record<string, any> = {};
 
   for (const key in this) {
