@@ -69,8 +69,16 @@ jsi::Value convert(
   CAST_AND_RETURN(JSharedObject::javaobject, expo/modules/kotlin/sharedobjects/SharedObject)
   CAST_AND_RETURN(JavaScriptTypedArray::javaobject, expo/modules/kotlin/jni/JavaScriptTypedArray)
 
-  return jsi::Value::undefined();
+  // Primitives arrays
+  CAST_AND_RETURN(jni::JArrayDouble, [D)
+  CAST_AND_RETURN(jni::JArrayBoolean, [Z)
+  CAST_AND_RETURN(jni::JArrayInt, [I)
+  CAST_AND_RETURN(jni::JArrayLong, [J)
+  CAST_AND_RETURN(jni::JArrayFloat, [F)
+
 #undef CAST_AND_RETURN
+
+  return jsi::Value::undefined();
 }
 
 std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value) {
