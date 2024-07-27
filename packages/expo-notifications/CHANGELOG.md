@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] map Expo and Firebase notifications correctly. ([#30615](https://github.com/expo/expo/pull/30615) by [@douglowder](https://github.com/douglowder))
+- [Android] Apply requested changes from #30615. ([#30658](https://github.com/expo/expo/pull/30615) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
