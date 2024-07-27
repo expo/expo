@@ -19,6 +19,8 @@
 
 ### 💡 Others
 
+- Use the `src` folder as the Metro target.
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
