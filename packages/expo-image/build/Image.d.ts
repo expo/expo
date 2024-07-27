@@ -8,7 +8,7 @@ export declare class Image extends React.PureComponent<ImageProps> {
     /**
      * @hidden
      */
-    static Image: any;
+    static Image: typeof ImageRef;
     /**
      * Preloads images at the given URLs that can be later used in the image view.
      * Preloaded images are cached to the memory and disk by default, so make sure

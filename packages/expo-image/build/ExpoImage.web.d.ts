@@ -1,4 +1,4 @@
-import { ImageNativeProps } from './Image.types';
+import type { ImageNativeProps } from './Image.types';
 export declare const ExpoImageModule: {
     prefetch(urls: string | string[], _: any, __: any): Promise<boolean>;
     clearMemoryCache(): Promise<boolean>;
