@@ -426,6 +426,8 @@ export interface CameraViewRef {
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly stopRecording: () => Promise<void>;
   readonly launchModernScanner: () => Promise<void>;
+  readonly resumePreview: () => Promise<void>;
+  readonly pausePreview: () => Promise<void>;
 }
 
 /**

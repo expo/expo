@@ -78,6 +78,18 @@ export default class CameraView extends Component {
     async getAvailablePictureSizesAsync() {
         return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
     }
+    /**
+     * Resumes the camera preview.
+     */
+    async resumePreview() {
+        return this._cameraRef.current?.resumePreview();
+    }
+    /**
+     * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+     */
+    async pausePreview() {
+        return this._cameraRef.current?.pausePreview();
+    }
     // Values under keys from this object will be transformed to native options
     static ConversionTables = ConversionTables;
     static defaultProps = {
