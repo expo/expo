@@ -219,7 +219,7 @@ Only apply inline code formatting using back-ticks (``) on programming words and
 
 ### Use `&mdash;`
 
-In some scenarios, when you split to sentences and use `-` or `--`, instead, use `&mdash;`. Markdown renders that mdash nicely instead of a `-`.
+In some scenarios, when you split two sentences and use `-` or `--`, instead use `&mdash;`. Markdown renders that em dash nicely instead of a hyphen (`-`).
 
 ### Referencing Keyboard shortcuts
 
