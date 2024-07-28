@@ -222,6 +222,26 @@ describe('installAsync', () => {
     expect(manager._runAsync).toHaveBeenNthCalledWith(1, ['install']);
     expect(manager._runAsync).toBeCalledTimes(1);
   });
+
+  it(`runs install with verbose flag`, async () => {
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+
+    manager._runAsync = jest.fn((commands: string[]) => {
+      const cmd = commands.join(' ');
+      if (cmd === 'install --verbose') {
+        return {};
+      }
+      // eslint-disable-next-line no-throw-literal
+      throw 'unhandled ig';
+    });
+
+    // Ensure an error is not thrown
+    await manager.installAsync({ verbose: true });
+
+    // `pod install` > success
+    expect(manager._runAsync).toHaveBeenNthCalledWith(1, ['install --verbose']);
+    expect(manager._runAsync).toBeCalledTimes(1);
+  });
 });
 
 it(`throws for unimplemented methods`, async () => {
