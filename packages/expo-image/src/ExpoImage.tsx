@@ -1,4 +1,4 @@
-import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 import { NativeSyntheticEvent, StyleSheet, Platform, processColor } from 'react-native';
 
@@ -8,10 +8,9 @@ import {
   ImageNativeProps,
   ImageProgressEventData,
 } from './Image.types';
+import ExpoImageModule from './ImageModule';
 
 const NativeExpoImage = requireNativeViewManager('ExpoImage');
-
-const ExpoImageModule = requireNativeModule('ExpoImage');
 
 function withDeprecatedNativeEvent<NativeEvent>(
   event: NativeSyntheticEvent<NativeEvent>

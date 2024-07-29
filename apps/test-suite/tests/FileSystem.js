@@ -495,27 +495,31 @@ export async function test({ describe, expect, it, ...t }) {
       expect(newDirInfo.isDirectory).toBeTruthy();
     }, 30000);
 
-    it('delete(idempotent) -> !exists -> copy(from bundle) -> exists -> delete -> !exists', async () => {
-      const from = 'file://' + FS.bundleDirectory + 'Info.plist';
-      const to = FS.documentDirectory + 'Info.plist.copy';
+    if (Platform.OS === 'ios') {
+      // We cannot run this test on Android because bundleDirectory
+      // on Android cannot be accessed using 'file://' protocol.
+      it('delete(idempotent) -> !exists -> copy(from bundle) -> exists -> delete -> !exists', async () => {
+        const from = 'file://' + FS.bundleDirectory + 'Info.plist';
+        const to = FS.documentDirectory + 'Info.plist.copy';
 
-      const assertExists = async (expectedToExist) => {
-        const { exists } = await FS.getInfoAsync(to);
-        if (expectedToExist) {
-          expect(exists).toBeTruthy();
-        } else {
-          expect(exists).not.toBeTruthy();
-        }
-      };
+        const assertExists = async (expectedToExist) => {
+          const { exists } = await FS.getInfoAsync(to);
+          if (expectedToExist) {
+            expect(exists).toBeTruthy();
+          } else {
+            expect(exists).not.toBeTruthy();
+          }
+        };
 
-      await FS.deleteAsync(to, { idempotent: true });
-      await assertExists(false);
+        await FS.deleteAsync(to, { idempotent: true });
+        await assertExists(false);
 
-      await FS.copyAsync({ from, to });
-      await assertExists(true);
+        await FS.copyAsync({ from, to });
+        await assertExists(true);
 
-      await FS.deleteAsync(to);
-      await assertExists(false);
-    });
+        await FS.deleteAsync(to);
+        await assertExists(false);
+      });
+    }
   });
 }

@@ -46,7 +46,7 @@
     "fast-glob": "^3.2.5",
     "find-up": "^5.0.0",
     "fs-extra": "^9.1.0",
-    "resolve-from": "^5.0.0",
-    "require-from-string": "^2.0.2"
+    "require-from-string": "^2.0.2",
+    "resolve-from": "^5.0.0"
   }
 }

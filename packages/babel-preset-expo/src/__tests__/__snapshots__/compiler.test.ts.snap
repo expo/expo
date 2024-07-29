@@ -3,7 +3,7 @@
 exports[`allows destructuring in the catch block 1`] = `
 "Object.defineProperty(exports, "__esModule", { value: true });exports.App = App;var _jsxRuntime = require("react/jsx-runtime");function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  var foo = function () {
+  var foo = () => {
     try {
       console.log('hey');
     } catch (_ref) {var message = _ref.message;
@@ -42,7 +42,7 @@ var _reactNative = require("react-native");var _jsxRuntime = require("react/jsx-
 function App() {var $ = (0, _reactCompilerRuntime.c)(5);
   var _useState = (0, _react.useState)(false),_useState2 = (0, _slicedToArray2.default)(_useState, 2),assetsAreLoaded = _useState2[0],setAssetsAreLoaded = _useState2[1];var t0;var t1;if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
 
-    t0 = function () {
+    t0 = () => {
       loadAssetsAsync(setAssetsAreLoaded);};
     t1 = [];$[0] = t0;$[1] = t1;} else {t0 = $[0];t1 = $[1];}(0, _react.useEffect)(t0, t1);if (!
 

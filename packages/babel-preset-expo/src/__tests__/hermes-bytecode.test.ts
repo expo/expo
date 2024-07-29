@@ -313,11 +313,8 @@ const LANGUAGE_SAMPLES: {
     name: `arrow-functions`,
     code: `var a = () => {};
     var a = b => b;`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `var a=()=>{};var a=b=>b;`;
-      }
-      return `var a=function(){};var a=function(b){return b;};`;
+    getCompiledCode() {
+      return `var a=()=>{};var a=b=>b;`;
     },
   },
   {
