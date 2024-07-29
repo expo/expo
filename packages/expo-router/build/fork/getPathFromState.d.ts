@@ -46,6 +46,7 @@ export declare function getPathDataFromState<ParamList extends object>(state: St
     params: Record<string, any>;
 };
 export declare function deepEqual(a: any, b: any): boolean;
+export declare function decodeParams(params: Record<string, string>): Record<string, any>;
 export declare function appendBaseUrl(path: string, baseUrl?: string | undefined): string;
 export {};
 //# sourceMappingURL=getPathFromState.d.ts.map

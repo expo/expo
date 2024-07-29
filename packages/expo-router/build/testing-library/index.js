@@ -27,7 +27,6 @@ Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: functio
 Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const ExpoRoot_1 = require("../ExpoRoot");
 const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
-const getLinkingConfig_1 = require("../getLinkingConfig");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
@@ -40,7 +39,6 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    getLinkingConfig_1.stateCache.clear();
     const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
     /**
      * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.

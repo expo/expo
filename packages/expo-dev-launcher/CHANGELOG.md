@@ -11,6 +11,8 @@
 - Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
 - [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Skip dev server websocket connection for expo updates. ([#30535](https://github.com/expo/expo/pull/30535) by [@joeporpeglia](https://github.com/joeporpeglia))
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

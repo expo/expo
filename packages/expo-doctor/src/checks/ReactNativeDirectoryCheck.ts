@@ -2,8 +2,8 @@ import chalk from 'chalk';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import {
-  getDirectoryCheckExcludes,
-  getDirectoryCheckListUnknownPackagesEnabled,
+  getReactNativeDirectoryCheckExcludes,
+  getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../utils/doctorConfig';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
@@ -28,7 +28,7 @@ export function filterPackages(packages: string[], ignoredPackages: (RegExp | st
   });
 }
 
-export class DirectoryCheck implements DoctorCheck {
+export class ReactNativeDirectoryCheck implements DoctorCheck {
   description = 'Validate packages against React Native Directory package metadata';
 
   sdkVersionRange = '>=51.0.0';
@@ -40,8 +40,8 @@ export class DirectoryCheck implements DoctorCheck {
     const unmaintainedPackages: string[] = [];
     const unknownPackages: string[] = [];
     const dependencies = pkg.dependencies ?? {};
-    const userDefinedIgnoredPackages = getDirectoryCheckExcludes(pkg);
-    const listUnknownPackagesEnabled = getDirectoryCheckListUnknownPackagesEnabled(pkg);
+    const userDefinedIgnoredPackages = getReactNativeDirectoryCheckExcludes(pkg);
+    const listUnknownPackagesEnabled = getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg);
 
     const packageNames = filterPackages(Object.keys(dependencies), [
       ...DEFAULT_PACKAGES_TO_IGNORE,
@@ -134,13 +134,13 @@ export class DirectoryCheck implements DoctorCheck {
     ) {
       advice += `\n- Use libraries that are actively maintained and support the New Architecture. Find alternative libraries with ${chalk.bold('https://reactnative.directory')}.`;
       advice += `\n${chalk.bold('-')} Add packages to ${chalk.bold(
-        'expo.doctor.directoryCheck.exclude'
+        'expo.doctor.reactNativeDirectoryCheck.exclude'
       )} in package.json to selectively skip validations, if the warning is not relevant.`;
     }
 
     if (unknownPackages.length > 0) {
       advice += `\n${chalk.bold('-')} Update React Native Directory to include metadata for unknown packages. Alternatively, set ${chalk.bold(
-        'expo.doctor.directoryCheck.listUnknownPackages'
+        'expo.doctor.reactNativeDirectoryCheck.listUnknownPackages'
       )} in package.json to ${chalk.bold('false')} to skip warnings about packages with no metadata, if the warning is not relevant.`;
     }
 
