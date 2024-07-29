@@ -785,6 +785,14 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
   }
 
+  func resumePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = true
+  }
+
+  func pausePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = false
+  }
+
   @objc func orientationChanged(notification: Notification) {
     changePreviewOrientation()
   }
