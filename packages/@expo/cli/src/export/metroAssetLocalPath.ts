@@ -50,7 +50,13 @@ function getAssetLocalPathDefault(
     // Assets can have relative paths outside of the project root.
     // Replace `../` with `_` to make sure they don't end up outside of
     // the expected assets directory.
-    adjustedHttpServerLocation.replace(/^\/+/g, '').replace(/\.\.\//g, '_'),
+    adjustedHttpServerLocation
+      .replace(/^\/+/g, '')
+      .replace(/\.\.\//g, '_')
+      // See: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+      // Certain characters are URL-unsafe and should be avoided as part of output filenames
+      // .replace(/[\x00-\x1F\x7F&$@=;:+,?{}^%`[\]"'<>~|#]/g, '_'),
+      .replace(/[\0-\32\127&$@=;:+,?{}^%`[\]"'<>~|#]/g, '_'),
     fileName
   );
 }
