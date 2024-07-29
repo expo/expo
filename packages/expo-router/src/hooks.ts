@@ -151,8 +151,8 @@ export function useLocalSearchParams<
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {
+  const globalRef = React.useRef(global);
   if (process.env.NODE_ENV !== 'production') {
-    const globalRef = React.useRef(global);
     if (global !== globalRef.current) {
       console.warn(
         `Detected change in 'global' option of useSearchParams. This value cannot change between renders`
