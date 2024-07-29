@@ -278,6 +278,9 @@ redirects[guides/react-compiler]=preview/react-compiler
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
+# Based on changes applied to previously called Unit testing guide
+redirects[develop/unit-testing]=develop/testing
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

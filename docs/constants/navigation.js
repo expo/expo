@@ -115,7 +115,7 @@ const home = [
       { expanded: false }
     ),
     makePage('develop/authentication.mdx'),
-    makePage('develop/unit-testing.mdx'),
+    makePage('develop/testing.mdx'),
   ]),
   makeSection('Review', [makePage('review/overview.mdx'), makePage('review/with-orbit.mdx')]),
   makeSection('Deploy', [
