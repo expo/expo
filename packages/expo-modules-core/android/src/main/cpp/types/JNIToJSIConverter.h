@@ -67,6 +67,24 @@ struct has_value<T, std::void_t<decltype(std::declval<T &>()->value())>>
   : std::true_type {
 };
 
+template<typename T, typename = void>
+struct has_get_region : std::false_type {
+};
+
+template<typename T>
+struct has_get_region<T, std::void_t<decltype(std::declval<T &>()->getRegion(std::declval<jsize>(),
+                                                                             std::declval<jsize>()))>>
+  : std::true_type {
+};
+
+template<typename T>
+struct RawArray {
+  typedef T element_type;
+
+  std::shared_ptr<T[]> data;
+  size_t size;
+};
+
 template<typename T>
 struct deref {
   typedef T type;
@@ -89,18 +107,23 @@ struct deref<jni::alias_ref<T>> {
 
 template<typename T>
 inline auto unwrapJNIRef(
-  const T &value
+  T &&value
 ) {
-
   if constexpr (has_cthis<T>::value) {
     return value->cthis();
   } else if constexpr (has_toStdString<T>::value) {
     return value->toStdString();
   } else if constexpr (std::is_same<typename deref<T>::type, jni::JBoolean>::value) {
-    return (bool)value->value();
+    return (bool) value->value();
   } else if constexpr (has_value<T>::value) {
     return value->value();
-
+  } else if constexpr (has_get_region<T>::value) {
+    size_t size = value->size();
+    auto region = value->getRegion(0, size);
+    RawArray<typename decltype(region)::element_type> rawArray;
+    rawArray.size = size;
+    rawArray.data = std::move(region);
+    return rawArray;
   } else {
     return value;
   }
@@ -302,16 +325,30 @@ public:
 };
 
 template<typename T>
-inline jsi::Value convertToJS(jsi::Runtime &rt, const T &value) {
+class JNIToJSIConverter<RawArray<T>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(jsi::Runtime &rt, const RawArray<T> &value) {
+    auto jsArray = jsi::Array(rt, value.size);
+    for (size_t i = 0; i < value.size; i++) {
+      jsArray.setValueAtIndex(rt, i, JNIToJSIConverter<T>::convert(rt, value.data[i]));
+    }
+    return jsArray;
+  }
+};
+
+template<typename T>
+inline jsi::Value convertToJS(jsi::Runtime &rt, T &&value) {
   if constexpr (std::is_same_v<SimpleConverter, typename JNIToJSIConverter<
-    decltype(unwrapJNIRef(std::declval<const T &>()))
+    decltype(unwrapJNIRef(std::declval<T>()))
   >::converterType>) {
     return JNIToJSIConverter<
-      decltype(unwrapJNIRef(std::declval<const T &>()))
-    >::convert(rt, unwrapJNIRef(value));
+      decltype(unwrapJNIRef(std::declval<T>()))
+    >::convert(rt, unwrapJNIRef(std::forward<T>(value)));
   } else {
     return JNIToJSIConverter<
-      decltype(unwrapJNIRef(std::declval<const T &>()))
+      decltype(unwrapJNIRef(std::declval<T>()))
     >::convert(rt, unwrapJNIRef(value), value);
   }
 }

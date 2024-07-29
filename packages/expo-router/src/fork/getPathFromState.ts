@@ -150,16 +150,22 @@ function processParamsWithUserSettings(configItem: ConfigItem, params: Record<st
   const stringify = configItem?.stringify;
 
   return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => [
-      key,
-      // TODO: Strip nullish values here.
-      stringify?.[key]
-        ? stringify[key](value)
-        : // Preserve rest params
-          Array.isArray(value)
-          ? value
-          : String(value),
-    ])
+    Object.entries(params).map(([key, value]) => {
+      if (key === 'params') {
+        return [key, value];
+      }
+
+      return [
+        key,
+        // TODO: Strip nullish values here.
+        stringify?.[key]
+          ? stringify[key](value)
+          : // Preserve rest params
+            Array.isArray(value)
+            ? value
+            : String(value),
+      ];
+    })
   );
 }
 
@@ -410,6 +416,7 @@ function getPathFromResolvedState(
         }
 
         const query = new URLSearchParams(focusedParams).toString();
+
         if (query) {
           path += `?${query}`;
         }
@@ -428,12 +435,14 @@ function getPathFromResolvedState(
   return { path: appendBaseUrl(basicSanitizePath(path)), params };
 }
 
-function decodeParams(params: Record<string, string>) {
+export function decodeParams(params: Record<string, string>) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
     try {
-      if (Array.isArray(value)) {
+      if (key === 'params' && typeof value === 'object') {
+        parsed[key] = decodeParams(value);
+      } else if (Array.isArray(value)) {
         parsed[key] = value.map((v) => decodeURIComponent(v));
       } else {
         parsed[key] = decodeURIComponent(value);

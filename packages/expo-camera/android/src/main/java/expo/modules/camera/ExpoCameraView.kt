@@ -129,6 +129,7 @@ class ExpoCameraView(
   private var previewView = PreviewView(context)
   private val scope = CoroutineScope(Dispatchers.Main)
   private var shouldCreateCamera = false
+  private var previewPaused = false
 
   var lensFacing = CameraType.BACK
     set(value) {
@@ -329,7 +330,7 @@ class ExpoCameraView(
 
   @SuppressLint("UnsafeOptInUsageError")
   fun createCamera() {
-    if (!shouldCreateCamera) {
+    if (!shouldCreateCamera || previewPaused) {
       return
     }
     shouldCreateCamera = false
@@ -471,6 +472,17 @@ class ExpoCameraView(
       val info = Camera2CameraInfo.from(cameraInfo).getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
       info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() }
     } ?: emptyList()
+  }
+
+  fun resumePreview() {
+    shouldCreateCamera = true
+    previewPaused = false
+    createCamera()
+  }
+
+  fun pausePreview() {
+    previewPaused = true
+    cameraProvider?.unbindAll()
   }
 
   fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {

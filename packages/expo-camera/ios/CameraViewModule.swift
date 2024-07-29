@@ -154,6 +154,14 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         view.initCamera()
       }
 
+      AsyncFunction("resumePreview") { view in
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view in
+        view.pausePreview()
+      }
+
       AsyncFunction("getAvailablePictureSizes") { (_: String?) in
         return PictureSize.allCases.map {
           $0.rawValue

@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DevMenuLoadingView : NSObject <RCTDevLoadingViewProtocol, RCTBridgeModule>
+@interface DevClientNoOpLoadingView : NSObject <RCTDevLoadingViewProtocol, RCTBridgeModule>
 
 @end
 
