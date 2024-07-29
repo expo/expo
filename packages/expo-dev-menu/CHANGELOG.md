@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 5.0.16 — 2024-07-03
