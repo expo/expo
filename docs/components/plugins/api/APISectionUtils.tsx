@@ -294,13 +294,7 @@ const renderWithLink = ({
 
   if (hardcodedHref || !nonLinkableTypes.includes(replacedName)) {
     return (
-      <A
-        href={
-          sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ??
-          hardcodedTypeLinks[replacedName] ??
-          `#${replacedName.toLowerCase()}`
-        }
-        key={`type-link-${replacedName}`}>
+      <A href={hardcodedHref ?? `#${replacedName.toLowerCase()}`} key={`type-link-${replacedName}`}>
         {replacedName}
         {type === 'array' && '[]'}
       </A>
