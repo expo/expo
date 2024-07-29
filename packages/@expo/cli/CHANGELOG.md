@@ -21,7 +21,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove illegal S3 characters from exported asset file paths.
+- Remove illegal S3 characters from exported asset file paths. ([#30698](https://github.com/expo/expo/pull/30698) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server closing in headless run commands. ([#30432](https://github.com/expo/expo/pull/30432) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix resolver fields for SSR + native platforms. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
