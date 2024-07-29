@@ -405,3 +405,77 @@ it(
   // Could take 45s depending on how fast npm installs
   120 * 1000
 );
+
+it(
+  'runs `npx expo export:embed --platform ios` for JSC with transpiled `@babel/runtime/helpers/...` imports',
+  async () => {
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed-babel-helpers-imports-transpiled';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    console.log(
+      [
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'android',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        path.join(projectRoot, `./${output}/output.js.map`),
+        '--sourcemap-sources-root',
+        projectRoot,
+      ].join(' ')
+    );
+
+    await execa(
+      'node',
+      // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
+      // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        path.join(projectRoot, './index.js'),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'android',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        path.join(projectRoot, `./${output}/output.js.map`),
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_JS_ENGINE: 'jsc',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
+        },
+      }
+    );
+
+    const outputDir = path.join(projectRoot, output);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    // Ensure the `@babel/runtime/helpers/defineProperty` is transpiled properly
+    expect(outputJS).not.toContain('require("@babel/runtime/helpers/defineProperty")');
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
