@@ -1,8 +1,8 @@
 import { LinkingOptions } from '@react-navigation/native';
 import { RouteNode } from './Route';
+import { RouterStore } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { RequireContext } from './types';
-import { RouterStore } from './global-state/router-store';
 export declare function getNavigationConfig(routes: RouteNode, metaOnly?: boolean): {
     initialRouteName: string | undefined;
     screens: Record<string, import("./getReactNavigationConfig").Screen>;
