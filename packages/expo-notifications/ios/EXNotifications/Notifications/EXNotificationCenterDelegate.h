@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addDelegate:(id<EXNotificationsDelegate>)delegate;
 - (void)removeDelegate:(id<EXNotificationsDelegate>)delegate;
-- (UNNotificationResponse *)lastNotificationResponse;
-- (void)setLastNotificationResponse:(UNNotificationResponse *)response;
+- (nullable UNNotificationResponse *)lastNotificationResponse;
+- (void)setLastNotificationResponse:(nullable UNNotificationResponse *)response;
 
 @end
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler;
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification;
 
-@property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
+@property (nonatomic, strong, nullable) UNNotificationResponse *lastNotificationResponse;
 
 @end
 
