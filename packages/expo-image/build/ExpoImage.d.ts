@@ -1,7 +1,7 @@
 import React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 import { ImageErrorEventData, ImageLoadEventData, ImageNativeProps, ImageProgressEventData } from './Image.types';
-declare const ExpoImageModule: any;
+import ExpoImageModule from './ImageModule';
 declare class ExpoImage extends React.PureComponent<ImageNativeProps> {
     onLoadStart: () => void;
     onLoad: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;

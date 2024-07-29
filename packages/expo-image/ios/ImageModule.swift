@@ -25,8 +25,13 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, sources: [ImageSource]?) in
-        view.sources = sources
+      Prop("source") { (view: ImageView, sources: Either<[ImageSource], SharedRef<UIImage>>?) in
+        if let imageRef: SharedRef<UIImage> = sources?.get() {
+          view.sources = nil
+          view.renderImage(imageRef.ref)
+        } else {
+          view.sources = sources?.get()
+        }
       }
 
       Prop("placeholder") { (view, placeholders: [ImageSource]?) in
@@ -181,6 +186,21 @@ public final class ImageModule: Module {
         } else {
           promise.resolve(nil)
         }
+      }
+    }
+
+    AsyncFunction("loadAsync") { (source: ImageSource) -> Image? in
+      let image = try await ImageLoadTask(source).load()
+      return Image(image)
+    }
+
+    Class(Image.self) {
+      Property("width", \.ref.size.width)
+      Property("height", \.ref.size.height)
+      Property("scale", \.ref.scale)
+      Property("isAnimated", \.ref.sd_isAnimated)
+      Property("mediaType") { image in
+        return imageFormatToMediaType(image.ref.sd_imageFormat)
       }
     }
   }

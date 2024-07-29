@@ -1774,6 +1774,8 @@ PODS:
     - Yoga
   - react-native-safe-area-context (4.10.7):
     - React-Core
+  - react-native-segmented-control (2.5.2):
+    - React-Core
   - react-native-slider (4.5.2):
     - DoubleConversion
     - glog
@@ -2304,6 +2306,7 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
+  - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../../../node_modules/react-native-view-shot`)
   - react-native-webview (from `../../../node_modules/react-native-webview`)
@@ -2643,6 +2646,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../../../node_modules/react-native-safe-area-context"
+  react-native-segmented-control:
+    :path: "../../../node_modules/@react-native-segmented-control/segmented-control"
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -2840,6 +2845,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-pager-view: 04f0d3af26fd33c722467ccfac64760f321bfb80
   react-native-safe-area-context: 422017db8bcabbada9ad607d010996c56713234c
+  react-native-segmented-control: b92809e9111013dfa266e1168ba366d62898d9a4
   react-native-slider: 97ce0bd921f40de79cead9754546d5e4e7ba44f8
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
   react-native-webview: 867e3873051b9adf8c14efa2755712b69011d8f4

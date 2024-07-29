@@ -25,6 +25,10 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
       is WritableNativeArray -> invokeNative(result)
       is WritableNativeMap -> invokeNative(result)
       is SharedObject -> invokeNative(result)
+      is IntArray -> invokeIntArray(result)
+      is LongArray -> invokeLongArray(result)
+      is FloatArray -> invokeFloatArray(result)
+      is DoubleArray -> invokeDoubleArray(result)
       else -> throw UnexpectedException("Unknown type: ${result.javaClass}")
     }
   }
@@ -67,6 +71,11 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeNative(result: WritableNativeMap)
   private external fun invokeNative(result: SharedObject)
   private external fun invokeNative(code: String, errorMessage: String)
+
+  private external fun invokeIntArray(result: IntArray)
+  private external fun invokeLongArray(result: LongArray)
+  private external fun invokeFloatArray(result: FloatArray)
+  private external fun invokeDoubleArray(result: DoubleArray)
 
   private inline fun checkIfValid(body: () -> Unit) {
     try {
