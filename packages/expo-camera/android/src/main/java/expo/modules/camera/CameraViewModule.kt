@@ -243,7 +243,7 @@ class CameraViewModule : Module() {
       AsyncFunction("resumePreview") { view: ExpoCameraView ->
         view.resumePreview()
       }
-      
+
       AsyncFunction("pausePreview") { view: ExpoCameraView ->
         view.pausePreview()
       }
