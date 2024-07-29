@@ -11,13 +11,15 @@ export const DevToolsPluginMethod = 'Expo:DevToolsPlugin';
  */
 export class DevToolsPluginClient {
     connectionInfo;
+    options;
     eventEmitter = new EventEmitter();
     static defaultWSStore = new WebSocketBackingStore();
     wsStore = DevToolsPluginClient.defaultWSStore;
     isClosed = false;
     retries = 0;
-    constructor(connectionInfo) {
+    constructor(connectionInfo, options) {
         this.connectionInfo = connectionInfo;
+        this.options = options;
         this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
     }
     /**
@@ -93,6 +95,7 @@ export class DevToolsPluginClient {
     connectAsync() {
         return new Promise((resolve, reject) => {
             const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+                binaryType: this.options?.websocketBinaryType,
                 onError: (e) => {
                     if (e instanceof Error) {
                         console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);

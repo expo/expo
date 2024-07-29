@@ -6,13 +6,13 @@ export { setEnableLogging } from './logger';
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */
-export function useDevToolsPluginClient(pluginName) {
+export function useDevToolsPluginClient(pluginName, options) {
     const [client, setClient] = useState(null);
     const [error, setError] = useState(null);
     useEffect(() => {
         async function setup() {
             try {
-                const client = await getDevToolsPluginClientAsync(pluginName);
+                const client = await getDevToolsPluginClientAsync(pluginName, options);
                 setClient(client);
             }
             catch (e) {

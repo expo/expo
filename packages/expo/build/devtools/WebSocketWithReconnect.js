@@ -14,6 +14,7 @@ export class WebSocketWithReconnect {
     lastCloseEvent = null;
     emitter = new EventEmitter();
     eventSubscriptions = [];
+    wsBinaryType;
     constructor(url, options) {
         this.url = url;
         this.retriesInterval = options?.retriesInterval ?? 1500;
@@ -25,6 +26,7 @@ export class WebSocketWithReconnect {
                     throw error;
                 });
         this.onReconnect = options?.onReconnect ?? (() => { });
+        this.wsBinaryType = options?.binaryType;
         this.connect();
     }
     close(code, reason) {
@@ -61,6 +63,9 @@ export class WebSocketWithReconnect {
         }
         this.connectTimeoutHandle = setTimeout(this.handleConnectTimeout, this.connectTimeout);
         this.ws = new WebSocket(this.url.toString());
+        if (this.wsBinaryType != null) {
+            this.ws.binaryType = this.wsBinaryType;
+        }
         this.ws.addEventListener('message', this.handleMessage);
         this.ws.addEventListener('open', this.handleOpen);
         // @ts-ignore TypeScript expects (e: Event) => any, but we want (e: WebSocketErrorEvent) => any

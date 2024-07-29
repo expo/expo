@@ -6,13 +6,13 @@ const instanceMap = {};
  * Factory of DevToolsPluginClient based on sender types.
  * @hidden
  */
-export async function createDevToolsPluginClient(connectionInfo) {
+export async function createDevToolsPluginClient(connectionInfo, options) {
     let client;
     if (connectionInfo.sender === 'app') {
-        client = new DevToolsPluginClientImplApp(connectionInfo);
+        client = new DevToolsPluginClientImplApp(connectionInfo, options);
     }
     else {
-        client = new DevToolsPluginClientImplBrowser(connectionInfo);
+        client = new DevToolsPluginClientImplBrowser(connectionInfo, options);
     }
     await client.initAsync();
     return client;
@@ -20,7 +20,7 @@ export async function createDevToolsPluginClient(connectionInfo) {
 /**
  * Public API to get the DevToolsPluginClient instance.
  */
-export async function getDevToolsPluginClientAsync(pluginName) {
+export async function getDevToolsPluginClientAsync(pluginName, options) {
     const connectionInfo = getConnectionInfo();
     let instance = instanceMap[pluginName];
     if (instance != null) {
@@ -35,7 +35,7 @@ export async function getDevToolsPluginClientAsync(pluginName) {
         }
     }
     if (instance == null) {
-        const instancePromise = createDevToolsPluginClient({ ...connectionInfo, pluginName });
+        const instancePromise = createDevToolsPluginClient({ ...connectionInfo, pluginName }, options);
         instanceMap[pluginName] = instancePromise;
         instance = await instancePromise;
         instanceMap[pluginName] = instance;

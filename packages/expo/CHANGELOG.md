@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `websocketBinaryType` option for `useDevToolsPluginClient` hook. ([#30655](https://github.com/expo/expo/pull/30655) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
