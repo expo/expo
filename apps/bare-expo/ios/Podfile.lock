@@ -30,9 +30,9 @@ PODS:
   - EXManifests/Tests (0.14.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.28.12):
+  - EXNotifications (0.28.13):
     - ExpoModulesCore
-  - Expo (51.0.22):
+  - Expo (51.0.23):
     - ExpoModulesCore
   - expo-dev-client (4.0.20):
     - EXManifests
@@ -40,10 +40,10 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (4.0.22):
+  - expo-dev-launcher (4.0.23):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 4.0.22)
+    - expo-dev-launcher/Main (= 4.0.23)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -69,7 +69,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (4.0.22):
+  - expo-dev-launcher/Main (4.0.23):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -98,7 +98,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Tests (4.0.22):
+  - expo-dev-launcher/Tests (4.0.23):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (4.0.22):
+  - expo-dev-launcher/Unsafe (4.0.23):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -159,10 +159,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (5.0.16):
+  - expo-dev-menu (5.0.17):
     - DoubleConversion
-    - expo-dev-menu/Main (= 5.0.16)
-    - expo-dev-menu/ReactNativeCompatibles (= 5.0.16)
+    - expo-dev-menu/Main (= 5.0.17)
+    - expo-dev-menu/ReactNativeCompatibles (= 5.0.17)
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
@@ -186,7 +186,7 @@ PODS:
   - expo-dev-menu-interface/Tests (1.8.3):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (5.0.16):
+  - expo-dev-menu/Main (5.0.17):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu-interface
@@ -212,7 +212,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (5.0.16):
+  - expo-dev-menu/ReactNativeCompatibles (5.0.17):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -233,7 +233,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (5.0.16):
+  - expo-dev-menu/SafeAreaView (5.0.17):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -255,7 +255,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (5.0.16):
+  - expo-dev-menu/Tests (5.0.17):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -280,7 +280,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/UITests (5.0.16):
+  - expo-dev-menu/UITests (5.0.17):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -303,7 +303,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (5.0.16):
+  - expo-dev-menu/Vendored (5.0.17):
     - DoubleConversion
     - expo-dev-menu/SafeAreaView
     - glog
@@ -413,7 +413,7 @@ PODS:
   - ExpoMediaLibrary (16.0.4):
     - ExpoModulesCore
     - React-Core
-  - ExpoModulesCore (1.12.19):
+  - ExpoModulesCore (1.12.20):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -436,7 +436,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (1.12.19):
+  - ExpoModulesCore/Tests (1.12.20):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -2532,11 +2532,11 @@ SPEC CHECKSUMS:
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
-  EXNotifications: 3e0ca8264c1d41b1b7452b623f32eaa157db5b98
-  Expo: 8b7948e45627e848c2d7b6be7cf5851a505aef19
+  EXNotifications: 2d0d99afae3b9150e976cab3afeaae64bac916bf
+  Expo: b7d771b7d25df5c25d04cd9fcfc8d56db5231fd8
   expo-dev-client: d24806e84d072563b0a26537c22ec902443e77d6
-  expo-dev-launcher: 9ec4a77189b7ba5340c26399885887bec84e71f2
-  expo-dev-menu: 02f7aa39ee32f4730815cb5fe0c38d7bfda76ab7
+  expo-dev-launcher: 0336379dae2faeb2da861c61977a6fbd02ab52f1
+  expo-dev-menu: 11322d81c62f966399ec162383a8488b55cce366
   expo-dev-menu-interface: be32c09f1e03833050f0ee290dcc86b3ad0e73e4
   ExpoAppleAuthentication: 265219fa0ba1110872079f55f56686b9737b0065
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
@@ -2568,7 +2568,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoMaps: ae5f30377143632c3e18368c7e0b73409dce975b
   ExpoMediaLibrary: 250bf2659264163e428da5f867493b4cccd35ef9
-  ExpoModulesCore: 734c1802786b23c9598f4d15273753a779969368
+  ExpoModulesCore: 5440e96a8ee014f4fd88e77264985fd0a65f5f8c
   ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
   ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
   ExpoPrint: 9e221bf0988c77c8a270a7df7135c65c2a396e0a

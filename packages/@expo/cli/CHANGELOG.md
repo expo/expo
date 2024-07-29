@@ -10,9 +10,12 @@
 
 ### 💡 Others
 
+## 0.18.26 — 2024-07-29
+
+### 💡 Others
+
 - Add `--config-cmd` option to `export:embed` command. ([#30563](https://github.com/expo/expo/pull/30563) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
-
 - Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.18.25 — 2024-07-11
@@ -36,7 +39,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
-  ||||||| parent of e8b83e2c53 ([cli] Add config-cmd option to export embed command (#30563))
+||||||| parent of e8b83e2c53 ([cli] Add config-cmd option to export embed command (#30563))
 - Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add robot export e2e test. ([#30049](https://github.com/expo/expo/pull/30049) by [@EvanBacon](https://github.com/EvanBacon))

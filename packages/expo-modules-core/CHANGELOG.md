@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.12.20 — 2024-07-29
+
+### 💡 Others
+
 - [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
 
 ## 1.12.19 — 2024-07-11

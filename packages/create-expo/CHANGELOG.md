@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.3.7 — 2024-07-29
+
+_This version does not introduce any user-facing changes._
+
 ## 2.3.6 — 2024-06-27
 
 _This version does not introduce any user-facing changes._
