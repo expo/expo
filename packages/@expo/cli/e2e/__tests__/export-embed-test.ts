@@ -407,7 +407,7 @@ it(
 );
 
 it(
-  'runs `npx expo export:embed --platform ios` for JSC with transpiled `@babel/runtime/helpers/...` imports',
+  'runs `npx expo export:embed --platform ios` without polyfills adding `require("@babel/runtime/helpers")`',
   async () => {
     const projectRoot = ensureTesterReady('static-rendering');
     const output = 'dist-export-embed-babel-helpers-imports-transpiled';
@@ -461,7 +461,7 @@ it(
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_JS_ENGINE: 'jsc',
+          E2E_ROUTER_JS_ENGINE: 'jsc', // This only happens on JSC, not on Hermes
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
           EXPO_USE_FAST_RESOLVER: '1',
@@ -473,8 +473,8 @@ it(
 
     // Ensure output.js is a utf8 encoded file
     const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
-    // Ensure the `@babel/runtime/helpers/defineProperty` is transpiled properly
-    expect(outputJS).not.toContain('require("@babel/runtime/helpers/defineProperty")');
+    // Ensure the `@babel/runtime/helpers/...` is transpiled properly in the polyfills
+    expect(outputJS).not.toContain('require("@babel/runtime/helpers/');
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000
