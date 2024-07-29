@@ -1791,9 +1791,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
-| [Get Your Config][c-strivacity] | OpenID | Supported | Available  |
-
-[c-strivacity]: https://docs.strivacity.com/docs/setting-up-your-instance
+| [Get Your Config](https://docs.strivacity.com/docs/setting-up-your-instance) | OpenID | Supported | Available  |
 
 {/* prettier-ignore */}
 ```tsx Strivacity Auth Example
@@ -1802,7 +1800,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
 
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web. It will ensure that authentication is completed properly. On native platforms, this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
