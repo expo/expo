@@ -12,7 +12,7 @@ function getRandomImageUri(): string {
 }
 
 // Shared objects' properties are defined in the prototype, thus they're not picked by `JSON.stringify`.
-// In this screen we show the contents of the image object, so `toJSON` needs to be overriden to include prototype's properties.
+// In this screen we show the contents of the image object, so `toJSON` needs to be overridden to include prototype's properties.
 // TODO: We may want to override this globally for all shared objects. Keep it here for now until we decide what to do.
 // @ts-expect-error
 Image.Image.prototype.toJSON = function () {
