@@ -193,11 +193,13 @@ async function copyCommonFixturesToProject(
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
   // Copy react-native patch
-  await fs.mkdir(path.join(projectRoot, 'patches'));
-  await fs.copyFile(
-    path.resolve(repoRoot, 'patches', 'react-native+0.75.0-rc.5.patch'),
-    path.join(projectRoot, 'patches', 'react-native+0.75.0-rc.5.patch')
-  );
+  if (!isTV) {
+    await fs.mkdir(path.join(projectRoot, 'patches'));
+    await fs.copyFile(
+      path.resolve(repoRoot, 'patches', 'react-native+0.75.0-rc.5.patch'),
+      path.join(projectRoot, 'patches', 'react-native+0.75.0-rc.5.patch')
+    );
+  }
 
   // Modify specific files for TV
   if (isTV) {
@@ -362,7 +364,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.2-0',
+        'react-native': 'npm:react-native-tvos@~0.74.3-0',
         '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
