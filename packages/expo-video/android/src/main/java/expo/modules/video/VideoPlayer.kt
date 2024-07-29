@@ -64,7 +64,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   var duration = 0f
   var isLive = false
-  var liveLatency = 0f
+  var currentOffsetFromLive = 0f
 
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
     player.volume = if (muted) 0f else new
@@ -95,7 +95,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
       this@VideoPlayer.duration = 0f
       this@VideoPlayer.isLive = false
-      this@VideoPlayer.liveLatency = 0f
+      this@VideoPlayer.currentOffsetFromLive = 0f
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEvent(PlayerEvent.PlayedToEnd())
       }
@@ -109,7 +109,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       if (playbackState == Player.STATE_READY) {
         this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
         this@VideoPlayer.isLive = this@VideoPlayer.player.isCurrentMediaItemLive
-        this@VideoPlayer.liveLatency = this@VideoPlayer.player.currentLiveOffset / 1000f
+        this@VideoPlayer.currentOffsetFromLive = this@VideoPlayer.player.currentLiveOffset / 1000f
       }
       setStatus(playerStateToPlayerStatus(playbackState), null)
       super.onPlaybackStateChanged(playbackState)
@@ -128,7 +128,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       error?.let {
         this@VideoPlayer.duration = 0f
         this@VideoPlayer.isLive = false
-        this@VideoPlayer.liveLatency = 0f
+        this@VideoPlayer.currentOffsetFromLive = 0f
         setStatus(ERROR, error)
       } ?: run {
         setStatus(playerStateToPlayerStatus(player.playbackState), null)

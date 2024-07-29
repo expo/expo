@@ -170,14 +170,14 @@ public final class VideoModule: Module {
         return Double(timeIntervalSince * 1000)
       }
 
-      Property("liveLatency") { player -> Double in
+      Property("currentOffsetFromLive") { player -> Double in
         let currentDate = player.pointer.currentItem?.currentDate()
         let timeIntervalSince = currentDate?.timeIntervalSince1970 ?? 0
         let unixTime = Date().timeIntervalSince1970
         return unixTime - timeIntervalSince
       }
 
-      Property("timeOffsetFromLive") { player -> Double in
+      Property("targetOffsetFromLive") { player -> Double in
         return player.pointer.currentItem?.configuredTimeOffsetFromLive.seconds ?? 0
       }
       .set { (player, timeOffset: Double) in

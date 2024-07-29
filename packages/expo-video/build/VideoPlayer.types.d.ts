@@ -47,12 +47,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * @platform android
      * @platform ios
      */
-    readonly liveLatency: number;
+    readonly currentOffsetFromLive: number;
     /**
      * Float value indicating the time offset from the live in seconds.
      * @platform ios
      */
-    timeOffsetFromLive: number;
+    targetOffsetFromLive: number;
     /**
      * Float value indicating the duration of the current video in seconds.
      * > This property is get-only

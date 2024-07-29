@@ -196,9 +196,7 @@ class VideoModule : Module() {
 
       Property("currentDate")
         .get { ref: VideoPlayer ->
-          // TODO: we shouldn't block the thread, but there are no events for the player position change,
-          //  so we can't update the currentDate in a non-blocking way like the other properties.
-          //  Until we think of something better we can temporarily do it this way
+          // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
             val window = Timeline.Window()
             if (!ref.player.currentTimeline.isEmpty) {
@@ -208,9 +206,9 @@ class VideoModule : Module() {
           }
         }
 
-      Property("liveLatency")
+      Property("currentOffsetFromLive")
         .get { ref: VideoPlayer ->
-          ref.liveLatency
+          ref.currentOffsetFromLive
         }
 
       Property("duration")

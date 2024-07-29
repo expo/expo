@@ -19,8 +19,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     staysActiveInBackground: boolean;
     showNowPlayingNotification: boolean;
     currentDate: number;
-    liveLatency: number;
-    timeOffsetFromLive: number;
+    currentOffsetFromLive: number;
+    targetOffsetFromLive: number;
     set muted(value: boolean);
     get muted(): boolean;
     set playbackRate(value: number);
