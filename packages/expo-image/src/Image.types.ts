@@ -97,12 +97,12 @@ export interface ImageProps extends ViewProps {
    * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    */
-  source?: ImageSource | string | number | ImageSource[] | string[] | null;
+  source?: ImageSource | string | number | ImageSource[] | string[] | ImageRef | null;
 
   /**
    * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
    */
-  placeholder?: ImageSource | string | number | ImageSource[] | string[] | null;
+  placeholder?: ImageSource | string | number | ImageSource[] | string[] | ImageRef | null;
 
   /**
    * Determines how the image should be resized to fit its container. This property tells the image to fill the container
@@ -342,8 +342,8 @@ export interface ImageProps extends ViewProps {
  */
 export interface ImageNativeProps extends ImageProps {
   style?: RNImageStyle;
-  source?: ImageSource[];
-  placeholder?: ImageSource[];
+  source?: ImageSource[] | ImageRef;
+  placeholder?: ImageSource[] | ImageRef;
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
@@ -516,24 +516,24 @@ export declare class ImageRef extends SharedRef {
   /**
    * Logical width of the image. Multiply it by the value in the `scale` property to get the width in pixels.
    */
-  width: number;
+  readonly width: number;
   /**
    * Logical height of the image. Multiply it by the value in the `scale` property to get the height in pixels.
    */
-  height: number;
+  readonly height: number;
   /**
    * If you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
    * All other images are assumed to have a scale factor of **1.0**.
    * If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
    */
-  scale: number;
+  readonly scale: number;
   /**
    * Media type (also known as MIME type) of the image, based on its format.
    * Returns `null` when the format is unknown or not supported.
    */
-  mediaType: string | null;
+  readonly mediaType: string | null;
   /**
    * Whether the referenced image is an animated image.
    */
-  isAnimated?: boolean;
+  readonly isAnimated?: boolean;
 }

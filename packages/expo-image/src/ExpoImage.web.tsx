@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native-web';
 
-import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
+import type { ImageNativeProps, ImageSource, ImageLoadEventData, ImageRef } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
@@ -78,6 +78,14 @@ function isFlipTransition(transition: ImageNativeProps['transition']) {
   );
 }
 
+function getAnimationKey(
+  source: ImageSource | ImageRef | undefined,
+  recyclingKey?: string | null
+): string {
+  const uri = (source && 'uri' in source && source.uri) || '';
+  return recyclingKey ? [recyclingKey, uri].join('-') : uri;
+}
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -109,9 +117,7 @@ export default function ExpoImage({
     isFlipTransition(transition) ? setCssVariablesForFlipTransitions : null
   );
 
-  const initialNodeAnimationKey =
-    (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
-
+  const initialNodeAnimationKey = getAnimationKey(placeholder?.[0], recyclingKey);
   const initialNode: AnimationManagerNode | null = placeholder?.[0]?.uri
     ? [
         initialNodeAnimationKey,
@@ -138,11 +144,7 @@ export default function ExpoImage({
       ]
     : null;
 
-  const currentNodeAnimationKey =
-    (recyclingKey
-      ? `${recyclingKey}-${selectedSource?.uri ?? placeholder?.[0]?.uri}`
-      : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
-
+  const currentNodeAnimationKey = getAnimationKey(selectedSource ?? placeholder?.[0], recyclingKey);
   const currentNode: AnimationManagerNode = [
     currentNodeAnimationKey,
     ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
