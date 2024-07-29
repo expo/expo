@@ -29,6 +29,7 @@
 - Update `setParams` types to be a `Partial<>` ([#30570](https://github.com/expo/expo/pull/30570) by [@marklawlor](https://github.com/marklawlor))
 - Remove `act` when running `runOnlyPendingTimers` in testing library. ([#30635](https://github.com/expo/expo/pull/30635) by [@marklawlor](https://github.com/marklawlor))
 - Remove debugger code ([#30686](https://github.com/expo/expo/pull/30686) by [@marklawlor](https://github.com/marklawlor))
+- Fix project linting errors ([#30687](https://github.com/expo/expo/pull/30687) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.5.16 - 2024-06-10
 

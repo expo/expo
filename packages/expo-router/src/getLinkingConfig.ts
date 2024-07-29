@@ -4,6 +4,7 @@ import { Platform } from 'expo-modules-core';
 import { RouteNode } from './Route';
 import { State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { RouterStore } from './global-state/router-store';
 import {
   addEventListener,
   getInitialURL,
@@ -11,7 +12,6 @@ import {
   getStateFromPath,
 } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
-import { RouterStore } from './global-state/router-store';
 
 export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
   return getReactNavigationConfig(routes, metaOnly);
