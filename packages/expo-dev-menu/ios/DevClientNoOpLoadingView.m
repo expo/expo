@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXDevMenu/DevMenuLoadingView.h>
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
 
 #if __has_include(<React/RCTDevLoadingViewProtocol.h>)
 
-@implementation DevMenuLoadingView
+@implementation DevClientNoOpLoadingView
 
 + (NSString *)moduleName
 {
