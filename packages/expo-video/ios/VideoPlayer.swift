@@ -109,7 +109,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     } else {
       AVURLAsset(url: url)
     }
-    let playerItem = VideoPlayerItem(asset: asset, videoSource: videoSource)
+
+    let playerItem = CachingPlayerItem(url: asset.url)
+    pointer.automaticallyWaitsToMinimizeStalling = false
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
@@ -149,6 +151,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     safeEmit(event: "playingChange", arguments: newIsPlaying, oldIsPlaying)
     isPlaying = newIsPlaying
 
+    print(getBufferedPosition())
     VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 

@@ -2,7 +2,7 @@
 
 import AVFoundation
 
-class VideoPlayerItem: AVPlayerItem {
+class VideoPlayerItem: CachingPlayerItem {
   let videoSource: VideoSource
   init(asset: AVAsset, videoSource: VideoSource) {
     self.videoSource = videoSource
