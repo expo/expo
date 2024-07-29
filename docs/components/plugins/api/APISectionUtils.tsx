@@ -134,7 +134,6 @@ const nonLinkableTypes = [
   'Parameters',
   'ParsedQs',
   'ServiceActionResult',
-  'SharedObject',
   'T',
   'TaskOptions',
   'TEventsMap',
@@ -226,6 +225,30 @@ const hardcodedTypeLinks: Record<string, string> = {
 const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string>> = {
   'v49.0.0': {
     Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
+  },
+  'v52.0.0': {
+    EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
+    NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
+    SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
+    SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
+  },
+  'v53.0.0': {
+    EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
+    NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
+    SharedObject: '/versions/v53.0.0/sdk/expo/#sharedobject',
+    SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
+  },
+  latest: {
+    EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
+    NativeModule: '/versions/latest/sdk/expo/#nativemodule',
+    SharedObject: '/versions/latest/sdk/expo/#sharedobject',
+    SharedRef: '/versions/latest/sdk/expo/#sharedref',
+  },
+  unversioned: {
+    EventEmitter: '/versions/unversioned/sdk/expo/#eventemitter',
+    NativeModule: '/versions/unversioned/sdk/expo/#nativemodule',
+    SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
+    SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
   },
 };
 
