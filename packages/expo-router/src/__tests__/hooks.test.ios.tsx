@@ -423,4 +423,36 @@ describe(useSearchParams, () => {
       ['fruit', 'apple'],
     ]);
   });
+
+  it('cannot change between local and global between renders', () => {
+    const warn = console.warn;
+    console.warn = jest.fn();
+    const error = console.error;
+    console.error = jest.fn();
+
+    renderRouter(
+      {
+        '[global]': function Index() {
+          const [global, setGlobal] = React.useState(true);
+
+          if (global) {
+            setGlobal(false);
+          }
+
+          useSearchParams({ global });
+          return null;
+        },
+      },
+      {
+        initialUrl: '/true',
+      }
+    );
+
+    expect(console.warn).toHaveBeenCalledWith(
+      "Detected change in 'global' option of useSearchParams. This value cannot change between renders"
+    );
+
+    console.error = error;
+    console.warn = warn;
+  });
 });

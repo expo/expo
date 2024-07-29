@@ -151,6 +151,15 @@ export function useLocalSearchParams<
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {
+  if (process.env.NODE_ENV !== 'production') {
+    const globalRef = React.useRef(global);
+    if (global !== globalRef.current) {
+      console.warn(
+        `Detected change in 'global' option of useSearchParams. This value cannot change between renders`
+      );
+    }
+  }
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const params = global ? useGlobalSearchParams() : useLocalSearchParams();
   const entries = Object.entries(params).flatMap(([key, value]) => {
@@ -162,15 +171,17 @@ export function useSearchParams({ global = false } = {}): URLSearchParams {
     return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]];
   });
 
-  return Object.assign(new URLSearchParams(entries), {
-    set() {
-      throw new Error('The URLSearchParams object return from useSearchParams is read-only');
-    },
-    append() {
-      throw new Error('The URLSearchParams object return from useSearchParams is read-only');
-    },
-    delete() {
-      throw new Error('The URLSearchParams object return from useSearchParams is read-only');
-    },
-  });
+  return new ReadOnlyURLSearchParams(entries);
+}
+
+class ReadOnlyURLSearchParams extends URLSearchParams {
+  set() {
+    throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+  }
+  append() {
+    throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+  }
+  delete() {
+    throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+  }
 }
