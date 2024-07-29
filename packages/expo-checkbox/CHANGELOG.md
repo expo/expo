@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules.
 
 ### 💡 Others
 
