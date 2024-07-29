@@ -226,36 +226,43 @@ const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>
   'v49.0.0': {
     Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
     SharedObject: null,
+    ResizeMode: '/versions/v49.0.0/sdk/video/#resizemode-1',
   },
   'v50.0.0': {
     SharedObject: null,
+    ResizeMode: '/versions/v50.0.0/sdk/video/#resizemode-1',
   },
   '51.0.0': {
     SharedObject: null,
+    ResizeMode: '/versions/v51.0.0/sdk/video-av/#resizemode-1',
   },
   'v52.0.0': {
     EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
     SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
     SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
+    ResizeMode: '/versions/v52.0.0/sdk/video-av/#resizemode-1',
   },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
     SharedObject: '/versions/v53.0.0/sdk/expo/#sharedobject',
     SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
+    ResizeMode: '/versions/v53.0.0/sdk/video-av/#resizemode-1',
   },
   latest: {
     EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
     NativeModule: '/versions/latest/sdk/expo/#nativemodule',
     SharedObject: '/versions/latest/sdk/expo/#sharedobject',
     SharedRef: '/versions/latest/sdk/expo/#sharedref',
+    ResizeMode: '/versions/latest/sdk/video-av/#resizemode-1',
   },
   unversioned: {
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemitter',
     NativeModule: '/versions/unversioned/sdk/expo/#nativemodule',
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
+    ResizeMode: '/versions/unversioned/sdk/video-av/#resizemode-1',
   },
 };
 
