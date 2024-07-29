@@ -74,9 +74,9 @@ URL.revokeObjectURL = function revokeObjectURL(url) {
   // Do nothing.
 };
 
-URL.canParse = function canParse(url: string): boolean {
+URL.canParse = function canParse(url: string, base?: string): boolean {
   try {
-    URL(url);
+    URL(url, base);
     return true;
   } catch {
     return false;
