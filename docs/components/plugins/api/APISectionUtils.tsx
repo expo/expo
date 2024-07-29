@@ -222,9 +222,16 @@ const hardcodedTypeLinks: Record<string, string> = {
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
 };
 
-const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string>> = {
+const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
   'v49.0.0': {
     Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
+    SharedObject: null,
+  },
+  'v50.0.0': {
+    SharedObject: null,
+  },
+  '51.0.0': {
+    SharedObject: null,
   },
   'v52.0.0': {
     EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
@@ -282,20 +289,25 @@ const renderWithLink = ({
     );
   }
 
-  return nonLinkableTypes.includes(replacedName) ? (
-    replacedName + (type === 'array' ? '[]' : '')
-  ) : (
-    <A
-      href={
-        sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ??
-        hardcodedTypeLinks[replacedName] ??
-        `#${replacedName.toLowerCase()}`
-      }
-      key={`type-link-${replacedName}`}>
-      {replacedName}
-      {type === 'array' && '[]'}
-    </A>
-  );
+  const hardcodedHref =
+    sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ?? hardcodedTypeLinks[replacedName];
+
+  if (hardcodedHref || !nonLinkableTypes.includes(replacedName)) {
+    return (
+      <A
+        href={
+          sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ??
+          hardcodedTypeLinks[replacedName] ??
+          `#${replacedName.toLowerCase()}`
+        }
+        key={`type-link-${replacedName}`}>
+        {replacedName}
+        {type === 'array' && '[]'}
+      </A>
+    );
+  }
+
+  return replacedName + (type === 'array' ? '[]' : '');
 };
 
 const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: string }) =>
