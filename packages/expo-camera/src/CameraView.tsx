@@ -119,7 +119,6 @@ export default class CameraView extends Component<CameraProps> {
   /**
    * Resumes the camera preview.
    */
-
   async resumePreview(): Promise<void> {
     return this._cameraRef.current?.resumePreview();
   }
