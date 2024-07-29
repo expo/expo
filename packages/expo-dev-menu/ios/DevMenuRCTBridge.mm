@@ -138,6 +138,7 @@
 
 - (Class)getModuleClassFromName:(const char *)name
 {
+  // Overrides DevLoadingView as no-op when loading dev-menu bundle
   if (strcmp(name, "DevLoadingView") == 0) {
     return [DevClientNoOpLoadingView class];
   }
