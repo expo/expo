@@ -124,9 +124,6 @@ function assertConfigDuplicates(configs) {
     }, {});
 }
 function sortConfigs(a, b, previousSegments = []) {
-    if (previousSegments.length) {
-        debugger;
-    }
     // Sort config so that:
     // - the most exhaustive ones are always at the beginning
     // - patterns with wildcard are always at the end
@@ -169,7 +166,6 @@ function sortConfigs(a, b, previousSegments = []) {
     });
     if ((similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
         similarToPreviousA.length !== similarToPreviousB.length) {
-        debugger;
         // They both match to some degree, so pick the one that matches more
         return similarToPreviousB.length - similarToPreviousA.length;
     }
