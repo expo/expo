@@ -76,6 +76,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
   <GridItem title="Spotify" protocol={['OAuth 2']} image={ASSETS.spotify} />
   <GridItem title="Strava" protocol={['OAuth 2']} image={ASSETS.strava} />
+  <GridItem title="Strivacity" protocol={['OAuth 2']} image={ASSETS.strivacity} />
   <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
   <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
   <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
@@ -1781,6 +1782,73 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 </Box>
 {/* End Strava */}
+
+<Box
+  name="Strivacity"
+  createUrl="https://www.strivacity.com/learn-support/developer-hub"
+  image={ASSETS.strivacity}
+>
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-strivacity] | OpenID | Supported | Available  |
+
+[c-strivacity]: https://docs.strivacity.com/docs/setting-up-your-instance
+
+{/* prettier-ignore */}
+```tsx Strivacity Auth Example
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://<instance>.strivacity.com/oauth2/auth',
+  tokenEndpoint: 'https://<instance>.strivacity.com/oauth2/token',
+  revocationEndpoint: 'https://<instance>.strivacity.com/oauth2/revoke',
+};
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['openid', 'profile'],
+      redirectUri: makeRedirectUri();
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</Box>
+{/* End Strivacity */}
 
 <Box
   name="Twitch"
