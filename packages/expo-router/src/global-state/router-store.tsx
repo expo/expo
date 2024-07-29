@@ -98,7 +98,7 @@ export class RouterStore {
 
     if (this.routeNode) {
       // We have routes, so get the linking config and the root component
-      this.linking = getLinkingConfig(this.routeNode, context, linkingConfigOptions);
+      this.linking = getLinkingConfig(this, this.routeNode, context, linkingConfigOptions);
       this.rootComponent = getQualifiedRouteComponent(this.routeNode);
 
       // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
