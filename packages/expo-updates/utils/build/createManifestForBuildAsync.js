@@ -11,22 +11,11 @@ const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const filterPlatformAssetScales_1 = require("./filterPlatformAssetScales");
-async function createManifestForBuildAsync(platform, possibleProjectRoot, destinationDir, entryFileArg) {
+async function createManifestForBuildAsync(platform, projectRoot, destinationDir, entryFileArg) {
     const entryFile = entryFileArg ||
         process.env.ENTRY_FILE ||
-        getRelativeEntryPoint(possibleProjectRoot, platform) ||
+        (0, paths_1.resolveRelativeEntryPoint)(projectRoot, { platform }) ||
         'index.js';
-    // Remove projectRoot validation when we no longer support React Native <= 62
-    let projectRoot;
-    if (fs_1.default.existsSync(path_1.default.join(possibleProjectRoot, entryFile))) {
-        projectRoot = path_1.default.resolve(possibleProjectRoot);
-    }
-    else if (fs_1.default.existsSync(path_1.default.join(possibleProjectRoot, '..', entryFile))) {
-        projectRoot = path_1.default.resolve(possibleProjectRoot, '..');
-    }
-    else {
-        throw new Error('Error loading application entry point. If your entry point is not index.js, please set ENTRY_FILE environment variable with your app entry point.');
-    }
     process.chdir(projectRoot);
     const options = {
         platform,
@@ -84,16 +73,6 @@ async function createManifestForBuildAsync(platform, possibleProjectRoot, destin
     fs_1.default.writeFileSync(path_1.default.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
 }
 exports.createManifestForBuildAsync = createManifestForBuildAsync;
-/**
- * Resolve the relative entry file using Expo's resolution method.
- */
-function getRelativeEntryPoint(projectRoot, platform) {
-    const entry = (0, paths_1.resolveEntryPoint)(projectRoot, { platform });
-    if (entry) {
-        return path_1.default.relative(projectRoot, entry);
-    }
-    return entry;
-}
 function getAndroidResourceFolderName(asset) {
     return metroAssetLocalPath_1.drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
 }
