@@ -4,7 +4,7 @@ module.exports = {
   name: 'Router E2E',
   slug: 'expo-router-e2e',
 
-  sdkVersion: 'UNVERSIONED',
+  sdkVersion: process.env.E2E_ROUTER_USE_PUBLISHED_EXPO_GO ? undefined : 'UNVERSIONED',
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
