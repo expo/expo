@@ -1,12 +1,11 @@
 import 'server-only';
 
-import matchers from 'expect/build/matchers';
+import { expect } from '@jest/globals';
 import { toMatchSnapshot } from 'jest-snapshot';
+import type { ReadableStream } from 'node:stream/web';
 import type { ReactNode } from 'react';
 
 import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
-
-matchers.customTesters = [];
 
 /** Resolve the JSX data source to string, from either streaming or JSX flight rendering */
 async function resolveFlightInputAsync(data: ReactNode | ReadableStream): Promise<string> {
@@ -22,23 +21,33 @@ function flightInputAsStringOrPromise(data: ReactNode | ReadableStream): string 
 
 expect.extend({
   toMatchFlight(data: ReactNode | ReadableStream, input: string) {
-    const resolved = flightInputAsStringOrPromise(data);
+    const resolvedStringOrPromise = flightInputAsStringOrPromise(data);
 
-    if (typeof resolved === 'string') {
-      return matchers.toEqual(resolved, input);
+    function createTestResult(flightInput: string) {
+      // Only pass when the flightInput "equals" the input string
+      const pass = flightInput === input;
+      return {
+        pass,
+        message: () => {
+          const received = this.utils.printReceived(resolvedStringOrPromise);
+          const expected = this.utils.printExpected(input);
+          return pass
+            ? `expected RSC flight ${received} NOT to equal ${expected}`
+            : `expected RSC flight ${received} to equal ${expected}`;
+        },
+      };
     }
 
-    return new Promise(async (res, rej) => {
-      try {
-        const resolvedString = await resolved;
-        res(matchers.toEqual(resolvedString, input));
-      } catch (e) {
-        rej(e);
-      }
-    });
+    // Handle both sync and async resolved strings
+    return typeof resolvedStringOrPromise === 'string'
+      ? createTestResult(resolvedStringOrPromise)
+      : resolvedStringOrPromise.then(createTestResult);
   },
-  async toMatchFlightSnapshot(this: any, data: ReactNode | ReadableStream) {
-    const resolved = await flightInputAsStringOrPromise(data);
-    return toMatchSnapshot.call(this, resolved);
+
+  async toMatchFlightSnapshot(data: ReactNode | ReadableStream) {
+    // See: https://jestjs.io/docs/expect#async
+    Object.defineProperty(this, 'error', { value: new Error() });
+    const resolvedString = await flightInputAsStringOrPromise(data);
+    return toMatchSnapshot.call(this, resolvedString, 'toMatchFlightSnapshot');
   },
 });
