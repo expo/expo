@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBaseUrl = exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.appendBaseUrl = exports.decodeParams = exports.deepEqual = exports.getPathDataFromState = void 0;
 const core_1 = require("@react-navigation/core");
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
@@ -92,16 +92,21 @@ function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
 exports.getPathDataFromState = getPathDataFromState;
 function processParamsWithUserSettings(configItem, params) {
     const stringify = configItem?.stringify;
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => [
-        key,
-        // TODO: Strip nullish values here.
-        stringify?.[key]
-            ? stringify[key](value)
-            : // Preserve rest params
-                Array.isArray(value)
-                    ? value
-                    : String(value),
-    ]));
+    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
+        if (key === 'params') {
+            return [key, value];
+        }
+        return [
+            key,
+            // TODO: Strip nullish values here.
+            stringify?.[key]
+                ? stringify[key](value)
+                : // Preserve rest params
+                    Array.isArray(value)
+                        ? value
+                        : String(value),
+        ];
+    }));
 }
 function deepEqual(a, b) {
     if (a === b) {
@@ -306,7 +311,10 @@ function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
         try {
-            if (Array.isArray(value)) {
+            if (key === 'params' && typeof value === 'object') {
+                parsed[key] = decodeParams(value);
+            }
+            else if (Array.isArray(value)) {
                 parsed[key] = value.map((v) => decodeURIComponent(v));
             }
             else {
@@ -319,6 +327,7 @@ function decodeParams(params) {
     }
     return parsed;
 }
+exports.decodeParams = decodeParams;
 function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveGroups, preserveDynamicRoutes, initialRouteName, }) {
     const segments = pattern.split('/');
     return segments

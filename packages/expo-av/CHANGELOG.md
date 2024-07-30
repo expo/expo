@@ -13,10 +13,15 @@
 - [iOS] Fixed broken Video view on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
 - Fix unhandled promise rejection when start recording fails [#29826](https://github.com/expo/expo/pull/29826) by [@anirudhsama](https://github.com/anirudhsama)
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30456](https://github.com/expo/expo/pull/30456) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 14.0.5 — 2024-05-15
 

@@ -47,7 +47,7 @@ class EnumTypeConverter(
       )
     }
 
-    throw IncompatibleArgTypeException(value.getType().toKType(), enumClass.createType())
+    throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
   }
 
   override fun convertFromAny(value: Any): Enum<*> {

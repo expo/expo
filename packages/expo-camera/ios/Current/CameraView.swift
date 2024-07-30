@@ -678,6 +678,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
+    self.stopSession()
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     super.removeFromSuperview()
@@ -782,6 +783,14 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }
+  }
+
+  func resumePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = true
+  }
+
+  func pausePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = false
   }
 
   @objc func orientationChanged(notification: Notification) {

@@ -222,7 +222,7 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class, IllegalArgumentException::class)
   fun getPluginProperties(packageName: String): Map<String, Any>? {
     val pluginsRawValue = getExpoClientConfigRootObject()?.getNullable<JSONArray>("plugins") ?: return null
-    val plugins = PluginType.fromRawArrayValue(pluginsRawValue) ?: return null
+    val plugins = PluginType.fromRawArrayValue(pluginsRawValue)
     return plugins.filterIsInstance<PluginType.WithProps>()
       .firstOrNull { it.plugin.first == packageName }
       ?.plugin?.second

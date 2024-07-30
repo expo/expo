@@ -18,6 +18,8 @@
 
 ### 🐛 Bug fixes
 
+- Terminate module source maps with a null mapping [upstream](https://github.com/facebook/metro/commit/96c6b893eb77b5929b6050d7189905232ddf6d6d). ([#30701](https://github.com/expo/expo/pull/30701) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix Typescript type export. ([#22410](https://github.com/expo/expo/pull/22410) by [@dcposch](https://github.com/dcposch])
 - Account for the entire dependency tree when creating module name hashes. ([#30512](https://github.com/expo/expo/pull/30512) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve missing module errors. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix support for defining variables named `module`, `require`, `global`, and `exports` with `experimentalImportSupport`. ([#30348](https://github.com/expo/expo/pull/30348) by [@EvanBacon](https://github.com/EvanBacon))
@@ -347,6 +349,7 @@ _This version does not introduce any user-facing changes._
 - Add PostCSS support on web, configurable with `postcss.config.js` and `postcss.config.json`, when `isCSSEnabled` is `true`. ([#22032](https://github.com/expo/expo/pull/22032) by [@EvanBacon](https://github.com/EvanBacon))
 - Add partial SASS/SCSS support on web, enabled when `isCSSEnabled` is `true`. ([#22031](https://github.com/expo/expo/pull/22031) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `cjs` extension to `resolver.sourceExts` (without platform extension support). ([#22076](https://github.com/expo/expo/pull/22076) by [@EvanBacon](https://github.com/EvanBacon))
+- Enable `EXPO_USE_METRO_WORKSPACE_ROOT` by default and replace with `EXPO_NO_METRO_WORKSPACE_ROOT`. ([#30621](https://github.com/expo/expo/pull/30621) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 

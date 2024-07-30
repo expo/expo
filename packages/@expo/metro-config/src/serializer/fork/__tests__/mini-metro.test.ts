@@ -178,6 +178,10 @@ it(`can create a micro Metro graph fixture`, async () => {
                       3,
                       21,
                     ],
+                    [
+                      6,
+                      3,
+                    ],
                   ],
                   "reactClientReference": undefined,
                 },
@@ -288,6 +292,10 @@ it(`can create a micro Metro graph fixture`, async () => {
                       0,
                       2,
                       29,
+                    ],
+                    [
+                      9,
+                      3,
                     ],
                   ],
                   "reactClientReference": undefined,

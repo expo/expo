@@ -33,9 +33,10 @@ function getModulesPaths(projectRoot) {
 }
 exports.getModulesPaths = getModulesPaths;
 function getServerRoot(projectRoot) {
-    return env_1.env.EXPO_USE_METRO_WORKSPACE_ROOT
-        ? getWorkspaceRoot(projectRoot) ?? projectRoot
-        : projectRoot;
+    if (env_1.env.EXPO_NO_METRO_WORKSPACE_ROOT) {
+        return projectRoot;
+    }
+    return getWorkspaceRoot(projectRoot) ?? projectRoot;
 }
 exports.getServerRoot = getServerRoot;
 //# sourceMappingURL=getModulesPaths.js.map
