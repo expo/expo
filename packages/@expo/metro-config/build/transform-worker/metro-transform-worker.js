@@ -571,6 +571,7 @@ exports.getCacheKey = getCacheKey;
 const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
+    transformImportMaybeSyncCall: () => { },
     transformImportCall: (path, dependency, state) => {
         // HACK: Ensure the async import code is included in the bundle when an import() call is found.
         let topParent = path;

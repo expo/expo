@@ -761,6 +761,7 @@ type InternalDependency = any;
 
 const disabledDependencyTransformer: DependencyTransformer = {
   transformSyncRequire: (path) => {},
+  transformImportMaybeSyncCall: () => {},
   transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
     // HACK: Ensure the async import code is included in the bundle when an import() call is found.
     let topParent = path;
