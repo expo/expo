@@ -44,7 +44,7 @@ function getRscMiddleware(options) {
             });
         }
         const engine = url.searchParams.get('transform.engine');
-        // TODO: Dev Server only?
+        // TODO: Will the hermes flag apply in production later?
         if (engine && !['hermes'].includes(engine)) {
             return new Response(`Query parameter "transform.engine" is an unsupported value: ${engine}`, {
                 status: 500,

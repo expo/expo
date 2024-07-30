@@ -11,6 +11,7 @@ import resolveFrom from 'resolve-from';
 
 import { logMetroError } from './metroErrorInterface';
 import { stripAnsi } from '../../../utils/ansi';
+import { memoize } from '../../../utils/fn';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
@@ -20,6 +21,8 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
   specificOptions?: Partial<ExpoMetroOptions>,
   extras?: { hot?: boolean }
 ) => Promise<T>;
+
+const getMetroServerRootMemo = memoize(getMetroServerRoot);
 
 export function createServerComponentsMiddleware(
   projectRoot: string,
@@ -61,7 +64,6 @@ export function createServerComponentsMiddleware(
         // }
 
         // TODO: Revisit all error handling now that we do direct metro bundling...
-
         await logMetroError(projectRoot, { error });
 
         const sanitizedServerMessage = stripAnsi(error.message) ?? error.message;
@@ -94,8 +96,7 @@ export function createServerComponentsMiddleware(
   }
 
   function getResolveClientEntry(context: { platform: string; engine?: 'hermes' | null }) {
-    // TODO: Memoize this
-    const serverRoot = getMetroServerRoot(projectRoot);
+    const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const {
       mode,
@@ -131,8 +132,6 @@ export function createServerComponentsMiddleware(
         routerRoot,
         isExporting,
         reactCompiler: !!reactCompiler,
-
-        // TODO:
         engine: context.engine ?? undefined,
         bytecode: false,
         clientBoundaries: [],
