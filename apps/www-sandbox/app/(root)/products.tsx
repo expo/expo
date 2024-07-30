@@ -1,5 +1,6 @@
-import Products from '@/components/www/products';
 import { Stack } from 'expo-router';
+
+import Products from '@/components/www/products';
 
 export default function ProductsPage() {
   return (

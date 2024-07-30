@@ -66,9 +66,9 @@ import {
 import type { NotificationContentInput } from 'expo-notifications';
 
 export default function Dashboard({
-  requestNotificationsPermissions,
+  notify,
 }: {
-  requestNotificationsPermissions: (content: NotificationContentInput) => Promise<void>;
+  notify: (content: NotificationContentInput) => Promise<void>;
 }) {
   return (
     <TooltipProvider>
@@ -249,7 +249,7 @@ export default function Dashboard({
                   <CardFooter>
                     <Button
                       onClick={() => {
-                        requestNotificationsPermissions({
+                        notify({
                           title: 'New Order',
                           body: '(from a DOM component 🚀)',
                         });
@@ -490,16 +490,7 @@ export default function Dashboard({
                     <CardDescription>Date: November 23, 2023</CardDescription>
                   </div>
                   <div className="ml-auto flex items-center gap-1">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 gap-1"
-                      onClick={() => {
-                        requestNotificationsPermissions({
-                          title: 'New Order',
-                          body: 'Liam Johnson has placed a new order.',
-                        });
-                      }}>
+                    <Button size="sm" variant="outline" className="h-8 gap-1">
                       <Truck className="h-3.5 w-3.5" />
                       <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
                         Track Order

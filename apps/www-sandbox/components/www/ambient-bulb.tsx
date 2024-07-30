@@ -5,7 +5,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const CustomThreeJSComponent = () => {
+const CustomThreeJSComponent = ({}: { dom?: import('expo/dom').DOMProps }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
