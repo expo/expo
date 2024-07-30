@@ -53,7 +53,7 @@ export async function resolveModuleAsync(
   const projects = buildGradleFiles.map((buildGradleFile) => {
     const gradleFilePath = path.join(revision.path, buildGradleFile);
     return {
-      name: convertPackageNameToProjectName(
+      name: convertPackageWithGradleToProjectName(
         packageName,
         path.relative(revision.path, gradleFilePath)
       ),
@@ -198,7 +198,7 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
  *   - `expo-test` + `android/build.gradle` → `react-native-third-party`
  *   - `expo-test` + `subproject/build.gradle` → `react-native-third-party$subproject`
  */
-export function convertPackageNameToProjectName(
+export function convertPackageWithGradleToProjectName(
   packageName: string,
   buildGradleFile: string
 ): string {

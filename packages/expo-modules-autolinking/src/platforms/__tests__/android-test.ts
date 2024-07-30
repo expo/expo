@@ -5,7 +5,7 @@ import path from 'path';
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
-  convertPackageNameToProjectName,
+  convertPackageWithGradleToProjectName,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
 } from '../android';
@@ -69,23 +69,25 @@ describe(resolveModuleAsync, () => {
   });
 });
 
-describe(convertPackageNameToProjectName, () => {
+describe(convertPackageWithGradleToProjectName, () => {
   it('should convert scoped package name to dash', () => {
-    expect(convertPackageNameToProjectName('@expo/expo-test', 'android/build.gradle')).toBe(
+    expect(convertPackageWithGradleToProjectName('@expo/expo-test', 'android/build.gradle')).toBe(
       'expo-expo-test'
     );
   });
 
   it('should have differentiated name for multiple projects', () => {
-    expect(convertPackageNameToProjectName('expo-test', 'android/build.gradle')).toBe('expo-test');
-    expect(convertPackageNameToProjectName('expo-test', 'subproject/build.gradle')).toBe(
+    expect(convertPackageWithGradleToProjectName('expo-test', 'android/build.gradle')).toBe(
+      'expo-test'
+    );
+    expect(convertPackageWithGradleToProjectName('expo-test', 'subproject/build.gradle')).toBe(
       'expo-test$subproject'
     );
   });
 
   it('should support expo adapter name', () => {
     expect(
-      convertPackageNameToProjectName('react-native-third-party', 'expo/android/build.gradle')
+      convertPackageWithGradleToProjectName('react-native-third-party', 'expo/android/build.gradle')
     ).toBe('react-native-third-party$expo-android');
   });
 });
