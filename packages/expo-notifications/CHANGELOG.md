@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `useLastNotificationResponse` should have only one effect. ([#30653](https://github.com/expo/expo/pull/30653) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.28.13 — 2024-07-29

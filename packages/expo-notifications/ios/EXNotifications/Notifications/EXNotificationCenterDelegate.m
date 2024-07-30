@@ -123,6 +123,8 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
+  // Save last response here for use by EXNotificationsEmitter
+  self.lastNotificationResponse = response;
   // Save response to pending responses array if none of the handlers will handle it.
   BOOL responseWillBeHandledByAppropriateDelegate = NO;
   for (int i = 0; i < _delegates.count; i++) {
