@@ -16,7 +16,7 @@ import {
   type SourceMapGeneratorOptions,
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
 import type MetroHmrServer from 'metro/src/HmrServer';
-import { type Client as MetroHmrClient } from 'metro/src/HmrServer';
+import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';

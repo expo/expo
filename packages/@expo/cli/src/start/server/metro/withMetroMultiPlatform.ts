@@ -298,7 +298,7 @@ export function withExtendedResolver(
   }
 
   // TODO: This is a hack to get resolveWeak working.
-  const idFactory = config.serializer?.createModuleIdFactory?.() ?? ((id: number): number => id);
+  const idFactory = config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.

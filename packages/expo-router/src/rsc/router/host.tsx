@@ -80,10 +80,6 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
   }
   console.log('[Router] Fetched', response.url, response.status);
 
-  // response.text().then((text) => {
-  //   console.log('[Router] Response:', text);
-  // });
-
   return response;
 };
 
