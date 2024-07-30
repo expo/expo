@@ -42,7 +42,7 @@ const IGNORED_PACKAGES = [
   'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
-  'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
+  'expo-updates', // utils: @expo/cli, @expo/metro-config, metro
   'jest-expo', // package: expect, jest-snapshot, react, server-only
 ];
 
