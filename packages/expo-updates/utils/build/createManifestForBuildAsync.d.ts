@@ -1,1 +1,1 @@
-export declare function createManifestForBuildAsync(platform: 'ios' | 'android', possibleProjectRoot: string, destinationDir: string, entryFileArg?: string): Promise<void>;
+export declare function createManifestForBuildAsync(platform: 'ios' | 'android', projectRoot: string, destinationDir: string, entryFileArg?: string): Promise<void>;
