@@ -158,7 +158,6 @@
     "@types/pixi.js": "^4.8.6",
     "@types/react": "~18.0.14",
     "@types/three": "^0.137.0",
-    "@types/victory": "^31.0.14",
     "babel-jest": "^29.2.1",
     "expo-module-scripts": "^3.0.0",
     "jest": "^29.2.1",
