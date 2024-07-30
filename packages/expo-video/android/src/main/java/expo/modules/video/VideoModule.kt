@@ -208,7 +208,10 @@ class VideoModule : Module() {
 
       Property("currentOffsetFromLive")
         .get { ref: VideoPlayer ->
-          ref.currentOffsetFromLive
+          // TODO: same as `currentTime`
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.player.currentLiveOffset / 1000f
+          }
         }
 
       Property("duration")
