@@ -33,7 +33,7 @@
     "react-native-webview": "13.8.6",
     "expo-notifications": "~0.28.0",
     "expo-haptics": "^13.0.1",
-    "recharts": "^2.12.7",
+    "recharts": "alpha",
     "tailwind": "^4.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",

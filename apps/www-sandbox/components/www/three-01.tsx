@@ -3,21 +3,27 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export default function ThreeThing({}: { dom: import('expo/dom').DOMProps }) {
+export default function ThreeThing({}: { dom?: import('expo/dom').DOMProps }) {
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!ref.current) return;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(ref.current.clientWidth, ref.current.clientHeight);
     renderer.autoClear = false;
     renderer.setClearColor(0x000000, 0.0);
     ref.current!.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      ref.current.clientWidth / ref.current.clientHeight,
+      1,
+      1000
+    );
     camera.position.z = 400;
     scene.add(camera);
 
@@ -29,17 +35,17 @@ export default function ThreeThing({}: { dom: import('expo/dom').DOMProps }) {
     scene.add(skelet);
     scene.add(particle);
 
-    var geometry = new THREE.TetrahedronGeometry(2, 0);
-    var geom = new THREE.IcosahedronGeometry(7, 1);
-    var geom2 = new THREE.IcosahedronGeometry(15, 1);
+    const geometry = new THREE.TetrahedronGeometry(2, 0);
+    const geom = new THREE.IcosahedronGeometry(7, 1);
+    const geom2 = new THREE.IcosahedronGeometry(15, 1);
 
-    var material = new THREE.MeshPhongMaterial({
+    const material = new THREE.MeshPhongMaterial({
       color: 0xffffff,
-      shading: THREE.FlatShading,
+      flatShading: true,
     });
 
-    for (var i = 0; i < 1000; i++) {
-      var mesh = new THREE.Mesh(geometry, material);
+    for (let i = 0; i < 1000; i++) {
+      const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
       mesh.position.multiplyScalar(90 + Math.random() * 700);
       mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
@@ -48,7 +54,7 @@ export default function ThreeThing({}: { dom: import('expo/dom').DOMProps }) {
 
     const mat = new THREE.MeshPhongMaterial({
       color: 0xffffff,
-      shading: THREE.FlatShading,
+      flatShading: true,
     });
 
     const mat2 = new THREE.MeshPhongMaterial({
@@ -82,9 +88,10 @@ export default function ThreeThing({}: { dom: import('expo/dom').DOMProps }) {
     window.addEventListener('resize', onWindowResize, false);
 
     function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect = ref.current.clientWidth / ref.current.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      renderer.setSize(ref.current.clientWidth, ref.current.clientHeight);
     }
 
     function animate() {
@@ -105,13 +112,17 @@ export default function ThreeThing({}: { dom: import('expo/dom').DOMProps }) {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      style={{
-        flex: 1,
-        // maxHeight: 360,
-        background: 'linear-gradient(to bottom,  #11e8bb 0%,#8200c9 100%)',
-      }}
-      id="canvas"></div>
+    <div className="items-center flex flex-1">
+      <div
+        ref={ref}
+        style={{
+          flex: 1,
+          height: 156,
+          aspectRatio: '1 / 1',
+          // background: 'linear-gradient(to bottom,  #11e8bb 0%,#8200c9 100%)',
+        }}
+        id="canvas"
+      />
+    </div>
   );
 }
