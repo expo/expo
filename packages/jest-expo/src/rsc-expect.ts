@@ -8,21 +8,16 @@ import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
 
 matchers.customTesters = [];
 
-async function resolveFlightInputAsync(data: ReactNode | ReadableStream) {
-  if (data && typeof data === 'object' && 'getReader' in data) {
-    return (await streamToString(data)).trim();
-  }
-  const resolved = await renderJsxToFlightStringAsync(data);
-  return resolved.trim();
+/** Resolve the JSX data source to string, from either streaming or JSX flight rendering */
+async function resolveFlightInputAsync(data: ReactNode | ReadableStream): Promise<string> {
+  return data && typeof data === 'object' && 'getReader' in data
+    ? (await streamToString(data)).trim()
+    : (await renderJsxToFlightStringAsync(data)).trim();
 }
 
-function flightInputAsStringOrPromise(data: any) {
-  if (typeof data === 'string') {
-    return data;
-  }
-  return new Promise(async (res, rej) => {
-    resolveFlightInputAsync(data).then(res).catch(rej);
-  });
+/** Return the resolved JSX flight input as string, or string promise */
+function flightInputAsStringOrPromise(data: ReactNode | ReadableStream): string | Promise<string> {
+  return typeof data === 'string' ? data : resolveFlightInputAsync(data);
 }
 
 expect.extend({
