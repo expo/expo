@@ -1,7 +1,5 @@
-// import ThreeThing from '@/components/www/three-01.tsx';
 import ThreeThing from '@/components/www/ambient-bulb';
 import { Stack } from 'expo-router';
-import { useState } from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 
 export default function Route() {
