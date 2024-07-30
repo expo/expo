@@ -7,7 +7,7 @@ import path from 'path';
 import { createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import { exportFromServerAsync } from './exportStaticAsync';
+import { exportApiRoutesAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -23,7 +23,7 @@ import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
+// import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
@@ -32,6 +32,32 @@ import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
+  projectRoot: string,
+  props: Pick<
+    Options,
+    | 'dumpAssetmap'
+    | 'sourceMaps'
+    | 'dev'
+    | 'clear'
+    | 'outputDir'
+    | 'platforms'
+    | 'minify'
+    | 'bytecode'
+    | 'maxWorkers'
+  >
+): Promise<void> {
+  setNodeEnv(props.dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
+
+  const outputPath = path.resolve(projectRoot, props.outputDir);
+
+  const { files } = await exportAppForAssetsAsync(projectRoot, props);
+
+  // Write all files at the end for unified logging.
+  await persistMetroFilesAsync(files, outputPath);
+}
+
+export async function exportAppForAssetsAsync(
   projectRoot: string,
   {
     platforms,
@@ -55,10 +81,7 @@ export async function exportAppAsync(
     | 'bytecode'
     | 'maxWorkers'
   >
-): Promise<void> {
-  setNodeEnv(dev ? 'development' : 'production');
-  require('@expo/env').load(projectRoot);
-
+) {
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.
@@ -69,7 +92,7 @@ export async function exportAppAsync(
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   }
 
-  const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+  const useServerRendering = ['rsc', 'static', 'server'].includes(exp.web?.output ?? '');
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
@@ -96,6 +119,7 @@ export async function exportAppAsync(
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
 
+  let metadata: ReturnType<typeof createMetadataJson> = {};
   const files: ExportAssetMap = new Map();
 
   const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
@@ -133,6 +157,13 @@ export async function exportAppAsync(
             await assertEngineMismatchAsync(projectRoot, exp, platform);
           }
 
+          // NOTE(EvanBacon): This will not account for client boundaries used in server actions. This will need to be added later.
+          const { clientBoundaries, payloads } = await devServer.rscRenderer!.exportRoutesAsync({
+            platform,
+          });
+
+          console.log('Collected evaluated client boundaries:', clientBoundaries);
+
           // Run metro bundler and create the JS bundles/source maps.
           const bundle = await devServer.legacySinglePageExportBundleAsync({
             platform,
@@ -145,8 +176,33 @@ export async function exportAppAsync(
             engine: isHermes ? 'hermes' : undefined,
             serializerIncludeMaps: sourceMaps,
             bytecode: bytecode && isHermes,
+            clientBoundaries,
             reactCompiler: !!exp.experiments?.reactCompiler,
           });
+
+          const moduleIdToSplitBundle = (
+            bundle.artifacts
+              .map(
+                (artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths)
+              )
+              .filter(Boolean)
+              .flat() as Record<string, string>[]
+          ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
+
+          console.log('SSR Manifest:', moduleIdToSplitBundle);
+
+          // Save the SSR manifest so we can perform more replacements in the server bundle.
+          // files.set(`_expo/rsc/${platform}/ssr-manifest.json`, {
+          //   targetDomain: 'server',
+          //   contents: JSON.stringify(moduleIdToSplitBundle),
+          // });
+
+          // Persist rsc and update with split client chunks.
+          await devServer.rscRenderer!.exportPathsWithChunks(
+            payloads,
+            moduleIdToSplitBundle,
+            files
+          );
 
           bundles[platform] = bundle;
 
@@ -224,44 +280,33 @@ export async function exportAppAsync(
       }
 
       // Generate a `metadata.json` for EAS Update.
-      const contents = createMetadataJson({
+      metadata = createMetadataJson({
         bundles,
         fileNames,
         embeddedHashSet,
       });
-      files.set('metadata.json', { contents: JSON.stringify(contents) });
+      files.set('metadata.json', { contents: JSON.stringify(metadata) });
     }
 
-    // Additional web-only steps...
+    // HACK: Include platform-specific API Routes for _flight redirects.
+    const { serverManifest } = await devServer.getServerManifestAsync();
 
-    if (platforms.includes('web') && useServerRendering) {
-      const exportServer = exp.web?.output === 'server';
+    const apiRoutes = await exportApiRoutesAsync({
+      // outputDir,
+      server: devServer,
+      manifest: serverManifest,
+      // NOTE(kitten): For now, we always output source maps for API route exports
+      includeSourceMaps: true,
+      platform: platforms[0],
+    });
 
-      if (exportServer) {
-        // TODO: Remove when this is abstracted into the files map
-        await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
-      }
-
-      await exportFromServerAsync(projectRoot, devServer, {
-        mode,
-        files,
-        clear: !!clear,
-        outputDir: outputPath,
-        minify,
-        baseUrl,
-        includeSourceMaps: sourceMaps,
-        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-        reactCompiler: !!exp.experiments?.reactCompiler,
-        exportServer,
-        maxWorkers,
-        isExporting: true,
-        exp: projectConfig.exp,
-      });
+    // Add the api routes to the files to export.
+    for (const [route, contents] of apiRoutes) {
+      files.set(route, contents);
     }
   } finally {
     await devServerManager.stopAsync();
   }
 
-  // Write all files at the end for unified logging.
-  await persistMetroFilesAsync(files, outputPath);
+  return { files, metadata };
 }

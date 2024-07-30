@@ -11,13 +11,11 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 
 import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
-import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
@@ -26,9 +24,9 @@ import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/mid
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { exportAppForAssetsAsync } from '../exportApp';
 import { isEnableHermesManaged } from '../exportHermes';
-import { persistMetroAssetsAsync } from '../persistMetroAssets';
-import { BundleAssetWithFileHashes } from '../saveAssets';
+import { persistMetroFilesAsync, BundleAssetWithFileHashes } from '../saveAssets';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -65,23 +63,75 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     }
   }
 
-  const { bundle, assets } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
+  // TODO: No safe way to get the binary dir at the moment.
+  const { files, metadata } = await exportAppForAssetsAsync(projectRoot, {
+    platforms: [options.platform],
+    // For debugging:
+    bytecode: false,
+    clear: false,
+    // minify: false,
+    // dev: true,
+    // clear: options.resetCache,
+    dev: options.dev,
+    dumpAssetmap: false,
+    minify: !!options.minify,
+    maxWorkers: options.maxWorkers,
+    outputDir: options.assetsDest!,
 
-  fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
+    // TODO: Source maps
+    sourceMaps: !!options.sourcemapOutput,
+  });
 
-  // Persist bundle and source maps.
-  await Promise.all([
-    output.save(bundle, options, Log.log),
-    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
-    // platforms when doing production embeds (unlikely).
-    options.assetsDest
-      ? persistMetroAssetsAsync(projectRoot, assets, {
-          platform: options.platform,
-          outputDirectory: options.assetsDest,
-          iosAssetCatalogDirectory: options.assetCatalogDest,
-        })
-      : null,
-  ]);
+  // Save all files in the project root for deployment to a hosting service.
+  const ouputDir = path.join(projectRoot, 'dist');
+  await persistMetroFilesAsync(files, ouputDir);
+
+  // Create a copy of the files without any server files
+  const clientFiles = new Map(files);
+  for (const [key, value] of files.entries()) {
+    if (value.targetDomain === 'server') {
+      clientFiles.delete(key);
+    } else {
+      value.targetDomain = undefined;
+    }
+  }
+
+  // Write all files at the end for unified logging.
+  await persistMetroFilesAsync(clientFiles, options.assetsDest!);
+
+  if (metadata) {
+    const bundlePath = metadata.fileMetadata[options.platform].bundle;
+    const bundleContents = files.get(bundlePath)?.contents;
+    if (!bundleContents) throw new Error('No bundle contents for: ' + bundlePath);
+    await fs.promises.writeFile(options.bundleOutput, bundleContents);
+    console.log('bundlePath', metadata, bundlePath);
+
+    if (options.sourcemapOutput) {
+      const mapPath = bundlePath + '.map';
+      const mapContents = files.get(mapPath)?.contents;
+      if (!mapContents) throw new Error('No map contents for: ' + mapPath);
+      await fs.promises.writeFile(options.sourcemapOutput, mapContents);
+    }
+  }
+
+  process.exit(0);
+  // const { bundle, assets } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
+
+  // fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
+
+  // // Persist bundle and source maps.
+  // await Promise.all([
+  //   output.save(bundle, options, Log.log),
+  //   // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
+  //   // platforms when doing production embeds (unlikely).
+  //   options.assetsDest
+  //     ? persistMetroAssetsAsync(assets, {
+  //         platform: options.platform,
+  //         outputDirectory: options.assetsDest,
+  //         iosAssetCatalogDirectory: options.assetCatalogDest,
+  //       })
+  //     : null,
+  // ]);
 }
 
 export async function exportEmbedBundleAndAssetsAsync(

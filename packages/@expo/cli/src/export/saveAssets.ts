@@ -269,7 +269,8 @@ export function getFilesFromSerialAssets(
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
-      targetDomain: platform === 'web' ? 'client' : undefined,
+      targetDomain: 'client',
+      // targetDomain: platform === 'web' ? 'client' : undefined,
     });
   });
 

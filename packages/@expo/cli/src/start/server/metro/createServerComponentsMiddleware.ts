@@ -9,12 +9,17 @@ import assert from 'assert';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { logMetroError } from './metroErrorInterface';
+import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
+import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
+import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
+import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
+import { logMetroError } from './metroErrorInterface';
+
+const debug = require('debug')('expo:rsc') as typeof console.log;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
@@ -120,6 +125,17 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string) => {
+      if (isExporting) {
+        const relativeFilePath = path.relative(serverRoot, file);
+        return {
+          id: relativeFilePath,
+          chunks: [
+            // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+            'chunk:' + relativeFilePath,
+          ],
+        };
+      }
+
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -202,6 +218,8 @@ export function createServerComponentsMiddleware(
     return context;
   }
 
+  const clientModuleMap = new Map<string, Map<string, Set<string>>>();
+
   async function renderRscToReadableStream(
     {
       input,
@@ -239,16 +257,155 @@ export function createServerComponentsMiddleware(
         method,
         input,
         contentType,
+        moduleIdCallback: !isExporting
+          ? undefined
+          : (moduleInfo: { id: string; chunks: string[]; name: string; async: boolean }) => {
+              let platformSet = clientModuleMap.get(platform);
+              if (!platformSet) {
+                platformSet = new Map();
+                clientModuleMap.set(platform, platformSet);
+              }
+              //TODO: This isn't right
+              const normalizedRouteKey = (
+                require('expo-router/build/matchers') as typeof import('expo-router/build/matchers')
+              ).getNameFromFilePath(input);
+
+              // Collect the client boundaries while rendering the server components.
+              // Indexed by routes.
+              let idSet = platformSet.get(normalizedRouteKey);
+              if (!idSet) {
+                idSet = new Set();
+                platformSet.set(normalizedRouteKey, idSet);
+              }
+              idSet.add(moduleInfo.id);
+            },
       },
       {
-        isExporting: false,
+        isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine }),
       }
     );
   }
 
+  const getClientModules = (platform: string, input: string) => {
+    const key = (
+      require('expo-router/build/matchers') as typeof import('expo-router/build/matchers')
+    ).getNameFromFilePath(input);
+
+    const platformSet = clientModuleMap.get(platform);
+    if (!platformSet) {
+      throw new CommandError(
+        `No client modules found for platform "${platform}". Expected one of: ${Array.from(
+          clientModuleMap.keys()
+        ).join(', ')}`
+      );
+    }
+
+    if (!platformSet.has(key)) {
+      throw new CommandError(
+        `No client modules found for "${key}". Expected one of: ${Array.from(
+          platformSet.keys()
+        ).join(', ')}`
+      );
+    }
+    const idSet = platformSet.get(key);
+    return Array.from(idSet || []);
+  };
+
   return {
+    exportPathsWithChunks: async (
+      payloads: RscExportPayload[],
+      moduleIdToSplitBundle: Record<string, string>,
+      files: ExportAssetMap
+    ) => {
+      payloads.forEach(({ rsc, input, path }) => {
+        let contents = rsc;
+
+        // TODO: Flight files need to be platform-segmented.
+        // HACK: This basically just replaces the module ID in the manifest with the new module ID since we don't know until after the server bundle has run.
+
+        console.log('Updating RSC:', input, rsc);
+        for (const match of contents.matchAll(/"(chunk:([^"]+))"/g)) {
+          const [_, moduleIdPlaceholder] = match;
+          console.log('- Match:', moduleIdPlaceholder);
+          const moduleId = moduleIdPlaceholder.replace(/^chunk:/, '');
+          if (moduleId in moduleIdToSplitBundle) {
+            console.log('- Match+bundle:', moduleIdToSplitBundle[moduleIdPlaceholder]);
+            const newModuleId = moduleIdToSplitBundle[moduleId];
+            if (newModuleId) {
+              console.log('Replacing', moduleId, 'with', newModuleId);
+              contents = contents.replace(moduleIdPlaceholder, newModuleId);
+            } else {
+              console.log('Removing', moduleId);
+              contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
+            }
+          } else {
+            // Can occur on iOS where there is no bundle splitting.
+            console.warn('Removing missing', moduleId, Object.keys(moduleIdToSplitBundle));
+            contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
+            // Remove the `"chunk:..."` entry from the manifest.
+            // contents = contents.replace(`"${moduleId}"`, '');
+          }
+        }
+
+        files.set(path, {
+          contents,
+          targetDomain: 'client',
+          rscId: input,
+        });
+      });
+    },
+
+    async exportRoutesAsync({ platform }: { platform: string }) {
+      const payloads: RscExportPayload[] = [];
+
+      // TODO: Extract CSS Modules / Assets from the bundler process
+      const { getBuildConfig } = (await getExpoRouterRscEntriesGetterAsync({ platform })).default;
+
+      // Get all the routes to render.
+      const buildConfig = await getBuildConfig!(async () =>
+        // TODO: Rework prefetching code to use Metro runtime.
+        []
+      );
+
+      const clientModules = new Set<string>();
+
+      await Promise.all(
+        Array.from(buildConfig).map(async ({ entries }) => {
+          for (const { input } of entries || []) {
+            const destRscFile = path.join('_flight', encodeInput(input));
+
+            // TODO: Expose via middleware
+            const pipe = await renderRscToReadableStream(
+              {
+                input,
+                method: 'GET',
+                platform,
+                searchParams: new URLSearchParams(),
+              },
+              true
+            );
+
+            const rsc = await streamToStringAsync(pipe);
+            debug('RSC Payload', { platform, input, rsc });
+
+            payloads.push({
+              path: destRscFile,
+              rsc,
+              input,
+            });
+
+            const clientBoundaries = getClientModules(platform, input);
+            for (const clientBoundary of clientBoundaries) {
+              clientModules.add(clientBoundary);
+            }
+          }
+        })
+      );
+      return { clientBoundaries: Array.from(clientModules), payloads };
+    },
+
     middleware: createBuiltinAPIRequestHandler(
       // Match `/_flight/[...path]`
       (req) => {
@@ -265,6 +422,12 @@ export function createServerComponentsMiddleware(
   };
 }
 
+type RscExportPayload = {
+  rsc: string;
+  input: string;
+  path: string;
+};
+
 const getFullUrl = (url: string) => {
   try {
     return new URL(url);
@@ -278,4 +441,20 @@ const fileURLToFilePath = (fileURL: string) => {
     throw new Error('Not a file URL');
   }
   return decodeURI(fileURL.slice('file://'.length));
+};
+
+const encodeInput = (input: string) => {
+  if (input === '') {
+    return 'index.txt';
+  }
+  if (input === 'index') {
+    throw new Error('Input should not be `index`');
+  }
+  if (input.startsWith('/')) {
+    throw new Error('Input should not start with `/`');
+  }
+  if (input.endsWith('/')) {
+    throw new Error('Input should not end with `/`');
+  }
+  return input + '.txt';
 };

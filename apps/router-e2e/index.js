@@ -1,5 +1,6 @@
 if (process.env.EXPO_PUBLIC_USE_RSC) {
   require('expo-router/entry-rsc');
 } else {
-  require('expo-router/entry');
+  // TODO: Need some way to not bundle the routes in RSC mode.
+  // require('expo-router/entry');
 }

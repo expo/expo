@@ -230,6 +230,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
+  async getServerManifestAsync(): Promise<{ serverManifest: ExpoRouterServerManifestV1 }> {
+    const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
+      typeof import('expo-router/build/rsc/getServerManifest')
+    >('expo-router/build/rsc/getServerManifest.js', {
+      environment: 'react-server',
+    });
+
+    return {
+      serverManifest: await getBuildTimeServerManifestAsync(),
+    };
+  }
+
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
     manifest: ExpoRouterRuntimeManifest;
@@ -619,6 +631,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
+  rscRenderer: Awaited<ReturnType<typeof createServerComponentsMiddleware>> | null = null;
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -724,6 +738,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
         });
+        this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
         this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
       }
@@ -780,6 +795,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
           );
         }
+      }
+    } else {
+      // If React 19 is enabled, then add RSC middleware to the dev server.
+      if (exp.experiments?.reactCanary) {
+        const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
+          getServerUrl: () => {
+            return this.getDevServerUrlOrAssert();
+          },
+          instanceMetroOptions: this.instanceMetroOptions,
+          rscPath: '/_flight',
+          ssrLoadModule: this.ssrLoadModule.bind(this),
+        });
+        this.rscRenderer = rscMiddleware;
       }
     }
     // Extend the close method to ensure that we clean up the local info.
@@ -957,6 +985,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
+          // TODO: NOT THIS!!
+          environment: 'react-server',
           isExporting: true,
           platform,
         });
