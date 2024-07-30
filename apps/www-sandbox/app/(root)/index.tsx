@@ -3,17 +3,18 @@ import * as Notifications from 'expo-notifications';
 import Dashboard from '../../components/www/dashboard';
 
 export default function Route() {
-  return <Dashboard notify={notify} />;
+  return <Dashboard />;
 }
 
-async function notify(content: Notifications.NotificationContentInput) {
-  if (process.env.EXPO_OS === 'web') return;
-
+async function notify() {
   await Notifications.requestPermissionsAsync();
 
   await Notifications.scheduleNotificationAsync({
     identifier: 'hello',
-    content,
+    content: {
+      title: 'New Order',
+      body: '(from a DOM component 🚀)',
+    },
     trigger: {
       seconds: 1,
     },

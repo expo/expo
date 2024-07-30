@@ -1,5 +1,26 @@
 import '@/global.css';
 
+import { StyleNoSelect } from 'expo/dom';
+import { Link } from 'expo-router';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  CreditCard,
+  File,
+  Home,
+  LineChart,
+  ListFilter,
+  MoreVertical,
+  Package,
+  Package2,
+  PanelLeft,
+  Search,
+  Settings,
+  Truck,
+  Users2,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import {
   Breadcrumb,
@@ -42,34 +63,8 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Link } from 'expo-router';
-import { StyleNoSelect } from 'expo/dom';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
-  File,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreVertical,
-  Package,
-  Package2,
-  PanelLeft,
-  Search,
-  Settings,
-  Truck,
-  Users2,
-} from 'lucide-react';
 
-import type { NotificationContentInput } from 'expo-notifications';
-
-export default function Dashboard({
-  notify,
-}: {
-  notify: (content: NotificationContentInput) => Promise<void>;
-}) {
+export default function Dashboard() {
   return (
     <TooltipProvider>
       <StyleNoSelect />
@@ -249,18 +244,11 @@ export default function Dashboard({
                   <CardFooter>
                     <Button
                       onClick={() => {
-                        notify({
-                          title: 'New Order',
-                          body: '(from a DOM component 🚀)',
-                        });
+                        // TODO...
                       }}>
                       Create New Order
                     </Button>
                   </CardFooter>
-
-                  {/* <CardContent className="p-0">
-                    <ThreeThing />
-                  </CardContent> */}
                 </Card>
                 <Card x-chunk="dashboard-05-chunk-2">
                   <CardHeader className="pb-2">
