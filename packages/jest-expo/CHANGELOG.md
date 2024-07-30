@@ -18,6 +18,7 @@
 ### 💡 Others
 
 - Mock files from the `src` folder instead of `build`. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+- Rewrite experimental `jest-expo/rsc` matchers to Jest only matchers.
 
 ### ⚠️ Notices
 
