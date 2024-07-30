@@ -133,5 +133,10 @@ function getMetroServerRoot(projectRoot: string): string {
  * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
  */
 export const resolveRelativeEntryPoint: typeof resolveEntryPoint = (projectRoot, options) => {
-  return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, options));
+  // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
+  // We need to make sure to get the non-symlinked path to the server or project root.
+  return path.relative(
+    fs.realpathSync(getMetroServerRoot(projectRoot)),
+    fs.realpathSync(resolveEntryPoint(projectRoot, options))
+  );
 };
