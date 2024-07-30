@@ -12,10 +12,14 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const filterPlatformAssetScales_1 = require("./filterPlatformAssetScales");
 async function createManifestForBuildAsync(platform, projectRoot, destinationDir, entryFileArg) {
-    const entryFile = entryFileArg ||
+    let entryFile = entryFileArg ||
         process.env.ENTRY_FILE ||
         (0, paths_1.resolveRelativeEntryPoint)(projectRoot, { platform }) ||
         'index.js';
+    // Android uses absolute paths for the entry file, so we need to convert that to a relative path.
+    if (path_1.default.isAbsolute(entryFile)) {
+        entryFile = (0, paths_1.convertEntryPointToRelative)(projectRoot, entryFile);
+    }
     process.chdir(projectRoot);
     const options = {
         platform,
