@@ -2,13 +2,13 @@ import 'server-only';
 
 import matchers from 'expect/build/matchers';
 import { toMatchSnapshot } from 'jest-snapshot';
-import React from 'react';
+import type { ReactNode } from 'react';
 
 import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
 
 matchers.customTesters = [];
 
-async function resolveFlightInputAsync(data: React.ReactNode | ReadableStream) {
+async function resolveFlightInputAsync(data: ReactNode | ReadableStream) {
   if ('getReader' in data) {
     return (await streamToString(data)).trim();
   }
@@ -26,7 +26,7 @@ function flightInputAsStringOrPromise(data: any) {
 }
 
 expect.extend({
-  toMatchFlight(data: string | React.ReactNode | ReadableStream, input: string) {
+  toMatchFlight(data: string | ReactNode | ReadableStream, input: string) {
     const resolved = flightInputAsStringOrPromise(data);
 
     if (typeof resolved === 'string') {
@@ -42,7 +42,7 @@ expect.extend({
       }
     });
   },
-  async toMatchFlightSnapshot(this: any, data: string | React.ReactNode | ReadableStream) {
+  async toMatchFlightSnapshot(this: any, data: string | ReactNode | ReadableStream) {
     const resolved = await flightInputAsStringOrPromise(data);
     return toMatchSnapshot.call(this, resolved);
   },
