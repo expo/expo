@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove git merge code from `testing-library`.
+
 ### 💡 Others
 
 ## 3.5.19 — 2024-07-29
