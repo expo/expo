@@ -44,7 +44,6 @@ const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_cache_1 = require("metro-cache");
 const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
 const metro_source_map_1 = require("metro-source-map");
@@ -53,6 +52,7 @@ const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
+const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
 class InvalidRequireCallError extends Error {
     innerError;
@@ -376,11 +376,13 @@ async function transformJS(file, { config, options }) {
             unstable_renameRequire,
         }
         : undefined;
+    let lineCount;
+    ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
     const output = [
         {
             data: {
                 code,
-                lineCount: (0, countLines_1.default)(code),
+                lineCount,
                 map,
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
@@ -469,9 +471,11 @@ async function transformJSON(file, { options, config }) {
     else {
         jsType = 'js/module';
     }
+    let lineCount;
+    ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
     const output = [
         {
-            data: { code, lineCount: (0, countLines_1.default)(code), map, functionMap: null },
+            data: { code, lineCount, map, functionMap: null },
             type: jsType,
         },
     ];
