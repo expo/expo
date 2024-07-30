@@ -25,4 +25,11 @@ declare namespace jest {
 declare module 'jest-expo' {
   const matchers: JestExpoMatchers<any>;
   export = matchers;
+
+  // Utilities
+
+  export function mockProperty<T = any>(module: T, propertyName: keyof T, propertyValue: any): void;
+  export function unmockProperty<T = any>(module: T, propertyName: keyof T): void;
+  export function unmockAllProperties(): void;
+  export function mockLinking(): (eventName: string, eventData: any) => void;
 }
