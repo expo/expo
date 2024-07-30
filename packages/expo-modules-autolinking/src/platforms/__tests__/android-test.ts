@@ -5,6 +5,7 @@ import path from 'path';
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
+  convertPackageToProjectName,
   convertPackageWithGradleToProjectName,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
@@ -66,6 +67,16 @@ describe(resolveModuleAsync, () => {
       ],
       modules: [],
     });
+  });
+});
+
+describe(convertPackageToProjectName, () => {
+  it('should keep dash', () => {
+    expect(convertPackageToProjectName('expo-modules-core')).toBe('expo-modules-core');
+  });
+
+  it('should convert scoped package name to dash', () => {
+    expect(convertPackageToProjectName('@expo/expo-test')).toBe('expo-expo-test');
   });
 });
 

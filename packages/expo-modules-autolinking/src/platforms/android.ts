@@ -69,11 +69,25 @@ export async function resolveModuleAsync(
     })
   );
 
+  const aarProjects = (revision.config?.androidGradleAarProjects() ?? []).map(
+    ({ name, aarFilePath }) => {
+      const mainProjectName = convertPackageToProjectName(packageName);
+      const projectName = `${mainProjectName}$${name}`;
+      const projectDir = path.join(revision.path, 'android', 'build', projectName);
+      return {
+        name: projectName,
+        aarFilePath: path.join(revision.path, aarFilePath),
+        projectDir,
+      };
+    }
+  );
+
   return {
     packageName,
     projects,
     ...(plugins.length > 0 ? { plugins } : {}),
     modules: revision.config?.androidModules() ?? [],
+    ...(aarProjects.length > 0 ? { aarProjects } : {}),
   };
 }
 
@@ -188,6 +202,16 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
 }
 
 /**
+ * Converts the package name to Android's project name.
+ *   `/` path will transform as `-`
+ *
+ * Example: `@expo/example` + `android/build.gradle` → `expo-example`
+ */
+export function convertPackageToProjectName(packageName: string): string {
+  return packageName.replace(/^@/g, '').replace(/\W+/g, '-');
+}
+
+/**
  * Converts the package name and gradle file path to Android's project name.
  *   `$` to indicate subprojects
  *   `/` path will transform as `-`
@@ -202,7 +226,7 @@ export function convertPackageWithGradleToProjectName(
   packageName: string,
   buildGradleFile: string
 ): string {
-  const name = packageName.replace(/^@/g, '').replace(/\W+/g, '-');
+  const name = convertPackageToProjectName(packageName);
   const baseDir = path.dirname(buildGradleFile).replace(/\//g, '-');
   return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }
