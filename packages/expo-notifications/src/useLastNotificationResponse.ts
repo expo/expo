@@ -1,9 +1,12 @@
 import { useLayoutEffect, useState } from 'react';
 
 import { NotificationResponse } from './Notifications.types';
-import { addNotificationResponseReceivedListener } from './NotificationsEmitter';
-import NotificationsEmitterModule from './NotificationsEmitterModule';
-import { mapNotificationResponse } from './utils/mapNotificationResponse';
+import {
+  addNotificationResponseReceivedListener,
+  getLastNotificationResponseAsync,
+} from './NotificationsEmitter';
+
+type MaybeNotificationResponse = NotificationResponse | null | undefined;
 
 /**
  * A React hook always returns the notification response that was received most recently
@@ -42,37 +45,41 @@ import { mapNotificationResponse } from './utils/mapNotificationResponse';
  * @header listen
  */
 export default function useLastNotificationResponse() {
-  const [lastNotificationResponse, setLastNotificationResponse] = useState<
-    NotificationResponse | null | undefined
-  >(undefined);
+  const [lastNotificationResponse, setLastNotificationResponse] =
+    useState<MaybeNotificationResponse>(undefined);
 
-  // Only update the response if it is really from a different notification,
-  // as determined by the identifier
-  const setLastNotificationResponseIfNeeded = (response: NotificationResponse | null) => {
-    if (
-      response &&
-      response?.notification.request.identifier !==
-        lastNotificationResponse?.notification.request.identifier
-    ) {
-      setLastNotificationResponse(response);
+  // Pure function that returns the new response if it is different from the previous,
+  // otherwise return the previous response
+  const newResponseIfNeeded = (
+    prevResponse: MaybeNotificationResponse,
+    newResponse: MaybeNotificationResponse
+  ) => {
+    // If the new response is undefined or null, no need for update
+    if (!newResponse) {
+      return prevResponse;
     }
+    // If the previous response is undefined or null and the new response is not, we should update
+    if (!prevResponse) {
+      return newResponse;
+    }
+    return prevResponse.notification.request.identifier !==
+      newResponse.notification.request.identifier
+      ? newResponse
+      : prevResponse;
   };
 
   // useLayoutEffect ensures the listener is registered as soon as possible
   useLayoutEffect(() => {
     // Get the last response first, in case it was set earlier (even in native code on startup)
     // before this renders
-    NotificationsEmitterModule.getLastNotificationResponseAsync?.().then((response) => {
-      setLastNotificationResponseIfNeeded(response);
-    });
+    getLastNotificationResponseAsync?.().then((response) =>
+      setLastNotificationResponse((prevResponse) => newResponseIfNeeded(prevResponse, response))
+    );
 
-    // On each mount of this hook we fetch last notification response
-    // from the native module which is an "always active listener"
-    // and always returns the most recent response.
-    const subscription = addNotificationResponseReceivedListener((response) => {
-      const mappedResponse = mapNotificationResponse(response);
-      setLastNotificationResponseIfNeeded(mappedResponse);
-    });
+    // Set up listener for responses that come in, and set the last response if needed
+    const subscription = addNotificationResponseReceivedListener((response) =>
+      setLastNotificationResponse((prevResponse) => newResponseIfNeeded(prevResponse, response))
+    );
     return () => {
       subscription.remove();
     };
