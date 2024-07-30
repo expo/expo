@@ -43,7 +43,6 @@ const IGNORED_PACKAGES = [
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
-  'jest-expo', // package: expect, jest-snapshot, react, server-only
 ];
 
 /**
