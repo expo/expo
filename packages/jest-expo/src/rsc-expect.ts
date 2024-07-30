@@ -20,10 +20,11 @@ function flightInputAsStringOrPromise(data: ReactNode | ReadableStream): string 
 }
 
 expect.extend({
+  // Types and jsdocs are defined in ./index.d.ts
   toMatchFlight(data: ReactNode | ReadableStream, input: string) {
     const resolvedStringOrPromise = flightInputAsStringOrPromise(data);
 
-    function createTestResult(flightInput: string) {
+    const createTestResult = (flightInput: string) => {
       // Only pass when the flightInput "equals" the input string
       const pass = flightInput === input;
       return {
@@ -36,7 +37,7 @@ expect.extend({
             : `expected RSC flight ${received} to equal ${expected}`;
         },
       };
-    }
+    };
 
     // Handle both sync and async resolved strings
     return typeof resolvedStringOrPromise === 'string'
@@ -44,10 +45,13 @@ expect.extend({
       : resolvedStringOrPromise.then(createTestResult);
   },
 
+  // Types and jsdocs are defined in ./index.d.ts
   async toMatchFlightSnapshot(data: ReactNode | ReadableStream) {
     // See: https://jestjs.io/docs/expect#async
     Object.defineProperty(this, 'error', { value: new Error() });
+
     const resolvedString = await flightInputAsStringOrPromise(data);
-    return toMatchSnapshot.call(this, resolvedString, 'toMatchFlightSnapshot');
+    // @ts-expect-error - Snapshot contexts have an additional snapshotState, which is handled by Jest
+    return toMatchSnapshot.call(this, resolvedString);
   },
 });
