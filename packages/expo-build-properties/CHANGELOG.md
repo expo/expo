@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
