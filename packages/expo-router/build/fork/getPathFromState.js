@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appendBaseUrl = exports.decodeParams = exports.deepEqual = exports.getPathDataFromState = void 0;
-const core_1 = require("@react-navigation/core");
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {
@@ -75,12 +74,30 @@ function getPathFromState(state, _options) {
     return getPathDataFromState(state, _options).path;
 }
 exports.default = getPathFromState;
+const formatToList = (items) => items.map((key) => `- ${key}`).join('\n');
+function validatePathConfig(config, root = true) {
+    const validKeys = ['initialRouteName', 'screens'];
+    if (!root) {
+        validKeys.push('path', 'exact', 'stringify', 'parse');
+    }
+    const invalidKeys = Object.keys(config).filter((key) => !validKeys.includes(key));
+    if (invalidKeys.length) {
+        throw new Error(`Found invalid properties in the configuration:\n${formatToList(invalidKeys)}\n\nDid you forget to specify them under a 'screens' property?\n\nYou can only specify the following properties:\n${formatToList(validKeys)}\n\nSee https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration.`);
+    }
+    if (config.screens) {
+        Object.entries(config.screens).forEach(([_, value]) => {
+            if (typeof value !== 'string') {
+                validatePathConfig(value, false);
+            }
+        });
+    }
+}
 function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
     if (state == null) {
         throw Error("Got 'undefined' for the navigation state. You must pass a valid state object.");
     }
     const { preserveGroups, preserveDynamicRoutes, ...options } = _options;
-    (0, core_1.validatePathConfig)(options);
+    validatePathConfig(options);
     // Expo Router disallows usage without a linking config.
     if (Object.is(options.screens, DEFAULT_SCREENS)) {
         throw Error("You must pass a 'screens' object to 'getPathFromState' to generate a path.");
