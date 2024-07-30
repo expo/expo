@@ -16,7 +16,7 @@ export declare class Try extends Component<PropsWithChildren<{
     };
     static getDerivedStateFromError(error: Error): {
         error: Error;
-    };
+    } | null;
     retry: () => Promise<void>;
     render(): string | number | boolean | React.ReactFragment | JSX.Element | null | undefined;
 }
