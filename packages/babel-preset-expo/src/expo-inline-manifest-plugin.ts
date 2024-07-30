@@ -132,7 +132,7 @@ export function expoInlineManifestPlugin(api: ConfigAPI & { types: any }) {
     name: 'expo-inline-manifest-plugin',
     visitor: {
       MemberExpression(path: any, state: any) {
-        // Web-only feature/React-server, the native manifest is provided dynamically by the client.
+        // Web-only/React Server-only feature: the native manifest is provided dynamically by the client.
         if (!shouldInline) {
           return;
         }
