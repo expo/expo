@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix logbox usage on native for router errors. ([#30651](https://github.com/expo/expo/pull/30651) by [@EvanBacon](https://github.com/EvanBacon))
 - Update DevLoadingView on native. ([#30606](https://github.com/expo/expo/pull/30606) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix metro symbolication issue with web import errors. ([#30544](https://github.com/expo/expo/pull/30544) by [@EvanBacon](https://github.com/EvanBacon))
 - Remount the failed component when a refresh event occurs. ([#30544](https://github.com/expo/expo/pull/30544) by [@EvanBacon](https://github.com/EvanBacon))

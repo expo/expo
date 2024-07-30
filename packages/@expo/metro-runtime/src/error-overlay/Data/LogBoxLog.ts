@@ -236,7 +236,12 @@ function ensureStackFilesHaveParams(stack: Stack): Stack {
       });
 
   return stack.map((frame) => {
-    if (!frame.file?.startsWith('http')) return frame;
+    if (
+      !frame.file?.startsWith('http') ||
+      // Account for Metro malformed URLs
+      frame.file.includes('&platform=')
+    )
+      return frame;
 
     const url = new URL(frame.file);
     if (url.searchParams.has('platform')) {
