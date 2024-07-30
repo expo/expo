@@ -26,7 +26,7 @@ function flightInputAsStringOrPromise(data: any) {
 }
 
 expect.extend({
-  toMatchFlight(data: string | ReactNode | ReadableStream, input: string) {
+  toMatchFlight(data: ReactNode | ReadableStream, input: string) {
     const resolved = flightInputAsStringOrPromise(data);
 
     if (typeof resolved === 'string') {
@@ -42,7 +42,7 @@ expect.extend({
       }
     });
   },
-  async toMatchFlightSnapshot(this: any, data: string | ReactNode | ReadableStream) {
+  async toMatchFlightSnapshot(this: any, data: ReactNode | ReadableStream) {
     const resolved = await flightInputAsStringOrPromise(data);
     return toMatchSnapshot.call(this, resolved);
   },
