@@ -37,7 +37,8 @@
     "tailwind": "^4.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "react-native-svg": "^15.2.0"
+    "react-native-svg": "^15.2.0",
+    "expo-quick-actions": "^2.0.0"
 
   },
   "devDependencies": {

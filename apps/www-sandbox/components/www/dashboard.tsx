@@ -1,5 +1,3 @@
-'use dom';
-
 import '@/global.css';
 
 import { Badge } from '@/components/ui/badge';
@@ -20,7 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -48,7 +45,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Link } from 'expo-router';
 import { StyleNoSelect } from 'expo/dom';
 import {
-  Bell,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -63,16 +59,11 @@ import {
   PanelLeft,
   Search,
   Settings,
-  ShoppingCart,
   Truck,
   Users2,
 } from 'lucide-react';
-import { Area, AreaChart, XAxis, YAxis } from 'recharts';
-
-import { ChartContainer } from '../ui/chart';
 
 import type { NotificationContentInput } from 'expo-notifications';
-import ThreeThing from './three-01';
 
 export default function Dashboard({
   requestNotificationsPermissions,
@@ -256,7 +247,15 @@ export default function Dashboard({
                   </CardHeader>
 
                   <CardFooter>
-                    <Button>Create New Order</Button>
+                    <Button
+                      onClick={() => {
+                        requestNotificationsPermissions({
+                          title: 'New Order',
+                          body: '(from a DOM component 🚀)',
+                        });
+                      }}>
+                      Create New Order
+                    </Button>
                   </CardFooter>
 
                   {/* <CardContent className="p-0">
