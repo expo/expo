@@ -48,10 +48,9 @@ Google Service Account Key is the authentication method required to be used to s
 #### Consequences if compromised
 
 If a malicious actor were to somehow gain access to the Google Service Account Key, they would be able to perform actions in the Google Play Console on your behalf. The actions they could perform would be limited to the permissions granted to the service account key.
-They would also be able to submit an existing app signed by your build credentials to the Google Play Store.
-When it comes to submitting an existing app to the Google Play Store, if an attacker doesn't have access to your build credentials, they won't be able to do much, as they would only be able to submit the app signed with them.
-The actor also wouldn't be able to submit a new app to the Google Play Store in your name, as the first Google Play submission needs to be done manually.
+If a malicious actor somehow gains access to your Google Service Account Key, they would be able to perform actions in the Google Play Console on your behalf. The actions they could perform would be limited to the permissions granted to the service account key. They would also be able to submit an existing app signed by your build credentials to the Google Play Store.
 
+If an attacker doesn't have access to your build credentials, they won't be able to do much when it comes to submitting an existing app to the Google Play Store. They would only be able to submit the app signed with them. The actor also wouldn't be able to submit a new app to the Google Play Store in your name, as the first Google Play submission needs to be done manually.
 #### Consequences if lost
 
 None. If you lose the Google Service Account Key, you can revoke it using the Google Cloud Console and create a new one.
@@ -118,16 +117,15 @@ None. They are available through the Apple Developer console.
 ### Apple App Store Connect (ASC) API key
 
 Apple App Store Connect (ASC) API key authentication is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service.
-The ASC API key is permanently stored on the Expo servers (unless deleted by a developer) while being encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest.
-The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using EAS Submit.
+Apple App Store Connect (ASC) API key is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service. This key is permanently stored on the Expo servers (unless deleted by a developer) while being encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest.
 
+The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using EAS Submit.
 #### Consequences if compromised
 
 If a malicious actor were to somehow gain access to the ASC API key, they would be able to perform actions in the App Store Connect on your behalf. The actions they could perform would be limited to the permissions granted to the API key.
-They would also be able to submit an app signed by your build credentials to the App Store.
-When it comes to submitting an app to the App Store, if an attacker doesn't have access to your build credentials, they won't be able to do much, as they would only be able to submit the app signed with them.
-It means that they wouldn't be able to submit any arbitrary app to the App Store in your name.
+If a malicious actor somehow gains access to the ASC API key, they would be able to perform actions in the App Store Connect on your behalf. The actions they could perform would be limited to the permissions granted to the API key. They would also be able to submit an app signed by your build credentials to the App Store.
 
+If an attacker doesn't have access to your build credentials, they won't be able to do much when submitting an app to the App Store. They can only submit the app signed with those build credentials, and they can't submit any arbitrary app to the App Store in your name.
 #### Consequences if lost
 
 None. If you lose the ASC API key, you can revoke it using the App Store Connect portal and create a new one.
@@ -135,17 +133,17 @@ None. If you lose the ASC API key, you can revoke it using the App Store Connect
 ### Apple app-specific password
 
 Apple app-specific password authentication is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service.
-Unlike other credentials, the app-specific password is not permanently stored in the Expo servers. The password is encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) and stored only for the period required to submit the app to the App Store + 24 hours for retries.
-Once this period is over, the password is deleted from the Expo servers. This authentication method is **not recommended**. We recommend using the Apple Store Connect (ASC) API key for submitting your apps to the App Store instead.
-Expo won't use the Apple app-specific password in any other way than for submitting your app to the App Store.
+Apple app-specific password is another authentication method that can be used to submit an iOS app to Apple's App Store using the EAS Submit. Unlike other credentials, the app-specific password is not permanently stored in the Expo servers. 
 
+The password is encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) and stored only for the period required to submit the app to the App Store plus 24 hours for retries. Once this period is over, the password is deleted from the Expo servers. 
+
+This authentication method is **not recommended**. We recommend using the Apple Store Connect (ASC) API key for submitting your apps to the App Store instead. Expo won't use the Apple app-specific password in any way other than to submit your app to the App Store.
 #### Consequences if compromised
 
 If a malicious actor were to somehow gain access to the app-specific password, they would be able to access information like mail, contacts, and calendars that you store in iCloud.
-They would also be able to submit an app signed by your build credentials to the App Store.
-When it comes to submitting an app to the App Store, if an attacker doesn't have access to your build credentials, they won't be able to do much, as they would only be able to submit the app signed with them.
-It means that they wouldn't be able to submit any arbitrary app to the App Store in your name.
+If a malicious actor somehow gains access to the app-specific password, they would be able to access information like mail, contacts, and calendars that you store in iCloud. They would also be able to submit an app signed by your build credentials to the App Store.
 
+If an attacker doesn't have access to your build credentials, they won't be able to do much when submitting an app to the App Store. They can only submit the app signed with those build credentials, and they can't submit any arbitrary app to the App Store in your name.
 #### Consequences if lost
 
 None. If you lose the app-specific password, you can revoke it and create a new one in the Apple account settings.
