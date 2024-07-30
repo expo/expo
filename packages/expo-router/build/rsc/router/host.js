@@ -85,9 +85,6 @@ const checkStatus = async (responsePromise) => {
         throw new errors_1.ReactServerError(responseText, response.url, response.status);
     }
     console.log('[Router] Fetched', response.url, response.status);
-    // response.text().then((text) => {
-    //   console.log('[Router] Response:', text);
-    // });
     return response;
 };
 function getCached(c, m, k) {

@@ -99,7 +99,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
         }
 
         return {
-          // TODO: Make relative to server root
+          // TODO: Make relative to server root for production exports.
           id: filePath,
           chunks: [
             // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.

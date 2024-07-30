@@ -42,7 +42,7 @@ async function renderRsc(args, opts) {
                 return { id: resolved.id, chunks: resolved.chunks, name, async: true };
             }
             return {
-                // TODO: Make relative to server root
+                // TODO: Make relative to server root for production exports.
                 id: filePath,
                 chunks: [
                     // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
