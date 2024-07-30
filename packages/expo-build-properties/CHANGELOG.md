@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds. ([#30699](https://github.com/expo/expo/pull/30699) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.12.4 — 2024-07-30
+
+### 🎉 New features
+
+- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds. ([#30699](https://github.com/expo/expo/pull/30699) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.12.3 — 2024-06-06
 
