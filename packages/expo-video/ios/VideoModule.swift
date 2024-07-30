@@ -6,6 +6,10 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
+    OnCreate {
+      VideoCacheManager.shared.removeUnusedCache()
+    }
+
     Function("isPictureInPictureSupported") { () -> Bool in
       return AVPictureInPictureController.isPictureInPictureSupported()
     }

@@ -3,6 +3,7 @@ import AVFoundation
 import UIKit
 import CoreServices
 
+
 final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
   private let lock = NSLock()
 
@@ -10,29 +11,36 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let downloadBufferLimit = CachingPlayerItemConfiguration.downloadBufferLimit
   private let readDataLimit = CachingPlayerItemConfiguration.readDataLimit
 
-  private lazy var fileHandle = MediaFileHandle(filePath: saveFilePath)
+  private lazy var fileHandle = MediaFileHandle(filePath: pathWithExtension)
 
   private var session: URLSession?
-  private var response: URLResponse? {
-    didSet {
-      if let mimeType = response?.mimeType {
-        saveMimeTypeForPath(mimeType: mimeType, filePath: saveFilePath)
-      }
-    }
-  }
+  private var response: URLResponse?
   private var pendingRequests = Set<AVAssetResourceLoadingRequest>()
   private var isDownloadComplete = false
 
   private let url: URL
   private let saveFilePath: String
+  private let fileExtension: String
+  
+  // For videos with uris without an extension the file extension is not known until we get mimeType response from the server
+  // We can't play local videos without an extension, which means that the cached file has to have it
+  // We should always receive it before creating the fileHandle
+  private var pathWithExtension: String {
+    let ext = CachingPlayerItem.mimeTypeToExtension(mimeType: response?.mimeType)
+    if let ext, self.fileExtension == "" {
+      return self.saveFilePath + ".\(ext)"
+    }
+    return self.saveFilePath
+  }
   private weak var owner: CachingPlayerItem?
 
   // MARK: Init
 
-  init(url: URL, saveFilePath: String, owner: CachingPlayerItem?) {
+  init(url: URL, saveFilePath: String, fileExtension: String, owner: CachingPlayerItem?) {
     self.url = url
     self.saveFilePath = saveFilePath
     self.owner = owner
+    self.fileExtension = fileExtension
     super.init()
 
     NotificationCenter.default.addObserver(self, selector: #selector(handleAppWillTerminate), name: UIApplication.willTerminateNotification, object: nil)
@@ -52,7 +60,9 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     }
 
     pendingRequests.insert(loadingRequest)
-    processPendingRequests()
+    if (self.response != nil) {
+      processPendingRequests()
+    }
     return true
   }
 
@@ -65,9 +75,8 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
     bufferData.append(data)
     writeBufferDataToFileIfNeeded()
-    processPendingRequests()
-    DispatchQueue.main.async {
-      self.owner?.delegate?.playerItem?(self.owner!, didDownloadBytesSoFar: self.fileHandle.fileSize, outOf: Int(dataTask.countOfBytesExpectedToReceive))
+    if (self.response != nil) {
+      processPendingRequests()
     }
   }
 
@@ -135,9 +144,15 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
   private func fillInContentInformationRequest(_ contentInformationRequest: AVAssetResourceLoadingContentInformationRequest?) {
     // Do we have response from the server?
-    guard let response = response else { return }
+    guard let response = response else {
+      return
+    }
 
-    contentInformationRequest?.contentType = response.mimeType
+    if let mimeType = response.mimeType {
+      let rawUti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil)?.takeRetainedValue() as? String
+
+      contentInformationRequest?.contentType = rawUti ?? response.mimeType
+    }
     contentInformationRequest?.contentLength = response.expectedContentLength
     contentInformationRequest?.isByteRangeAccessSupported = true
   }
@@ -176,13 +191,15 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     isDownloadComplete = true
 
-    DispatchQueue.main.async {
-      self.owner?.delegate?.playerItem?(self.owner!, didFinishDownloadingFileAt: self.saveFilePath)
+    if let mimeType = response?.mimeType {
+      saveMimeType(forUrl: url, mimeType: mimeType)
     }
   }
 
-  func saveMimeTypeForPath(mimeType: String, filePath: String) {
-    let mimeTypeCachePath = filePath + "&mimeType"
+  func saveMimeType(forUrl: URL, mimeType: String) {
+    let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension)
+    let mimeTypeCachePath = filePath + VideoCacheManager.mimeTypeSuffix
+
     do {
       if (FileManager.default.fileExists(atPath: mimeTypeCachePath)) {
         try FileManager.default.removeItem(atPath: mimeTypeCachePath)
@@ -193,8 +210,9 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     }
   }
 
-  static func readMimeTypeForPath(filePath: String) -> String? {
-    let mimeTypeCachePath = filePath + "&mimeType"
+  static func readMimeType(forUrl url: URL) -> String? {
+    let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension)
+    let mimeTypeCachePath = filePath + VideoCacheManager.mimeTypeSuffix
 
     do {
       guard FileManager.default.fileExists(atPath: mimeTypeCachePath) else {
@@ -230,10 +248,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
   private func downloadFailed(with error: Error) {
     fileHandle.deleteFile()
-
-    DispatchQueue.main.async {
-      self.owner?.delegate?.playerItem?(self.owner!, downloadingFailedWith: error)
-    }
   }
 
   @objc private func handleAppWillTerminate() {

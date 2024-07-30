@@ -4,8 +4,11 @@ import AVFoundation
 
 class VideoPlayerItem: CachingPlayerItem {
   let videoSource: VideoSource
-  init(asset: AVAsset, videoSource: VideoSource) {
+
+  init(url: URL, videoSource: VideoSource, avUrlAssetOptions: [String: Any]? = nil) {
+//  init(asset: AVAsset, videoSource: VideoSource) {
     self.videoSource = videoSource
-    super.init(asset: asset, automaticallyLoadedAssetKeys: nil)
+//    super.init(asset: asset, automaticallyLoadedAssetKeys: nil)
+    super.init(url: url, avUrlAssetOptions: avUrlAssetOptions)
   }
 }
