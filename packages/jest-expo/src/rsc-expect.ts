@@ -9,7 +9,7 @@ import { streamToString, renderJsxToFlightStringAsync } from './rsc-utils';
 matchers.customTesters = [];
 
 async function resolveFlightInputAsync(data: ReactNode | ReadableStream) {
-  if ('getReader' in data) {
+  if (data && typeof data === 'object' && 'getReader' in data) {
     return (await streamToString(data)).trim();
   }
   const resolved = await renderJsxToFlightStringAsync(data);
