@@ -7,6 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 
 Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects.
@@ -110,7 +111,34 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 
 <Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
-Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
+<Tabs>
+  <Tab label="SDK 52 and above">
+    Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the file as a Gradle project from autolinking:
+
+```diff expo-module.config.json
+    "android": {
++     "gradleAarProjects": [
++       {
++         "name": "test-aar",
++         "aarFilePath": "android/libs/test.aar"
++       }
++     ],
+    "modules": [
+```
+
+    Finally, add the dependency to the `dependencies` list, using the specified name with `${project.name}$` prefix:
+
+```diff android/build.gradle
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
++ implementation project(":${project.name}\$test-aar")
+}
+```
+
+  </Tab>
+  <Tab label="SDK 51 and below">
+    Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
 
 ```diff android/build.gradle
   repositories {
@@ -130,6 +158,9 @@ dependencies {
 + implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0@aar'
 }
 ```
+
+  </Tab>
+</Tabs>
 
 </Collapsible>
 
