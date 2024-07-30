@@ -68,6 +68,24 @@ describe(validateConfig, () => {
     ).toThrow();
   });
 
+  it('should validate android.enablePngCrunchInReleaseBuilds', () => {
+    expect(() =>
+      validateConfig({
+        android: {
+          enablePngCrunchInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enablePngCrunchInReleaseBuilds: false,
+        },
+      })
+    ).not.toThrow();
+  });
+
   it('should validate ios.extraPods', () => {
     expect(() => {
       validateConfig({ ios: { extraPods: [{ name: 'Protobuf' }] } });
