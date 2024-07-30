@@ -8,6 +8,11 @@ export declare function resolveEntryPoint(projectRoot: string, { platform, pkg, 
 }): string;
 export declare function getFileWithExtensions(fromDirectory: string, moduleId: string, extensions: string[]): string | null;
 /**
+ * Convert an absolute entry point to a server or project root relative filepath.
+ * This is useful on Android where the entry point is an absolute path.
+ */
+export declare function convertEntryPointToRelative(projectRoot: string, absolutePath: string): string;
+/**
  * Resolve the entry point relative to either the server or project root.
  * This relative entry path should be used to pass non-absolute paths to Metro,
  * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
