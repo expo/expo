@@ -21,28 +21,27 @@ function flightInputAsStringOrPromise(data: ReactNode | ReadableStream): string 
 
 expect.extend({
   // Types and jsdocs are defined in ./index.d.ts
-  toMatchFlight(data: ReactNode | ReadableStream, input: string) {
-    const resolvedStringOrPromise = flightInputAsStringOrPromise(data);
+  toMatchFlight(data: ReactNode | ReadableStream, expectedInput: string) {
+    const inputStringOrPromise = flightInputAsStringOrPromise(data);
 
-    const createTestResult = (flightInput: string) => {
-      // Only pass when the flightInput "equals" the input string
-      const pass = flightInput === input;
+    const createTestResult = (receivedInput: string) => {
       return {
-        pass,
+        // Only pass when the resolvedInput "equals" the input string
+        pass: this.equals(receivedInput, expectedInput),
         message: () => {
-          const received = this.utils.printReceived(resolvedStringOrPromise);
-          const expected = this.utils.printExpected(input);
-          return pass
+          const received = this.utils.printReceived(receivedInput);
+          const expected = this.utils.printExpected(expectedInput);
+          return this.isNot
             ? `expected RSC flight ${received} NOT to equal ${expected}`
             : `expected RSC flight ${received} to equal ${expected}`;
         },
       };
     };
 
-    // Handle both sync and async resolved strings
-    return typeof resolvedStringOrPromise === 'string'
-      ? createTestResult(resolvedStringOrPromise)
-      : resolvedStringOrPromise.then(createTestResult);
+    // Handle both sync and async input data
+    return typeof inputStringOrPromise === 'string'
+      ? createTestResult(inputStringOrPromise)
+      : inputStringOrPromise.then(createTestResult);
   },
 
   // Types and jsdocs are defined in ./index.d.ts
