@@ -1,13 +1,9 @@
 export declare const log: {
     (...data: any[]): void;
     (message?: any, ...optionalParams: any[]): void;
-    (message?: any, ...optionalParams: any[]): void;
-    (message?: any, ...optionalParams: any[]): void;
 };
 export declare const error: {
     (...data: any[]): void;
-    (message?: any, ...optionalParams: any[]): void;
-    (message?: any, ...optionalParams: any[]): void;
     (message?: any, ...optionalParams: any[]): void;
 };
 /** Print an error and provide additional info (the stack trace) in debug mode. */
