@@ -282,3 +282,6 @@ require('expo-modules-core/src/web/index.web');
 
 // Ensure the environment globals are installed before the first test runs.
 require('expo/src/winter');
+
+// Installs the temporary workaround to disable the deprecation warning for `react-test-renderer@19+`.
+require('./setup-react-19');
