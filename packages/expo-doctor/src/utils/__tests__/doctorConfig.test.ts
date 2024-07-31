@@ -14,7 +14,9 @@ describe('getReactNativeDirectoryCheckExcludes', () => {
   });
 
   it('returns an empty array if the config has no excludes', () => {
-    expect(getReactNativeDirectoryCheckExcludes({ expo: { doctor: { reactNativeDirectoryCheck: {} } } })).toEqual([]);
+    expect(
+      getReactNativeDirectoryCheckExcludes({ expo: { doctor: { reactNativeDirectoryCheck: {} } } })
+    ).toEqual([]);
   });
 
   it('parses strings that begin and end with / as regexes', () => {
@@ -41,7 +43,9 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
   it('returns true if the config is enabled', () => {
     expect(
-      getReactNativeDirectoryCheckEnabled({ expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } } })
+      getReactNativeDirectoryCheckEnabled({
+        expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } },
+      })
     ).toBe(true);
   });
 
@@ -57,7 +61,9 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
     process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK = '0';
     expect(
-      getReactNativeDirectoryCheckEnabled({ expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } } })
+      getReactNativeDirectoryCheckEnabled({
+        expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } },
+      })
     ).toBe(false);
     delete process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK;
 
@@ -71,7 +77,9 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
 describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
   it('returns true if the config is empty', () => {
-    expect(getReactNativeDirectoryCheckListUnknownPackagesEnabled({ expo: { doctor: {} } })).toBe(true);
+    expect(getReactNativeDirectoryCheckListUnknownPackagesEnabled({ expo: { doctor: {} } })).toBe(
+      true
+    );
   });
 
   it('returns true if the config is enabled', () => {
