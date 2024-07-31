@@ -118,7 +118,9 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
         isPackagerRunning(isMetroRunning -> {
           if (!isMetroRunning) {
             String bundleURL = getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-            reloadJSFromServer(bundleURL, () -> {});
+            reloadJSFromServer(bundleURL, () -> {
+              UiThreadUtil.runOnUiThread(getReactInstanceDevHelper()::onJSBundleLoadedFromServer);
+            });
           }
         });
     }

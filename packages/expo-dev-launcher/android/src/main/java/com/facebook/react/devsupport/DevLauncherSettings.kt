@@ -10,7 +10,9 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.PackagerConnectionSettings
 import expo.modules.devlauncher.react.DevLauncherPackagerConnectionSettings
 
-
+/**
+ * Implementation has been copied from reacts internal [DevInternalSettings] class
+ */
 internal class DevLauncherSettings(
   context: Context,
   debugServerHost: String,

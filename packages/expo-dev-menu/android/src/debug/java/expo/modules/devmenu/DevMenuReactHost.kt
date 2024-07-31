@@ -22,8 +22,6 @@ import com.facebook.soloader.SoLoader
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
-import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
-import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import expo.modules.devmenu.modules.DevMenuInternalModule
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.kotlin.ModulesProvider
@@ -55,10 +53,6 @@ object DevMenuReactHost {
       )
     val componentFactory = ComponentFactory()
     DefaultComponentsRegistry.register(componentFactory)
-    var originalDevFlag: Boolean? = null
-    if (!useDeveloperSupport) {
-      originalDevFlag = injectDevFlag(false)
-    }
     val reactHost = ReactHostImpl(
       application,
       defaultReactHostDelegate,
@@ -69,9 +63,6 @@ object DevMenuReactHost {
       .apply {
         jsEngineResolutionAlgorithm = jsResolutionAlgorithm
       }
-    if (originalDevFlag != null) {
-      injectDevFlag(originalDevFlag)
-    }
     if (useDeveloperSupport) {
       injectDevServerSettings(application.applicationContext, reactHost)
     }
@@ -150,20 +141,5 @@ object DevMenuReactHost {
     } catch (e: Exception) {
       Log.e(DEV_MENU_TAG, "Couldn't inject DevSettings object.", e)
     }
-  }
-
-  /**
-   * TODO: Remove this after React Native 0.74.1
-   */
-  private fun injectDevFlag(devFlag: Boolean): Boolean {
-    val reactHostClass = ReactHostImpl::class.java
-    val originalDevFlag: Boolean =
-      reactHostClass.getPrivateDeclaredFieldValue("DEV", reactHostClass)
-    reactHostClass.setPrivateDeclaredFieldValue(
-      "DEV",
-      reactHostClass,
-      devFlag
-    )
-    return originalDevFlag
   }
 }

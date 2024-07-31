@@ -215,7 +215,9 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
       String bundleURL =
         getDevServerHelper()
           .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-      reloadJSFromServer(bundleURL, () -> {});
+      reloadJSFromServer(bundleURL, () -> {
+        UiThreadUtil.runOnUiThread(getReactInstanceDevHelper()::onJSBundleLoadedFromServer);
+      });
     }
   }
 
