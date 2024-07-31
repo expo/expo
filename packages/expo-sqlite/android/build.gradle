@@ -27,9 +27,9 @@ def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File(
 def SQLITE3_SRC_DIR = new File("$buildDir/sqlite3_src")
 
 def getSQLiteBuildFlags() {
-  def buildFlags = '-DSQLITE_ENABLE_BYTECODE_VTAB=1'
+  def buildFlags = '-DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
   if (findProperty('expo.sqlite.enableFTS') !== 'false') {
-    buildFlags <<= '-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
+    buildFlags <<= ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   }
   def customBuildFlags = findProperty('expo.sqlite.customBuildFlags') ?: ''
   if (customBuildFlags != '') {
