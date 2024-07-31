@@ -65,7 +65,7 @@ export interface SQLiteProviderProps {
  * Context.Provider component that provides a SQLite database to all children.
  * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
  */
-export declare function SQLiteProvider({ children, onError, useSuspense, ...props }: SQLiteProviderProps): JSX.Element;
+export declare function SQLiteProvider({ children, onError, useSuspense, ...props }: SQLiteProviderProps): React.JSX.Element;
 /**
  * A global hook for accessing the SQLite database across components.
  * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.

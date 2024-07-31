@@ -33,7 +33,7 @@ export declare const Slot: ({ id, children, fallback, }: {
     id: string;
     children?: ReactNode;
     fallback?: ReactNode;
-}) => string | number | true | import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>> | import("react").ReactFragment | import("react").FunctionComponentElement<import("react").ProviderProps<ReactNode>>;
+}) => string | number | true | import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>> | Iterable<ReactNode> | import("react").FunctionComponentElement<import("react").ProviderProps<ReactNode>>;
 export declare const Children: () => any;
 /**
  * ServerRoot for SSR
