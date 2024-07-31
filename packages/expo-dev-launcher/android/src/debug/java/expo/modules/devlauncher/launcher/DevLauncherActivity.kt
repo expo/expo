@@ -84,7 +84,7 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLaun
   }
 
   override fun onReactContextInitialized(context: ReactContext) {
-//    controller.devClientHost.removeReactInstanceEventListener(this)
+    controller.devClientHost.removeReactInstanceEventListener(this)
   }
 
   private val isSimulator
