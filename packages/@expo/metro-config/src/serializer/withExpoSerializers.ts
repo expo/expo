@@ -16,8 +16,10 @@ import {
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
+import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
+import { treeShakeSerializer } from './treeShakeSerializerPlugin';
 import { env } from '../env';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -52,6 +54,12 @@ export function withExpoSerializers(
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
+
+  // Then tree-shake the modules.
+  processors.push(treeShakeSerializer);
+
+  // Then finish transforming the modules from AST to JS.
+  processors.push(reconcileTransformSerializerPlugin);
 
   return withSerializerPlugins(config, processors, options);
 }
@@ -233,6 +241,7 @@ function getDefaultSerializer(
         return {
           outputMode: customSerializerOptions.output,
           splitChunks: customSerializerOptions.splitChunks,
+          usedExports: customSerializerOptions.usedExports,
           includeSourceMaps: customSerializerOptions.includeSourceMaps,
         };
       }
@@ -245,6 +254,7 @@ function getDefaultSerializer(
 
         return {
           outputMode: url.searchParams.get('serializer.output'),
+          usedExports: url.searchParams.get('serializer.usedExports') === 'true',
           splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
         };

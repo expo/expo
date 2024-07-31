@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 export type ManifestAsset = {
     url: string;
 };

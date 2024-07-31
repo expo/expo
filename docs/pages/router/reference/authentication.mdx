@@ -19,16 +19,16 @@ It's common to restrict specific routes to users who are not authenticated. This
 
 <FileTree
   files={[
-    'app/_layout.js',
+    'app/_layout.tsx',
     [
-      'app/sign-in.js',
+      'app/sign-in.tsx',
       <span>
         Always accessible <LockUnlocked01Icon className="inline mb-1" />
       </span>,
     ],
-    ['app/(app)/_layout.js', <span>Protects child routes</span>],
+    ['app/(app)/_layout.tsx', <span>Protects child routes</span>],
     [
-      'app/(app)/index.js',
+      'app/(app)/index.tsx',
       <span>
         Requires authorization <Lock01Icon className="inline mb-1" />
       </span>,
@@ -45,10 +45,10 @@ To follow the above example, set up a [React Context provider](https://react.dev
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
 ```tsx ctx.tsx
-import React from 'react';
+import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 
-const AuthContext = React.createContext<{
+const AuthContext = createContext<{
   signIn: () => void;
   signOut: () => void;
   session?: string | null;
@@ -62,7 +62,7 @@ const AuthContext = React.createContext<{
 
 // This hook can be used to access the user info.
 export function useSession() {
-  const value = React.useContext(AuthContext);
+  const value = useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {
     if (!value) {
       throw new Error('useSession must be wrapped in a <SessionProvider />');
@@ -72,7 +72,7 @@ export function useSession() {
   return value;
 }
 
-export function SessionProvider(props: React.PropsWithChildren) {
+export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
@@ -88,7 +88,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
         session,
         isLoading,
       }}>
-      {props.children}
+      {children}
     </AuthContext.Provider>
   );
 }
@@ -175,7 +175,7 @@ export function useStorageState(key: string): UseStateHook<string> {
 
 Use the `SessionProvider` in the root layout to provide the authentication context to the entire app. It's imperative that the `<Slot />` is mounted before any navigation events are triggered. Otherwise, a runtime error will be thrown.
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Slot } from 'expo-router';
 import { SessionProvider } from '../ctx';
 
@@ -195,7 +195,8 @@ export default function Root() {
 
 Create a nested [layout route](/router/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
-```jsx app/(app)/_layout.js|collapseHeight=400
+```tsx app/(app)/_layout.tsx|collapseHeight=400
+import { Text } from 'react-native';
 import { Redirect, Stack } from 'expo-router';
 
 import { useSession } from '../../ctx';
@@ -227,7 +228,7 @@ export default function AppLayout() {
 
 Create the `/sign-in` screen. It can toggle the authentication using `signIn()`. Since this screen is outside the `(app)` group, the group's layout and authentication check do not run when rendering this screen. This lets logged-out users see this screen.
 
-```jsx app/sign-in.js|collapseHeight=480
+```tsx app/sign-in.tsx|collapseHeight=480
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
@@ -257,7 +258,7 @@ export default function SignIn() {
 
 Implement an authenticated screen that lets users sign out.
 
-```jsx app/(app)/index.js|collapseHeight=480
+```tsx app/(app)/index.tsx|collapseHeight=480
 import { Text, View } from 'react-native';
 
 import { useSession } from '../../ctx';
@@ -292,12 +293,12 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
 
 <FileTree
   files={[
-    ['app/_layout.js', 'Declares global session context'],
-    'app/(app)/_layout.js',
-    ['app/(app)/sign-in.js', <span>Modally presented over the root</span>],
-    ['app/(app)/(root)/_layout.js', <span>Protects child routes</span>],
+    ['app/_layout.tsx', 'Declares global session context'],
+    'app/(app)/_layout.tsx',
+    ['app/(app)/sign-in.tsx', <span>Modal presented over the root</span>],
+    ['app/(app)/(root)/_layout.tsx', <span>Protects child routes</span>],
     [
-      'app/(app)/(root)/index.js',
+      'app/(app)/(root)/index.tsx',
       <span>
         Requires authorization <Lock01Icon className="inline mb-1" />
       </span>,
@@ -305,7 +306,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
   ]}
 />
 
-```jsx app/(app)/_layout.js|collapseHeight=480
+```tsx app/(app)/_layout.tsx|collapseHeight=480
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -339,9 +340,9 @@ To fix this, add a group and move conditional logic down a level.
 
 ### Before
 
-<FileTree files={['app/_layout.js', 'app/about.js']} />
+<FileTree files={['app/_layout.tsx', 'app/about.tsx']} />
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 export default function RootLayout() {
   React.useEffect(() => {
     // This navigation event will trigger the error above.
@@ -362,19 +363,19 @@ export default function RootLayout() {
 
 <FileTree
   files={[
-    ['app/_layout.js', ''],
-    ['app/(app)/_layout.js', 'Move conditional logic down a level'],
-    'app/(app)/about.js',
+    ['app/_layout.tsx', ''],
+    ['app/(app)/_layout.tsx', 'Move conditional logic down a level'],
+    'app/(app)/about.tsx',
   ]}
 />
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 export default function RootLayout() {
   return <Slot />;
 }
 ```
 
-```jsx app/(app)/_layout.js
+```tsx app/(app)/_layout.tsx
 export default function RootLayout() {
   React.useEffect(() => {
     router.push('/about');
@@ -394,4 +395,4 @@ export default function RootLayout() {
 
 ## Middleware
 
-Traditionally, websites may leverage some form of server-side redirection to protect routes. As of Expo Router v2, this library on the web currently only supports build-time static generation and has no support for custom middleware or serving. This can be added in the future to provide a more optimal web experience. In the meantime, authentication can be implemented by using client-side redirects and a loading state.
+Traditionally, websites may leverage some form of server-side redirection to protect routes. Expo Router on the web currently only supports build-time static generation and has no support for custom middleware or serving. This can be added in the future to provide a more optimal web experience. In the meantime, authentication can be implemented by using client-side redirects and a loading state.

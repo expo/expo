@@ -15,7 +15,7 @@ import ExpoCalendar from './ExpoCalendar';
  */
 export type RecurringEventOptions = {
   /**
-   * Whether or not future events in the recurring series should also be updated. If `true`, will
+   * Whether future events in the recurring series should also be updated. If `true`, will
    * apply the given changes to the recurring instance specified by `instanceStartDate` and all
    * future events in the series. If `false`, will only apply the given changes to the instance
    * specified by `instanceStartDate`.
@@ -552,6 +552,184 @@ export type DaysOfTheWeek = {
 
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
+/**
+ * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
+ * */
+export enum CalendarDialogResultActions {
+  /**
+   * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
+   * the user may have canceled the dialog, modified the event, or deleted it.
+   *
+   * On iOS, this means the user simply closed the dialog.
+   * */
+  done = 'done',
+  /**
+   * The user canceled or dismissed the dialog.
+   * @platform ios
+   * */
+  canceled = 'canceled',
+  /**
+   * The user deleted the event.
+   * @platform ios
+   * */
+  deleted = 'deleted',
+  /**
+   * The user responded to and saved a pending event invitation.
+   * @platform ios
+   * */
+  responded = 'responded',
+  /**
+   * The user saved a new event or modified an existing one.
+   * @platform ios
+   * */
+  saved = 'saved',
+}
+
+/**
+ * The result of presenting the calendar dialog for opening (viewing) an event.
+ * */
+export type OpenEventDialogResult = {
+  /**
+   * Indicates how user responded to the dialog.
+   * On Android, the `action` is always `done`.
+   * On iOS, it can be `done`, `canceled`, `deleted` or `responded`.
+   * */
+  action: Extract<CalendarDialogResultActions, 'done' | 'canceled' | 'deleted' | 'responded'>;
+};
+
+/**
+ * The result of presenting a calendar dialog for creating or editing an event.
+ * */
+export type DialogEventResult = {
+  /**
+   * How user responded to the dialog.
+   * On Android, this is always `done` (Android doesn't provide enough information to determine the user's action -
+   * the user may have canceled the dialog, saved or deleted the event).
+   *
+   * On iOS, it can be `saved`, `canceled` or `deleted`.
+   * */
+  action: Extract<CalendarDialogResultActions, 'done' | 'saved' | 'canceled' | 'deleted'>;
+  /**
+   * The ID of the event that was created or edited. On Android, this is always `null`.
+   *
+   * On iOS, this is a string when user confirms the creation or editing of an event. Otherwise, it's `null`.
+   * */
+  id: string | null;
+};
+
+export type PresentationOptions = {
+  /**
+   * Whether to launch the Activity as a new [task](https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_NEW_TASK).
+   * If `true`, the promise resolves with `'done'` action immediately after opening the calendar activity.
+   * @default true
+   * @platform android
+   */
+  startNewActivityTask?: boolean;
+};
+export type OpenEventPresentationOptions = PresentationOptions & {
+  /**
+   * Whether to allow the user to edit the previewed event.
+   * This property applies only to events in calendars created by the user.
+   *
+   * Note that if the user edits the event, the returned action is the one that user performs last.
+   * For example, when user previews the event, confirms some edits and finally dismisses the dialog, the event is edited, but response is `canceled`.
+   *
+   * @default false
+   * @platform ios
+   * */
+  allowsEditing?: boolean;
+  /**
+   * Determines whether event can be shown in calendar day view preview.
+   * This property applies only to invitations.
+   *
+   * @default false
+   * @platform ios
+   * */
+  allowsCalendarPreview?: boolean;
+};
+
+export type CalendarDialogParams = {
+  /**
+   * ID of the event to be presented in the calendar UI.
+   */
+  id: string;
+  /**
+   * Date object representing the start time of the desired instance, if looking for a single instance
+   * of a recurring event. If this is not provided and **id** represents a recurring event, the first
+   * instance of that event will be returned by default.
+   * @platform ios
+   */
+  instanceStartDate?: string | Date;
+};
+
+/**
+ * Launches the calendar UI provided by the OS to create a new event.
+ * @param eventData A map of details for the event to be created.
+ * @param presentationOptions Configuration that influences how the calendar UI is presented.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function createEventInCalendarAsync(
+  eventData: Omit<Partial<Event>, 'id'> = {},
+  presentationOptions?: PresentationOptions
+): Promise<DialogEventResult> {
+  if (!ExpoCalendar.createEventInCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'createEventInCalendarAsync');
+  }
+  // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
+  if (eventData.id) {
+    console.warn(
+      'You attempted to create an event with an id. Event ids are assigned by the system.'
+    );
+  }
+  const params = stringifyDateValues(eventData);
+  Object.assign(params, presentationOptions);
+
+  return ExpoCalendar.createEventInCalendarAsync(params);
+}
+
+/**
+ * Launches the calendar UI provided by the OS to preview an event.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function openEventInCalendarAsync(
+  params: CalendarDialogParams,
+  presentationOptions?: OpenEventPresentationOptions
+): Promise<OpenEventDialogResult> {
+  if (!ExpoCalendar.openEventInCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');
+  }
+  if (!params.id) {
+    throw new Error(
+      'openEventInCalendarAsync must be called with an id (string) of the target event'
+    );
+  }
+  const newParams = { ...params, ...presentationOptions };
+  return ExpoCalendar.openEventInCalendarAsync(newParams);
+}
+
+/**
+ * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function editEventInCalendarAsync(
+  params: CalendarDialogParams,
+  presentationOptions?: PresentationOptions
+): Promise<DialogEventResult> {
+  if (!ExpoCalendar.editEventInCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
+  }
+  if (!params.id) {
+    throw new Error(
+      'editEventInCalendarAsync must be called with an id (string) of the target event'
+    );
+  }
+  const newParams = { ...params, ...presentationOptions };
+  return ExpoCalendar.editEventInCalendarAsync(newParams);
+}
+
 // @needsAudit
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
@@ -751,7 +929,7 @@ export async function createEventAsync(
     throw new Error('createEventAsync must be called with an id (string) of the target calendar');
   }
 
-  // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object litteral
+  // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
   const { id, ...details } = eventData;
 
   if (id) {
@@ -1116,6 +1294,8 @@ export async function getSourceAsync(id: string): Promise<Source> {
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
+ * @deprecated Use [`openEventInCalendarAsync`](#openeventincalendarasyncparams-presentationoptions) instead.
+ * @header systemProvidedUI
  */
 export function openEventInCalendar(id: string): void {
   if (!ExpoCalendar.openEventInCalendar) {
@@ -1125,7 +1305,7 @@ export function openEventInCalendar(id: string): void {
   if (!id) {
     throw new Error('openEventInCalendar must be called with an id (string) of the target event');
   }
-  return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
+  return ExpoCalendar.openEventInCalendar(id);
 } // Android
 
 // @needsAudit

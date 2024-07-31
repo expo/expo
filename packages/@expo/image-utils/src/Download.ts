@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 // @ts-ignore
 import Jimp from 'jimp-compact';
-import fetch from 'node-fetch';
 import path from 'path';
 import stream from 'stream';
+import type { ReadableStream } from 'stream/web';
 import temporary from 'tempy';
 import util from 'util';
 
@@ -33,11 +33,16 @@ export async function downloadImage(url: string): Promise<string> {
   if (!response.ok) {
     throw new Error(`It was not possible to download image from '${url}'`);
   }
+  if (!response.body) {
+    throw new Error(`No response received from '${url}'`);
+  }
 
   // Download to local file
   const streamPipeline = util.promisify(stream.pipeline);
   const localPath = path.join(outputPath, path.basename(stripQueryParams(url)));
-  await streamPipeline(response.body, fs.createWriteStream(localPath));
+  // Type casting is required, see: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+  const readableBody = stream.Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+  await streamPipeline(readableBody, fs.createWriteStream(localPath));
 
   // If an image URL doesn't have a name, get the mime type and move the file.
   const img = await Jimp.read(localPath);

@@ -69,6 +69,12 @@ module.exports = {
         'no-redeclare': 'off',
         '@typescript-eslint/no-redeclare': 'warn',
 
+        'no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [
+          'warn',
+          { allowShortCircuit: true, enforceForJSX: true },
+        ],
+
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': [
           'warn',

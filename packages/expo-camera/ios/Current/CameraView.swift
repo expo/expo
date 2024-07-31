@@ -94,6 +94,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   var animateShutter = true
+  var mirror = false
 
   var zoom: CGFloat = 0 {
     didSet {
@@ -141,9 +142,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   private func setupPreview() {
-    previewLayer.videoPreviewLayer.session = session
-    previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
-    previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+    DispatchQueue.main.async {
+      self.previewLayer.videoPreviewLayer.session = self.session
+      self.previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
+      self.previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+      self.addSubview(self.previewLayer)
+    }
   }
 
   func initCamera() {
@@ -355,6 +359,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+
+      // options.mirror is deprecated but should continue to work until removed
+      connection?.isVideoMirrored = self.presetCamera == .front && (self.mirror || options.mirror)
       var photoSettings = AVCapturePhotoSettings()
 
       if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
@@ -560,8 +567,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
           connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
           self.setVideoOptions(options: options, for: connection, promise: promise)
 
-          if connection.isVideoOrientationSupported && options.mirror {
-            connection.isVideoMirrored = options.mirror
+          if connection.isVideoOrientationSupported && self.mirror {
+            connection.isVideoMirrored = self.mirror
           }
         }
 
@@ -671,6 +678,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
+    self.stopSession()
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     super.removeFromSuperview()
@@ -775,6 +783,14 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }
+  }
+
+  func resumePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = true
+  }
+
+  func pausePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = false
   }
 
   @objc func orientationChanged(notification: Notification) {

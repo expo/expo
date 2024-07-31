@@ -35,6 +35,88 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
+/**
+ * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
+ * */
+export var CalendarDialogResultActions;
+(function (CalendarDialogResultActions) {
+    /**
+     * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, modified the event, or deleted it.
+     *
+     * On iOS, this means the user simply closed the dialog.
+     * */
+    CalendarDialogResultActions["done"] = "done";
+    /**
+     * The user canceled or dismissed the dialog.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["canceled"] = "canceled";
+    /**
+     * The user deleted the event.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["deleted"] = "deleted";
+    /**
+     * The user responded to and saved a pending event invitation.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["responded"] = "responded";
+    /**
+     * The user saved a new event or modified an existing one.
+     * @platform ios
+     * */
+    CalendarDialogResultActions["saved"] = "saved";
+})(CalendarDialogResultActions || (CalendarDialogResultActions = {}));
+/**
+ * Launches the calendar UI provided by the OS to create a new event.
+ * @param eventData A map of details for the event to be created.
+ * @param presentationOptions Configuration that influences how the calendar UI is presented.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function createEventInCalendarAsync(eventData = {}, presentationOptions) {
+    if (!ExpoCalendar.createEventInCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'createEventInCalendarAsync');
+    }
+    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
+    if (eventData.id) {
+        console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
+    }
+    const params = stringifyDateValues(eventData);
+    Object.assign(params, presentationOptions);
+    return ExpoCalendar.createEventInCalendarAsync(params);
+}
+/**
+ * Launches the calendar UI provided by the OS to preview an event.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function openEventInCalendarAsync(params, presentationOptions) {
+    if (!ExpoCalendar.openEventInCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'openEventInCalendarAsync');
+    }
+    if (!params.id) {
+        throw new Error('openEventInCalendarAsync must be called with an id (string) of the target event');
+    }
+    const newParams = { ...params, ...presentationOptions };
+    return ExpoCalendar.openEventInCalendarAsync(newParams);
+}
+/**
+ * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export async function editEventInCalendarAsync(params, presentationOptions) {
+    if (!ExpoCalendar.editEventInCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'editEventInCalendarAsync');
+    }
+    if (!params.id) {
+        throw new Error('editEventInCalendarAsync must be called with an id (string) of the target event');
+    }
+    const newParams = { ...params, ...presentationOptions };
+    return ExpoCalendar.editEventInCalendarAsync(newParams);
+}
 // @needsAudit
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
@@ -195,7 +277,7 @@ export async function createEventAsync(calendarId, eventData = {}) {
     if (!calendarId) {
         throw new Error('createEventAsync must be called with an id (string) of the target calendar');
     }
-    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object litteral
+    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object literal
     const { id, ...details } = eventData;
     if (id) {
         console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
@@ -487,6 +569,8 @@ export async function getSourceAsync(id) {
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
+ * @deprecated Use [`openEventInCalendarAsync`](#openeventincalendarasyncparams-presentationoptions) instead.
+ * @header systemProvidedUI
  */
 export function openEventInCalendar(id) {
     if (!ExpoCalendar.openEventInCalendar) {
@@ -496,7 +580,7 @@ export function openEventInCalendar(id) {
     if (!id) {
         throw new Error('openEventInCalendar must be called with an id (string) of the target event');
     }
-    return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
+    return ExpoCalendar.openEventInCalendar(id);
 } // Android
 // @needsAudit
 /**

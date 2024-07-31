@@ -1,9 +1,12 @@
+import chalk from 'chalk';
+import fs from 'fs';
 import path from 'path';
 
 import { resolveInstallApkNameAsync } from './resolveInstallApkName';
 import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
@@ -27,17 +30,19 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   const androidProjectRoot = path.join(projectRoot, 'android');
 
-  await assembleAsync(androidProjectRoot, {
-    variant: props.variant,
-    port: props.port,
-    appName: props.appName,
-    buildCache: props.buildCache,
-    architectures: props.architectures,
-  });
+  if (!options.binary) {
+    await assembleAsync(androidProjectRoot, {
+      variant: props.variant,
+      port: props.port,
+      appName: props.appName,
+      buildCache: props.buildCache,
+      architectures: props.architectures,
+    });
 
-  // Ensure the port hasn't become busy during the build.
-  if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
-    props.shouldStartBundler = false;
+    // Ensure the port hasn't become busy during the build.
+    if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
+      props.shouldStartBundler = false;
+    }
   }
 
   const manager = await startBundlerAsync(projectRoot, {
@@ -47,7 +52,18 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     headless: !props.shouldStartBundler,
   });
 
-  await installAppAsync(androidProjectRoot, props);
+  if (options.binary) {
+    // Attempt to install the APK from the file path
+    const binaryPath = path.join(options.binary);
+
+    if (!fs.existsSync(binaryPath)) {
+      throw new CommandError(`The path to the custom Android binary does not exist: ${binaryPath}`);
+    }
+    Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
+    await props.device.installAppAsync(binaryPath);
+  } else {
+    await installAppAsync(androidProjectRoot, props);
+  }
 
   await manager.getDefaultDevServer().openCustomRuntimeAsync(
     'emulator',
@@ -71,7 +87,7 @@ async function installAppAsync(androidProjectRoot: string, props: ResolvedOption
   if (apkFile) {
     // Attempt to install the APK from the file path
     const binaryPath = path.join(props.apkVariantDirectory, apkFile);
-    debug('Installing:', binaryPath);
+    Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
     await props.device.installAppAsync(binaryPath);
   } else {
     // If we cannot resolve the APK file path then we can attempt to install using Gradle.

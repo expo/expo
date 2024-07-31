@@ -1,5 +1,5 @@
-import { type ExpoConfig } from '@expo/config';
-import { type ModPlatform } from '@expo/config-plugins';
+import { type ExpoConfig } from 'expo/config';
+import { type ModPlatform } from 'expo/config-plugins';
 /**
  * Generates native projects for the given platforms.
  * This step is similar to the `expo prebuild` command but removes some validation.

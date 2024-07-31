@@ -4,9 +4,6 @@ description: Learn about different tools available to inspect your Expo project 
 sidebar_title: Tools
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
@@ -62,8 +59,6 @@ The Console tab gives you access to an interactive terminal, connected directly 
 
 The **Network tab** gives you insights into the network requests made by your app. You can inspect each request and response by clicking on them. This includes `fetch` requests, external loaded media, and in some cases, even requests made by native modules.
 
-> **warning** This feature is only available from Expo SDK 49 and higher.
-
 <ContentSpotlight
   alt="Gain insights in the network requests from your app"
   src="/static/images/debugging/inspector-network-post.png"
@@ -85,7 +80,7 @@ You can enable the **JavaScript Profiler tab** within Chrome DevTools to record 
 <Collapsible summary="Screenshot of the Chrome DevTools command palette">
 
 <ContentSpotlight
-  alt="Chrome DevTools showing the command paletter."
+  alt="Chrome DevTools showing the command palette."
   src="/static/images/debugging/profiling-enable.png"
 />
 
@@ -109,7 +104,7 @@ You can enable the **JavaScript Profiler tab** within Chrome DevTools to record 
 
 ## Debugging with VS Code
 
-> **warning** This feature is only available from Expo SDK 49 and higher.
+> **warning** VS Code debugger integration is experimental. For the most stable debugging experience, [use the Chrome DevTools built into Expo CLI](#debugging-with-chrome-devtools).
 
 VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the Chrome DevTools &mdash; the inspector protocol.
 
@@ -252,15 +247,6 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
 - [Fiddler](http://www.telerik.com/fiddler)
 
-## Debugging production apps with Sentry
+## Debugging production apps
 
-In reality, apps often ship with bugs. Implementing a crash and bug reporting system in your production app is essential. It ensures that if any user hits fatal JavaScript errors (or any event you have configured), you can see the details. Sentry provides a crash reporting system with real-time insights into production deployments.
-
-You can add Sentry to your Expo project. It gathers crash data and alerts you about other events. You can also configure source maps. They make stack traces in Sentry deobfuscated and more readable.
-
-<BoxLink
-  title="Use Sentry"
-  description="A guide on installing and configuring Sentry for crash reporting in your Expo project."
-  href="/guides/using-sentry"
-  Icon={BookOpen02Icon}
-/>
+In reality, apps often ship with bugs. Implementing a crash and bug reporting system can help you get real-time insights of your production apps. See [Using error reporting services](/debugging/runtime-issues/#using-error-reporting-services) for more details.

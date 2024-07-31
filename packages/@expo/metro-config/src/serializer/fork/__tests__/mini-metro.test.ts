@@ -24,6 +24,9 @@ it(`can create a micro Metro graph fixture`, async () => {
                 "data": {
                   "data": {
                     "asyncType": null,
+                    "exportNames": [
+                      "*",
+                    ],
                     "key": "BMmp2IBk5bHEtqZLRWIvwl1M4ck=",
                     "locs": [
                       SourceLocation {
@@ -63,6 +66,7 @@ it(`can create a micro Metro graph fixture`, async () => {
                       "<global>",
                     ],
                   },
+                  "hasCjsExports": false,
                   "lineCount": 6,
                   "map": [
                     [
@@ -174,6 +178,10 @@ it(`can create a micro Metro graph fixture`, async () => {
                       3,
                       21,
                     ],
+                    [
+                      6,
+                      3,
+                    ],
                   ],
                   "reactClientReference": undefined,
                 },
@@ -206,6 +214,7 @@ it(`can create a micro Metro graph fixture`, async () => {
                       "<global>",
                     ],
                   },
+                  "hasCjsExports": false,
                   "lineCount": 9,
                   "map": [
                     [
@@ -284,6 +293,10 @@ it(`can create a micro Metro graph fixture`, async () => {
                       2,
                       29,
                     ],
+                    [
+                      9,
+                      3,
+                    ],
                   ],
                   "reactClientReference": undefined,
                 },
@@ -302,10 +315,12 @@ it(`can create a micro Metro graph fixture`, async () => {
             "bytecode": undefined,
             "engine": undefined,
             "environment": undefined,
+            "optimize": undefined,
           },
           "dev": true,
           "experimentalImportSupport": true,
           "hot": false,
+          "inlineRequires": false,
           "minify": false,
           "platform": "web",
           "type": "module",
@@ -313,6 +328,7 @@ it(`can create a micro Metro graph fixture`, async () => {
         },
       },
       {
+        "_test_getPackageJson": [Function],
         "asyncRequireModulePath": "expo-mock/async-require",
         "createModuleId": [Function],
         "dev": true,

@@ -35,6 +35,7 @@ const schema = {
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
+                enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
                 packagingOptions: {
                     type: 'object',

@@ -10,6 +10,12 @@ const RUNTIME_VERSION = '1.0.0';
 const serverHost = process.env.UPDATES_HOST;
 const serverPort = parseInt(process.env.UPDATES_PORT || '', 10);
 
+if (!serverHost || isNaN(serverPort)) {
+  console.error(
+    `UPDATES_HOST: "${String(serverHost)}" or UPDATES_PORT: "${String(serverPort)}" is not defined. Check the readme for instructions.`
+  );
+}
+
 const urlForBundleFilename = (bundleFilename: any) =>
   `http://${serverHost}:${serverPort}/static/${bundleFilename}`;
 

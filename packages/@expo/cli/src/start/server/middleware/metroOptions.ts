@@ -31,13 +31,18 @@ export type ExpoMetroOptions = {
   baseUrl?: string;
   isExporting: boolean;
   inlineSourceMap?: boolean;
+  clientBoundaries?: string[];
   splitChunks?: boolean;
+  usedExports?: boolean;
+  /** Enable optimized bundling (required for tree shaking). */
+  optimize?: boolean;
 };
 
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  usedExports?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -63,7 +68,7 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
 function withDefaults({
   mode = 'development',
   minify = mode === 'production',
-  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
+  preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
@@ -76,10 +81,18 @@ function withDefaults({
     }
   }
 
+  const optimize =
+    props.optimize ??
+    (props.environment !== 'node' &&
+      mode === 'production' &&
+      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+
   return {
     mode,
     minify,
     preserveEnvVars,
+    optimize,
+    usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     ...props,
   };
@@ -139,7 +152,9 @@ export function getMetroDirectBundleOptions(
     isExporting,
     inlineSourceMap,
     splitChunks,
+    usedExports,
     reactCompiler,
+    optimize,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -174,14 +189,16 @@ export function getMetroDirectBundleOptions(
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
+      optimize: optimize || undefined,
       engine,
-      preserveEnvVars,
-      asyncRoutes,
+      preserveEnvVars: preserveEnvVars || undefined,
+      // Use string to match the query param behavior.
+      asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
       environment,
-      baseUrl,
+      baseUrl: baseUrl || undefined,
       routerRoot,
-      bytecode,
-      reactCompiler,
+      bytecode: bytecode || undefined,
+      reactCompiler: reactCompiler || undefined,
     },
     customResolverOptions: {
       __proto__: null,
@@ -192,6 +209,7 @@ export function getMetroDirectBundleOptions(
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
     },
@@ -236,7 +254,10 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     reactCompiler,
     inlineSourceMap,
     isExporting,
+    clientBoundaries,
     splitChunks,
+    usedExports,
+    optimize,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -269,7 +290,6 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (bytecode) {
     queryParams.append('transform.bytecode', String(bytecode));
   }
-
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
   }
@@ -278,6 +298,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
+  }
+  if (clientBoundaries?.length) {
+    queryParams.append('transform.clientBoundaries', JSON.stringify(clientBoundaries));
   }
   if (routerRoot != null) {
     queryParams.append('transform.routerRoot', routerRoot);
@@ -298,11 +321,20 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (splitChunks) {
     queryParams.append('serializer.splitChunks', String(splitChunks));
   }
+  if (usedExports) {
+    queryParams.append('serializer.usedExports', String(usedExports));
+  }
+  if (optimize) {
+    queryParams.append('transform.optimize', String(optimize));
+  }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  if (engine === 'hermes') {
+    queryParams.append('unstable_transformProfile', 'hermes-stable');
   }
 
   return queryParams;

@@ -13,6 +13,9 @@ function ensurePictureOptions(options) {
     if (!options.quality) {
         options.quality = 1;
     }
+    if (options.mirror) {
+        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
+    }
     if (options.onPictureSaved) {
         const id = _GLOBAL_PICTURE_ID++;
         _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
@@ -24,6 +27,9 @@ function ensurePictureOptions(options) {
 function ensureRecordingOptions(options = {}) {
     if (!options || typeof options !== 'object') {
         return {};
+    }
+    if (options.mirror) {
+        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
     }
     return options;
 }
@@ -72,6 +78,18 @@ export default class CameraView extends Component {
     async getAvailablePictureSizesAsync() {
         return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
     }
+    /**
+     * Resumes the camera preview.
+     */
+    async resumePreview() {
+        return this._cameraRef.current?.resumePreview();
+    }
+    /**
+     * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+     */
+    async pausePreview() {
+        return this._cameraRef.current?.pausePreview();
+    }
     // Values under keys from this object will be transformed to native options
     static ConversionTables = ConversionTables;
     static defaultProps = {
@@ -104,6 +122,8 @@ export default class CameraView extends Component {
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
+     *
+     * **Note** Avoid calling this method while the preview is paused. On iOS, this will take a picture of the last frame that is currently on screen, on Android, this will throw an error.
      */
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);

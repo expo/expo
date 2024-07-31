@@ -137,6 +137,13 @@ internal fun shouldParseBody(response: Response): Boolean {
     return false
   }
 
+  // Skip when request "Accept" header is explicitly skip types.
+  // This is for test-suite testing from httpbin.
+  val requestAccept = response.request.header("Accept") ?: ""
+  if (skipContentTypes.any { requestAccept.startsWith(it) }) {
+    return false
+  }
+
   // HTTP 1.1 chunked encoding
   val transferEncoding = response.header("Transfer-Encoding")
   if ("chunked".equals(transferEncoding, ignoreCase = true)) {

@@ -15,6 +15,7 @@ const excludedInTests = [
   'expo-splash-screen',
   'expo-modules-test-core',
   'expo-dev-client',
+  'expo-dev-launcher',
 ];
 
 const testTypes = ['local', 'instrumented', 'spotless'] as const;

@@ -245,6 +245,21 @@ void JSIContext::registerSharedObject(
   method(javaPart_, std::move(native), std::move(js));
 }
 
+jni::local_ref<JavaScriptObject::javaobject> JSIContext::getSharedObject(
+  int objectId
+) {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("getSharedObject: JSIContext was prepared to be deallocated.");
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<JavaScriptObject::javaobject>(int)>(
+      "getSharedObject"
+    );
+
+  return method(javaPart_, objectId);
+}
+
 void JSIContext::deleteSharedObject(
   jni::alias_ref<JSIContext::javaobject> javaObject,
   int objectId

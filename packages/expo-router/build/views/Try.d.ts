@@ -16,8 +16,8 @@ export declare class Try extends Component<PropsWithChildren<{
     };
     static getDerivedStateFromError(error: Error): {
         error: Error;
-    };
+    } | null;
     retry: () => Promise<void>;
-    render(): string | number | boolean | React.ReactFragment | JSX.Element | null | undefined;
+    render(): string | number | boolean | Iterable<React.ReactNode> | React.JSX.Element | null | undefined;
 }
 //# sourceMappingURL=Try.d.ts.map

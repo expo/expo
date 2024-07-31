@@ -14,7 +14,8 @@ To enable Search Engine Optimization (SEO) on the web you must statically render
 ## Setup
 
 <Step label="1">
-  Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
+
+Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
 
 ```json app.json
 {
@@ -34,7 +35,8 @@ To enable Search Engine Optimization (SEO) on the web you must statically render
 </Step>
 
 <Step label="2">
-  If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
+
+If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -47,57 +49,69 @@ const config = getDefaultConfig(__dirname, {
 module.exports = config;
 ```
 
-You can also [learn more](/guides/customizing-metro/) about customizing Metro.
+You can also learn more about [customizing Metro](/guides/customizing-metro/) .
 
 </Step>
 
 <Step label="3">
-  Ensure Fast Refresh is configured.
+Ensure Fast Refresh is configured.
 
-  <Tabs>
-    <Tab label="Expo Router v3">
+<Tabs>
 
-        Expo Router requires at least `react-refresh@0.14.0` this is available in SDK 50. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
+<Tab label="Expo Router v3">
 
-    </Tab>
-    <Tab label="Expo Router v2">
+Expo Router requires at least `react-refresh@0.14.0`. This is available in SDK 50 and above. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
 
-    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+</Tab>
 
-    <Tabs>
-      <Tab label="Yarn">
-          ```json package.json
-          {
-            /* @hide ... */
-            /* @end */
-            "resolutions": {
-              "react-refresh": "~0.14.0"
-            }
-          }
-          ```
-      </Tab>
-      <Tab label="npm">
-          ```json package.json
-          {
-            /* @hide ... */
-            /* @end */
-            "overrides": {
-              "react-refresh": "~0.14.0"
-            }
-          }
-          ```
-      </Tab>
-    </Tabs>
+<Tab label="Expo Router v2">
 
-    </Tab>
+Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 and Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
 
-  </Tabs>
+<Tabs>
+
+<Tab label="npm">
+
+```json package.json
+{
+  /* @hide ... */
+  /* @end */
+  "overrides": {
+    "react-refresh": "~0.14.0"
+  }
+}
+```
+
+</Tab>
+
+<Tab label="Yarn">
+
+```json package.json
+{
+  /* @hide ... */
+  /* @end */
+  "resolutions": {
+    "react-refresh": "~0.14.0"
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Tab>
+
+</Tabs>
+
 </Step>
 
 <Step label="4">
-  Finally, start the development server:
 
-  <Terminal cmd={['$ npx expo start']} />
+Start the development server:
+
+<Terminal cmd={['$ npx expo start']} />
+
 </Step>
 
 ## Production
@@ -143,7 +157,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <APIBox header="generateStaticParams">
 
-A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process, not just the values prefixed with **EXPO*PUBLIC***. **generateStaticParams** is not run in a browser environment, so it cannot access browser APIs like **localStorage** or **document**, nor can it access native Expo APIs such as **expo-camera** or **expo-location**.
+A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_.generateStaticParams` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
 
 ```tsx app/[id].tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
@@ -155,11 +169,11 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
 }
 ```
 
-**generateStaticParams** cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
+`generateStaticParams` cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
 
 ```tsx app/[id]/_layout.tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
-  /* @info Any dynamic children that export <b>generateStaticParams</b> will be invoked once for every entry in the array. */
+  /* @info Any dynamic children that export <CODE>generateStaticParams</CODE> will be invoked once for every entry in the array. */
   return [{ id: 'one' }, { id: 'two' }];
   /* @end */
 }
@@ -216,7 +230,7 @@ You can customize the root HTML file by creating an **app/+html.tsx** file in yo
 
 ```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
@@ -318,7 +332,7 @@ Expo Font has automatic static optimization for font loading in Expo Router. Whe
 
 The following snippet will load Inter into the namespace and statically optimize on web:
 
-```js app/home.js
+```tsx app/home.tsx
 import { Text } from 'react-native';
 import { useFonts } from 'expo-font';
 
@@ -361,7 +375,7 @@ This generates the following static HTML:
 
 ### How do I add a custom server?
 
-As of Expo Router v2 there is no prescriptive way to add a custom server. You can use any server you want. However, you will need to handle dynamic routes yourself. You can use the `generateStaticParams` function to generate static HTML files for known routes.
+There is no prescriptive way to add a custom server. You can use any server you want. However, you will need to handle dynamic routes yourself. You can use the `generateStaticParams` function to generate static HTML files for known routes.
 
 In the future, there will be a server API, and a new `web.output` mode which will generate a project that will (amongst other things) support dynamic routes.
 

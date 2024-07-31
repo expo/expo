@@ -82,7 +82,7 @@ function getBabelCaller({
     // Metro automatically updates the cache to account for the custom transform options.
     isServer,
 
-    // Enable React Server Component rules for AST.
+    // Enable React Server Component rules for AST. The naming maps to the resolver property `--conditions=react-server`.
     isReactServer,
 
     // The base url to make requests from, used for hosting from non-standard locations.
@@ -115,7 +115,8 @@ function getBabelCaller({
     isHMREnabled: options.hot,
 
     // Set the standard Babel flag to disable ESM transformations.
-    supportsStaticESM: options.experimentalImportSupport,
+    supportsStaticESM:
+      isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
 
     // Enable React compiler support in Babel.
     // TODO: Remove this in the future when compiler is on by default.

@@ -33,6 +33,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.ResolutionSelector
@@ -128,6 +129,7 @@ class ExpoCameraView(
   private var previewView = PreviewView(context)
   private val scope = CoroutineScope(Dispatchers.Main)
   private var shouldCreateCamera = false
+  private var previewPaused = false
 
   var lensFacing = CameraType.BACK
     set(value) {
@@ -166,6 +168,12 @@ class ExpoCameraView(
     }
 
   var pictureSize: String = ""
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var mirror: Boolean = false
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -247,7 +255,8 @@ class ExpoCameraView(
           }
           cacheDirectory.let {
             scope.launch {
-              ResolveTakenPicture(data, promise, options, it) { response: Bundle ->
+              val shouldMirror = mirror && lensFacing == CameraType.FRONT
+              ResolveTakenPicture(data, promise, options, shouldMirror, it) { response: Bundle ->
                 onPictureSaved(response)
               }.resolve()
             }
@@ -304,6 +313,7 @@ class ExpoCameraView(
                     }
                   )
                 }
+
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
                     event.cause?.message
@@ -320,7 +330,7 @@ class ExpoCameraView(
 
   @SuppressLint("UnsafeOptInUsageError")
   fun createCamera() {
-    if (!shouldCreateCamera) {
+    if (!shouldCreateCamera || previewPaused) {
       return
     }
     shouldCreateCamera = false
@@ -421,9 +431,12 @@ class ExpoCameraView(
         this.recorder = it
       }
 
-    return VideoCapture.Builder(recorder)
-      .setVideoStabilizationEnabled(true)
-      .build()
+    return VideoCapture.Builder(recorder).apply {
+      if (mirror) {
+        setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
+      }
+      setVideoStabilizationEnabled(true)
+    }.build()
   }
 
   private fun startFocusMetering() {
@@ -447,6 +460,7 @@ class ExpoCameraView(
           onCameraReady(Unit)
           setTorchEnabled(enableTorch)
         }
+
         else -> {}
       }
     }
@@ -458,6 +472,17 @@ class ExpoCameraView(
       val info = Camera2CameraInfo.from(cameraInfo).getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
       info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() }
     } ?: emptyList()
+  }
+
+  fun resumePreview() {
+    shouldCreateCamera = true
+    previewPaused = false
+    createCamera()
+  }
+
+  fun pausePreview() {
+    previewPaused = true
+    cameraProvider?.unbindAll()
   }
 
   fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
@@ -552,7 +577,7 @@ class ExpoCameraView(
           raw = barcode.raw,
           type = BarcodeType.mapFormatToString(barcode.type),
           cornerPoints = cornerPoints,
-          boundingBox = boundingBox
+          bounds = boundingBox
         )
       )
     }

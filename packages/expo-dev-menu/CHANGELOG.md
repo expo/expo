@@ -10,8 +10,13 @@
 
 - [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
 - [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 5.0.15 - 2024-06-06
 

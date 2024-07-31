@@ -7,7 +7,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **info** This feature is experimental. Available from Expo SDK 49 and Expo Router v2.
+> **warning** Async routes is an experimental feature.
 
 <ContentSpotlight file="expo-router/async-routes.mp4" loop={false} />
 
@@ -35,29 +35,9 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router config
 
 <Tabs>
 
-<Tab label="SDK 49">
-
-    ```json app.json
-    {
-      "expo": {
-        "plugins": [
-          [
-            "expo-router",
-            {
-              "origin": "https://acme.com",
-              "asyncRoutes": "development"
-            }
-          ]
-        ]
-      }
-    }
-    ```
-
-</Tab>
-
 <Tab label="SDK 50 and above">
 
-    > SDK 50 supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
+    > SDK 50 and above supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
 
     ```json app.json
     {
@@ -79,6 +59,27 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router config
     ```
 
 </Tab>
+
+<Tab label="SDK 49">
+
+    ```json app.json
+    {
+      "expo": {
+        "plugins": [
+          [
+            "expo-router",
+            {
+              "origin": "https://acme.com",
+              "asyncRoutes": "development"
+            }
+          ]
+        ]
+      }
+    }
+    ```
+
+</Tab>
+
 </Tabs>
 
 You can set platform-specific settings (`default`, `android`, `ios` or `web`) for `asyncRoutes` using an object:

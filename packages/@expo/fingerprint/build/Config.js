@@ -15,8 +15,11 @@ const debug = require('debug')('expo:fingerprint:Config');
  * @returns The loaded config or null if no config file was found.
  */
 async function loadConfigAsync(projectRoot, silent = false) {
-    const configFile = await resolveConfigFileAsync(projectRoot);
-    if (!configFile) {
+    let configFile;
+    try {
+        configFile = await resolveConfigFileAsync(projectRoot);
+    }
+    catch {
         return null;
     }
     debug('Resolved config file:', configFile);
@@ -51,14 +54,13 @@ exports.loadConfigAsync = loadConfigAsync;
  * Resolve the config file path from the project root.
  */
 async function resolveConfigFileAsync(projectRoot) {
-    return await Promise.race(CONFIG_FILES.map(async (file) => {
+    return await Promise.any(CONFIG_FILES.map(async (file) => {
         const configPath = path_1.default.resolve(projectRoot, file);
-        try {
-            const stat = await promises_1.default.stat(configPath);
-            return stat.isFile() ? configPath : null;
+        const stat = await promises_1.default.stat(configPath);
+        if (!stat.isFile()) {
+            throw new Error(`Config file is not a file: ${configPath}`);
         }
-        catch { }
-        return null;
+        return configPath;
     }));
 }
 /**
