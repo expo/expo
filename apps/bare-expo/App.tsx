@@ -1,4 +1,3 @@
-import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
@@ -21,7 +20,6 @@ function useLoaded() {
     loadAssetsAsync()
       .then(() => {
         if (isMounted) setLoaded(true);
-        SplashScreen.hideAsync();
       })
       .catch((e) => {
         console.warn('Error loading assets: ' + e.message);
