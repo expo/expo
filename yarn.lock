@@ -8363,7 +8363,7 @@ expo-asset-utils@~3.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-3.0.0.tgz#2c7ddf71ba9efacf7b46c159c1c650114a2f14dc"
   integrity sha512-CgIbNvTqKqQi1lrlptmwoaCMu4ZVOZf8tghmytlor23CjIOuorw6cfuOqiqWkJLz23arTt91maYEU9XLMPB23A==
 
-expo-atlas@0.3.11, expo-atlas@^0.3.11:
+expo-atlas@^0.3.11:
   version "0.3.11"
   resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.3.11.tgz#e025615e0f9ecd43c32b54706a1f3557a0f75124"
   integrity sha512-mQnKzNlEReusByuBX8GnRsRY1GAL1iy5j/lsJ/dLusQR+xLY7hZaUiZ4XEe+UYzLTSN3d3Sf43hOsDOpxDwm8Q==
