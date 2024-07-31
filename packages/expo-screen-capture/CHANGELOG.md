@@ -34,7 +34,7 @@ _This version does not introduce any user-facing changes._
 - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
 - Native module on iOS is now written in Swift using the Sweet API. ([#26103](https://github.com/expo/expo/pull/26103) by [@fobos531](https://github.com/fobos531))
 - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
-- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`.
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
 
 ## 5.8.1 - 2024-01-23
 

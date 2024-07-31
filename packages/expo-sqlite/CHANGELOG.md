@@ -13,7 +13,7 @@
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
-- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`.
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
 
 ## 14.0.6 - 2024-07-31
 
