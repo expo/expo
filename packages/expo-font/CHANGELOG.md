@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`.
 
 ## 12.0.9 - 2024-07-16
 
