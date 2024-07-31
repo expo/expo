@@ -60,7 +60,7 @@ class DevMenuReactNativeHost(application: Application, private val useDeveloperS
 
   override fun getJSMainModuleName() = "index"
 
-  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory {
     return createNonDebuggableJavaScriptExecutorFactory(application)
   }
 

@@ -10,8 +10,6 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -29,7 +27,6 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
-import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
@@ -41,6 +38,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import androidx.annotation.Nullable;
 
 //
 // Expo: This is a copy of react-native's {@link com.facebook.react.devsupport.BridgeDevSupportManager}
@@ -234,7 +233,7 @@ public class NonFinalBridgeDevSupportManager extends DevSupportManagerBase {
       } catch (UnsupportedOperationException e) {
         Toast.makeText(
             getApplicationContext(),
-            javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
+            javaScriptExecutorFactory + " does not support Sampling Profiler",
             Toast.LENGTH_LONG)
           .show();
       } finally {

@@ -1,5 +1,5 @@
-import React from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 let Notifications;

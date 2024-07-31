@@ -59,6 +59,7 @@
     "babel-preset-expo": "~11.0.0",
     "expo-dev-client-components": "1.8.1",
     "expo-module-scripts": "^3.0.0",
+    "expo-atlas": "0.3.11",
     "fuse.js": "^6.4.6",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",

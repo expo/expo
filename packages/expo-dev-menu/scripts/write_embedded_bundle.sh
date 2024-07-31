@@ -5,7 +5,7 @@
 cat > app.json <<EOF
 {
   "expo": {
-    "jsEngine": "jsc"
+    "jsEngine": "hermes"
   }
 }
 EOF

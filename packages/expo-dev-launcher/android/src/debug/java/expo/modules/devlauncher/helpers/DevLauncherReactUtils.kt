@@ -61,10 +61,10 @@ fun injectDebugServerHost(
   debugServerHost: String,
   appBundleName: String
 ): Boolean {
-  if (reactHost.isBridgelessMode) {
-    return injectDebugServerHost(context, reactHost.reactHost, debugServerHost, appBundleName)
+  return if (reactHost.isBridgelessMode) {
+    injectDebugServerHost(context, reactHost.reactHost, debugServerHost, appBundleName)
   } else {
-    return injectDebugServerHost(context, reactHost.reactNativeHost, debugServerHost, appBundleName)
+    injectDebugServerHost(context, reactHost.reactNativeHost, debugServerHost, appBundleName)
   }
 }
 
