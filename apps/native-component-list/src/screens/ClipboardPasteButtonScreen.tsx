@@ -21,6 +21,7 @@ export default function ClipboardPasteButtonScreen() {
   return (
     <ScrollView>
       <View style={styles.screen}>
+        <Text selectable>Random text you can copy</Text>
         <ClipboardPasteButton
           imageOptions={{ format: 'png' }}
           onPress={(data) => {

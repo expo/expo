@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { env } from './env';
 import { getBareExtensions } from './extensions';
+import { findWorkspaceRoot } from './workspaces';
 import { getPackageJson } from '../Config';
 import { PackageJSONConfig } from '../Config.types';
 import { ConfigError } from '../Errors';
@@ -11,7 +13,7 @@ import { ConfigError } from '../Errors';
 export function ensureSlash(inputPath: string, needsSlash: boolean): string {
   const hasSlash = inputPath.endsWith('/');
   if (hasSlash && !needsSlash) {
-    return inputPath.substr(0, inputPath.length - 1);
+    return inputPath.substring(0, inputPath.length - 1);
   } else if (!hasSlash && needsSlash) {
     return `${inputPath}/`;
   } else {
@@ -115,3 +117,34 @@ export function getFileWithExtensions(
   }
   return null;
 }
+
+/** Get the Metro server root, when working in monorepos */
+function getMetroServerRoot(projectRoot: string): string {
+  if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
+    return projectRoot;
+  }
+
+  return findWorkspaceRoot(projectRoot) ?? projectRoot;
+}
+
+/**
+ * Convert an absolute entry point to a server or project root relative filepath.
+ * This is useful on Android where the entry point is an absolute path.
+ */
+export function convertEntryPointToRelative(projectRoot: string, absolutePath: string) {
+  // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
+  // We need to make sure to get the non-symlinked path to the server or project root.
+  return path.relative(
+    fs.realpathSync(getMetroServerRoot(projectRoot)),
+    fs.realpathSync(absolutePath)
+  );
+}
+
+/**
+ * Resolve the entry point relative to either the server or project root.
+ * This relative entry path should be used to pass non-absolute paths to Metro,
+ * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
+ */
+export const resolveRelativeEntryPoint: typeof resolveEntryPoint = (projectRoot, options) => {
+  return convertEntryPointToRelative(projectRoot, resolveEntryPoint(projectRoot, options));
+};

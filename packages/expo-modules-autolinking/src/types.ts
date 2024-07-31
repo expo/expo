@@ -75,11 +75,16 @@ export interface ModuleAndroidPluginInfo {
   sourceDir: string;
 }
 
+export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
+  projectDir: string;
+}
+
 export interface ModuleDescriptorAndroid {
   packageName: string;
   projects: ModuleAndroidProjectInfo[];
   plugins?: ModuleAndroidPluginInfo[];
   modules: string[];
+  aarProjects?: ModuleAndroidAarProjectInfo[];
 }
 
 export interface ModuleIosPodspecInfo {
@@ -123,6 +128,18 @@ export interface AndroidGradlePluginDescriptor {
    * Relative path to the gradle plugin directory
    */
   sourceDir: string;
+}
+
+export interface AndroidGradleAarProjectDescriptor {
+  /**
+   * Gradle project name
+   */
+  name: string;
+
+  /**
+   * Path to the AAR file
+   */
+  aarFilePath: string;
 }
 
 /**
@@ -215,6 +232,11 @@ export interface RawExpoModuleConfig {
      * Gradle plugins.
      */
     gradlePlugins?: AndroidGradlePluginDescriptor[];
+
+    /**
+     * Gradle projects containing AAR files.
+     */
+    gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
   };
 
   /**

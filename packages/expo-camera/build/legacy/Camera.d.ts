@@ -158,7 +158,7 @@ export default class Camera extends React.Component<CameraProps> {
         nativeEvent: any;
     }) => void;
     _setReference: (ref?: React.Component) => void;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;
 //# sourceMappingURL=Camera.d.ts.map

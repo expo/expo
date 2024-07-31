@@ -21,10 +21,6 @@ jest.mock('@expo/config-plugins', () => {
 
 jest.mock('fs');
 
-afterAll(() => {
-  jest.unmock('fs');
-});
-
 describe(withIosSplashScreen, () => {
   const iconPath = path.resolve(__dirname, '../../../__tests__/fixtures/icon.png');
   const icon = fsReal.readFileSync(iconPath, 'utf8');
@@ -86,7 +82,6 @@ describe(withIosSplashScreen, () => {
     // Image is not defined
     expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).not.toBeDefined();
     // Ensure colors are created
-
     expect(
       after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png']
     ).toBeDefined();

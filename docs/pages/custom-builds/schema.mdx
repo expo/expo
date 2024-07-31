@@ -740,9 +740,10 @@ You can replace the `eas/build` command call by using these steps in your YAML c
 
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
 
-| Input       | Description                                                                                                                                                 |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flow_path` | **string** Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run. |
+| Input       | Description                                                                                                                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flow_path` | **string** Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run.                                                                                 |
+| `app_path`  | **string** Path (or regex pattern) to the emulator/simulator app that should be tested. If not provided, it defaults to **android/app/build/outputs/**/*.apk** for Android and to **ios/build/Build/Products/*simulator/\*.app\*\* for iOS. |
 
 ```yaml build-and-test.yml
 build:
@@ -751,6 +752,38 @@ build:
     - eas/build
     # @info #
     - eas/maestro_test:
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+```yaml test-ios-simulator-app.yml
+build:
+  name: Build and test iOS simulator app
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/maestro_test:
+        app_path: ./fixtures/my_app.app
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+```yaml test-android-emulator-app.yml
+build:
+  name: Build and test Android emulator app
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/maestro_test:
+        app_path: ./fixtures/my_app.apk
         inputs:
           flow_path: |
             maestro/sign_in.yaml

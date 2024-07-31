@@ -1,5 +1,4 @@
 'use client';
-
 import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';

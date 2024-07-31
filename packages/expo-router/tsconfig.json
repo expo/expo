@@ -6,7 +6,12 @@
     "module": "commonjs",
     "types": ["jest", "jest-require", "node"]
   },
-  "include": ["./src", "./types/expect.d.ts", "../expo/src/ts-declarations"],
+  "include": [
+    "./src",
+    "./types/expect.d.ts",
+    "../@expo/cli/ts-declarations",
+    "../expo/src/ts-declarations"
+  ],
   "exclude": [
     "**/__mocks__/*",
     "**/.expo/*",

@@ -18,11 +18,13 @@
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30462](https://github.com/expo/expo/pull/30462) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - On `iOS`, correctly stop the session when the `CameraView` is removed. ([#30580](https://github.com/expo/expo/pull/30580) by [@alanjhughes](https://github.com/alanjhughes))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Updated docs for the `pictureSize` prop. ([#30195](https://github.com/expo/expo/pull/30195) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Migrated cameraview AAR to autolinking and removed related config-plugin about adding the maven repository. ([#30707](https://github.com/expo/expo/pull/30707) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

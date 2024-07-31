@@ -7,6 +7,7 @@
   "main": "build/index",
   "types": "build/index.d.ts",
   "sideEffects": [
+    "entry-rsc.js",
     "entry.js"
   ],
   "files": [
@@ -27,6 +28,7 @@
     "drawer.js",
     "drawer.d.ts",
     "entry.js",
+    "entry-rsc.js",
     "expo-module.config.json",
     "head.js",
     "head.d.ts",

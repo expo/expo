@@ -8,7 +8,7 @@ declare class ExpoImage extends React.PureComponent<ImageNativeProps> {
     onProgress: (event: NativeSyntheticEvent<ImageProgressEventData>) => void;
     onError: (event: NativeSyntheticEvent<ImageErrorEventData>) => void;
     onLoadEnd: () => void;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 export { ExpoImageModule };
 export default ExpoImage;
