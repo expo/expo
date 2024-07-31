@@ -40,7 +40,5 @@ dependencies {
   implementation "com.google.mlkit:barcode-scanning:17.2.0"
   implementation "androidx.camera:camera-mlkit-vision:${camerax_version}"
 
-  api("com.google.android:cameraview:1.0.0") {
-    exclude group: 'com.android.support'
-  }
+  implementation project(":${project.name}\$cameraview-aar")
 }

@@ -110,7 +110,7 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app',
+        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
       ],
     });
     expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
