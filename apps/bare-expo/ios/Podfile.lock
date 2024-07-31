@@ -505,7 +505,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (12.0.2):
     - ExpoModulesCore
-  - ExpoSQLite (14.0.5):
+  - ExpoSQLite (14.0.6):
     - ExpoModulesCore
     - "sqlite3 (~> 3.45.3+1)"
     - "sqlite3/bytecodevtab (~> 3.45.3+1)"
@@ -2580,7 +2580,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 8db05dd85081219f75989a3db2c92fe5e9741033
   ExpoSMS: a5184fc4d4b33071b2dd9d43bb9ac8ef952b1dd7
   ExpoSpeech: 258ea713923eb70ef63d3bdb14f47a462d0b6f0e
-  ExpoSQLite: e69ad30f5271e6e9b32358035fb65eaf0a20fa83
+  ExpoSQLite: 80476d564ec75b26ffe801f3953d876377b3c9fe
   ExpoStoreReview: 15f9a636b62ff00bb21cbe9a9fe22f0239da4481
   ExpoSymbols: 5adb1166f2929fc8d2497b98d5c48c4b94effe33
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26

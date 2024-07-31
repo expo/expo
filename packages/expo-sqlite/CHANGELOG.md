@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the "disk I/O error" on older Android devices. ([#30718](https://github.com/expo/expo/pull/30718) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 14.0.6 — 2024-07-31
+
+### 🐛 Bug fixes
+
+- Fixed the "disk I/O error" on older Android devices. ([#30718](https://github.com/expo/expo/pull/30718) by [@kudo](https://github.com/kudo))
 
 ## 14.0.5 — 2024-07-23
 
