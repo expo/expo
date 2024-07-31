@@ -32,8 +32,6 @@ export function optionalRequire(requirer: () => { default: React.ComponentType }
   }
 }
 
-console.log('Test');
-
 const routes: RoutesConfig = {
   'test-suite': TestSuite,
 };
