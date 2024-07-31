@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import semver from 'semver';
 
 import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
-import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
 import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
 import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
@@ -14,6 +13,7 @@ import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
+import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
 import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
