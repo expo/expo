@@ -26,10 +26,6 @@
 - Fix server closing in headless run commands. ([#30432](https://github.com/expo/expo/pull/30432) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix resolver fields for SSR + native platforms. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
-- Resolve module specifiers to posix paths for Metro. ([#29696](https://github.com/expo/expo/pull/29696) by [@byCedric](https://github.com/byCedric))
-- Ensure Metro dev server closes fully when clients are connected. ([#30067](https://github.com/expo/expo/pull/30067) by [@byCedric](https://github.com/byCedric))
-- Fix app crashing when hitting debugger breakpoint through VSCode. ([#30287](https://github.com/expo/expo/pull/30287) by [@byCedric](https://github.com/byCedric))
-- Resolve real locations of file paths when using `eas build --local`. ([#30340](https://github.com/expo/expo/pull/30340) by [@byCedric](https://github.com/byCedric))
 - Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads. ([#30424](https://github.com/expo/expo/pull/30424) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
@@ -41,19 +37,58 @@
 - Remove webpack dependency in repo. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
 - Add "more tools" to terminal UI all the time. ([#29837](https://github.com/expo/expo/pull/29837) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused `serve.json` file from `expo customize`. ([#29571](https://github.com/expo/expo/pull/29571) by [@EvanBacon](https://github.com/EvanBacon))
-- Add more tests for export:embed. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce unused server code in exports. ([#29619](https://github.com/expo/expo/pull/29619) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 - Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
-- Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 - Update `glob@7` to `glob@10`. ([#29898](https://github.com/expo/expo/pull/29898) by [@byCedric](https://github.com/byCedric))
-- Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
-- Add `--config-cmd` option to `export:embed` command. ([#30563](https://github.com/expo/expo/pull/30563) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add Router mastro test. ([#30285](https://github.com/expo/expo/pull/30285) by [@marklawlor](https://github.com/marklawlor))
 
 ### 📚 3rd party library updates
 
+## 0.18.26 - 2024-07-29
+
+### 💡 Others
+
+- Add `--config-cmd` option to `export:embed` command. ([#30563](https://github.com/expo/expo/pull/30563) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add addition Expo Router e2e tests. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+- Removed <SDK51 type tests. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.18.25 - 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.24 - 2024-07-11
+
+### 🐛 Bug fixes
+
+- Resolve real locations of file paths when using `eas build --local`. ([#30340](https://github.com/expo/expo/pull/30340) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.23 - 2024-07-11
+
+### 🐛 Bug fixes
+
+- Fix app crashing when hitting debugger breakpoint through VSCode. ([#30287](https://github.com/expo/expo/pull/30287) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.22 - 2024-07-03
+
+### 📚 3rd party library updates
+
 - Update @react-native/dev-middleware to 0.74.85. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.18.21 - 2024-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.20 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- Resolve module specifiers to posix paths for Metro. ([#29696](https://github.com/expo/expo/pull/29696) by [@byCedric](https://github.com/byCedric))
+- Ensure Metro dev server closes fully when clients are connected. ([#30067](https://github.com/expo/expo/pull/30067) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Add more tests for export:embed. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.18.19 - 2024-06-13
 

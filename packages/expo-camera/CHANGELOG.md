@@ -13,8 +13,6 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
-- On `iOS`, fix touch interactions when using gesture handler. ([#30338](https://github.com/expo/expo/pull/30338) by [@alanjhughes](https://github.com/alanjhughes))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30462](https://github.com/expo/expo/pull/30462) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - On `iOS`, correctly stop the session when the `CameraView` is removed. ([#30580](https://github.com/expo/expo/pull/30580) by [@alanjhughes](https://github.com/alanjhughes))
@@ -29,6 +27,17 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 15.0.14 - 2024-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.13 - 2024-07-03
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix touch interactions when using gesture handler. ([#30338](https://github.com/expo/expo/pull/30338) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.12 - 2024-06-20
 

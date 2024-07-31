@@ -14,17 +14,11 @@
 ### 🐛 Bug fixes
 
 - Prevent duplicated `NSUserActivityTypes` strings in prebuild. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))
-- Fix deep linking to Expo Go. ([#30283](https://github.com/expo/expo/pull/30283) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
-- Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
-- Fix pushing multiple hashes on web. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
 - Ensure navigation keeps within the closest group. ([#30266](https://github.com/expo/expo/pull/30266) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
 - Import `@expo/metro-runtime` internals from `src` directory. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
-- Update URL params docblocks ([#29799](https://github.com/expo/expo/pull/29799) by [@aaron-mota](https://github.com/aaron-mota))
-- Update TypeScript types for Screen options function ([#30074](https://github.com/expo/expo/pull/30074) by [@vilnytskyi](https://github.com/vilnytskyi))
 - Prevent creating params object with null prototype ([#30009](https://github.com/expo/expo/pull/30009) by [@marklawlor](https://github.com/marklawlor))
 - Fix Typed Routes clashing types and allow strict types for hooks. ([#29612](https://github.com/expo/expo/pull/29612) by [@marklawlor](https://github.com/marklawlor))
 - Update `setParams` types to be a `Partial<>` ([#30570](https://github.com/expo/expo/pull/30570) by [@marklawlor](https://github.com/marklawlor))
@@ -32,6 +26,33 @@
 - Remove debugger code ([#30686](https://github.com/expo/expo/pull/30686) by [@marklawlor](https://github.com/marklawlor))
 - Fix project linting errors ([#30687](https://github.com/expo/expo/pull/30687) by [@marklawlor](https://github.com/marklawlor))
 - Fix useGlobalSearchParams returning a string value for params ([#30415](https://github.com/expo/expo/pull/30415) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.19 - 2024-07-29
+
+### 🐛 Bug fixes
+
+- Fix deep linking to Expo Go. ([#30283](https://github.com/expo/expo/pull/30283) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix pushing multiple hashes on web. ([#29990](https://github.com/expo/expo/pull/29990) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Update TypeScript types for Screen options function ([#30074](https://github.com/expo/expo/pull/30074) by [@vilnytskyi](https://github.com/vilnytskyi))
+
+## 3.5.18 - 2024-07-11
+
+### 🐛 Bug fixes
+
+- Ensure initial route is created with params ([#27223](https://github.com/expo/expo/pull/27223) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.17 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- Fix server hosting root html in a group with a layout. ([#29948](https://github.com/expo/expo/pull/29948) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Update URL params docblocks ([#29799](https://github.com/expo/expo/pull/29799) by [@aaron-mota](https://github.com/aaron-mota))
 
 ## 3.5.16 - 2024-06-10
 

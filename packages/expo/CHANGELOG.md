@@ -10,7 +10,6 @@
 - Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
 - Introduced `useEvent` hook for EventEmitter objects (e.g. native modules and shared objects). ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
 - Added fetch API support. ([#30173](https://github.com/expo/expo/pull/30173), [#30219](https://github.com/expo/expo/pull/30219), [#30576](https://github.com/expo/expo/pull/30576) by [@kudo](https://github.com/kudo))
-- Added `websocketBinaryType` option for `useDevToolsPluginClient` hook. ([#30655](https://github.com/expo/expo/pull/30655) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -30,11 +29,49 @@
 
 ### 📚 3rd party library updates
 
-- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 51.0.24 - 2024-07-30
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.23 - 2024-07-29
+
+### 🎉 New features
+
+- Added `websocketBinaryType` option for `useDevToolsPluginClient` hook. ([#30655](https://github.com/expo/expo/pull/30655) by [@kudo](https://github.com/kudo))
+
+## 51.0.22 - 2024-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.21 - 2024-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.20 - 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.19 - 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.18 - 2024-07-03
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 51.0.17 - 2024-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 51.0.16 - 2024-06-27
+
+_This version does not introduce any user-facing changes._
 
 ## 51.0.15 - 2024-06-20
 
