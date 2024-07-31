@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Remove unused `pathJoin` function. ([#29963](https://github.com/expo/expo/pull/29963) by [@EvanBacon](https://github.com/EvanBacon))
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`.
 
 ## 10.0.10 - 2024-06-20
 
