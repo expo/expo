@@ -3,14 +3,14 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
         href="#name"
         id="name"
       >
@@ -51,7 +51,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </a>
     </p>
     <p
-      class="css-1lwc34i-AppConfigProperty"
+      class="my-3 css-1ac5bb0-TextComponent"
       data-text="true"
     >
       Type: 
@@ -148,14 +148,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
   </div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
         href="#androidnavigationbar"
         id="androidnavigationbar"
       >
@@ -196,7 +196,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </a>
     </p>
     <p
-      class="css-1lwc34i-AppConfigProperty"
+      class="my-3 css-1ac5bb0-TextComponent"
       data-text="true"
     >
       Type: 
@@ -370,14 +370,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
           href="#visible"
           id="visible"
         >
@@ -418,7 +418,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="css-1lwc34i-AppConfigProperty"
+        class="my-3 css-1ac5bb0-TextComponent"
         data-text="true"
       >
         Type: 
@@ -431,7 +431,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
          • Path:
          
         <code
-          class="css-te23k8-AppConfigProperty"
+          class="text-secondary px-1 break-words"
         >
           androidNavigationBar
           .
@@ -523,14 +523,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
             href="#always"
             id="always"
           >
@@ -571,7 +571,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="css-1lwc34i-AppConfigProperty"
+          class="my-3 css-1ac5bb0-TextComponent"
           data-text="true"
         >
           Type: 
@@ -584,7 +584,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
            • Path:
            
           <code
-            class="css-te23k8-AppConfigProperty"
+            class="text-secondary px-1 break-words"
           >
             androidNavigationBar.visible
             .
@@ -600,14 +600,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
           href="#backgroundcolor"
           id="backgroundcolor"
         >
@@ -648,7 +648,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="css-1lwc34i-AppConfigProperty"
+        class="my-3 css-1ac5bb0-TextComponent"
         data-text="true"
       >
         Type: 
@@ -661,7 +661,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
          • Path:
          
         <code
-          class="css-te23k8-AppConfigProperty"
+          class="text-secondary px-1 break-words"
         >
           androidNavigationBar
           .
@@ -691,14 +691,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+    class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
   >
     <p
       class="group css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
         href="#intentfilters"
         id="intentfilters"
       >
@@ -739,7 +739,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </a>
     </p>
     <p
-      class="css-1lwc34i-AppConfigProperty"
+      class="my-3 css-1ac5bb0-TextComponent"
       data-text="true"
     >
       Type: 
@@ -862,14 +862,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </span>
     </span>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
           href="#autoverify"
           id="autoverify"
         >
@@ -910,7 +910,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="css-1lwc34i-AppConfigProperty"
+        class="my-3 css-1ac5bb0-TextComponent"
         data-text="true"
       >
         Type: 
@@ -923,7 +923,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
          • Path:
          
         <code
-          class="css-te23k8-AppConfigProperty"
+          class="text-secondary px-1 break-words"
         >
           intentFilters
           .
@@ -938,14 +938,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
     </div>
     <div
-      class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+      class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
         data-text="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
           href="#data"
           id="data"
         >
@@ -986,7 +986,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="css-1lwc34i-AppConfigProperty"
+        class="my-3 css-1ac5bb0-TextComponent"
         data-text="true"
       >
         Type: 
@@ -999,7 +999,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
          • Path:
          
         <code
-          class="css-te23k8-AppConfigProperty"
+          class="text-secondary px-1 break-words"
         >
           intentFilters
           .
@@ -1007,14 +1007,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </code>
       </p>
       <div
-        class="!pb-4 last:[&>*]:!mb-1 css-13k2qmh-AppConfigProperty"
+        class="!pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
-            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 css-pvem2h-PropertyName"
+            class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 mb-4"
             href="#host"
             id="host"
           >
@@ -1055,7 +1055,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="css-1lwc34i-AppConfigProperty"
+          class="my-3 css-1ac5bb0-TextComponent"
           data-text="true"
         >
           Type: 
@@ -1068,7 +1068,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
            • Path:
            
           <code
-            class="css-te23k8-AppConfigProperty"
+            class="text-secondary px-1 break-words"
           >
             intentFilters.data
             .
