@@ -91,6 +91,16 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
 
+        args.moduleIdCallback?.({
+          id: filePath,
+          chunks: [
+            // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+            // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
+            'chunk:' + filePath,
+          ],
+          name,
+          async: true,
+        });
         // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
         // This is similar to how we handle lazy bundling.
         if (resolveClientEntry) {
@@ -98,6 +108,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
           return { id: resolved.id, chunks: resolved.chunks, name, async: true };
         }
 
+        // TODO: Drop this code path after production exports are added.
         return {
           // TODO: Make relative to server root for production exports.
           id: filePath,
