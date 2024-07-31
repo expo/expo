@@ -47,9 +47,7 @@ function InnerRouter() {
         }
         globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
     }
-    return (0, react_1.createElement)(RouterContext.Provider, { value: { route } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(
-    // @ts-expect-error
-    host_js_1.Slot, { id, fallback: acc }, acc), null));
+    return (0, react_1.createElement)(RouterContext.Provider, { value: { route } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_js_1.Slot, { id, fallback: acc }, acc), null));
 }
 function Router() {
     const route = parseRoute(new URL(getHref()));
