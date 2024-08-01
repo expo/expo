@@ -8,10 +8,12 @@ import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 
 class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
+
   override fun create(
     applicationContext: Context,
     reactInstanceDevHelper: ReactInstanceDevHelper,
@@ -22,7 +24,8 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     minNumShakes: Int,
     customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
-    devLoadingViewManager: DevLoadingViewManager?
+    devLoadingViewManager: DevLoadingViewManager?,
+    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
     return if (!enableOnCreate) {
       ReleaseDevSupportManager()

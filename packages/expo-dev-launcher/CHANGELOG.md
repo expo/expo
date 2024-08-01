@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
