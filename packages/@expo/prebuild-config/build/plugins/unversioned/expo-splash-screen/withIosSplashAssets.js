@@ -33,16 +33,9 @@ function _fsExtra() {
   };
   return data;
 }
-function _jimpCompact() {
-  const data = _interopRequireDefault(require("jimp-compact"));
-  _jimpCompact = function () {
-    return data;
-  };
-  return data;
-}
-function path() {
-  const data = _interopRequireWildcard(require("path"));
-  path = function () {
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
     return data;
   };
   return data;
@@ -54,11 +47,7 @@ function _AssetContents() {
   };
   return data;
 }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-// @ts-ignore
-
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreen.imageset';
@@ -101,7 +90,7 @@ async function configureImageAssets({
   tabletImage,
   darkTabletImage
 }) {
-  const imageSetPath = path().resolve(iosNamedProjectRoot, IMAGESET_PATH);
+  const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
 
   // ensure old SplashScreen imageSet is removed
   await _fsExtra().default.remove(imageSetPath);
@@ -125,8 +114,11 @@ async function configureImageAssets({
   });
 }
 async function createPngFileAsync(color, filePath) {
-  const png = new (_jimpCompact().default)(1, 1, color);
-  return png.writeAsync(filePath);
+  const pngBuffer = await (0, _imageUtils().createSquareAsync)({
+    size: 1,
+    color
+  });
+  await _fsExtra().default.writeFile(filePath, pngBuffer);
 }
 async function createBackgroundImagesAsync({
   iosNamedProjectRoot,
@@ -137,7 +129,7 @@ async function createBackgroundImagesAsync({
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      await createPngFileAsync(item, path().resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH, fileName));
+      await createPngFileAsync(item, _path().default.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH, fileName));
     },
     anyItem: color,
     darkItem: darkColor,
@@ -167,7 +159,7 @@ async function copyImageFiles({
       });
       // Write image buffer to the file system.
       // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-      await _fsExtra().default.writeFile(path().resolve(iosNamedProjectRoot, IMAGESET_PATH, fileName), source);
+      await _fsExtra().default.writeFile(_path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, fileName), source);
     },
     anyItem: image,
     darkItem: darkImage,
@@ -193,7 +185,7 @@ async function createSplashScreenBackgroundImageAsync({
   const darkColor = splash.dark?.backgroundColor;
   const tabletColor = splash.tabletBackgroundColor;
   const darkTabletColor = splash.dark?.tabletBackgroundColor;
-  const imagesetPath = path().join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
+  const imagesetPath = _path().default.join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
   // Ensure the Images.xcassets/... path exists
   await _fsExtra().default.remove(imagesetPath);
   await _fsExtra().default.ensureDir(imagesetPath);
@@ -205,7 +197,7 @@ async function createSplashScreenBackgroundImageAsync({
     darkTabletColor: darkTabletColor ? darkTabletColor : null
   });
   await writeContentsJsonFileAsync({
-    assetPath: path().resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
+    assetPath: _path().default.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
     image: PNG_FILENAME,
     darkImage: darkColor ? DARK_PNG_FILENAME : null,
     tabletImage: tabletColor ? TABLET_PNG_FILENAME : null,

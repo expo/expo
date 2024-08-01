@@ -8,7 +8,7 @@ import React from 'react';
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
-import { ExpoLinkingOptions, stateCache } from '../getLinkingConfig';
+import { ExpoLinkingOptions } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
@@ -56,7 +56,6 @@ export function renderRouter(
 
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-  stateCache.clear();
 
   const result = render(
     <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,

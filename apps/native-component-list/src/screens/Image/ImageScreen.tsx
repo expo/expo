@@ -71,6 +71,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Rendering a shared ref',
+    route: 'image/shared-ref',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSharedRefScreen'));
+    },
+  },
+  {
     name: 'Background',
     route: 'image/background',
     getComponent() {

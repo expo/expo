@@ -6,15 +6,22 @@
 
 ### 🎉 New features
 
+- Add experimental support for server rendering middleware wrapper in development. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Fix the Vercel adapter's `writeHead` call in the `respond` helper failing to pass raw headers ([#29616](https://github.com/expo/expo/pull/29616) by [@kitten](https://github.com/kitten))
-- Fix support for `.cjs` API route files ([#30205](https://github.com/expo/expo/pull/30205) by [@bradleyayers](https://github.com/bradleyayers))
 
 ### 💡 Others
 
 - Reduce side-effects and imports. ([#29647](https://github.com/expo/expo/pull/29647) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade to `@remix-run/node@2.10.0` and enable undici globals. ([#30070](https://github.com/expo/expo/pull/30070) by [@byCedric](https://github.com/byCedric))
+
+## 0.4.4 - 2024-07-11
+
+### 🐛 Bug fixes
+
+- Fix support for `.cjs` API route files ([#30205](https://github.com/expo/expo/pull/30205) by [@bradleyayers](https://github.com/bradleyayers))
 
 ## 0.4.3 - 2024-06-10
 

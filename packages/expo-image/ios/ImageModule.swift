@@ -25,8 +25,13 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, sources: [ImageSource]?) in
-        view.sources = sources
+      Prop("source") { (view: ImageView, sources: Either<[ImageSource], SharedRef<UIImage>>?) in
+        if let imageRef: SharedRef<UIImage> = sources?.get() {
+          view.sources = nil
+          view.renderImage(imageRef.ref)
+        } else {
+          view.sources = sources?.get()
+        }
       }
 
       Prop("placeholder") { (view, placeholders: [ImageSource]?) in

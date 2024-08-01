@@ -62,11 +62,11 @@ export function getEntryWithServerRoot(
 }
 
 export function getMetroServerRoot(projectRoot: string) {
-  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
-    return getWorkspaceRoot(projectRoot) ?? projectRoot;
+  if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
+    return projectRoot;
   }
 
-  return projectRoot;
+  return getWorkspaceRoot(projectRoot) ?? projectRoot;
 }
 
 /** Get the main entry module ID (file) relative to the project root. */

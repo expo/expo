@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- [iOS] Allow excluding motion permission APIs. ([#29845](https://github.com/expo/expo/pull/29845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30482](https://github.com/expo/expo/pull/30482) by [@byCedric](https://github.com/byCedric))
@@ -17,7 +15,13 @@
 - Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Remove usage of deprecated internal modules API. ([#28715](https://github.com/expo/expo/pull/28715) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]https://github.com/expo/expo/pull/29957) by [@rlods](https://github.com/rlods)) 
+- [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]https://github.com/expo/expo/pull/29957) by [@rlods](https://github.com/rlods))
+
+## 13.0.9 - 2024-06-27
+
+### 🎉 New features
+
+- [iOS] Allow excluding motion permission APIs. ([#29845](https://github.com/expo/expo/pull/29845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 13.0.8 - 2024-05-29
 
