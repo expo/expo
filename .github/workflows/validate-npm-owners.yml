@@ -6,7 +6,7 @@ on:
     - cron: '0 8 * * *' # 8:00 AM UTC time every day
 
 jobs:
-  validate-pending-issues:
+  validate-npm-owners:
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
