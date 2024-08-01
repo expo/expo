@@ -1,21 +1,22 @@
 ---
 title: Modals
 description: Learn how to use modals in Expo Router.
-hideTOC: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-Modals are a common pattern in mobile apps. They are a way to present a new screen on top of the current screen. They are often used for things like creating a new account, or for a user to select an option from a list.
+Modals are a common pattern in mobile apps that present a new screen on top of the current screen. They are used to create focus based interactions, such as a screen to create a new account or to select an option from a list.
 
-<ContentSpotlight file="expo-router/modal.mp4" />
+A modal screen is created inside the root layout route by setting up the `presentation` option to the `modal` on the screen. This guide provides an example of how you can create a modal screen on top of the screen inside a `Stack` navigator.
 
-You can implement a modal by creating a root layout route that renders certain routes as modals.
+## Get started
 
-<FileTree files={['app/_layout.tsx', 'app/home.tsx', 'app/modal.tsx']} />
+You can implement a modal by creating a screen inside the **app** directory. Here's an example file structure:
 
-The layout route **app/\_layout.tsx** can present components as modals. Add a new route called **modal** that is used to render modals:
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/modal.tsx']} />
+
+The above file structure produces a layout where the `index` is the first route in the stack. Inside the root layout file (**app/\_layout.tsx**), you can add the `modal` route in the stack. To present it as a modal, set the `presentation` option to `modal` on the route.
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -23,18 +24,13 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack>
-      <Stack.Screen
-        name="home"
-        options={{
-          // Hide the header for all other routes.
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen name="index" />
       <Stack.Screen
         name="modal"
         options={{
-          // Set the presentation mode to modal for our modal route.
+          /* @info Set the <CODE>presentation</CODE> mode to <CODE>modal</CODE> for the modal route. */
           presentation: 'modal',
+          /* @end */
         }}
       />
     </Stack>
@@ -42,38 +38,142 @@ export default function Layout() {
 }
 ```
 
-```tsx app/home.tsx
-import { View, Text } from 'react-native';
+You can use the `Link` component to navigate to the modal screen from the **index.tsx** file.
+
+{/* prettier-ignore */}
+```tsx app/index.tsx|collapseHeight=350
 import { Link } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function Home() {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-      <Link href="/modal">Present modal</Link>
+    <View style={styles.container}>
+      <Text>Home screen</Text>
+      /* @info Use the <CODE>Link</CODE> component to navigate to the modal screen. The <CODE>href</CODE> prop is the route name of the modal screen. */
+      <Link href="/modal" style={styles.link}>
+        Open modal
+      </Link>
+      /* @end */
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  link: {
+    paddingTop: 20,
+    fontSize: 20,
+  },
+});
 ```
 
-Now create a modal that adds a back button when the modal has lost its previous context and must be presented as a standalone page.
+The **modal.tsx** presents the contents of the modal.
 
-```tsx app/modal.tsx
-import { View, Platform } from 'react-native';
-import { Link, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+```tsx app/modal.tsx|collapseHeight=250
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function Modal() {
-  // If the page was reloaded or navigated to directly, then the modal should be presented as
-  // a full screen page. You may need to change the UI to account for this.
-  const isPresented = router.canGoBack();
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      {/* Use `../` as a simple way to navigate to the root. This is not analogous to "goBack". */}
-      {!isPresented && <Link href="../">Dismiss</Link>}
-      {/* Native modals have dark backgrounds on iOS. Set the status bar to light content and add a fallback for other platforms with auto. */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+    <View style={styles.container}>
+      <Text>Modal screen</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 ```
+
+An example of how modal screen works on different platforms is shown below:
+
+<ContentSpotlight file="expo-router/modal.mp4" />
+
+## Modal presentation and dismiss behavior
+
+A modal loses its previous context when it is the current screen in the navigator and is presented as a standalone screen. Its presentation and dismissal behavior are different on each platform:
+
+- On Android, the modal slides on top of the current screen. To dismiss it, use the back button to navigate back to the previous screen.
+- On iOS, the modal slides from the bottom of the current screen. To dismiss it, swipe it down from the top.
+- On web, the modal is presented as a separate route, and the dismiss behavior has to be provided manually using [`router.canGoBack()`](/router/navigating-pages/#imperative-navigation). Here's an example of how to dismiss the modal:
+
+{/* prettier-ignore */}
+```tsx modal.tsx
+import { Link, /* @info Import the <CODE>router</CODE> object which is used to navigate imperatively. */ router /* @end */} from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function Modal() {
+  /* @info Use <CODE>router.canGoBack()</CODE> to check if the modal is presented as a standalone screen. If the screen was reloaded or navigated to directly, then the modal should be presented as a full screen. You may need to change the UI to account for this. */
+  const isPresented = router.canGoBack();
+  /* @end */
+
+  return (
+    <View style={styles.container}>
+      <Text>Modal screen</Text>
+      /* @info On web, use <CODE>../</CODE> as a simple way to navigate to the root. This is not analogous to <CODE>goBack</CODE>.*/
+      {!isPresented && <Link href="../">Dismiss modal</Link>}
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## Change status bar appearance on iOS
+
+By default on iOS, the modal has a dark background which hides the status bar. To change the status bar appearance, you can use the `Platform` API to check if the current platform is iOS and then use the [`StatusBar`](/versions/latest/sdk/status-bar/) component to change the appearance inside the **modal.tsx** file.
+
+{/* prettier-ignore */}
+```tsx app/modal.tsx|collapseHeight=250
+import { Platform, StyleSheet, Text, View } from 'react-native';
+
+export default function Modal() {
+  return (
+    <View style={styles.container}>
+      <Text>Modal screen</Text>
+      /* @info Use <CODE>Platform.OS</CODE> to check if the current platform is iOS and then use <CODE>StatusBar</CODE> component to change the appearance. */
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## Additional information
+
+### Presentation options
+
+There are different options to present a modal screen using the `presentation` option on Android and iOS.
+
+| Option                      | Description                                                                                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `card`                      | The new screen will be pushed onto a stack. The default animation on Android will vary depending on the OS version and theme. On iOS, it will slide from the side.               |
+| `modal`                     | The new screen will be presented modally, allowing for a nested stack to be rendered inside the screen.                                                                          |
+| `transparentModal`          | The new screen will be presented modally, with the previous screen remaining visible. This allows the content below to still be seen if the screen has a translucent background. |
+| `containedModal`            | On Android, fallbacks to `modal`. On iOS, uses `UIModalPresentationCurrentContext` modal style.                                                                                  |
+| `containedTransparentModal` | On Android, fallbacks to `transparentModal`. On iOS, uses `UIModalPresentationOverCurrentContext` modal style.                                                                   |
+| `fullScreenModal`           | On Android, fallbacks to `modal`. On iOS, uses `UIModalPresentationFullScreen` modal style.                                                                                      |
+| `formSheet`                 | On Android, fallbacks to `modal`. On iOS, uses `UIModalPresentationFormSheet` modal style.                                                                                       |
