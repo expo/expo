@@ -72,7 +72,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
         await fs.promises.writeFile(babelConfigPath, contents);
       } catch {
         console.warn(
-          '⚠️ Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
+          '⚠️ Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
         );
       }
 
@@ -104,9 +104,9 @@ async function findBabelConfigPathAsync(projectRoot: string): Promise<string> {
         throw new Error(`Config file is not a file: ${configPath}`);
       }
       return configPath;
-    }),
+    })
   );
-};
+}
 
 const withCliMetroConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
@@ -150,7 +150,7 @@ export function updateAndroidGradleFile(contents: string): string {
 export function updateBabelConfig(contents: string): string {
   return contents.replace(
     /(['"])module:(metro-react-native-babel-preset|@react-native\/babel-preset)(['"])/g,
-    `$1babel-preset-expo$3`,
+    `$1babel-preset-expo$3`
   );
 }
 
@@ -159,7 +159,7 @@ export function updateMetroConfig(contents: string): string {
     /^const \{\s*getDefaultConfig, mergeConfig\s*\} = require\('@react-native\/metro-config'\);$/m;
   if (!contents.match(searchPattern)) {
     console.warn(
-      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.',
+      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'
     );
     return contents;
   }
@@ -167,7 +167,7 @@ export function updateMetroConfig(contents: string): string {
     searchPattern,
     `\
 const { getDefaultConfig } = require('expo/metro-config');
-const { mergeConfig } = require('@react-native/metro-config');`,
+const { mergeConfig } = require('@react-native/metro-config');`
   );
 }
 
@@ -178,12 +178,12 @@ export function updateVirtualMetroEntryAndroid(contents: string): string {
 export function updateVirtualMetroEntryIos(contents: string): string {
   return contents.replace(
     /^(\s*return.*RCTBundleURLProvider.*jsBundleURLForBundleRoot:@")(index)(".*;)$/m,
-    `$1.expo/.virtual-metro-entry$3`,
+    `$1.expo/.virtual-metro-entry$3`
   );
 }
 
 export function updateIosXcodeProjectBuildPhase(
-  section: PBXShellScriptBuildPhase,
+  section: PBXShellScriptBuildPhase
 ): PBXShellScriptBuildPhase {
   if (section.name === 'Start Packager') {
     section.shellScript = `\
