@@ -65,39 +65,47 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const babelConfigFiles = [
-        'babel.config.json',
-        'babel.config.js',
-        'babel.config.cjs',
-        'babel.config.mjs',
-        'babel.config.cts',
-        '.babelrc.json',
-        '.babelrc.js',
-        '.babelrc.cjs',
-        '.babelrc.mjs',
-        '.babelrc.cts',
-        '.babelrc',
-      ];
-
-      for (const configFile of babelConfigFiles) {
-        const babelConfigPath = path.join(config.modRequest.projectRoot, configFile);
-
-        if (!fs.existsSync(babelConfigPath)) {
-          continue;
-        }
-
+      try {
+        const babelConfigPath = await findBabelConfigPathAsync(config.modRequest.projectRoot);
         let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
         contents = updateBabelConfig(contents);
         await fs.promises.writeFile(babelConfigPath, contents);
-        return config;
+      } catch {
+        console.warn(
+          '⚠️ Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
+        );
       }
 
-      console.warn(
-        '⚠️  Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.',
-      );
       return config;
     },
   ]);
+};
+
+async function findBabelConfigPathAsync(projectRoot: string): Promise<string> {
+  const babelConfigFiles = [
+    'babel.config.json',
+    'babel.config.js',
+    'babel.config.cjs',
+    'babel.config.mjs',
+    'babel.config.cts',
+    '.babelrc.json',
+    '.babelrc.js',
+    '.babelrc.cjs',
+    '.babelrc.mjs',
+    '.babelrc.cts',
+    '.babelrc',
+  ];
+
+  return Promise.any(
+    babelConfigFiles.map(async (filename) => {
+      const configPath = path.join(projectRoot, filename);
+      const stat = await fs.promises.stat(configPath);
+      if (!stat.isFile()) {
+        throw new Error(`Config file is not a file: ${configPath}`);
+      }
+      return configPath;
+    }),
+  );
 };
 
 const withCliMetroConfig: ConfigPlugin = (config) => {
@@ -141,8 +149,8 @@ export function updateAndroidGradleFile(contents: string): string {
 
 export function updateBabelConfig(contents: string): string {
   return contents.replace(
-    /(['"])module:metro-react-native-babel-preset(['"])/g,
-    `$1babel-preset-expo$2`,
+    /(['"])module:(metro-react-native-babel-preset|@react-native\/babel-preset)(['"])/g,
+    `$1babel-preset-expo$3`,
   );
 }
 
