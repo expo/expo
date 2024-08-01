@@ -21,7 +21,7 @@ function nullthrows<T extends object>(x: T | null, message?: string): NonNullabl
   return x;
 }
 
-export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -104,6 +104,11 @@ export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
 export interface DependencyTransformer {
   transformSyncRequire(
     path: NodePath<CallExpression>,
+    dependency: InternalDependency,
+    state: State
+  ): void;
+  transformImportMaybeSyncCall(
+    path: NodePath<any>,
     dependency: InternalDependency,
     state: State
   ): void;
@@ -194,6 +199,27 @@ function collectDependencies<TAst extends t.File>(
           !path.scope.getBinding('require')
         ) {
           processResolveWeakCall(path, state);
+          visited.add(path.node);
+          return;
+        }
+
+        // Match `require.unstable_importMaybeSync`
+        if (
+          callee.type === 'MemberExpression' &&
+          // `require`
+          callee.object.type === 'Identifier' &&
+          callee.object.name === 'require' &&
+          // `unstable_importMaybeSync`
+          callee.property.type === 'Identifier' &&
+          callee.property.name === 'unstable_importMaybeSync' &&
+          !callee.computed &&
+          // Ensure `require` refers to the global and not something else.
+          !path.scope.getBinding('require')
+        ) {
+          processImportCall(path, state, {
+            dynamicRequires: options.dynamicRequires,
+            asyncType: 'maybeSync',
+          });
           visited.add(path.node);
           return;
         }
@@ -455,10 +481,18 @@ function processImportCall(
 
   const transformer = state.dependencyTransformer;
 
-  if (options.asyncType === 'async') {
-    transformer.transformImportCall(path, dep, state);
-  } else {
-    transformer.transformPrefetch(path, dep, state);
+  switch (options.asyncType) {
+    case 'async':
+      transformer.transformImportCall(path, dep, state);
+      break;
+    case 'maybeSync':
+      transformer.transformImportMaybeSyncCall(path, dep, state);
+      break;
+    case 'prefetch':
+      transformer.transformPrefetch(path, dep, state);
+      break;
+    default:
+      throw new Error('Unreachable');
   }
 }
 
@@ -595,6 +629,14 @@ const makeAsyncPrefetchTemplateWithName = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).prefetch(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
 
+const makeAsyncImportMaybeSyncTemplate = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+
+const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
+`);
+
 const makeResolveWeakTemplate = template.expression(`
   MODULE_ID
 `);
@@ -616,6 +658,23 @@ const DefaultDependencyTransformer: DependencyTransformer = {
     const makeNode = state.keepRequireNames
       ? makeAsyncRequireTemplateWithName
       : makeAsyncRequireTemplate;
+    const opts = {
+      ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+      MODULE_ID: createModuleIDExpression(dependency, state),
+      DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+      ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+    };
+    path.replaceWith(makeNode(opts));
+  },
+
+  transformImportMaybeSyncCall(
+    path: NodePath<any>,
+    dependency: InternalDependency,
+    state: State
+  ): void {
+    const makeNode = state.keepRequireNames
+      ? makeAsyncImportMaybeSyncTemplateWithName
+      : makeAsyncImportMaybeSyncTemplate;
     const opts = {
       ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
       MODULE_ID: createModuleIDExpression(dependency, state),
