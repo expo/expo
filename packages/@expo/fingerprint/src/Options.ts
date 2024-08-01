@@ -48,6 +48,9 @@ export const DEFAULT_IGNORE_PATHS = [
   'app.config.json',
   'app.json',
 
+  // Ignore nested node_modules
+  '**/node_modules/**/node_modules/**',
+
   // Ignore default javascript files when calling `getConfig()`
   '**/node_modules/@babel/**/*',
   '**/node_modules/@expo/**/*',
