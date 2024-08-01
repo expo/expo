@@ -70,13 +70,13 @@ export declare enum OrientationLock {
     UNKNOWN = 9
 }
 /**
- * Each iOS device has a default set of [size classes](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html)
+ * Each iOS device has a default set of [size classes](https://developer.apple.com/documentation/uikit/uiuserinterfacesizeclass)
  * that you can use as a guide when designing your interface.
  */
 export declare enum SizeClassIOS {
-    REGULAR = 0,
+    UNKNOWN = 0,
     COMPACT = 1,
-    UNKNOWN = 2
+    REGULAR = 2
 }
 /**
  * An enum representing the lock policies that can be applied on the web platform, modelled after
@@ -103,7 +103,7 @@ export declare enum WebOrientation {
 }
 export type PlatformOrientationInfo = {
     /**
-     * A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation).
+     * A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr#screenOrientation).
      * For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED),
      * `-1` should be passed in.
      * @platform android
@@ -126,13 +126,13 @@ export type ScreenOrientationInfo = {
      */
     orientation: Orientation;
     /**
-     * The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html)
+     * The [vertical size class](https://developer.apple.com/documentation/uikit/uitraitcollection/1623513-verticalsizeclass)
      * of the device.
      * @platform ios
      */
     verticalSizeClass?: SizeClassIOS;
     /**
-     * The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html)
+     * The [horizontal size class](https://developer.apple.com/documentation/uikit/uitraitcollection/1623508-horizontalsizeclass)
      * of the device.
      * @platform ios
      */

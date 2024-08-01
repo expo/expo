@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, shadows, spacing, theme } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 
 import { Icon } from './Icon';
 
@@ -50,13 +51,13 @@ const itemStyle = css({
   padding: spacing[6],
   gap: spacing[2],
   textDecoration: 'none',
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
   transition: 'box-shadow 0.15s ease 0s, transform 0.15s ease 0s',
-  boxShadow: shadows.micro,
+  boxShadow: shadows.xs,
   border: `1px solid ${theme.border.default}`,
 
   ':hover': {
-    boxShadow: shadows.small,
+    boxShadow: shadows.md,
     transform: 'scale(1.05)',
 
     p: {

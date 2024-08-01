@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
+import { loadRequestedParcels } from './loadRequestedParcels';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { prepareParcels } from './prepareParcels';
 
 const { green, cyan, blue, yellow } = chalk;
 
@@ -19,7 +19,7 @@ const { green, cyan, blue, yellow } = chalk;
 export const checkPackagesIntegrity = new Task<TaskArgs>(
   {
     name: 'checkPackagesIntegrity',
-    dependsOn: [prepareParcels],
+    dependsOn: [loadRequestedParcels],
   },
   async (parcels: Parcel[], options: CommandOptions): Promise<void | symbol> => {
     logger.info('\n👁  Checking packages integrity...');

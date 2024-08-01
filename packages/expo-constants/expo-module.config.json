@@ -1,7 +1,6 @@
 {
-  "name": "expo-constants",
-  "platforms": ["ios", "android", "web"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modules": ["ConstantsModule"]
   },
   "android": {

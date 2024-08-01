@@ -29,7 +29,7 @@ const apis: ScreenConfig = {
       ...APIScreens.reduce(
         (prev, curr) => ({
           ...prev,
-          [curr.name]: curr.name.toLowerCase(),
+          [curr.name]: curr.route || curr.name.toLowerCase(),
         }),
         {}
       ),

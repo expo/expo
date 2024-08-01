@@ -1,4 +1,5 @@
-import { asMock } from '../../__tests__/asMock';
+import { getConfig } from '@expo/config';
+
 import { Log } from '../../log';
 import {
   getVersionedDependenciesAsync,
@@ -6,14 +7,14 @@ import {
 } from '../../start/doctor/dependencies/validateDependenciesVersions';
 import { confirmAsync } from '../../utils/prompts';
 import { checkPackagesAsync } from '../checkPackages';
-import { installPackagesAsync } from '../installAsync';
+import { fixPackagesAsync } from '../fixPackages';
 
 jest.mock('../../log');
 
 jest.mock('../../utils/prompts');
 
-jest.mock('../installAsync', () => ({
-  installPackagesAsync: jest.fn(),
+jest.mock('../fixPackages', () => ({
+  fixPackagesAsync: jest.fn(),
 }));
 
 jest.mock('../../start/doctor/dependencies/validateDependenciesVersions', () => ({
@@ -35,10 +36,11 @@ jest.mock('@expo/config', () => ({
 
 describe(checkPackagesAsync, () => {
   it(`checks packages and exits when packages are invalid`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(false);
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([
       {
         packageName: 'react-native',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
@@ -62,9 +64,47 @@ describe(checkPackagesAsync, () => {
     );
   });
 
+  it(`notifies when dependencies are on exclude list`, async () => {
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    // @ts-expect-error
+    jest.mocked(getConfig).mockReturnValueOnce({
+      pkg: {
+        expo: {
+          install: {
+            exclude: ['expo-av', 'expo-blur'],
+          },
+        },
+      },
+      exp: {
+        sdkVersion: '45.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+      },
+    });
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([
+      {
+        packageName: 'expo-av',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '^2.0.0',
+        actualVersion: '1.0.0',
+      },
+    ]);
+    await checkPackagesAsync('/', {
+      packages: ['expo-av'],
+      options: { fix: true },
+      // @ts-expect-error
+      packageManager: {},
+      packageManagerArguments: [],
+    });
+
+    expect(Log.log).toBeCalledWith(
+      expect.stringContaining('Skipped fixing dependencies: expo-av and expo-blur')
+    );
+  });
+
   it(`checks packages and exits with zero if all are valid`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(false);
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([]);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([]);
     await expect(
       checkPackagesAsync('/', {
         packages: ['react-native'],
@@ -85,18 +125,22 @@ describe(checkPackagesAsync, () => {
   });
 
   it(`fixes invalid packages`, async () => {
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+    const issues: Awaited<ReturnType<typeof getVersionedDependenciesAsync>> = [
       {
         packageName: 'react-native',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
       {
         packageName: 'expo',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
-    ]);
+    ];
+
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
 
     await checkPackagesAsync('/', {
       packages: ['react-native', 'expo'],
@@ -106,10 +150,10 @@ describe(checkPackagesAsync, () => {
       packageManagerArguments: [],
     });
 
-    expect(installPackagesAsync).toBeCalledWith('/', {
+    expect(fixPackagesAsync).toBeCalledWith('/', {
       packageManager: {},
       packageManagerArguments: [],
-      packages: ['react-native', 'expo'],
+      packages: issues,
       sdkVersion: '45.0.0',
     });
     expect(logIncorrectDependencies).toBeCalledTimes(1);

@@ -74,6 +74,7 @@ internal struct MediaHandler {
                                                                                options: options)
 
       let targetUrl = try generateUrl(withFileExtension: fileExtension)
+      let mimeType = getMimeType(from: ".\(targetUrl.pathExtension)")
 
       // no modification requested
       let imageModified = options.allowsEditing || options.quality != nil
@@ -85,7 +86,11 @@ internal struct MediaHandler {
       // as calling this already requires media library permission, we can access it here
       // if user gave limited permissions, in the worst case this will be null
       let asset = mediaInfo[.phAsset] as? PHAsset
-      let fileName = asset?.value(forKey: "filename") as? String
+      var fileName = asset?.value(forKey: "filename") as? String
+      // Extension will change to png when editing BMP files, reflect that change in fileName
+      if let unwrappedName = fileName {
+        fileName = replaceFileExtension(fileName: unwrappedName, targetExtension: fileExtension.lowercased())
+      }
       let fileSize = getFileSize(from: targetUrl)
 
       let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
@@ -100,6 +105,7 @@ internal struct MediaHandler {
                                   height: image.size.height,
                                   fileName: fileName,
                                   fileSize: fileSize,
+                                  mimeType: mimeType,
                                   base64: base64,
                                   exif: exif)
         let response = ImagePickerResponse(assets: [imageInfo], canceled: false)
@@ -121,7 +127,7 @@ internal struct MediaHandler {
       do {
         guard error == nil,
               let rawData = rawData,
-              let image = try? UIImage(data: rawData) else {
+              let image = UIImage(data: rawData) else {
           return completion(index, .failure(FailedToReadImageException().causedBy(error)))
         }
 
@@ -130,6 +136,7 @@ internal struct MediaHandler {
                                                                                  itemProvider: itemProvider,
                                                                                  options: self.options)
 
+        let mimeType = getMimeType(from: fileExtension)
         let targetUrl = try generateUrl(withFileExtension: fileExtension)
         try ImageUtils.write(imageData: imageData, to: targetUrl)
         let fileSize = getFileSize(from: targetUrl)
@@ -149,6 +156,7 @@ internal struct MediaHandler {
                                   height: image.size.height,
                                   fileName: fileName,
                                   fileSize: fileSize,
+                                  mimeType: mimeType,
                                   base64: base64,
                                   exif: exif)
         completion(index, .success(imageInfo))
@@ -158,6 +166,22 @@ internal struct MediaHandler {
         return completion(index, .failure(UnexpectedException(error)))
       }
     } // loadObject
+  }
+
+  private func getMimeType(from pathExtension: String) -> String? {
+    let filenameExtension = String(pathExtension.dropFirst())
+    if #available(iOS 14, *) {
+      return UTType(filenameExtension: filenameExtension)?.preferredMIMEType
+    }
+    if let uti = UTTypeCreatePreferredIdentifierForTag(
+      kUTTagClassFilenameExtension,
+      pathExtension as NSString, nil
+    )?.takeRetainedValue() {
+      if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+        return mimetype as String
+      }
+    }
+    return nil
   }
 
   // MARK: - Video
@@ -184,6 +208,7 @@ internal struct MediaHandler {
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
 
       let asset = mediaInfo[.phAsset] as? PHAsset
+      let mimeType = getMimeType(from: ".\(targetUrl.pathExtension)")
       let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
       let videoInfo = AssetInfo(assetId: asset?.localIdentifier,
@@ -193,6 +218,7 @@ internal struct MediaHandler {
                                 height: dimensions.height,
                                 fileName: fileName,
                                 fileSize: fileSize,
+                                mimeType: mimeType,
                                 duration: duration)
 
       completion(.success(ImagePickerResponse(assets: [videoInfo], canceled: false)))
@@ -211,7 +237,7 @@ internal struct MediaHandler {
     itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
       do {
         guard error == nil,
-              let videoUrl = url as? URL else {
+        let videoUrl = url else {
           return completion(index, .failure(FailedToReadVideoException().causedBy(error)))
         }
 
@@ -220,6 +246,7 @@ internal struct MediaHandler {
         let transcodeFileType = AVFileType.mp4
         let transcodeFileExtension = ".mp4"
         let originalExtension = ".\(videoUrl.pathExtension)"
+        let mimeType = getMimeType(from: originalExtension)
 
         // We need to copy the result into a place that we control, because the picker
         // can remove the original file during conversion.
@@ -237,7 +264,7 @@ internal struct MediaHandler {
             return completion(index, .failure(exception))
           case .success(let targetUrl):
             let fileName = itemProvider.suggestedName.map { $0 + transcodeFileExtension }
-            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, assetId: selectedVideo.assetIdentifier)
+            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, mimeType: mimeType, assetId: selectedVideo.assetIdentifier)
             return completion(index, videoResult)
           }
         }
@@ -251,6 +278,22 @@ internal struct MediaHandler {
 
   // MARK: - utils
 
+  private func replaceFileExtension(fileName: String, targetExtension: String) -> String {
+    if !fileName.lowercased().hasSuffix(targetExtension.lowercased()) {
+      return deleteFileExtension(fileName: fileName) + targetExtension
+    }
+    return fileName
+  }
+
+  private func deleteFileExtension(fileName: String) -> String {
+    var components = fileName.components(separatedBy: ".")
+    guard components.count > 1 else {
+      return fileName
+    }
+    components.removeLast()
+    return components.joined(separator: ".")
+  }
+
   private func generateUrl(withFileExtension: String) throws -> URL {
     guard let fileSystem = self.fileSystem else {
       throw FileSystemModuleNotFoundException()
@@ -263,7 +306,7 @@ internal struct MediaHandler {
     return url
   }
 
-  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, assetId: String?) -> SelectedMediaResult {
+  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, mimeType: String?, assetId: String?) -> SelectedMediaResult {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
       return .failure(FailedToReadVideoSizeException())
     }
@@ -277,6 +320,7 @@ internal struct MediaHandler {
                            height: size.height,
                            fileName: fileName,
                            fileSize: fileSize,
+                           mimeType: mimeType,
                            duration: duration)
     return .success(result)
   }
@@ -337,8 +381,16 @@ private struct ImageUtils {
       let data = image.pngData()
       return (data, ".png")
 
+    case .some(let s) where s.contains("ext=WEBP"):
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (nil, ".webp")
+
     case .some(let s) where s.contains("ext=BMP"):
-      if options.allowsEditing || options.quality != nil {
+      if options.allowsEditing {
         // switch to png if editing
         let data = image.pngData()
         return (data, ".png")
@@ -375,9 +427,23 @@ private struct ImageUtils {
     let preferredFormat = itemProvider.registeredTypeIdentifiers.first
 
     switch preferredFormat {
+    case UTType.bmp.identifier:
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (rawData, ".bmp")
     case UTType.png.identifier:
       let data = image.pngData()
       return (data, ".png")
+    case UTType.webP.identifier:
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (rawData, ".webp")
     case UTType.gif.identifier:
       let gifData = try processGifData(inputData: rawData,
                                        compressionQuality: options.quality,
@@ -455,8 +521,8 @@ private struct ImageUtils {
 
     let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
 
-    if metadata != nil {
-      let exif = ImageUtils.readExifFrom(imageMetadata: metadata!)
+    if let metadata {
+      let exif = ImageUtils.readExifFrom(imageMetadata: metadata)
       return completion(exif)
     }
 
@@ -474,7 +540,7 @@ private struct ImageUtils {
 
     let options = PHContentEditingInputRequestOptions()
     options.isNetworkAccessAllowed = true
-    asset.requestContentEditingInput(with: options) { input, info in
+    asset.requestContentEditingInput(with: options) { input, _ in
       guard let imageUrl = input?.fullSizeImageURL,
             let properties = CIImage(contentsOf: imageUrl)?.properties
       else {
@@ -499,18 +565,15 @@ private struct ImageUtils {
     var exif: ExifInfo = imageMetadata[kCGImagePropertyExifDictionary as String] as? ExifInfo ?? [:]
 
     // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
-    let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
-    if gps != nil {
-      gps!.forEach { key, value in
+    if let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
+      gps.forEach { key, value in
         exif["GPS\(key)"] = value
       }
     }
 
-    // Inject orientation into exif
-    let orientationKey = kCGImagePropertyOrientation as String
-    let orientationValue = imageMetadata[orientationKey]
-    if orientationValue != nil {
-      exif[orientationKey] = orientationValue
+    if let tiff = imageMetadata[kCGImagePropertyTIFFDictionary as String] as? [String: Any] {
+      // Inject tiff data (make, model, resolution...)
+      exif.merge(tiff) { current, _ in current }
     }
 
     return exif
@@ -555,9 +618,7 @@ private struct ImageUtils {
       if cropRect != nil {
         cgImage = cgImage.cropping(to: cropRect!)!
       }
-      if quality != nil {
-        frameProperties[kCGImageDestinationLossyCompressionQuality as String] = quality
-      }
+      frameProperties[kCGImageDestinationLossyCompressionQuality as String] = quality
       CGImageDestinationAddImage(imageDestination, cgImage, frameProperties as CFDictionary)
     }
 
@@ -589,8 +650,12 @@ private struct VideoUtils {
 
   static func readSizeFrom(url: URL) -> CGSize? {
     let asset = AVURLAsset(url: url)
-    let size: CGSize? = asset.tracks(withMediaType: .video).first?.naturalSize
-    return size
+    guard let assetTrack = asset.tracks(withMediaType: .video).first else {
+      return nil
+    }
+    // The video could be rotated and the resulting transform can result in a negative width/height.
+    let size = assetTrack.naturalSize.applying(assetTrack.preferredTransform)
+    return CGSize(width: abs(size.width), height: abs(size.height))
   }
 
   static func readVideoUrlFrom(mediaInfo: MediaInfo) -> URL? {

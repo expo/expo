@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy } from 'expo-modules-core';
+import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
@@ -6,64 +6,52 @@ export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }
-let rawManifest = null;
+const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
+let rawUpdatesManifest = null;
 // If expo-updates defines a non-empty manifest, prefer that one
-if (NativeModulesProxy.ExpoUpdates) {
+if (ExpoUpdates) {
     let updatesManifest;
-    if (NativeModulesProxy.ExpoUpdates.manifest) {
-        updatesManifest = NativeModulesProxy.ExpoUpdates.manifest;
+    if (ExpoUpdates.manifest) {
+        updatesManifest = ExpoUpdates.manifest;
     }
-    else if (NativeModulesProxy.ExpoUpdates.manifestString) {
-        updatesManifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
+    else if (ExpoUpdates.manifestString) {
+        updatesManifest = JSON.parse(ExpoUpdates.manifestString);
     }
     if (updatesManifest && Object.keys(updatesManifest).length > 0) {
-        rawManifest = updatesManifest;
+        rawUpdatesManifest = updatesManifest;
     }
 }
 // If dev-launcher defines a non-empty manifest, prefer that one
+let rawDevLauncherManifest = null;
 if (NativeModules.EXDevLauncher) {
     let devLauncherManifest;
     if (NativeModules.EXDevLauncher.manifestString) {
         devLauncherManifest = JSON.parse(NativeModules.EXDevLauncher.manifestString);
     }
     if (devLauncherManifest && Object.keys(devLauncherManifest).length > 0) {
-        rawManifest = devLauncherManifest;
+        rawDevLauncherManifest = devLauncherManifest;
     }
 }
 // Fall back to ExponentConstants.manifest if we don't have one from Updates
-if (!rawManifest && ExponentConstants && ExponentConstants.manifest) {
-    rawManifest = ExponentConstants.manifest;
+let rawAppConfig = null;
+if (ExponentConstants && ExponentConstants.manifest) {
+    const appConfig = ExponentConstants.manifest;
     // On Android we pass the manifest in JSON form so this step is necessary
-    if (typeof rawManifest === 'string') {
-        rawManifest = JSON.parse(rawManifest);
+    if (typeof appConfig === 'string') {
+        rawAppConfig = JSON.parse(appConfig);
+    }
+    else {
+        rawAppConfig = appConfig;
     }
 }
+let rawManifest = rawUpdatesManifest ?? rawDevLauncherManifest ?? rawAppConfig;
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
-let warnedAboutDeviceYearClass = false;
-let warnedAboutIosModel = false;
 const constants = {
     ...nativeConstants,
     // Ensure this is null in bare workflow
     appOwnership: appOwnership ?? null,
 };
 Object.defineProperties(constants, {
-    // Deprecated field
-    deviceYearClass: {
-        get() {
-            if (!warnedAboutDeviceYearClass) {
-                console.warn(`Constants.deviceYearClass has been deprecated in favor of expo-device's Device.deviceYearClass property. This API will be removed in SDK 45.`);
-                warnedAboutDeviceYearClass = true;
-            }
-            return nativeConstants.deviceYearClass;
-        },
-        enumerable: false,
-    },
-    installationId: {
-        get() {
-            return nativeConstants.installationId;
-        },
-        enumerable: false,
-    },
     /**
      * Use `manifest` property by default.
      * This property is only used for internal purposes.
@@ -73,7 +61,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isAppManifest(maybeManifest)) {
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -83,7 +71,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest2: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isManifest(maybeManifest)) {
+            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -93,7 +81,7 @@ Object.defineProperties(constants, {
     manifest: {
         get() {
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isAppManifest(maybeManifest)) {
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -103,7 +91,7 @@ Object.defineProperties(constants, {
     manifest2: {
         get() {
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isManifest(maybeManifest)) {
+            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -116,10 +104,47 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            if (isManifest(maybeManifest)) {
+            // if running an embedded update, maybeManifest is a EmbeddedManifest which doesn't have
+            // the expo config. Instead, the embedded expo-constants app.config should be used.
+            if (ExpoUpdates && ExpoUpdates.isEmbeddedLaunch) {
+                return rawAppConfig;
+            }
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoClient ?? null;
             }
-            else if (isAppManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
+                return maybeManifest;
+            }
+            return null;
+        },
+        enumerable: true,
+    },
+    expoGoConfig: {
+        get() {
+            const maybeManifest = getManifest(true);
+            if (!maybeManifest) {
+                return null;
+            }
+            if (isExpoUpdatesManifest(maybeManifest)) {
+                return maybeManifest.extra?.expoGo ?? null;
+            }
+            else if (isEmbeddedManifest(maybeManifest)) {
+                return maybeManifest;
+            }
+            return null;
+        },
+        enumerable: true,
+    },
+    easConfig: {
+        get() {
+            const maybeManifest = getManifest(true);
+            if (!maybeManifest) {
+                return null;
+            }
+            if (isExpoUpdatesManifest(maybeManifest)) {
+                return maybeManifest.extra?.eas ?? null;
+            }
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -136,24 +161,10 @@ Object.defineProperties(constants, {
         enumerable: false,
     },
 });
-// Add deprecation warning for `platform.ios.model`
-if (constants?.platform?.ios) {
-    const originalModel = nativeConstants.platform.ios.model;
-    Object.defineProperty(constants.platform.ios, 'model', {
-        get() {
-            if (!warnedAboutIosModel) {
-                console.warn(`Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`);
-                warnedAboutIosModel = true;
-            }
-            return originalModel;
-        },
-        enumerable: false,
-    });
+function isEmbeddedManifest(manifest) {
+    return !isExpoUpdatesManifest(manifest);
 }
-function isAppManifest(manifest) {
-    return !isManifest(manifest);
-}
-function isManifest(manifest) {
+function isExpoUpdatesManifest(manifest) {
     return 'metadata' in manifest;
 }
 function getManifest(suppressWarning = false) {

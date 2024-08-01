@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { queryClient } from '../../providers/QueryProvider';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
@@ -6,7 +7,7 @@ import { UpdatesScreen } from '../UpdatesScreen';
 
 jest.mock('graphql-request', () => {
   return {
-    GraphQLClient(apiUrl: string) {
+    GraphQLClient() {
       return {
         request: jest.fn(),
       };
@@ -58,10 +59,12 @@ describe('<UpdatesScreen />', () => {
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
       message: 'hi joe',
-      manifestPermalink: '123'
+      manifestPermalink: '123',
     };
 
-    mockUpdatesResponse([testUpdate]);
+    act(() => {
+      mockUpdatesResponse([testUpdate]);
+    });
 
     const { queryByText, getByText } = render(
       <UpdatesScreen
@@ -84,7 +87,9 @@ describe('<UpdatesScreen />', () => {
       navigate: jest.fn(),
     };
 
-    mockUpdatesResponse([]);
+    act(() => {
+      mockUpdatesResponse([]);
+    });
 
     const { queryByText, getByText } = render(
       <UpdatesScreen

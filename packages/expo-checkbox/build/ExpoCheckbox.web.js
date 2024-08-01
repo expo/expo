@@ -1,4 +1,5 @@
 /**
+ * Copyright © 2024 650 Industries.
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,39 +8,38 @@
  *
  * see: https://github.com/necolas/react-native-web
  */
-import React, { useCallback } from 'react';
-// @ts-ignore
-import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
-const ExpoCheckbox = (props) => {
-    const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
-    const handleChange = useCallback((event) => {
+import React from 'react';
+import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
+const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChange, style, value, ...other }, ref) => {
+    const handleChange = (event) => {
         const value = event.nativeEvent.target.checked;
         event.nativeEvent.value = value;
-        onChange && onChange(event);
-        onValueChange && onValueChange(value);
-    }, [onChange, onValueChange]);
-    const fakeControl = (React.createElement(View, { pointerEvents: "none", style: [
+        onChange?.(event);
+        onValueChange?.(value);
+    };
+    const fakeControl = (<View style={[
             styles.fakeControl,
             value && styles.fakeControlChecked,
             // custom color
             !!color && { backgroundColor: value ? color : undefined, borderColor: color },
             disabled && styles.fakeControlDisabled,
             value && disabled && styles.fakeControlCheckedAndDisabled,
-        ] }));
+        ]}/>);
     const nativeControl = createElement('input', {
-        accessibilityChecked: value,
-        accessibilityDisabled: disabled,
+        'aria-checked': value,
+        'aria-disabled': disabled,
         checked: value,
         disabled,
         onChange: handleChange,
         style: [styles.nativeControl, styles.cursorInherit],
         type: 'checkbox',
     });
-    return (React.createElement(View, { ...other, style: [styles.root, style, disabled && styles.cursorDefault] },
-        nativeControl,
-        fakeControl));
-};
-ExpoCheckbox.displayName = 'Checkbox';
+    return (<View ref={ref} {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
+        {nativeControl}
+        {fakeControl}
+      </View>);
+});
+export default ExpoCheckbox;
 const styles = StyleSheet.create({
     root: {
         // @ts-ignore
@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     },
     fakeControl: {
         ...StyleSheet.absoluteFillObject,
+        pointerEvents: 'none',
         alignItems: 'center',
         backgroundColor: '#fff',
         borderColor: '#657786',
@@ -92,10 +93,5 @@ const styles = StyleSheet.create({
         WebkitAppearance: 'none',
     },
 });
-export default ExpoCheckbox;
-ExpoCheckbox.isAvailableAsync = () => {
-    console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
-    return Promise.resolve(true);
-};
 export const name = 'ExpoCheckbox';
 //# sourceMappingURL=ExpoCheckbox.web.js.map

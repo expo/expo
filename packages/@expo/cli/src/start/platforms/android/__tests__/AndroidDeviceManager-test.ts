@@ -1,4 +1,4 @@
-import { asMock } from '../../../../__tests__/asMock';
+import { shellDumpsysPackage } from './fixtures/adb-output';
 import { CommandError } from '../../../../utils/errors';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import {
@@ -8,7 +8,6 @@ import {
   openAppIdAsync,
   openUrlAsync,
 } from '../adb';
-import { shellDumpsysPackage } from './fixtures/adb-output';
 
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
@@ -29,12 +28,12 @@ function createDevice() {
 describe('getAppVersionAsync', () => {
   it(`gets the version from an installed app`, async () => {
     const device = createDevice();
-    asMock(getPackageInfoAsync).mockResolvedValueOnce(shellDumpsysPackage);
+    jest.mocked(getPackageInfoAsync).mockResolvedValueOnce(shellDumpsysPackage);
     await expect(device.getAppVersionAsync('foobar')).resolves.toBe('2.23.2');
   });
   it(`returns null when the app is not installed`, async () => {
     const device = createDevice();
-    asMock(getPackageInfoAsync).mockResolvedValueOnce('');
+    jest.mocked(getPackageInfoAsync).mockResolvedValueOnce('');
     await expect(device.getAppVersionAsync('foobar')).resolves.toBe(null);
   });
 });
@@ -42,14 +41,14 @@ describe('getAppVersionAsync', () => {
 describe('launchActivityAsync', () => {
   it(`asserts that the app is not installed`, async () => {
     const device = createDevice();
-    asMock(launchActivityAsync).mockImplementationOnce(() => {
+    jest.mocked(launchActivityAsync).mockImplementationOnce(() => {
       throw new CommandError('APP_NOT_INSTALLED', '...');
     });
     await expect(device.launchActivityAsync).rejects.toThrow(/run:android/);
   });
   it(`asserts that an unexpected error occurred`, async () => {
     const device = createDevice();
-    asMock(launchActivityAsync).mockImplementationOnce(() => {
+    jest.mocked(launchActivityAsync).mockImplementationOnce(() => {
       throw new Error('...');
     });
     await expect(device.launchActivityAsync).rejects.toThrow(/\.\.\./);

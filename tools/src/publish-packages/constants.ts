@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { ReleaseType } from './types';
 import { EXPOTOOLS_DIR } from '../Constants';
 
 /**
@@ -28,3 +29,8 @@ export const BACKUPABLE_OPTIONS_FIELDS = [
   'commitMessage',
   'dry',
 ] as const;
+
+/**
+ * An array of release types in the order from patch to major.
+ */
+export const RELEASE_TYPES_ASC_ORDER = [ReleaseType.PATCH, ReleaseType.MINOR, ReleaseType.MAJOR];

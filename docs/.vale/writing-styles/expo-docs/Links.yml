@@ -1,0 +1,13 @@
+extends: substitution
+message: "Avoid vague text in links such as '%s' unless you can pair it with more descriptive text."
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#linking-to-other-docs'
+ignorecase: true
+scope: raw
+nonword: true
+level: warning
+
+swap:
+  '\[here\]\(.*?\)': 'here'
+  '<a\s*href\s*=\s*".*?".*?>\s*here\s*</a>': 'here'
+  '\[this\]\(.*?\)': 'this'
+  '<a\s*href\s*=\s*".*?".*?>\s*this\s*</a>': 'this'

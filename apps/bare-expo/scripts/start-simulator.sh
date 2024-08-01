@@ -11,43 +11,29 @@ echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 
 "$DIR/setup-ios-project.sh"
 
-"$DIR/start-metro.sh" "$port"
-
 if [ "${CURRENT_ENV}" = "test" ]; then
-    if command -v applesimutils > /dev/null; then 
-    # if brew ls --versions applesimutils > /dev/null; then 
-        echo " ✅ Detox simulators are installed"
+    if command -v maestro > /dev/null; then
+    # if brew ls --versions applesimutils > /dev/null; then
+        echo " ✅ Maestro are installed"
     else
-        echo "Detox simulators are not installed, installing..."
-        brew tap wix/brew
-        brew install applesimutils
+        echo "Maestro is not installed, installing..."
+        curl -Ls "https://get.maestro.mobile.dev" | bash
+        brew tap facebook/fb
+        brew install facebook/fb/idb-companion
     fi
 
-    if [ -d "ios/build/Build/Products/Debug-iphonesimulator/BareExpo.app" ]; then
-        echo " ✅ Debug Detox project is built for iOS"
+    if [ -d "ios/build/BareExpo.app" ]; then
+        echo " ✅ Project is built for iOS"
     else
-        echo " ⚠️  Building the debug Detox project..."
-        yarn run ios:detox:build:debug
+        echo " ⚠️  Building the project..."
+        "$DIR/start-ios-e2e-test.ts" --build
     fi
 
-    echo " ☛  Opening the iOS simulator app"
-    # Detox requires that the app is opened before it can connect
-    open -a "Simulator"
-
-    echo " ☛  Starting Detox in watch mode"
+    echo " ☛  Starting E2E tests"
     # Run our default E2E tests
-    yarn run ios:detox:test:debug --watch
-else 
-
+    "${DIR}/start-ios-e2e-test.ts" --test
+else
     echo " ☛  Running the iOS project..."
-    
-    # CONNECTED_DEVICE=$(node ios-deploy -c | grep -oE 'Found ([0-9A-Za-z\-]+)' | sed 's/Found //g')
-    # if [ -z "${CONNECTED_DEVICE}" ]; then
-        # Build and run the iOS project using `react-native run-ios`
-        node "node_modules/react-native/cli.js" run-ios --no-packager --port "$port"
-    # else
-    #     # Build and run the iOS project using `react-native run-ios`
-    #     node "node_modules/react-native/cli.js" run-ios --no-packager --udid ${CONNECTED_DEVICE} --port ${port}
-    # fi
+    npx expo run:ios --port "${port}"
 fi
 

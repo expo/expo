@@ -6,7 +6,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.RectF
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
@@ -23,7 +25,6 @@ class ExpoImageView(
 ) : AppCompatImageView(context) {
   var currentTarget: ImageViewWrapperTarget? = null
   var isPlaceholder: Boolean = false
-  var placeholderContentFit: ContentFit? = null
 
   fun recycleView(): ImageViewWrapperTarget? {
     setImageDrawable(null)
@@ -35,7 +36,6 @@ class ExpoImageView(
     currentTarget = null
     isVisible = false
     isPlaceholder = false
-    placeholderContentFit = null
 
     return target
   }
@@ -72,7 +72,12 @@ class ExpoImageView(
     }
 
     if (isPlaceholder) {
-      applyTransformationMatrix(drawable, placeholderContentFit ?: ContentFit.ScaleDown)
+      applyTransformationMatrix(
+        drawable,
+        placeholderContentFit,
+        sourceHeight = currentTarget?.placeholderHeight,
+        sourceWidth = currentTarget?.placeholderWidth
+      )
     } else {
       applyTransformationMatrix(drawable, contentFit, contentPosition)
     }
@@ -81,12 +86,19 @@ class ExpoImageView(
   private fun applyTransformationMatrix(
     drawable: Drawable,
     contentFit: ContentFit,
-    contentPosition: ContentPosition = ContentPosition.center
+    contentPosition: ContentPosition = ContentPosition.center,
+    sourceWidth: Int? = currentTarget?.sourceWidth,
+    sourceHeight: Int? = currentTarget?.sourceHeight
   ) {
     val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
     val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
 
-    val matrix = contentFit.toMatrix(imageRect, viewRect)
+    val matrix = contentFit.toMatrix(
+      imageRect,
+      viewRect,
+      sourceWidth ?: -1,
+      sourceHeight ?: -1
+    )
     val scaledImageRect = imageRect.transform(matrix)
 
     imageMatrix = matrix.apply {
@@ -105,6 +117,12 @@ class ExpoImageView(
 
   // region Component Props
   internal var contentFit: ContentFit = ContentFit.Cover
+    set(value) {
+      field = value
+      transformationMatrixChanged = true
+    }
+
+  internal var placeholderContentFit: ContentFit = ContentFit.ScaleDown
     set(value) {
       field = value
       transformationMatrixChanged = true
@@ -175,6 +193,17 @@ class ExpoImageView(
     // is used for the Outline. Unfortunately clipping is not supported
     // for convex-paths and we fallback to Canvas clipping.
     outlineProvider.clipCanvasIfNeeded(canvas, this)
+    // If we encounter a recycled bitmap here, it suggests an issue where we may have failed to
+    // finish clearing the image bitmap before the UI attempts to display it.
+    // One solution could be to suppress the error and assume that the second image view is currently responsible for displaying the correct view.
+    if ((drawable as? BitmapDrawable)?.bitmap?.isRecycled == true) {
+      Log.e("ExpoImage", "Trying to use a recycled bitmap")
+      recycleView()?.let { target ->
+        (parent as? ExpoImageViewWrapper)?.requestManager?.let { requestManager ->
+          target.clear(requestManager)
+        }
+      }
+    }
     super.draw(canvas)
   }
 
@@ -182,14 +211,14 @@ class ExpoImageView(
     super.onDraw(canvas)
     // Draw borders on top of the background and image
     if (borderDrawableLazyHolder.isInitialized()) {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
       }
 
       borderDrawable.apply {
-        resolvedLayoutDirection = layoutDirection
+        layoutDirection = newLayoutDirection
         setBounds(0, 0, width, height)
         draw(canvas)
       }

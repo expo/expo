@@ -1,0 +1,1 @@
+{"version":3,"file":"LogBoxInspectorSection.d.ts","sourceRoot":"","sources":["../../../src/error-overlay/overlay/LogBoxInspectorSection.tsx"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,KAAK,MAAM,OAAO,CAAC;AAK1B,KAAK,KAAK,GAAG;IACX,OAAO,EAAE,MAAM,CAAC;IAChB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;IAC1B,MAAM,CAAC,EAAE,GAAG,CAAC;CACd,CAAC;AAEF,wBAAgB,sBAAsB,CAAC,KAAK,EAAE,KAAK,qBAUlD"}

@@ -13,9 +13,6 @@ jest.mock('../../../../utils/interactive', () => ({
   isInteractive: jest.fn(() => true),
 }));
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 describe(installOnDeviceAsync, () => {
   it(`resolves when the app is installed`, async () => {
     await installOnDeviceAsync({
@@ -29,10 +26,10 @@ describe(installOnDeviceAsync, () => {
     expect(confirmAsync).not.toBeCalled();
   });
   it(`prompts to retry when the device is locked`, async () => {
-    asMock(runOnDevice).mockImplementationOnce(() => {
+    jest.mocked(runOnDevice).mockImplementationOnce(() => {
       throw new CommandError('APPLE_DEVICE_LOCKED', 'device locked');
     });
-    asMock(confirmAsync).mockImplementationOnce(async () => true);
+    jest.mocked(confirmAsync).mockImplementationOnce(async () => true);
 
     await installOnDeviceAsync({
       bundle: 'foo',
@@ -45,10 +42,10 @@ describe(installOnDeviceAsync, () => {
     expect(confirmAsync).toBeCalledTimes(1);
   });
   it(`prompts to retry and throws on false`, async () => {
-    asMock(runOnDevice).mockImplementationOnce(() => {
+    jest.mocked(runOnDevice).mockImplementationOnce(() => {
       throw new CommandError('APPLE_DEVICE_LOCKED', 'device locked');
     });
-    asMock(confirmAsync).mockImplementationOnce(async () => false);
+    jest.mocked(confirmAsync).mockImplementationOnce(async () => false);
 
     await expect(
       installOnDeviceAsync({
@@ -63,7 +60,7 @@ describe(installOnDeviceAsync, () => {
     expect(confirmAsync).toBeCalledTimes(1);
   });
   it(`surfaces rejections`, async () => {
-    asMock(runOnDevice).mockImplementationOnce(() => {
+    jest.mocked(runOnDevice).mockImplementationOnce(() => {
       throw new Error('unknown');
     });
 

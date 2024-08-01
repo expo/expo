@@ -14,10 +14,10 @@ object FileSystemUtils {
   }
 
   @Throws(IOException::class)
-  fun generateOutputPath(internalDirectory: File, dirName: String, extension: String): String {
+  fun generateOutputFile(internalDirectory: File, dirName: String, extension: String): File {
     val directory = File(internalDirectory.toString() + File.separator + dirName)
     ensureDirExists(directory)
     val filename = UUID.randomUUID().toString()
-    return directory.toString() + File.separator + filename + extension
+    return File(directory.toString() + File.separator + filename + extension)
   }
 }

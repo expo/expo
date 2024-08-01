@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+
+group = 'host.exp.exponent'
+version = '13.0.2'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+android {
+  namespace "expo.modules.blur"
+  defaultConfig {
+    versionCode 1
+    versionName "13.0.2"
+  }
+}
+
+dependencies {
+  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+}

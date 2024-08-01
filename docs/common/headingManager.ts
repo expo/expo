@@ -1,8 +1,8 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 import * as Utilities from './utilities';
+import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 
 /**
  * These types directly correspond to MDAST node types
@@ -10,6 +10,7 @@ import * as Utilities from './utilities';
 export enum HeadingType {
   Text = 'text',
   InlineCode = 'inlineCode',
+  CodeFilePath = 'codeFilePath',
 }
 
 /**
@@ -25,7 +26,7 @@ export const BASE_HEADING_LEVEL = 2;
  * How deeply nested headings to display
  * 0 - means only root headings
  *
- * Can be overriden in `.md` pages by setting
+ * Can be overridden in `.md` pages by setting
  * `maxHeadingDepth` attribute
  */
 const DEFAULT_NESTING_LIMIT = 1;
@@ -41,7 +42,8 @@ export type AdditionalProps = {
   sidebarDepth?: number;
   sidebarType?: HeadingType;
   tags?: string[];
-  style?: React.CSSProperties;
+  className?: string;
+  iconSize?: 'sm' | 'xs';
 };
 
 type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };
@@ -91,7 +93,8 @@ export class HeadingManager {
     this._meta = meta;
     this._headings = [];
 
-    const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
+    const maxHeadingDepth =
+      (meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT) + (meta.packageName ? 2 : 0);
     this._maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
   }
 

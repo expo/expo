@@ -1,6 +1,5 @@
 import { PermissionStatus, createPermissionHook, UnavailabilityError, CodedError, } from 'expo-modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
-import { MediaTypeOptions, VideoExportPreset, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, } from './ImagePicker.types';
 function validateOptions(options) {
     const { aspect, quality, videoMaxDuration } = options;
     if (aspect != null) {
@@ -16,37 +15,6 @@ function validateOptions(options) {
         throw new CodedError('ERR_INVALID_ARGUMENT', `Invalid 'videoMaxDuration' value ${videoMaxDuration}. Provide a non-negative number.`);
     }
     return options;
-}
-const DEPRECATED_RESULT_KEYS = [
-    'uri',
-    'assetId',
-    'width',
-    'height',
-    'type',
-    'exif',
-    'base64',
-    'duration',
-    'fileName',
-    'fileSize',
-];
-function mergeDeprecatedResult(result) {
-    const firstAsset = result.assets?.[0];
-    const deprecatedResult = {
-        ...result,
-        get cancelled() {
-            console.warn('Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead');
-            return this.canceled;
-        },
-    };
-    for (const key of DEPRECATED_RESULT_KEYS) {
-        Object.defineProperty(deprecatedResult, key, {
-            get() {
-                console.warn(`Key "${key}" in the image picker result is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead`);
-                return firstAsset?.[key];
-            },
-        });
-    }
-    return deprecatedResult;
 }
 // @needsAudit
 /**
@@ -151,8 +119,7 @@ export async function launchCameraAsync(options = {}) {
     if (!ExponentImagePicker.launchCameraAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
     }
-    const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
-    return mergeDeprecatedResult(result);
+    return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
 }
 // @needsAudit
 /**
@@ -184,9 +151,8 @@ export async function launchImageLibraryAsync(options) {
             "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
             'to fix this warning.');
     }
-    const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
-    return mergeDeprecatedResult(result);
+    return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
 }
-export { MediaTypeOptions, VideoExportPreset, PermissionStatus, // deprecated
-UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export * from './ImagePicker.types';
+export { PermissionStatus };
 //# sourceMappingURL=ImagePicker.js.map

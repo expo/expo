@@ -1,8 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
 export default {
-    get name() {
-        return 'ExpoSharing';
-    },
     async isAvailableAsync() {
         if (typeof navigator === 'undefined') {
             return false;

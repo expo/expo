@@ -1,22 +1,22 @@
 import chalk from 'chalk';
 import { pathExists, readJSON, unlink, writeJSON } from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import ora from 'ora';
 import * as path from 'path';
 
-import * as Directories from '../Directories';
-import logger from '../Logger';
-import { spawnAsync, SpawnResult } from '../Utils';
 import {
   AndroidProjectReport,
   GradleDependency,
   RawGradleDependency,
   RawGradleReport,
 } from './types';
+import * as Directories from '../Directories';
+import logger from '../Logger';
+import { spawnAsync, SpawnResult } from '../Utils';
 
 export const REVISIONS = ['release', 'milestone', 'integration'] as const;
 
-export type Revision = typeof REVISIONS[number];
+export type Revision = (typeof REVISIONS)[number];
 
 export interface GradleTaskOptions {
   revision: Revision;
@@ -150,6 +150,14 @@ async function readGradleReportAndConvertIntoAndroidReport(
     if (await pathExists(gradleBuildKotlin)) {
       return gradleBuildKotlin;
     }
+    const projectGradleBuildGroovy = path.resolve(reportPath, '../../../../build.gradle');
+    const projectGradleBuildKotlin = path.resolve(reportPath, '../../../../build.gradle.kts');
+    if (await pathExists(projectGradleBuildGroovy)) {
+      return gradleBuildGroovy;
+    }
+    if (await pathExists(projectGradleBuildKotlin)) {
+      return gradleBuildKotlin;
+    }
     throw new Error(`Failed to locate gradle.build(.kts)? for report: ${reportPath}`);
   };
 
@@ -182,7 +190,11 @@ async function readAndConvertReports(): Promise<AndroidProjectReport[]> {
   const findGradleReportsFiles = async (cwd: string): Promise<string[]> => {
     const result = await glob('**/build/dependencyUpdates/report.json', {
       cwd,
-      ignore: ['**/node_modules, **/ios'],
+      ignore: [
+        '**/node_modules, **/ios',
+        '**/packages/react-native/**',
+        '**/vendored/unversioned/**',
+      ],
     });
     return Promise.all(result.map(async (el) => path.resolve(cwd, el)));
   };
@@ -191,7 +203,7 @@ async function readAndConvertReports(): Promise<AndroidProjectReport[]> {
     await Promise.all(
       [
         Directories.getPackagesDir(),
-        Directories.getAndroidDir(),
+        Directories.getExpoGoAndroidDir(),
         path.join(Directories.getAppsDir(), 'bare-expo/android'),
       ].map(findGradleReportsFiles)
     )
@@ -231,7 +243,7 @@ export async function getAndroidProjectReports(
   }
 
   for (const androidProjectPath of [
-    Directories.getAndroidDir(),
+    Directories.getExpoGoAndroidDir(),
     path.join(Directories.getAppsDir(), 'bare-expo/android'),
   ]) {
     await executeGradleTask(androidProjectPath, options);

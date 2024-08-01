@@ -3,14 +3,11 @@
 exports[`renders static 1`] = `
 <View>
   <ViewManagerAdapter_ExponentGLView
+    enableExperimentalWorkletSupport={false}
+    msaaSamples={4}
     onSurfaceCreate={[Function]}
-    proxiedProperties={
-      Object {
-        "msaaSamples": 4,
-      }
-    }
     style={
-      Object {
+      {
         "backgroundColor": "transparent",
         "flex": 1,
       }

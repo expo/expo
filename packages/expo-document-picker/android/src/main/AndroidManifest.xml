@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.documentpicker">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <queries>
         <!-- Query open documents -->
         <intent>

@@ -1,0 +1,157 @@
+---
+title: Troubleshooting overview
+sidebar_title: Overview
+description: An overview of troubleshooting guides for app development with Expo and EAS.
+---
+
+import { RouterLogo } from '@expo/styleguide';
+import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
+
+This page lists a collection of various troubleshooting guides for Expo and EAS.
+
+## Error and warnings
+
+<BoxLink
+  title="View logs"
+  description="Learn how to view logs when using Expo CLI to encounter errors and warnings while developing your app."
+  href="/workflow/logging/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Errors and warnings"
+  description="Learn about Redbox errors and stack traces to help you debug your Expo project."
+  href="/debugging/errors-and-warnings/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Common development errors"
+  description="A list of common development errors that are encountered by developers using Expo."
+  href="/workflow/common-development-errors/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title='"Application has not been registered" error'
+  description="Learn about what the Application has not been registered error means and how to resolve it."
+  href="/troubleshooting/application-has-not-been-registered/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Clear bundler caches on macOS and Linux"
+  description="Learn how to clear the bundler cache when using Yarn or npm with Expo CLI or React Native CLI on macOS and Linux."
+  href="/troubleshooting/clear-cache-macos-linux/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Clear bundler caches on Windows"
+  description="Learn how to clear the bundler cache when using Yarn or npm with Expo CLI or React Native CLI on Windows."
+  href="/troubleshooting/clear-cache-windows/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title='"React Native version mismatch" errors'
+  description="Learn about what React Native version mismatch means and how to resolve it in an Expo or React Native app."
+  href="/troubleshooting/react-native-version-mismatch/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Proxies"
+  description="Learn about troubleshooting proxies with a set of recommended tools."
+  href="/troubleshooting/proxies/"
+  Icon={BookOpen02Icon}
+/>
+
+## Runtime issues in development and production
+
+<BoxLink
+  title="Debugging runtime issues"
+  description="Learn about different techniques to debug your native runtime issues in development and production."
+  href="/debugging/runtime-issues/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Debugging and profiling tools"
+  description="Learn about different tools available to inspect your Expo project at runtime."
+  href="/debugging/tools/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Dev tools plugins"
+  description="Learn about using dev tools plugins to inspect and debug your Expo project."
+  href="/debugging/devtools-plugins/"
+  Icon={BookOpen02Icon}
+/>
+
+## Expo Router
+
+<BoxLink
+  title="Expo Router: Troubleshooting"
+  description="A list of common issues with Expo Router setup and how to fix them."
+  href="/router/reference/troubleshooting/"
+  Icon={RouterLogo}
+/>
+
+<BoxLink
+  title="Expo Router FAQ"
+  description="A list of common questions about Expo Router."
+  href="/router/reference/faq/"
+  Icon={RouterLogo}
+/>
+
+## Push notifications
+
+<BoxLink
+  title="Push notifications: Troubleshooting and FAQ"
+  description="A collection of common questions about Expo's push notification service."
+  href="/push-notifications/faq/"
+  Icon={Bell03Icon}
+/>
+
+## EAS
+
+<BoxLink
+  title="EAS Build: Troubleshooting errors and crashes"
+  description="A reference for troubleshooting build errors and crashes when using EAS Build."
+  href="/build-reference/troubleshooting/"
+  Icon={Cube01Icon}
+/>
+
+<BoxLink
+  title="EAS Update: Basic debugging"
+  description="Learn how to use basic debugging techniques to fix an update issue."
+  href="/eas-update/debug/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="EAS Update: Advanced debugging"
+  description="Learn advanced strategies on how to debug EAS Update."
+  href="/eas-update/debug-advanced/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="EAS Update: Error recovery"
+  description={
+    <>
+      Learn how to take advantage of using built-in error recovery when using{' '}
+      <CODE>expo-updates</CODE> library.
+    </>
+  }
+  href="/eas-update/error-recovery/"
+  Icon={LayersTwo02Icon}
+/>

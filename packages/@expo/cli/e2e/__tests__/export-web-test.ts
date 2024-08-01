@@ -1,11 +1,18 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
+import assert from 'assert';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin } from './utils';
+import {
+  execute,
+  projectRoot,
+  getLoadedModulesAsync,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -26,12 +33,6 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/export/web').expoExportWeb`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/export/web/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
@@ -44,7 +45,7 @@ it('runs `npx expo export:web --help`', async () => {
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
-        Export the static files of the web app for hosting on a web server
+        (Deprecated) Bundle the static files of the web app with Webpack for hosting on a web server
 
       Usage
         $ npx expo export:web <dir>
@@ -61,7 +62,7 @@ it('runs `npx expo export:web --help`', async () => {
 it(
   'runs `npx expo export:web`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('basic-export-web', 'with-web');
+    const projectRoot = await setupTestProjectWithOptionsAsync('basic-export-web', 'with-web');
     // `npx expo export:web`
     await execa('node', [bin, 'export:web'], {
       cwd: projectRoot,
@@ -82,29 +83,28 @@ it(
 
     const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
     expect(assetsManifest.entrypoints).toEqual([
-      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js/),
-      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
     ]);
 
     const knownFiles = [
-      ['app.js', expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/)],
-      ['app.js.map', expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js\.map/)],
+      ['main.js', expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/)],
       ['index.html', '/index.html'],
       ['manifest.json', '/manifest.json'],
       ['serve.json', '/serve.json'],
-      ['runtime~app.js', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/)],
-      ['runtime~app.js.map', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/)],
     ];
 
+    assert(assetsManifest.files);
+    console.log(assetsManifest.files);
     for (const [key, value] of knownFiles) {
-      expect(assetsManifest.files[key]).toEqual(value);
-      delete assetsManifest.files[key];
+      const files = assetsManifest.files as Record<string, string>;
+      expect(files[key]).toEqual(value);
+      delete files[key];
     }
 
-    for (const [key, value] of Object.entries(assetsManifest.files)) {
-      expect(key).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
-      expect(value).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
+    for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
+      expect(key).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
+      expect(value).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
     }
 
     expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({
@@ -146,13 +146,11 @@ it(
       'index.html',
       'manifest.json',
       'serve.json',
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js/),
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js\.LICENSE\.txt/),
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js\.map/),
-      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
-      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js\.map/),
-      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.LICENSE\.txt/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.map/),
+      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js\.map/),
     ]);
   },
   // Could take 45s depending on how fast npm installs

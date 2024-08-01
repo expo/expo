@@ -2,22 +2,21 @@ import * as Application from 'expo-application';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
+import { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
+import { AuthRequest } from '../AuthRequest';
 import {
-  AuthRequest,
   AuthRequestConfig,
   AuthRequestPromptOptions,
-  AuthSessionRedirectUriOptions,
-  AuthSessionResult,
-  DiscoveryDocument,
-  generateHexStringAsync,
-  makeRedirectUri,
   Prompt,
   ResponseType,
-} from '../AuthSession';
+} from '../AuthRequest.types';
+import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
+import { makeRedirectUri } from '../AuthSession';
+import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import { DiscoveryDocument } from '../Discovery';
+import { generateHexStringAsync } from '../PKCE';
 import { AccessTokenRequest } from '../TokenRequest';
-import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, invariantClientId, useProxyEnabled } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 515, height: 680 },
@@ -36,7 +35,10 @@ export const discovery: DiscoveryDocument = {
 };
 
 // @needsAudit
-export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
+/**
+ * @deprecated See [Google authentication](/guides/google-authentication/).
+ */
+export type GoogleAuthRequestConfig = ProviderAuthRequestConfig & {
   /**
    * If the user's email address is known ahead of time, it can be supplied to be the default option.
    * If the user has approved access for this app in the past then auth may return without any further interaction.
@@ -48,75 +50,28 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    */
   selectAccount?: boolean;
   /**
-   * Proxy client ID for use in the Expo client on iOS and Android.
-   *
-   * This Google Client ID must be setup as follows:
-   *
-   * - **Application Type**: Web Application
-   * - **URIs**: https://auth.expo.io
-   * - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
-   */
-  expoClientId?: string;
-  /**
    * Expo web client ID for use in the browser.
-   *
-   * This Google Client ID must be setup as follows:
-   *
-   * - **Application Type**: Web Application
-   * - Give it a name (e.g. "Web App").
-   * - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
-   * - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-   * - To test this be sure to start your app with `npx expo start --https`.
    */
   webClientId?: string;
   /**
    * iOS native client ID for use in standalone, bare workflow, and custom clients.
-   *
-   * This Google Client ID must be setup as follows:
-   *
-   * - **Application Type**: iOS Application
-   * - Give it a name (e.g. "iOS App").
-   * - **Bundle ID**: Must match the value of `ios.bundleIdentifier` in your `app.json`.
-   * - Your app needs to conform to the URI scheme matching your bundle identifier.
-   *   - _Standalone_: Automatically added, do nothing.
-   *   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
-   * - To test this you can:
-   *   1. Prebuild to generate the native files: `expo prebuild` and run `yarn ios`
-   *   2. Create a custom client: `expo client:ios`
-   *   3. Build a production IPA: `expo build:ios`
-   * - Whenever you change the values in `app.json` you'll need to rebuild the native app.
    */
   iosClientId?: string;
   /**
    * Android native client ID for use in standalone, and bare workflow.
-   *
-   * This Google Client ID must be setup as follows:
-   *
-   * - **Application Type**: Android Application
-   * - Give it a name (e.g. "Android App").
-   * - **Package name**: Must match the value of `android.package` in your `app.json`.
-   * - Your app needs to conform to the URI scheme matching your `android.package` (ex. `com.myname.mycoolapp:/`).
-   *   - _Standalone_: Automatically added, do nothing.
-   *   - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
-   * - **Signing-certificate fingerprint**:
-   *   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
-   *   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
-   * - To test this you can:
-   *   1. Prebuild to generate the native files: `expo prebuild` and run `yarn ios`
-   *   2. Build a production IPA: `expo build:android`
    */
   androidClientId?: string;
   /**
    * Should the hook automatically exchange the response code for an authentication token.
    *
-   * Defaults to `true` on installed apps (iOS, Android) when `ResponseType.Code` is used (default).
+   * Defaults to `true` on installed apps (Android, iOS) when `ResponseType.Code` is used (default).
    */
   shouldAutoExchangeCode?: boolean;
   /**
    * Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
    */
   language?: string;
-}
+};
 
 // @needsAudit
 /**
@@ -199,11 +154,9 @@ export function useIdTokenAuthRequest(
 ): [
   GoogleAuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
-  const useProxy = useProxyEnabled(redirectUriOptions);
-
-  const isWebAuth = useProxy || Platform.OS === 'web';
+  const isWebAuth = Platform.OS === 'web';
 
   return useAuthRequest(
     {
@@ -216,7 +169,7 @@ export function useIdTokenAuthRequest(
           ? ResponseType.IdToken
           : undefined,
     },
-    { ...redirectUriOptions, useProxy }
+    { ...redirectUriOptions }
   );
 }
 
@@ -236,30 +189,19 @@ export function useAuthRequest(
 ): [
   GoogleAuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
-  const useProxy = useProxyEnabled(redirectUriOptions);
-
   const clientId = useMemo((): string => {
-    const propertyName = useProxy
-      ? 'expoClientId'
-      : Platform.select({
-          ios: 'iosClientId',
-          android: 'androidClientId',
-          default: 'webClientId',
-        });
+    const propertyName = Platform.select({
+      ios: 'iosClientId',
+      android: 'androidClientId',
+      default: 'webClientId',
+    });
 
     const clientId = config[propertyName as any] ?? config.clientId;
     invariantClientId(propertyName, clientId, 'Google');
     return clientId;
-  }, [
-    useProxy,
-    config.expoClientId,
-    config.iosClientId,
-    config.androidClientId,
-    config.webClientId,
-    config.clientId,
-  ]);
+  }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
 
   const responseType = useMemo(() => {
     // Allow overrides.
@@ -268,14 +210,14 @@ export function useAuthRequest(
     }
     // You can only use `response_token=code` on installed apps (iOS, Android without proxy).
     // Installed apps can auto exchange without a client secret and get the token and id-token (Firebase).
-    const isInstalledApp = Platform.OS !== 'web' && !useProxy;
+    const isInstalledApp = Platform.OS !== 'web';
     // If the user provided the client secret (they shouldn't!) then use code exchange by default.
     if (config.clientSecret || isInstalledApp) {
       return ResponseType.Code;
     }
     // This seems the most pragmatic option since it can result in a full authentication on web and proxy platforms as expected.
     return ResponseType.Token;
-  }, [config.responseType, config.clientSecret, useProxy]);
+  }, [config.responseType, config.clientSecret]);
 
   const redirectUri = useMemo((): string => {
     if (typeof config.redirectUri !== 'undefined') {
@@ -284,11 +226,10 @@ export function useAuthRequest(
 
     return makeRedirectUri({
       native: `${Application.applicationId}:/oauthredirect`,
-      useProxy,
       ...redirectUriOptions,
       // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
     });
-  }, [useProxy, config.redirectUri, redirectUriOptions]);
+  }, [config.redirectUri, redirectUriOptions]);
 
   const extraParams = useMemo((): GoogleAuthRequestConfig['extraParams'] => {
     const output = config.extraParams ? { ...config.extraParams } : {};
@@ -318,7 +259,6 @@ export function useAuthRequest(
   );
 
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
-    useProxy,
     windowFeatures: settings.windowFeatures,
   });
 

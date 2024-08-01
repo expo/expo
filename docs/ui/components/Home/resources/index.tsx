@@ -1,4 +1,3 @@
-export * from './APIIcons';
 export * from './CodecademyImage';
 export * from './DevicesImage';
 export * from './OfficeHoursImage';

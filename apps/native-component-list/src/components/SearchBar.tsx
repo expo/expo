@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { StyleSheet, TextInput, TextStyle, TouchableOpacity, View, Platform } from 'react-native';
 
@@ -71,7 +71,7 @@ export default function SearchBar({
             onPress={_handleClear}
             hitSlop={{ top: 15, left: 10, right: 15, bottom: 15 }}
             style={{ padding: 5 }}>
-            <Ionicons name="md-close" size={25} color={tintColor} />
+            <Ionicons name="close" size={25} color={tintColor} />
           </TouchableOpacity>
         ) : null}
       </View>

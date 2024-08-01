@@ -1,7 +1,14 @@
-import { AndroidConfig, ConfigPlugin, History, withDangerousMod } from 'expo/config-plugins';
+import {
+  AndroidConfig,
+  ConfigPlugin,
+  History,
+  withAndroidManifest,
+  withDangerousMod,
+} from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
+import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
 import type { PluginConfigType } from './pluginConfig';
 
@@ -9,6 +16,10 @@ const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
 export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<PluginConfigType>(
   [
+    {
+      propName: 'newArchEnabled',
+      propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+    },
     {
       propName: 'android.minSdkVersion',
       propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
@@ -48,6 +59,34 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     {
       propName: 'android.enableProguardInReleaseBuilds',
       propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
+    },
+    {
+      propName: 'android.enableShrinkResourcesInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
+    },
+    {
+      propName: 'android.enablePngCrunchInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
+    },
+    {
+      propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
+      propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
+    },
+    {
+      propName: 'expo.useLegacyPackaging',
+      propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+    },
+    {
+      propName: 'android.extraMavenRepos',
+      propValueGetter: (config) => {
+        const extraMavenRepos = (config.android?.extraMavenRepos ?? []).map((item) => {
+          if (typeof item === 'string') {
+            return { url: item };
+          }
+          return item;
+        });
+        return JSON.stringify(extraMavenRepos);
+      },
     },
   ],
   'withAndroidBuildProperties'
@@ -154,3 +193,60 @@ export function updateAndroidProguardRules(
   }
   return newContents;
 }
+
+export const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.usesCleartextTraffic == null) {
+      return config;
+    }
+
+    config.modResults = setUsesCleartextTraffic(
+      config.modResults,
+      props.android?.usesCleartextTraffic
+    );
+
+    return config;
+  });
+};
+
+function setUsesCleartextTraffic(
+  androidManifest: AndroidConfig.Manifest.AndroidManifest,
+  value: boolean
+) {
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+
+  if (mainApplication?.$) {
+    mainApplication.$['android:usesCleartextTraffic'] = String(
+      value
+    ) as AndroidConfig.Manifest.StringBoolean;
+  }
+
+  return androidManifest;
+}
+
+export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.manifestQueries == null) {
+      return config;
+    }
+
+    const { manifestQueries } = props.android;
+
+    // Default template adds a single intent to the `queries` tag
+    const defaultIntents =
+      config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+    const defaultPackages =
+      config.modResults.manifest.queries.map((q) => q.package ?? []).flat() ?? [];
+    const defaultProviders =
+      config.modResults.manifest.queries.map((q) => q.provider ?? []).flat() ?? [];
+
+    const newQueries: AndroidConfig.Manifest.ManifestQuery = {
+      package: [...defaultPackages, ...renderQueryPackages(manifestQueries.package)],
+      intent: [...defaultIntents, ...renderQueryIntents(manifestQueries.intent)],
+      provider: [...defaultProviders, ...renderQueryProviders(manifestQueries.provider)],
+    };
+
+    config.modResults.manifest.queries = [newQueries];
+    return config;
+  });
+};

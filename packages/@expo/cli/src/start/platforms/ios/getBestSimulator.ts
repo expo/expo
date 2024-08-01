@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 
-import { CommandError } from '../../../utils/errors';
 import * as SimControl from './simctl';
+import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:platforms:ios:getBestSimulator') as typeof console.log;
 

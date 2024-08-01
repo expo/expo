@@ -1,12 +1,13 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import getenv from 'getenv';
+import os from 'os';
 import path from 'path';
 
 import { installDependencies } from './packageManager';
 import { PackageManagerName } from './resolvePackageManager';
 import { SubstitutionData } from './types';
-import { newStep } from './utils';
+import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:createExampleApp') as typeof console.log;
 
@@ -77,8 +78,12 @@ export async function createExampleApp(
 
   await newStep('Installing dependencies in the example app', async (step) => {
     await installDependencies(packageManager, appTargetPath);
-    await podInstall(appTargetPath);
-    step.succeed('Installed dependencies in the example app');
+    if (os.platform() === 'darwin') {
+      await podInstall(appTargetPath);
+      step.succeed('Installed dependencies in the example app');
+    } else {
+      step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
+    }
   });
 }
 
@@ -94,7 +99,7 @@ async function moveFiles(fromPath: string, toPath: string): Promise<void> {
 }
 
 /**
- * Adds missing configuration that are required to run `expo prebuild`.
+ * Adds missing configuration that are required to run `npx expo prebuild`.
  */
 async function addMissingAppConfigFields(appPath: string, data: SubstitutionData): Promise<void> {
   const appConfigPath = path.join(appPath, 'app.json');

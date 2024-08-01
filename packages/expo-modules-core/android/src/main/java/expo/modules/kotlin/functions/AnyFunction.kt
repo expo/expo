@@ -1,7 +1,6 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.CodedException
@@ -9,9 +8,12 @@ import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * Base class of all exported functions
@@ -22,15 +24,38 @@ abstract class AnyFunction(
 ) {
   internal val argsCount get() = desiredArgsTypes.size
 
+  @PublishedApi
+  internal var canTakeOwner: Boolean = false
+
+  @PublishedApi
+  internal var ownerType: KType? = null
+
+  internal val takesOwner: Boolean
+    get() {
+      if (canTakeOwner) {
+        val firstArgumentType = desiredArgsTypes.firstOrNull()?.kType?.classifier as? KClass<*>
+          ?: return false
+
+        if (firstArgumentType == JavaScriptObject::class) {
+          return true
+        }
+
+        val ownerClass = ownerType?.classifier as? KClass<*> ?: return false
+
+        return firstArgumentType == ownerClass
+      }
+      return false
+    }
+
   /**
    * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
    */
-  internal val requiredArgumentsCount = run {
+  private val requiredArgumentsCount = run {
     val nonNullableArgIndex = desiredArgsTypes
       .reversed()
       .indexOfFirst { !it.kType.isMarkedNullable }
     if (nonNullableArgIndex < 0) {
-      return@run desiredArgsTypes.size
+      return@run 0
     }
 
     return@run desiredArgsTypes.size - nonNullableArgIndex
@@ -54,7 +79,7 @@ abstract class AnyFunction(
       val desiredType = desiredArgsTypes[index]
       argIterator.next().recycle {
         exceptionDecorator({ cause ->
-          ArgumentCastException(desiredType.kType, index, type, cause)
+          ArgumentCastException(desiredType.kType, index, type.toString(), cause)
         }) {
           finalArgs[index] = desiredType.convert(this)
         }
@@ -70,7 +95,7 @@ abstract class AnyFunction(
    * @throws `CodedException` if conversion isn't possible
    */
   @Throws(CodedException::class)
-  protected fun convertArgs(args: Array<Any?>): Array<out Any?> {
+  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null): Array<out Any?> {
     if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
       throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
@@ -81,9 +106,9 @@ abstract class AnyFunction(
       val element = argIterator.next()
       val desiredType = desiredArgsTypes[index]
       exceptionDecorator({ cause ->
-        ArgumentCastException(desiredType.kType, index, ReadableType.String, cause)
+        ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
       }) {
-        finalArgs[index] = desiredType.convert(element)
+        finalArgs[index] = desiredType.convert(element, appContext)
       }
     }
     return finalArgs
@@ -92,7 +117,7 @@ abstract class AnyFunction(
   /**
    * Attaches current function to the provided js object.
    */
-  internal abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
+  abstract fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String)
 
   fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }

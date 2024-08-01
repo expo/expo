@@ -5,12 +5,12 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 import { useInfiniteQuery } from 'react-query';
 
+import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 import { apiClient } from '../apiClient';
 import { Toasts } from '../components/Toasts';
 import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
-import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 
 const query = gql`
   query getBranches(
@@ -77,42 +77,41 @@ async function getBranchesAsync({
     const branches: Branch[] = [];
     const incompatibleBranches: Branch[] = [];
 
-    return apiClient.request(query, variables).then((response) => {
-      const updateBranches = response.app.byId.updateBranches;
-      updateBranches.forEach((updateBranch) => {
-        const branch: Branch = {
-          id: updateBranch.id,
-          name: updateBranch.name,
-          updates: updateBranch.updates.map((update) => {
-            return {
-              ...update,
-              createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
-            };
-          }),
-        };
-
-        const hasNoUpdates = updateBranch.updates.length === 0;
-        const isCompatible = hasNoUpdates || updateBranch.compatibleUpdates.length > 0;
-
-        if (isCompatible) {
-          branches.push(branch);
-        } else {
-          incompatibleBranches.push(branch);
-        }
-
-        // side-effect: prime the cache with branches
-        primeCacheWithBranch(appId, branch);
-
-        // side-effect: prime the cache with the first paginated updates for a branch
-        primeCacheWithUpdates(appId, branch.name, branch.updates);
-      });
-
-      return {
-        branches,
-        incompatibleBranches,
-        page,
+    const response = await apiClient.request(query, variables);
+    const updateBranches = response.app.byId.updateBranches;
+    updateBranches.forEach((updateBranch) => {
+      const branch: Branch = {
+        id: updateBranch.id,
+        name: updateBranch.name,
+        updates: updateBranch.updates.map((update) => {
+          return {
+            ...update,
+            createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
+          };
+        }),
       };
+
+      const hasNoUpdates = updateBranch.updates.length === 0;
+      const isCompatible = hasNoUpdates || updateBranch.compatibleUpdates.length > 0;
+
+      if (isCompatible) {
+        branches.push(branch);
+      } else {
+        incompatibleBranches.push(branch);
+      }
+
+      // side-effect: prime the cache with branches
+      primeCacheWithBranch(appId, branch);
+
+      // side-effect: prime the cache with the first paginated updates for a branch
+      primeCacheWithUpdates(appId, branch.name, branch.updates);
     });
+
+    return {
+      branches,
+      incompatibleBranches,
+      page,
+    };
   }
 
   return {

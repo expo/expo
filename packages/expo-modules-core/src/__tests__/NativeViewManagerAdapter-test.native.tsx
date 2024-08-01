@@ -26,7 +26,7 @@ describe('requireNativeViewManager', () => {
     // calculated.
     // https://github.com/facebook/react/blob/769b1f270e1251d9dbdce0fcbd9e92e502d059b8/packages/shared/getComponentName.js#L81
     const TestView: any = requireNativeViewManager('ExpoTestView');
-    expect(TestView.render.displayName).toBe('Adapter<ExpoTestView>');
+    expect(TestView.displayName).toBe('ExpoTestView');
   });
 
   it(`partitions props into React Native and custom props`, () => {
@@ -46,7 +46,6 @@ describe('requireNativeViewManager', () => {
     expect(React.Children.toArray(testNativeComponent.props.children)).toHaveLength(1);
 
     // Custom props
-    expect(testNativeComponent.props.proxiedProperties).toEqual({ custom: 'hello' });
-    expect(testNativeComponent.props).not.toHaveProperty('custom');
+    expect(testNativeComponent.props.custom).toEqual('hello');
   });
 });

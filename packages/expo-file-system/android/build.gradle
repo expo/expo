@@ -1,99 +1,28 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '15.1.1'
+version = '17.0.1'
 
-buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
-
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
-      }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
-      }
-    }
-  }
-}
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
-
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
-
+  namespace "expo.modules.filesystem"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 30
-    versionName "15.1.1"
+    versionName "17.0.1"
   }
-  lintOptions {
-    abortOnError false
-  }
-}
-
-repositories {
-  mavenCentral()
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
-
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:1.4'
   api 'com.squareup.okhttp3:okhttp:4.9.2'
   api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
   api 'com.squareup.okio:okio:2.9.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
-
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

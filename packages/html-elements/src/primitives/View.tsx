@@ -1,10 +1,8 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  StyleProp,
-  View as NativeView,
-  AccessibilityRole,
-  ViewStyle as NativeViewStyle,
-} from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
+
+import { createDevView } from './createDevView';
+import { createSafeStyledView } from '../css/createSafeStyledView';
 
 // https://github.com/necolas/react-native-web/issues/832
 
@@ -103,7 +101,7 @@ export interface WebViewStyle {
   /** @platform web */
   touchAction?: string;
   /** @platform web */
-  transformOrigin?: string;
+  transformOrigin?: string | (string | number)[];
   /** @platform web */
   transitionDelay?: string;
   /** @platform web */
@@ -118,28 +116,23 @@ export interface WebViewStyle {
   visibility?: string;
   /** @platform web */
   willChange?: string;
+  /** @platform web */
+  position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
 }
 
 export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
-
-  accessibilityRole?:
-    | 'list'
-    | 'listitem'
-    | 'complementary'
-    | 'contentinfo'
-    | 'region'
-    | 'navigation'
-    | 'main'
-    | 'article'
-    | 'banner'
-    | AccessibilityRole;
 };
 
-export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
+export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style'>;
 
-const View = NativeView as ComponentType<ViewProps>;
+let View = NativeView as ComponentType<ViewProps>;
 
-export default View;
+if (process.env.NODE_ENV !== 'production') {
+  // Add better errors and warnings in development builds.
+  View = createDevView(NativeView) as ComponentType<ViewProps>;
+}
+
+export default createSafeStyledView(View) as ComponentType<ViewProps>;

@@ -3,13 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
+    {
+        propName: 'newArchEnabled',
+        propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+    },
     {
         propName: 'android.minSdkVersion',
         propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
@@ -49,6 +54,34 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
         propName: 'android.enableProguardInReleaseBuilds',
         propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
+    },
+    {
+        propName: 'android.enableShrinkResourcesInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
+    },
+    {
+        propName: 'android.enablePngCrunchInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
+    },
+    {
+        propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
+        propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
+    },
+    {
+        propName: 'expo.useLegacyPackaging',
+        propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+    },
+    {
+        propName: 'android.extraMavenRepos',
+        propValueGetter: (config) => {
+            const extraMavenRepos = (config.android?.extraMavenRepos ?? []).map((item) => {
+                if (typeof item === 'string') {
+                    return { url: item };
+                }
+                return item;
+            });
+            return JSON.stringify(extraMavenRepos);
+        },
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -137,3 +170,40 @@ function updateAndroidProguardRules(contents, newProguardRules, updateMode) {
     return newContents;
 }
 exports.updateAndroidProguardRules = updateAndroidProguardRules;
+const withAndroidCleartextTraffic = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.usesCleartextTraffic == null) {
+            return config;
+        }
+        config.modResults = setUsesCleartextTraffic(config.modResults, props.android?.usesCleartextTraffic);
+        return config;
+    });
+};
+exports.withAndroidCleartextTraffic = withAndroidCleartextTraffic;
+function setUsesCleartextTraffic(androidManifest, value) {
+    const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+    if (mainApplication?.$) {
+        mainApplication.$['android:usesCleartextTraffic'] = String(value);
+    }
+    return androidManifest;
+}
+const withAndroidQueries = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.manifestQueries == null) {
+            return config;
+        }
+        const { manifestQueries } = props.android;
+        // Default template adds a single intent to the `queries` tag
+        const defaultIntents = config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+        const defaultPackages = config.modResults.manifest.queries.map((q) => q.package ?? []).flat() ?? [];
+        const defaultProviders = config.modResults.manifest.queries.map((q) => q.provider ?? []).flat() ?? [];
+        const newQueries = {
+            package: [...defaultPackages, ...(0, androidQueryUtils_1.renderQueryPackages)(manifestQueries.package)],
+            intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(manifestQueries.intent)],
+            provider: [...defaultProviders, ...(0, androidQueryUtils_1.renderQueryProviders)(manifestQueries.provider)],
+        };
+        config.modResults.manifest.queries = [newQueries];
+        return config;
+    });
+};
+exports.withAndroidQueries = withAndroidQueries;

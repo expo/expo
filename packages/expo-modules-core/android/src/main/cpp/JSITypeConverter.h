@@ -23,7 +23,7 @@ struct jsi_type_converter {
 };
 
 /**
- * Conversion from jni::alias_ref<T::javaobject> to jsi::Value where T extends JSIValueWrapper or JSIObjectWrapper.
+ * Conversion from jni::alias_ref<T::javaobject> to jsi::Value where T extends JSIValueWrapper, JSIObjectWrapper or JSIFunctionWrapper.
  */
 template<class T>
 struct jsi_type_converter<
@@ -31,7 +31,8 @@ struct jsi_type_converter<
   std::enable_if_t<
     // jni::ReprType<T>::HybridType>::value if T looks like `R::javaobject`, it will return R
     std::is_base_of<JSIValueWrapper, typename jni::ReprType<T>::HybridType>::value ||
-    std::is_base_of<JSIObjectWrapper, typename jni::ReprType<T>::HybridType>::value
+    std::is_base_of<JSIObjectWrapper, typename jni::ReprType<T>::HybridType>::value ||
+    std::is_base_of<JSIValueWrapper, typename jni::ReprType<T>::HybridType>::value
   >
 > {
   static const bool isDefined = true;

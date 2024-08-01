@@ -2,19 +2,26 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
+import { fixPackagesAsync } from './fixPackages';
+import { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
   getVersionedDependenciesAsync,
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { isInteractive } from '../utils/interactive';
+import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
-import { installPackagesAsync } from './installAsync';
-import { Options } from './resolveOptions';
+import { joinWithCommasAnd } from '../utils/strings';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
 
-// Exposed for testing.
+/**
+ * Handles `expo install --fix|check'.
+ * Checks installed dependencies against bundledNativeModules and versions endpoints to find any incompatibilities.
+ * If `--fix` is passed, it will install the correct versions of the dependencies.
+ * If `--check` is passed, it will prompt the user to install the correct versions of the dependencies (on interactive terminal).
+ */
 export async function checkPackagesAsync(
   projectRoot: string,
   {
@@ -29,10 +36,7 @@ export async function checkPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
 
     /** How the check should resolve */
     options: Pick<Options, 'fix'>;
@@ -50,6 +54,16 @@ export async function checkPackagesAsync(
     skipPlugins: true,
   });
 
+  if (pkg.expo?.install?.exclude?.length) {
+    Log.log(
+      chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
+        pkg.expo.install.exclude
+      )}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
+
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 
   if (!dependencies.length) {
@@ -65,13 +79,11 @@ export async function checkPackagesAsync(
     (isInteractive() && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
-    // Just pass in the names, the install function will resolve the versions again.
-    const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-    debug('Installing fixed dependencies:', fixedDependencies);
+    debug('Installing fixed dependencies:', dependencies);
     // Install the corrected dependencies.
-    return installPackagesAsync(projectRoot, {
+    return fixPackagesAsync(projectRoot, {
       packageManager,
-      packages: fixedDependencies,
+      packages: dependencies,
       packageManagerArguments,
       sdkVersion: exp.sdkVersion!,
     });

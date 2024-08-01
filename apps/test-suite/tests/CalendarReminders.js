@@ -179,7 +179,6 @@ export async function test(t) {
         }
         t.expect(error).toBeDefined();
         t.expect(error instanceof Error).toBe(true);
-        t.expect(error.code).toBe('E_REMINDER_NOT_FOUND');
       });
 
       t.afterAll(async () => {

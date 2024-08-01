@@ -2,12 +2,12 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { transformFileAsync } from '../../Transforms';
 import { Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { yellow, magenta } = chalk;
 

@@ -18,6 +18,10 @@ export type GyroscopeMeasurement = {
    * Value of rotation in degrees per second device reported in Z axis.
    */
   z: number;
+  /**
+   * Timestamp of the measurement in seconds.
+   */
+  timestamp: number;
 };
 
 export class GyroscopeSensor extends DeviceSensor<GyroscopeMeasurement> {
@@ -40,9 +44,9 @@ export class GyroscopeSensor extends DeviceSensor<GyroscopeMeasurement> {
   }
 
   /**
-   * Subscribe for updates to the accelerometer.
+   * Subscribe for updates to the gyroscope.
    *
-   * @param listener A callback that is invoked when an accelerometer update is available. When invoked,
+   * @param listener A callback that is invoked when a gyroscope update is available. When invoked,
    * the listener is provided a single argument that is an `GyroscopeMeasurement` object.
    *
    * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.

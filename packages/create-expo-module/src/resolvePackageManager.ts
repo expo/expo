@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 
-export type PackageManagerName = 'npm' | 'pnpm' | 'yarn';
+export type PackageManagerName = 'npm' | 'pnpm' | 'yarn' | 'bun';
 
 /** Determine which package manager to use for installing dependencies based on how the process was started. */
 export function resolvePackageManager(): PackageManagerName {
@@ -13,6 +13,8 @@ export function resolvePackageManager(): PackageManagerName {
     return 'pnpm';
   } else if (userAgent?.startsWith('npm')) {
     return 'npm';
+  } else if (userAgent?.startsWith('bun')) {
+    return 'bun';
   }
 
   // Try availability
@@ -20,6 +22,8 @@ export function resolvePackageManager(): PackageManagerName {
     return 'yarn';
   } else if (isPackageManagerAvailable('pnpm')) {
     return 'pnpm';
+  } else if (isPackageManagerAvailable('bun')) {
+    return 'bun';
   }
 
   return 'npm';
@@ -39,6 +43,8 @@ export function formatRunCommand(manager: PackageManagerName, cmd: string) {
       return `pnpm run ${cmd}`;
     case 'yarn':
       return `yarn ${cmd}`;
+    case 'bun':
+      return `bun run ${cmd}`;
     case 'npm':
     default:
       return `npm run ${cmd}`;

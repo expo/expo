@@ -17,8 +17,10 @@ public class CryptoModule: Module {
 
     Function("getRandomValues", getRandomValues)
 
+    Function("digest", digest)
+
     Function("randomUUID") {
-      UUID().uuidString
+      UUID().uuidString.lowercased()
     }
   }
 }
@@ -64,6 +66,11 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
     throw FailedGeneratingRandomBytesException(status)
   }
   return array
+}
+
+private func digest(algorithm: DigestAlgorithm, output: TypedArray, data: TypedArray) {
+  let outputPtr = output.rawPointer.assumingMemoryBound(to: UInt8.self)
+  _ = algorithm.digest(data.rawPointer, UInt32(data.byteLength), outputPtr)
 }
 
 private class LossyConversionException: Exception {

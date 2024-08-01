@@ -1,69 +1,98 @@
 package expo.modules.screencapture
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.view.WindowManager
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
+const val eventName = "onScreenshot"
 
-class ScreenCaptureModule(context: Context) : ExportedModule(context) {
+class ScreenCaptureModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
+  private val safeCurrentActivity
+    get() = appContext.currentActivity
+  private val currentActivity
+    get() = safeCurrentActivity ?: throw Exceptions.MissingActivity()
+  private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
+  private var screenshotEventEmitter: ScreenshotEventEmitter? = null
+  private var isRegistered = false
 
-  private lateinit var mActivityProvider: ActivityProvider
+  override fun definition() = ModuleDefinition {
+    Name("ExpoScreenCapture")
 
-  override fun getName(): String {
-    return NAME
-  }
+    Events(eventName)
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-    ScreenshotEventEmitter(context, moduleRegistry)
-  }
-
-  @ExpoMethod
-  fun preventScreenCapture(promise: Promise) {
-    val activity = getCurrentActivity()
-
-    activity.runOnUiThread {
-      try {
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      } catch (exception: Exception) {
-        promise.reject(ERROR_CODE_PREVENTION, "Failed to prevent screen capture: " + exception)
+    OnCreate {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        screenCaptureCallback = Activity.ScreenCaptureCallback {
+          sendEvent(eventName)
+        }
+      } else {
+        screenshotEventEmitter = ScreenshotEventEmitter(context) {
+          sendEvent(eventName)
+        }
       }
     }
-    promise.resolve(null)
-  }
 
-  @ExpoMethod
-  fun allowScreenCapture(promise: Promise) {
-    val activity = getCurrentActivity()
-
-    activity.runOnUiThread {
-      try {
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      } catch (exception: Exception) {
-        promise.reject(ERROR_CODE_PREVENTION, "Failed to reallow screen capture: " + exception)
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
+      } else {
+        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_EXTERNAL_STORAGE)
       }
     }
-    promise.resolve(null)
-  }
 
-  @Throws(CurrentActivityNotFoundException::class)
-  fun getCurrentActivity(): Activity {
-    val activity = mActivityProvider.currentActivity
-    if (activity != null) {
-      return activity
-    } else {
-      throw CurrentActivityNotFoundException()
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
+      } else {
+        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_EXTERNAL_STORAGE)
+      }
+    }
+
+    AsyncFunction<Unit>("preventScreenCapture") {
+      registerCallback()
+      currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction<Unit>("allowScreenCapture") {
+      registerCallback()
+      currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }.runOnQueue(Queues.MAIN)
+
+    OnActivityEntersForeground {
+      screenshotEventEmitter?.onHostResume()
+    }
+
+    OnActivityEntersBackground {
+      screenshotEventEmitter?.onHostPause()
+    }
+
+    OnDestroy {
+      screenshotEventEmitter?.onHostDestroy()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        screenCaptureCallback?.let {
+          safeCurrentActivity?.unregisterScreenCaptureCallback(it)
+        }
+      }
     }
   }
 
-  companion object {
-    private val NAME = "ExpoScreenCapture"
-    private const val ERROR_CODE_PREVENTION = "ERR_SCREEN_CAPTURE_PREVENTION"
+  private fun registerCallback() {
+    if (isRegistered) {
+      return
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      currentActivity.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!)
+      isRegistered = true
+    }
   }
 }

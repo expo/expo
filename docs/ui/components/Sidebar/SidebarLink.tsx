@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
-import { theme, typography, spacing, ArrowUpRightIcon, iconSize } from '@expo/styleguide';
-import { useRouter } from 'next/router';
-import type { PropsWithChildren } from 'react';
-import { useEffect, useRef } from 'react';
+import { theme, typography, LinkBase } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { useRouter } from 'next/compat/router';
+import { useEffect, useRef, type PropsWithChildren } from 'react';
 
-import { stripVersionFromPath } from '~/common/utilities';
+import { isRouteActive } from '~/common/routes';
 import { NavigationRoute } from '~/types/common';
-import { LinkBase } from '~/ui/components/Text';
 
 type SidebarLinkProps = PropsWithChildren<{
   info: NavigationRoute;
@@ -25,22 +25,10 @@ const isLinkInViewport = (element: HTMLAnchorElement) => {
 };
 
 export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
-  const { asPath, pathname } = useRouter();
+  const router = useRouter();
   const ref = useRef<HTMLAnchorElement>(null);
 
-  const checkSelection = () => {
-    // Special case for root url
-    if (info.name === 'Introduction') {
-      if (asPath.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
-        return true;
-      }
-    }
-
-    const linkUrl = stripVersionFromPath(info.as || info.href);
-    return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
-  };
-
-  const isSelected = checkSelection();
+  const isSelected = isRouteActive(info, router?.asPath, router?.pathname);
 
   useEffect(() => {
     if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {
@@ -55,24 +43,18 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const customDataAttributes = isSelected && {
     'data-sidebar-anchor-selected': true,
   };
+  const isExternal = info.href.startsWith('http');
 
   return (
     <div css={STYLES_CONTAINER}>
       <LinkBase
         href={info.href as string}
-        {...customDataAttributes}
         ref={ref}
-        target={info.href.startsWith('http') ? '_blank' : undefined}
-        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
-        {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
+        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}
+        {...customDataAttributes}>
+        <div css={[STYLES_BULLET, isSelected && STYLES_ACTIVE_BULLET]} />
         {children}
-        {info.href.startsWith('http') && (
-          <ArrowUpRightIcon
-            size={iconSize.small}
-            color={theme.icon.secondary}
-            css={STYLES_EXTERNAL_ICON}
-          />
-        )}
+        {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
       </LinkBase>
     </div>
   );
@@ -86,17 +68,21 @@ const STYLES_LINK = css`
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   align-items: center;
-  padding-left: ${spacing[4] + spacing[0.5]}px;
   scroll-margin: 60px;
+  width: 100%;
+  margin-left: -${spacing[2] + spacing[0.5]}px;
 
   &:hover {
-    color: ${theme.link.default};
+    color: ${theme.text.link};
+  }
+
+  &:hover svg {
+    color: ${theme.button.tertiary.icon};
   }
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  color: ${theme.link.default};
-  padding-left: 0;
+  color: ${theme.text.link};
 `;
 
 const STYLES_CONTAINER = css`
@@ -107,16 +93,16 @@ const STYLES_CONTAINER = css`
   padding-right: ${spacing[2]}px;
 `;
 
-const STYLES_ACTIVE_BULLET = css`
+const STYLES_BULLET = css`
   height: 6px;
   width: 6px;
   min-height: 6px;
   min-width: 6px;
-  background-color: ${theme.link.default};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
+  align-self: self-start;
 `;
 
-const STYLES_EXTERNAL_ICON = css`
-  margin-left: ${spacing[1]}px;
+const STYLES_ACTIVE_BULLET = css`
+  background-color: ${theme.text.link};
 `;

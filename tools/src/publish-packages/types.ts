@@ -1,8 +1,9 @@
+import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 import { Changelog, ChangelogChanges } from '../Changelogs';
 import { GitLog, GitFileLog, GitDirectory } from '../Git';
 import { PackageViewType } from '../Npm';
 import { Package } from '../Packages';
-import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
+import { PackagesGraphNode } from '../packages-graph';
 
 /**
  * Command's options.
@@ -16,17 +17,20 @@ export type CommandOptions = {
   skipRepoChecks: boolean;
   dry: boolean;
   force: boolean;
+  canary: boolean;
+  deps: boolean;
 
   /* exclusive options that affect what the command does */
   listUnpublished: boolean;
   grantAccess: boolean;
   checkIntegrity: boolean;
+  assignSdkTag: boolean;
 };
 
 /**
  * CommandOptions without options that aren't backupable or just don't matter when restoring a backup.
  */
-export type BackupableOptions = Pick<CommandOptions, typeof BACKUPABLE_OPTIONS_FIELDS[number]>;
+export type BackupableOptions = Pick<CommandOptions, (typeof BACKUPABLE_OPTIONS_FIELDS)[number]>;
 
 /**
  * Represents command's backup data.
@@ -40,22 +44,6 @@ export type PublishBackupData = {
 };
 
 export type PublishState = {
-  /**
-   * Provides informations about changelog changes that have been added since last publish.
-   */
-  changelogChanges?: ChangelogChanges;
-
-  /**
-   * Object that contains a list of commits and changed files since last publish.
-   */
-  logs?: PackageGitLogs;
-
-  /**
-   * This is the smallest possible release type that we can use.
-   * It depends only on changes within this package.
-   */
-  minReleaseType?: ReleaseType;
-
   /**
    * The final release type that also takes into account release types of the dependencies.
    *
@@ -74,6 +62,16 @@ export type PublishState = {
    * Property that is set to `true` once the parcel finishes publishing to NPM registry.
    */
   published?: boolean;
+
+  /**
+   * Whether the package was requested to be published (was listed in command's arguments).
+   */
+  isRequested?: boolean;
+
+  /**
+   * Name of the tarball the package was packed to.
+   */
+  packageTarballFilename?: string;
 };
 
 export type BaseParcel<State> = {
@@ -111,14 +109,35 @@ export type BaseParcel<State> = {
  */
 export type Parcel = BaseParcel<PublishState> & {
   /**
-   * Lists of parcels whose package depends on this one.
+   * A node in the graph of monorepo packages and their dependencies.
    */
-  dependents: Parcel[];
+  graphNode: PackagesGraphNode;
 
   /**
-   * Lists of parcels on which this parcel depends on.
+   * Provides informations about changelog changes that have been added since last publish.
    */
-  dependencies: Parcel[];
+  changelogChanges: ChangelogChanges;
+
+  /**
+   * Object that contains a list of commits and changed files since last publish.
+   */
+  logs: PackageGitLogs;
+
+  /**
+   * This is the smallest possible release type that we can use.
+   * It depends only on changes within this package.
+   */
+  minReleaseType?: ReleaseType;
+
+  /**
+   * Set of parcels whose package depends on this one.
+   */
+  dependents: Set<Parcel>;
+
+  /**
+   * Set of parcels on which this parcel depends on.
+   */
+  dependencies: Set<Parcel>;
 };
 
 /**

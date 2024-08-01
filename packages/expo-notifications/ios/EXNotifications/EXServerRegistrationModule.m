@@ -52,6 +52,7 @@ EX_EXPORT_METHOD_AS(getInstallationIdAsync,
     return installationId;
   }
   
+  // Uses required reason API based on the following reason: CA92.1
   NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDLegacyKey];
   if (legacyUUID) {
     installationId = legacyUUID;

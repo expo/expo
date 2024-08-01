@@ -1,9 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
-import type { HashSource, NormalizedOptions, Platform } from '../Fingerprint.types';
+import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync } from './Utils';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 
@@ -41,9 +44,9 @@ export async function getPackageJsonScriptSourcesAsync(
 ) {
   let packageJson;
   try {
-    packageJson = require(`${projectRoot}/package.json`);
+    packageJson = require(resolveFrom(path.resolve(projectRoot), './package.json'));
   } catch (e: unknown) {
-    debug(`Unable to read package.json from ${projectRoot}/package.json: ` + e);
+    debug(`Unable to read package.json from ${path.resolve(projectRoot)}/package.json: ` + e);
     return [];
   }
   const results: HashSource[] = [];
@@ -53,7 +56,7 @@ export async function getPackageJsonScriptSourcesAsync(
     results.push({
       type: 'contents',
       id,
-      contents: JSON.stringify(packageJson.scripts),
+      contents: normalizePackageJsonScriptSources(packageJson.scripts, options),
       reasons: [id],
     });
   }
@@ -79,36 +82,56 @@ export async function getRncliAutolinkingSourcesAsync(
     const config = JSON.parse(stdout);
     const { root } = config;
     const reasons = ['bareRncliAutolinking'];
-    for (const depData of Object.values<any>(config.dependencies)) {
-      const filePath = path.relative(root, depData.root);
-      results.push({ type: 'dir', filePath, reasons });
-      debug(`Adding react-native-cli autolinking dir - ${chalk.dim(filePath)}`);
-      for (const platform of options.platforms) {
-        const platformData = getRncliPlatformData(depData, root, platform);
-        if (platformData) {
-          results.push({
-            type: 'contents',
-            id: `rncliAutolinkingConfig:${depData.name}:${platform}`,
-            contents: platformData,
-            reasons,
-          });
-        }
+    const autolinkingConfig: Record<string, any> = {};
+    for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
+      try {
+        stripRncliAutolinkingAbsolutePaths(depData, root);
+        const filePath = depData.root;
+        debug(`Adding react-native-cli autolinking dir - ${chalk.dim(filePath)}`);
+        results.push({ type: 'dir', filePath, reasons });
+
+        autolinkingConfig[depName] = depData;
+      } catch (e) {
+        debug(chalk.red(`Error adding react-native-cli autolinking dir - ${depName}.\n${e}`));
       }
     }
+
+    results.push({
+      type: 'contents',
+      id: 'rncliAutolinkingConfig',
+      contents: JSON.stringify(autolinkingConfig),
+      reasons,
+    });
     return results;
-  } catch {
+  } catch (e) {
+    debug(chalk.red(`Error adding react-native-cli autolinking sources.\n${e}`));
     return [];
   }
 }
 
-function getRncliPlatformData(dependency: any, root: string, platform: Platform): string {
-  const platformData = dependency.platforms[platform];
-  if (!platformData) {
-    return '';
+function stripRncliAutolinkingAbsolutePaths(dependency: any, root: string): void {
+  assert(dependency.root);
+  const dependencyRoot = dependency.root;
+  dependency.root = path.relative(root, dependencyRoot);
+  for (const platformData of Object.values<any>(dependency.platforms)) {
+    for (const [key, value] of Object.entries<any>(platformData ?? {})) {
+      platformData[key] = value?.startsWith?.(dependencyRoot) ? path.relative(root, value) : value;
+    }
   }
-  const json: Record<string, string> = {};
-  for (const [key, value] of Object.entries<any>(platformData)) {
-    json[key] = value?.startsWith?.(root) ? path.relative(root, value) : value;
+}
+
+function normalizePackageJsonScriptSources(
+  scripts: Record<string, string>,
+  options: NormalizedOptions
+): string {
+  if (options.sourceSkips & SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun) {
+    // Replicate the behavior of `expo prebuild`
+    if (!scripts.android?.includes('run') || scripts.android === 'expo run:android') {
+      delete scripts.android;
+    }
+    if (!scripts.ios?.includes('run') || scripts.ios === 'expo run:ios') {
+      delete scripts.ios;
+    }
   }
-  return JSON.stringify(json);
+  return JSON.stringify(scripts);
 }

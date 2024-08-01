@@ -10,6 +10,105 @@
 
 ### 💡 Others
 
+## 0.16.2 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed loading error when both `expo-dev-client` and `expo-updates` installed but no `runtimeVersion` configured. ([#28662](https://github.com/expo/expo/pull/28662) by [@kudo](https://github.com/kudo))
+
+## 0.16.1 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.0 — 2024-04-18
+
+### 💡 Others
+
+- Decouple from "bridge" in `expo-updates`. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+- Migrated expo-updates-interface to Kotlin. ([#28033](https://github.com/expo/expo/pull/28033) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Aligned `UpdatesControllerRegistry` with iOS for a better expo-updates and expo-dev-launcher interoperability. ([#27996](https://github.com/expo/expo/pull/27996) by [@kudo](https://github.com/kudo))
+
+## 0.15.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.15.2 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.15.1 - 2023-12-19
+
+### 🐛 Bug fixes
+
+- Add relaunch to disabled and dev client controllers. ([#25973](https://github.com/expo/expo/pull/25973) by [@wschurman](https://github.com/wschurman))
+
+## 0.15.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- Remove unused `storedUpdateIdsWithConfiguration` method. ([#25194](https://github.com/expo/expo/pull/25194) by [@wschurman](https://github.com/wschurman))
+
+## 0.14.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 0.13.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+## 0.12.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.1 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
+## 0.10.0 — 2023-06-21
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 0.9.2 — 2023-05-08
+
+### 💡 Others
+
+- iOS: convert to swift. ([#21646](https://github.com/expo/expo/pull/21646) by [@wschurman](https://github.com/wschurman))
+
+## 0.9.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
 ## 0.8.1 — 2022-11-02
 
 ### 💡 Others

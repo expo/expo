@@ -20,12 +20,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/run/ios').expoRunIos`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/run/ios/index.js',
     '@expo/cli/build/src/utils/args.js',
@@ -35,26 +29,5 @@ it('loads expected modules by default', async () => {
 
 it('runs `npx expo run:ios --help`', async () => {
   const results = await execute('run:ios', '--help');
-  expect(results.stdout).toMatchInlineSnapshot(`
-    "
-      Info
-        Run the iOS app binary locally
-
-      Usage
-        $ npx expo run:ios
-
-      Options
-        --no-build-cache                 Clear the native derived data before building
-        --no-install                     Skip installing dependencies
-        --no-bundler                     Skip starting the Metro bundler
-        --scheme [scheme]                Scheme to build
-        --configuration <configuration>  Xcode configuration to use. Debug or Release. Default: Debug
-        -d, --device [device]            Device name or UDID to build the app on
-        -p, --port <port>                Port to start the Metro bundler on. Default: 8081
-        -h, --help                       Usage info
-
-      Build for production (unsigned) with the Release configuration:
-        $ npx expo run:ios --configuration Release
-    "
-  `);
+  expect(results.stdout).toMatchSnapshot();
 });

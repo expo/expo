@@ -1,5 +1,5 @@
-import { Subscription } from 'expo-modules-core';
-import { ColorValue } from 'react-native';
+import { type EventSubscription } from 'expo-modules-core';
+import { type ColorValue } from 'react-native';
 import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 /**
  * Observe changes to the system navigation bar.
@@ -12,7 +12,7 @@ import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition,
  * });
  * ```
  */
-export declare function addVisibilityListener(listener: (event: NavigationBarVisibilityEvent) => void): Subscription;
+export declare function addVisibilityListener(listener: (event: NavigationBarVisibilityEvent) => void): EventSubscription;
 /**
  * Changes the navigation bar's background color.
  *
@@ -60,7 +60,7 @@ export declare function getBorderColorAsync(): Promise<ColorValue>;
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param color Based on CSS visibility property.
+ * @param visibility Based on CSS visibility property.
  */
 export declare function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void>;
 /**

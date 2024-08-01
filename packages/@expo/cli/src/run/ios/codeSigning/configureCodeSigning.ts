@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
-import * as Log from '../../../log';
 import * as Security from './Security';
 import { resolveCertificateSigningIdentityAsync } from './resolveCertificateSigningIdentity';
 import { getCodeSigningInfoForPbxproj, setAutoCodeSigningInfoForPbxproj } from './xcodeCodeSigning';
+import * as Log from '../../../log';
 
 export async function ensureDeviceIsCodeSignedForDeploymentAsync(
   projectRoot: string

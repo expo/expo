@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeVideoModule.web.js","sourceRoot":"","sources":["../src/NativeVideoModule.web.ts"],"names":[],"mappings":"AAAA,eAAe,GAAG,EAAE,GAAE,CAAC,CAAC","sourcesContent":["export default () => {};\n"]}

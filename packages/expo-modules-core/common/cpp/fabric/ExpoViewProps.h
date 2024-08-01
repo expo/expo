@@ -19,7 +19,10 @@ public:
 
 #pragma mark - Props
 
-  const folly::dynamic proxiedProperties;
+  /**
+   A map with props stored as `folly::dynamic` objects.
+   */
+  std::unordered_map<std::string, folly::dynamic> propsMap;
 };
 
 } // namespace expo

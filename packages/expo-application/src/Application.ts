@@ -1,5 +1,6 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 
+import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
 // @needsAudit
@@ -8,7 +9,8 @@ import ExpoApplication from './ExpoApplication';
  * This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set
  * by `version` in `app.json` on Android at the time the native app was built.
  * On web, this value is `null`.
- * @example `"2.11.0"`
+ * @example
+ * `"2.11.0"`
  */
 export const nativeApplicationVersion: string | null = ExpoApplication
   ? ExpoApplication.nativeApplicationVersion || null
@@ -21,7 +23,8 @@ export const nativeApplicationVersion: string | null = ExpoApplication
  * `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by
  * `android.versionCode` in `app.json` on Android at the time the native app was built. On web, this
  * value is `null`. The return type on Android and iOS is `string`.
- * @example iOS: `"2.11.0"`, Android: `"114"`
+ * @example
+ * Android: `"114"`, iOS: `"2.11.0"`
  */
 export const nativeBuildVersion: string | null = ExpoApplication
   ? ExpoApplication.nativeBuildVersion || null
@@ -32,7 +35,8 @@ export const nativeBuildVersion: string | null = ExpoApplication
  * The human-readable name of the application that is displayed with the app's icon on the device's
  * home screen or desktop. On Android and iOS, this value is a `string` unless the name could not be
  * retrieved, in which case this value will be `null`. On web this value is `null`.
- * @example `"Expo"`, `"Yelp"`, `"Instagram"`
+ * @example
+ * `"Expo"`, `"Yelp"`, `"Instagram"`
  */
 export const applicationName: string | null = ExpoApplication
   ? ExpoApplication.applicationName || null
@@ -42,7 +46,8 @@ export const applicationName: string | null = ExpoApplication
 /**
  * The ID of the application. On Android, this is the application ID. On iOS, this is the bundle ID.
  * On web, this is `null`.
- * @example `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
+ * @example
+ * `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
  */
 export const applicationId: string | null = ExpoApplication
   ? ExpoApplication.applicationId || null
@@ -50,19 +55,25 @@ export const applicationId: string | null = ExpoApplication
 
 // @needsAudit
 /**
- * The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
+ * Gets the value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
  * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.
  * The value may change if a factory reset is performed on the device or if an APK signing key changes.
  * For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26)
  * and higher, see [Android 8.0 Behavior Changes](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all).
- * On iOS and web, this value is `null`.
+ * On iOS and web, this function is unavailable.
  * > In versions of the platform lower than Android 8.0 (API level 26), this value remains constant
  * > for the lifetime of the user's device. See the [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID)
  * > official docs for more information.
- * @example `"dd96dec43fb81c97"`
+ * @example
+ * `"dd96dec43fb81c97"`
  * @platform android
  */
-export const androidId: string | null = ExpoApplication ? ExpoApplication.androidId || null : null;
+export function getAndroidId(): string {
+  if (Platform.OS !== 'android') {
+    throw new UnavailabilityError('expo-application', 'androidId');
+  }
+  return ExpoApplication.androidId;
+}
 
 // @needsAudit
 /**
@@ -109,17 +120,7 @@ export async function getIosIdForVendorAsync(): Promise<string | null> {
   if (!ExpoApplication.getIosIdForVendorAsync) {
     throw new UnavailabilityError('expo-application', 'getIosIdForVendorAsync');
   }
-  return (await ExpoApplication.getIosIdForVendorAsync()) ?? null;
-}
-
-// @docsMissing
-export enum ApplicationReleaseType {
-  UNKNOWN = 0,
-  SIMULATOR = 1,
-  ENTERPRISE = 2,
-  DEVELOPMENT = 3,
-  AD_HOC = 4,
-  APP_STORE = 5,
+  return await ExpoApplication.getIosIdForVendorAsync();
 }
 
 // @needsAudit
@@ -134,9 +135,6 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
   }
   return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
-
-// @docsMissing
-export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
 
 // @needsAudit
 /**
@@ -199,3 +197,5 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   const lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
   return new Date(lastUpdateTime);
 }
+
+export { ApplicationReleaseType, PushNotificationServiceEnvironment };

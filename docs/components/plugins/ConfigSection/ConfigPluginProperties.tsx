@@ -1,7 +1,10 @@
 import type { PropsWithChildren } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { StatusTag } from '~/ui/components/Tag';
 import { P, CODE, H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
@@ -28,15 +31,16 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
             </Cell>
             <Cell>{!property.default ? '-' : <CODE>{property.default}</CODE>}</Cell>
             <Cell>
+              {property.experimental && <StatusTag status="experimental" className="mb-2" />}
               {!!property.platform && (
                 <APISectionPlatformTags
-                  prefix="Only for:"
                   platforms={[
                     { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
                   ]}
+                  prefix="Only for:"
                 />
               )}
-              {property.description}
+              <ReactMarkdown components={mdComponents}>{property.description}</ReactMarkdown>
             </Cell>
           </Row>
         ))}
@@ -50,4 +54,5 @@ export type PluginProperty = {
   description: string;
   default?: string;
   platform?: 'android' | 'ios' | 'web';
+  experimental?: boolean;
 };

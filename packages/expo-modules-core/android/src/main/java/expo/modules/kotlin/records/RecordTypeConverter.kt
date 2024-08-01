@@ -24,10 +24,10 @@ import kotlin.reflect.jvm.javaField
 
 class RecordTypeConverter<T : Record>(
   private val converterProvider: TypeConverterProvider,
-  val type: KType,
+  val type: KType
 ) : DynamicAwareTypeConverters<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
-  private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> =
+  private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {
     (type.classifier as KClass<*>)
       .memberProperties
       .map { property ->
@@ -43,6 +43,7 @@ class RecordTypeConverter<T : Record>(
       }
       .filterNotNull()
       .toMap()
+  }
 
   override fun convertFromDynamic(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
     val jsMap = value.asMap()
@@ -60,9 +61,11 @@ class RecordTypeConverter<T : Record>(
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_MAP)
 
+  override fun isTrivial(): Boolean = false
+
   private fun convertFromReadableMap(jsMap: ReadableMap): T {
     val kClass = type.classifier as KClass<*>
-    val instance = getObjectConstructor(kClass.java).construct()
+    val instance = getObjectConstructor(kClass).construct()
 
     propertyDescriptors
       .forEach { (property, descriptor) ->
@@ -101,7 +104,7 @@ class RecordTypeConverter<T : Record>(
     return instance as T
   }
 
-  private fun <T> getObjectConstructor(clazz: Class<T>): ObjectConstructor<T> {
+  private fun <T : Any> getObjectConstructor(clazz: KClass<T>): ObjectConstructor<T> {
     return objectConstructorFactory.get(clazz)
   }
 

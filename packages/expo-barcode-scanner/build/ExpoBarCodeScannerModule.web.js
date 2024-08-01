@@ -88,9 +88,6 @@ async function handlePermissionsQueryAsync() {
     }
 }
 export default {
-    get name() {
-        return 'ExpoBarCodeScannerModule';
-    },
     get BarCodeType() {
         return {
             code39mod43: 'code39mod43',

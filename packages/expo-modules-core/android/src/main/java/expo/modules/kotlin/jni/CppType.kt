@@ -16,6 +16,7 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   NONE(Nothing::class, 0),
   DOUBLE(Double::class),
   INT(Int::class),
+  LONG(Long::class),
   FLOAT(Float::class),
   BOOLEAN(Boolean::class),
   STRING(String::class),
@@ -23,8 +24,13 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   JS_VALUE(JavaScriptValue::class),
   READABLE_ARRAY(ReadableArray::class),
   READABLE_MAP(ReadableMap::class),
+  UINT8_TYPED_ARRAY(ByteArray::class),
   TYPED_ARRAY(TypedArray::class),
   PRIMITIVE_ARRAY(Array::class),
   LIST(List::class),
-  MAP(Map::class);
+  MAP(Map::class),
+  VIEW_TAG(Int::class),
+  SHARED_OBJECT_ID(Int::class),
+  JS_FUNCTION(JavaScriptFunction::class),
+  ANY(Any::class)
 }

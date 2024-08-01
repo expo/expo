@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { resolveReleaseTypeAndVersion } from './resolveReleaseTypeAndVersion';
 
 const { blue } = chalk;
 
@@ -14,7 +14,7 @@ const { blue } = chalk;
 export const commitStagedChanges = new Task<TaskArgs>(
   {
     name: 'commitStagedChanges',
-    dependsOn: [resolveReleaseTypeAndVersion],
+    dependsOn: [selectPackagesToPublish],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     const stagedFiles = await Git.getStagedFilesAsync();

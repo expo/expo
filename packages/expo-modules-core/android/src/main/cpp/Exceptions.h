@@ -12,7 +12,7 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * A convenient wrapper for the Kotlin CodedException.
@@ -28,9 +28,9 @@ public:
 
   static jni::local_ref<CodedException> create(const std::string &message);
 
-  std::string getCode();
+  std::string getCode() noexcept;
 
-  std::optional<std::string> getLocalizedMessage();
+  std::optional<std::string> getLocalizedMessage() noexcept;
 };
 
 /**
@@ -57,6 +57,17 @@ public:
 
   static jni::local_ref<UnexpectedException> create(
     const std::string &message
+  );
+};
+
+class InvalidArgsNumberException
+: public jni::JavaClass<InvalidArgsNumberException, CodedException> {
+public:
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/exception/InvalidArgsNumberException;";
+
+  static jni::local_ref<InvalidArgsNumberException> create(
+    int received,
+    int expected
   );
 };
 

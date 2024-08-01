@@ -1,6 +1,5 @@
-import { ConfigPlugin, IOSConfig, withXcodeProject } from '@expo/config-plugins';
+import { ConfigPlugin, IOSConfig, withXcodeProject, type XcodeProject } from '@expo/config-plugins';
 import path from 'path';
-import { XcodeProject } from 'xcode';
 
 import { STORYBOARD_FILE_PATH } from './withIosSplashScreenStoryboard';
 

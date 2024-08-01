@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { darkTheme, spacing, theme, typography } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { darkTheme } from '@expo/styleguide-base';
 
 export const globalExtras = css`
   html {
@@ -12,8 +13,14 @@ export const globalExtras = css`
     line-height: 1;
   }
 
+  *:focus-visible {
+    outline: 3px solid ${theme.button.tertiary.icon};
+    outline-offset: 1px;
+    border-radius: 3px;
+  }
+
   ::selection {
-    background-color: ${theme.highlight.accent};
+    background-color: ${theme.palette.blue5};
     color: ${theme.text.default};
   }
 
@@ -28,27 +35,22 @@ export const globalExtras = css`
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.tertiary};
+    background: ${theme.palette.gray5};
     border-radius: 10px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.quaternary};
+    background: ${theme.palette.gray6};
   }
 
-  html[data-expo-theme='light'] div[class*='SnippetContent'] {
+  div[class*='Terminal'] > div {
     ::-webkit-scrollbar-thumb {
-      background: ${darkTheme.background.quaternary};
+      background: ${darkTheme.icon.quaternary};
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: ${darkTheme.icon.secondary};
+      background: ${darkTheme.icon.tertiary};
     }
-  }
-
-  a {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: ${theme.link.default};
   }
 
   img {
@@ -74,75 +76,11 @@ export const globalExtras = css`
     text-decoration: line-through;
   }
 
-  // TODO(simek): investigate why some style is forcing nested ordered lists to have 1rem bottom margin!
-  ul ul,
-  ol ul {
-    margin-bottom: 0 !important;
+  code {
+    font-variant-ligatures: none;
   }
 
-  // Global styles for react-diff-view
-
-  .diff-unified {
-    ${typography.fontSizes[13]};
-    border-collapse: collapse;
-    white-space: pre-wrap;
-    width: 100%;
-
-    td,
-    th {
-      border-bottom: none;
-    }
-  }
-
-  .diff-line:first-of-type {
-    height: 29px;
-
-    td {
-      padding-top: ${spacing[2]}px;
-    }
-  }
-
-  .diff-line:last-of-type {
-    height: 29px;
-  }
-
-  .diff-gutter-col {
-    width: ${spacing[10]}px;
-    background-color: ${theme.background.tertiary};
-  }
-
-  .diff-gutter {
-    ${typography.fontSizes[12]};
-    text-align: right;
-    padding: 0 ${spacing[2]}px;
-  }
-
-  .diff-gutter-normal {
-    color: ${theme.icon.secondary};
-  }
-
-  .diff-code {
-    word-break: break-word;
-    padding-left: ${spacing[4]}px;
-  }
-
-  .diff-code-insert {
-    background-color: ${theme.palette.green['000']};
-    color: ${theme.text.success};
-  }
-
-  .diff-gutter-insert {
-    background-color: ${theme.palette.green['100']};
-    color: ${theme.text.success};
-  }
-
-  .diff-code-delete {
-    background-color: ${theme.palette.red['000']};
-    color: ${theme.text.error};
-  }
-
-  .diff-gutter-delete {
-    background-color: ${theme.palette.red['100']};
-    color: ${theme.text.error};
+  [cmdk-input] {
+    outline: none;
   }
 `;

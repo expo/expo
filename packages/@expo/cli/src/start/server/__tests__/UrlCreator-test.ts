@@ -1,4 +1,3 @@
-import { asMock } from '../../../__tests__/asMock';
 import * as Log from '../../../log';
 import { UrlCreator } from '../UrlCreator';
 
@@ -46,6 +45,11 @@ describe('constructDevClientUrl', () => {
   it(`returns null when the custom scheme is restricted`, () => {
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'http' })).toEqual(null);
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'https' })).toEqual(null);
+  });
+  it(`returns null when protocol contains "_" characters`, () => {
+    expect(
+      createDefaultCreator().constructDevClientUrl({ scheme: 'dev.expo.invalid_node_protocol' })
+    ).toEqual(null);
   });
   it(`creates default`, () => {
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toMatchInlineSnapshot(
@@ -113,7 +117,7 @@ describe('constructUrl', () => {
     ).toMatchInlineSnapshot(`"newer://100.100.1.100:8081"`);
   });
   it(`warns when tunnel isn't available`, () => {
-    asMock(Log.warn).mockClear();
+    jest.mocked(Log.warn).mockClear();
     expect(
       new UrlCreator({}, { port: 8081, getTunnelUrl: () => null }).constructUrl({
         hostType: 'tunnel',

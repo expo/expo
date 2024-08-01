@@ -1,60 +1,75 @@
 package expo.modules.devmenu.modules
 
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.ReadableMap
-
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import expo.modules.core.utilities.EmulatorUtilities
-import expo.modules.devmenu.modules.internals.DevMenuInternalFontManagerModule
-import expo.modules.devmenu.modules.internals.DevMenuInternalMenuControllerModule
+import expo.modules.devmenu.DevMenuManager
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-interface DevMenuInternalMenuControllerModuleInterface {
-  @ReactMethod
-  fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise)
+class DevMenuInternalModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  @ReactMethod
-  fun hideMenu()
-
-  @ReactMethod
-  fun setOnboardingFinished(finished: Boolean)
-
-  @ReactMethod
-  fun openDevMenuFromReactNative()
-
-  @ReactMethod
-  fun onScreenChangeAsync(currentScreen: String?, promise: Promise)
-
-  @ReactMethod
-  fun fetchDataSourceAsync(id: String?, promise: Promise)
-
-  @ReactMethod
-  fun copyToClipboardAsync(content: String, promise: Promise)
-
-  @ReactMethod
-  fun fireCallback(name: String, promise: Promise)
-}
-
-interface DevMenuInternalFontManagerModuleInterface {
-  @ReactMethod
-  fun loadFontsAsync(promise: Promise)
-}
-
-class DevMenuInternalModule(
-  reactContext: ReactApplicationContext
-) : ReactContextBaseJavaModule(reactContext),
-  DevMenuInternalFontManagerModuleInterface by DevMenuInternalFontManagerModule(reactContext),
-  DevMenuInternalMenuControllerModuleInterface by DevMenuInternalMenuControllerModule(reactContext) {
-
-  override fun getName() = "ExpoDevMenuInternal"
-
-  private val doesDeviceSupportKeyCommands
-    get() = EmulatorUtilities.isRunningOnEmulator()
-
-  override fun getConstants(): Map<String, Any> {
-    return mapOf(
-      "doesDeviceSupportKeyCommands" to doesDeviceSupportKeyCommands
+  override fun definition() = ModuleDefinition {
+    Name("ExpoDevMenuInternal")
+    Constants(
+      "doesDeviceSupportKeyCommands" to EmulatorUtilities.isRunningOnEmulator()
     )
+
+    AsyncFunction<Unit>("loadFontsAsync") {
+      DevMenuManager.loadFonts(context)
+    }
+
+    AsyncFunction("reload", DevMenuManager::reload)
+    AsyncFunction("togglePerformanceMonitor", DevMenuManager::togglePerformanceMonitor)
+    AsyncFunction("toggleInspector", DevMenuManager::toggleInspector)
+    AsyncFunction("toggleRemoteDebug", DevMenuManager::toggleRemoteDebug)
+    AsyncFunction("openJSInspector", DevMenuManager::openJSInspector)
+    AsyncFunction("toggleFastRefresh", DevMenuManager::toggleFastRefresh)
+
+    AsyncFunction<Unit>("hideMenu") {
+      DevMenuManager.hideMenu()
+    }
+
+    AsyncFunction<Unit>("closeMenu") {
+      DevMenuManager.closeMenu()
+    }
+
+    AsyncFunction("setOnboardingFinished") { finished: Boolean ->
+      DevMenuManager.getSettings()?.isOnboardingFinished = finished
+    }
+
+    AsyncFunction<Unit>("openDevMenuFromReactNative") {
+      val devSupportManager = DevMenuManager.getReactHost()?.devSupportManager
+        ?: return@AsyncFunction
+      val activity = DevMenuManager.getReactHost()?.currentReactContext?.currentActivity
+        ?: return@AsyncFunction
+
+      activity.runOnUiThread {
+        DevMenuManager.closeMenu()
+        devSupportManager.devSupportEnabled = true
+        devSupportManager.showDevOptionsDialog()
+      }
+    }
+
+    AsyncFunction("copyToClipboardAsync") { content: String ->
+      val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+      val clip = ClipData.newPlainText(null, content)
+      clipboard.setPrimaryClip(clip)
+    }
+
+    AsyncFunction("fireCallback") { name: String ->
+      val callback = DevMenuManager.registeredCallbacks.firstOrNull { it.name == name }
+        ?: throw UnexpectedException("Callback with name: $name is not registered")
+
+      DevMenuManager.sendEventToDelegateBridge("registeredCallbackFired", name)
+      if (callback.shouldCollapse) {
+        DevMenuManager.closeMenu()
+      }
+    }
   }
 }

@@ -3,10 +3,10 @@ import { readFile, writeFile } from 'fs-extra';
 import * as path from 'path';
 import terminalLink from 'terminal-link';
 
-import { EXPO_DIR } from '../Constants';
-import logger from '../Logger';
 import { AndroidProjectDependenciesUpdates } from './types';
 import { addColorBasedOnSemverDiff, calculateSemverDiff } from './utils';
+import { EXPO_DIR } from '../Constants';
+import logger from '../Logger';
 
 function replaceVersionInGradleFile(
   body: string,

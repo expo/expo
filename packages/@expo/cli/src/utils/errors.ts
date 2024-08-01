@@ -12,7 +12,10 @@ export class CommandError extends Error {
   name = 'CommandError';
   readonly isCommandError = true;
 
-  constructor(public code: string, message: string = '') {
+  constructor(
+    public code: string,
+    message: string = ''
+  ) {
     super('');
     // If e.toString() was called to get `message` we don't want it to look
     // like "Error: Error:".
@@ -47,7 +50,10 @@ export class SilentError extends CommandError {
   }
 }
 
-export function logCmdError(error: Error): never {
+export function logCmdError(error: any): never {
+  if (!(error instanceof Error)) {
+    throw error;
+  }
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
     process.exit(0);

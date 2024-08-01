@@ -10,6 +10,129 @@
 
 ### 💡 Others
 
+- Export missing types. ([#29401](https://github.com/expo/expo/pull/29401) by [@Simek](https://github.com/Simek))
+
+## 0.12.4 - 2024-07-30
+
+### 🎉 New features
+
+- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds. ([#30699](https://github.com/expo/expo/pull/30699) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.12.3 - 2024-06-06
+
+### 🎉 New features
+
+- `ios.privacyManifestAggregationEnabled` is now enabled by default. ([#29439](https://github.com/expo/expo/pull/29439) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.12.2 - 2024-06-05
+
+### 🐛 Bug fixes
+
+- Improved android manifest queries, preventing overrides of <package> tags and splitting <provider> instead of merging them into one string ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
+
+## 0.12.1 — 2024-05-06
+
+### 🎉 New features
+
+- Add `ios.ccacheEnabled` option to enable the C++ compiler cache for iOS builds. ([#28638](https://github.com/expo/expo/pull/28638) by [@byCedric](https://github.com/byCedric))
+- Add `ios.privacyManifestAggregationEnabled` option to enable/disable privacy manifest aggregation. ([#28646](https://github.com/expo/expo/pull/28646) by [@brentvatne](https://github.com/brentvatne)).
+
+## 0.12.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Removed Flipper support. ([#26581](https://github.com/expo/expo/pull/26581) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Expand `android.extraMavenRepos` to allow authentication-required Maven repositories. ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
+- Added `extraPods` and `extraMavenRepos` supports within `withBuildProperties()` that library authors could reuse in third-party libraries. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 0.11.1 - 2024-02-01
+
+### 🎉 New features
+
+- Added `useLegacyPackaging` property to instruct AGP to compress native libraries in the APK. ([#26779](https://github.com/expo/expo/pull/26779) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.11.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.10.0 — 2023-10-17
+
+### 🎉 New features
+
+- Add `android.manifestQueries` to allow adding and modifying the `<queries>` tag in the App Manifest. ([#24619](https://github.com/expo/expo/pull/24619) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.9.1 — 2023-09-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.3 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.2 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 0.8.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Replaced `unstable_networkInspector` as `networkInspector` and enabled the feature by default. ([#22994](https://github.com/expo/expo/pull/22994) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Added `android.extraMavenRepos` and `ios.extraPods` support. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+- Added `android.usesCleartextTraffic` support. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.7.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fixed false alarm error throwing when `ios.flipper=false` and `useFrameworks`. ([#22296](https://github.com/expo/expo/pull/22296) by [@kudo](https://github.com/kudo))
+
+## 0.6.0 - 2023-04-14
+
+### 🎉 New features
+
+- Added experimental `unstable_networkInspector` properties. ([#22129](https://github.com/expo/expo/pull/22129) by [@kudo](https://github.com/kudo))
+
+## 0.5.2 — 2023-04-03
+
+### 🎉 New features
+
+- Added `enableShrinkResourcesInReleaseBuilds` property to enable Android `shrinkResources` build feature. ([#21911](https://github.com/expo/expo/pull/21911) by [@kudo](https://github.com/kudo))
+
+## 0.5.1 — 2023-02-09
+
+### 🎉 New features
+
+- Add support for enabling [Flipper](https://fbflipper.com/) as bundled with react-native. ([#20890](https://github.com/expo/expo/pull/20861) by [@jakobo](https://github.com/jakobo))
+
+## 0.5.0 — 2023-02-03
+
+### 🎉 New features
+
+- Add support for enabling [React Native new architecture mode](https://reactnative.dev/docs/new-architecture-intro). ([#20861](https://github.com/expo/expo/pull/20861) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.4.1 - 2022-11-24
 
 ### 🐛 Bug fixes

@@ -8,9 +8,6 @@
 - [Running on a Device](#running-on-a-device)
   - [iOS](#ios-1)
   - [Android](#android-1)
-- [Standalone Apps](#standalone-apps)
-  - [Android](#android-2)
-  - [iOS](#ios-2)
 - [Modifying JS Code](#modifying-js-code)
 - [Tests](#tests)
   - [iOS](#ios-3)
@@ -64,6 +61,8 @@ If you need to make native code changes to your Expo project, such as adding cus
 - In the project navigator, select the **Exponent** project to bring up the project's settings, and then:
   - In the **General** tab, in the **Identity** section, put in a unique Bundle Identifier.
   - Also in the **General** tab, in the **Signing** section, select your personal or team Apple Developer account as your **Team**, and create a new signing certificate by clicking **Fix Issue**.
+- In the project's settings page, select the **ExpoNotificationServiceExtension** target, and then:
+  - In the **General** tab, in the **Identity** section, change its Bundle Identifier to be prefixed with your unique Bundle Identifier. For example, if your unique Bundle Identifier is `host.exp.Exponent.unique`, then the Bundle Identifier for the notification service extension should be `host.exp.Exponent.unique.ExpoNotificationServiceExtension`.
 - Finally, run the build.
 
 ### Android
@@ -75,46 +74,11 @@ If you need to make native code changes to your Expo project, such as adding cus
   - You can also run `./gradlew installUnversionedDebug` from the `android` directory.
   - If you're having trouble building the Android app, trying clearing your gradle cache with `./gradlew clean` and rebuilding.
 
-## Standalone Apps
-
-If you don't need custom native code outside of the Expo SDK, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.expo.dev/classic/building-standalone-apps).
-
-If you need standalone apps as built by running `expo build:ios` or `expo build:android` for a supported SDK version, check out our docs on [using turtle-cli to build apps locally or on CI](https://docs.expo.dev/classic/turtle-cli).
-
-If you're still here, you need to build a standalone app with code currently on `main` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.dev/classic/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
-
-### Android
-
-The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
-
-Here are the steps to build a standalone Android app:
-
-- Publish your experience with Expo CLI. Note the published URL.
-- If you want a signed `.apk`, run `et android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password]`.
-- If you don't want a signed `.apk`, run `et android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience]`.
-- The `.apk` file will be at `/tmp/shell-signed.apk` for a signed `.apk` or at `/tmp/shell-debug.apk` for an unsigned `.apk`.
-
-### iOS
-
-The iOS standalone app script has two actions, `build` and `configure`:
-- `build` creates an archive or a simulator build of the Expo iOS workspace,
-- `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo project rather than in Expo Go.
-
-Here are the steps to build a standalone iOS app:
-
-- Publish your experience with Expo CLI. Note the published URL.
-- `et ios-shell-app --action build --type [simulator or archive] --configuration [Debug or Release]`
-- The resulting archive will be created at `../shellAppBase-[type]`.
-- `et ios-shell-app --url [the published experience url] --action configure --type [simulator or archive] --archivePath [path to ExpoKitApp.app] --sdkVersion [sdk version of your experience] --output your-app.tar.gz`
-- This bundle is not signed and cannot be submitted to iTunes Connect as-is; you'll need to manually sign it if you'd like to submit it to Apple. [Fastlane](https://fastlane.tools/) is a good option for this. Also, [Expo will do this for you](https://docs.expo.dev/classic/building-standalone-apps) if you don't need to build this project from source.
-- If you created a simulator build in the first step, unpack the tar.gz using `tar -xvzf your-app.tar.gz`. Then you can run this on iPhone Simulator using `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
-- There are a few more optional flags you can pass to this script. They are all documented in the block comments inside `xdl/src/detach/IosShellApp.js`.
-
 ## Modifying JS Code
 
 The Expo Go apps run a root Expo project in addition to native code. By default, this will use a published version of the project, so any changes made in the `home` directory will not show up without some extra work.
 
-Serve this project locally by running `expo start` from the `home` directory. **On iOS**, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
+Serve this project locally by running `npx expo start --port=80` from the `home` directory. **On iOS**, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
 
 The native Android Studio and Xcode projects have a build hook which will find this if `expo start` is running. Keep this running and rebuild the app on each platform.
 

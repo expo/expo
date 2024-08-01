@@ -1,24 +1,18 @@
 package expo.modules.devmenu.modules
 
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import com.facebook.react.bridge.*
-import com.facebook.react.module.annotations.ReactModule
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
-private const val DEV_MENU_PREFERENCES = "DevMenuPreferences"
 
-/**
- * Class that represents all user preferences connected with the current [expo.modules.devmenu.interfaces.DevMenuDelegateInterface].
- */
-@ReactModule(name = DEV_MENU_PREFERENCES)
-class DevMenuPreferences(context: ReactApplicationContext) : BaseJavaModule(), DevMenuPreferencesInterface {
-  private val sharedPreferences = context.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
-
-  override fun getName() = DEV_MENU_PREFERENCES
-
-  override fun canOverrideExistingModule(): Boolean {
-    return true
+class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
+  private val sharedPreferences by lazy {
+    context.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
   }
 
   /**
@@ -94,15 +88,26 @@ class DevMenuPreferences(context: ReactApplicationContext) : BaseJavaModule(), D
       touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
     }
   }
+}
 
-  @ReactMethod
-  fun getPreferencesAsync(promise: Promise) {
-    promise.resolve(serialize())
+/**
+ * Class that represents all user preferences connected with the current [expo.modules.devmenu.interfaces.DevMenuDelegateInterface].
+ */
+class DevMenuPreferences : Module() {
+  private val preferencesHandel by lazy {
+    DevMenuPreferencesHandle(
+      appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    )
   }
+  override fun definition() = ModuleDefinition {
+    Name("DevMenuPreferences")
 
-  @ReactMethod
-  fun setPreferencesAsync(settings: ReadableMap, promise: Promise) {
-    setPreferences(settings)
-    promise.resolve(null)
+    AsyncFunction<WritableMap>("getPreferencesAsync") {
+      preferencesHandel.serialize()
+    }
+
+    AsyncFunction("setPreferencesAsync") { settings: ReadableMap ->
+      preferencesHandel.setPreferences(settings)
+    }
   }
 }

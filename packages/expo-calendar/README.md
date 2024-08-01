@@ -1,15 +1,22 @@
-# expo-calendar
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/calendar/">
+    <img
+      src="../../.github/resources/expo-calendar.svg"
+      alt="expo-calendar"
+      height="64" />
+  </a>
+</p>
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/calendar.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/calendar/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/calendar/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/calendar/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/calendar/).
 
 # Installation in bare React Native projects
 
@@ -18,7 +25,16 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-calendar
+npx expo install expo-calendar
+```
+
+### Configure for Android
+
+Add `android.permission.READ_CALENDAR` and `android.permission.WRITE_CALENDAR` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<uses-permission android:name="android.permission.READ_CALENDAR" />
+<uses-permission android:name="android.permission.WRITE_CALENDAR" />
 ```
 
 ### Configure for iOS
@@ -33,15 +49,6 @@ Add `NSCalendarsUsageDescription`, and `NSRemindersUsageDescription` keys to you
 ```
 
 Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-Add `android.permission.READ_CALENDAR` and `android.permission.WRITE_CALENDAR` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
-
-```xml
-<uses-permission android:name="android.permission.READ_CALENDAR" />
-<uses-permission android:name="android.permission.WRITE_CALENDAR" />
-```
 
 # Contributing
 

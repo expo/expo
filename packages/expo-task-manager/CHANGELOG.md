@@ -8,7 +8,88 @@
 
 ### 🐛 Bug fixes
 
+- `isAvailableAsync()` now returns `false` in Expo Go for Android. ([#29823](https://github.com/expo/expo/pull/29823)) by [@vonovak](https://github.com/vonovak)
+- Add missing `react-native` peer dependencies for isolated modules. ([#30486](https://github.com/expo/expo/pull/30486) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.8.2 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix the task manager events not being sent to the JS side. ([#29024](https://github.com/expo/expo/pull/29024) by [@behenate](https://github.com/behenate))
+
+## 11.8.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 11.8.0 — 2024-04-18
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 11.7.1 - 2024-01-25
+
+### 🐛 Bug fixes
+
+- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Migrated codebase to use Expo Modules API. ([#24157](https://github.com/expo/expo/pull/24157) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 11.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Update `defineTask` to accept type arguments. ([#21958](https://github.com/expo/expo/pull/21958) by [@kazuma0129](https://github.com/kazuma0129))
+
+## 11.2.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.0.1 — 2022-10-28
 

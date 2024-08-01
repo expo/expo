@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
 import {
   AppleAuthenticationCredential,
@@ -39,7 +39,7 @@ export async function isAvailableAsync(): Promise<boolean> {
  *
  * @param options An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationsigninoptions) object
  * @return A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
- * object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the
+ * object after a successful authentication, and rejects with `ERR_REQUEST_CANCELED` if the user cancels the
  * sign-in operation.
  */
 export async function signInAsync(
@@ -55,7 +55,7 @@ export async function signInAsync(
   const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
   if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
     throw new CodedError(
-      'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
+      'ERR_REQUEST_FAILED',
       'The credential returned by `signInAsync` is missing one or more required fields.'
     );
   }
@@ -69,7 +69,7 @@ export async function signInAsync(
  *
  * @param options An [`AppleAuthenticationRefreshOptions`](#appleauthenticationrefreshoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
- * object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the
+ * object after a successful authentication, and rejects with `ERR_REQUEST_CANCELED` if the user cancels the
  * refresh operation.
  */
 export async function refreshAsync(
@@ -85,7 +85,7 @@ export async function refreshAsync(
   const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
   if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
     throw new CodedError(
-      'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
+      'ERR_REQUEST_FAILED',
       'The credential returned by `refreshAsync` is missing one or more required fields.'
     );
   }
@@ -103,7 +103,7 @@ export async function refreshAsync(
  *
  * @param options An [`AppleAuthenticationSignOutOptions`](#appleauthenticationsignoutoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
- * object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the
+ * object after a successful authentication, and rejects with `ERR_REQUEST_CANCELED` if the user cancels the
  * sign-out operation.
  */
 export async function signOutAsync(
@@ -138,11 +138,9 @@ export async function getCredentialStateAsync(
   return ExpoAppleAuthentication.getCredentialStateAsync(user);
 }
 
-const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentication);
-
 // @docsMissing
-export function addRevokeListener(listener: () => void): Subscription {
-  return ExpoAppleAuthenticationEventEmitter.addListener('Expo.appleIdCredentialRevoked', listener);
+export function addRevokeListener(listener: () => void): EventSubscription {
+  return ExpoAppleAuthentication.addListener('Expo.appleIdCredentialRevoked', listener);
 }
 
-export { Subscription };
+export { EventSubscription as Subscription };

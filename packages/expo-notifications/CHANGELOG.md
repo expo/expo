@@ -8,7 +8,226 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.28.14 - 2024-07-30
+
+### 🐛 Bug fixes
+
+- `useLastNotificationResponse` should have only one effect. ([#30653](https://github.com/expo/expo/pull/30653) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.13 - 2024-07-29
+
+### 🐛 Bug fixes
+
+- [Android] map Expo and Firebase notifications correctly. ([#30615](https://github.com/expo/expo/pull/30615) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.12 - 2024-07-25
+
+### 🐛 Bug fixes
+
+- [Android] Android 11 crash when click foreground notifications. ([#30207](https://github.com/expo/expo/pull/30207) by [@GrinZero](https://github.com/GrinZero))
+- Notification's textInput content would contain `placeholder` instead of the actual user input ([#27479](https://github.com/expo/expo/pull/27479) by [@Victor-FT](https://github.com/Victor-FT))
+
+## 0.28.11 - 2024-07-22
+
+### 🐛 Bug fixes
+
+- [Android] Fix serialization of vibration pattern. ([#30495](https://github.com/expo/expo/pull/30495) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.10 - 2024-07-15
+
+### 🐛 Bug fixes
+
+- [Android] fix getLastNotificationResponseAsync. ([#30301](https://github.com/expo/expo/pull/30301) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.9 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.8 - 2024-06-10
+
+### 🐛 Bug fixes
+
+- [Android] Add default channel plugin prop, restore legacy icon and color. ([#29491](https://github.com/expo/expo/pull/29491) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.7 — 2024-06-05
+
+### 🐛 Bug fixes
+
+- Remove console.log line. ([#29443](https://github.com/expo/expo/pull/29443) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.6 — 2024-06-03
+
+### 🐛 Bug fixes
+
+- [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.5 — 2024-05-31
+
+### 🐛 Bug fixes
+
+- [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.4 — 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.3 — 2024-05-16
+
+### 💡 Others
+
+- [iOS] Add support for `interruptionLevel`. ([#28921](https://github.com/expo/expo/pull/28921) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.28.2 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] fix response handling when app in background or not running. ([#28883](https://github.com/expo/expo/pull/28883) by [@douglowder](https://github.com/douglowder))
+
+## 0.28.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix notifications events were using an incorrect event emitter. ([#28207](https://github.com/expo/expo/pull/28207) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 0.27.5 - 2024-01-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.4 - 2024-01-20
+
+### 🐛 Bug fixes
+
+- Throw `UnavailabilityError` when trying to use `setNotificationCategoryAsync` on web. ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+- On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.27.3 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- [Android] Fix `expo-notifications` requiring the `expo-task-manager` module to start. ([#26227](https://github.com/expo/expo/pull/26227) by [@behenate](https://github.com/behenate))
+
+## 0.27.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On `Android`, make `tokenManager` nullable to prevent crash if we can't find it. ([#25860](https://github.com/expo/expo/pull/25860) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.26.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.25.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Send background notifications through when the app is in the foreground ([#24684](https://github.com/expo/expo/pull/24684) by [@kadikraman](https://github.com/kadikraman))
+
+### 💡 Others
+
+- Migrated codebase to use Expo Modules API. ([#24499](https://github.com/expo/expo/pull/24499) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.24.2 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.1 — 2023-09-15
+
+### 💡 Others
+
+- Remove legacy expo package notifications module code. ([#24325](https://github.com/expo/expo/pull/24325) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.23.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix server rendering with Metro web. ([#24195](https://github.com/expo/expo/pull/24195) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.22.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.0 — 2023-07-28
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 0.20.1 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 0.19.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
+- Removed the deprecated `ExpoPushTokenOptions.experienceId` field. ([#22303](https://github.com/expo/expo/pull/22303) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.1 — 2023-02-09
+
+### 💡 Others
+
+- Export `getExpoPushTokenAsync` parameter type. ([#21104](https://github.com/expo/expo/pull/21104) by [@Simek](https://github.com/Simek))
+
+## 0.18.0 — 2023-02-03
+
+### 💡 Others
+
+- Update `getExpoPushTokenAsync` to make `projectId` required. ([#20833](https://github.com/expo/expo/pull/20833) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- Add JSDoc comments, perform type changes related to documentation autogeneration. ([#21002](https://github.com/expo/expo/pull/21002) by [@Simek](https://github.com/Simek))
 
 ## 0.17.0 — 2022-10-25
 

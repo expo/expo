@@ -11,7 +11,7 @@ export interface ExpoConfig {
      */
     description?: string;
     /**
-     * The friendly URL name for publishing. For example, `myAppName` will refer to the `expo.dev/@project-owner/myAppName` project.
+     * A URL-friendly name for your project that is unique across your account.
      */
     slug: string;
     /**
@@ -19,29 +19,22 @@ export interface ExpoConfig {
      */
     owner?: string;
     /**
-     * The auto generated Expo account name and slug used for display purposes. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value may change when a project is transferred between accounts or renamed.
+     * The auto generated Expo account name and slug used for display purposes. It is not meant to be set directly. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value may change when a project is transferred between accounts or renamed.
      */
     currentFullName?: string;
     /**
-     * The auto generated Expo account name and slug used for services like Notifications and AuthSession proxy. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value will not change when a project is transferred between accounts or renamed.
+     * The auto generated Expo account name and slug used for services like Notifications and AuthSession proxy. It is not meant to be set directly. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value will not change when a project is transferred between accounts or renamed.
      */
     originalFullName?: string;
-    /**
-     * Defaults to `unlisted`. `unlisted` hides the project from search results. `hidden` restricts access to the project page to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `hidden`.
-     */
-    privacy?: 'public' | 'unlisted' | 'hidden';
     /**
      * The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
      */
     sdkVersion?: string;
     /**
-     * **Note: Don't use this property unless you are sure what you're doing**
-     *
-     * The runtime version associated with this manifest.
-     * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+     * Property indicating compatibility between a build's native code and an OTA update.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
     /**
      * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
@@ -117,7 +110,7 @@ export interface ExpoConfig {
          */
         hidden?: boolean;
         /**
-         * Sets `android:windowTranslucentStatus` in `styles.xml`. When false, the system status bar pushes the content of your app down (similar to `position: relative`). When true, the status bar floats above the content in your app (similar to `position: absolute`). Defaults to `true` to match the iOS status bar behavior (which can only float above content).
+         * When false, the system status bar pushes the content of your app down (similar to `position: relative`). When true, the status bar floats above the content in your app (similar to `position: absolute`). Defaults to `true` to match the iOS status bar behavior (which can only float above content). Explicitly setting this property to `true` will add `android:windowTranslucentStatus` to `styles.xml` and may cause unexpected keyboard behavior on Android when using the `softwareKeyboardLayoutMode` set to `resize`. In this case you will have to use `KeyboardAvoidingView` to manage the keyboard layout.
          */
         translucent?: boolean;
     };
@@ -154,15 +147,11 @@ export interface ExpoConfig {
         silentLaunch?: boolean;
     };
     /**
-     * **Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
+     * URL scheme(s) to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. This is a build-time configuration, it has no effect in Expo Go.
      */
-    scheme?: string;
+    scheme?: string | string[];
     /**
-     * The relative path to your main JavaScript file.
-     */
-    entryPoint?: string;
-    /**
-     * Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
+     * Any extra fields you want to pass to your experience. Values are accessible via `Constants.expoConfig.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
      */
     extra?: {
         [k: string]: any;
@@ -174,19 +163,19 @@ export interface ExpoConfig {
         [k: string]: any;
     };
     /**
-     * Configuration for how and when the app should request OTA JavaScript updates
+     * Configuration for the expo-updates library
      */
     updates?: {
         /**
-         * If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through app store review. Defaults to true. (Note: This will not work out of the box with ExpoKit projects)
+         * Whether the updates system will run. Defaults to true. If set to false, builds will only use code and assets bundled at time of build.
          */
         enabled?: boolean;
         /**
-         * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Must be one of `ON_LOAD` or `ON_ERROR_RECOVERY`
+         * By default, expo-updates will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to disable automatic checking. Valid values: `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, `NEVER`
          */
-        checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD';
+        checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
         /**
-         * How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 0. Must be between 0 and 300000 (5 minutes).
+         * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
          */
         fallbackToCacheTimeout?: number;
         /**
@@ -194,7 +183,7 @@ export interface ExpoConfig {
          */
         url?: string;
         /**
-         * Local path of a PEM-formatted X.509 certificate used for requiring and verifying signed Expo updates
+         * Local path of a PEM-formatted X.509 certificate used for verifying codesigned updates. When provided, all updates downloaded by expo-updates must be signed.
          */
         codeSigningCertificate?: string;
         /**
@@ -202,7 +191,7 @@ export interface ExpoConfig {
          */
         codeSigningMetadata?: {
             /**
-             * Algorithm used to generate manifest code signing signature.
+             * Algorithm used to generate manifest code signing signature. Valid values: `rsa-v1_5-sha256`
              */
             alg?: 'rsa-v1_5-sha256';
             /**
@@ -211,7 +200,7 @@ export interface ExpoConfig {
             keyid?: string;
         };
         /**
-         * Extra HTTP headers to include in HTTP requests made by `expo-updates`. These may override preset headers.
+         * Extra HTTP headers to include in HTTP requests made by `expo-updates` when fetching manifests or assets. These may override preset headers.
          */
         requestHeaders?: {
             [k: string]: any;
@@ -226,41 +215,7 @@ export interface ExpoConfig {
         };
     };
     /**
-     * Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
-     */
-    facebookAppId?: string;
-    /**
-     * Whether the Facebook SDK should be initialized automatically. The default in Expo (Client and in standalone apps) is `false`.
-     */
-    facebookAutoInitEnabled?: boolean;
-    /**
-     * Whether the Facebook SDK log app events automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.) Note: The Facebook SDK must be initialized for app events to work. You may autoinitialize Facebook SDK by setting `facebookAutoInitEnabled` to `true`
-     */
-    facebookAutoLogAppEventsEnabled?: boolean;
-    /**
-     * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
-     */
-    facebookAdvertiserIDCollectionEnabled?: boolean;
-    /**
-     * Used for native Facebook login.
-     */
-    facebookDisplayName?: string;
-    /**
-     * Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme [here](https://developers.facebook.com/docs/facebook-login/ios)in the 'Configuring Your info.plist' section (only applicable to standalone apps and custom Expo Go apps).
-     */
-    facebookScheme?: string;
-    /**
-     * Is app detached
-     */
-    isDetached?: boolean;
-    /**
-     * Extra fields needed by detached apps
-     */
-    detach?: {
-        [k: string]: any;
-    };
-    /**
-     * An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
+     * @deprecated Follow [the guide to select and exclude assets](https://docs.expo.dev/eas-update/asset-selection/) for EAS Update instead. An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
      */
     assetBundlePatterns?: string[];
     /**
@@ -269,27 +224,44 @@ export interface ExpoConfig {
     plugins?: (string | [] | [string] | [string, any])[];
     splash?: Splash;
     /**
-     * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+     * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
     ios?: IOS;
     android?: Android;
     web?: Web;
     /**
-     * Configuration for scripts to run to hook into the publish process
-     */
-    hooks?: {
-        postPublish?: PublishHook[];
-        postExport?: PublishHook[];
-    };
-    /**
      * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
      */
     experiments?: {
         /**
+         * Export a website relative to a subpath of a domain. The path will be prepended as-is to links to all bundled resources. Prefix the path with a `/` (recommended) to load all resources relative to the server root. If the path **does not** start with a `/` then resources will be loaded relative to the code that requests them, this could lead to unexpected behavior. Example '/subpath'. Defaults to '' (empty string).
+         */
+        baseUrl?: string;
+        /**
+         * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
+         */
+        supportsTVOnly?: boolean;
+        /**
+         * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
+         */
+        tsconfigPaths?: boolean;
+        /**
+         * Enable support for statically typed links in Expo Router. This feature requires TypeScript be set up in your Expo Router v2 project.
+         */
+        typedRoutes?: boolean;
+        /**
          * Enables Turbo Modules, which are a type of native modules that use a different way of communicating between JS and platform code. When installing a Turbo Module you will need to enable this experimental option (the library still needs to be a part of Expo SDK already, like react-native-reanimated v2). Turbo Modules do not support remote debugging and enabling this option will disable remote debugging.
          */
         turboModules?: boolean;
+        /**
+         * Experimentally use a vendored canary build of React for testing upcoming features.
+         */
+        reactCanary?: boolean;
+        /**
+         * Experimentally enable React Compiler.
+         */
+        reactCompiler?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -357,7 +329,7 @@ export interface IOS {
      */
     appStoreUrl?: string;
     /**
-     * Enable iOS Bitcode optimizations in the native build. Accepts the name of an iOS build configuration to enable for a single configuration and disable for all others, e.g. Debug, Release. Not available in the classic 'expo build:ios' or Expo Go. Defaults to `undefined` which uses the template's predefined settings.
+     * Enable iOS Bitcode optimizations in the native build. Accepts the name of an iOS build configuration to enable for a single configuration and disable for all others, e.g. Debug, Release. Not available in Expo Go. Defaults to `undefined` which uses the template's predefined settings.
      */
     bitcode?: boolean | string;
     /**
@@ -423,6 +395,41 @@ export interface IOS {
         [k: string]: any;
     };
     /**
+     * Dictionary of privacy manifest definitions to add to your app's native PrivacyInfo.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files)
+     */
+    privacyManifests?: {
+        /**
+         * A list of required reasons of why your app uses restricted API categories. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api)
+         */
+        NSPrivacyAccessedAPITypes?: {
+            /**
+             * A string that identifies the category of required reason APIs your app uses
+             */
+            NSPrivacyAccessedAPIType: string;
+            /**
+             * A list of reasons for a specific category.
+             */
+            NSPrivacyAccessedAPITypeReasons: string[];
+        }[];
+        /**
+         * A list of domains that your app uses for tracking.
+         */
+        NSPrivacyTrackingDomains?: string[];
+        /**
+         * A Boolean that indicates whether your app or third-party SDK uses data for tracking.
+         */
+        NSPrivacyTracking?: boolean;
+        /**
+         * A list of collected data types that your app uses.
+         */
+        NSPrivacyCollectedDataTypes?: {
+            NSPrivacyCollectedDataType: string;
+            NSPrivacyCollectedDataTypeLinked: boolean;
+            NSPrivacyCollectedDataTypeTracking: boolean;
+            NSPrivacyCollectedDataTypePurposes: string[];
+        }[];
+    };
+    /**
      * An array that contains Associated Domains for the standalone app. [Learn more](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
      */
     associatedDomains?: string[];
@@ -458,20 +465,39 @@ export interface IOS {
          * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
          */
         tabletImage?: string;
+        /**
+         * Configuration for loading and splash screen for standalone iOS apps in dark mode.
+         */
+        dark?: {
+            /**
+             * Color to fill the loading screen background
+             */
+            backgroundColor?: string;
+            /**
+             * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+             */
+            resizeMode?: 'cover' | 'contain';
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+             */
+            image?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+             */
+            tabletImage?: string;
+            [k: string]: any;
+        };
         [k: string]: any;
     };
     /**
-     * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+     * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * **Note: Don't use this property unless you are sure what you're doing**
-     *
-     * The runtime version associated with this manifest for the iOS platform. If provided, this will override the top level runtimeVersion key.
-     * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+     * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
 }
 /**
@@ -532,61 +558,15 @@ export interface Android {
      */
     playStoreUrl?: string;
     /**
-     * List of permissions used by the standalone app.
-     *
-     *  To use ONLY the following minimum necessary permissions and none of the extras supported by Expo in a default managed app, set `permissions` to `[]`. The minimum necessary permissions do not require a Privacy Policy when uploading to Google Play Store and are:
-     * • receive data from Internet
-     * • view network connections
-     * • full network access
-     * • change your audio settings
-     * • prevent device from sleeping
-     *
-     *  To use ALL permissions supported by Expo by default, do not specify the `permissions` key.
-     *
-     *   To use the minimum necessary permissions ALONG with certain additional permissions, specify those extras in `permissions`, e.g.
-     *
-     *  `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-     *
-     *   You can specify the following permissions depending on what you need:
-     *
-     * - `ACCESS_COARSE_LOCATION`
-     * - `ACCESS_FINE_LOCATION`
-     * - `ACCESS_BACKGROUND_LOCATION`
-     * - `CAMERA`
-     * - `RECORD_AUDIO`
-     * - `READ_CONTACTS`
-     * - `WRITE_CONTACTS`
-     * - `READ_CALENDAR`
-     * - `WRITE_CALENDAR`
-     * - `READ_EXTERNAL_STORAGE`
-     * - `WRITE_EXTERNAL_STORAGE`
-     * - `USE_FINGERPRINT`
-     * - `USE_BIOMETRIC`
-     * - `WRITE_SETTINGS`
-     * - `VIBRATE`
-     * - `READ_PHONE_STATE`
-     * - `FOREGROUND_SERVICE`
-     * - `WAKE_LOCK`
-     * - `com.anddoes.launcher.permission.UPDATE_COUNT`
-     * - `com.android.launcher.permission.INSTALL_SHORTCUT`
-     * - `com.google.android.c2dm.permission.RECEIVE`
-     * - `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
-     * - `com.google.android.providers.gsf.permission.READ_GSERVICES`
-     * - `com.htc.launcher.permission.READ_SETTINGS`
-     * - `com.htc.launcher.permission.UPDATE_SHORTCUT`
-     * - `com.majeur.launcher.permission.UPDATE_BADGE`
-     * - `com.sec.android.provider.badge.permission.READ`
-     * - `com.sec.android.provider.badge.permission.WRITE`
-     * - `com.sonyericsson.home.permission.BROADCAST_BADGE`
-     *
+     * A list of permissions to add to the app `AndroidManifest.xml` during prebuild. For example: `['android.permission.SCHEDULE_EXACT_ALARM']`
      */
     permissions?: string[];
     /**
-     * List of permissions to block in the final `AndroidManifest.xml`. This is useful for removing permissions that are added by native package `AndroidManifest.xml` files which are merged into the final manifest. Internally this feature uses the `tools:node="remove"` XML attribute to remove permissions. Not available in the classic `expo build:android` or Expo Go.
+     * List of permissions to block in the final `AndroidManifest.xml`. This is useful for removing permissions that are added by native package `AndroidManifest.xml` files which are merged into the final manifest. Internally this feature uses the `tools:node="remove"` XML attribute to remove permissions. Not available in Expo Go.
      */
     blockedPermissions?: string[];
     /**
-     * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `GoogleService-Info.plist` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
+     * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `google-services.json` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
      */
     googleServicesFile?: string;
     /**
@@ -666,6 +646,54 @@ export interface Android {
          *  `Scale 4x`
          */
         xxxhdpi?: string;
+        /**
+         * Configuration for loading and splash screen for managed and standalone Android apps in dark mode.
+         */
+        dark?: {
+            /**
+             * Color to fill the loading screen background
+             */
+            backgroundColor?: string;
+            /**
+             * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover`, `contain` or `native`, defaults to `contain`.
+             */
+            resizeMode?: 'cover' | 'contain' | 'native';
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+             */
+            image?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Natural sized image (baseline)`
+             */
+            mdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 1.5x`
+             */
+            hdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 2x`
+             */
+            xhdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 3x`
+             */
+            xxhdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 4x`
+             */
+            xxxhdpi?: string;
+            [k: string]: any;
+        };
         [k: string]: any;
     };
     /**
@@ -689,17 +717,14 @@ export interface Android {
      */
     softwareKeyboardLayoutMode?: 'resize' | 'pan';
     /**
-     * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+     * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * **Note: Don't use this property unless you are sure what you're doing**
-     *
-     * The runtime version associated with this manifest for the Android platform. If provided, this will override the top level runtimeVersion key.
-     * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+     * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
 }
 export interface AndroidIntentFiltersData {
@@ -736,6 +761,10 @@ export interface AndroidIntentFiltersData {
  * Configuration that is specific to the web platform.
  */
 export interface Web {
+    /**
+     * Sets the export method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. `server` outputs static HTML, and API Routes for hosting with a custom Node.js server. Defaults to `single`.
+     */
+    output?: 'single' | 'static' | 'server';
     /**
      * Relative path of an image to use for your app's favicon.
      */
@@ -834,15 +863,8 @@ export interface Web {
         [k: string]: any;
     };
     /**
-     * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`.
+     * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`. Defaults to `webpack` if the `@expo/webpack-config` package is installed, if not, it defaults to `metro`.
      */
     bundler?: 'webpack' | 'metro';
-    [k: string]: any;
-}
-export interface PublishHook {
-    file?: string;
-    config?: {
-        [k: string]: any;
-    };
     [k: string]: any;
 }

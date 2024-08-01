@@ -1,6 +1,6 @@
-import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { Platform, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { ColorValue, processColor } from 'react-native';
+import { type ColorValue, processColor } from 'react-native';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
 import {
@@ -10,17 +10,6 @@ import {
   NavigationBarVisibility,
   NavigationBarVisibilityEvent,
 } from './NavigationBar.types';
-
-let _emitter: EventEmitter;
-
-// Lazily initialize the event emitter because it isn't available on iOS,
-// this enables us to use the same code for all platforms.
-function getEmitter() {
-  if (!_emitter) {
-    _emitter = new EventEmitter(ExpoNavigationBar);
-  }
-  return _emitter;
-}
 
 /**
  * Observe changes to the system navigation bar.
@@ -35,12 +24,12 @@ function getEmitter() {
  */
 export function addVisibilityListener(
   listener: (event: NavigationBarVisibilityEvent) => void
-): Subscription {
+): EventSubscription {
   // Assert so the type is non-nullable.
   if (!ExpoNavigationBar.addListener) {
     throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
   }
-  return getEmitter().addListener('ExpoNavigationBar.didChange', listener);
+  return ExpoNavigationBar.addListener('ExpoNavigationBar.didChange', listener);
 }
 
 /**
@@ -121,7 +110,7 @@ export async function getBorderColorAsync(): Promise<ColorValue> {
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param color Based on CSS visibility property.
+ * @param visibility Based on CSS visibility property.
  */
 export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
   if (Platform.OS !== 'android') {

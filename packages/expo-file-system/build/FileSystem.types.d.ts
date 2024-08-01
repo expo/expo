@@ -146,7 +146,7 @@ export type UploadProgressData = {
     /**
      * The total bytes sent by the upload operation.
      */
-    totalByteSent: number;
+    totalBytesSent: number;
     /**
      * The total bytes expected to be sent by the upload operation.
      */

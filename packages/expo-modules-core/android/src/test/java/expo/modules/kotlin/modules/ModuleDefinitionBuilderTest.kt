@@ -3,7 +3,6 @@ package expo.modules.kotlin.modules
 import com.google.common.truth.Truth
 import expo.modules.core.Promise
 import expo.modules.kotlin.events.EventName
-import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test
 
@@ -61,9 +60,7 @@ class ModuleDefinitionBuilderTest {
 
     val moduleDefinition = unboundModuleDefinition {
       Name(moduleName)
-      ViewManager {
-        View { mockk() }
-      }
+      View(android.view.View::class) { }
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)

@@ -1,35 +1,111 @@
 package expo.modules.updates
 
 import android.content.Context
+import android.os.AsyncTask
+import android.os.Bundle
+import android.util.Log
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.updates.db.DatabaseHolder
+import expo.modules.updates.db.Reaper
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.DatabaseLauncher
-import expo.modules.updates.launcher.Launcher.LauncherCallback
+import expo.modules.updates.launcher.Launcher
+import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.loader.UpdateDirective
+import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
+import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
-import expo.modules.updatesinterface.UpdatesInterface.QueryCallback
-import expo.modules.updatesinterface.UpdatesInterface.UpdateCallback
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import org.json.JSONObject
-import java.util.*
+import java.io.File
+import java.lang.ref.WeakReference
 
 /**
- * Main entry point to expo-updates in development builds with expo-dev-client. Singleton that still
- * makes use of [UpdatesController] for keeping track of updates state, but provides capabilities
- * that are not usually exposed but that expo-dev-client needs (launching and downloading a specific
- * update by URL, allowing dynamic configuration, introspecting the database).
+ * Main entry point to expo-updates in development builds with expo-dev-client. Similar to EnabledUpdatesController
+ * in that it keeps track of updates state, but provides capabilities that are not usually exposed but
+ * that expo-dev-client needs (launching and downloading a specific
+ * update by URL, allowing dynamic configuration, introspecting the database). The behavior of this
+ * class differs enough that it is implemented independently from EnabledUpdatesController.
  *
  * Implements the external UpdatesInterface from the expo-updates-interface package. This allows
  * expo-dev-client to compile without needing expo-updates to be installed.
  */
-class UpdatesDevLauncherController : UpdatesInterface {
-  private var mTempConfiguration: UpdatesConfiguration? = null
+class UpdatesDevLauncherController(
+  private val context: Context,
+  initialUpdatesConfiguration: UpdatesConfiguration?,
+  override val updatesDirectory: File?,
+  private val updatesDirectoryException: Exception?
+) : IUpdatesController, UpdatesInterface {
+  override var appContext: WeakReference<AppContext>? = null
+  override var eventEmitter: EventEmitter? = null
+  override var shouldEmitJsEvents = false
+  override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
+
+  private var launcher: Launcher? = null
+
+  private var previousUpdatesConfiguration: UpdatesConfiguration? = null
+  private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
+
+  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+
+  private var mSelectionPolicy: SelectionPolicy? = null
+  private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
+    initialUpdatesConfiguration?.getRuntimeVersion() ?: "1"
+  )
+  private val selectionPolicy: SelectionPolicy
+    get() = mSelectionPolicy ?: defaultSelectionPolicy
+  private fun setNextSelectionPolicy(selectionPolicy: SelectionPolicy?) {
+    mSelectionPolicy = selectionPolicy
+  }
+  private fun resetSelectionPolicyToDefault() {
+    mSelectionPolicy = null
+  }
+  private fun setDefaultSelectionPolicy(selectionPolicy: SelectionPolicy) {
+    defaultSelectionPolicy = selectionPolicy
+  }
+
+  @get:Synchronized
+  override val launchAssetFile: String
+    get() = throw Exception("IUpdatesController.launchAssetFile should not be called in dev client")
+
+  override val bundleAssetName: String
+    get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
+
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {}
+
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
+
+  override val isActiveController = false
+
+  override fun start() {
+    // no-op for UpdatesDevLauncherController
+  }
+
+  val launchedUpdate: UpdateEntity?
+    get() = launcher?.launchedUpdate
+
+  private val localAssetFiles: Map<AssetEntity, String>?
+    get() = launcher?.localAssetFiles
+
+  private val isUsingEmbeddedAssets: Boolean
+    get() = launcher?.isUsingEmbeddedAssets ?: false
+
   override fun reset() {
-    UpdatesController.instance.setLauncher(null)
+    launcher = null
   }
 
   /**
@@ -39,47 +115,48 @@ class UpdatesDevLauncherController : UpdatesInterface {
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
     context: Context,
-    callback: UpdateCallback
+    callback: UpdatesInterface.UpdateCallback
   ) {
-    val controller = UpdatesController.instance
-    val updatesConfiguration = UpdatesConfiguration(context, configuration)
-    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
+    val newUpdatesConfiguration: UpdatesConfiguration
+    try {
+      newUpdatesConfiguration = createUpdatesConfiguration(configuration, context)
+    } catch (e: Exception) {
+      callback.onFailure(e)
       return
     }
-    if (controller.updatesDirectory == null) {
-      callback.onFailure(controller.updatesDirectoryException)
-      return
-    }
+    check(updatesDirectory != null)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
-    mTempConfiguration = controller.updatesConfiguration
+    previousUpdatesConfiguration = updatesConfiguration
+    updatesConfiguration = newUpdatesConfiguration
+
     setDevelopmentSelectionPolicy()
-    controller.updatesConfiguration = updatesConfiguration
-    val databaseHolder = controller.databaseHolder
+
+    val fileDownloader = FileDownloader(context, updatesConfiguration!!)
     val loader = RemoteLoader(
       context,
-      updatesConfiguration,
+      updatesConfiguration!!,
       databaseHolder.database,
-      controller.fileDownloader,
-      controller.updatesDirectory,
+      fileDownloader,
+      updatesDirectory,
       null
     )
     loader.start(object : Loader.LoaderCallback {
       override fun onFailure(e: Exception) {
         databaseHolder.releaseDatabase()
         // reset controller's configuration to what it was before this request
-        controller.updatesConfiguration = mTempConfiguration!!
+        updatesConfiguration = previousUpdatesConfiguration
         callback.onFailure(e)
       }
 
-      override fun onSuccess(update: UpdateEntity?) {
+      override fun onSuccess(loaderResult: Loader.LoaderResult) {
+        // the dev launcher doesn't handle roll back to embedded commands
         databaseHolder.releaseDatabase()
-        if (update == null) {
+        if (loaderResult.updateEntity == null) {
           callback.onSuccess(null)
           return
         }
-        launchUpdate(update, updatesConfiguration, context, callback)
+        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, context, callback)
       }
 
       override fun onAssetLoaded(
@@ -91,27 +168,80 @@ class UpdatesDevLauncherController : UpdatesInterface {
         callback.onProgress(successfulAssetCount, failedAssetCount, totalAssetCount)
       }
 
-      override fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean {
-        return callback.onManifestLoaded(updateManifest.manifest.getRawJson())
+      override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+        val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+        if (updateDirective != null) {
+          return Loader.OnUpdateResponseLoadedResult(
+            shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+              is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+              is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+            }
+          )
+        }
+
+        val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
+  }
+
+  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
+    return try {
+      createUpdatesConfiguration(configuration, context)
+      true
+    } catch (e: Exception) {
+      Log.e(TAG, "Invalid updates configuration: ${e.localizedMessage}")
+      false
+    }
+  }
+
+  @Throws(Exception::class)
+  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
+    if (updatesDirectory == null) {
+      throw updatesDirectoryException!!
+    }
+
+    return when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
+      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
+      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object is not enabled")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version")
+      }
+    }
+  }
+
+  private fun setDevelopmentSelectionPolicy() {
+    resetSelectionPolicyToDefault()
+    val currentSelectionPolicy = selectionPolicy
+    setDefaultSelectionPolicy(
+      SelectionPolicy(
+        currentSelectionPolicy.launcherSelectionPolicy,
+        currentSelectionPolicy.loaderSelectionPolicy,
+        ReaperSelectionPolicyDevelopmentClient()
+      )
+    )
+    resetSelectionPolicyToDefault()
   }
 
   private fun launchUpdate(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
+    fileDownloader: FileDownloader,
     context: Context,
-    callback: UpdateCallback
+    callback: UpdatesInterface.UpdateCallback
   ) {
-    val controller = UpdatesController.instance
-
     // ensure that we launch the update we want, even if it isn't the latest one
-    val currentSelectionPolicy = controller.selectionPolicy
+    val currentSelectionPolicy = selectionPolicy
     // Calling `setNextSelectionPolicy` allows the Updates module's `reloadAsync` method to reload
     // with a different (newer) update if one is downloaded, e.g. using `fetchUpdateAsync`. If we
     // set the default selection policy here instead, the update we are launching here would keep
     // being launched by `reloadAsync` even if a newer one is downloaded.
-    controller.setNextSelectionPolicy(
+    setNextSelectionPolicy(
       SelectionPolicy(
         LauncherSelectionPolicySingleUpdate(update.id),
         currentSelectionPolicy.loaderSelectionPolicy,
@@ -119,92 +249,112 @@ class UpdatesDevLauncherController : UpdatesInterface {
       )
     )
 
-    val databaseHolder = controller.databaseHolder
     val launcher = DatabaseLauncher(
       configuration,
-      controller.updatesDirectory!!,
-      controller.fileDownloader,
-      controller.selectionPolicy
+      updatesDirectory!!,
+      fileDownloader,
+      selectionPolicy
     )
     launcher.launch(
-      databaseHolder.database, context,
-      object : LauncherCallback {
+      databaseHolder.database,
+      context,
+      object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
           // reset controller's configuration to what it was before this request
-          controller.updatesConfiguration = mTempConfiguration!!
+          updatesConfiguration = previousUpdatesConfiguration
           callback.onFailure(e)
         }
 
         override fun onSuccess() {
           databaseHolder.releaseDatabase()
-          controller.setLauncher(launcher)
+          this@UpdatesDevLauncherController.launcher = launcher
           callback.onSuccess(object : UpdatesInterface.Update {
-            override fun getManifest(): JSONObject {
-              return launcher.launchedUpdate!!.manifest!!
-            }
-
-            override fun getLaunchAssetPath(): String {
-              return launcher.launchAssetFile!!
-            }
+            override val manifest: JSONObject
+              get() = launcher.launchedUpdate!!.manifest
+            override val launchAssetPath: String
+              get() = launcher.launchAssetFile!!
           })
-          controller.runReaper()
+          runReaper()
         }
       }
     )
   }
 
-  override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: QueryCallback) {
-    val controller = UpdatesController.instance
-    val updatesConfiguration = UpdatesConfiguration(context, configuration)
-    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-      return
+  private fun getDatabase(): UpdatesDatabase = databaseHolder.database
+  private fun releaseDatabase() {
+    databaseHolder.releaseDatabase()
+  }
+
+  private fun runReaper() {
+    AsyncTask.execute {
+      updatesConfiguration?.let {
+        val databaseLocal = getDatabase()
+        Reaper.reapUnusedUpdates(
+          it,
+          databaseLocal,
+          updatesDirectory,
+          launchedUpdate,
+          selectionPolicy
+        )
+        releaseDatabase()
+      }
     }
-    val updatesDirectory = controller.updatesDirectory
-    if (updatesDirectory == null) {
-      callback.onFailure(controller.updatesDirectoryException)
-      return
-    }
-    val databaseHolder = controller.databaseHolder
-    val launcher = DatabaseLauncher(
-      updatesConfiguration,
-      updatesDirectory,
-      controller.fileDownloader,
-      controller.selectionPolicy
+  }
+
+  class NotAvailableInDevClientException(message: String) : CodedException(message)
+
+  override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
+    return IUpdatesController.UpdatesModuleConstants(
+      launchedUpdate = launchedUpdate,
+      embeddedUpdate = null, // no embedded update in debug builds
+      emergencyLaunchException = updatesDirectoryException,
+      isEnabled = true,
+      isUsingEmbeddedAssets = isUsingEmbeddedAssets,
+      runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",
+      checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
+      requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
+      localAssetFiles = localAssetFiles,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true
     )
-    val readyUpdateIds = launcher.getReadyUpdateIds(databaseHolder.database)
-    controller.databaseHolder.releaseDatabase()
-    callback.onSuccess(readyUpdateIds)
+  }
+
+  override fun relaunchReactApplicationForModule(
+    callback: IUpdatesController.ModuleCallback<Unit>
+  ) {
+    this.updatesInterfaceCallbacks?.get()?.onRequestRelaunch()
+    callback.onSuccess(Unit)
+  }
+
+  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
+    callback.onSuccess(UpdatesStateContext())
+  }
+
+  override fun checkForUpdate(
+    callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
+  ) {
+    callback.onFailure(NotAvailableInDevClientException("Updates.checkForUpdateAsync() is not supported in development builds."))
+  }
+
+  override fun fetchUpdate(
+    callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
+  ) {
+    callback.onFailure(NotAvailableInDevClientException("Updates.fetchUpdateAsync() is not supported in development builds."))
+  }
+
+  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
+    callback.onFailure(NotAvailableInDevClientException("Updates.getExtraParamsAsync() is not supported in development builds."))
+  }
+
+  override fun setExtraParam(
+    key: String,
+    value: String?,
+    callback: IUpdatesController.ModuleCallback<Unit>
+  ) {
+    callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
   }
 
   companion object {
-    private var singletonInstance: UpdatesDevLauncherController? = null
-    val instance: UpdatesDevLauncherController
-      get() {
-        return checkNotNull(singletonInstance) { "UpdatesDevLauncherController.instance was called before the module was initialized" }
-      }
-
-    @JvmStatic fun initialize(context: Context): UpdatesDevLauncherController {
-      if (singletonInstance == null) {
-        singletonInstance = UpdatesDevLauncherController()
-      }
-      UpdatesController.initializeWithoutStarting(context)
-      return instance
-    }
-
-    private fun setDevelopmentSelectionPolicy() {
-      val controller = UpdatesController.instance
-      controller.resetSelectionPolicyToDefault()
-      val currentSelectionPolicy = controller.selectionPolicy
-      controller.setDefaultSelectionPolicy(
-        SelectionPolicy(
-          currentSelectionPolicy.launcherSelectionPolicy,
-          currentSelectionPolicy.loaderSelectionPolicy,
-          ReaperSelectionPolicyDevelopmentClient()
-        )
-      )
-      controller.resetSelectionPolicyToDefault()
-    }
+    private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }
 }

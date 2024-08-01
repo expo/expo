@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, EventEmitter, Subscription, PermissionExpiration } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, type EventSubscription, PermissionExpiration } from 'expo-modules-core';
 /**
  * @hidden
  */
@@ -10,11 +10,9 @@ type NativeSensorModule = any;
  */
 export default class DeviceSensor<Measurement> {
     _nativeModule: NativeSensorModule;
-    _nativeEmitter: EventEmitter;
     _nativeEventName: string;
-    _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);
-    addListener(listener: Listener<Measurement>): Subscription;
+    addListener(listener: Listener<Measurement>): EventSubscription;
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
@@ -31,7 +29,7 @@ export default class DeviceSensor<Measurement> {
      * Removes the given subscription.
      * @param subscription A subscription to remove.
      */
-    removeSubscription(subscription: Subscription): void;
+    removeSubscription(subscription: EventSubscription): void;
     /**
      * Set the sensor update interval.
      *
@@ -58,5 +56,5 @@ export default class DeviceSensor<Measurement> {
     requestPermissionsAsync(): Promise<PermissionResponse>;
 }
 export { PermissionStatus };
-export type { Subscription, PermissionResponse, PermissionExpiration };
+export type { EventSubscription as Subscription, PermissionResponse, PermissionExpiration };
 //# sourceMappingURL=DeviceSensor.d.ts.map

@@ -123,7 +123,6 @@ function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string })
       'expo-file-system',
       'expo-font',
       'expo-keep-awake',
-      'expo-error-recovery',
       'expo-splash-screen',
       'expo-updates',
       'expo-manifests',

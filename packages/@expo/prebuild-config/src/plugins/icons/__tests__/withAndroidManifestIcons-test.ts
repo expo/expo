@@ -1,26 +1,26 @@
-import { AndroidConfig } from '@expo/config-plugins';
-import * as path from 'path';
+import { AndroidConfig, AndroidManifest, XML } from '@expo/config-plugins';
 
+import rnFixture from '../../__tests__/fixtures/react-native-project';
 import { setRoundIconManifest } from '../withAndroidManifestIcons';
 
-const { getMainApplicationOrThrow, readAndroidManifestAsync } = AndroidConfig.Manifest;
+const { getMainApplicationOrThrow } = AndroidConfig.Manifest;
 
-const sampleManifestPath = path.resolve(
-  __dirname,
-  '../../__tests__/fixtures',
-  'react-native-AndroidManifest.xml'
-);
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe(setRoundIconManifest, () => {
   it(`adds the round icon property when an adaptive icon is present`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     const results = setRoundIconManifest({ android: { adaptiveIcon: {} } }, manifest);
 
     const app = getMainApplicationOrThrow(results);
     expect(app.$['android:roundIcon']).toBe('@mipmap/ic_launcher_round');
   });
   it(`removes the round icon property when an adaptive icon is missing`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     const results = setRoundIconManifest({ android: {} }, manifest);
 
     const app = getMainApplicationOrThrow(results);

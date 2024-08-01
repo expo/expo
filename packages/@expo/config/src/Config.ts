@@ -20,12 +20,13 @@ import {
 } from './Config.types';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
 import { getExpoSDKVersion } from './getExpoSDKVersion';
-import { getFullName } from './getFullName';
 import { withConfigPlugins } from './plugins/withConfigPlugins';
 import { withInternal } from './plugins/withInternal';
 import { getRootPackageJsonPath } from './resolvePackageJson';
 
 type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
+
+let hasWarnedAboutRootConfig = false;
 
 /**
  * If a config has an `expo` object then that will be used as the config.
@@ -35,6 +36,26 @@ type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
  */
 function reduceExpoObject(config?: any): SplitConfigs {
   if (!config) return config === undefined ? null : config;
+
+  if (config.expo && !hasWarnedAboutRootConfig) {
+    const keys = Object.keys(config).filter((key) => key !== 'expo');
+    if (keys.length) {
+      hasWarnedAboutRootConfig = true;
+      const ansiYellow = (str: string) => `\u001B[33m${str}\u001B[0m`;
+      const ansiGray = (str: string) => `\u001B[90m${str}\u001B[0m`;
+      const ansiBold = (str: string) => `\u001B[1m${str}\u001B[22m`;
+      const plural = keys.length > 1;
+      console.warn(
+        ansiYellow(
+          ansiBold('Warning: ') +
+            `Root-level ${ansiBold(`"expo"`)} object found. Ignoring extra key${plural ? 's' : ''} in Expo config: ${keys
+              .map((key) => `"${key}"`)
+              .join(', ')}\n` +
+            ansiGray(`Learn more: https://expo.fyi/root-expo-object`)
+        )
+      );
+    }
+  }
 
   const { mods, ...expo } = config.expo ?? config;
 
@@ -98,7 +119,11 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
   // Can only change the package.json location if an app.json or app.config.json exists
   const [packageJson, packageJsonPath] = getPackageJsonAndPath(projectRoot);
 
-  function fillAndReturnConfig(config: SplitConfigs, dynamicConfigObjectType: string | null) {
+  function fillAndReturnConfig(
+    config: SplitConfigs,
+    dynamicConfigObjectType: string | null,
+    mayHaveUnusedStaticConfig: boolean = false
+  ) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
@@ -113,6 +138,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
       staticConfigPath: paths.staticConfigPath,
+      hasUnusedStaticConfig:
+        !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig,
     };
 
     if (options.isModdedConfig) {
@@ -137,7 +164,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
 
-      if (configWithDefaultValues.exp.hooks) {
+      // hooks no longer exists in the typescript type but should still be removed
+      if ('hooks' in configWithDefaultValues.exp) {
         delete configWithDefaultValues.exp.hooks;
       }
       if (configWithDefaultValues.exp.ios?.config) {
@@ -146,12 +174,6 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       if (configWithDefaultValues.exp.android?.config) {
         delete configWithDefaultValues.exp.android.config;
       }
-
-      // These value will be overwritten when the manifest is being served from the host (i.e. not completely accurate).
-      // @ts-ignore: currentFullName not on type yet.
-      configWithDefaultValues.exp.currentFullName = getFullName(configWithDefaultValues.exp);
-      // @ts-ignore: originalFullName not on type yet.
-      configWithDefaultValues.exp.originalFullName = getFullName(configWithDefaultValues.exp);
 
       delete configWithDefaultValues.exp.updates?.codeSigningCertificate;
       delete configWithDefaultValues.exp.updates?.codeSigningMetadata;
@@ -174,19 +196,20 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
 
   if (paths.dynamicConfigPath) {
     // No app.config.json or app.json but app.config.js
-    const { exportedObjectType, config: rawDynamicConfig } = getDynamicConfig(
-      paths.dynamicConfigPath,
-      {
-        projectRoot,
-        staticConfigPath: paths.staticConfigPath,
-        packageJsonPath,
-        config: getContextConfig(staticConfig),
-      }
-    );
+    const {
+      exportedObjectType,
+      config: rawDynamicConfig,
+      mayHaveUnusedStaticConfig,
+    } = getDynamicConfig(paths.dynamicConfigPath, {
+      projectRoot,
+      staticConfigPath: paths.staticConfigPath,
+      packageJsonPath,
+      config: getContextConfig(staticConfig),
+    });
     // Allow for the app.config.js to `export default null;`
     // Use `dynamicConfigPath` to detect if a dynamic config exists.
     const dynamicConfig = reduceExpoObject(rawDynamicConfig) || {};
-    return fillAndReturnConfig(dynamicConfig, exportedObjectType);
+    return fillAndReturnConfig(dynamicConfig, exportedObjectType, mayHaveUnusedStaticConfig);
   }
 
   // No app.config.js but json or no config
@@ -279,26 +302,28 @@ export async function modifyConfigAsync(
       )}`,
       config: null,
     };
-  } else if (config.staticConfigPath) {
-    // Static with no dynamic config, this means we can append to the config automatically.
-    let outputConfig: AppJSONConfig;
-    // If the config has an expo object (app.json) then append the options to that object.
-    if (config.rootConfig.expo) {
-      outputConfig = {
-        ...config.rootConfig,
-        expo: { ...config.rootConfig.expo, ...modifications },
-      };
-    } else {
-      // Otherwise (app.config.json) just add the config modification to the top most level.
-      outputConfig = { ...config.rootConfig, ...modifications };
-    }
-    if (!writeOptions.dryRun) {
-      await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
-    }
-    return { type: 'success', config: outputConfig };
+  } else if (config.staticConfigPath == null) {
+    // No config in the project, use a default location.
+    config.staticConfigPath = path.join(projectRoot, 'app.json');
   }
 
-  return { type: 'fail', message: 'No config exists', config: null };
+  // Static with no dynamic config, this means we can append to the config automatically.
+  let outputConfig: AppJSONConfig;
+  // If the config has an expo object (app.json) then append the options to that object.
+  if (config.rootConfig.expo) {
+    outputConfig = {
+      ...config.rootConfig,
+      expo: { ...config.rootConfig.expo, ...modifications },
+    };
+  } else {
+    // Otherwise (app.config.json) just add the config modification to the top most level.
+    outputConfig = { ...config.rootConfig, ...modifications };
+  }
+  if (!writeOptions.dryRun) {
+    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
+  }
+
+  return { type: 'success', config: outputConfig };
 }
 
 function ensureConfigHasDefaultValues({

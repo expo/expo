@@ -12,27 +12,25 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
-import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
-import withBranch from './unversioned/expo-branch/expo-branch';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
-import withFacebook from './unversioned/expo-facebook/expo-facebook';
 import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
 import withNotifications from './unversioned/expo-notifications/expo-notifications';
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
 import withMaps from './unversioned/react-native-maps';
+import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 
 const debug = Debug('expo:prebuild-config');
 
 /**
  * Config plugin to apply all of the custom Expo iOS config plugins we support by default.
- * TODO: In the future most of this should go into versioned packages like expo-facebook, expo-updates, etc...
+ * TODO: In the future most of this should go into versioned packages like expo-updates, etc...
  */
 export const withIosExpoPlugins: ConfigPlugin<{
   bundleIdentifier: string;
@@ -64,12 +62,13 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Locales.withLocales,
     // Dangerous
     withIosIcons,
+    IOSConfig.PrivacyInfo.withPrivacyInfo,
   ]);
 };
 
 /**
  * Config plugin to apply all of the custom Expo Android config plugins we support by default.
- * TODO: In the future most of this should go into versioned packages like expo-facebook, expo-updates, etc...
+ * TODO: In the future most of this should go into versioned packages like expo-updates, etc...
  */
 export const withAndroidExpoPlugins: ConfigPlugin<{
   package: string;
@@ -94,7 +93,6 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     AndroidConfig.Version.withVersion,
 
     // AndroidManifest.xml
-    AndroidConfig.Package.withPackageManifest,
     AndroidConfig.AllowBackup.withAllowBackup,
     AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
     // Note: The withAndroidIntentFilters plugin must appear before the withScheme
@@ -130,28 +128,21 @@ const versionedExpoSDKPackages: string[] = [
   'expo-contacts',
   'expo-notifications',
   'expo-updates',
-  'expo-branch',
   'expo-navigation-bar',
   'expo-document-picker',
-  'expo-facebook',
   'expo-splash-screen',
   'expo-system-ui',
 ];
 
-export const withVersionedExpoSDKPlugins: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
+export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withMaps,
     withAdMob,
     withAppleAuthentication,
     withContacts,
     withNotifications,
-    [withUpdates, { expoUsername }],
-    withBranch,
+    withUpdates,
     withDocumentPicker,
-    withFacebook,
     // System UI must come before splash screen as they overlap
     // and splash screen will warn about conflicting rules.
     withSystemUI,
@@ -184,7 +175,6 @@ const legacyExpoPlugins = [
   'expo-dev-client',
   'expo-image-picker',
   'expo-file-system',
-  'expo-ads-facebook',
   'expo-location',
   'expo-media-library',
   'expo-screen-orientation',

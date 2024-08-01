@@ -6,12 +6,62 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API and Swift. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
-- Added support for Fabric. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependency. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 6.4.2 - 2024-07-22
+
+### 💡 Others
+
+- Handle new error code on `iOS` 18. ([#29639](https://github.com/expo/expo/pull/29639) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.4.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.4.0 — 2024-04-18
+
+_This version does not introduce any user-facing changes._
+
+## 6.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.2.0 — 2023-10-17
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.1.2 — 2023-09-04
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2023-02-03
+
+### 🎉 New features
+
+- Migrated to Expo Modules API and Swift. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
+- Added support for Fabric. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
 
 ## 5.0.1 — 2022-10-28
 

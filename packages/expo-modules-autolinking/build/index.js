@@ -4,8 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
+const path_1 = __importDefault(require("path"));
 const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 const autolinking_1 = require("./autolinking");
+const reactNativeConfig_1 = require("./reactNativeConfig");
 /**
  * Registers a command that only searches for available expo modules.
  */
@@ -14,8 +16,11 @@ function registerSearchCommand(commandName, fn) {
         .command(`${commandName} [paths...]`)
         .option('-i, --ignore-paths <ignorePaths...>', 'Paths to ignore when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
         .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
-        .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android"', 'ios')
+        .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "apple", "android"', 'apple')
         .option('--silent', 'Silence resolution warnings')
+        .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
+        .option('--only-project-deps', 'For a monorepo, include only modules that are the project dependencies.', true)
+        .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
         .action(async (searchPaths, providedOptions) => {
         const options = await (0, autolinking_1.mergeLinkingOptionsAsync)({
             ...providedOptions,
@@ -39,6 +44,35 @@ function registerPatchReactImportsCommand() {
         .option('--dry-run', 'Only list files without writing changes to the file system')
         .action(ReactImportsPatcher_1.patchReactImportsAsync);
 }
+/**
+ * Registry the `react-native-config` command.
+ */
+function registerReactNativeConfigCommand() {
+    return commander_1.default
+        .command('react-native-config [paths...]')
+        .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "android", "ios"', 'ios')
+        .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
+        .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+        .action(async (paths, options) => {
+        if (!['android', 'ios'].includes(options.platform)) {
+            throw new Error(`Unsupported platform: ${options.platform}`);
+        }
+        const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(options.projectRoot));
+        const searchPaths = await (0, autolinking_1.resolveSearchPathsAsync)(paths, projectRoot);
+        const providedOptions = {
+            platform: options.platform,
+            projectRoot,
+            searchPaths,
+        };
+        const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(providedOptions);
+        if (options.json) {
+            console.log(JSON.stringify(results));
+        }
+        else {
+            console.log(require('util').inspect(results, false, null, true));
+        }
+    });
+}
 module.exports = async function (args) {
     // Searches for available expo modules.
     registerSearchCommand('search', async (results, options) => {
@@ -50,8 +84,8 @@ module.exports = async function (args) {
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Checks whether there are no resolving issues in the current setup.
-    registerSearchCommand('verify', (results) => {
-        const numberOfDuplicates = (0, autolinking_1.verifySearchResults)(results);
+    registerSearchCommand('verify', (results, options) => {
+        const numberOfDuplicates = (0, autolinking_1.verifySearchResults)(results, options);
         if (!numberOfDuplicates) {
             console.log('✅ Everything is fine!');
         }
@@ -59,14 +93,16 @@ module.exports = async function (args) {
     // Searches for available expo modules and resolves the results for given platform.
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
+        const extraDependencies = await (0, autolinking_1.resolveExtraBuildDependenciesAsync)(options);
         if (options.json) {
-            console.log(JSON.stringify({ modules }));
+            console.log(JSON.stringify({ extraDependencies, modules }));
         }
         else {
-            console.log(require('util').inspect({ modules }, false, null, true));
+            console.log(require('util').inspect({ extraDependencies, modules }, false, null, true));
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.
+    // It's deprecated, use `generate-modules-provider` instead.
     registerResolveCommand('generate-package-list', async (results, options) => {
         const modules = options.empty ? [] : await (0, autolinking_1.resolveModulesAsync)(results, options);
         (0, autolinking_1.generatePackageListAsync)(modules, options);
@@ -74,7 +110,17 @@ module.exports = async function (args) {
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('-n, --namespace <namespace>', 'Java package name under which the package list should be placed.')
         .option('--empty', 'Whether to only generate an empty list. Might be used when the user opts-out of autolinking.', false);
+    // Generates a source file listing all packages to link in the runtime.
+    registerResolveCommand('generate-modules-provider', async (results, options) => {
+        const packages = options.packages ?? [];
+        const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
+        const filteredModules = modules.filter((module) => packages.includes(module.packageName));
+        (0, autolinking_1.generatePackageListAsync)(filteredModules, options);
+    })
+        .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
+        .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.');
     registerPatchReactImportsCommand();
+    registerReactNativeConfigCommand();
     await commander_1.default
         .version(require('expo-modules-autolinking/package.json').version)
         .description('CLI command that searches for Expo modules to autolink them.')

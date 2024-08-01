@@ -18,7 +18,7 @@ export default function ContactsList({ data, style, onPressItem, ...props }: Pro
     ({ item }) => (
       <ContactsListItem
         key={item.id}
-        contactId={item.id}
+        contactId={item.id!}
         {...item}
         onPress={(id: string) => onPressItem?.(id)}
       />
@@ -30,7 +30,7 @@ export default function ContactsList({ data, style, onPressItem, ...props }: Pro
     <FlatList<Contacts.Contact>
       {...props}
       style={[{ flex: 1 }, style]}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id!}
       data={data}
       renderItem={renderItem}
     />

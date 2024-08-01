@@ -1,5 +1,13 @@
 import { updateAndroidProguardRules } from '../android';
 
+jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
+  const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
+  return {
+    ...plugins,
+    withGradleProperties: jest.fn().mockImplementation((config) => config),
+  };
+});
+
 describe(updateAndroidProguardRules, () => {
   it('should append new rules', () => {
     const contents = '# original rules\n';

@@ -2,7 +2,7 @@
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
  * This returns a promise fulfills with `boolean`, depending on the platform:
- * - On iOS, it will always resolve to `true`.
+ * - On iOS, it will resolve to `true` unless the app is distributed through TestFlight.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
@@ -14,8 +14,8 @@ export declare function isAvailableAsync(): Promise<boolean>;
  */
 export declare function requestReview(): Promise<void>;
 /**
- * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
- * `Constants.manifest.android.playStoreUrl` on Android.
+ * This uses the `Constants` API to get the `Constants.expoConfig.ios.appStoreUrl` on iOS, or the
+ * `Constants.expoConfig.android.playStoreUrl` on Android.
  *
  * On Web this will return `null`.
  */

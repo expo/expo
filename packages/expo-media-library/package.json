@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "15.1.0",
+  "version": "16.0.3",
   "description": "Provides access to user's media library.",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
@@ -41,6 +41,7 @@
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }

@@ -4,7 +4,6 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.caverock.androidsvg.SVG
 import com.caverock.androidsvg.SVGParseException
 import java.io.IOException
@@ -24,12 +23,17 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   override fun decode(source: InputStream, width: Int, height: Int, options: Options): Resource<SVG>? {
     return try {
       val svg: SVG = SVG.getFromInputStream(source)
-      if (width != SIZE_ORIGINAL) {
-        svg.documentWidth = width.toFloat()
+      // Use document width and height if view box is not set.
+      // Later, we will override the document width and height with the dimensions of the native view.
+      if (svg.documentViewBox == null) {
+        val documentWidth = svg.documentWidth
+        val documentHeight = svg.documentHeight
+        if (documentWidth != -1f && documentHeight != -1f) {
+          svg.setDocumentViewBox(0f, 0f, documentWidth, documentHeight)
+        }
       }
-      if (height != SIZE_ORIGINAL) {
-        svg.documentHeight = height.toFloat()
-      }
+      svg.documentWidth = width.toFloat()
+      svg.documentHeight = height.toFloat()
       SimpleResource(svg)
     } catch (ex: SVGParseException) {
       throw IOException("Cannot load SVG from stream", ex)

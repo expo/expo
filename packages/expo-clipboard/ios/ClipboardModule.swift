@@ -9,7 +9,7 @@ public class ClipboardModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoClipboard")
 
-    // MARK: Strings
+    // MARK: - Strings
 
     AsyncFunction("getStringAsync") { (options: GetStringOptions) -> String in
       switch options.preferredFormat {
@@ -35,7 +35,7 @@ public class ClipboardModule: Module {
       return UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
 
-    // MARK: URLs
+    // MARK: - URLs
 
     AsyncFunction("getUrlAsync") { () -> String? in
       return UIPasteboard.general.url?.absoluteString
@@ -49,7 +49,7 @@ public class ClipboardModule: Module {
       return UIPasteboard.general.hasURLs
     }
 
-    // MARK: Images
+    // MARK: - Images
 
     AsyncFunction("setImageAsync") { (content: String) in
       guard let data = Data(base64Encoded: content),
@@ -82,7 +82,14 @@ public class ClipboardModule: Module {
       ]
     }
 
-    // MARK: Events
+    Property("isPasteButtonAvailable") { () -> Bool in
+      if #available(iOS 16.0, *) {
+        return true
+      }
+      return false
+    }
+
+    // MARK: - Events
 
     Events(onClipboardChanged)
 
@@ -98,6 +105,44 @@ public class ClipboardModule: Module {
 
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
+    }
+
+    // MARK: - View
+
+    View(ClipboardPasteButton.self) {
+      Events("onPastePressed")
+
+      Prop("backgroundColor") { (view, color: UIColor?) in
+        if view.baseBackgroundColor != color {
+          view.baseBackgroundColor = color
+        }
+      }
+
+      Prop("foregroundColor") { (view, color: UIColor?) in
+        if view.baseForegroundColor != color {
+          view.baseForegroundColor = color
+        }
+      }
+
+      Prop("acceptedContentTypes") { (view, types: [AcceptedTypes]?) in
+        view.acceptedContentTypes = types ?? []
+      }
+
+      Prop("cornerStyle") { (view, style: CornerStyle?) in
+        view.cornerStyle = style ?? .capsule
+      }
+
+      Prop("displayMode") { (view, mode: DisplayMode?) in
+        view.displayMode = mode ?? .iconAndLabel
+      }
+
+      Prop("imageOptions") { (view, options: GetImageOptions?) in
+        view.imageOptions = options ?? GetImageOptions()
+      }
+
+      OnViewDidUpdateProps { view in
+        view.update()
+      }
     }
   }
 

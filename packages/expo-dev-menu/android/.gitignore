@@ -261,3 +261,4 @@ gradle-app.setting
 # End of https://www.gitignore.io/api/java,maven,gradle,android,intellij,androidstudio
 
 src/main/assets/
+src/debug/assets/

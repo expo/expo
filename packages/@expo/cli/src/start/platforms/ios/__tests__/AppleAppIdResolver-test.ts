@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import { IOSConfig } from '@expo/config-plugins';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { AppleAppIdResolver } from '../AppleAppIdResolver';
 
 jest.mock('@expo/config-plugins', () => ({
@@ -30,12 +29,12 @@ jest.mock('@expo/config', () => ({
 
 describe('hasNativeProjectAsync', () => {
   it(`returns true when the AppDelegate file exists`, async () => {
-    asMock(IOSConfig.Paths.getAllPBXProjectPaths).mockReturnValueOnce(['/path/to/file']);
+    jest.mocked(IOSConfig.Paths.getAllPBXProjectPaths).mockReturnValueOnce(['/path/to/file']);
     const resolver = new AppleAppIdResolver('/');
     expect(await resolver.hasNativeProjectAsync()).toBe(true);
   });
   it(`returns false when the AppDelegate getter throws`, async () => {
-    asMock(IOSConfig.Paths.getAllPBXProjectPaths).mockImplementationOnce(() => {
+    jest.mocked(IOSConfig.Paths.getAllPBXProjectPaths).mockImplementationOnce(() => {
       throw new Error('file missing');
     });
     const resolver = new AppleAppIdResolver('/');
@@ -48,9 +47,9 @@ describe('getAppIdAsync', () => {
     const resolver = new AppleAppIdResolver('/');
     resolver.hasNativeProjectAsync = jest.fn(async () => true);
     resolver.getAppIdFromNativeAsync = jest.fn(resolver.getAppIdFromNativeAsync);
-    asMock(IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj).mockReturnValueOnce(
-      'dev.bacon.myapp'
-    );
+    jest
+      .mocked(IOSConfig.BundleIdentifier.getBundleIdentifierFromPbxproj)
+      .mockReturnValueOnce('dev.bacon.myapp');
     expect(await resolver.getAppIdAsync()).toBe('dev.bacon.myapp');
     expect(resolver.getAppIdFromNativeAsync).toBeCalledTimes(1);
     expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
@@ -60,7 +59,7 @@ describe('getAppIdAsync', () => {
     const resolver = new AppleAppIdResolver('/');
     resolver.hasNativeProjectAsync = jest.fn(async () => false);
     resolver.getAppIdFromConfigAsync = jest.fn(resolver.getAppIdFromConfigAsync);
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       exp: {
         ios: {
           bundleIdentifier: 'dev.bacon.myapp',

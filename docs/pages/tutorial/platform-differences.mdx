@@ -1,16 +1,22 @@
 ---
 title: Handle platform differences
+description: In this tutorial, learn how to handle platform differences between native and web when creating a universal app.
 ---
 
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
-import { A } from '~/ui/components/Text';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-Android, iOS, and the web have different capabilities. In our case, Android and iOS both are able to capture a screenshot with the `react-native-view-shot` library, however web browsers cannot.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library, however, web browsers cannot.
 
 In this chapter, let's learn how to make an exception for web browsers to get the same functionality on all platforms.
 
-## Step 1: Install and import dom-to-image
+<Step label="1">
+
+## Install and import dom-to-image
 
 To capture a screenshot on the web and save it as an image , we'll use a third-party library called [dom-to-image](https://github.com/tsayen/dom-to-image#readme).
 It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
@@ -27,7 +33,11 @@ To use it, let's import it into **App.js**:
 import domtoimage from 'dom-to-image';
 ```
 
-## Step 2: Add platform-specific code
+</Step>
+
+<Step label="2">
+
+## Add platform-specific code
 
 React Native provides a `Platform` module that gives us access to information about the platform on which the app is currently running.
 You can use it to implement platform-specific behavior.
@@ -81,21 +91,20 @@ const onSaveImageAsync = async () => {
       console.log(e);
     }
   } /* @info Add an else condition to run the logic when the current platform is the web. */else {
-    domtoimage
-      .toJpeg(imageRef.current, {
-          quality: 0.95,
-          width: 320,
-          height: 440,
-        })
-      .then(dataUrl => {
-        let link = document.createElement('a');
-        link.download = 'sticker-smash.jpeg';
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch(e => {
-        console.log(e);
+    try {
+      const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+        quality: 0.95,
+        width: 320,
+        height: 440,
       });
+
+      let link = document.createElement('a');
+      link.download = 'sticker-smash.jpeg';
+      link.href = dataUrl;
+      link.click();
+    } catch (e) {
+      console.log(e);
+    }
   } /* @end */
 };
 ```
@@ -104,9 +113,17 @@ const onSaveImageAsync = async () => {
 
 On running the app in a web browser, we can now save a screenshot:
 
-<Video file="tutorial/web.mp4" />
+<ContentSpotlight file="tutorial/web.mp4" />
 
-## Next steps
+</Step>
 
-The app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic.
-In the next chapter, we will [customize the app's status bar, splash screen, and app icon](/tutorial/configuration).
+## Next step
+
+The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic.
+
+<BoxLink
+  title="Configure status bar, splash screen and app icon"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, we will customize the app's status bar, splash screen, and app icon."
+  href="/tutorial/configuration"
+/>

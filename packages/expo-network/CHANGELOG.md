@@ -6,9 +6,80 @@
 
 ### 🎉 New features
 
+- Add network state change listeners ([#28808](https://github.com/expo/expo/pull/28808) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix `java.lang.IllegalArgumentException: NetworkCallback was not registered`. ([#30185](https://github.com/expo/expo/pull/30185) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix wired ethernet connection being reported as unknown type. ([#30169](https://github.com/expo/expo/pull/30169) by [@Simek](https://github.com/Simek))
+- Add missing `react` peer dependencies for isolated modules. ([#30477](https://github.com/expo/expo/pull/30477) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add Apple TV support. ([#27819](https://github.com/expo/expo/pull/27819) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 5.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Add Node.js support. ([#24505](https://github.com/expo/expo/pull/24505) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove deprecated `getMacAddressAsync` method. ([#24505](https://github.com/expo/expo/pull/24505) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 5.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 5.3.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 5.1.0 — 2022-12-30
 

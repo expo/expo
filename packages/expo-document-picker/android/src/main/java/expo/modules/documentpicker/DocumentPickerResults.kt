@@ -5,8 +5,13 @@ import expo.modules.kotlin.records.Record
 
 data class DocumentPickerResult(
   @Field
-  val type: String,
+  val canceled: Boolean = false,
 
+  @Field
+  val assets: List<DocumentInfo>? = null
+) : Record
+
+data class DocumentInfo(
   @Field
   val uri: String,
 
@@ -19,8 +24,3 @@ data class DocumentPickerResult(
   @Field
   val size: Int?
 ) : Record
-
-data class DocumentPickerCancelled(
-  @Field
-  val type: String
-)

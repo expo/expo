@@ -1,22 +1,20 @@
 {
   "name": "@expo/sandbox",
   "version": "0.0.0",
-  "main": "__generated__/AppEntry.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios",
-    "eject": "expo eject",
-    "postinstall": "expo-yarn-workspaces postinstall"
+    "ios": "expo start --ios"
   },
   "dependencies": {
-    "expo": "~47.0.0-alpha.1",
-    "react": "18.1.0",
-    "react-native": "0.70.5"
+    "expo": "~51.0.0",
+    "expo-router": "^3.0.0",
+    "react": "19.0.0-rc-fb9a90fa48-20240614",
+    "react-native": "0.75.0-rc.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "~9.2.0",
-    "expo-yarn-workspaces": "^2.0.0"
+    "babel-preset-expo": "~11.0.0"
   },
   "private": true
 }

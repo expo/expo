@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoAsset.web.js","sourceRoot":"","sources":["../src/ExpoAsset.web.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,KAAK,UAAU,aAAa,CACjC,GAAW,EACX,KAAoB,EACpB,KAAa;IAEb,OAAO,GAAG,CAAC;AACb,CAAC","sourcesContent":["export async function downloadAsync(\n  url: string,\n  _hash: string | null,\n  _type: string\n): Promise<string> {\n  return url;\n}\n"]}

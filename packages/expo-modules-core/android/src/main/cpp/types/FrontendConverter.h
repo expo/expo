@@ -11,7 +11,7 @@ namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 class SingleType;
 
 /**
@@ -35,7 +35,6 @@ public:
   virtual jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const = 0;
 };
@@ -48,7 +47,20 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js number to [java.lang.Long].
+ */
+class LongFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
     const jsi::Value &value
   ) const override;
 
@@ -63,7 +75,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -78,7 +89,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -93,7 +103,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -108,7 +117,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -123,7 +131,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -138,7 +145,20 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js Uint8Array to [java.lang.Byte] array.
+ */
+class ByteArrayFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
     const jsi::Value &value
   ) const override;
 
@@ -153,7 +173,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -168,7 +187,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -183,7 +201,48 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js function to [expo.modules.kotlin.jni.JavaScriptFunction].
+ */
+class JavaScriptFunctionFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js view object to int.
+ */
+class ViewTagFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js shared object to int.
+ */
+class SharedObjectIdConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
     const jsi::Value &value
   ) const override;
 
@@ -200,7 +259,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -222,7 +280,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -242,7 +299,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -275,7 +331,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -299,7 +354,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -309,5 +363,24 @@ private:
    * Converter used to convert values.
    */
   std::shared_ptr<FrontendConverter> valueConverter;
+};
+
+/**
+ * Converter from js object to [kotlin.Any] (Boolean, Double, String, Map<Any>, List<Any>).
+ */
+class AnyFrontendConvert : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+private:
+  BooleanFrontendConverter booleanConverter;
+  DoubleFrontendConverter doubleConverter;
+  StringFrontendConverter stringConverter;
 };
 } // namespace expo

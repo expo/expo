@@ -1,15 +1,27 @@
-# expo-dev-client
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/dev-client/">
+    <img
+      src="../../.github/resources/expo-dev-client.svg"
+      alt="expo-dev-client"
+      height="64" />
+  </a>
+</p>
 
-`expo-dev-client` is an npm package installable in any Expo or React Native project. Once installed, Debug builds of your application will gain an extensible debug menu and the ability to load projects from Expo CLI. Release builds of your application will not change other than the addition of a few header files. Your debug builds can be shared with anyone on your team who needs to work on or review your application. Your team can develop the JavaScript portion of your application with expo-cli and your custom client without waiting for your native code to build until the
-next time you need to upgrade, install a new module, or otherwise change the native code in your project.
+`expo-dev-client` adds various useful development tools to your debug builds:
+
+- A configurable launcher UI, so you can launch updates (such as from [PR previews](https://docs.expo.dev/develop/development-builds/development-workflows#pr-previews)) and switch between development servers without needing to recompile the native app
+- Improved debugging tools (such as support for [inspecting network requests](https://docs.expo.dev/debugging/tools/#inspecting-network-requests))
+- [A powerful and extensible developer menu UI](https://docs.expo.dev/debugging/tools#developer-menu)
+
+Expo documentation refers to debug builds that include `expo-dev-client` as [development builds](https://docs.expo.dev/develop/development-builds/introduction/).
 
 ## Documentation
 
-You can find the documentation under [https://docs.expo.dev/clients/introduction](https://docs.expo.dev/clients/introduction).
+You can find more information in the [Expo documentation](https://docs.expo.dev/versions/latest/sdk/dev-client).
 
 ## Issues
 
-If you encounter any issues using this package in your project, please [report your issue here](https://github.com/expo/expo/issues/new?template=dev_client_bug_report.yml). 
+If you encounter any issues using this package in your project, please [report your issue here](https://github.com/expo/expo/issues/new?template=dev_client_bug_report.yml).
 
 ## Contributing
 

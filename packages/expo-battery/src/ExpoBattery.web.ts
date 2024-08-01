@@ -1,8 +1,8 @@
 import { EventEmitter, Platform } from 'expo-modules-core';
 
-import { BatteryState } from './Battery.types';
+import { type BatteryEvents, BatteryState } from './Battery.types';
 
-const emitter = new EventEmitter({} as any);
+const emitter = new EventEmitter<BatteryEvents>();
 
 declare let navigator: Navigator;
 
@@ -33,10 +33,6 @@ interface BatteryManagerEventTarget extends EventTarget {
 }
 
 export default {
-  get name(): string {
-    return 'ExpoBattery';
-  },
-
   get isSupported(): boolean {
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
     return Platform.isDOMAvailable && ('getBattery' in navigator || 'battery' in navigator);

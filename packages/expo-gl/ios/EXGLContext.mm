@@ -26,7 +26,8 @@
 
 @implementation EXGLContext
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate
+               andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     self.delegate = delegate;
@@ -98,7 +99,7 @@
   [self flush];
 }
 
-- (void)prepare:(void(^)(BOOL))callback
+- (void)prepare:(void(^)(BOOL))callback andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport
 {
   if (_wasPrepareCalled) {
     return;
@@ -127,7 +128,13 @@
         [self flush];
       });
 
+      if (enableExperimentalWorkletSupport) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+          EXGLContextPrepareWorklet(self->_contextId);
+        });
+      }
       _isContextReady = YES;
+
       if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
         [self.delegate glContextInitialized:self];
       }
@@ -167,11 +174,14 @@
     // Flush all the stuff
     EXGLContextFlush(self->_contextId);
 
-    // Destroy JS binding
-    EXGLContextDestroy(self->_contextId);
+    id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+    [uiManager dispatchOnClientThread:^{
+      // Destroy JS binding
+      EXGLContextDestroy(self->_contextId);
 
-    // Remove from dictionary of contexts
-    [self->_objectManager deleteContextWithId:@(self->_contextId)];
+      // Remove from dictionary of contexts
+      [self->_objectManager deleteContextWithId:@(self->_contextId)];
+    }];
   }];
 }
 

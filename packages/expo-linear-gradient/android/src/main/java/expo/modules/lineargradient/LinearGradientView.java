@@ -9,9 +9,10 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.TypedValue;
 import android.view.View;
+import expo.modules.core.interfaces.DoNotStrip;
 
 public class LinearGradientView extends View {
-  private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
   private Path mPathForBorderRadius;
   private RectF mTempRectForBorderRadius;
 
@@ -22,6 +23,8 @@ public class LinearGradientView extends View {
   private int[] mSize = {0, 0};
   private float[] mBorderRadii = {0, 0, 0, 0, 0, 0, 0, 0};
 
+  // Keeps this primary constructor from Proguard/R8 for ViewDefinitionBuilder
+  @DoNotStrip
   public LinearGradientView(Context context) {
     super(context);
   }
@@ -52,6 +55,11 @@ public class LinearGradientView extends View {
     }
     mBorderRadii = borderRadii;
     updatePath();
+    drawGradient();
+  }
+
+  public void setDither(final boolean dither){
+    mPaint.setDither(dither);
     drawGradient();
   }
 

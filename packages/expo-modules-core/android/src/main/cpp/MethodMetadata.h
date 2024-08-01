@@ -9,7 +9,6 @@
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/TurboModuleUtils.h>
-#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <memory>
 #include <vector>
@@ -21,22 +20,22 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * A class that holds information about the exported function.
  */
-class MethodMetadata {
+class MethodMetadata : public std::enable_shared_from_this<MethodMetadata> {
 public:
   /**
    * Function name
    */
   std::string name;
   /**
-   * Number of arguments
+   * Whether this function takes owner
    */
-  int args;
-  /*
+  bool takesOwner;
+  /**
    * Whether this function is async
    */
   bool isAsync;
@@ -46,18 +45,16 @@ public:
   std::vector<std::unique_ptr<AnyType>> argTypes;
 
   MethodMetadata(
-    std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
-    int args,
+    bool takesOwner,
     bool isAsync,
     jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
   );
 
   MethodMetadata(
-    std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
-    int args,
+    bool takesOwner,
     bool isAsync,
     std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
@@ -69,25 +66,13 @@ public:
   MethodMetadata(MethodMetadata &&other) = default;
 
   /**
-   * MethodMetadata owns the only reference to the Kotlin function.
-   * We have to clean that, cause it's a `global_ref`.
-   */
-  ~MethodMetadata() {
-    if (jBodyReference != nullptr) {
-      jBodyReference.release();
-    }
-  }
-
-  /**
    * Transforms metadata to a jsi::Function.
    *
    * @param runtime
-   * @param moduleRegistry
    * @return shared ptr to the jsi::Function that wrapped the underlying Kotlin's function.
    */
   std::shared_ptr<jsi::Function> toJSFunction(
-    jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *moduleRegistry
+    jsi::Runtime &runtime
   );
 
   /**
@@ -95,7 +80,15 @@ public:
    */
   jsi::Value callSync(
     jsi::Runtime &rt,
-    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &thisValue,
+    const jsi::Value *args,
+    size_t count
+  );
+
+  jni::local_ref<jobject> callJNISync(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jsi::Value &thisValue,
     const jsi::Value *args,
     size_t count
   );
@@ -114,22 +107,19 @@ private:
    */
   std::shared_ptr<jsi::Function> body = nullptr;
 
-  std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
+  jsi::Function toSyncFunction(jsi::Runtime &runtime);
 
-  jsi::Function toSyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
-
-  jsi::Function toAsyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
+  jsi::Function toAsyncFunction(jsi::Runtime &runtime);
 
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
-    JSIInteropModuleRegistry *moduleRegistry,
     jobjectArray globalArgs
   );
 
   jobjectArray convertJSIArgsToJNI(
-    JSIInteropModuleRegistry *moduleRegistry,
     JNIEnv *env,
     jsi::Runtime &rt,
+    const jsi::Value &thisValue,
     const jsi::Value *args,
     size_t count
   );

@@ -1,95 +1,29 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '5.0.1'
+version = '5.9.1'
 
-buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
-
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
-      }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
-      }
-    }
-  }
-}
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
-
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
-
+  namespace "expo.modules.application"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 12
-    versionName '5.0.1'
-  }
-  lintOptions {
-    abortOnError false
+    versionName '5.9.1'
   }
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
-
-  implementation 'com.android.installreferrer:installreferrer:1.0'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  implementation 'com.android.installreferrer:installreferrer:2.2'
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.5.1"
-  testImplementation 'junit:junit:4.12'
+  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation 'junit:junit:4.13.2'
 }

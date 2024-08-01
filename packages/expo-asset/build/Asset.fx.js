@@ -1,8 +1,8 @@
 import { Asset } from './Asset';
-import { IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import { setCustomSourceTransformer } from './resolveAssetSource';
 // Override React Native's asset resolution for `Image` components in contexts where it matters
-if (IS_ENV_WITH_UPDATES_ENABLED) {
+if (IS_ENV_WITH_LOCAL_ASSETS) {
     setCustomSourceTransformer((resolver) => {
         try {
             // Bundler is using the hashAssetFiles plugin if and only if the fileHashes property exists

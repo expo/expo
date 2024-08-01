@@ -24,7 +24,8 @@ internal class SetStringOptions : Record {
 }
 
 internal enum class ImageFormat(val jsName: String) : Enumerable {
-  JPG("jpeg"), PNG("png");
+  JPG("jpeg"),
+  PNG("png");
 
   val compressFormat: Bitmap.CompressFormat
     get() = when (this) {

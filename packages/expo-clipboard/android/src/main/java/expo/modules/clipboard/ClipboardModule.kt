@@ -58,7 +58,7 @@ class ClipboardModule : Module() {
       return@AsyncFunction true
     }
 
-    AsyncFunction("hasStringAsync") {
+    AsyncFunction<Boolean>("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
         ?.hasTextContent
@@ -102,7 +102,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("hasImageAsync") {
+    AsyncFunction<Boolean>("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion
@@ -170,10 +170,12 @@ class ClipboardModule : Module() {
       maybeClipboardManager.takeIf { isListening }
         ?.primaryClipDescription
         ?.let { clip ->
-          if (timestamp == clip.timestamp) {
-            return@OnPrimaryClipChangedListener
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (timestamp == clip.timestamp) {
+              return@OnPrimaryClipChangedListener
+            }
+            timestamp = clip.timestamp
           }
-          timestamp = clip.timestamp
 
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,

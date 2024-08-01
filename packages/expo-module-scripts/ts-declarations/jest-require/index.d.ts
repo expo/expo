@@ -36,4 +36,4 @@ interface NodeModule {
   paths: string[];
 }
 
-declare var require: NodeRequire;
+declare let require: NodeRequire;

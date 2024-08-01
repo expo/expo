@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
-export default NativeModulesProxy.ExponentAV;
+export default requireNativeModule('ExponentAV');

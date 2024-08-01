@@ -1,15 +1,33 @@
-import path from 'path';
+import { vol } from 'memfs';
 
-import { getDefaultConfig, loadAsync } from '../ExpoMetroConfig';
+import { getDefaultConfig } from '../ExpoMetroConfig';
 
-const projectRoot = path.join(__dirname, '__fixtures__', 'hello-world');
+const projectRoot = '/';
 const consoleError = console.error;
 
-beforeEach(() => {
-  delete process.env.EXPO_USE_EXOTIC;
-});
-
-describe('getDefaultConfig', () => {
+function mockProject() {
+  vol.fromJSON(
+    {
+      'package.json': JSON.stringify({
+        name: 'hello-world',
+        private: true,
+      }),
+      'node_modules/expo-asset/tools/hashAssetFiles.js': '',
+      'node_modules/react-native/package.json': '',
+      'node_modules/react-native/node_modules/metro-runtime/package.json': '',
+      'node_modules/react-native/node_modules/metro-runtime/src/modules/asyncRequire.js': '',
+      'node_modules/metro-react-native-babel-transformer/package.json': '',
+    },
+    projectRoot
+  );
+}
+describe(getDefaultConfig, () => {
+  beforeEach(() => {
+    mockProject();
+  });
+  afterEach(() => {
+    vol.reset();
+  });
   afterAll(() => {
     console.error = consoleError;
   });
@@ -29,44 +47,9 @@ describe('getDefaultConfig', () => {
     );
   });
 
-  it('loads exotic configuration', () => {
-    expect(getDefaultConfig(projectRoot, { mode: 'exotic' })).toEqual(
-      expect.objectContaining({
-        projectRoot,
-        resolver: expect.objectContaining({
-          resolverMainFields: ['browser', 'main'],
-          sourceExts: expect.arrayContaining(['cjs']),
-        }),
-      })
-    );
-  });
-
   it('loads default configuration for apps', () => {
-    expect(getDefaultConfig(projectRoot).resolver.sourceExts).toEqual(
+    expect(getDefaultConfig(projectRoot).resolver?.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
     );
-  });
-});
-
-describe('loadAsync', () => {
-  it('adds runtime options to the default configuration', async () => {
-    const options = {
-      maxWorkers: 10,
-      resetCache: true,
-      reporter: { update() {} },
-      sourceExts: ['yml', 'toml', 'json'],
-      assetExts: ['json'],
-    };
-    const config = await loadAsync(projectRoot, options);
-
-    expect(config).toMatchObject({
-      maxWorkers: options.maxWorkers,
-      resetCache: options.resetCache,
-      reporter: options.reporter,
-      resolver: {
-        sourceExts: options.sourceExts,
-        assetExts: options.assetExts,
-      },
-    });
   });
 });

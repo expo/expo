@@ -9,12 +9,13 @@ import { Platform } from 'react-native';
 import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'Video';
-const imageRemoteSource = { uri: 'http://via.placeholder.com/350x150' };
-const videoRemoteSource = { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
-const redirectingVideoRemoteSource = { uri: 'http://bit.ly/2mcW40Q' };
+const imageRemoteSource = { uri: 'https://via.placeholder.com/350x150' };
+const videoRemoteSource = { uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
+const redirectingVideoRemoteSource = { uri: 'https://bit.ly/3Qld7fa' };
 const mp4Source = require('../assets/big_buck_bunny.mp4');
-const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
-const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
+const hlsStreamUri =
+  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+const hlsStreamUriWithRedirect = 'https://bit.ly/3xXhpTT';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
 let portraitVideoSource = null;
 let imageSource = null;
@@ -369,6 +370,15 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize.height).toBeDefined();
         t.expect(status.naturalSize.orientation).toBe('portrait');
       });
+
+      t.it('correctly orientation for HLS streams', async () => {
+        const props = {
+          style,
+          source: { uri: hlsStreamUri },
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize.orientation).toBe('landscape');
+      });
     });
 
     t.describe('Video fullscreen player', () => {
@@ -417,7 +427,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             instance.presentFullscreenPlayer().catch((error) => {
               presentationError = error;
             });
+            await waitFor(1000);
             await instance.dismissFullscreenPlayer();
+            await waitFor(1000);
           } catch (error) {
             dismissalError = error;
           }
@@ -434,8 +446,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         );
         let error = null;
         const presentationPromise = instance.presentFullscreenPlayer();
+        await waitFor(1000);
         try {
           await instance.dismissFullscreenPlayer();
+          await waitFor(1000);
         } catch (err) {
           error = err;
         }
@@ -451,8 +465,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         );
         let error = null;
         const presentationPromise = instance.presentFullscreenPlayer();
+        await waitFor(1000);
         try {
           await instance.presentFullscreenPlayer();
+          await waitFor(1000);
         } catch (err) {
           error = err;
         }
@@ -460,57 +476,6 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await presentationPromise;
         await instance.dismissFullscreenPlayer();
       });
-
-      // NOTE(2018-10-17): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
-
-      unreliablyIt(
-        'rejects all but the last request to change fullscreen mode before the video loads',
-        async () => {
-          // Adding second clause sometimes crashes the application,
-          // because by the time we call `present` second time,
-          // the video loads, so it handles the first request properly,
-          // rejects the second and it may reject the third request
-          // if it tries to be handled while the first presentation request
-          // is being handled.
-          let firstErrored = false;
-          // let secondErrored = false;
-          let thirdErrored = false;
-          // We're using remote source as this gives us time to request changes
-          // before the video loads.
-          const instance = await mountAndWaitFor(
-            <Video style={style} source={videoRemoteSource} />,
-            'ref'
-          );
-          instance.dismissFullscreenPlayer().catch(() => {
-            firstErrored = true;
-          });
-          // instance.presentFullscreenPlayer().catch(() => (secondErrored = true));
-          try {
-            await instance.dismissFullscreenPlayer();
-          } catch (_error) {
-            thirdErrored = true;
-          }
-
-          if (!firstErrored) {
-            // First present request finished too early so we cannot
-            // test this behavior at all. Normally I would put
-            // `t.pending` here, but as for the end of 2017 it doesn't work.
-          } else {
-            t.expect(firstErrored).toBe(true);
-            // t.expect(secondErrored).toBe(true);
-            t.expect(thirdErrored).toBe(false);
-          }
-          const pleaseDismiss = async () => {
-            try {
-              await instance.dismissFullscreenPlayer();
-            } catch {
-              pleaseDismiss();
-            }
-          };
-          await pleaseDismiss();
-        }
-      );
     });
 
     // Actually values 2.0 and -0.5 shouldn't be allowed, however at the moment

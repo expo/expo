@@ -1,12 +1,12 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { loginAsync } from './user';
 import * as Log from '../../log';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { promptAsync, selectAsync } from '../../utils/prompts';
 import { fetchAsync } from '../rest/client';
-import { loginAsync } from './user';
 
 export enum UserSecondFactorDeviceMethod {
   AUTHENTICATOR = 'authenticator',

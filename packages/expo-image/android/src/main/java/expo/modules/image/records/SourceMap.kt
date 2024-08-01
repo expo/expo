@@ -7,13 +7,13 @@ import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ApplicationVersionSignature
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import expo.modules.image.GlideBlurhashModel
 import expo.modules.image.GlideModel
-import expo.modules.image.GlideOptions
 import expo.modules.image.GlideRawModel
+import expo.modules.image.GlideThumbhashModel
 import expo.modules.image.GlideUriModel
 import expo.modules.image.GlideUrlModel
+import expo.modules.image.ResourceIdHelper
 import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -40,15 +40,20 @@ data class SourceMap(
 
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
-  internal fun createGlideModel(context: Context): GlideModel? {
-    if (uri == null) {
-      return null
-    }
+  fun isThumbhash() = parsedUri?.scheme?.startsWith("thumbhash") ?: false
 
+  private fun parseUri(context: Context) {
     if (parsedUri == null) {
       parsedUri = computeUri(context)
     }
+  }
 
+  internal fun createGlideModel(context: Context): GlideModel? {
+    if (uri.isNullOrBlank()) {
+      return null
+    }
+
+    parseUri(context)
     if (isContentUrl() || isDataUrl()) {
       return GlideRawModel(uri)
     }
@@ -58,6 +63,12 @@ data class SourceMap(
         parsedUri!!,
         width,
         height
+      )
+    }
+
+    if (isThumbhash()) {
+      return GlideThumbhashModel(
+        parsedUri!!
       )
     }
 
@@ -86,13 +97,10 @@ data class SourceMap(
   }
 
   internal fun createOptions(context: Context): RequestOptions {
+    parseUri(context)
     return RequestOptions()
       .apply {
-        if (parsedUri == null) {
-          parsedUri = computeUri(context)
-        }
-
-        // Override the size for local assets. This ensures that
+        // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
         if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())
@@ -105,7 +113,7 @@ data class SourceMap(
           // sure the cache does not return the wrong image, we should clear the cache when the
           // application version changes.
           apply(
-            GlideOptions.signatureOf(ApplicationVersionSignature.obtain(context))
+            RequestOptions.signatureOf(ApplicationVersionSignature.obtain(context))
           )
         }
       }
@@ -142,7 +150,7 @@ data class SourceMap(
   }
 
   private fun computeLocalUri(stringUri: String, context: Context): Uri? {
-    return ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, stringUri)
+    return ResourceIdHelper.getResourceUri(context, stringUri)
   }
 
   internal val pixelCount: Double

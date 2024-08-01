@@ -1,4 +1,4 @@
-import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 import { NativeSyntheticEvent, StyleSheet, Platform, processColor } from 'react-native';
 
@@ -8,10 +8,9 @@ import {
   ImageNativeProps,
   ImageProgressEventData,
 } from './Image.types';
+import ExpoImageModule from './ImageModule';
 
 const NativeExpoImage = requireNativeViewManager('ExpoImage');
-
-const ExpoImageModule = requireNativeModule('ExpoImage');
 
 function withDeprecatedNativeEvent<NativeEvent>(
   event: NativeSyntheticEvent<NativeEvent>
@@ -51,7 +50,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
   };
 
   render() {
-    const { style, ...props } = this.props;
+    const { style, accessibilityLabel, alt, ...props } = this.props;
     const resolvedStyle = StyleSheet.flatten(style);
 
     // Shadows behave different on iOS, Android & Web.
@@ -75,7 +74,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
       delete resolvedStyle.backgroundColor;
     }
 
-    const tintColor = processColor(resolvedStyle.tintColor);
+    const tintColor = processColor(props.tintColor || resolvedStyle.tintColor);
 
     const borderColor = processColor(resolvedStyle.borderColor);
     // @ts-ignore
@@ -95,12 +94,12 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
       <NativeExpoImage
         {...props}
         {...resolvedStyle}
+        accessibilityLabel={accessibilityLabel ?? alt}
         style={resolvedStyle}
         onLoadStart={this.onLoadStart}
         onLoad={this.onLoad}
         onProgress={this.onProgress}
         onError={this.onError}
-        // @ts-ignore
         tintColor={tintColor}
         borderColor={borderColor}
         borderLeftColor={borderLeftColor}
@@ -110,6 +109,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
         borderStartColor={borderStartColor}
         borderEndColor={borderEndColor}
         backgroundColor={backgroundColor}
+        ref={props.nativeViewRef}
       />
     );
   }

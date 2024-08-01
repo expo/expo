@@ -178,6 +178,7 @@ export type DetectionResult = {
  * @param uri `file://` URI to the image.
  * @param options A map of detection options.
  * @return Returns a Promise which fulfils with [`DetectionResult`](#detectionresult) object.
+ * @deprecated If you require this functionality, we recommend using [react-native-vision-camera](https://github.com/mrousavy/react-native-vision-camera)
  */
 export declare function detectFacesAsync(uri: string, options?: DetectionOptions): Promise<DetectionResult>;
 //# sourceMappingURL=FaceDetector.d.ts.map

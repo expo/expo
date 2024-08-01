@@ -8,22 +8,19 @@ import {
   CodeChallengeMethod,
   ResponseType,
   Prompt,
+  AuthDiscoveryDocument,
 } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
-import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
 
 let _authLock: boolean = false;
 
-type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
-
 // @needsAudit @docsMissing
 /**
- * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1][https://tools.ietf.org/html/rfc6749#section-4.1.1].
+ * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
  * You can use this class directly for more info around the authorization.
  *
  * **Common use-cases:**
@@ -38,7 +35,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
  * const request = new AuthRequest({ ... });
  *
  * // Prompt for an auth code
- * const result = await request.promptAsync(discovery, { useProxy: true });
+ * const result = await request.promptAsync(discovery);
  *
  * // Get the URL to invoke
  * const url = await request.makeAuthUrlAsync(discovery);
@@ -140,7 +137,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
    */
   async promptAsync(
     discovery: AuthDiscoveryDocument,
-    { url, proxyOptions, ...options }: AuthRequestPromptOptions = {}
+    { url, ...options }: AuthRequestPromptOptions = {}
   ): Promise<AuthSessionResult> {
     if (!url) {
       if (!this.url) {
@@ -160,12 +157,9 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       'No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.'
     );
 
-    let startUrl: string = url!;
-    let returnUrl: string = this.redirectUri;
-    if (options.useProxy) {
-      returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
-      startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
-    }
+    const startUrl: string = url!;
+    const returnUrl: string = this.redirectUri;
+
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't
     // support it this makes the behavior predictable.
     if (_authLock) {
@@ -183,8 +177,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
 
     let result: WebBrowser.WebBrowserAuthSessionResult;
     try {
-      const { useProxy, ...openOptions } = options;
-      result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, openOptions);
+      result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, options);
     } finally {
       _authLock = false;
     }
@@ -277,9 +270,8 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       params.scope = request.scopes.join(' ');
     }
 
-    const query = QueryParams.buildQueryString(params);
     // Store the URL for later
-    this.url = `${discovery.authorizationEndpoint}?${query}`;
+    this.url = `${discovery.authorizationEndpoint}?${new URLSearchParams(params)}`;
     return this.url;
   }
 

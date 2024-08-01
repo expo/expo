@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import path from 'path';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { ChangelogEntry, UNPUBLISHED_VERSION_NAME } from '../../Changelogs';
 import { EXPO_DIR } from '../../Constants';
 import { link } from '../../Formatter';
@@ -11,7 +12,6 @@ import { Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { CommentatorPayload } from '../../commands/CommentatorCommand';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 type CommentRowObject = {
   pkg: Package;
@@ -85,8 +85,8 @@ async function generatePayloadForCommentatorAsync(
   // An object whose key is the pull request number and value is an array of issues it closes.
   const closedIssuesRegistry: Record<number, number[]> = {};
 
-  for (const { pkg, state } of parcels) {
-    const versionChanges = state.changelogChanges?.versions[UNPUBLISHED_VERSION_NAME];
+  for (const { pkg, state, changelogChanges } of parcels) {
+    const versionChanges = changelogChanges.versions[UNPUBLISHED_VERSION_NAME];
 
     if (!versionChanges) {
       continue;

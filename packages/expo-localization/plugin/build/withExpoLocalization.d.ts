@@ -1,3 +1,8 @@
-import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void>;
-export default _default;
+import type { ExpoConfig } from 'expo/config';
+type ConfigPluginProps = {
+    supportsRTL?: boolean;
+    forcesRTL?: boolean;
+    allowDynamicLocaleChangesAndroid?: boolean;
+};
+declare function withExpoLocalization(config: ExpoConfig, data?: ConfigPluginProps): ExpoConfig;
+export default withExpoLocalization;

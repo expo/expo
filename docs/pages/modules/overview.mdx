@@ -1,36 +1,46 @@
 ---
-title: Overview
+title: 'Expo Modules API: Overview'
+sidebar_title: Overview
 description: An overview of the APIs and utilities provided by Expo to develop native modules.
 ---
 
-import { GeneralIcon, AndroidIcon, AppleIcon, SettingsIcon } from '@expo/styleguide';
+import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
+import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Expo provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
+## What are Expo Modules
+
+Sometimes, installing an Expo package or a third-party library is not enough when looking to extend the capabilities of your app. In that scenario, you can write custom native code to tap into native platform APIs or use available Android or iOS dependencies. Luckily, Expo has first class support for this in the form of Expo Modules.
+
+Expo Modules allow you to write native code in a way that feels natural with minimal boilerplate that is also consistent on both platforms.
+It provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
 
 <BoxLink
   title="Native Modules"
   description="Create native modules using Swift and Kotlin."
-  href="./module-api"
-  Icon={GeneralIcon}
+  href="/modules/module-api/"
+  Icon={Grid01Icon}
 />
 <BoxLink
   title="Android Lifecycle Listeners"
   description="Hook into Android Activity and Application lifecycle events."
-  href="./android-lifecycle-listeners"
+  href="/modules/android-lifecycle-listeners/"
   Icon={AndroidIcon}
 />
 <BoxLink
   title="iOS AppDelegate Subscribers"
   description="Respond to iOS AppDelegate events."
-  href="./appdelegate-subscribers"
+  href="/modules/appdelegate-subscribers/"
   Icon={AppleIcon}
 />
 <BoxLink
   title="expo-module.config.json"
   description="Configure and opt in to features."
-  href="./module-config"
-  Icon={SettingsIcon}
+  href="/modules/module-config/"
+  Icon={Settings01Icon}
 />
 
 ## Design considerations
@@ -53,8 +63,8 @@ This is one of the reasons why the Expo Modules ecosystem was designed from the 
 
 Another big pain point we have encountered is the validation of arguments passed from JavaScript to native functions.
 This is especially error-prone, time-consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
-A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](./module-api.md#records).
-Knowing the argument types, it is also possible to [automatically convert arguments](./module-api.md#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
+A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](/modules/module-api/#records).
+Knowing the argument types, it is also possible to [automatically convert arguments](/modules/module-api/#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
 
 ### React Native New Architecture
 
@@ -68,11 +78,3 @@ As we all, React Native developers, use high-level JavaScript on a daily basis, 
 Moreover, including C++ code in the library has a negative impact on build times, especially on Android, and can be more difficult to debug.
 
 We took these into account when designing the Expo Modules API with the goal in mind to make it renderer-agnostic, so that the module doesn't need to know whether the app is run on the new architecture or not, significantly reducing the cost for library developers.
-
-## Next steps
-
-<BoxLink
-  title="Get Started"
-  description="Learn how to create a new Expo module or setup existing library as an Expo module."
-  href="./get-started"
-/>

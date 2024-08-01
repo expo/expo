@@ -37,13 +37,6 @@ function _path() {
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Paths() {
   const data = require("./Paths");
   _Paths = function () {
@@ -61,6 +54,13 @@ function _Scheme() {
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
   _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
     return data;
   };
   return data;
@@ -92,17 +92,15 @@ function readGoogleServicesInfoPlist(relativePath, {
   return _plist().default.parse(contents);
 }
 function getGoogleSignInReversedClientId(config, modRequest) {
-  var _infoPlist$REVERSED_C;
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
     return null;
   }
   const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
-  return (_infoPlist$REVERSED_C = infoPlist.REVERSED_CLIENT_ID) !== null && _infoPlist$REVERSED_C !== void 0 ? _infoPlist$REVERSED_C : null;
+  return infoPlist.REVERSED_CLIENT_ID ?? null;
 }
 function getGoogleServicesFile(config) {
-  var _config$ios$googleSer, _config$ios;
-  return (_config$ios$googleSer = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.googleServicesFile) !== null && _config$ios$googleSer !== void 0 ? _config$ios$googleSer : null;
+  return config.ios?.googleServicesFile ?? null;
 }
 function setGoogleSignInReversedClientId(config, infoPlist, modRequest) {
   const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);

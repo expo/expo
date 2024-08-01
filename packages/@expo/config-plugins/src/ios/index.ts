@@ -12,6 +12,7 @@ import * as Name from './Name';
 import * as Orientation from './Orientation';
 import * as Paths from './Paths';
 import * as Permissions from './Permissions';
+import * as PrivacyInfo from './PrivacyInfo';
 import * as ProvisioningProfile from './ProvisioningProfile';
 import * as RequiresFullScreen from './RequiresFullScreen';
 import * as Scheme from './Scheme';
@@ -48,4 +49,5 @@ export {
   UsesNonExemptEncryption,
   Version,
   XcodeProjectFile,
+  PrivacyInfo,
 };

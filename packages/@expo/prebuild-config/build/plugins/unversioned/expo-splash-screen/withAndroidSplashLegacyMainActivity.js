@@ -53,7 +53,6 @@ const withAndroidSplashLegacyMainActivity = config => {
 };
 exports.withAndroidSplashLegacyMainActivity = withAndroidSplashLegacyMainActivity;
 function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
-  var _config$androidStatus;
   debug(`Modify with language: "${language}"`);
   const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
   if (!splashConfig) {
@@ -69,13 +68,13 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
     return mainActivity;
   }
   // TODO: Translucent is weird
-  const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
+  const statusBarTranslucent = !!config.androidStatusBar?.translucent;
   const {
     resizeMode
   } = splashConfig;
   const isJava = language === 'java';
   const LE = isJava ? ';' : '';
-  mainActivity = (0, _codeMod().addImports)(mainActivity, ['expo.modules.splashscreen.SplashScreen', 'expo.modules.splashscreen.SplashScreenImageResizeMode', 'android.os.Bundle'], isJava);
+  mainActivity = (0, _codeMod().addImports)(mainActivity, ['expo.modules.splashscreen.singletons.SplashScreen', 'expo.modules.splashscreen.SplashScreenImageResizeMode', 'com.facebook.react.ReactRootView', 'android.os.Bundle'], isJava);
   if (!mainActivity.match(/(?<=^.*super\.onCreate.*$)/m)) {
     const onCreateBlock = isJava ? ['    @Override', '    protected void onCreate(Bundle savedInstanceState) {', '      super.onCreate(savedInstanceState);', '    }'] : ['    override fun onCreate(savedInstanceState: Bundle?) {', '      super.onCreate(savedInstanceState)', '    }'];
     mainActivity = (0, _generateCode().mergeContents)({

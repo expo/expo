@@ -1,10 +1,10 @@
 # Git and Code Reviews at Expo
 
 - [Git](#git)
-  - [“main” is green](#-main--is-green)
+  - [“main” is green](#main-is-green)
   - [Develop on feature branches](#develop-on-feature-branches)
-  - [One idea = one commit](#one-idea---one-commit)
-  - [Rebasing: a linear history](#rebasing--a-linear-history)
+  - [One idea = one commit](#one-idea--one-commit)
+  - [Rebasing: a linear history](#rebasing-a-linear-history)
   - [Pull and rebase often](#pull-and-rebase-often)
   - [Commit often](#commit-often)
   - [Squash before pushing](#squash-before-pushing)

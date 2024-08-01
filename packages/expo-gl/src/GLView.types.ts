@@ -33,7 +33,7 @@ export type SnapshotOptions = {
    * Specifies what type of compression should be used and what is the result file extension.
    * PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts.
    * > **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead.
-   * > It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specific code](/versions/latest/react-native/platform-specific-code).
+   * > It is recommended to use [platform-specific](https://reactnative.dev/docs/platform-specific-code) code in this case.
    * @default 'jpeg'
    */
   format?: 'jpeg' | 'png' | 'webp';
@@ -90,6 +90,11 @@ export type GLViewProps = {
    * @default 4
    */
   msaaSamples: number;
+  /**
+   * Enables support for interacting with a `gl` object from code running on the Reanimated worklet thread.
+   * @default false
+   */
+  enableExperimentalWorkletSupport: boolean;
   /**
    * @hidden
    * A ref callback for the native GLView

@@ -1,0 +1,15 @@
+{
+  '3': 4,
+  // Another comment!
+  '5': {
+    '6': {
+      /* Comment comment comment! */
+      '7': 8
+    },
+    '9': 10
+  },
+  '11': 12,
+  itParsedProperly: 42,
+  score: 5,
+  x: 'z'
+}

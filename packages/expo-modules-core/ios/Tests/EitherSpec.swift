@@ -5,7 +5,9 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class EitherSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
+    let appContext = AppContext.create()
+
     describe("Either") {
       it("is the first type") {
         let either = Either<String, Int>("string")
@@ -33,16 +35,16 @@ final class EitherSpec: ExpoSpec {
         expect(value).notTo(beNil())
       }
       it("converts as convertible") {
-        let either = try Either<String, Int>.convert(from: 123)
+        let either = try Either<String, Int>.convert(from: 123, appContext: appContext)
         expect(either.is(String.self)) == false
         expect(either.is(Int.self)) == true
       }
       it("throws when converting from neither type") {
-        expect({ try Either<String, Int>.convert(from: true) }).to(throwError(errorType: NeitherTypeException.self))
+        expect({ try Either<String, Int>.convert(from: true, appContext: appContext) }).to(throwError(errorType: NeitherTypeException.self))
       }
 
       it("supports arrays") {
-        let either = try Either<String, [String]>.convert(from: ["foo"])
+        let either = try Either<String, [String]>.convert(from: ["foo"], appContext: appContext)
         let value: [String]? = either.get()
 
         expect(either.is([String].self)) == true
@@ -50,7 +52,7 @@ final class EitherSpec: ExpoSpec {
       }
 
       it("supports convertibles (UIColor)") {
-        let either = try Either<Int, UIColor>.convert(from: "blue")
+        let either = try Either<Int, UIColor>.convert(from: "blue", appContext: appContext)
         let color: UIColor? = either.get()
 
         expect(either.is(UIColor.self)) == true
@@ -62,7 +64,7 @@ final class EitherSpec: ExpoSpec {
           @Field
           var foo: String
         }
-        let either = try Either<String, TestRecord>.convert(from: ["foo": "bar"])
+        let either = try Either<String, TestRecord>.convert(from: ["foo": "bar"], appContext: appContext)
         let record: TestRecord? = either.get()
 
         expect(either.is(TestRecord.self)) == true
@@ -88,7 +90,7 @@ final class EitherSpec: ExpoSpec {
         expect(value).notTo(beNil())
       }
       it("throws when converting from neither type") {
-        expect({ try EitherOfThree<String, Int, Double>.convert(from: false) }).to(throwError(errorType: NeitherTypeException.self))
+        expect({ try EitherOfThree<String, Int, Double>.convert(from: false, appContext: appContext) }).to(throwError(errorType: NeitherTypeException.self))
       }
     }
     describe("EitherOfFour") {
@@ -112,7 +114,7 @@ final class EitherSpec: ExpoSpec {
         expect(value).notTo(beNil())
       }
       it("throws when converting from neither type") {
-        expect({ try EitherOfFour<String, Int, Double, Bool>.convert(from: [1, 2]) }).to(throwError(errorType: NeitherTypeException.self))
+        expect({ try EitherOfFour<String, Int, Double, Bool>.convert(from: [1, 2], appContext: appContext) }).to(throwError(errorType: NeitherTypeException.self))
       }
     }
   }

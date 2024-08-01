@@ -2,15 +2,19 @@
 
 #pragma once
 
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 
 #include <jsi/jsi.h>
 
 #include <vector>
+#import <unordered_map>
 
 namespace jsi = facebook::jsi;
 
 namespace expo {
+
+using UniqueJSIObject = std::unique_ptr<jsi::Object>;
+
 /**
  * An entry point to all exported functionalities like modules.
  *
@@ -18,7 +22,7 @@ namespace expo {
  */
 class ExpoModulesHostObject : public jsi::HostObject {
 public:
-  ExpoModulesHostObject(JSIInteropModuleRegistry *installer);
+  ExpoModulesHostObject(JSIContext *installer);
 
   ~ExpoModulesHostObject() override;
 
@@ -29,6 +33,7 @@ public:
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
 private:
-  JSIInteropModuleRegistry *installer;
+  JSIContext *installer;
+  std::unordered_map<std::string, UniqueJSIObject> modulesCache;
 };
 } // namespace expo

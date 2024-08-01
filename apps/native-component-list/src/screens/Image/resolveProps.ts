@@ -13,7 +13,7 @@ function range(
   end: number,
   animValue?: Animated.Value,
   flatten?: boolean
-): number | Animated.AnimatedInterpolation | string {
+): number | Animated.AnimatedInterpolation<number> | string {
   if (animValue) {
     if (flatten) {
       // @ts-ignore

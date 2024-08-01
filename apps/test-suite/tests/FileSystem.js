@@ -35,9 +35,9 @@ export async function test({ describe, expect, it, ...t }) {
           await throws(() => FS.copyAsync({ from: 'c', to: p + '../a/b' }));
           await throws(() => FS.makeDirectoryAsync(p + '../hello/world'));
           await throws(() => FS.readDirectoryAsync(p + '../hello/world'));
-          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.downloadAsync('https://www.google.com', p + '../hello/world'));
           await throws(() => FS.readDirectoryAsync(p + '../'));
-          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.downloadAsync('https://www.google.com', p + '../hello/world'));
         });
       });
     }
@@ -112,7 +112,7 @@ export async function test({ describe, expect, it, ...t }) {
       } catch (e) {
         error = e;
       }
-      expect(error.message).toMatch(/not.*found/);
+      expect(error.message).toMatch(/could not be deleted/);
     });
 
     it('download(md5, uri) -> read -> delete -> !exists -> read[error]', async () => {
@@ -465,7 +465,7 @@ export async function test({ describe, expect, it, ...t }) {
         const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
         await FS.downloadAsync(remoteUrl, localUri);
       } catch (err) {
-        expect(err.message).toMatch(/Directory for .* doesn't exist/);
+        expect(err.message).toMatch(/(does not exist)|(doesn't exist)/);
       }
     }, 30000);
 
@@ -478,5 +478,48 @@ export async function test({ describe, expect, it, ...t }) {
 
       await FS.downloadAsync(remoteUrl, localFileUri);
     }, 30000);
+
+    it('create UTF-8 folder and get info', async () => {
+      const folderName = '中文';
+      const folderUri = FS.documentDirectory + folderName;
+
+      const dirInfo = await FS.getInfoAsync(folderUri);
+      if (dirInfo.exists) {
+        await FS.deleteAsync(folderUri);
+      }
+
+      await FS.makeDirectoryAsync(folderUri);
+      const newDirInfo = await FS.getInfoAsync(folderUri);
+
+      expect(newDirInfo.exists).toBeTruthy();
+      expect(newDirInfo.isDirectory).toBeTruthy();
+    }, 30000);
+
+    if (Platform.OS === 'ios') {
+      // We cannot run this test on Android because bundleDirectory
+      // on Android cannot be accessed using 'file://' protocol.
+      it('delete(idempotent) -> !exists -> copy(from bundle) -> exists -> delete -> !exists', async () => {
+        const from = 'file://' + FS.bundleDirectory + 'Info.plist';
+        const to = FS.documentDirectory + 'Info.plist.copy';
+
+        const assertExists = async (expectedToExist) => {
+          const { exists } = await FS.getInfoAsync(to);
+          if (expectedToExist) {
+            expect(exists).toBeTruthy();
+          } else {
+            expect(exists).not.toBeTruthy();
+          }
+        };
+
+        await FS.deleteAsync(to, { idempotent: true });
+        await assertExists(false);
+
+        await FS.copyAsync({ from, to });
+        await assertExists(true);
+
+        await FS.deleteAsync(to);
+        await assertExists(false);
+      });
+    }
   });
 }

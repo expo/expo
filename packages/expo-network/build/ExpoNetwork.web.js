@@ -1,4 +1,19 @@
+import { EventEmitter } from 'expo-modules-core';
 import { NetworkStateType } from './Network.types';
+const emitter = new EventEmitter();
+const onNetworkStateEventName = 'onNetworkStateChanged';
+function getNetworkState() {
+    const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
+    return {
+        type: isOnline ? NetworkStateType.UNKNOWN : NetworkStateType.NONE,
+        isConnected: isOnline,
+        isInternetReachable: isOnline,
+    };
+}
+function updateNetworkState() {
+    const state = getNetworkState();
+    emitter.emit(onNetworkStateEventName, state);
+}
 export default {
     async getIpAddressAsync() {
         try {
@@ -11,17 +26,15 @@ export default {
         }
     },
     async getNetworkStateAsync() {
-        const type = navigator.onLine ? NetworkStateType.UNKNOWN : NetworkStateType.NONE;
-        const isConnected = navigator.onLine;
-        const isInternetReachable = isConnected;
-        return {
-            type,
-            isConnected,
-            isInternetReachable,
-        };
+        return getNetworkState();
     },
-    async getMacAddressAsync() {
-        return null;
+    startObserving() {
+        window.addEventListener('online', updateNetworkState);
+        window.addEventListener('offline', updateNetworkState);
+    },
+    stopObserving() {
+        window.removeEventListener('online', updateNetworkState);
+        window.removeEventListener('offline', updateNetworkState);
     },
 };
 //# sourceMappingURL=ExpoNetwork.web.js.map

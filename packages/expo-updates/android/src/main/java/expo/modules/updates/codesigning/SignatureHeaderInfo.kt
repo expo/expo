@@ -18,13 +18,19 @@ data class SignatureHeaderInfo(val signature: String, val keyId: String, val alg
 
       val signature = if (sigFieldValue is StringItem) {
         sigFieldValue.get()
-      } else throw Exception("Structured field $CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE not found in expo-signature header")
+      } else {
+        throw Exception("Structured field $CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE not found in expo-signature header")
+      }
       val keyId = if (keyIdFieldValue is StringItem) {
         keyIdFieldValue.get()
-      } else CODE_SIGNING_METADATA_DEFAULT_KEY_ID
+      } else {
+        CODE_SIGNING_METADATA_DEFAULT_KEY_ID
+      }
       val alg = if (algFieldValue is StringItem) {
         algFieldValue.get()
-      } else null
+      } else {
+        null
+      }
 
       return SignatureHeaderInfo(signature, keyId, CodeSigningAlgorithm.parseFromString(alg))
     }

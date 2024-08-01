@@ -1,10 +1,13 @@
 {
-    "expo": {
-        "android": {
-            "package": "com.example.minimal"
-        },
-        "ios": {
-            "bundleIdentifier": "com.example.minimal"
-        }
+  "expo": {
+    "android": {
+      "package": "com.example.minimal"
+    },
+    "ios": {
+      "bundleIdentifier": "com.example.minimal"
+    },
+    "web": {
+      "bundler": "webpack"
     }
+  }
 }

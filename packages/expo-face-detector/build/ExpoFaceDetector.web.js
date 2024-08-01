@@ -1,6 +1,2 @@
-export default {
-    get name() {
-        return 'ExpoFaceDetector';
-    },
-};
+export default {};
 //# sourceMappingURL=ExpoFaceDetector.web.js.map

@@ -1,7 +1,5 @@
-import * as React from 'react';
-
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 const screens = [
   'ActivityIndicator',
@@ -9,7 +7,11 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
+  'Camera (legacy)',
+  'Camera (barcode)',
+  'Camera (barcode from URL)',
   'Checkbox',
+  'ClipboardPasteButton',
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'ExpoMaps',
@@ -18,7 +20,6 @@ const screens = [
   'GestureHandlerList',
   'GestureHandlerPinch',
   'GestureHandlerSwipeable',
-  'Gif',
   'HTML',
   'Image',
   'LinearGradient',
@@ -28,8 +29,6 @@ const screens = [
   'Modal',
   'Picker',
   'Pressable',
-  'ProgressBarAndroid',
-  'ProgressViewIOS',
   'QRCode',
   'Reanimated',
   'Skia',
@@ -37,14 +36,15 @@ const screens = [
   'Screens',
   'ScrollView',
   'SegmentedControl',
-  'SharedElement',
   'Slider',
   'Switch',
+  'Symbols',
   'Text',
   'TextInput',
   'TouchableBounce',
   'Touchables',
-  'Video',
+  'Video (expo-av)',
+  'Video (expo-video)',
   'PagerView',
   'WebView',
 ];
@@ -57,12 +57,12 @@ export const ScreenItems = screens.map((name) => ({
 }));
 
 export default function ExpoComponentsScreen() {
-  const renderItemRight = React.useCallback(
-    ({ name }: { name: string }) => (
-      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
-    ),
-    []
+  return (
+    <ComponentListScreen
+      renderItemRight={({ name }: { name: string }) => (
+        <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+      )}
+      apis={ScreenItems}
+    />
   );
-
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

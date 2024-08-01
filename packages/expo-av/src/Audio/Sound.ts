@@ -1,5 +1,6 @@
-import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   Playback,
   PlaybackMixin,
@@ -14,7 +15,6 @@ import {
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
 
 // @needsAudit
 export type AudioChannel = {
@@ -97,7 +97,7 @@ export class Sound implements Playback {
   _lastStatusUpdate: string | null = null;
   _lastStatusUpdateTime: Date | null = null;
   _subscriptions: { remove: () => void }[] = [];
-  _eventEmitter: EventEmitter = new EventEmitter(ExponentAV);
+  _eventEmitter = new LegacyEventEmitter(ExponentAV);
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
   _onMetadataUpdate: ((metadata: AVMetadata) => void) | null = null;
@@ -201,7 +201,7 @@ export class Sound implements Playback {
   }
 
   private _updateAudioSampleReceivedCallback() {
-    if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
+    if (globalThis.__EXAV_setOnAudioSampleReceivedCallback == null) {
       if (Platform.OS === 'ios' || Platform.OS === 'android') {
         console.warn(
           'expo-av: Failed to set up Audio Sample Buffer callback. ' +
@@ -225,7 +225,7 @@ export class Sound implements Playback {
       );
     }
 
-    global.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
+    globalThis.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
   }
 
   _internalStatusUpdateCallback = ({

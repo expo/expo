@@ -61,14 +61,14 @@ export class ExpoMap extends React.Component {
     mapView = React.createRef();
     getSearchCompletions(queryFragment) {
         const nodeHandle = findNodeHandle(this.mapView.current);
-        let module;
+        let nativeModule;
         if (Platform.OS === 'ios' && this.props.provider === 'apple') {
-            module = NativeExpoAppleMapsModule;
+            nativeModule = NativeExpoAppleMapsModule;
         }
         else {
-            module = NativeExpoGoogleMapsModule;
+            nativeModule = NativeExpoGoogleMapsModule;
         }
-        module
+        nativeModule
             .getSearchCompletions(nodeHandle, queryFragment)
             .then((response) => {
             console.log(response);
@@ -79,14 +79,14 @@ export class ExpoMap extends React.Component {
     }
     async moveCamera(cameraMove) {
         const nodeHandle = findNodeHandle(this.mapView.current);
-        let module;
+        let nativeModule;
         if (Platform.OS === 'ios' && this.props.provider === 'apple') {
-            module = requireNativeModule('ExpoAppleMaps');
+            nativeModule = requireNativeModule('ExpoAppleMaps');
         }
         else {
-            module = requireNativeModule('ExpoGoogleMaps');
+            nativeModule = requireNativeModule('ExpoGoogleMaps');
         }
-        return module.moveCamera(nodeHandle, cameraMove);
+        return nativeModule.moveCamera(nodeHandle, cameraMove);
     }
     componentDidMount() {
         this.mapChildren();
@@ -162,7 +162,7 @@ export class ExpoMap extends React.Component {
             if (parseInt(Platform.Version, 10) < 13) {
                 console.warn("Versions of iOS < 13 doesn't support Points Of Interest Filters and their display modifications for Apple Maps. Adding POI filters for these versions will be omitted.");
             }
-            return (React.createElement(NativeExpoAppleMapsView, { ...defaultNativeExpoMapViewProps, ...this.props, markers: this.state.markers, polygons: this.state.polygons, polylines: this.state.polylines, circles: this.state.circles, clusters: this.state.clusters, kmls: this.state.kmls, geojsons: this.state.geojsons, ref: this.mapView }));
+            return (<NativeExpoAppleMapsView {...defaultNativeExpoMapViewProps} {...this.props} markers={this.state.markers} polygons={this.state.polygons} polylines={this.state.polylines} circles={this.state.circles} clusters={this.state.clusters} kmls={this.state.kmls} geojsons={this.state.geojsons} ref={this.mapView}/>);
         }
         let googleMapsJsonStyleString = this.props.googleMapsJsonStyleString
             ? this.props.googleMapsJsonStyleString
@@ -180,7 +180,7 @@ export class ExpoMap extends React.Component {
                 ]);
             }
         }
-        return (React.createElement(NativeExpoGoogleMapsView, { ...defaultNativeExpoMapViewProps, ...this.props, googleMapsJsonStyleString: googleMapsJsonStyleString, markers: this.state.markers, polygons: this.state.polygons, polylines: this.state.polylines, circles: this.state.circles, clusters: this.state.clusters, kmls: this.state.kmls, geojsons: this.state.geojsons, ref: this.mapView, overlays: this.state.overlays, heatmaps: this.state.heatmaps }));
+        return (<NativeExpoGoogleMapsView {...defaultNativeExpoMapViewProps} {...this.props} googleMapsJsonStyleString={googleMapsJsonStyleString} markers={this.state.markers} polygons={this.state.polygons} polylines={this.state.polylines} circles={this.state.circles} clusters={this.state.clusters} kmls={this.state.kmls} geojsons={this.state.geojsons} ref={this.mapView} overlays={this.state.overlays} heatmaps={this.state.heatmaps}/>);
     }
 }
 //# sourceMappingURL=Map.js.map

@@ -1,6 +1,8 @@
 import { resolve } from 'path';
 
-import { getMainActivity, readAndroidManifestAsync } from '../Manifest';
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import * as XML from '../../utils/XML';
+import { AndroidManifest, getMainActivity, readAndroidManifestAsync } from '../Manifest';
 import {
   appendScheme,
   ensureManifestHasValidIntentFilter,
@@ -11,8 +13,13 @@ import {
   setScheme,
 } from '../Scheme';
 
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
+
 const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
 const sampleManifestWithHostPath = resolve(
   fixturesPath,
   'react-native-AndroidManifest-with-host.xml'
@@ -28,20 +35,25 @@ describe('scheme', () => {
     expect(getScheme({ scheme: ['other', 'myapp'] })).toStrictEqual(['other', 'myapp']);
     expect(
       getScheme({
-        scheme: ['other', 'myapp', null],
+        scheme: [
+          'other',
+          'myapp',
+          // @ts-expect-error
+          null,
+        ],
       })
     ).toStrictEqual(['other', 'myapp']);
   });
 
   it('does not add scheme if none provided', async () => {
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setScheme({}, androidManifestJson);
 
     expect(androidManifestJson).toEqual(androidManifestJson);
   });
 
   it('adds scheme to android manifest', async () => {
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setScheme(
       {
         scheme: 'myapp',
@@ -56,13 +68,13 @@ describe('scheme', () => {
     );
 
     const mainActivity = getMainActivity(androidManifestJson);
-    const intentFilters = mainActivity['intent-filter'];
+    const intentFilters = mainActivity!['intent-filter']!;
 
-    const schemeIntent = [];
+    const schemeIntent: string[] = [];
 
     for (const intent of intentFilters) {
       if ('data' in intent) {
-        for (const dataFilter of intent.data) {
+        for (const dataFilter of intent.data!) {
           const possibleScheme = dataFilter.$['android:scheme'];
           if (possibleScheme) {
             schemeIntent.push(possibleScheme);
@@ -89,20 +101,20 @@ function removeSingleTaskFromActivities(manifest) {
 
 describe('Schemes', () => {
   it(`ensure manifest has valid intent filter added`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     const manifestHasValidIntentFilter = ensureManifestHasValidIntentFilter(manifest);
     expect(manifestHasValidIntentFilter).toBe(true);
   });
 
   it(`detect if no singleTask Activity exists`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     removeSingleTaskFromActivities(manifest);
 
     expect(ensureManifestHasValidIntentFilter(manifest)).toBe(false);
   });
 
   it(`adds and removes a new scheme`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     ensureManifestHasValidIntentFilter(manifest);
 
     const modifiedManifest = appendScheme('myapp.test', manifest);
@@ -128,7 +140,7 @@ describe('Schemes', () => {
   });
 
   it(`detect when a duplicate might be added`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     ensureManifestHasValidIntentFilter(manifest);
 
     const modifiedManifest = appendScheme('myapp.test', manifest);
@@ -136,7 +148,7 @@ describe('Schemes', () => {
   });
 
   it(`detect a non-existent scheme`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
 
     expect(hasScheme('myapp.test', manifest)).toBe(false);
   });

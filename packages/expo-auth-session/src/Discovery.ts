@@ -10,7 +10,7 @@ import { requestAsync } from './Fetch';
 export type Issuer = string;
 
 // @needsAudit @docsMissing
-type ProviderMetadataEndpoints = {
+export type ProviderMetadataEndpoints = {
   issuer?: Issuer;
   /**
    * URL of the OP's OAuth 2.0 Authorization Endpoint.
@@ -156,7 +156,7 @@ export type ProviderMetadata = Record<string, string | boolean | string[]> &
   };
 
 // @needsAudit
-export interface DiscoveryDocument {
+export type DiscoveryDocument = {
   /**
    * Used to interact with the resource owner and obtain an authorization grant.
    *
@@ -198,7 +198,7 @@ export interface DiscoveryDocument {
    * All metadata about the provider.
    */
   discoveryDocument?: ProviderMetadata;
-}
+};
 
 // @docsMissing
 export type IssuerOrDiscovery = Issuer | DiscoveryDocument;

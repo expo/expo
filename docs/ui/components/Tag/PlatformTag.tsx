@@ -1,28 +1,24 @@
+import { mergeClasses } from '@expo/styleguide';
+
 import { TagProps } from './Tag';
-import { labelStyle, tagStyle, tagToCStyle } from './styles';
+import { labelStyle, tagStyle } from './styles';
 
 import { PlatformIcon } from '~/components/plugins/PlatformIcon';
 import { PlatformName } from '~/types/common';
-import { formatName, getPlatformName, getTagStyle } from '~/ui/components/Tag/helpers';
+import { formatName, getPlatformName, getTagClasses } from '~/ui/components/Tag/helpers';
 
 type PlatformTagProps = Omit<TagProps, 'name'> & {
   platform: PlatformName;
 };
 
-export const PlatformTag = ({ platform, type }: PlatformTagProps) => {
+export const PlatformTag = ({ platform, className }: PlatformTagProps) => {
   const platformName = getPlatformName(platform);
 
   return (
     <div
-      css={[
-        tagStyle,
-        platformName === 'android' && getTagStyle('green'),
-        platformName === 'ios' && getTagStyle('blue'),
-        platformName === 'web' && getTagStyle('orange'),
-        platformName === 'expo' && getTagStyle('purple'),
-        type === 'toc' && tagToCStyle,
-      ]}>
-      {type !== 'toc' && <PlatformIcon platform={platformName} />}
+      css={tagStyle}
+      className={mergeClasses(getTagClasses(platformName), 'select-none', className)}>
+      <PlatformIcon platform={platformName} />
       <span css={labelStyle}>{formatName(platform)}</span>
     </div>
   );

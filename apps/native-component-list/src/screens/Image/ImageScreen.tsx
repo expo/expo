@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -8,6 +10,14 @@ export const ImageScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageComparisonScreen'));
+    },
+  },
+  {
+    name: 'Animated styles',
+    route: 'image/animated-styles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimatedStyles'));
     },
   },
   {
@@ -61,6 +71,27 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Rendering a shared ref',
+    route: 'image/shared-ref',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSharedRefScreen'));
+    },
+  },
+  {
+    name: 'Background',
+    route: 'image/background',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBackgroundScreen'));
+    },
+  },
+  {
+    name: 'Static responsiveness using srcSet',
+    route: 'image/srcset',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSrcSetScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {
@@ -68,10 +99,17 @@ export const ImageScreens = [
     },
   },
   {
-    name: 'Blurhash',
-    route: 'image/blurhash',
+    name: 'Tinting',
+    route: 'image/tinting',
     getComponent() {
-      return optionalRequire(() => require('./ImageBlurhashScreen'));
+      return optionalRequire(() => require('./ImageTintingScreen'));
+    },
+  },
+  {
+    name: 'Hash Placeholders',
+    route: 'image/hash-placeholders',
+    getComponent() {
+      return optionalRequire(() => require('./ImageHashPlaceholdersScreen'));
     },
   },
   {
@@ -81,7 +119,31 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageCacheKeyScreen'));
     },
   },
+  {
+    name: 'List of GIFs',
+    route: 'image/gifs',
+    getComponent() {
+      return optionalRequire(() => require('./ImageGifsScreen'));
+    },
+  },
+  {
+    name: 'MediaLibrary and ImagePicker integration',
+    route: 'image/media-library',
+    getComponent() {
+      return optionalRequire(() => require('./ImageMediaLibraryScreen'));
+    },
+  },
 ];
+
+if (Platform.OS === 'ios') {
+  ImageScreens.push({
+    name: 'Live Text Interaction',
+    route: 'image/live-text-interaction',
+    getComponent() {
+      return optionalRequire(() => require('./ImageLiveTextInteractionScreen'));
+    },
+  });
+}
 
 export default function ImageScreen() {
   const apis: ListElement[] = ImageScreens.map((screen) => {

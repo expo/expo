@@ -6,6 +6,8 @@ import type {
   DownloadProgressData,
   DownloadResumable,
   FileSystemNetworkTaskProgressCallback,
+  UploadProgressData,
+  UploadTask,
 } from 'expo-file-system';
 import React from 'react';
 import { Alert, ScrollView, Text, Platform } from 'react-native';
@@ -18,6 +20,7 @@ const { StorageAccessFramework } = FileSystem;
 
 interface State {
   downloadProgress: number;
+  uploadProgress: number;
   permittedURI: string | null;
   createdFileURI: string | null;
 }
@@ -29,21 +32,23 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   readonly state: State = {
     downloadProgress: 0,
+    uploadProgress: 0,
     permittedURI: null,
     createdFileURI: null,
   };
 
   download?: DownloadResumable;
+  upload?: UploadTask;
 
   _download = async () => {
-    const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
-    await FileSystem.downloadAsync(url, FileSystem.documentDirectory + '256KB.zip');
+    const url = 'https://getsamplefiles.com/download/zip/sample-1.zip';
+    await FileSystem.downloadAsync(url, FileSystem.documentDirectory + 'sample-1.zip');
     alert('Download complete!');
   };
 
   _startDownloading = async () => {
-    const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
-    const fileUri = FileSystem.documentDirectory + '5MB.zip';
+    const url = 'https://getsamplefiles.com/download/zip/sample-5.zip';
+    const fileUri = FileSystem.documentDirectory + 'sample-5.zip';
     const callback: FileSystemNetworkTaskProgressCallback<DownloadProgressData> = (
       downloadProgress
     ) => {
@@ -149,8 +154,30 @@ export default class FileSystemScreen extends React.Component<object, State> {
         }
       } else {
         alert('Initiate a download first!');
-        return;
       }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  _upload = async () => {
+    try {
+      const fileUri = FileSystem.documentDirectory + 'sample-4.zip';
+      const downloadUrl = 'https://getsamplefiles.com/download/zip/sample-4.zip';
+      await FileSystem.downloadAsync(downloadUrl, fileUri);
+
+      const callback: FileSystemNetworkTaskProgressCallback<UploadProgressData> = (
+        uploadProgress
+      ) => {
+        const progress = uploadProgress.totalBytesSent / uploadProgress.totalBytesExpectedToSend;
+        this.setState({
+          uploadProgress: progress,
+        });
+      };
+      const uploadUrl = 'https://httpbin.org/post';
+      this.upload = FileSystem.createUploadTask(uploadUrl, fileUri, {}, callback);
+
+      await this.upload.uploadAsync();
     } catch (e) {
       console.log(e);
     }
@@ -206,7 +233,9 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   _alertFreeSpace = async () => {
     const freeBytes = await FileSystem.getFreeDiskStorageAsync();
-    alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
+    alert(
+      `${Math.round(freeBytes / 1024 / 1024)} MB (1MB = 1024^2B), or ${Math.round(freeBytes / 1000000)} MB (1MB = 1000^2B) available.`
+    );
   };
 
   _askForDirPermissions = async () => {
@@ -281,11 +310,23 @@ export default class FileSystemScreen extends React.Component<object, State> {
     });
   };
 
+  _downloadAndReadLocalAsset = async () => {
+    const asset = Asset.fromModule(require('../../assets/index.html')).uri;
+    const tmpFile = FileSystem.cacheDirectory + 'test.html';
+    try {
+      await FileSystem.downloadAsync(asset, tmpFile);
+      const result = await FileSystem.readAsStringAsync(tmpFile);
+      Alert.alert('Result', result);
+    } catch (e) {
+      Alert.alert('Error', e.message);
+    }
+  };
+
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
-        <ListButton onPress={this._download} title="Download file (512KB)" />
-        <ListButton onPress={this._startDownloading} title="Start Downloading file (5MB)" />
+        <ListButton onPress={this._download} title="Download file (1.1MB)" />
+        <ListButton onPress={this._startDownloading} title="Start Downloading file (8.4MB)" />
         {this.state.downloadProgress ? (
           <Text style={{ paddingVertical: 15 }}>
             Download progress: {this.state.downloadProgress * 100}%
@@ -296,11 +337,21 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._cancel} title="Cancel Download" />
+        <ListButton onPress={this._upload} title="Download & Upload file (2.8MB)" />
+        {this.state.uploadProgress ? (
+          <Text style={{ paddingVertical: 15 }}>
+            Upload progress: {this.state.uploadProgress * 100}%
+          </Text>
+        ) : null}
         <ListButton onPress={this._getInfo} title="Get Info" />
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
+        <ListButton
+          onPress={this._downloadAndReadLocalAsset}
+          title="Download and read local asset"
+        />
         {Platform.OS === 'android' && (
           <>
             <HeadingText>Storage Access Framework</HeadingText>

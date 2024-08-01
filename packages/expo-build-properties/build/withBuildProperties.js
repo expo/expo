@@ -5,15 +5,16 @@ const android_1 = require("./android");
 const ios_1 = require("./ios");
 const pluginConfig_1 = require("./pluginConfig");
 /**
- * Config plugin to customize native Android or iOS build properties for managed apps
- *
- * @param config ExpoConfig
- * @param props Configuration for the config plugin
+ * Config plugin allowing customizing native Android and iOS build properties for managed apps.
+ * @param config Expo config for application.
+ * @param props Configuration for the build properties plugin.
  */
 const withBuildProperties = (config, props) => {
     const pluginConfig = (0, pluginConfig_1.validateConfig)(props || {});
     config = (0, android_1.withAndroidBuildProperties)(config, pluginConfig);
     config = (0, android_1.withAndroidProguardRules)(config, pluginConfig);
+    config = (0, android_1.withAndroidCleartextTraffic)(config, pluginConfig);
+    config = (0, android_1.withAndroidQueries)(config, pluginConfig);
     // Assuming `withBuildProperties` could be called multiple times from different config-plugins,
     // the `withAndroidProguardRules` always appends new rules by default.
     // That is not ideal if we leave generated contents from previous prebuild there.

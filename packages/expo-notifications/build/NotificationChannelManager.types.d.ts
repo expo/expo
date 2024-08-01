@@ -19,7 +19,9 @@ export declare enum AndroidImportance {
     MIN = 3,
     LOW = 4,
     DEFAULT = 5,
-    /** @deprecated use `DEFAULT` instead */
+    /**
+     * @deprecated Use `DEFAULT` instead.
+     */
     DEEFAULT = 5,
     HIGH = 6,
     MAX = 7
@@ -50,6 +52,10 @@ export interface AudioAttributes {
     };
 }
 export type AudioAttributesInput = Partial<AudioAttributes>;
+/**
+ * An object represents a notification channel.
+ * @platform android
+ */
 export interface NotificationChannel {
     id: string;
     name: string | null;
@@ -66,7 +72,11 @@ export interface NotificationChannel {
     enableLights: boolean;
     enableVibrate: boolean;
 }
-type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
+export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
+/**
+ * An object represents a notification channel to be set.
+ * @platform android
+ */
 export type NotificationChannelInput = RequiredBy<Omit<NotificationChannel, 'id' | 'audioAttributes' | 'sound'> & {
     audioAttributes?: AudioAttributesInput;
     sound?: string | null;
@@ -77,5 +87,4 @@ export interface NotificationChannelManager extends ProxyNativeModule {
     setNotificationChannelAsync?: (channelId: string, channelConfiguration: NotificationChannelInput) => Promise<NotificationChannel | null>;
     deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
 }
-export {};
 //# sourceMappingURL=NotificationChannelManager.types.d.ts.map

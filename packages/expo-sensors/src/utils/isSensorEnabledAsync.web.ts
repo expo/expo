@@ -7,8 +7,8 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
   const status = getRequestPermission()
     ? PermissionStatus.UNDETERMINED
     : isIOS()
-    ? PermissionStatus.DENIED
-    : PermissionStatus.GRANTED;
+      ? PermissionStatus.DENIED
+      : PermissionStatus.GRANTED;
   return {
     status,
     expires: 'never',

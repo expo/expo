@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import { LocationCallback, LocationHeadingCallback } from './Location.types';
@@ -15,7 +15,7 @@ class Subscriber<CallbackType extends LocationCallback | LocationHeadingCallback
   private eventName: string;
   private eventDataField: string;
   private callbacks: { [id: string]: CallbackType } = {};
-  private eventSubscription: Subscription | null = null;
+  private eventSubscription: EventSubscription | null = null;
 
   constructor(eventName: string, eventDataField: string) {
     this.eventName = eventName;

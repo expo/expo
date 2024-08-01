@@ -13,18 +13,8 @@ import {
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
   ImagePickerResult,
-  ImagePickerAsset,
   ImagePickerErrorResult,
-  MediaTypeOptions,
   ImagePickerOptions,
-  VideoExportPreset,
-  ExpandImagePickerResult,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
-  OpenFileBrowserOptions,
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
 } from './ImagePicker.types';
 
 function validateOptions(options: ImagePickerOptions) {
@@ -56,42 +46,6 @@ function validateOptions(options: ImagePickerOptions) {
   }
 
   return options;
-}
-
-const DEPRECATED_RESULT_KEYS = [
-  'uri',
-  'assetId',
-  'width',
-  'height',
-  'type',
-  'exif',
-  'base64',
-  'duration',
-  'fileName',
-  'fileSize',
-];
-function mergeDeprecatedResult(result: ImagePickerResult): ImagePickerResult {
-  const firstAsset = result.assets?.[0];
-  const deprecatedResult = {
-    ...result,
-    get cancelled() {
-      console.warn(
-        'Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead'
-      );
-      return this.canceled;
-    },
-  };
-  for (const key of DEPRECATED_RESULT_KEYS) {
-    Object.defineProperty(deprecatedResult, key, {
-      get() {
-        console.warn(
-          `Key "${key}" in the image picker result is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead`
-        );
-        return firstAsset?.[key];
-      },
-    });
-  }
-  return deprecatedResult;
 }
 
 // @needsAudit
@@ -215,8 +169,7 @@ export async function launchCameraAsync(
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
-  const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
-  return mergeDeprecatedResult(result);
+  return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
 }
 
 // @needsAudit
@@ -253,28 +206,10 @@ export async function launchImageLibraryAsync(
         'to fix this warning.'
     );
   }
-  const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
-  return mergeDeprecatedResult(result);
+  return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
 }
 
-export {
-  MediaTypeOptions,
-  ImagePickerOptions,
-  ImagePickerResult,
-  ImagePickerErrorResult,
-  ImagePickerAsset,
-  VideoExportPreset,
-  CameraPermissionResponse,
-  MediaLibraryPermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
-  ImageInfo, // deprecated
-  ImagePickerMultipleResult, // deprecated
-  ImagePickerCancelledResult, // deprecated
-  OpenFileBrowserOptions,
-  ExpandImagePickerResult, // deprecated
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
-};
+export * from './ImagePicker.types';
+
+export type { PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export { PermissionStatus };

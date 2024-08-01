@@ -1,7 +1,7 @@
 export type DocumentPickerOptions = {
     /**
      * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
-     * to be picked. Is also supports wildcards like `'image/*'` to choose any image. To allow any type
+     * to be picked. It also supports wildcards like `'image/*'` to choose any image. To allow any type
      * of document you can use `'&ast;/*'`.
      * @default '&ast;/*'
      */
@@ -17,14 +17,11 @@ export type DocumentPickerOptions = {
     /**
      * Allows multiple files to be selected from the system UI.
      * @default false
-     * @platform web
+     *
      */
     multiple?: boolean;
 };
-export type DocumentResult = {
-    type: 'cancel';
-} | {
-    type: 'success';
+export type DocumentPickerAsset = {
     /**
      * Document original name.
      */
@@ -45,7 +42,50 @@ export type DocumentResult = {
      * Timestamp of last document modification.
      */
     lastModified?: number;
+    /**
+     * `File` object for the parity with web File API.
+     * @platform web
+     */
     file?: File;
-    output?: FileList | null;
+};
+/**
+ * Type representing successful and canceled document pick result.
+ */
+export type DocumentPickerResult = DocumentPickerSuccessResult | DocumentPickerCanceledResult;
+/**
+ * Type representing successful pick result.
+ */
+export type DocumentPickerSuccessResult = {
+    /**
+     * If asset data have been returned this should always be `false`.
+     */
+    canceled: false;
+    /**
+     * An array of picked assets.
+     */
+    assets: DocumentPickerAsset[];
+    /**
+     * `FileList` object for the parity with web File API.
+     * @platform web
+     */
+    output?: FileList;
+};
+/**
+ * Type representing canceled pick result.
+ */
+export type DocumentPickerCanceledResult = {
+    /**
+     *  Always `true` when the request was canceled.
+     */
+    canceled: true;
+    /**
+     *  Always `null` when the request was canceled.
+     */
+    assets: null;
+    /**
+     * Always `null` when the request was canceled.
+     * @platform web
+     */
+    output?: null;
 };
 //# sourceMappingURL=types.d.ts.map

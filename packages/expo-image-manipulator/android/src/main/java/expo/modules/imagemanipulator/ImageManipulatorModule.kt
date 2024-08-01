@@ -3,88 +3,123 @@ package expo.modules.imagemanipulator
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Bundle
 import android.util.Base64
-import expo.modules.imagemanipulator.arguments.Actions
-import expo.modules.imagemanipulator.arguments.SaveOptions
-import expo.modules.interfaces.imageloader.ImageLoaderInterface
+import expo.modules.imagemanipulator.transformers.CropTransformer
+import expo.modules.imagemanipulator.transformers.FlipTransformer
+import expo.modules.imagemanipulator.transformers.ResizeTransformer
+import expo.modules.imagemanipulator.transformers.RotateTransformer
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.async
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.net.URL
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-private const val TAG = "ExpoImageManipulator"
-private const val ERROR_TAG = "E_IMAGE_MANIPULATOR"
+class ImageManipulatorModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-class ImageManipulatorModule(
-  context: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context) {
-  private val mImageLoader: ImageLoaderInterface by moduleRegistry()
+  private fun createManipulatorContext(url: URL): ImageManipulatorContext {
+    val loader = suspend {
+      val imageLoader = appContext.imageLoader
+        ?: throw ImageLoaderNotFoundException()
 
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
-  override fun getName() = TAG
+      suspendCancellableCoroutine { continuation ->
+        imageLoader.loadImageForManipulationFromURL(
+          url.toString(),
+          object : ResultListener {
+            override fun onSuccess(bitmap: Bitmap) {
+              continuation.resume(bitmap)
+            }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-  }
-
-  @ExpoMethod
-  fun manipulateAsync(uri: String, actionsRaw: ArrayList<Any?>, saveOptionsRaw: ReadableArguments, promise: Promise) {
-    val saveOptions = SaveOptions.fromArguments(saveOptionsRaw)
-    val actions = Actions.fromArgument(actionsRaw)
-    mImageLoader.loadImageForManipulationFromURL(
-      uri,
-      object : ResultListener {
-        override fun onSuccess(bitmap: Bitmap) {
-          runActions(bitmap, actions, saveOptions, promise)
-        }
-
-        override fun onFailure(cause: Throwable?) {
-          // No cleanup required here.
-          val basicMessage = "Could not get decoded bitmap of $uri"
-          if (cause != null) {
-            promise.reject("${ERROR_TAG}_DECODE", "$basicMessage: $cause", cause)
-          } else {
-            promise.reject("${ERROR_TAG}_DECODE", "$basicMessage.")
+            override fun onFailure(cause: Throwable?) {
+              continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+            }
           }
-        }
+        )
       }
-    )
+    }
+
+    val task = ManipulatorTask(appContext.backgroundCoroutineScope, loader)
+    return ImageManipulatorContext(runtimeContext, task)
   }
 
-  private fun runActions(bitmap: Bitmap, actions: Actions, saveOptions: SaveOptions, promise: Promise) {
-    val resultBitmap = actions.actions.fold(bitmap, { acc, action -> action.run(acc) })
-    val path = FileUtils.generateRandomOutputPath(context, saveOptions.format)
-    val compression = (saveOptions.compress * 100).toInt()
+  override fun definition() = ModuleDefinition {
+    Name("ExpoImageManipulator")
 
-    var base64String: String? = null
+    Function("manipulate") { url: URL ->
+      createManipulatorContext(url)
+    }
 
-    FileOutputStream(path).use { fileOut ->
-      resultBitmap.compress(saveOptions.format, compression, fileOut)
-      if (saveOptions.base64) {
-        ByteArrayOutputStream().use { byteOut ->
-          resultBitmap.compress(saveOptions.format, compression, byteOut)
-          base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.NO_WRAP)
-        }
+    Class<ImageManipulatorContext>("Context") {
+      Constructor { url: URL ->
+        createManipulatorContext(url)
+      }
+
+      Function("resize") { context: ImageManipulatorContext, options: ResizeOptions ->
+        context.addTransformer(ResizeTransformer(options))
+      }
+
+      Function("rotate") { context: ImageManipulatorContext, rotation: Float ->
+        context.addTransformer(RotateTransformer(rotation))
+      }
+
+      Function("flip") { context: ImageManipulatorContext, flipType: FlipType ->
+        context.addTransformer(FlipTransformer(flipType))
+      }
+
+      Function("crop") { context: ImageManipulatorContext, rect: CropRect ->
+        context.addTransformer(CropTransformer(rect))
+      }
+
+      Function("reset") { context: ImageManipulatorContext ->
+        context.reset()
+      }
+
+      AsyncFunction("renderAsync") Coroutine { context: ImageManipulatorContext ->
+        val image = context.render()
+        ImageRef(image, runtimeContext)
       }
     }
 
-    val result = Bundle().apply {
-      putString("uri", Uri.fromFile(File(path)).toString())
-      putInt("width", resultBitmap.width)
-      putInt("height", resultBitmap.height)
-      if (base64String != null) {
-        putString("base64", base64String)
+    Class<ImageRef>("Image") {
+      Property("width") { image: ImageRef -> image.ref.width }
+      Property("height") { image: ImageRef -> image.ref.height }
+
+      AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions ->
+        val path = FileUtils.generateRandomOutputPath(context, options.format)
+        val compression = (options.compress * 100).toInt()
+        val resultBitmap = image.ref
+
+        var base64String: String? = null
+        appContext.backgroundCoroutineScope.async {
+          FileOutputStream(path).use { fileOut ->
+            val compressFormat = options.format.compressFormat
+            resultBitmap.compress(compressFormat, compression, fileOut)
+            if (options.base64) {
+              ByteArrayOutputStream().use { byteOut ->
+                resultBitmap.compress(compressFormat, compression, byteOut)
+                base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.NO_WRAP)
+              }
+            }
+          }
+        }.await()
+
+        mapOf(
+          "uri" to Uri.fromFile(File(path)).toString(),
+          "width" to resultBitmap.width,
+          "height" to resultBitmap.height,
+          "base64" to base64String
+        )
       }
     }
-    promise.resolve(result)
   }
 }

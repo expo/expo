@@ -1,8 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`logs messages from the device 1`] = `
-Array [
-  "iPhone: [info] Hello world!",
-  "iPhone: [error] Something went wrong...",
-]
-`;

@@ -2,6 +2,7 @@ import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { setProvisioningProfileForPbxproj } from '../ProvisioningProfile';
 
 jest.mock('fs');
@@ -61,10 +62,7 @@ describe('ProvisioningProfile module', () => {
       beforeEach(() => {
         vol.fromJSON(
           {
-            [pbxProjPath]: originalFs.readFileSync(
-              path.join(__dirname, 'fixtures/project.pbxproj'),
-              'utf-8'
-            ),
+            [pbxProjPath]: rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
           },
           projectRoot
         );

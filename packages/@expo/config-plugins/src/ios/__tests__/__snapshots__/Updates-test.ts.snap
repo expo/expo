@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`iOS Updates config ensureBundleReactNativePhaseContainsConfigurationScript adds create-manifest-ios.sh line to the 'Bundle React Native code and images' build phase  1`] = `"\\"export NODE_BINARY=node\\\\n../node_modules/react-native/scripts/react-native-xcode.sh\\\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\\\n\\""`;
-
-exports[`iOS Updates config ensureBundleReactNativePhaseContainsConfigurationScript fixes the path to create-manifest-ios.sh in case of a monorepo 1`] = `"\\"export NODE_BINARY=node\\\\n../node_modules/react-native/scripts/react-native-xcode.sh\\\\n../../node_modules/expo-updates/scripts/create-manifest-ios.sh\\\\n\\""`;

@@ -15,8 +15,6 @@
 - (NSArray<NSString *> *)systemFontNames;
 
 + (NSString *)devicePlatform;
-+ (NSString *)deviceModel;
-+ (NSNumber *)deviceYear;
 + (NSString *)deviceName;
 
 @end

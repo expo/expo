@@ -14,9 +14,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
-var Fingerprint_1 = require("./Fingerprint");
-Object.defineProperty(exports, "createFingerprintAsync", { enumerable: true, get: function () { return Fingerprint_1.createFingerprintAsync; } });
-Object.defineProperty(exports, "createProjectHashAsync", { enumerable: true, get: function () { return Fingerprint_1.createProjectHashAsync; } });
+exports.DEFAULT_SOURCE_SKIPS = exports.DEFAULT_IGNORE_PATHS = void 0;
+__exportStar(require("./Fingerprint"), exports);
 __exportStar(require("./Fingerprint.types"), exports);
+__exportStar(require("./sourcer/SourceSkips"), exports);
+var Options_1 = require("./Options");
+Object.defineProperty(exports, "DEFAULT_IGNORE_PATHS", { enumerable: true, get: function () { return Options_1.DEFAULT_IGNORE_PATHS; } });
+Object.defineProperty(exports, "DEFAULT_SOURCE_SKIPS", { enumerable: true, get: function () { return Options_1.DEFAULT_SOURCE_SKIPS; } });
 //# sourceMappingURL=index.js.map

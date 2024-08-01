@@ -1,5 +1,5 @@
-import { ConfigPlugin, ExportedConfig, ExportedConfigWithProps, ModPlatform } from '../Plugin.types';
 import { BaseModOptions } from './withMod';
+import { ConfigPlugin, ExportedConfig, ExportedConfigWithProps, ModPlatform } from '../Plugin.types';
 export type ForwardedBaseModOptions = Partial<Pick<BaseModOptions, 'saveToInternal' | 'skipEmptyMod'>>;
 export type BaseModProviderMethods<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions> = {
     getFilePath: (config: ExportedConfigWithProps<ModType>, props: Props) => Promise<string> | string;
@@ -25,6 +25,7 @@ export declare function createPlatformBaseMod<ModType, Props extends ForwardedBa
 export declare function provider<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions>(props: BaseModProviderMethods<ModType, Props>): BaseModProviderMethods<ModType, Props>;
 /** Plugin to create and append base mods from file providers */
 export declare function withGeneratedBaseMods<ModName extends string>(config: ExportedConfig, { platform, providers, ...props }: ForwardedBaseModOptions & {
-    platform: ModPlatform;
+    /** Officially supports `'ios' | 'android'` (`ModPlatform`). Arbitrary strings are supported for adding out-of-tree platforms. */
+    platform: ModPlatform & string;
     providers: Partial<Record<ModName, BaseModProviderMethods<any, any>>>;
 }): ExportedConfig;

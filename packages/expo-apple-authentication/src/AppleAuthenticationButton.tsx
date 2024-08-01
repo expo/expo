@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 import ExpoAppleAuthenticationButton from './ExpoAppleAuthenticationButton';
 
@@ -10,7 +8,7 @@ import ExpoAppleAuthenticationButton from './ExpoAppleAuthenticationButton';
  * authentication process instead of a custom button. Limited customization of the button is
  * available via the provided properties.
  *
- * You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#isavailableasync)
+ * You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
  * resolves to `true`. This component will render nothing if it is not available, and you will get
  * a warning in development mode (`__DEV__ === true`).
  *

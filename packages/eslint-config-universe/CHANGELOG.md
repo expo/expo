@@ -6,6 +6,37 @@
 
 ### 🎉 New features
 
+- Bring over more lint rules from Expo server for typescript configs. ([#30491](https://github.com/expo/expo/pull/30491) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2024-05-30
+
+### 💡 Others
+
+- Update dependencies to support newer versions of TypeScript. ([#29160](https://github.com/expo/expo/pull/29160) by [@Simek](https://github.com/Simek))
+- Reflect in peer dependencies the fact that config does not support yet ESLint 9. ([#29160](https://github.com/expo/expo/pull/29160) by [@Simek](https://github.com/Simek))
+
+## 12.1.0 — 2024-04-18
+
+### 💡 Others
+
+- Update test snapshots. ([#26527](https://github.com/expo/expo/pull/26527) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.0.0 — 2023-08-11
+
+### 🛠 Breaking changes
+
+- Upgrade from Prettier 2.4+ to Prettier 3. Projects that use this ESLint config will need to upgrade the version of Prettier they use to 3.0.0+. See the Prettier 3 [changelog](https://prettier.io/blog/2023/07/05/3.0.0.html#breaking-changes). ([#23544](https://github.com/expo/expo/pull/23544) by [@ide](https://github.com/ide))
+
+## 11.3.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
 ### 🐛 Bug fixes
 
 - Fix import ignore entry for `react-native`, which do not work correctly on Windows. ([#20785](https://github.com/expo/expo/pull/20785) by [@Simek](https://github.com/Simek))
@@ -16,6 +47,11 @@
 - Bumped `eslint-plugin-prettier` from 4.0.0 to 4.2.1. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
 - Bumped `eslint-plugin-react` from 7.30.0 to 7.31.11. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
 - Bumped `eslint-plugin-react-hooks` from 4.5.0 to 4.6.0. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
+- Upgrade typescript-eslint packages. ([#21025](https://github.com/expo/expo/pull/21025) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- Upgrade jest to v29. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
 
 ## 11.1.1 — 2022-10-25
 

@@ -40,7 +40,139 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 13.0."`
+      `"\`ios.deploymentTarget\` needs to be at least version 13.4."`
     );
+  });
+
+  it('should use `enableShrinkResourcesInReleaseBuilds` with `enableProguardInReleaseBuilds`', () => {
+    expect(() =>
+      validateConfig({ android: { enableShrinkResourcesInReleaseBuilds: true } })
+    ).toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableProguardInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableProguardInReleaseBuilds: false,
+        },
+      })
+    ).toThrow();
+  });
+
+  it('should validate android.enablePngCrunchInReleaseBuilds', () => {
+    expect(() =>
+      validateConfig({
+        android: {
+          enablePngCrunchInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enablePngCrunchInReleaseBuilds: false,
+        },
+      })
+    ).not.toThrow();
+  });
+
+  it('should validate ios.extraPods', () => {
+    expect(() => {
+      validateConfig({ ios: { extraPods: [{ name: 'Protobuf' }] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { extraPods: [{ name: 'Protobuf', version: '~> 0.1.2' }] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { extraPods: [{}] } });
+    }).toThrow();
+  });
+
+  it('should validate android.extraMavenRepos', () => {
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+            {
+              url: 'https://bar.com/maven-repos',
+              credentials: { username: 'user', password: 'password' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [
+            {
+              url: 'https://foo.com/maven-repos',
+              credentials: { username: 'user' },
+              authentication: 'basic',
+            },
+          ],
+        },
+      });
+    }).toThrow();
+
+    // Maintain backwards compatibility
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: ['https://foo.com/maven-repos'],
+        },
+      });
+    }).not.toThrow();
+
+    // Allow mix and match of old and new format
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: ['https://foo.com/maven-repos', { url: 'https://bar.com/maven-repos' }],
+        },
+      });
+    }).not.toThrow();
+
+    // Empty array is allowed
+    expect(() => {
+      validateConfig({
+        android: {
+          extraMavenRepos: [],
+        },
+      });
+    }).not.toThrow();
   });
 });

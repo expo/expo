@@ -31,7 +31,7 @@ describe(setSplashScreenLegacyMainActivity, () => {
     let contents = fs.readFileSync(mainActivity.path).toString();
     contents = await setSplashScreenLegacyMainActivity(exp, contents, mainActivity.language);
     expect(contents).toMatch(
-      /SplashScreen.show\(this, SplashScreenImageResizeMode\.NATIVE, ReactRootView\.class, false\);/
+      /SplashScreen\.show\(this, SplashScreenImageResizeMode\.NATIVE, ReactRootView::class\.java, false\)/
     );
     // Try it twice...
     const nextContents = await setSplashScreenLegacyMainActivity(

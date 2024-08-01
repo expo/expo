@@ -1,3 +1,5 @@
+import { getDevSessionsAsync } from './getDevSessionsAsync';
+import { restoreUserAsync } from './restoreUserAsync';
 import {
   getBuildInfoAsync,
   getCrashReport,
@@ -11,8 +13,6 @@ import { getMenuPreferencesAsync } from '../native-modules/DevMenuPreferences';
 import { AppProvidersProps } from '../providers/AppProviders';
 import { defaultQueryOptions } from '../providers/QueryProvider';
 import { prefetchBranchesForApp } from '../queries/useBranchesForApp';
-import { getDevSessionsAsync } from './getDevSessionsAsync';
-import { restoreUserAsync } from './restoreUserAsync';
 
 export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
   const [initialBuildInfo, initialDevMenuPreferences, initialCrashReport, initialNavigationState] =
@@ -38,6 +38,7 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
     isAuthenticated,
     installationID,
     isDevice,
+    timeout: 1500,
   }).catch((error) => {
     // likely network request failure -- no need to do anything
     console.log({ error });

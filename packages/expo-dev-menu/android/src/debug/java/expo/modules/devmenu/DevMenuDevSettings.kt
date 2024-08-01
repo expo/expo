@@ -1,23 +1,21 @@
 package expo.modules.devmenu
 
 import android.os.Bundle
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.devsupport.DevInternalSettings
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import kotlinx.coroutines.runBlocking
 
 object DevMenuDevSettings {
-  fun getDevSettings(reactInstanceManager: ReactInstanceManager): Bundle {
-    val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactInstanceManager)
-    val devSettings = devDelegate.devSettings as? DevInternalSettings
+  fun getDevSettings(reactHost: ReactHostWrapper): Bundle {
+    val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactHost)
+    val devSettings = devDelegate.devSettings
 
-    val jsBundleURL = reactInstanceManager.devSupportManager.jsBundleURLForRemoteDebugging
+    val jsBundleURL = reactHost.devSupportManager?.jSBundleURLForRemoteDebugging ?: ""
 
     if (devSettings != null) {
       return Bundle().apply {
         putBoolean("isDebuggingRemotely", devSettings.isRemoteJSDebugEnabled)
         putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
-        putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
+        putBoolean("isHotLoadingEnabled", devDelegate.devInternalSettings?.isHotModuleReplacementEnabled ?: false)
         putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
         putBoolean("isRemoteDebuggingAvailable", jsBundleURL.isNotEmpty())
         putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
@@ -26,7 +24,7 @@ object DevMenuDevSettings {
         putBoolean(
           "isJSInspectorAvailable",
           run {
-            val jsExecutorName = reactInstanceManager.jsExecutorName
+            val jsExecutorName = reactHost.jsExecutorName
             jsExecutorName.contains("Hermes") || jsExecutorName.contains("V8")
           }
         )

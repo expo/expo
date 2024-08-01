@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "ios": {
+    "modules": ["VideoModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.video.VideoModule"]
+  }
+}

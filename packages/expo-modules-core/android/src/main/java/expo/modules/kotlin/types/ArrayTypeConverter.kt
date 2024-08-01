@@ -10,7 +10,7 @@ import kotlin.reflect.KType
 
 class ArrayTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val arrayType: KType,
+  private val arrayType: KType
 ) : DynamicAwareTypeConverters<Array<*>>(arrayType.isMarkedNullable) {
   private val arrayElementConverter = converterProvider.obtainTypeConverter(
     requireNotNull(arrayType.arguments.first().type) {

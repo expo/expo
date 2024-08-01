@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input {
+  appearance: unset;
+}
+
+#__next[aria-hidden] {
+  filter: none !important;
+}

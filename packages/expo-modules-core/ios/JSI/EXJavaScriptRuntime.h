@@ -14,6 +14,9 @@ namespace react = facebook::react;
 
 @class EXJavaScriptValue;
 @class EXJavaScriptObject;
+@class EXJavaScriptSharedObject;
+
+typedef void (^JSRuntimeExecutionBlock)();
 
 typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      NSArray<EXJavaScriptValue *> * _Nonnull arguments,
@@ -67,12 +70,6 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 - (nonnull EXJavaScriptObject *)global;
 
 /**
- The main object of the Expo runtime that is used to scope native Expo-specific functionalities.
- It gets installed into the runtime as the `global.expo` object.
- */
-- (nonnull EXJavaScriptObject *)mainObject;
-
-/**
  Creates a new object for use in Swift.
  */
 - (nonnull EXJavaScriptObject *)createObject;
@@ -103,11 +100,28 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor;
 
+/**
+ Creates a new object, using the provided object as the prototype.
+ */
+- (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
+
+#pragma mark - Shared objects
+
+- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
+                                            constructor:(nonnull ClassConstructorBlock)constructor;
+
 #pragma mark - Script evaluation
 
 /**
  Evaluates given JavaScript source code.
  */
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource NS_REFINED_FOR_SWIFT;
+
+#pragma mark - Runtime execution
+
+/**
+ Schedules a block to be executed with granted synchronized access to the JS runtime.
+ */
+- (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority NS_REFINED_FOR_SWIFT;
 
 @end

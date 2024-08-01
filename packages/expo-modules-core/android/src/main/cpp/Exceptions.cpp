@@ -2,7 +2,7 @@
 
 #include "Exceptions.h"
 
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 #include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;
@@ -13,13 +13,13 @@ jni::local_ref<CodedException> CodedException::create(const std::string &message
   return CodedException::newInstance(jni::make_jstring(message));
 }
 
-std::string CodedException::getCode() {
+std::string CodedException::getCode() noexcept {
   const auto getCode = this->getClass()->getMethod<jni::JString()>("getCode");
   const auto code = getCode(this->self());
   return code->toStdString();
 }
 
-std::optional<std::string> CodedException::getLocalizedMessage() {
+std::optional<std::string> CodedException::getLocalizedMessage() noexcept {
   const auto getLocalizedMessage = this->getClass()
     ->getMethod<jni::JString()>("getLocalizedMessage");
   const auto message = getLocalizedMessage(this->self());
@@ -43,6 +43,14 @@ jni::local_ref<JavaScriptEvaluateException> JavaScriptEvaluateException::create(
 jni::local_ref<UnexpectedException> UnexpectedException::create(const std::string &message) {
   return UnexpectedException::newInstance(
     jni::make_jstring(message)
+  );
+}
+
+jni::local_ref<InvalidArgsNumberException> InvalidArgsNumberException::create(int received, int expected) {
+  return InvalidArgsNumberException::newInstance(
+    received,
+    expected,
+    expected // number of required arguments
   );
 }
 

@@ -10,36 +10,105 @@ import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.objects.ObjectDefinitionData
+import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
-class ModuleHolder(val module: Module) {
+class ModuleHolder<T : Module>(val module: T) {
   val definition = module.definition()
 
   val name get() = definition.name
+
+  private var wasInitialized = false
+
+  val safeJSObject: JavaScriptModuleObject?
+    get() = if (wasInitialized) {
+      jsObject
+    } else {
+      null
+    }
 
   /**
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
-    JavaScriptModuleObject(name)
-      .apply {
-        val constants = definition.constantsProvider()
-        val convertedConstants = Arguments.makeNativeMap(constants)
-        exportConstants(convertedConstants)
+    wasInitialized = true
 
-        definition
-          .functions
-          .forEach { function ->
-            function.attachToJSObject(module.appContext, this)
+    trace("$name.jsObject") {
+      val appContext = module.appContext
+      val runtimeContext = module.runtimeContext
+      val jniDeallocator = runtimeContext.jniDeallocator
+
+      val moduleDecorator = JSDecoratorsBridgingObject(jniDeallocator)
+      attachPrimitives(appContext, definition.objectDefinition, moduleDecorator, name)
+
+      // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
+      moduleDecorator.registerProperty("__expo_module_name__", false, emptyArray(), { name }, false, emptyArray(), null)
+
+      val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
+      if (viewFunctions?.isNotEmpty() == true) {
+        trace("Attaching view prototype") {
+          val viewDecorator = JSDecoratorsBridgingObject(jniDeallocator)
+          viewFunctions.forEach { function ->
+            function.attachToJSObject(appContext, viewDecorator, "${name}_${definition.viewManagerDefinition?.viewType?.name}")
           }
 
-        definition
-          .properties
-          .forEach { (_, prop) ->
-            prop.attachToJSObject(this)
-          }
+          moduleDecorator.registerObject("ViewPrototype", viewDecorator)
+        }
       }
+
+      trace("Attaching classes") {
+        definition.classData.forEach { clazz ->
+          val prototypeDecorator = JSDecoratorsBridgingObject(jniDeallocator)
+
+          attachPrimitives(appContext, clazz.objectDefinition, prototypeDecorator, clazz.name)
+
+          val constructor = clazz.constructor
+          val ownerClass = (constructor.ownerType?.classifier as? KClass<*>)?.java
+
+          moduleDecorator.registerClass(
+            clazz.name,
+            prototypeDecorator,
+            constructor.takesOwner,
+            ownerClass,
+            constructor.getCppRequiredTypes().toTypedArray(),
+            constructor.getJNIFunctionBody(clazz.name, appContext)
+          )
+        }
+      }
+
+      JavaScriptModuleObject(jniDeallocator, name).apply {
+        decorate(moduleDecorator)
+      }
+    }
+  }
+
+  private fun attachPrimitives(appContext: AppContext, definition: ObjectDefinitionData, moduleDecorator: JSDecoratorsBridgingObject, name: String) {
+    trace("Exporting constants") {
+      val constants = definition.constantsProvider()
+      val convertedConstants = Arguments.makeNativeMap(constants)
+
+      moduleDecorator.registerConstants(convertedConstants)
+    }
+
+    trace("Attaching functions") {
+      definition
+        .functions
+        .forEach { function ->
+          function.attachToJSObject(appContext, moduleDecorator, name)
+        }
+    }
+
+    trace("Attaching properties") {
+      definition
+        .properties
+        .forEach { (_, prop) ->
+          prop.attachToJSObject(appContext, moduleDecorator)
+        }
+    }
   }
 
   /**
@@ -85,12 +154,8 @@ class ModuleHolder(val module: Module) {
   fun registerContracts() {
     definition.registerContracts?.let {
       module.appContext.mainQueue.launch {
-        it.invoke(module.appContext)
+        it.invoke(module.appContext.appContextActivityResultCaller)
       }
     }
-  }
-
-  fun cleanUp() {
-    module.cleanUp()
   }
 }

@@ -18,7 +18,7 @@ public class LocalAuthenticationModule: Module {
       let context = LAContext()
       var error: NSError?
       let isSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
-      let isEnrolled: Bool = isSupported && error == nil
+      let isEnrolled: Bool = (isSupported && error == nil) || error?.code == LAError.biometryLockout.rawValue
 
       return isEnrolled
     }
@@ -58,16 +58,16 @@ public class LocalAuthenticationModule: Module {
     }
 
     AsyncFunction("authenticateAsync") { (options: LocalAuthenticationOptions, promise: Promise) -> Void in
-      var warningMessage: NSString?
-      var reason = options.promptMessage
-      var cancelLabel = options.cancelLabel
-      var fallbackLabel = options.fallbackLabel
-      var disableDeviceFallback = options.disableDeviceFallback
+      var warningMessage: String?
+      let reason = options.promptMessage
+      let cancelLabel = options.cancelLabel
+      let fallbackLabel = options.fallbackLabel
+      let disableDeviceFallback = options.disableDeviceFallback
 
       if isFaceIdDevice() {
         let usageDescription = Bundle.main.object(forInfoDictionaryKey: "NSFaceIDUsageDescription")
 
-        if usageDescription != nil {
+        if usageDescription == nil {
           warningMessage = "FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`."
         }
       }
@@ -84,7 +84,7 @@ public class LocalAuthenticationModule: Module {
 
       context.interactionNotAllowed = false
 
-      let policyForAuth: LAPolicy = disableDeviceFallback ? LAPolicy.deviceOwnerAuthenticationWithBiometrics : LAPolicy.deviceOwnerAuthentication
+      let policyForAuth = disableDeviceFallback ? LAPolicy.deviceOwnerAuthenticationWithBiometrics : LAPolicy.deviceOwnerAuthentication
 
       if disableDeviceFallback {
         if warningMessage != nil {
@@ -94,7 +94,7 @@ public class LocalAuthenticationModule: Module {
           return promise.resolve([
             "success": false,
             "error": "missing_usage_description",
-            "warning": warningMessage
+            "warning": warningMessage as Any
           ])
         }
       }
@@ -108,8 +108,8 @@ public class LocalAuthenticationModule: Module {
 
         return promise.resolve([
           "success": success,
-          "error": err,
-          "warning": warningMessage
+          "error": err as Any,
+          "warning": warningMessage as Any
         ])
       }
     }
@@ -165,5 +165,6 @@ enum AuthenticationType: Int {
 enum SecurityLevel: Int {
   case none = 0
   case secret = 1
-  case biometric = 2
+  // We return any biometric as strong biometric, because there are currently no iOS devices with weak biometric options.
+  case biometric = 3
  }

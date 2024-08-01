@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
+import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { prepareParcels } from './prepareParcels';
 
 const { green } = chalk;
 
@@ -15,7 +15,7 @@ const { green } = chalk;
 export const grantTeamAccessToPackages = new Task<TaskArgs>(
   {
     name: 'grantTeamAccessToPackages',
-    dependsOn: [prepareParcels],
+    dependsOn: [loadRequestedParcels],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     // There is no good way to check whether the package is added to organization team,

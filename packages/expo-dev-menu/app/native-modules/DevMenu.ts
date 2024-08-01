@@ -1,4 +1,5 @@
-import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
+import { Alert, DeviceEventEmitter, EventSubscription } from 'react-native';
 
 export type JSEngine = 'Hermes' | 'JSC' | 'V8';
 
@@ -28,17 +29,14 @@ export type MenuPreferences = {
   isOnboardingFinished?: boolean;
 };
 
-const DevMenu = NativeModules.ExpoDevMenuInternal;
-
-export async function dispatchCallableAsync(
-  callableId: string,
-  args: object | null = null
-): Promise<void> {
-  return await DevMenu.dispatchCallableAsync(callableId, args);
-}
+const DevMenu = requireNativeModule('ExpoDevMenuInternal');
 
 export function hideMenu(): void {
   DevMenu.hideMenu();
+}
+
+export function closeMenu(): void {
+  DevMenu.closeMenu();
 }
 
 export function subscribeToCloseEvents(listener: () => void): EventSubscription {
@@ -54,27 +52,27 @@ export function openDevMenuFromReactNative() {
 }
 
 export async function togglePerformanceMonitorAsync() {
-  return await dispatchCallableAsync('performance-monitor');
+  return await DevMenu.togglePerformanceMonitor();
 }
 
 export async function toggleElementInspectorAsync() {
-  return await dispatchCallableAsync('inspector');
+  return await DevMenu.toggleInspector();
 }
 
 export async function reloadAsync() {
-  return await dispatchCallableAsync('reload');
+  return await DevMenu.reload();
 }
 
 export async function toggleDebugRemoteJSAsync() {
-  return await dispatchCallableAsync('remote-debug');
+  return await DevMenu.toggleRemoteDebug();
 }
 
 export async function toggleFastRefreshAsync() {
-  return await dispatchCallableAsync('fast-refresh');
+  return await DevMenu.toggleFastRefresh();
 }
 
 export async function openJSInspector() {
-  return await dispatchCallableAsync('js-inspector');
+  return await DevMenu.openJSInspector();
 }
 
 export async function copyToClipboardAsync(content: string) {
@@ -90,5 +88,8 @@ export async function loadFontsAsync() {
 }
 
 export async function fireCallbackAsync(name: string) {
-  return await DevMenu.fireCallback(name).catch((error) => console.warn(error.message));
+  return await DevMenu.fireCallback(name).catch((error) => {
+    console.warn(error.message);
+    Alert.alert('Error', error.message);
+  });
 }

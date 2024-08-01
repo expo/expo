@@ -1,1 +1,1 @@
-{"version":3,"file":"setStatusBarStyle.d.ts","sourceRoot":"","sources":["../src/setStatusBarStyle.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,mBAAmB,CAAC;AAInD;;;GAGG;AACH,MAAM,CAAC,OAAO,UAAU,iBAAiB,CAAC,KAAK,EAAE,cAAc,QAE9D"}
+{"version":3,"file":"setStatusBarStyle.d.ts","sourceRoot":"","sources":["../src/setStatusBarStyle.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,mBAAmB,CAAC;AAInD;;;;GAIG;AACH,MAAM,CAAC,OAAO,UAAU,iBAAiB,CAAC,KAAK,EAAE,cAAc,EAAE,QAAQ,CAAC,EAAE,OAAO,QAElF"}

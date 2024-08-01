@@ -1,11 +1,11 @@
 import assert from 'assert';
 import fs from 'fs';
-import { sync as globSync } from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 
+import { ResourceKind } from './Resources';
 import { UnexpectedError } from '../utils/errors';
 import { directoryExistsAsync } from '../utils/modules';
-import { ResourceKind } from './Resources';
 
 export interface ProjectFile<L extends string = string> {
   path: string;

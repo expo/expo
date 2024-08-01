@@ -3,6 +3,7 @@ package expo.modules
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.ViewGroup
@@ -10,13 +11,16 @@ import androidx.collection.ArrayMap
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.kotlin.Utils
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -34,6 +38,18 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
+  private val _reactNativeHost: ReactNativeHost by lazy {
+    invokeDelegateMethod("getReactNativeHost")
+  }
+  private val _reactHost: ReactHost? by lazy {
+    delegate.reactHost
+  }
+
+  /**
+   * When the app delay for `loadApp`, the ReactInstanceManager's lifecycle will be disrupted.
+   * This flag indicates we should emit `onResume` after `loadApp`.
+   */
+  private var shouldEmitPendingResume = false
 
   //region ReactActivityDelegate
 
@@ -41,16 +57,20 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("getLaunchOptions")
   }
 
-  override fun createRootView(): ReactRootView {
-    val rootView = reactActivityHandlers.asSequence()
-      .mapNotNull { it.createReactRootView(activity) }
-      .firstOrNull() ?: invokeDelegateMethod("createRootView")
-    rootView.setIsFabric(isNewArchitectureEnabled)
-    return rootView
+  override fun createRootView(): ReactRootView? {
+    return invokeDelegateMethod("createRootView")
+  }
+
+  override fun getReactDelegate(): ReactDelegate? {
+    return invokeDelegateMethod("getReactDelegate")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
-    return invokeDelegateMethod("getReactNativeHost")
+    return _reactNativeHost
+  }
+
+  override fun getReactHost(): ReactHost? {
+    return _reactHost
   }
 
   override fun getReactInstanceManager(): ReactInstanceManager {
@@ -74,10 +94,36 @@ class ReactActivityDelegateWrapper(
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
       reactDelegate.loadApp(appKey)
-      rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
+      val reactRootView = reactDelegate.reactRootView
+      (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
+      rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
-    } else {
-      return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onContentChanged(activity)
+      }
+      return
+    }
+
+    val delayLoadAppHandler = reactActivityHandlers.asSequence()
+      .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
+      .firstOrNull()
+    if (delayLoadAppHandler != null) {
+      shouldEmitPendingResume = true
+      delayLoadAppHandler.whenReady {
+        Utils.assertMainThread()
+        invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+        reactActivityLifecycleListeners.forEach { listener ->
+          listener.onContentChanged(activity)
+        }
+        shouldEmitPendingResume = false
+        onResume()
+      }
+      return
+    }
+
+    invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    reactActivityLifecycleListeners.forEach { listener ->
+      listener.onContentChanged(activity)
     }
   }
 
@@ -102,11 +148,25 @@ class ReactActivityDelegateWrapper(
       // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
       // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
       // That's not ideal but works.
-      val reactDelegate = object : ReactDelegate(
-        plainActivity, reactNativeHost, mainComponentName, launchOptions
-      ) {
-        override fun createRootView(): ReactRootView {
-          return this@ReactActivityDelegateWrapper.createRootView()
+      val launchOptions = composeLaunchOptions()
+      val reactDelegate: ReactDelegate
+      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+        reactDelegate = ReactDelegate(
+          plainActivity,
+          reactHost,
+          mainComponentName,
+          launchOptions
+        )
+      } else {
+        reactDelegate = object : ReactDelegate(
+          plainActivity,
+          reactNativeHost,
+          mainComponentName,
+          launchOptions
+        ) {
+          override fun createRootView(): ReactRootView {
+            return this@ReactActivityDelegateWrapper.createRootView() ?: super.createRootView()
+          }
         }
       }
       val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
@@ -123,6 +183,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
+    if (shouldEmitPendingResume) {
+      return
+    }
     invokeDelegateMethod<Unit>("onResume")
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onResume(activity)
@@ -130,6 +193,10 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
+    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    if (shouldEmitPendingResume) {
+      shouldEmitPendingResume = false
+    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
     }
@@ -137,6 +204,10 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
+    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    if (shouldEmitPendingResume) {
+      shouldEmitPendingResume = false
+    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
     }
@@ -157,9 +228,9 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (delegate.reactInstanceManager.currentReactContext == null) {
+    if (!ReactFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext?) {
+        override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)
           delegate.onActivityResult(requestCode, resultCode, data)
         }
@@ -171,7 +242,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyDown(keyCode, event)
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyDown(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyDown(keyCode, event)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
@@ -183,7 +258,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyLongPress(keyCode, event)
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyLongPress(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyLongPress(keyCode, event)
   }
 
   override fun onBackPressed(): Boolean {
@@ -220,6 +299,18 @@ class ReactActivityDelegateWrapper(
 
   override fun getPlainActivity(): Activity {
     return invokeDelegateMethod("getPlainActivity")
+  }
+
+  override fun isFabricEnabled(): Boolean {
+    return invokeDelegateMethod("isFabricEnabled")
+  }
+
+  override fun composeLaunchOptions(): Bundle? {
+    return invokeDelegateMethod("composeLaunchOptions")
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration?) {
+    delegate.onConfigurationChanged(newConfig)
   }
 
   //endregion

@@ -14,7 +14,7 @@ public final class BlurView: ExpoView {
     addSubview(blurEffectView)
   }
 
-  public func setTint(_ tint: String) {
+  public func setTint(_ tint: TintStyle) {
     blurEffectView.tint = tint
   }
 

@@ -1,31 +1,27 @@
-import { css } from '@emotion/react';
-import {
-  BuildIcon,
-  CodeIcon,
-  EditIcon,
-  GithubIcon,
-  iconSize,
-  MessageIcon,
-  spacing,
-  theme,
-  typography,
-} from '@expo/styleguide';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
+import { MessageTextSquare02Icon } from '@expo/styleguide-icons/outline/MessageTextSquare02Icon';
+import * as Dialog from '@radix-ui/react-dialog';
 
-import { A, LI } from '../Text';
+import { FeedbackDialog } from './FeedbackDialog';
 import { githubUrl } from './utils';
+import { A, CALLOUT, LI } from '../Text';
+
+const LINK_CLASSES = 'inline-flex items-center mb-1 focus-visible:outline-offset-4';
+const ICON_CLASSES = 'flex items-center mr-2.5 text-icon-secondary shrink-0';
 
 export const IssuesLink = ({ title, repositoryUrl }: { title: string; repositoryUrl?: string }) => (
   <LI>
     <A
-      css={linkStyle}
+      isStyled
       openInNewTab
       href={
         repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
-      }>
-      <span css={iconStyle}>
-        <GithubIcon size={iconSize.small} />
-      </span>
-      View open bug reports for {title}
+      }
+      className={LINK_CLASSES}>
+      <GithubIcon className={ICON_CLASSES} />
+      <CALLOUT theme="secondary">View open bug reports for {title}</CALLOUT>
     </A>
   </LI>
 );
@@ -33,78 +29,46 @@ export const IssuesLink = ({ title, repositoryUrl }: { title: string; repository
 export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: string }) =>
   isAPIPage ? (
     <LI>
-      <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
-        <span css={iconStyle}>
-          <MessageIcon size={iconSize.small} />
-        </span>
-        Ask a question on the forums about {title}
+      <A isStyled openInNewTab href="https://chat.expo.dev/" className={LINK_CLASSES}>
+        <DiscordIcon className={ICON_CLASSES} />
+        <CALLOUT theme="secondary">Ask a question on the forums about {title}</CALLOUT>
       </A>
     </LI>
   ) : (
     <LI>
-      <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
-        <span css={iconStyle}>
-          <MessageIcon size={iconSize.small} />
-        </span>
-        Ask a question on the forums
+      <A
+        isStyled
+        openInNewTab
+        href="https://chat.expo.dev/"
+        className={LINK_CLASSES}
+        shouldLeakReferrer>
+        <DiscordIcon className={ICON_CLASSES} />
+        <CALLOUT theme="secondary">Ask a question on the forums</CALLOUT>
       </A>
     </LI>
   );
 
-export const SourceCodeLink = ({
-  title,
-  sourceCodeUrl,
-}: {
-  title: string;
-  sourceCodeUrl: string;
-}) => (
+export const EditPageLink = ({ pathname }: { pathname: string }) => (
   <LI>
-    <A css={linkStyle} openInNewTab href={sourceCodeUrl}>
-      <span css={iconStyle}>
-        <CodeIcon size={iconSize.small} />
-      </span>
-      View source code for {title}
+    <A isStyled openInNewTab href={githubUrl(pathname)} className={LINK_CLASSES}>
+      <Edit05Icon className={ICON_CLASSES} />
+      <CALLOUT theme="secondary">Edit this page</CALLOUT>
     </A>
   </LI>
 );
 
-export const GitHubLink = ({ pathname }: { pathname: string }) => (
-  <LI>
-    <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
-      <span css={iconStyle}>
-        <EditIcon size={iconSize.small} />
-      </span>
-      Edit this page
-    </A>
-  </LI>
-);
-
-export const NpmLink = ({ packageName }: { packageName: string }) => (
-  <LI>
-    <A css={linkStyle} openInNewTab href={`https://www.npmjs.com/package/${packageName}`}>
-      <span css={iconStyle}>
-        <BuildIcon size={iconSize.small} />
-      </span>
-      View package in npm Registry
-    </A>
-  </LI>
-);
-
-const linkStyle = css({
-  ...typography.fontSizes[14],
-  textDecoration: 'none',
-  color: theme.text.secondary,
-  display: 'inline-flex',
-  alignItems: 'center',
-  marginBottom: spacing[1],
-
-  ':visited': {
-    color: theme.text.secondary,
-  },
-});
-
-const iconStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  marginRight: spacing[2.5],
-});
+export const ShareFeedbackLink = ({ pathname }: { pathname?: string }) => {
+  return (
+    <LI>
+      <Dialog.Root>
+        <Dialog.Trigger className="h-[22px] focus-visible:outline-offset-4">
+          <A isStyled className={LINK_CLASSES}>
+            <MessageTextSquare02Icon className={ICON_CLASSES} />
+            <CALLOUT theme="secondary">Share your feedback</CALLOUT>
+          </A>
+        </Dialog.Trigger>
+        <FeedbackDialog pathname={pathname} />
+      </Dialog.Root>
+    </LI>
+  );
+};

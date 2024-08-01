@@ -6,6 +6,6 @@
     "modules": ["GLViewModule"]
   },
   "android": {
-    "modules": ["expo.modules.gl.GLViewModule"]
+    "modules": ["expo.modules.gl.GLViewModule", "expo.modules.gl.GLObjectManagerModule"]
   }
 }

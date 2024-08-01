@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class FunctionSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let functionName = "test function name"
 
@@ -103,7 +103,7 @@ class FunctionSpec: ExpoSpec {
 
               expect(value).notTo(beNil())
               expect(value).to(beAKindOf(String.self))
-              expect(value).to(be(dict["property"]))
+              expect(value as? String).to(equal(dict["property"]!))
               done()
             }
           }
@@ -120,7 +120,7 @@ class FunctionSpec: ExpoSpec {
               let value = try! result.get()
               expect(value).notTo(beNil())
               expect(value).to(beAKindOf(String.self))
-              expect(value).to(be(dict["propertyWithCustomKey"]))
+              expect(value as? String).to(equal(dict["propertyWithCustomKey"]))
               done()
             }
           }
@@ -128,11 +128,15 @@ class FunctionSpec: ExpoSpec {
 
         it("returns the record back (sync)") {
           let result = try Function(functionName) { (record: TestRecord) in record }
-            .call(by: nil, withArguments: [dict]) as? TestRecord.Dict
+            .call(by: nil, withArguments: [dict], appContext: appContext) as? TestRecord
+
+          guard let result = Conversions.convertFunctionResult(result, appContext: appContext) as? TestRecord.Dict else {
+            return fail()
+          }
 
           expect(result).notTo(beNil())
-          expect(result?["property"] as? String).to(equal(dict["property"]))
-          expect(result?["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
+          expect(result["property"] as? String).to(equal(dict["property"]))
+          expect(result["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
         }
 
         it("returns the record back (async)") {
@@ -186,13 +190,13 @@ class FunctionSpec: ExpoSpec {
           return returnedValue
         }
 
-        expect({ try fn.call(by: nil, withArguments: ["test"]) })
+        expect({ (try fn.call(by: nil, withArguments: ["test"], appContext: appContext)) as? String })
           .notTo(throwError())
-          .to(be(returnedValue))
+          .to(equal(returnedValue))
 
-        expect({ try fn.call(by: nil, withArguments: ["test", 3]) })
+        expect({ (try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext)) as? String })
           .notTo(throwError())
-          .to(be(returnedValue))
+          .to(equal(returnedValue))
       }
 
       it("throws when called without required arguments") {
@@ -200,7 +204,7 @@ class FunctionSpec: ExpoSpec {
           return "something"
         }
 
-        expect({ try fn.call(by: nil, withArguments: []) })
+        expect({ try fn.call(by: nil, withArguments: [], appContext: appContext) })
           .to(throwError(errorType: FunctionCallException.self) { error in
             expect(error.rootCause).to(beAKindOf(InvalidArgsNumberException.self))
             let exception = error.rootCause as! InvalidArgsNumberException
@@ -222,7 +226,8 @@ class FunctionSpec: ExpoSpec {
             switch result {
             case .failure(let error):
               expect(error).notTo(beNil())
-              expect(error).to(beAKindOf(ArgumentCastException.self))
+              expect(error).to(beAKindOf(FunctionCallException.self))
+              expect(error.isCausedBy(ArgumentCastException.self)) == true
               expect(error.isCausedBy(Conversions.CastingException<String>.self)) == true
             case .success(_):
               fail()
@@ -232,20 +237,20 @@ class FunctionSpec: ExpoSpec {
         }
       }
     }
-    
+
     context("JavaScript") {
-      let runtime = appContext.runtime
-      
+      let runtime = try! appContext.runtime
+
       beforeSuite {
         appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
           Name("TestModule")
 
           Function("returnPi") { Double.pi }
-          
+
           Function("returnNull") { () -> Double? in
             return nil
           }
-          
+
           Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
@@ -260,30 +265,49 @@ class FunctionSpec: ExpoSpec {
               }
             }
           }
+
+          Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
+            return try fn.call("foo", "bar")
+          }
+
+          Function("withCGFloat") { (f: CGFloat) in
+            return "\(f)"
+          }
         })
       }
 
       it("returns values") {
-        expect(try runtime?.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
-        expect(try runtime?.eval("expo.modules.TestModule.returnNull()").isNull()) == true
+        expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
+        expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull()) == true
       }
 
       it("accepts optional arguments") {
-        expect(try runtime?.eval("expo.modules.TestModule.isArgNull(3.14)").asBool()) == false
-        expect(try runtime?.eval("expo.modules.TestModule.isArgNull(null)").asBool()) == true
+        expect(try runtime.eval("expo.modules.TestModule.isArgNull(3.14)").asBool()) == false
+        expect(try runtime.eval("expo.modules.TestModule.isArgNull(null)").asBool()) == true
       }
 
       it("returns object made from definition") {
         let initialValue = Int.random(in: 1..<100)
-        let object = try runtime?.eval("object = expo.modules.TestModule.returnObjectDefinition(\(initialValue))")
+        let object = try runtime.eval("object = expo.modules.TestModule.returnObjectDefinition(\(initialValue))")
 
-        expect(object?.kind) == .object
-        expect(object?.getObject().hasProperty("increment")) == true
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("increment")) == true
 
-        let result = try runtime?.eval("object.increment()")
+        let result = try runtime.eval("object.increment()")
 
-        expect(result?.kind) == .number
-        expect(result?.getInt()) == initialValue + 1
+        expect(result.kind) == .number
+        expect(result.getInt()) == initialValue + 1
+      }
+
+      it("takes JavaScriptFunction argument") {
+        let value = try runtime.eval("expo.modules.TestModule.withFunction((a, b) => a + b)")
+
+        expect(value.kind) == .string
+        expect(value.getString()) == "foobar"
+      }
+
+      it("accepts CGFloat argument") {
+        expect(try runtime.eval("expo.modules.TestModule.withCGFloat(20.23)").asString()) == "20.23"
       }
     }
   }

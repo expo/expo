@@ -1,6 +1,6 @@
-import { searchFilesAsync } from '../Utils';
 import { copyVendoredFilesAsync } from './common';
 import { VendoringModuleConfig } from './types';
+import { searchFilesAsync } from '../Utils';
 
 export async function vendorAsync(
   sourceDirectory: string,

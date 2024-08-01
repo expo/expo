@@ -4,7 +4,7 @@
     "paths": {
       "~/*": ["./*"]
     },
-    "target": "es2022",
+    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
@@ -24,6 +24,7 @@
     "incremental": true,
     "types": [
       "jest",
+      "@types/jest",
       "@testing-library/jest-dom",
       "@types/gtag.js",
       "user-agent-data-types"

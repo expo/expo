@@ -1,0 +1,76 @@
+---
+title: Overview of using Expo with existing React Native apps
+sidebar_title: Overview
+hideTOC: true
+description: Learn how to use Expo tools and services with existing React Native apps.
+---
+
+import { BuildArtifactIcon } from '@expo/styleguide-icons/custom/BuildArtifactIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { ChevronUpDoubleIcon } from '@expo/styleguide-icons/outline/ChevronUpDoubleIcon';
+import { Lightbulb01Icon } from '@expo/styleguide-icons/outline/Lightbulb01Icon';
+import { RefreshCw02Icon } from '@expo/styleguide-icons/outline/RefreshCw02Icon';
+import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
+
+If you have a React Native app that doesn't use any Expo tools, you might be wondering what Expo can provide for you, why you might want to use Expo tools and services, and how to get started.
+
+**All tools and services provided by Expo work great in any React Native app**.
+
+You can use [EAS](/eas) to get quickly set up with a professional CI/CD workflow for building, reviewing, deploying, and updating your apps. [Expo CLI](/more/expo-cli/) provides the best command-line experience for working with React Native. The [Expo SDK](/versions/latest/) is an extended standard library for React Native. It gives developers high-quality, well-maintained native libraries that use consistent API conventions to make them easier to learn and use.
+
+If you've ever written a native module for React Native, you'll be surprised how much easier it is to build and maintain modules with the idiomatic Swift and Kotlin DSL provided by the [Expo Modules API](/modules/overview/).
+
+There's so much more to explore, and the links below will help you to explore the options available to you.
+
+## Next Steps
+
+<BoxLink
+  title="Install Expo modules"
+  Icon={Rocket02Icon}
+  description={
+    <>
+      If you have already initialized a React Native app without <CODE>create-expo-app</CODE>, learn
+      how to install the Expo module library.
+    </>
+  }
+  href="/bare/installing-expo-modules"
+/>
+<BoxLink
+  title="Use Expo SDK"
+  Icon={BookOpen02Icon}
+  description="Use one of the many libraries provided by the Expo SDK, an extensive set of libraries that provide access to native APIs."
+  href="/versions/"
+/>
+<BoxLink
+  title="Write native modules"
+  description="Use the Expo Modules API to write native modules using Swift and Kotlin."
+  Icon={Lightbulb01Icon}
+  href="/modules/overview/"
+/>
+<BoxLink
+  title="Use Expo CLI"
+  Icon={BookOpen02Icon}
+  description="Learn about the many benefits Expo CLI provides over @react-native-community/cli."
+  href="/bare/using-expo-cli/"
+/>
+<BoxLink
+  title="Native project upgrade helper"
+  Icon={ChevronUpDoubleIcon}
+  description="View file-by-file diffs of all the changes you need to make to your native projects to upgrade them to the next Expo SDK and React Native version."
+  href="/bare/upgrade/"
+/>
+<BoxLink
+  title="Adopt Prebuild"
+  Icon={RefreshCw02Icon}
+  description="Learn how to simplify maintaining your native projects by generating them on demand from configuration."
+  href="/guides/adopting-prebuild"
+/>
+<BoxLink
+  title="App distribution"
+  Icon={BuildArtifactIcon}
+  description="Build and submit your app to the app store with a single command."
+  href="/distribution/introduction"
+/>

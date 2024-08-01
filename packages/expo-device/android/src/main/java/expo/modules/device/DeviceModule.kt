@@ -18,8 +18,6 @@ import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-private const val NAME = "ExpoDevice"
-
 class DeviceModule : Module() {
   // Keep this enum in sync with JavaScript
   enum class DeviceType(val JSValue: Int) {
@@ -27,7 +25,7 @@ class DeviceModule : Module() {
     PHONE(1),
     TABLET(2),
     DESKTOP(3),
-    TV(4);
+    TV(4)
   }
 
   private val context: Context
@@ -43,12 +41,15 @@ class DeviceModule : Module() {
         "manufacturer" to Build.MANUFACTURER,
         "modelName" to Build.MODEL,
         "designName" to Build.DEVICE,
-        "productName" to Build.DEVICE,
+        "productName" to Build.PRODUCT,
         "deviceYearClass" to deviceYearClass,
         "totalMemory" to run {
           val memoryInfo = ActivityManager.MemoryInfo()
           (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
           memoryInfo.totalMem
+        },
+        "deviceType" to run {
+          getDeviceType(context).JSValue
         },
         "supportedCpuArchitectures" to Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() },
         "osName" to systemName,
@@ -57,27 +58,28 @@ class DeviceModule : Module() {
         "osInternalBuildId" to Build.ID,
         "osBuildFingerprint" to Build.FINGERPRINT,
         "platformApiLevel" to Build.VERSION.SDK_INT,
-        "deviceName" to if (Build.VERSION.SDK_INT <= 31)
+        "deviceName" to if (Build.VERSION.SDK_INT <= 31) {
           Settings.Secure.getString(context.contentResolver, "bluetooth_name")
-        else
+        } else {
           Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
+        }
       )
     }
 
-    AsyncFunction("getDeviceTypeAsync") {
+    AsyncFunction<Int>("getDeviceTypeAsync") {
       return@AsyncFunction getDeviceType(context).JSValue
     }
 
-    AsyncFunction("getUptimeAsync") {
+    AsyncFunction<Double>("getUptimeAsync") {
       return@AsyncFunction SystemClock.uptimeMillis().toDouble()
     }
 
-    AsyncFunction("getMaxMemoryAsync") {
+    AsyncFunction<Double>("getMaxMemoryAsync") {
       val maxMemory = Runtime.getRuntime().maxMemory()
-      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1
+      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1.0
     }
 
-    AsyncFunction("isRootedExperimentalAsync") {
+    AsyncFunction<Boolean>("isRootedExperimentalAsync") {
       val isRooted: Boolean
       val isDevice = !isRunningOnEmulator
 
@@ -95,8 +97,9 @@ class DeviceModule : Module() {
       return@AsyncFunction isRooted
     }
 
-    AsyncFunction("isSideLoadingEnabledAsync") {
+    AsyncFunction<Boolean>("isSideLoadingEnabledAsync") {
       return@AsyncFunction if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        @Suppress("DEPRECATION")
         Settings.Global.getInt(
           context.applicationContext.contentResolver,
           Settings.Global.INSTALL_NON_MARKET_APPS,
@@ -107,7 +110,7 @@ class DeviceModule : Module() {
       }
     }
 
-    AsyncFunction("getPlatformFeaturesAsync") {
+    AsyncFunction<List<String>>("getPlatformFeaturesAsync") {
       val allFeatures = context.applicationContext.packageManager.systemAvailableFeatures
       return@AsyncFunction allFeatures.filterNotNull().map { it.name }
     }
@@ -122,16 +125,10 @@ class DeviceModule : Module() {
 
   private val systemName: String
     get() {
-      return if (Build.VERSION.SDK_INT < 23) {
-        "Android"
-      } else {
-        Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
-      }
+      return Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
     }
 
   companion object {
-    private val TAG = DeviceModule::class.java.simpleName
-
     private val isRunningOnEmulator: Boolean
       get() = EmulatorUtilities.isRunningOnEmulator()
 
@@ -146,18 +143,54 @@ class DeviceModule : Module() {
         return DeviceType.TV
       }
 
+      val deviceTypeFromResourceConfiguration = getDeviceTypeFromResourceConfiguration(context)
+      return if (deviceTypeFromResourceConfiguration != DeviceType.UNKNOWN) {
+        deviceTypeFromResourceConfiguration
+      } else {
+        getDeviceTypeFromPhysicalSize(context)
+      }
+    }
+
+    // Device type based on the smallest screen width quantifier
+    // https://developer.android.com/guide/topics/resources/providing-resources#SmallestScreenWidthQualifier
+    private fun getDeviceTypeFromResourceConfiguration(context: Context): DeviceType {
+      val smallestScreenWidthDp = context.resources.configuration.smallestScreenWidthDp
+
+      return if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
+        DeviceType.UNKNOWN
+      } else if (smallestScreenWidthDp >= 600) {
+        DeviceType.TABLET
+      } else {
+        DeviceType.PHONE
+      }
+    }
+
+    private fun getDeviceTypeFromPhysicalSize(context: Context): DeviceType {
       // Find the current window manager, if none is found we can't measure the device physical size.
       val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
         ?: return DeviceType.UNKNOWN
 
       // Get display metrics to see if we can differentiate phones and tablets.
-      val metrics = DisplayMetrics()
-      windowManager.defaultDisplay.getMetrics(metrics)
+      val widthInches: Double
+      val heightInches: Double
+
+      // windowManager.defaultDisplay was marked as deprecated in API level 30 (Android R) and above
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val windowBounds = windowManager.currentWindowMetrics.bounds
+        val densityDpi = context.resources.configuration.densityDpi
+        widthInches = windowBounds.width() / densityDpi.toDouble()
+        heightInches = windowBounds.height() / densityDpi.toDouble()
+      } else {
+        val metrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        windowManager.defaultDisplay.getRealMetrics(metrics)
+        widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
+        heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
+      }
 
       // Calculate physical size.
-      val widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
-      val heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
       val diagonalSizeInches = sqrt(widthInches.pow(2.0) + heightInches.pow(2.0))
+
       return if (diagonalSizeInches in 3.0..6.9) {
         // Devices in a sane range for phones are considered to be phones.
         DeviceType.PHONE

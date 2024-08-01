@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { EXPO_DIR } from './Constants';
+import { getPullRequestAsync } from './GitHub';
 import { execAll, filterAsync } from './Utils';
 
 const octokit = new Octokit({
@@ -29,6 +30,10 @@ export async function getWorkflowsAsync(): Promise<Workflow[]> {
   const response = await octokit.actions.listRepoWorkflows({
     owner,
     repo,
+    // By default this API returns only 25 results per page.
+    // We're already much beyond this number, but there is no chance we'll ever reach
+    // the max number of results per page, so we just hardcode it.
+    per_page: 100,
   });
 
   // We need to filter out some workflows because they might have
@@ -106,22 +111,10 @@ export async function dispatchWorkflowEventAsync(
 }
 
 /**
- * Requests for the pull request object.
- */
-export async function getPullRequestAsync(pull_number: number) {
-  const { data } = await octokit.pulls.get({
-    owner,
-    repo,
-    pull_number,
-  });
-  return data;
-}
-
-/**
  * Returns an array of issue IDs that has been auto-closed by the pull request.
  */
 export async function getClosedIssuesAsync(pullRequestId: number): Promise<number[]> {
-  const pullRequest = await getPullRequestAsync(pullRequestId);
+  const pullRequest = await getPullRequestAsync(pullRequestId, true);
   const matches = execAll(
     /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) (#|https:\/\/github\.com\/expo\/expo\/issues\/)(\d+)/gi,
     pullRequest.body ?? '',

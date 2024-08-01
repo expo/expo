@@ -1,7 +1,7 @@
 import React from 'react';
+import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 import { TextProps } from '../primitives/Text';
 import { ViewProps } from '../primitives/View';
-import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 export declare const P: React.ComponentType<TextProps>;
 export declare const B: React.ComponentType<TextProps>;
 export declare const S: React.ComponentType<TextProps>;
@@ -17,5 +17,6 @@ export declare const Time: React.ComponentType<TimeProps>;
 export declare const Strong: React.ComponentType<TextProps>;
 export declare const Del: React.ComponentType<TextProps>;
 export declare const EM: React.ComponentType<TextProps>;
+export declare const Span: React.ComponentType<TextProps>;
 export {};
 //# sourceMappingURL=Text.d.ts.map

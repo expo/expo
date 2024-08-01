@@ -10,12 +10,7 @@ build/
 local.properties
 *.iml
 *.hprof
-
-# BUCK
-buck-out/
-\.buckd/
-*.keystore
-!debug.keystore
+.cxx/
 
 # Bundle artifacts
 *.jsbundle

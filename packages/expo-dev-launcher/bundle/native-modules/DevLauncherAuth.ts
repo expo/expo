@@ -1,3 +1,4 @@
+import { requireNativeModule } from 'expo-modules-core';
 import {
   AppState,
   EmitterSubscription,
@@ -7,7 +8,10 @@ import {
   NativeModules,
 } from 'react-native';
 
-const DevLauncherAuth = NativeModules.EXDevLauncherAuth;
+const DevLauncherAuth =
+  Platform.OS === 'ios'
+    ? requireNativeModule('ExpoDevLauncherAuth')
+    : NativeModules.EXDevLauncherAuth;
 
 let appStateSubscription: NativeEventSubscription | null = null;
 let redirectSubscription: EmitterSubscription | null = null;

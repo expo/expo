@@ -1,66 +1,65 @@
 package expo.modules.notifications.permissions
 
+import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
 import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsStatus
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.notifications.ModuleNotFoundException
 
-class NotificationPermissionsModule(context: Context?) : ExportedModule(context) {
-  private lateinit var moduleRegistry: ModuleRegistry
+private const val ANDROID_RESPONSE_KEY = "android"
+private const val IMPORTANCE_KEY = "importance"
+private const val INTERRUPTION_FILTER_KEY = "interruptionFilter"
+private val PERMISSIONS: Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
-  }
+class NotificationPermissionsModule : Module() {
+  private val permissions: Permissions
+    get() = appContext.permissions ?: throw ModuleNotFoundException(Permissions::class)
 
-  override fun getName(): String {
-    return EXPORTED_NAME
-  }
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  @ExpoMethod
-  fun getPermissionsAsync(promise: Promise) {
-    if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
-      getPermissionsWithPromiseImplApi33(promise)
-    } else {
-      getPermissionsWithPromiseImplClassic(promise)
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNotificationPermissionsModule")
+
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
+        getPermissionsWithPromiseImplApi33(promise)
+      } else {
+        getPermissionsWithPromiseImplClassic(promise)
+      }
     }
-  }
 
-  @ExpoMethod
-  fun requestPermissionsAsync(permissionsTypes: ReadableArguments?, promise: Promise) {
-    if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
-      requestPermissionsWithPromiseImplApi33(promise)
-    } else {
-      getPermissionsWithPromiseImplClassic(promise)
+    AsyncFunction("requestPermissionsAsync") { _: ReadableArguments?, promise: Promise ->
+      if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
+        requestPermissionsWithPromiseImplApi33(promise)
+      } else {
+        getPermissionsWithPromiseImplClassic(promise)
+      }
     }
   }
 
   @RequiresApi(33)
   private fun getPermissionsWithPromiseImplApi33(promise: Promise) {
-    val permissionManager = moduleRegistry.getModule(Permissions::class.java)
-    if (permissionManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
-
-    permissionManager.getPermissions(
+    permissions.getPermissions(
       { permissionsMap: Map<String, PermissionsResponse> ->
         val managerCompat = NotificationManagerCompat.from(context)
         val areEnabled = managerCompat.areNotificationsEnabled()
         val platformBundle = bundleOf(
-          IMPORTANCE_KEY to managerCompat.importance,
+          IMPORTANCE_KEY to managerCompat.importance
         ).apply {
-          val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notificationManager != null) {
+          val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+          if (notificationManager != null) {
             putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
           }
         }
@@ -81,7 +80,7 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
             PermissionsResponse.STATUS_KEY to status,
             PermissionsResponse.CAN_ASK_AGAIN_KEY to canAskAgain,
             PermissionsResponse.GRANTED_KEY to areAllGranted,
-            ANDROID_RESPONSE_KEY to platformBundle,
+            ANDROID_RESPONSE_KEY to platformBundle
           )
         )
       },
@@ -94,10 +93,10 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
     val areEnabled = managerCompat.areNotificationsEnabled()
     val status = if (areEnabled) PermissionsStatus.GRANTED else PermissionsStatus.DENIED
     val platformBundle = bundleOf(
-      IMPORTANCE_KEY to managerCompat.importance,
+      IMPORTANCE_KEY to managerCompat.importance
     ).apply {
-      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notificationManager != null) {
+      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+      if (notificationManager != null) {
         putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
       }
     }
@@ -108,37 +107,18 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
         PermissionsResponse.STATUS_KEY to status.status,
         PermissionsResponse.CAN_ASK_AGAIN_KEY to areEnabled,
         PermissionsResponse.GRANTED_KEY to (status == PermissionsStatus.GRANTED),
-        ANDROID_RESPONSE_KEY to platformBundle,
+        ANDROID_RESPONSE_KEY to platformBundle
       )
     )
   }
 
   @RequiresApi(33)
   private fun requestPermissionsWithPromiseImplApi33(promise: Promise) {
-    val permissionManager = moduleRegistry.getModule(Permissions::class.java)
-    if (permissionManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
-
-    permissionManager.askForPermissions(
+    permissions.askForPermissions(
       {
         getPermissionsWithPromiseImplApi33(promise)
       },
       *PERMISSIONS
     )
-  }
-
-  companion object {
-    private const val EXPORTED_NAME = "ExpoNotificationPermissionsModule"
-    private const val ANDROID_RESPONSE_KEY = "android"
-    private const val IMPORTANCE_KEY = "importance"
-    private const val INTERRUPTION_FILTER_KEY = "interruptionFilter"
-
-    private val PERMISSIONS: Array<String>
-      /**
-       * TODO: Use {@link Android.Manifest.permission.POST_NOTIFICATIONS} when we support compileSdkVersion 33
-       */
-      get() = arrayOf("android.permission.POST_NOTIFICATIONS")
   }
 }

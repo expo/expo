@@ -1,5 +1,5 @@
-import { DefaultDependencyKind, DependencyKind, Package } from '../Packages';
 import PackagesGraphEdge from './PackagesGraphEdge';
+import { DefaultDependencyKind, DependencyKind, Package } from '../Packages';
 
 /**
  * A graph node that refers to the single package.
@@ -59,6 +59,23 @@ export default class PackagesGraphNode {
 
   getAllDependents(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphNode[] {
     return [...new Set(this.getAllDependentEdges(kinds).map((edge) => edge.origin))];
+  }
+
+  getAllDependencyEdges(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphEdge[] {
+    const allDependencyEdges = this.outgoingEdges
+      .map((edge) => {
+        if (!edge.isCyclic && kinds.includes(edge.getDominantKind())) {
+          return [edge, ...edge.destination.getAllDependencyEdges(kinds)];
+        }
+        return [];
+      })
+      .flat();
+
+    return [...new Set(allDependencyEdges)];
+  }
+
+  getAllDependencies(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphNode[] {
+    return [...new Set(this.getAllDependencyEdges(kinds).map((edge) => edge.destination))];
   }
 
   getOutgoingEdgesOfKinds(kinds: DependencyKind[]): PackagesGraphEdge[] {

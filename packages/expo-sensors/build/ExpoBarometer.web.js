@@ -1,7 +1,4 @@
 export default {
-    get name() {
-        return 'ExpoBarometer';
-    },
     async isAvailableAsync() {
         return false;
     },

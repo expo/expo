@@ -1,20 +1,20 @@
 package expo.modules.updates.logging
 
-import android.os.Bundle
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.core.Promise
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.UpdatesModule
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
-import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.util.*
 
-class UpdatesLoggingTest : TestCase() {
+@RunWith(AndroidJUnit4ClassRunner::class)
+class UpdatesLoggingTest {
 
   @Before
   fun setup() {
@@ -31,7 +31,7 @@ class UpdatesLoggingTest : TestCase() {
 
   @Test
   fun testLogEntryConversion() {
-    val entry = UpdatesLogEntry(12345678, "Test message", "NoUpdatesAvailable", "warn", null, null, null)
+    val entry = UpdatesLogEntry(12345678, "Test message", "NoUpdatesAvailable", "warn", null, null, null, null)
     val json = entry.asString()
     val entryCopy = UpdatesLogEntry.create(json)
     Assert.assertEquals(entry.message, entryCopy?.message)
@@ -42,7 +42,7 @@ class UpdatesLoggingTest : TestCase() {
     Assert.assertNull(entryCopy?.assetId)
     Assert.assertNull(entryCopy?.stacktrace)
 
-    val entry2 = UpdatesLogEntry(12345678, "Test message", "UpdateFailedToLoad", "fatal", "myUpdateId", "myAssetId", listOf("stack frame 1", "stack frame 2"))
+    val entry2 = UpdatesLogEntry(12345678, "Test message", "UpdateFailedToLoad", "fatal", null, "myUpdateId", "myAssetId", listOf("stack frame 1", "stack frame 2"))
     val json2 = entry2.asString()
     val entryCopy2 = UpdatesLogEntry.create(json2)
     Assert.assertEquals(entry2.message, entryCopy2?.message)
@@ -69,7 +69,7 @@ class UpdatesLoggingTest : TestCase() {
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     val now = Date()
-    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null)
+    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null, null)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
@@ -80,6 +80,27 @@ class UpdatesLoggingTest : TestCase() {
     Assert.assertEquals(expectedLogEntry.message, actualLogEntry.message)
     Assert.assertEquals(expectedLogEntry.code, actualLogEntry.code)
     Assert.assertEquals(expectedLogEntry.level, actualLogEntry.level)
+  }
+
+  @Test
+  fun testTimer() {
+    val asyncTestUtil = AsyncTestUtil()
+    val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
+    val logger = UpdatesLogger(instrumentationContext)
+    val now = Date()
+
+    val timer = logger.startTimer("testlabel")
+    asyncTestUtil.waitForTimeout(300)
+    timer.stop()
+
+    asyncTestUtil.waitForTimeout(500)
+    val sinceThen = Date(now.time - 5000)
+    val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
+    Assert.assertTrue(logs.isNotEmpty())
+
+    val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1]) as UpdatesLogEntry
+    Assert.assertEquals("testlabel", actualLogEntry.message)
+    Assert.assertTrue(actualLogEntry.duration!! >= 300)
   }
 
   @Test
@@ -126,72 +147,39 @@ class UpdatesLoggingTest : TestCase() {
   }
 
   @Test
-  fun testBridgeMethods() {
+  fun testNativeMethods() {
     val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
-    asyncTestUtil.waitForTimeout(500)
-    val updatesModule = UpdatesModule(instrumentationContext)
-    asyncTestUtil.asyncMethodRunning = true
-    var entries: List<Bundle>? = null
-    var rejected = false
-    updatesModule.readLogEntriesAsync(
-      1000L,
-      PromiseTestWrapper(
-        resolve = { result ->
-          entries = result as? List<Bundle>
-          asyncTestUtil.asyncMethodRunning = false
-        },
-        reject = { _, _, _ ->
-          rejected = true
-          asyncTestUtil.asyncMethodRunning = false
-        }
-      )
+    val entries = UpdatesModule.readLogEntries(
+      instrumentationContext,
+      1000L
     )
-    asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000)
-    Assert.assertFalse(rejected)
     Assert.assertNotNull(entries)
-    Assert.assertEquals(1, entries?.size)
-    val bundle = entries?.get(0)
-    Assert.assertEquals("Test message", bundle?.get("message"))
+    Assert.assertEquals(1, entries.size)
+    val bundle = entries[0]
+    Assert.assertEquals("Test message", bundle.getString("message"))
 
-    rejected = false
+    var rejected = false
     asyncTestUtil.asyncMethodRunning = true
-    updatesModule.clearLogEntriesAsync(
-      PromiseTestWrapper(
-        resolve = {
-          asyncTestUtil.asyncMethodRunning = false
-        },
-        reject = { _, _, _ ->
-          rejected = true
-          asyncTestUtil.asyncMethodRunning = false
-        }
-      )
-    )
+    UpdatesModule.clearLogEntries(instrumentationContext) { error ->
+      if (error != null) {
+        rejected = true
+        asyncTestUtil.asyncMethodRunning = false
+      }
+      asyncTestUtil.asyncMethodRunning = false
+    }
     asyncTestUtil.waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
     Assert.assertFalse(rejected)
 
-    entries = null
-    rejected = false
-    asyncTestUtil.asyncMethodRunning = true
-    updatesModule.readLogEntriesAsync(
-      1000L,
-      PromiseTestWrapper(
-        resolve = { result ->
-          entries = result as? List<Bundle>
-          asyncTestUtil.asyncMethodRunning = false
-        },
-        reject = { _, _, _ ->
-          rejected = true
-          asyncTestUtil.asyncMethodRunning = false
-        }
-      )
+    val entries2 = UpdatesModule.readLogEntries(
+      instrumentationContext,
+      1000L
     )
     asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
-    Assert.assertFalse(rejected)
-    Assert.assertNotNull(entries)
-    Assert.assertEquals(0, entries?.size)
+    Assert.assertNotNull(entries2)
+    Assert.assertEquals(0, entries2.size)
   }
 
   internal class AsyncTestUtil {
@@ -213,20 +201,6 @@ class UpdatesLoggingTest : TestCase() {
       while (System.currentTimeMillis() < end) {
         Thread.sleep(16)
       }
-    }
-  }
-
-  internal class PromiseTestWrapper(
-    private val resolve: (_: Any?) -> Unit,
-    private val reject: (code: String?, message: String?, e: Throwable?) -> Unit
-
-  ) : Promise {
-    override fun resolve(value: Any?) {
-      resolve.invoke(value)
-    }
-
-    override fun reject(code: String?, message: String?, e: Throwable?) {
-      reject.invoke(code, message, e)
     }
   }
 }

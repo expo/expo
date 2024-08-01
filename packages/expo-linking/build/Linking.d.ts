@@ -1,54 +1,5 @@
 import { EmitterSubscription } from 'react-native';
-import { CreateURLOptions, ParsedURL, QueryParams, SendIntentExtras, URLListener } from './Linking.types';
-/**
- * Create a URL that works for the environment the app is currently running in.
- * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
- *
- * # Examples
- * - Bare: empty string
- * - Standalone, Custom: `yourscheme:///path`
- * - Web (dev): `https://localhost:19006/path`
- * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
- * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
- *
- * @param path addition path components to append to the base URL.
- * @param queryParams An object with a set of query parameters. These will be merged with any
- * Expo-specific parameters that are needed (e.g. release channel) and then appended to the URL
- * as a query string.
- * @param scheme Optional URI protocol to use in the URL `<scheme>:///`, when `undefined` the scheme
- * will be chosen from the Expo config (`app.config.js` or `app.json`).
- * @return A URL string which points to your app with the given deep link information.
- * @deprecated An alias for [`createURL()`](#linkingcreateurlpath-namedparameters). This method is
- * deprecated and will be removed in a future SDK version.
- */
-export declare function makeUrl(path?: string, queryParams?: QueryParams, scheme?: string): string;
-/**
- * Helper method for constructing a deep link into your app, given an optional path and set of query
- * parameters. Creates a URI scheme with two slashes by default.
- *
- * The scheme in bare and standalone must be defined in the Expo config (`app.config.js` or `app.json`)
- * under `expo.scheme`.
- *
- * # Examples
- * - Bare: `<scheme>://path` - uses provided scheme or scheme from Expo config `scheme`.
- * - Standalone, Custom: `yourscheme://path`
- * - Web (dev): `https://localhost:19006/path`
- * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
- * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
- *
- * @param path Addition path components to append to the base URL.
- * @param namedParameters Additional options object.
- * @return A URL string which points to your app with the given deep link information.
- */
-export declare function createURL(path: string, { scheme, queryParams, isTripleSlashed }?: CreateURLOptions): string;
-/**
- * Helper method for parsing out deep link information from a URL.
- * @param url A URL that points to the currently running experience (e.g. an output of `Linking.createURL()`).
- * @return A `ParsedURL` object.
- */
-export declare function parse(url: string): ParsedURL;
+import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
  * It is recommended to use the [`useURL()`](#useurl) hook instead.
@@ -59,16 +10,6 @@ export declare function parse(url: string): ParsedURL;
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export declare function addEventListener(type: 'url', handler: URLListener): EmitterSubscription;
-/**
- * Remove a handler by passing the `url` event type and the handler.
- * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
- *
- * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
- */
-export declare function removeEventListener(type: 'url', handler: URLListener): void;
 /**
  * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.
  * Parses the deep link information out of the URL used to open the experience initially.
@@ -94,6 +35,11 @@ export declare function openSettings(): Promise<void>;
  */
 export declare function getInitialURL(): Promise<string | null>;
 /**
+ * Get the URL that was used to launch the app if it was launched by a link.
+ * @return The URL string that launched your app, or `null`.
+ */
+export declare function getLinkingURL(): string | null;
+/**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.
  * @param url A URL for the operating system to open, eg: `tel:5555555`, `exp://`.
@@ -118,6 +64,13 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  * @return Returns the initial URL or `null`.
  */
 export declare function useURL(): string | null;
+/**
+ * Returns the linking URL followed by any subsequent changes to the URL.
+ * Always returns the initial URL immediately on reload.
+ * @return Returns the initial URL or `null`.
+ */
+export declare function useLinkingURL(): string | null;
 export * from './Linking.types';
 export * from './Schemes';
+export { parse, createURL } from './createURL';
 //# sourceMappingURL=Linking.d.ts.map

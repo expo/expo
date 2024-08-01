@@ -1,5 +1,6 @@
-import { NetworkState, NetworkStateType } from './Network.types';
-export { NetworkState, NetworkStateType };
+import { type EventSubscription } from 'expo-modules-core';
+import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
+export { NetworkState, NetworkStateEvent, NetworkStateType };
 /**
  * Gets the device's current network connection state.
  *
@@ -35,24 +36,6 @@ export declare function getNetworkStateAsync(): Promise<NetworkState>;
  */
 export declare function getIpAddressAsync(): Promise<string>;
 /**
- * Gets the specified network interface's MAC address.
- *
- * > Beginning with iOS 7 and Android 11, non-system applications can no longer access the device's
- * MAC address. In SDK 41 and above, this method will always resolve to a predefined value that
- * isn't useful.
- *
- * If you need to identify the device, use the `getIosIdForVendorAsync()` method / `androidId`
- * property of the `expo-application` unimodule instead.
- *
- * @deprecated This method is deprecated and will be removed in a future SDK version.
- *
- * @param interfaceName A string representing interface name (`eth0`, `wlan0`) or `null` (default),
- * meaning the method should fetch the MAC address of the first available interface.
- *
- * @return A `Promise` that fulfils with the value `'02:00:00:00:00:00'`.
- */
-export declare function getMacAddressAsync(interfaceName?: string | null): Promise<string>;
-/**
  * Tells if the device is in airplane mode.
  * @return Returns a `Promise` that fulfils with a `boolean` value for whether the device is in
  * airplane mode or not.
@@ -65,4 +48,33 @@ export declare function getMacAddressAsync(interfaceName?: string | null): Promi
  * ```
  */
 export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
+/**
+ * Adds a listener that will fire whenever the network state changes.
+ *
+ * @param listener Callback to execute when the network state changes. The callback is provided with
+ * a single argument that is an object containing information about the network state.
+ *
+ * @example
+ * ```ts
+ * const subscription = addNetworkStateListener(({ type, isConnected, isInternetReachable }) => {
+ *   console.log(`Network type: ${type}, Connected: ${isConnected}, Internet Reachable: ${isInternetReachable}`);
+ * });
+ * ```
+ *
+ * @returns A subscription object with a remove function to unregister the listener.
+ */
+export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): EventSubscription;
+/**
+ * Returns the current network state of the device. This method
+ * initiates a listener for network state changes and cleans up before unmounting.
+ *
+ * @example
+ * ```ts
+ * const networkState = useNetworkState();
+ * console.log(`Current network type: ${networkState.type}`);
+ * ```
+ *
+ * @return The current network state of the device, including connectivity and type.
+ */
+export declare function useNetworkState(): NetworkState;
 //# sourceMappingURL=Network.d.ts.map

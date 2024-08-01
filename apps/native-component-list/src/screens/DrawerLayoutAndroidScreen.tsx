@@ -1,34 +1,7 @@
-import * as React from 'react';
-import { DrawerLayoutAndroid, Text, View, Platform } from 'react-native';
-
-import TitleSwitch from '../components/TitledSwitch';
+import { Text, View } from 'react-native';
 
 export default function DrawerLayoutAndroidScreen() {
-  const [isRight, setRight] = React.useState(false);
-
-  const renderNavigationView = () => (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <Text>DrawerLayoutAndroid</Text>
-    </View>
-  );
-
-  return Platform.OS === 'android' ? (
-    <DrawerLayoutAndroid
-      drawerWidth={300}
-      drawerPosition={isRight ? 'right' : 'left'}
-      renderNavigationView={renderNavigationView}>
-      <View style={{ flex: 1, padding: 16 }}>
-        <TitleSwitch title="Is Right" value={isRight} setValue={setRight} />
-        <Text>Pull from the {isRight ? 'right' : 'left'}</Text>
-      </View>
-    </DrawerLayoutAndroid>
-  ) : (
+  return (
     <View
       style={{
         flex: 1,

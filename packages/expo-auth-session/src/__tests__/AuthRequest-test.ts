@@ -1,12 +1,9 @@
 import { AuthRequest } from '../AuthRequest';
 import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
-import { buildQueryString, getQueryParams } from '../QueryParams';
+import { getQueryParams } from '../QueryParams';
 
-jest.mock('expo-random', () => ({
-  getRandomBytes: jest.fn(() => ''),
-  getRandomBase64StringAsync: jest.fn(async () => ''),
-}));
 jest.mock('expo-crypto', () => ({
+  getRandomValues: jest.fn((x) => x),
   digestStringAsync: jest.fn(async () => ''),
   CryptoDigestAlgorithm: { SHA256: 'SHA256' },
   CryptoEncoding: { BASE64: 'BASE64' },
@@ -111,7 +108,7 @@ it(`parses the server error into an AuthError`, () => {
     state: 'somn',
   });
 
-  const queryString = buildQueryString({ state: 'somn', error: 'invalid_request' });
+  const queryString = new URLSearchParams({ state: 'somn', error: 'invalid_request' }).toString();
   const results = request.parseReturnUrl(`https://demo.io?${queryString}`);
   if (results.type !== 'error' || !results.error) throw new Error('Invalid type for test');
 

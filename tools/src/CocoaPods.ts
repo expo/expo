@@ -12,6 +12,7 @@ export type Podspec = {
   header_dir?: string;
   source_files: string | string[];
   exclude_files: string | string[];
+  public_header_files?: string | string[];
   preserve_paths: string | string[];
   compiler_flags: string;
   frameworks: string | string[];
@@ -59,5 +60,24 @@ export async function podInstallAsync(
   await spawnAsync('pod', args, {
     cwd: projectPath,
     stdio: options.stdio ?? 'pipe',
+  });
+}
+
+/**
+ * An alternative version of `podInstallAsync` that uses `npx pod-install` command.
+ * See https://github.com/expo/expo-cli/tree/main/packages/pod-install
+ */
+export async function npxPodInstallAsync(
+  projectPath: string,
+  verbose: boolean = false
+): Promise<void> {
+  const args = ['pod-install@latest'];
+
+  if (!verbose) {
+    args.push('--quiet');
+  }
+  await spawnAsync('npx', args, {
+    cwd: projectPath,
+    stdio: verbose ? 'inherit' : 'pipe',
   });
 }

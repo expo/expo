@@ -1,11 +1,16 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import assert from 'assert';
 import execa from 'execa';
+import findProcess from 'find-process';
 import fs from 'fs';
+import * as htmlParser from 'node-html-parser';
 import os from 'os';
 import path from 'path';
+import treeKill from 'tree-kill';
+import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 
@@ -17,11 +22,11 @@ export function getTemporaryPath() {
   return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
 }
 
-export function execute(...args) {
+export function execute(...args: string[]) {
   return execa('node', [bin, ...args], { cwd: projectRoot });
 }
 
-export function getRoot(...args) {
+export function getRoot(...args: string[]) {
   return path.join(projectRoot, ...args);
 }
 
@@ -30,13 +35,11 @@ export async function abortingSpawnAsync(
   args: string[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  const spawnAsync = jest.requireActual(
-    '@expo/spawn-async'
-  ) as typeof import('@expo/spawn-async').default;
+  const spawnAsync = jest.requireActual('@expo/spawn-async') as typeof mockedSpawnAsync;
 
   const promise = spawnAsync(cmd, args, options);
-  promise.child.stdout.pipe(process.stdout);
-  promise.child.stderr.pipe(process.stderr);
+  promise.child.stdout?.pipe(process.stdout);
+  promise.child.stderr?.pipe(process.stderr);
 
   // TODO: Not sure how to do this yet...
   // const unsub = addJestInterruptedListener(() => {
@@ -44,10 +47,12 @@ export async function abortingSpawnAsync(
   // });
   try {
     return await promise;
-  } catch (error) {
+  } catch (e) {
+    const error = e as Error;
     if (isSpawnResult(error)) {
-      if (error.stdout) error.message += `\n------\nSTDOUT:\n${error.stdout}`;
-      if (error.stderr) error.message += `\n------\nSTDERR:\n${error.stderr}`;
+      const spawnError = error as SpawnResult;
+      if (spawnError.stdout) error.message += `\n------\nSTDOUT:\n${spawnError.stdout}`;
+      if (spawnError.stderr) error.message += `\n------\nSTDERR:\n${spawnError.stderr}`;
     }
     throw error;
   } finally {
@@ -60,7 +65,7 @@ function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResu
 }
 
 export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('yarn', pkgs, {
+  return abortingSpawnAsync('bun', ['install', ...pkgs], {
     cwd: projectRoot,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -156,6 +161,7 @@ export async function createFromFixtureAsync(
           ...config,
         },
       };
+      assert(staticConfigPath);
       await JsonFile.writeAsync(staticConfigPath, modifiedConfig as any);
     }
 
@@ -173,17 +179,27 @@ export async function createFromFixtureAsync(
 // Set this to true to enable caching and prevent rerunning yarn installs
 const testingLocally = !process.env.CI;
 
-export async function setupTestProjectAsync(name: string, fixtureName: string): Promise<string> {
+export async function setupTestProjectWithOptionsAsync(
+  name: string,
+  fixtureName: string,
+  {
+    reuseExisting = testingLocally,
+    sdkVersion = '51.0.0',
+  }: {
+    sdkVersion?: string;
+    reuseExisting?: boolean;
+  } = {}
+): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
     dirName: name,
-    reuseExisting: testingLocally,
+    reuseExisting,
     fixtureName,
   });
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe('45.0.0');
+  expect(exp.sdkVersion).toBe(sdkVersion);
   return projectRoot;
 }
 
@@ -199,5 +215,66 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
     { cwd: __dirname }
   );
   const loadedModules = JSON.parse(results.stdout.trim());
-  return loadedModules.map((value) => path.relative(repoRoot, value)).sort();
+  return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
+}
+
+const pTreeKill = promisify(treeKill);
+
+export async function ensurePortFreeAsync(port: number) {
+  const [portProcess] = await findProcess('port', port);
+  if (!portProcess) {
+    return;
+  }
+  console.log(`Killing process ${portProcess.name} on port ${port}...`);
+  try {
+    await pTreeKill(portProcess.pid);
+    console.log(`Killed process ${portProcess.name} on port ${port}`);
+  } catch (error: any) {
+    console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
+  }
+}
+
+export async function getPage(output: string, route: string): Promise<string> {
+  return await fs.promises.readFile(path.join(output, route), 'utf8');
+}
+
+export async function getPageHtml(output: string, route: string) {
+  return htmlParser.parse(await getPage(output, route));
+}
+
+export function getRouterE2ERoot(): string {
+  const root = path.join(__dirname, '../../../../../apps/router-e2e');
+  return root;
+}
+
+export function getHtmlHelpers(outputDir: string) {
+  async function getScriptTagsAsync(name: string) {
+    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
+      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+
+      return script.attributes.src;
+    });
+
+    ensureEntryChunk(tags[0]);
+
+    return tags;
+  }
+
+  function ensureEntryChunk(relativePath: string) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath), 'utf8')).toMatch(
+      /__BUNDLE_START_TIME__/
+    );
+  }
+
+  return {
+    getScriptTagsAsync,
+  };
+}
+
+export function expectChunkPathMatching(name: string) {
+  return expect.stringMatching(
+    new RegExp(
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+    )
+  );
 }

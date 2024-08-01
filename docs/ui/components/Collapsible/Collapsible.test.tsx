@@ -1,16 +1,40 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
+import { PropsWithChildren } from 'react';
 
 import { Collapsible } from '.';
 
-describe(Collapsible, () => {
+import { HeadingManager } from '~/common/headingManager';
+import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+
+const prepareHeadingManager = () => {
+  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
+
+  return headingManager;
+};
+
+const WrapWithContext = ({ children }: PropsWithChildren) => {
+  const headingManager = prepareHeadingManager();
+  return <HeadingsContext.Provider value={headingManager}>{children}</HeadingsContext.Provider>;
+};
+
+describe('Collapsible', () => {
   it('hides content by default', () => {
-    render(<Collapsible summary="Summary">Content</Collapsible>);
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary">Content</Collapsible>
+      </WrapWithContext>
+    );
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).not.toBeVisible();
   });
 
   it('shows content when opened', () => {
-    render(<Collapsible summary="Summary">Content</Collapsible>);
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary">Content</Collapsible>
+      </WrapWithContext>
+    );
     fireEvent.click(screen.getByText('Summary'));
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).toBeVisible();
@@ -18,9 +42,11 @@ describe(Collapsible, () => {
 
   it('shows content when rendered with open', () => {
     render(
-      <Collapsible summary="Summary" open>
-        Content
-      </Collapsible>
+      <WrapWithContext>
+        <Collapsible summary="Summary" open>
+          Content
+        </Collapsible>
+      </WrapWithContext>
     );
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).toBeVisible();

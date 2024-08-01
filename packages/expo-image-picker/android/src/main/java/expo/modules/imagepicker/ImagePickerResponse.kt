@@ -11,6 +11,9 @@ internal class ImagePickerAsset(
   @Field val uri: String = "",
   @Field val width: Int = 0,
   @Field val height: Int = 0,
+  @Field val fileName: String? = null,
+  @Field val fileSize: Long? = null,
+  @Field val mimeType: String? = null,
   @Field val base64: String? = null,
   @Field val exif: Bundle? = null,
   @Field val duration: Int? = null,
@@ -24,5 +27,5 @@ internal class ImagePickerResponse(
 
 enum class MediaType(val value: String) : Enumerable {
   VIDEO("video"),
-  IMAGE("image"),
+  IMAGE("image")
 }

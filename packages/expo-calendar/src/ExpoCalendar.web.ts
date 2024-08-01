@@ -8,9 +8,6 @@ const noPermissionResponse: PermissionResponse = {
 };
 
 export default {
-  get name(): string {
-    return 'ExpoCalendar';
-  },
   async requestCalendarPermissionsAsync(): Promise<PermissionResponse> {
     return noPermissionResponse;
   },

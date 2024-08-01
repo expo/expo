@@ -1,25 +1,10 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
-import { PropsWithChildren } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import type { HTMLAttributes } from 'react';
 
-type SnippetProps = {
-  includeMargin?: boolean;
-  className?: string;
-};
+type SnippetProps = HTMLAttributes<HTMLDivElement>;
 
-export const Snippet = ({
-  children,
-  className,
-  includeMargin = true,
-}: PropsWithChildren<SnippetProps>) => (
-  <div css={[containerStyle, includeMargin && containerMarginStyle]} className={className}>
+export const Snippet = ({ children, className, ...rest }: SnippetProps) => (
+  <div className={mergeClasses('flex flex-col mb-4 last:mb-0', className)} {...rest}>
     {children}
   </div>
 );
-
-const containerStyle = css({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const containerMarginStyle = css({ marginBottom: spacing[4] });

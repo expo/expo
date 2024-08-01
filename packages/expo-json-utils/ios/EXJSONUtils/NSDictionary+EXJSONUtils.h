@@ -6,14 +6,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSDictionary<__covariant KeyType, __covariant ObjectType> (EXJSONUtils)
 
-- (NSString *)stringForKey:(KeyType)key;
-- (nullable NSString *)nullableStringForKey:(KeyType)key;
-- (NSNumber *)numberForKey:(KeyType)key;
-- (nullable NSNumber *)nullableNumberForKey:(KeyType)key;
-- (NSArray *)arrayForKey:(KeyType)key;
-- (nullable NSArray *)nullableArrayForKey:(KeyType)key;
-- (NSDictionary *)dictionaryForKey:(KeyType)key;
-- (nullable NSDictionary *)nullableDictionaryForKey:(KeyType)key;
+- (NSString *)expo_stringForKey:(KeyType)key;
+- (nullable NSString *)expo_nullableStringForKey:(KeyType)key;
+- (NSNumber *)expo_numberForKey:(KeyType)key;
+- (nullable NSNumber *)expo_nullableNumberForKey:(KeyType)key;
+- (NSArray *)expo_arrayForKey:(KeyType)key;
+- (nullable NSArray *)expo_nullableArrayForKey:(KeyType)key;
+- (NSDictionary *)expo_dictionaryForKey:(KeyType)key;
+- (nullable NSDictionary *)expo_nullableDictionaryForKey:(KeyType)key;
 
 @end
 

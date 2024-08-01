@@ -4,7 +4,6 @@ import path from 'path';
 import { Stream } from 'stream';
 import { promisify } from 'util';
 
-import { asMock } from '../../../__tests__/asMock';
 import * as Log from '../../../log';
 import { wrapFetchWithProgress } from '../wrapFetchWithProgress';
 
@@ -15,7 +14,7 @@ jest.mock(`../../../log`);
 
 describe(wrapFetchWithProgress, () => {
   beforeEach(() => {
-    asMock(Log.warn).mockClear();
+    jest.mocked(Log.warn).mockClear();
   });
   it('should call the progress callback', async () => {
     const url = 'https://example.com';

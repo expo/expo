@@ -1,18 +1,18 @@
 import Constants from 'expo-constants';
-import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
+import { Linking } from 'react-native';
 import StoreReview from './ExpoStoreReview';
 // @needsAudit
 /**
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
  * This returns a promise fulfills with `boolean`, depending on the platform:
- * - On iOS, it will always resolve to `true`.
+ * - On iOS, it will resolve to `true` unless the app is distributed through TestFlight.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
 export async function isAvailableAsync() {
-    return StoreReview.isAvailableAsync();
+    return StoreReview.isAvailableAsync?.() ?? false;
 }
 // @needsAudit
 /**
@@ -22,15 +22,14 @@ export async function isAvailableAsync() {
  */
 export async function requestReview() {
     if (StoreReview?.requestReview) {
-        await StoreReview.requestReview();
-        return;
+        return StoreReview.requestReview();
     }
     // If StoreReview is unavailable then get the store URL from `app.config.js` or `app.json` and open the store
     const url = storeUrl();
     if (url) {
         const supported = await Linking.canOpenURL(url);
         if (!supported) {
-            console.warn("Expo.StoreReview.requestReview(): Can't open store url: ", url);
+            console.warn("StoreReview.requestReview(): Can't open store url: ", url);
         }
         else {
             await Linking.openURL(url);
@@ -38,29 +37,23 @@ export async function requestReview() {
     }
     else {
         // If the store URL is missing, let the dev know.
-        console.warn("Expo.StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`");
+        console.warn("StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`");
     }
 }
 // @needsAudit
 /**
- * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
- * `Constants.manifest.android.playStoreUrl` on Android.
+ * This uses the `Constants` API to get the `Constants.expoConfig.ios.appStoreUrl` on iOS, or the
+ * `Constants.expoConfig.android.playStoreUrl` on Android.
  *
  * On Web this will return `null`.
  */
 export function storeUrl() {
-    const { manifest, manifest2 } = Constants;
-    if (Platform.OS === 'ios' && manifest?.ios) {
-        return manifest.ios.appStoreUrl ?? null;
+    const expoConfig = Constants.expoConfig;
+    if (Platform.OS === 'ios' && expoConfig?.ios) {
+        return expoConfig.ios.appStoreUrl ?? null;
     }
-    else if (Platform.OS === 'ios' && manifest2?.extra?.expoClient?.ios) {
-        return manifest2.extra.expoClient.ios.appStoreUrl ?? null;
-    }
-    else if (Platform.OS === 'android' && manifest?.android) {
-        return manifest.android.playStoreUrl ?? null;
-    }
-    else if (Platform.OS === 'android' && manifest2?.extra?.expoClient?.android) {
-        return manifest2.extra.expoClient.android.playStoreUrl ?? null;
+    else if (Platform.OS === 'android' && expoConfig?.android) {
+        return expoConfig.android.playStoreUrl ?? null;
     }
     return null;
 }

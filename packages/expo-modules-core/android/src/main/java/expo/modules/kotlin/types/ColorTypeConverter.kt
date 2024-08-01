@@ -1,6 +1,8 @@
 package expo.modules.kotlin.types
 
 import android.graphics.Color
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.exception.UnexpectedException
@@ -166,6 +168,7 @@ private val namedColors = mapOf(
   value.map { it.toFloat() / 255f }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 class ColorTypeConverter(
   isOptional: Boolean
 ) : DynamicAwareTypeConverters<Color>(isOptional) {

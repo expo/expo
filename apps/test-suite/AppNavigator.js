@@ -1,6 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import { StyleSheet } from 'react-native';
 
 import Colors from './constants/Colors';
 import SelectScreen from './screens/SelectScreen';
@@ -18,9 +19,9 @@ const spec = {
   },
 };
 
-const shouldDisableTransition = !!global.DETOX;
+// TODO: Disable transition animations in E2E tests
+const shouldDisableTransition = false;
 
-// Disable transition animations in E2E tests
 const transitionSpec = shouldDisableTransition ? { open: spec, close: spec } : undefined;
 
 export default function AppNavigator(props) {
@@ -49,8 +50,8 @@ export default function AppNavigator(props) {
         },
         headerTintColor: Colors.tintColor,
         headerStyle: {
-          borderBottomWidth: 0.5,
-          borderBottomColor: 'rgba(0,0,0,0.1)',
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: Colors.border,
           boxShadow: '',
         },
       }}>

@@ -1,18 +1,42 @@
-import { Heading, View, Text, Spacer, Button } from 'expo-dev-client-components';
+import { View, Text, Spacer, Button } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { useMenuPreferences } from '../hooks/useMenuPreferences';
-import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 const deviceMessage = Platform.select({
-  ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
-  android: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
+  ios: `You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
+  android: `You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
 });
 
 const simulatorMessage = Platform.select({
-  ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in a simulator you can press \u2318D (make sure that 'I/O \u279E Input \u279E Send Keyboard Input to Device' is enabled on your simulator) to get back to it at any time.`,
-  android: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in an emulator you can press \u2318M on macOS or Ctrl+M on other platforms to get back to it at any time.`,
+  ios: (
+    <Text size="medium">
+      You can open it at any time with the <Text weight="bold">{'\u2303 + d '}</Text> keyboard
+      shortcut{' '}
+      <Text color="secondary" size="medium">
+        ("Connect Hardware Keyboard" must be enabled on your simulator to use this shortcut, you can
+        toggle it with{' '}
+        <Text weight="bold" color="secondary" size="medium">
+          {'\u2318 + shift + K'}
+        </Text>
+        ).
+      </Text>
+    </Text>
+  ),
+  android: (
+    <Text size="medium">
+      You can press{' '}
+      <Text size="medium" weight="bold">
+        {'\u2318 + m'}
+      </Text>{' '}
+      on macOS or{' '}
+      <Text size="medium" weight="bold">
+        Ctrl + m
+      </Text>{' '}
+      on other platforms to get back to it at any time.
+    </Text>
+  ),
 });
 
 type OnboardingProps = {
@@ -31,36 +55,28 @@ export function Onboarding({ isDevice }: OnboardingProps) {
   if (isVisible) {
     return (
       <View style={StyleSheet.absoluteFill}>
-        <View style={StyleSheet.absoluteFill}>
-          <View flex="1" bg="default" py="large" px="large">
-            <Heading size="large" weight="bold">
-              Hello there, friend! 👋
-            </Heading>
+        <View flex="1" bg="default" py="medium" px="large">
+          <View>
+            <Text size="medium" maxFontSizeMultiplier={1.2}>
+              This is the developer menu. It gives you access to useful tools in your development
+              builds.
+            </Text>
 
             <Spacer.Vertical size="medium" />
-
-            <View>
-              <Text size="large">{isDevice ? deviceMessage : simulatorMessage}</Text>
-
-              <Spacer.Vertical size="medium" />
-              <Text size="large">
-                Also, this menu is only available in development builds and won't be in any release
-                builds.
-              </Text>
-            </View>
-
-            <Spacer.Vertical size="xl" />
-
-            <GestureHandlerTouchableWrapper onPress={onOnboardingFinishedPress}>
-              <Button.ScaleOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
-                <View py="small">
-                  <Button.Text align="center" size="large" color="primary" weight="medium">
-                    Got It
-                  </Button.Text>
-                </View>
-              </Button.ScaleOnPressContainer>
-            </GestureHandlerTouchableWrapper>
+            <Text size="medium" maxFontSizeMultiplier={1.2}>
+              {isDevice ? deviceMessage : simulatorMessage}
+            </Text>
           </View>
+
+          <Spacer.Vertical size="large" />
+
+          <Button.FadeOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
+            <View py="small">
+              <Button.Text align="center" size="medium" color="primary" weight="medium">
+                Continue
+              </Button.Text>
+            </View>
+          </Button.FadeOnPressContainer>
         </View>
       </View>
     );

@@ -9,12 +9,17 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
+import androidx.annotation.UiThread;
+
 import com.facebook.jni.HybridData;
+import com.facebook.react.bridge.UiThreadUtil;
 
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
 
+import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.Objects;
 
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
@@ -22,6 +27,7 @@ import expo.modules.av.AudioFocusNotAcquiredException;
 import expo.modules.av.progress.AndroidLooperTimeMachine;
 import expo.modules.av.progress.ProgressLooper;
 import expo.modules.core.interfaces.DoNotStrip;
+import expo.modules.core.interfaces.services.UIManager;
 import expo.modules.interfaces.permissions.PermissionsResponse;
 import expo.modules.interfaces.permissions.PermissionsStatus;
 
@@ -88,6 +94,7 @@ public abstract class PlayerData implements AudioEventHandler {
   final AVManagerInterface mAVModule;
   final Uri mUri;
   final Map<String, Object> mRequestHeaders;
+  private final WeakReference<UIManager> mUiManager;
 
   private ProgressLooper mProgressUpdater = new ProgressLooper(new AndroidLooperTimeMachine());
 
@@ -110,6 +117,7 @@ public abstract class PlayerData implements AudioEventHandler {
     mRequestHeaders = requestHeaders;
     mAVModule = avModule;
     mUri = uri;
+    mUiManager = new WeakReference<>(avModule.getModuleRegistry().getModule(UIManager.class));
 
     mHybridData = initHybrid();
   }
@@ -136,6 +144,13 @@ public abstract class PlayerData implements AudioEventHandler {
 //  @SuppressWarnings("unused")
   @DoNotStrip
   void setEnableSampleBufferCallback(boolean enable) {
+    if (!UiThreadUtil.isOnUiThread()) {
+      UiThreadUtil.runOnUiThread(() -> {
+        setEnableSampleBufferCallback(enable);
+      });
+      return;
+    }
+
     if (enable) {
       try {
         boolean hasRecordAudioPermission = mAVModule.hasAudioPermission();
@@ -166,7 +181,7 @@ public abstract class PlayerData implements AudioEventHandler {
           @Override
           public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
             if (mShouldPlay) {
-              sampleBufferCallback(bytes, getCurrentPositionSeconds());
+              emitSampleBufferEvent(bytes, getCurrentPositionSeconds());
             }
           }
 
@@ -201,10 +216,20 @@ public abstract class PlayerData implements AudioEventHandler {
     final Uri uri = Uri.parse(uriString);
 
     if (status.containsKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
-      && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
+      && Objects.equals(status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH), MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
       return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);
+    }
+  }
+
+  @UiThread
+  private void emitSampleBufferEvent(final byte[] bytes, final double currentPositionSeconds) {
+    final UIManager uiManager = mUiManager.get();
+    if (uiManager != null) {
+      uiManager.runOnClientCodeQueueThread(() -> {
+        sampleBufferCallback(bytes, currentPositionSeconds);
+      });
     }
   }
 

@@ -13,7 +13,7 @@ function createView(nativeProps: ViewProps = {}): ComponentType<ViewProps> {
 export const UL = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'list',
+      role: 'list',
     },
   })
 );
@@ -27,15 +27,15 @@ type LIProps = TextProps | ViewProps;
 
 export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
   if (isTextProps(props)) {
-    const accessibilityRole: LIProps['accessibilityRole'] = Platform.select({
+    const role: LIProps['role'] = Platform.select({
       web: 'listitem',
-      default: props.accessibilityRole,
+      default: props.role,
     });
-    return <Text {...props} accessibilityRole={accessibilityRole} ref={ref} />;
+    return <Text {...props} role={role} ref={ref} />;
   }
-  const accessibilityRole: LIProps['accessibilityRole'] = Platform.select({
+  const role: LIProps['role'] = Platform.select({
     web: 'listitem',
-    default: props.accessibilityRole,
+    default: props.role,
   });
-  return <View {...props} accessibilityRole={accessibilityRole} ref={ref} />;
+  return <View {...props} role={role} ref={ref} />;
 }) as ComponentType<LIProps>;

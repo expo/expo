@@ -1,0 +1,28 @@
+name: Sync App Template Repository
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [sdk-51]
+    paths:
+      - .github/workflows/sync-template.yml
+      - templates/expo-template-default/**
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+      - name: 🚀 Push changes to the template repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        with:
+          source-directory: 'templates/expo-template-default'
+          destination-github-username: 'expo'
+          destination-repository-name: 'expo-template-default'
+          user-name: Expo Bot
+          user-email: expo-bot@users.noreply.github.com
+          target-branch: main
+          commit-message: Sync the default project template from ORIGIN_COMMIT

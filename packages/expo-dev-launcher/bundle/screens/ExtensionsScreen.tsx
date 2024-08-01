@@ -12,9 +12,9 @@ import {
   Heading,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Linking, RefreshControl } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Linking, RefreshControl, ScrollView } from 'react-native';
 
+import { ExtensionsStackParamList } from './ExtensionsStack';
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
@@ -26,7 +26,6 @@ import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
-import { ExtensionsStackParamList } from './ExtensionsStack';
 
 type ExtensionsScreenProps = {
   navigation: StackNavigationProp<ExtensionsStackParamList>;
@@ -100,13 +99,13 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                   {/* <Spacer.Vertical size="small" />
 
                   <View align="centered">
-                    <Button.ScaleOnPressContainer bg="ghost" rounded="small">
+                    <Button.FadeOnPressContainer bg="ghost" rounded="small">
                       <View border="default" px="small" py="2" rounded="small">
                         <Button.Text color="ghost" weight="semibold" size="small">
                           Learn More
                         </Button.Text>
                       </View>
-                    </Button.ScaleOnPressContainer>
+                    </Button.FadeOnPressContainer>
                   </View> */}
 
                   <Spacer.Vertical size="medium" />
@@ -131,7 +130,6 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
               <Spacer.Vertical size="medium" />
               <EASUpdatesPreview
                 navigation={navigation}
-                isLoading={isLoading}
                 branches={branches}
                 emptyBranches={emptyBranches}
                 incompatibleBranches={incompatibleBranches}
@@ -151,7 +149,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <Spacer.Vertical size="large" />
 
                 <View>
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="tertiary"
                     rounded="medium"
                     onPress={onLoginPress}
@@ -161,11 +159,11 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                         Log In
                       </Button.Text>
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
 
                   <Spacer.Vertical size="small" />
 
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="secondary"
                     rounded="medium"
                     onPress={onSignupPress}
@@ -175,7 +173,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                         Sign Up
                       </Button.Text>
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
                 </View>
               </View>
               <Spacer.Vertical size="medium" />
@@ -216,7 +214,6 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 }
 
 type EASUpdatesPreviewProps = ExtensionsScreenProps & {
-  isLoading: boolean;
   branches: Branch[];
   emptyBranches: Branch[];
   incompatibleBranches: Branch[];
@@ -224,7 +221,6 @@ type EASUpdatesPreviewProps = ExtensionsScreenProps & {
 
 function EASUpdatesPreview({
   navigation,
-  isLoading,
   branches,
   emptyBranches,
   incompatibleBranches,
@@ -264,7 +260,7 @@ function EASUpdatesPreview({
           );
         })}
         {emptyBranches.length > 1 && (
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             onPress={onSeeAllBranchesPress}
             bg="default"
             roundedTop="none"
@@ -276,19 +272,19 @@ function EASUpdatesPreview({
                 <ChevronRightIcon />
               </Row>
             </View>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         )}
       </View>
     );
   }
 
-  // no compatiable branches
+  // no compatible branches
   if (branches.length === 0) {
     return (
       <View mx="medium">
         <View px="small">
           <Heading size="small" color="secondary">
-            EAS Updates
+            EAS Update
           </Heading>
         </View>
         <Spacer.Vertical size="small" />
@@ -302,7 +298,7 @@ function EASUpdatesPreview({
     <View mx="medium">
       <View py="small" px="small">
         <Heading size="small" color="secondary">
-          EAS Updates
+          EAS Update
         </Heading>
       </View>
       {branches?.slice(0, 2).map((branch, index, arr) => {

@@ -1,7 +1,6 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 import styleToBarStyle from './styleToBarStyle';
-import useColorScheme from './useColorScheme';
 export default function ExpoStatusBar(props) {
     const { style, animated, hidden, backgroundColor: backgroundColorProp, translucent: translucentProp, } = props;
     // Default to true for translucent
@@ -16,6 +15,6 @@ export default function ExpoStatusBar(props) {
     if (translucent && !backgroundColor) {
         backgroundColor = 'transparent';
     }
-    return (React.createElement(StatusBar, { translucent: translucent, barStyle: barStyle, backgroundColor: backgroundColor, animated: animated, hidden: hidden }));
+    return (<StatusBar translucent={translucent} barStyle={barStyle} backgroundColor={backgroundColor} animated={animated} hidden={hidden}/>);
 }
 //# sourceMappingURL=ExpoStatusBar.android.js.map

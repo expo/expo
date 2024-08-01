@@ -1,8 +1,8 @@
 import React from 'react';
 
-import MonoText from '../MonoText';
 import { EnumParameter, FunctionArgument, FunctionParameter, ObjectParameter } from './index.types';
 import { isCurrentPlatformSupported } from './utils';
+import MonoText from '../MonoText';
 
 export default function FunctionSignature(props: {
   namespace: string;

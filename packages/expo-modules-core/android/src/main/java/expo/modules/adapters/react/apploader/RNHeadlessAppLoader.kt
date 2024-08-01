@@ -2,7 +2,9 @@ package expo.modules.adapters.react.apploader
 
 import android.content.Context
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.core.interfaces.Consumer
@@ -22,10 +24,12 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     if (context.applicationContext is ReactApplication) {
       val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
       if (!appRecords.containsKey(params.appScopeKey)) {
-        reactInstanceManager.addReactInstanceEventListener {
-          HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
-          callback?.apply(true)
-        }
+        reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceEventListener {
+          override fun onReactContextInitialized(context: ReactContext) {
+            HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
+            callback?.apply(true)
+          }
+        })
         appRecords[params.appScopeKey] = reactInstanceManager
         if (reactInstanceManager.hasStartedCreatingInitialContext()) {
           reactInstanceManager.recreateReactContextInBackground()

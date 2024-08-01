@@ -2,6 +2,8 @@
 
 #include "JavaReferencesCache.h"
 
+#include <vector>
+
 namespace expo {
 std::shared_ptr<JavaReferencesCache> JavaReferencesCache::instance() {
   static std::shared_ptr<JavaReferencesCache> singleton{new JavaReferencesCache};
@@ -21,16 +23,26 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(I)V"}
   });
 
+  loadJClass(env, "java/lang/Long", {
+    {"<init>", "(J)V"}
+  });
+
   loadJClass(env, "java/lang/Float", {
     {"<init>", "(F)V"}
   });
+
+  loadJClass(env, "[D", {});
+  loadJClass(env, "[Z", {});
+  loadJClass(env, "[I", {});
+  loadJClass(env, "[J", {});
+  loadJClass(env, "[F", {});
 
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });
 
   loadJClass(env, "expo/modules/kotlin/jni/PromiseImpl", {
-    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"}
+    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;)V"}
   });
 
   loadJClass(env, "java/lang/Object", {});
@@ -42,6 +54,9 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
   loadJClass(env, "com/facebook/react/bridge/WritableNativeArray", {});
   loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
+
+  loadJClass(env, "expo/modules/kotlin/sharedobjects/SharedObject", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptModuleObject", {});
 }
 
 void JavaReferencesCache::loadJClass(

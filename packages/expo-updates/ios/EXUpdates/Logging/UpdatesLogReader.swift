@@ -4,22 +4,21 @@ import Foundation
 import OSLog
 
 import ExpoModulesCore
-import SafariServices
 
 /**
  Class to read expo-updates logs using OSLogReader
  */
-@objc(EXUpdatesLogReader)
-public class UpdatesLogReader: NSObject {
+public final class UpdatesLogReader {
   private let serialQueue = DispatchQueue(label: "dev.expo.updates.logging.reader")
   private let logPersistence = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+
+  public init() {}
 
   /**
    Get expo-updates logs newer than the given date
    Returns the log entries unpacked as dictionaries
    Maximum of one day lookback is allowed
    */
-  @objc(getLogEntriesNewerThan:error:)
   public func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
     let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
@@ -33,7 +32,6 @@ public class UpdatesLogReader: NSObject {
    Returned strings are all in the JSON format of UpdatesLogEntry
    Maximum of one day lookback is allowed
    */
-  @objc(getLogEntryStringsNewerThan:)
   public func getLogEntries(newerThan: Date) -> [String] {
     let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
@@ -45,7 +43,6 @@ public class UpdatesLogReader: NSObject {
   /**
    Purge all log entries written more than one day ago
    */
-  @objc(purgeLogEntries:)
   public func purgeLogEntries(completion: @escaping (Error?) -> Void) {
     purgeLogEntries(
       olderThan: Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL),
@@ -56,7 +53,6 @@ public class UpdatesLogReader: NSObject {
   /**
    Purge all log entries written prior to the given date
    */
-  @objc(purgeLogEntriesOlderThan:completion:)
   public func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
     let epoch = epochFromDateOrOneDayAgo(date: olderThan)
     logPersistence.purgeEntriesNotMatchingFilter(filter: { entryString in
@@ -86,6 +82,6 @@ public class UpdatesLogReader: NSObject {
     let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
       earliestDate :
       date
-    return UInt(dateToUse.timeIntervalSince1970) * 1_000
+    return UInt(dateToUse.timeIntervalSince1970) * 1000
   }
 }

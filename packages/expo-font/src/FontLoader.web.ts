@@ -2,8 +2,7 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay } from './Font';
-import { FontResource, FontSource } from './Font.types';
+import { FontResource, FontSource, FontDisplay } from './Font.types';
 
 function uriFromFontSource(asset: any): string | null {
   if (typeof asset === 'string') {
@@ -18,10 +17,6 @@ function uriFromFontSource(asset: any): string | null {
 
 function displayFromFontSource(asset: any): FontDisplay | undefined {
   return asset.display || FontDisplay.AUTO;
-}
-
-export function fontFamilyNeedsScoping(name: string): boolean {
-  return false;
 }
 
 export function getAssetForSource(source: FontSource): Asset | FontResource {
@@ -47,17 +42,17 @@ function throwInvalidSourceError(source: any): never {
   );
 }
 
-export async function loadSingleFontAsync(
-  name: string,
-  input: Asset | FontResource
-): Promise<void> {
+// NOTE(EvanBacon): No async keyword!
+export function loadSingleFontAsync(name: string, input: Asset | FontResource): Promise<void> {
   if (typeof input !== 'object' || typeof input.uri !== 'string' || (input as any).downloadAsync) {
     throwInvalidSourceError(input);
   }
 
-  await ExpoFontLoader.loadAsync(name, input);
-}
+  try {
+    return ExpoFontLoader.loadAsync(name, input);
+  } catch {
+    // No-op.
+  }
 
-export function getNativeFontName(name: string): string {
-  return name;
+  return Promise.resolve();
 }

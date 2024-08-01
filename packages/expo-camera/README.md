@@ -1,15 +1,22 @@
-# expo-camera
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/camera/">
+    <img
+      src="../../.github/resources/expo-camera.svg"
+      alt="expo-camera"
+      height="64" />
+  </a>
+</p>
 
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/camera.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/camera/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/camera/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/camera/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/camera/).
 
 # Installation in bare React Native projects
 
@@ -18,21 +25,8 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-camera
+npx expo install expo-camera
 ```
-
-### Configure for iOS
-
-Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
-
-```xml
-<key>NSCameraUsageDescription</key>
-<string>Allow $(PRODUCT_NAME) to use the camera</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>Allow $(PRODUCT_NAME) to use the microphone</string>
-```
-
-Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
@@ -64,6 +58,19 @@ allprojects {
 ```
 
 The sourcecode for `cameraview` can be found at [`expo/cameraview`](https://github.com/expo/cameraview).
+
+### Configure for iOS
+
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
+```
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

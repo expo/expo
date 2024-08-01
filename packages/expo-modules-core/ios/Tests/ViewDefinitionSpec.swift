@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class ViewDefinitionSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("View") {
       it("creates a view") {
         let definition = View(UIImageView.self) {}
@@ -15,6 +15,8 @@ final class ViewDefinitionSpec: ExpoSpec {
     }
 
     describe("Prop") {
+      let appContext = AppContext.create()
+
       it("sets the prop") {
         let textView = UITextView()
         let content = "hello"
@@ -23,7 +25,7 @@ final class ViewDefinitionSpec: ExpoSpec {
             view.text = value
           }
         }
-        try definition.propsDict()["content"]?.set(value: content, onView: textView)
+        try definition.propsDict()["content"]?.set(value: content, onView: textView, appContext: appContext)
         expect(textView.text) == content
       }
 
@@ -31,12 +33,12 @@ final class ViewDefinitionSpec: ExpoSpec {
         let textView = UITextView()
         let content = "hello"
         let definition = View(UITextView.self) {
-          // The type of `view` is inferred and equals to the type passed to `View` component.
+          // The type of `view` is inferred and equals to the type passed to `View`.
           Prop("content") { (view, _: String) in
             expect(view).to(beAKindOf(UITextView.self))
           }
         }
-        try definition.propsDict()["content"]?.set(value: content, onView: textView)
+        try definition.propsDict()["content"]?.set(value: content, onView: textView, appContext: appContext)
       }
     }
 

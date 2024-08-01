@@ -5,9 +5,9 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class ExpoModulesSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
-    let runtime = appContext.runtime
+    let runtime = try! appContext.runtime
     let testModuleName = "TestModule"
     let testFunctionName = "testFunction"
     let throwingFunctionName = "throwingFunction"
@@ -33,23 +33,24 @@ class ExpoModulesSpec: ExpoSpec {
 
     describe("host object") {
       it("is defined") {
-        expect(try! runtime?.eval("'ExpoModules' in this").asBool()) === true
+        expect(try! runtime.eval("'expo' in this").asBool()).to(beTrue())
+        expect(try! runtime.eval("'modules' in expo").asBool()).to(beTrue())
       }
 
       it("has native module defined") {
-        expect(try! runtime?.eval("'\(testModuleName)' in ExpoModules").asBool()) === true
+        expect(try! runtime.eval("'\(testModuleName)' in expo.modules").asBool()).to(beTrue())
       }
 
       it("can access native module") {
-        let nativeModule = try! runtime?.eval("expo.modules.\(testModuleName)")
-        expect(nativeModule?.isUndefined()) == false
-        expect(nativeModule?.isObject()) == true
-        expect(nativeModule?.getRaw()).notTo(beNil())
+        let nativeModule = try runtime.eval("expo.modules.\(testModuleName)")
+        expect(nativeModule.isUndefined()) == false
+        expect(nativeModule.isObject()) == true
+        expect(nativeModule.getRaw()).notTo(beNil())
       }
 
       it("has keys for registered modules") {
         let registeredModuleNames = appContext.moduleRegistry.getModuleNames()
-        let keys = try! runtime?.eval("Object.keys(ExpoModules)").asArray().compactMap {
+        let keys = try runtime.eval("Object.keys(expo.modules)").asArray().compactMap {
           return try! $0?.asString()
         }
         expect(keys).to(contain(registeredModuleNames))
@@ -58,25 +59,25 @@ class ExpoModulesSpec: ExpoSpec {
 
     describe("module") {
       it("exposes constants") {
-        let dict = try! runtime!.eval("expo.modules.TestModule").asDict()
+        let dict = try runtime.eval("expo.modules.TestModule").asDict()
 
         dict.forEach { (key: String, value: Any) in
-          expect(value) === dict[key]!
+          expect(value as! NSObject) === dict[key] as! NSObject
         }
       }
 
       it("has function") {
-        expect(try! runtime?.eval("typeof expo.modules.TestModule.\(testFunctionName)").asString()) == "function"
-        expect(try! runtime?.eval("expo.modules.TestModule.\(testFunctionName)").isFunction()) == true
+        expect(try runtime.eval("typeof expo.modules.TestModule.\(testFunctionName)").asString()) == "function"
+        expect(try runtime.eval("expo.modules.TestModule.\(testFunctionName)").isFunction()) == true
       }
 
       it("calls function") {
-        expect(try! runtime?.eval("expo.modules.TestModule.\(testFunctionName)()").asDouble()) == Double.pi
+        expect(try runtime.eval("expo.modules.TestModule.\(testFunctionName)()").asDouble()) == Double.pi
       }
 
       it("throws from sync function") {
         // Invoke the throwing function and return the error (eval shouldn't rethrow here)
-        let error = try! runtime!.eval("try { expo.modules.TestModule.\(throwingFunctionName)() } catch (error) { error }").asObject()
+        let error = try runtime.eval("try { expo.modules.TestModule.\(throwingFunctionName)() } catch (error) { error }").asObject()
 
         // We just check if it contains the description — they won't be equal for the following reasons:
         // - the `exceptionToThrow` is just the root cause, in fact it returns `FunctionCallException`

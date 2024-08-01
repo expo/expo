@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class JavaScriptRuntimeSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let runtime = JavaScriptRuntime()
 
     it("has global object accessible") {
@@ -86,7 +86,11 @@ class JavaScriptRuntimeSpec: ExpoSpec {
       it("throws evaluation exception") {
         expect({ try runtime.eval("foo") }).to(throwError { error in
           expect(error).to(beAKindOf(JavaScriptEvalException.self))
+          #if canImport(reacthermes)
+          expect((error as! JavaScriptEvalException).reason).to(contain("Property 'foo' doesn't exist"))
+          #else
           expect((error as! JavaScriptEvalException).reason).to(contain("Can't find variable: foo"))
+          #endif
         })
       }
     }

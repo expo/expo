@@ -1,3 +1,5 @@
+@file:Suppress("UnusedImport") // this needs to stay for versioning to work
+
 package expo.modules.splashscreen
 
 import android.annotation.SuppressLint
@@ -7,9 +9,6 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 
 // this needs to stay for versioning to work
-/* ktlint-disable no-unused-imports */
-import expo.modules.splashscreen.SplashScreenImageResizeMode
-/* ktlint-enable no-unused-imports */
 
 @SuppressLint("ViewConstructor")
 class SplashScreenView(
@@ -24,7 +23,6 @@ class SplashScreenView(
 
   init {
     layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-    isClickable = true
 
     addView(imageView)
   }

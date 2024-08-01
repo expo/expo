@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 
 import { NavigationRenderProps } from './types';
 
@@ -24,25 +25,25 @@ const linkStyle = css({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   padding: `${spacing[1.5]}px ${spacing[2]}px`,
   margin: `${spacing[1]}px ${spacing[4]}px`,
 });
 
 const linkStyleActive = css({
-  boxShadow: shadows.micro,
+  boxShadow: shadows.xs,
   backgroundColor: theme.background.default,
-  '[data-expo-theme="dark"] &': {
-    backgroundColor: theme.background.tertiary,
+  '.dark-theme &': {
+    backgroundColor: theme.background.element,
   },
 });
 
 const markerStyle = css({
   flexShrink: 0,
   backgroundColor: theme.icon.secondary,
-  borderRadius: iconSize.micro,
-  width: iconSize.micro / 2,
-  height: iconSize.micro / 2,
+  borderRadius: '100%',
+  width: 4,
+  height: 4,
   marginRight: spacing[2],
   visibility: 'hidden',
 });

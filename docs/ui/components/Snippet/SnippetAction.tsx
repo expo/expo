@@ -1,54 +1,39 @@
-import { css } from '@emotion/react';
-import { darkTheme, iconSize, palette, shadows, theme } from '@expo/styleguide';
-import { cloneElement } from 'react';
+import { Button, ButtonProps, mergeClasses } from '@expo/styleguide';
 
-import { Button, ButtonProps } from '~/ui/components/Button';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 export type SnippetActionProps = ButtonProps & {
   alwaysDark?: boolean;
 };
 
-export const SnippetAction = (props: SnippetActionProps) => {
-  const { children, icon, alwaysDark = false, ...rest } = props;
-  const iconStyle = {
-    color: alwaysDark ? darkTheme.text.default : undefined,
-    size: iconSize.small,
-  };
-
-  const styledIcon = icon && cloneElement(icon as any, iconStyle);
-
+export const SnippetAction = ({
+  children,
+  leftSlot,
+  rightSlot,
+  className,
+  alwaysDark = false,
+  ...rest
+}: SnippetActionProps) => {
   return (
     <Button
-      size="mini"
-      theme="ghost"
-      icon={styledIcon}
-      css={[!alwaysDark && snippetActionStyle, alwaysDark && alwaysDarkStyle]}
+      size="xs"
+      theme="quaternary"
+      leftSlot={leftSlot}
+      rightSlot={rightSlot}
+      className={mergeClasses(
+        'focus-visible:-outline-offset-2',
+        alwaysDark &&
+          'dark-theme border-transparent bg-transparent hocus:shadow-xs hocus:border-palette-gray9 hocus:bg-palette-gray5',
+        !alwaysDark &&
+          'border-0 rounded-none border-l border-l-default h-10 leading-10 px-4 hocus:bg-subtle hocus:shadow-none',
+        className
+      )}
       {...rest}>
-      <FOOTNOTE css={alwaysDark && { color: darkTheme.text.default }}>{children}</FOOTNOTE>
+      {children && (
+        <FOOTNOTE className={mergeClasses(alwaysDark && '!text-palette-white')}>
+          {children}
+        </FOOTNOTE>
+      )}
     </Button>
   );
 };
-
-const snippetActionStyle = css({
-  border: 0,
-  borderRadius: 0,
-  borderLeft: `1px solid ${theme.border.default}`,
-  height: 42,
-  lineHeight: 42,
-  padding: `0 16px`,
-
-  ':hover': {
-    backgroundColor: theme.background.secondary,
-    boxShadow: 'none',
-  },
-});
-
-const alwaysDarkStyle = css({
-  borderColor: 'transparent',
-
-  ':hover': {
-    borderColor: palette.dark.gray[500],
-    boxShadow: shadows.button,
-  },
-});
