@@ -251,7 +251,7 @@ declare module 'metro/src/ModuleGraph/worker/JsFileWrapping' {
 }
 declare module 'metro/src/DeltaBundler' {
   import { SourceLocation } from '@babel/types';
-  export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+  export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak';
   export type TransformResultDependency = {
     /**
      * The literal name provided to a require or import call. For example 'foo' in
