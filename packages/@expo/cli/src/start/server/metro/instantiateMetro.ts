@@ -220,9 +220,14 @@ export async function instantiateMetroAsync(
 
   if (!isExporting) {
     // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
+    // From react-native 0.75, the exported `securityHeadersMiddleware` is a middleware factory that accepts single option parameter.
+    const securityHeadersMiddlewareHandler =
+      securityHeadersMiddleware.length === 1
+        ? securityHeadersMiddleware({})
+        : securityHeadersMiddleware;
     replaceMiddlewareWith(
       middleware as ConnectServer,
-      securityHeadersMiddleware,
+      securityHeadersMiddlewareHandler,
       createCorsMiddleware(exp)
     );
 
