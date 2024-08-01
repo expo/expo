@@ -18,7 +18,6 @@ import Themes from '../constants/Themes';
 import { AccountModal } from '../screens/AccountModal';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
-import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
 import { DiagnosticsStackScreen } from '../screens/DiagnosticsScreen';
 import { FeedbackFormScreen } from '../screens/FeedbackFormScreen';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -115,13 +114,6 @@ function SettingsStackScreen() {
       detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
       <SettingsStack.Screen name="Settings" component={SettingsScreen} />
-      <SettingsStack.Screen
-        name="DeleteAccount"
-        component={DeleteAccountScreen}
-        options={{
-          title: 'Delete Account',
-        }}
-      />
     </SettingsStack.Navigator>
   );
 }

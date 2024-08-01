@@ -180,13 +180,7 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
       { route: { path: pathname, searchParams } },
       componentIds.reduceRight(
-        (acc: ReactNode, id) =>
-          createElement(
-            // @ts-expect-error
-            Slot,
-            { id, fallback: acc },
-            acc
-          ),
+        (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
         null
       )
     );

@@ -4,7 +4,6 @@
 .vale
 
 out
-diagram-sources
 node_modules
 pages/versions/latest
 public

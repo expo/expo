@@ -63,13 +63,7 @@ function InnerRouter() {
     RouterContext.Provider,
     { value: { route } },
     componentIds.reduceRight<null | ReactNode>(
-      (acc: ReactNode, id) =>
-        createElement(
-          // @ts-expect-error
-          Slot,
-          { id, fallback: acc },
-          acc
-        ),
+      (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
       null
     )
   );
