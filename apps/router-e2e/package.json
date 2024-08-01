@@ -9,6 +9,7 @@
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_CANARY_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
+    "start:headless": "E2E_ROUTER_SRC=headless yarn start",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
@@ -24,7 +25,8 @@
     "react-native-webview": "13.8.6"
   },
   "devDependencies": {
-    "@stylexjs/babel-plugin": "^0.7.5",
+    "@stylexjs/babel-plugin": "latest",
+    "react-strict-dom": "latest",
     "autoprefixer": "^10.4.16",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",

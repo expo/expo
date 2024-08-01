@@ -19,7 +19,7 @@ export default function useLinking(ref: React.RefObject<NavigationContainerRef<P
         })[];
         type: string;
         stale: false;
-    }>, "routes" | "stale">> & Readonly<{
+    }>, "stale" | "routes">> & Readonly<{
         stale?: true | undefined;
         routes: import("@react-navigation/core").PartialRoute<import("@react-navigation/core").Route<string, object | undefined>>[];
     }> & {
@@ -39,7 +39,7 @@ export default function useLinking(ref: React.RefObject<NavigationContainerRef<P
             })[];
             type: string;
             stale: false;
-        }>, "routes" | "stale">> & Readonly<{
+        }>, "stale" | "routes">> & Readonly<{
             stale?: true | undefined;
             routes: import("@react-navigation/core").PartialRoute<import("@react-navigation/core").Route<string, object | undefined>>[];
         }> & any) | undefined;

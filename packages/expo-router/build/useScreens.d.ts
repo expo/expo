@@ -27,7 +27,7 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
  */
 export declare function useSortedScreens(order: ScreenProps[]): React.ReactNode[];
 /** Wrap the component with various enhancements and add access to child routes. */
-export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>>;
+export declare function getQualifiedRouteComponent(value: RouteNode): React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<unknown>> | React.ComponentType<any>;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>): ({ params }?: {
     params?: Record<string, any> | undefined;

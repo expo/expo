@@ -12,7 +12,6 @@ import {
   TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import { ExpoTabNavigationState, ExpoTabRouterOptions } from './Tabs.router';
 
 export type ExpoTabsProps = DefaultNavigatorOptions<
   ParamListBase,
@@ -45,10 +44,10 @@ export type TabNavigationEventMap = {
 
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<
-    ExpoTabNavigationState,
-    ExpoTabRouterOptions,
+    TabNavigationState<any>,
+    TabRouterOptions,
     TabActionHelpers<ParamListBase>,
-    ExpoTabsScreenOptions,
+    BottomTabNavigationOptions,
     TabNavigationEventMap
   >
 >;

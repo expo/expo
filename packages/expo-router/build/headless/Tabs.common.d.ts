@@ -1,7 +1,6 @@
 /// <reference types="react" />
 import { BottomTabNavigationOptions, BottomTabNavigationConfig } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import { DefaultNavigatorOptions, NavigationAction, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
-import { ExpoTabNavigationState, ExpoTabRouterOptions } from './Tabs.router';
 export type ExpoTabsProps = DefaultNavigatorOptions<ParamListBase, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap> & Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
 BottomTabNavigationConfig;
 export type ExpoTabsScreenOptions = Pick<BottomTabNavigationOptions, 'title' | 'lazy' | 'unmountOnBlur' | 'freezeOnBlur'> & {
@@ -24,9 +23,9 @@ export type TabNavigationEventMap = {
         data: undefined;
     };
 };
-export type TabsContextValue = ReturnType<typeof useNavigationBuilder<ExpoTabNavigationState, ExpoTabRouterOptions, TabActionHelpers<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap>>;
+export type TabsContextValue = ReturnType<typeof useNavigationBuilder<TabNavigationState<any>, TabRouterOptions, TabActionHelpers<ParamListBase>, BottomTabNavigationOptions, TabNavigationEventMap>>;
 export declare const TabsContext: import("react").Context<{
-    state: ExpoTabNavigationState;
+    state: TabNavigationState<any>;
     navigation: {
         dispatch(action: Readonly<{
             type: string;
@@ -124,13 +123,13 @@ export declare const TabsContext: import("react").Context<{
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
         setParams<RouteName_2 extends string>(params: Partial<object | undefined>): void;
     } & TabActionHelpers<ParamListBase>;
-    descriptors: Record<string, import("@react-navigation/native").Descriptor<ExpoTabsScreenOptions, Omit<{
+    descriptors: Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, Omit<{
         dispatch(action: Readonly<{
             type: string;
             payload?: object | undefined;
             source?: string | undefined;
             target?: string | undefined;
-        }> | ((state: ExpoTabNavigationState) => Readonly<{
+        }> | ((state: TabNavigationState<any>) => Readonly<{
             type: string;
             payload?: object | undefined;
             source?: string | undefined;
@@ -147,13 +146,13 @@ export declare const TabsContext: import("react").Context<{
             params: object | undefined;
             merge?: boolean | undefined;
         } : never): void;
-        reset(state: ExpoTabNavigationState | import("@react-navigation/native").PartialState<ExpoTabNavigationState>): void;
+        reset(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
         goBack(): void;
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
         getParent<T_1 = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T_1;
-        getState(): ExpoTabNavigationState;
+        getState(): TabNavigationState<any>;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
         getParent<T_1 = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
             key: string;
@@ -173,14 +172,14 @@ export declare const TabsContext: import("react").Context<{
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T_1;
         setParams(params: Partial<object | undefined>): void;
-        setOptions(options: Partial<ExpoTabsScreenOptions>): void;
-    } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<ExpoTabNavigationState>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
+        setOptions(options: Partial<BottomTabNavigationOptions>): void;
+    } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
     NavigationContent: ({ children }: {
         children: import("react").ReactNode;
     }) => JSX.Element;
 } | null>;
 export declare function useTabsContext(): {
-    state: ExpoTabNavigationState;
+    state: TabNavigationState<any>;
     navigation: {
         dispatch(action: Readonly<{
             type: string;
@@ -278,13 +277,13 @@ export declare function useTabsContext(): {
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
         setParams<RouteName_2 extends string>(params: Partial<object | undefined>): void;
     } & TabActionHelpers<ParamListBase>;
-    descriptors: Record<string, import("@react-navigation/native").Descriptor<ExpoTabsScreenOptions, Omit<{
+    descriptors: Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, Omit<{
         dispatch(action: Readonly<{
             type: string;
             payload?: object | undefined;
             source?: string | undefined;
             target?: string | undefined;
-        }> | ((state: ExpoTabNavigationState) => Readonly<{
+        }> | ((state: TabNavigationState<any>) => Readonly<{
             type: string;
             payload?: object | undefined;
             source?: string | undefined;
@@ -301,13 +300,13 @@ export declare function useTabsContext(): {
             params: object | undefined;
             merge?: boolean | undefined;
         } : never): void;
-        reset(state: ExpoTabNavigationState | import("@react-navigation/native").PartialState<ExpoTabNavigationState>): void;
+        reset(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
         goBack(): void;
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
         getParent<T_1 = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T_1;
-        getState(): ExpoTabNavigationState;
+        getState(): TabNavigationState<any>;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
         getParent<T_1 = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
             key: string;
@@ -327,8 +326,8 @@ export declare function useTabsContext(): {
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T_1;
         setParams(params: Partial<object | undefined>): void;
-        setOptions(options: Partial<ExpoTabsScreenOptions>): void;
-    } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<ExpoTabNavigationState>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
+        setOptions(options: Partial<BottomTabNavigationOptions>): void;
+    } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
     NavigationContent: ({ children }: {
         children: import("react").ReactNode;
     }) => JSX.Element;
