@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `ios.developmentTeam` to change the Apple development team id.
+- Added `ios.developmentTeam` to change the Apple development team id. ([#30761](https://github.com/expo/expo/pull/30761) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
