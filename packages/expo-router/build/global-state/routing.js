@@ -225,7 +225,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
     if (navigationState.type === 'expo-tab') {
         type = 'JUMP_TO';
     }
-    if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
+    if (type === 'REPLACE' && navigationState.type === 'tab') {
         type = 'JUMP_TO';
     }
     return {
