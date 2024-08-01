@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ViewProps } from 'react-native';
 import { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabRouterOptions } from '@react-navigation/native';
 import { ExpoTabsScreenOptions } from './Tabs.common';
@@ -11,7 +11,7 @@ export * from './Tabs.common';
 export type UseTabsOptions = Omit<DefaultNavigatorOptions<ParamListBase, ExpoTabNavigationState, ExpoTabsScreenOptions, TabNavigationEventMap>, 'children'> & Omit<TabRouterOptions, 'initialRouteName'> & {
     triggers: TabTriggerOptions[];
 };
-export type TabsProps = PropsWithChildren<ViewProps>;
+export type TabsProps = ViewProps;
 export type TabNavigationEventMap = {
     /**
      * Event which fires on tapping on the tab in the tab bar.
@@ -235,5 +235,5 @@ export declare function useTabs({ triggers, ...options }: UseTabsOptions): {
     };
 };
 export type ExpoTabHrefs = Record<string, Omit<ExpoTabsScreenOptions, 'action'>> | Array<Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>]>;
-export declare function NewTabs({ children, style }: TabsProps): import("react").JSX.Element;
+export declare function Tabs({ children, ...props }: TabsProps): import("react").JSX.Element;
 //# sourceMappingURL=Tabs.d.ts.map

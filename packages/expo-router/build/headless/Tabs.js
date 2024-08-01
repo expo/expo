@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NewTabs = exports.useTabs = void 0;
+exports.Tabs = exports.useTabs = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const core_1 = require("@react-navigation/core");
@@ -139,15 +139,19 @@ function triggersToScreens(triggers, layoutRouteNode, linking) {
         initialRouteName,
     };
 }
-function NewTabs({ children, style = { flex: 1 } }) {
-    const triggers = parseTriggersFromChildren(children);
-    const tabsContext = useTabs({ triggers });
-    const NavigationContent = tabsContext.NavigationContent;
-    return (<Tabs_common_1.TabsContext.Provider value={tabsContext}>
-      <react_native_1.View style={style}>
+function Tabs({ children, ...props }) {
+    const tabs = useTabs({ triggers: parseTriggersFromChildren(children) });
+    const NavigationContent = tabs.NavigationContent;
+    return (<Tabs_common_1.TabsContext.Provider value={tabs}>
+      <react_native_1.View style={styles.tabsRoot} {...props}>
         <NavigationContent>{children}</NavigationContent>
       </react_native_1.View>
     </Tabs_common_1.TabsContext.Provider>);
 }
-exports.NewTabs = NewTabs;
+exports.Tabs = Tabs;
+const styles = react_native_1.StyleSheet.create({
+    tabsRoot: {
+        flex: 1,
+    },
+});
 //# sourceMappingURL=Tabs.js.map

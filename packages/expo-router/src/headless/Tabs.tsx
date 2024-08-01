@@ -2,13 +2,12 @@ import {
   Fragment,
   FunctionComponentElement,
   isValidElement,
-  PropsWithChildren,
   useId,
   useContext,
   Children,
   ReactNode,
 } from 'react';
-import { Platform, ViewProps, View } from 'react-native';
+import { Platform, StyleSheet, ViewProps, View } from 'react-native';
 import { createNavigatorFactory } from '@react-navigation/core';
 import {
   DefaultNavigatorOptions,
@@ -50,7 +49,7 @@ export type UseTabsOptions = Omit<
 // do this hack.
 const { Screen } = createNavigatorFactory({} as any)();
 
-export type TabsProps = PropsWithChildren<ViewProps>;
+export type TabsProps = ViewProps;
 
 export type TabNavigationEventMap = {
   /**
@@ -219,16 +218,21 @@ function triggersToScreens(
   };
 }
 
-export function NewTabs({ children, style = { flex: 1 } }: TabsProps) {
-  const triggers = parseTriggersFromChildren(children);
-  const tabsContext = useTabs({ triggers });
-  const NavigationContent = tabsContext.NavigationContent;
+export function Tabs({ children, ...props }: TabsProps) {
+  const tabs = useTabs({ triggers: parseTriggersFromChildren(children) });
+  const NavigationContent = tabs.NavigationContent;
 
   return (
-    <TabsContext.Provider value={tabsContext}>
-      <View style={style}>
+    <TabsContext.Provider value={tabs}>
+      <View style={styles.tabsRoot} {...props}>
         <NavigationContent>{children}</NavigationContent>
       </View>
     </TabsContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  tabsRoot: {
+    flex: 1,
+  },
+});

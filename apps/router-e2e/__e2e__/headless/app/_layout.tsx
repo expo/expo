@@ -1,9 +1,9 @@
-import { NewTabs, TabList, TabSlot, TabTrigger } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/headless';
+import { Text } from 'react-native';
 
 export default function Layout() {
   return (
-    <NewTabs>
+    <Tabs>
       <TabSlot />
       <TabList>
         <TabTrigger href="/">
@@ -16,6 +16,6 @@ export default function Layout() {
           <Text>External</Text>
         </TabTrigger>
       </TabList>
-    </NewTabs>
+    </Tabs>
   );
 }
