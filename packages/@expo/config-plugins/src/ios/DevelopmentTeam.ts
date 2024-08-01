@@ -45,7 +45,7 @@ export function setDevelopmentTeamForBuildConfiguration(
 }
 
 /**
- * Update the Apple development team ID for all XCBuildConfiguration entries using the first native target
+ * Update the Apple development team ID for all XCBuildConfiguration entries, in all native targets.
  *
  * A development team is stored as a value in XCBuildConfiguration entry.
  * Those entries exist for every pair (build target, build configuration).
