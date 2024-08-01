@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix JSC builds.
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
