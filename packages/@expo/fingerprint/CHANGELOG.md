@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support to pass string array for `sourceSkips` in the `fingerprint.config.js`. ([#30754](https://github.com/expo/expo/pull/30754) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
