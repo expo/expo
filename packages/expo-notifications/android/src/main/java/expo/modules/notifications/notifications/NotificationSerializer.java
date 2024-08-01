@@ -1,5 +1,8 @@
 package expo.modules.notifications.notifications;
 
+import static expo.modules.notifications.UtilsKt.filteredBundleForWritableMap;
+import static expo.modules.notifications.UtilsKt.isValidJSONString;
+
 import android.os.Build;
 import android.os.Bundle;
 
@@ -9,7 +12,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import expo.modules.core.arguments.MapArguments;
 
@@ -235,8 +237,9 @@ public class NotificationSerializer {
       serializedContent.putString("body", extras.getString("message"));
     } else {
       // The notification came directly from Firebase or some other service,
-      // so we copy the data as is from the extras bundle
-      serializedContent.putBundle("data", extras);
+      // so we copy the data as is from the extras bundle, after
+      // ensuring it can be converted to a WritableMap
+      serializedContent.putBundle("data", filteredBundleForWritableMap(extras));
     }
 
     Bundle serializedTrigger = new Bundle();
@@ -257,19 +260,6 @@ public class NotificationSerializer {
     serializedResponse.putBundle("notification", serializedNotification);
 
     return serializedResponse;
-  }
-
-  public static boolean isValidJSONString(String test) {
-    try {
-      new JSONObject(test);
-    } catch (JSONException objectEx) {
-      try {
-        new JSONArray(test);
-      } catch (JSONException arrayEx) {
-        return false;
-      }
-    }
-    return true;
   }
 
 }
