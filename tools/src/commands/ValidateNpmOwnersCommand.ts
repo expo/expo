@@ -9,6 +9,9 @@ type ActionOptions = object;
 const API_TOKEN = process.env.NPM_TOKEN_READ_ONLY;
 const ORG_NAME = 'expo';
 
+// If we want to add any exemptions for particular users, add them here.
+const USERS_TO_SKIP = [];
+
 export default (program: Command) => {
   program
     .command('validate-npm-owners')
@@ -31,7 +34,10 @@ async function action(_options: ActionOptions) {
   logger.log(`${packages.length} packages found: ${chalk.dim(packages.join(', '))}\n`);
 
   logger.log('Validating package owners...');
-  const packagesWithInvalidOwners = await validatePackageOwnersAsync(orgMembers, packages);
+  const packagesWithInvalidOwners = await validatePackageOwnersAsync(
+    [...orgMembers, ...USERS_TO_SKIP],
+    packages
+  );
   logger.log('\n\n');
 
   if (Object.keys(packagesWithInvalidOwners).length === 0) {
