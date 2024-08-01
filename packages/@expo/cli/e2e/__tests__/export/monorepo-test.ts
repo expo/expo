@@ -46,7 +46,6 @@ async function exportApp(monorepoRoot: string, workspacePath: string) {
     env: {
       NODE_ENV: 'production',
       EXPO_USE_FAST_RESOLVER: 'true',
-      EXPO_USE_METRO_WORKSPACE_ROOT: 'true',
     },
   });
 

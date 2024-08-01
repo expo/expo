@@ -387,6 +387,8 @@ export interface CameraViewRef {
     }>;
     readonly stopRecording: () => Promise<void>;
     readonly launchModernScanner: () => Promise<void>;
+    readonly resumePreview: () => Promise<void>;
+    readonly pausePreview: () => Promise<void>;
 }
 /**
  * @hidden

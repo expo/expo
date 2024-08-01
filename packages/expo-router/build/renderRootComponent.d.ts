@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 /**
  * Register and mount the root component using the predefined rendering
  * method. This function ensures the Splash Screen and errors are handled correctly.

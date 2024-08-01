@@ -8,12 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fixed broken `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun`. ([#30344](https://github.com/expo/expo/pull/30344) by [@kudo](https://github.com/kudo))
-- Fixed `fingerprint.config.js` loading error on EAS build. ([#30505](https://github.com/expo/expo/pull/30505) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
 
 - Upgrade `glob@7` to `glob@10`. ([#29927](https://github.com/expo/expo/pull/29927) by [@byCedric](https://github.com/byCedric))
+
+## 0.10.2 - 2024-07-22
+
+### 🐛 Bug fixes
+
+- Fixed `fingerprint.config.js` loading error on EAS build. ([#30505](https://github.com/expo/expo/pull/30505) by [@kudo](https://github.com/kudo))
+
+## 0.10.1 - 2024-07-15
+
+### 🐛 Bug fixes
+
+- Fixed broken `SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun`. ([#30344](https://github.com/expo/expo/pull/30344) by [@kudo](https://github.com/kudo))
 
 ## 0.10.0 - 2024-06-20
 

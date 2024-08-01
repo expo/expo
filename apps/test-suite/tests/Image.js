@@ -29,7 +29,36 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     t.expect(error).toBeTruthy();
   };
 
-  t.describe('Image', () => {
+  // TODO: Remove the condition once this is implemented on other platforms
+  if (Platform.OS === 'ios') {
+    t.describe('Image', () => {
+      t.it('loads an image', async () => {
+        const image = await Image.loadAsync(REMOTE_SOURCE);
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(false);
+        t.expect(image.mediaType).toBe('image/jpeg');
+      });
+
+      t.it('loads an animated image', async () => {
+        const image = await Image.loadAsync(ANIMATED_IMAGE_SOURCE);
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(true);
+        t.expect(image.mediaType).toBe('image/gif');
+      });
+    });
+  }
+
+  t.describe('ImageView', () => {
     t.afterEach(async () => {
       await cleanupPortal();
     });

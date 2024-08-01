@@ -95,7 +95,7 @@ class RouterStore {
         };
         if (this.routeNode) {
             // We have routes, so get the linking config and the root component
-            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this.routeNode, context, linkingConfigOptions);
+            this.linking = (0, getLinkingConfig_1.getLinkingConfig)(this, this.routeNode, context, linkingConfigOptions);
             this.rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode);
             // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
             // This will cause static rendering to fail, which once performs a single pass.

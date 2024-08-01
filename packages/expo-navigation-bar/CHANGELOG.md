@@ -14,6 +14,10 @@
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
+## 3.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.6 - 2024-06-06
 
 _This version does not introduce any user-facing changes._

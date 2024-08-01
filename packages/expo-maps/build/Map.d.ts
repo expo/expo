@@ -28,6 +28,6 @@ export declare class ExpoMap extends React.Component<ExpoMapViewProps> {
     componentWillUnmount(): void;
     componentDidUpdate(_: any, prevState: ExpoMapState): void;
     private mapChildren;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 //# sourceMappingURL=Map.d.ts.map

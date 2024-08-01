@@ -1,3 +1,4 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
@@ -51,6 +52,7 @@ interface State {
   autoFocus: FocusMode;
   barcodeData: string;
   newPhotos: boolean;
+  previewPaused: boolean;
   permissionsGranted: boolean;
   micPermissionsGranted: boolean;
   permission?: PermissionStatus;
@@ -106,6 +108,7 @@ export default class CameraScreen extends React.Component<object, State> {
     barcodeData: '',
     autoFocus: 'off',
     newPhotos: false,
+    previewPaused: false,
     permissionsGranted: false,
     micPermissionsGranted: false,
     showGallery: false,
@@ -148,6 +151,8 @@ export default class CameraScreen extends React.Component<object, State> {
     }));
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
+
+  togglePreviewPaused = () => this.setState((state) => ({ previewPaused: !state.previewPaused }));
 
   toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
 
@@ -220,6 +225,15 @@ export default class CameraScreen extends React.Component<object, State> {
         to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
       });
     }
+  };
+
+  updatePreviewState = () => {
+    if (this.state.previewPaused) {
+      this.camera?.current?.resumePreview();
+    } else {
+      this.camera?.current?.pausePreview();
+    }
+    this.togglePreviewPaused();
   };
 
   changeMode = () => {
@@ -304,6 +318,13 @@ export default class CameraScreen extends React.Component<object, State> {
           size={24}
           color={this.state.mirror ? 'white' : '#858585'}
         />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.updatePreviewState}>
+        {this.state.previewPaused ? (
+          <AntDesign name="playcircleo" size={24} color="white" />
+        ) : (
+          <AntDesign name="pausecircleo" size={24} color="white" />
+        )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />

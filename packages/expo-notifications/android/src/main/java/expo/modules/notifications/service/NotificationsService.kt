@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.*
 import android.util.Log
 import androidx.core.app.RemoteInput
+import expo.modules.notifications.BuildConfig
 import expo.modules.notifications.notifications.model.*
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
@@ -644,7 +645,12 @@ open class NotificationsService : BroadcastReceiver() {
         // If we ended up here, the callbacks must have completed successfully
         receiver?.send(SUCCESS_CODE, resultData)
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Action ${intent.action} failed: ${e.message}")
+        if (BuildConfig.DEBUG) {
+          // Log stack trace for debugging
+          Log.e("expo-notifications", "Action ${intent.action} failed: ${e.message}\n${e.stackTraceToString()}")
+        } else {
+          Log.e("expo-notifications", "Action ${intent.action} failed: ${e.message}")
+        }
         e.printStackTrace()
 
         receiver?.send(ERROR_CODE, Bundle().also { it.putSerializable(EXCEPTION_KEY, e) })

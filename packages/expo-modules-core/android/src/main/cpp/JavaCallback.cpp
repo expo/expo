@@ -65,6 +65,10 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
+                   makeNativeMethod("invokeIntArray", JavaCallback::invokeIntArray),
+                   makeNativeMethod("invokeLongArray", JavaCallback::invokeLongArray),
+                   makeNativeMethod("invokeFloatArray", JavaCallback::invokeFloatArray),
+                   makeNativeMethod("invokeDoubleArray", JavaCallback::invokeDoubleArray),
                  });
 }
 
@@ -80,7 +84,7 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
 
 template<typename T>
 void JavaCallback::invokeJSFunction(
-  ArgsConverter<T> argsConverter,
+  ArgsConverter<typename std::remove_const<T>::type> argsConverter,
   T arg
 ) {
   const auto strongCallbackContext = this->callbackContext.lock();
@@ -129,9 +133,22 @@ void JavaCallback::invokeJSFunction(T arg) {
       jsi::Function &jsFunction,
       T arg
     ) {
-      jsFunction.call(rt, convertToJS(rt, arg));
+      jsFunction.call(rt, convertToJS(rt, std::forward<T>(arg)));
     },
     arg
+  );
+}
+
+template<class T>
+void JavaCallback::invokeJSFunctionForArray(T &arg) {
+  size_t size = arg->size();
+  auto region = arg->getRegion((jsize)0, size);
+  RawArray<typename decltype(region)::element_type> rawArray;
+  rawArray.size = size;
+  rawArray.data = std::move(region);
+
+  invokeJSFunction<decltype(rawArray)>(
+    std::move(rawArray)
   );
 }
 
@@ -178,6 +195,22 @@ void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
   invokeJSFunction(jni::make_global(result));
+}
+
+void JavaCallback::invokeIntArray(jni::alias_ref<jni::JArrayInt> result) {
+  invokeJSFunctionForArray(result);
+}
+
+void JavaCallback::invokeLongArray(jni::alias_ref<jni::JArrayLong> result) {
+  invokeJSFunctionForArray(result);
+}
+
+void JavaCallback::invokeDoubleArray(jni::alias_ref<jni::JArrayDouble> result) {
+  invokeJSFunctionForArray(result);
+}
+
+void JavaCallback::invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result) {
+  invokeJSFunctionForArray(result);
 }
 
 void JavaCallback::invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage) {

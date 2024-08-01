@@ -2,6 +2,7 @@
 
 package expo.modules.kotlin.types
 
+import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
 import java.lang.ref.WeakReference
@@ -33,6 +34,8 @@ class UnconvertedValue(
 data class ConvertedValue(val convertedValue: Any) : DeferredValue()
 
 @EitherType
+@DoNotStrip
+// We can't strip this class because typeOf<Either<T,P>> won't work in the release builds.
 open class Either<FirstType : Any, SecondType : Any>(
   private val bareValue: Any,
   private val deferredValue: MutableList<DeferredValue>,

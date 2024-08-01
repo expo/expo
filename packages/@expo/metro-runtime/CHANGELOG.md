@@ -6,12 +6,15 @@
 
 ### 🎉 New features
 
+- Add server HMR for native. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
+- Add streaming fetch polyfill. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `src` directory for source code. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Always enable async bundle loading on native. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))
 - Support `location.reload()` in native production builds. ([#29572](https://github.com/expo/expo/pull/29572) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Fix logbox usage on native for router errors. ([#30651](https://github.com/expo/expo/pull/30651) by [@EvanBacon](https://github.com/EvanBacon))
 - Update DevLoadingView on native. ([#30606](https://github.com/expo/expo/pull/30606) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix metro symbolication issue with web import errors. ([#30544](https://github.com/expo/expo/pull/30544) by [@EvanBacon](https://github.com/EvanBacon))
 - Remount the failed component when a refresh event occurs. ([#30544](https://github.com/expo/expo/pull/30544) by [@EvanBacon](https://github.com/EvanBacon))
