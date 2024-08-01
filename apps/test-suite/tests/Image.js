@@ -8,7 +8,9 @@ import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './hel
 
 export const name = 'Image';
 
-const REMOTE_SOURCE = { uri: 'https://source.unsplash.com/random' };
+const REMOTE_SOURCE = {
+  uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
+};
 const REMOTE_KNOWN_SOURCE = {
   uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
   blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
@@ -30,7 +32,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
   };
 
   // TODO: Remove the condition once this is implemented on other platforms
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
     t.describe('Image', () => {
       t.it('loads an image', async () => {
         const image = await Image.loadAsync(REMOTE_SOURCE);
@@ -41,7 +43,9 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(image.height).toBeGreaterThan(0);
         t.expect(image.scale).toBe(1);
         t.expect(image.isAnimated).toBe(false);
-        t.expect(image.mediaType).toBe('image/jpeg');
+        if (Platform.OS === 'ios') {
+          t.expect(image.mediaType).toBe('image/jpeg');
+        }
       });
 
       t.it('loads an animated image', async () => {
@@ -53,7 +57,9 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(image.height).toBeGreaterThan(0);
         t.expect(image.scale).toBe(1);
         t.expect(image.isAnimated).toBe(true);
-        t.expect(image.mediaType).toBe('image/gif');
+        if (Platform.OS === 'ios') {
+          t.expect(image.mediaType).toBe('image/gif');
+        }
       });
     });
   }

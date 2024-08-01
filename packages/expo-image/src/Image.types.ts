@@ -522,12 +522,15 @@ export declare class ImageRef extends SharedRef {
    */
   readonly height: number;
   /**
-   * If you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
+   * On iOS, if you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
    * All other images are assumed to have a scale factor of **1.0**.
-   * If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+   * On Android, it calculates the scale based on the bitmap density divided by screen density.
+   *
+   * On all platforms, if you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
    */
   readonly scale: number;
   /**
+   * @platform ios
    * Media type (also known as MIME type) of the image, based on its format.
    * Returns `null` when the format is unknown or not supported.
    */
