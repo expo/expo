@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 
 import { loadConfigAsync } from './Config';
-import type { NormalizedOptions, Options } from './Fingerprint.types';
+import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
 import { SourceSkips } from './sourcer/SourceSkips';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -95,13 +95,18 @@ export async function normalizeOptionsAsync(
     // Explicit options
     ...options,
     // These options are computed by both default and explicit options, so we put them last.
-    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+    ignorePaths: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
   };
 }
 
-async function collectIgnorePathsAsync(projectRoot: string, options?: Options): Promise<string[]> {
+async function collectIgnorePathsAsync(
+  projectRoot: string,
+  pathsFromConfig: Config['ignorePaths'],
+  options: Options | undefined
+): Promise<string[]> {
   const ignorePaths = [
     ...DEFAULT_IGNORE_PATHS,
+    ...(pathsFromConfig ?? []),
     ...(options?.ignorePaths ?? []),
     ...(options?.dirExcludes?.map((dirExclude) => `${dirExclude}/**/*`) ?? []),
   ];

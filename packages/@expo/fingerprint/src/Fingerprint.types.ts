@@ -114,7 +114,12 @@ type SourceSkipsKeys = keyof typeof SourceSkips;
  */
 export type Config = Pick<
   Options,
-  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'enableReactImportsPatcher' | 'debug'
+  | 'concurrentIoLimit'
+  | 'hashAlgorithm'
+  | 'ignorePaths'
+  | 'extraSources'
+  | 'enableReactImportsPatcher'
+  | 'debug'
 > & {
   sourceSkips?: SourceSkips | SourceSkipsKeys[];
 };
