@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `withDevelopmentTeam` to change the Apple development team id.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
