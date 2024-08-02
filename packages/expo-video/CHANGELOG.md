@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
