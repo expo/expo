@@ -280,20 +280,9 @@ export async function modifyConfigAsync(
   config: AppJSONConfig | null;
 }> {
   const config = getConfig(projectRoot, readOptions);
-  if (config.dynamicConfigPath) {
-    // We cannot automatically write to a dynamic config.
-    /* Currently we should just use the safest approach possible, informing the user that they'll need to manually modify their dynamic config.
 
-    if (config.staticConfigPath) {
-      // Both a dynamic and a static config exist.
-      if (config.dynamicConfigObjectType === 'function') {
-        // The dynamic config exports a function, this means it possibly extends the static config.
-      } else {
-        // Dynamic config ignores the static config, there isn't a reason to automatically write to it.
-        // Instead we should warn the user to add values to their dynamic config.
-      }
-    }
-    */
+  // We cannot automatically write to a dynamic config
+  if (config.dynamicConfigPath) {
     return {
       type: 'warn',
       message: `Cannot automatically write to dynamic config at: ${path.relative(
@@ -302,8 +291,10 @@ export async function modifyConfigAsync(
       )}`,
       config: null,
     };
-  } else if (config.staticConfigPath == null) {
-    // No config in the project, use a default location.
+  }
+
+  // No config in the project, use a default location.
+  if (config.staticConfigPath == null) {
     config.staticConfigPath = path.join(projectRoot, 'app.json');
   }
 
@@ -319,6 +310,7 @@ export async function modifyConfigAsync(
     // Otherwise (app.config.json) just add the config modification to the top most level.
     outputConfig = { ...config.rootConfig, ...modifications };
   }
+
   if (!writeOptions.dryRun) {
     await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
   }
