@@ -87,7 +87,11 @@ function babelPresetExpo(api, options = {}) {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-        extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
+        extraPlugins.push([
+            require('@babel/plugin-transform-object-rest-spread'),
+            // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
+            { loose: true, useBuiltIns: true },
+        ]);
     }
     else if (!isServerEnv) {
         // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
