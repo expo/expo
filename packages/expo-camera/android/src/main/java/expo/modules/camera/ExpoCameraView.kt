@@ -128,7 +128,7 @@ class ExpoCameraView(
   private var barcodeFormats: List<BarcodeType> = emptyList()
 
   private var previewView = PreviewView(context).apply {
-    elevation = -1f
+    elevation = 0f
   }
   private val scope = CoroutineScope(Dispatchers.Main)
   private var shouldCreateCamera = false
@@ -227,6 +227,16 @@ class ExpoCameraView(
     val width = right - left
     val height = bottom - top
     previewView.layout(0, 0, width, height)
+  }
+
+  override fun onViewAdded(child: View?) {
+    super.onViewAdded(child)
+    if (child == previewView) {
+      return
+    }
+    child?.bringToFront()
+    removeView(previewView)
+    addView(previewView, 0)
   }
 
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
