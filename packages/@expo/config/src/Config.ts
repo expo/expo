@@ -298,24 +298,26 @@ export async function modifyConfigAsync(
     config.staticConfigPath = path.join(projectRoot, 'app.json');
   }
 
-  // Static with no dynamic config, this means we can append to the config automatically.
-  let outputConfig: AppJSONConfig;
-  // If the config has an expo object (app.json) then append the options to that object.
-  if (config.rootConfig.expo) {
-    outputConfig = {
-      ...config.rootConfig,
-      expo: { ...config.rootConfig.expo, ...modifications },
-    };
-  } else {
-    // Otherwise (app.config.json) just add the config modification to the top most level.
-    outputConfig = { ...config.rootConfig, ...modifications };
-  }
-
+  const outputConfig = mergeConfigModifications(config, modifications);
   if (!writeOptions.dryRun) {
     await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
   }
-
   return { type: 'success', config: outputConfig };
+}
+
+/** Merge the config modifications, using an optional possible top-level `expo` object. */
+function mergeConfigModifications(
+  config: ProjectConfig,
+  modifications: Partial<ExpoConfig>
+): AppJSONConfig {
+  if (!config.rootConfig.expo) {
+    return { ...config.rootConfig, ...modifications };
+  }
+
+  return {
+    ...config.rootConfig,
+    expo: { ...config.rootConfig.expo, ...modifications },
+  };
 }
 
 function ensureConfigHasDefaultValues({
