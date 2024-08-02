@@ -281,6 +281,13 @@ export async function modifyConfigAsync(
 }> {
   const config = getConfig(projectRoot, readOptions);
 
+  // Helper to avoid writing when running in drymode
+  async function writeConfigAsync(configPath: string, mergedConfig: AppJSONConfig) {
+    if (!writeOptions.dryRun) {
+      await JsonFile.writeAsync(configPath, mergedConfig, { json5: false });
+    }
+  }
+
   // We cannot automatically write to a dynamic config
   if (config.dynamicConfigPath) {
     return {
@@ -299,9 +306,7 @@ export async function modifyConfigAsync(
   }
 
   const outputConfig = mergeConfigModifications(config, modifications);
-  if (!writeOptions.dryRun) {
-    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
-  }
+  await writeConfigAsync(config.staticConfigPath, outputConfig);
   return { type: 'success', config: outputConfig };
 }
 
