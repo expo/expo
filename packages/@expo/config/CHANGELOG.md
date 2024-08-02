@@ -8,7 +8,7 @@
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `resolveRelativeEntryPoint` that takes possible server root into account. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
-- Add support for static and extending dynamic config modifications.
+- Add support for static and extending dynamic config modifications. ([#30782](https://github.com/expo/expo/pull/30782) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
