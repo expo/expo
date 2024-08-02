@@ -370,6 +370,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
+  '/router/appearance/': '/router/introduction/',
 
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',

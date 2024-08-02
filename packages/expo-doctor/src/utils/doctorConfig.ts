@@ -10,7 +10,7 @@ import { env } from './env';
  * {
  *  "expo": {
  *    "doctor": {
- *      "directoryCheck": {
+ *      "reactNativeDirectoryCheck": {
  *        "enabled": true,
  *        "exclude": ["/foo/", "bar"]
  *        "listUnknownPackages": true,
@@ -24,9 +24,9 @@ export function getDoctorConfig(pkg: any) {
   return pkg?.expo?.doctor ?? {};
 }
 
-export function getDirectoryCheckExcludes(pkg: any) {
+export function getReactNativeDirectoryCheckExcludes(pkg: any) {
   const config = getDoctorConfig(pkg);
-  return (config.directoryCheck?.exclude ?? []).map((ignoredPackage: string) => {
+  return (config.reactNativeDirectoryCheck?.exclude ?? []).map((ignoredPackage: string) => {
     if (
       typeof ignoredPackage === 'string' &&
       ignoredPackage.startsWith('/') &&
@@ -39,13 +39,13 @@ export function getDirectoryCheckExcludes(pkg: any) {
   });
 }
 
-export function getDirectoryCheckEnabled(pkg: any) {
-  const pkgJsonConfigSetting = getDoctorConfig(pkg).directoryCheck?.enabled;
+export function getReactNativeDirectoryCheckEnabled(pkg: any) {
+  const pkgJsonConfigSetting = getDoctorConfig(pkg).reactNativeDirectoryCheck?.enabled;
 
   if (env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK !== null) {
     if (typeof pkgJsonConfigSetting === 'boolean') {
       console.warn(
-        'Both EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK and config.directoryCheck.enabled are set. Using EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK.'
+        'Both EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK and config.reactNativeDirectoryCheck.enabled are set. Using EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK.'
       );
     }
 
@@ -55,9 +55,9 @@ export function getDirectoryCheckEnabled(pkg: any) {
   return pkgJsonConfigSetting ?? false;
 }
 
-export function getDirectoryCheckListUnknownPackagesEnabled(pkg: any) {
+export function getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg: any) {
   const config = getDoctorConfig(pkg);
-  const listUnknownPackages = config.directoryCheck?.listUnknownPackages;
+  const listUnknownPackages = config.reactNativeDirectoryCheck?.listUnknownPackages;
 
   // Default to true if config is missing
   if (typeof listUnknownPackages !== 'boolean') {

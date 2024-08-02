@@ -5,6 +5,7 @@ import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
+import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -185,6 +186,7 @@ export async function instantiateMetroAsync(
   }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
   metro: Metro.Server;
+  hmrServer: MetroHmrServer | null;
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
@@ -218,9 +220,14 @@ export async function instantiateMetroAsync(
 
   if (!isExporting) {
     // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
+    // From react-native 0.75, the exported `securityHeadersMiddleware` is a middleware factory that accepts single option parameter.
+    const securityHeadersMiddlewareHandler =
+      securityHeadersMiddleware.length === 1
+        ? securityHeadersMiddleware({})
+        : securityHeadersMiddleware;
     replaceMiddlewareWith(
       middleware as ConnectServer,
-      securityHeadersMiddleware,
+      securityHeadersMiddlewareHandler,
       createCorsMiddleware(exp)
     );
 
@@ -256,7 +263,7 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
-  const { server, metro } = await runServer(
+  const { server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
     {
@@ -289,6 +296,7 @@ export async function instantiateMetroAsync(
 
   return {
     metro,
+    hmrServer,
     server,
     middleware,
     messageSocket: messageSocketEndpoint,

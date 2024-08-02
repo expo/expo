@@ -60,7 +60,7 @@ describe(useSegments, () => {
 });
 
 describe(useGlobalSearchParams, () => {
-  it(`return styles of deeply nested routes`, () => {
+  it(`return params of deeply nested routes`, () => {
     const { result } = renderHook(() => useGlobalSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
       initialUrl: '/apple/square',
     });
@@ -210,6 +210,41 @@ describe(useGlobalSearchParams, () => {
           shape: 'square',
         },
       },
+    ]);
+  });
+
+  it('preserves the params object', () => {
+    const results1: object[] = [];
+    const results2: object[] = [];
+
+    renderRouter(
+      {
+        index: () => null,
+        '[id]/_layout': () => <Slot />,
+        '[id]/index': function Protected() {
+          results1.push(useGlobalSearchParams());
+          return null;
+        },
+        '[id]/[fruit]/_layout': () => <Slot />,
+        '[id]/[fruit]/index': function Protected() {
+          results2.push(useGlobalSearchParams());
+          return null;
+        },
+      },
+      {
+        initialUrl: '/1',
+      }
+    );
+
+    expect(results1).toEqual([{ id: '1' }]);
+    act(() => router.push('/2'));
+    expect(results1).toEqual([{ id: '1' }, { id: '2', screen: 'index', params: { id: '2' } }]);
+
+    act(() => router.push('/3/apple'));
+    // The first screen has not rerendered
+    expect(results1).toEqual([{ id: '1' }, { id: '2', screen: 'index', params: { id: '2' } }]);
+    expect(results2).toEqual([
+      { id: '3', fruit: 'apple', screen: 'index', params: { id: '3', fruit: 'apple' } },
     ]);
   });
 });

@@ -17,13 +17,19 @@ export enum TextElement {
   PRE = 'pre',
   STRONG = 'strong',
   KBD = 'kbd',
+  DEL = 'del',
 }
 
 export type TextWeight = keyof typeof typography.utility.weight;
 export type TextTheme = keyof typeof theme.text;
 
 export type TextComponentProps = HTMLAttributes<
-  HTMLHeadingElement | HTMLParagraphElement | HTMLLIElement | HTMLUListElement | HTMLPreElement
+  | HTMLHeadingElement
+  | HTMLParagraphElement
+  | HTMLLIElement
+  | HTMLUListElement
+  | HTMLPreElement
+  | HTMLModElement
 > & {
   testID?: string;
   weight?: TextWeight;

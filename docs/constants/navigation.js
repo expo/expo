@@ -204,7 +204,6 @@ const general = [
     makePage('router/create-pages.mdx'),
     makePage('router/navigating-pages.mdx'),
     makePage('router/layouts.mdx'),
-    makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
     makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),

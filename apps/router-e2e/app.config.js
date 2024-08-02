@@ -4,7 +4,7 @@ module.exports = {
   name: 'Router E2E',
   slug: 'expo-router-e2e',
 
-  sdkVersion: 'UNVERSIONED',
+  sdkVersion: process.env.E2E_ROUTER_USE_PUBLISHED_EXPO_GO ? undefined : 'UNVERSIONED',
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
@@ -34,6 +34,19 @@ module.exports = {
     bundler: 'metro',
   },
   plugins: [
+    [
+      'expo-build-properties',
+      {
+        ios: {
+          newArchEnabled: true,
+          ccacheEnabled: true,
+        },
+        android: {
+          newArchEnabled: true,
+        },
+      },
+    ],
+
     [
       'expo-router',
       {

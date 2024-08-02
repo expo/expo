@@ -9,17 +9,32 @@
  * @returns the mapped response.
  */
 export const mapNotificationResponse = (response) => {
-    const mappedResponse = { ...response };
+    return {
+        ...response,
+        notification: mapNotification(response.notification),
+    };
+};
+/**
+ * @hidden
+ *
+ * Does any required processing of a notification from native code
+ * before it is passed to a notification listener.
+ *
+ * @param notification The raw notification passed in from native code
+ * @returns the mapped notification.
+ */
+export const mapNotification = (notification) => {
+    const mappedNotification = { ...notification };
     try {
-        const dataString = mappedResponse?.notification?.request?.content['dataString'];
+        const dataString = mappedNotification?.request?.content['dataString'];
         if (typeof dataString === 'string') {
-            mappedResponse.notification.request.content.data = JSON.parse(dataString);
-            delete mappedResponse.notification.request.content.dataString;
+            mappedNotification.request.content.data = JSON.parse(dataString);
+            delete mappedNotification.request.content.dataString;
         }
     }
     catch (e) {
-        console.log(`Error in response: ${e}`);
+        console.log(`Error in notification: ${e}`);
     }
-    return mappedResponse;
+    return mappedNotification;
 };
 //# sourceMappingURL=mapNotificationResponse.js.map

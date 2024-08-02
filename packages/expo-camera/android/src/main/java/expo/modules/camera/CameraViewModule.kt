@@ -240,6 +240,14 @@ class CameraViewModule : Module() {
         view.activeRecording?.close()
       }.runOnQueue(Queues.MAIN)
 
+      AsyncFunction("resumePreview") { view: ExpoCameraView ->
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view: ExpoCameraView ->
+        view.pausePreview()
+      }
+
       OnViewDestroys { view ->
         view.orientationEventListener.disable()
         view.cancelCoroutineScope()

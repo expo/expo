@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.node",
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node16",
+    "declaration": false,
+    "composite": false,
+  }
+}

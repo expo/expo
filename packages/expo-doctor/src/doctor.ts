@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import semver from 'semver';
 
 import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
-import { DirectoryCheck } from './checks/DirectoryCheck';
 import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
 import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
@@ -14,9 +13,10 @@ import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
+import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
-import { getDirectoryCheckEnabled } from './utils/doctorConfig';
+import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
 import { env } from './utils/env';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
@@ -135,11 +135,11 @@ export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConf
     new NativeToolingVersionCheck(),
   ];
 
-  if (getDirectoryCheckEnabled(pkg)) {
+  if (getReactNativeDirectoryCheckEnabled(pkg)) {
     chalk.yellow(
       'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
     );
-    checks.push(new DirectoryCheck());
+    checks.push(new ReactNativeDirectoryCheck());
   }
 
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {

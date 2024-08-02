@@ -14,7 +14,6 @@ import androidx.test.filters.LargeTest
 import com.expo.modules.devclient.activities.DevClientBundledAppActivity
 import com.expo.modules.devclient.activities.reactApplicationHolder
 import com.expo.modules.devclient.consts.BundledAppManifest
-import com.expo.modules.devclient.devmenu.DevClientTestExtension
 import com.expo.modules.devclient.koin.DevLauncherKoinTest
 import com.expo.modules.devclient.koin.declareInDevLauncherScope
 import com.expo.modules.devclient.scenarios.DevLauncherBasicScenario
@@ -26,6 +25,7 @@ import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
@@ -71,14 +71,14 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
             DevLauncherPackage(),
             DevMenuPackage(),
             object : ReactPackage {
-              override fun createNativeModules(reactContext: ReactApplicationContext) = listOf(DevClientTestExtension(reactContext))
+              override fun createNativeModules(reactContext: ReactApplicationContext) = emptyList<ReactContextBaseJavaModule>()
               override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> = emptyList()
             }
           )
         }
       }
 
-      override val reactHost: ReactHost?
+      override val reactHost: ReactHost
         get() = getDefaultReactHost(app, reactNativeHost)
     }.also {
       reactApplicationHolder = it

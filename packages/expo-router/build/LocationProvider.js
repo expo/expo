@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNormalizedStatePath = exports.getRouteInfoFromState = void 0;
+const getPathFromState_1 = require("./fork/getPathFromState");
 const getStateFromPath_1 = require("./fork/getStateFromPath");
 function getRouteInfoFromState(getPathFromState, state, baseUrl) {
     const { path } = getPathFromState(state, false);
@@ -41,27 +42,7 @@ function getNormalizedStatePath({ path: statePath, params, }, baseUrl) {
         segments: (0, getStateFromPath_1.stripBaseUrl)(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
         // TODO: This is not efficient, we should generate based on the state instead
         // of converting to string then back to object
-        params: Object.entries(params).reduce((prev, [key, value]) => {
-            if (Array.isArray(value)) {
-                prev[key] = value.map((v) => {
-                    try {
-                        return decodeURIComponent(v);
-                    }
-                    catch {
-                        return v;
-                    }
-                });
-            }
-            else {
-                try {
-                    prev[key] = decodeURIComponent(value);
-                }
-                catch {
-                    prev[key] = value;
-                }
-            }
-            return prev;
-        }, {}),
+        params: (0, getPathFromState_1.decodeParams)(params),
     };
 }
 exports.getNormalizedStatePath = getNormalizedStatePath;

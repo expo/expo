@@ -1,5 +1,5 @@
 ---
-modificationDate: April 8th, 2024
+modificationDate: July 31st, 2024
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -11,7 +11,7 @@ import { BuildResourceList } from '~/ui/components/utils/infrastructure';
 
 ## Builder IP addresses
 
-A list of the IP addresses of the build servers is available [in this file](https://expo.dev/eas-build-worker-ips.txt). We do not expect to change the list often. Every time we improve the infrastructure and do need to update the IPs, we will also update the timestamp in the header of the file.
+A list of the IP addresses of the build servers is available [in this file](https://expo.dev/eas-build-worker-ips.txt). We do not expect to change the list often. The list includes "Last-Modified" and "Expires" ISO 8601 timestamps that respectively specify the last time the list was updated and the time until which we commit to not change the list.
 
 Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in our own macOS cloud.
 
@@ -53,7 +53,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
+  registry=http://10.4.0.19:4873
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -61,7 +61,7 @@ Android builders run on virtual machines in an isolated environment. Every build
   ```yml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'http://npm-cache-service.worker-infra-production.svc.cluster.local:4873'
+  npmRegistryServer: 'http://10.4.0.19:4873'
   enableImmutableInstalls: false
   ```
 
@@ -263,7 +263,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://10.254.24.9:4873
+  registry=http://10.94.183.70:4873
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -271,7 +271,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
   ```yml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'registry=http://10.254.24.9:4873'
+  npmRegistryServer: 'http://10.94.183.70:4873'
   enableImmutableInstalls: false
   ```
 
@@ -366,3 +366,9 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - node-gyp 10.0.1
 
 </Collapsible>
+
+### Supported Xcode versions
+
+We aim to support all stable Xcode releases that allow you to submit your app to the App Store Connect when used during the build process.
+
+This usually means that we support the latest stable Xcode version and the previous one (until the new [minimal Xcode version requirement](https://developer.apple.com/news/upcoming-requirements/?id=04292024a) is introduced by Apple).
