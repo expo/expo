@@ -166,8 +166,7 @@ describe(createFileHashResultsAsync, () => {
     const filePath = 'app.json';
     const contents = '{}';
     const limiter = pLimit(1);
-    const options = await normalizeOptionsAsync('/app', { debug: true });
-    options.ignorePaths = ['*.json'];
+    const options = await normalizeOptionsAsync('/app', { debug: true, ignorePaths: ['*.json'] });
     vol.mkdirSync('/app');
     vol.writeFileSync(path.join('/app', filePath), contents);
 
@@ -216,8 +215,10 @@ describe(createDirHashResultsAsync, () => {
 
   it('should ignore dir if it is in options.ignorePaths', async () => {
     const limiter = pLimit(3);
-    const options = await normalizeOptionsAsync('/app', { debug: true });
-    options.ignorePaths = ['ios/**/*', 'android/**/*'];
+    const options = await normalizeOptionsAsync('/app', {
+      debug: true,
+      ignorePaths: ['ios/**/*', 'android/**/*'],
+    });
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',
