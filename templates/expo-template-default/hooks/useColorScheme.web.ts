@@ -16,7 +16,7 @@ export function useColorScheme() {
   return 'light'
 }
 
-export const useHasHydrated = () => {
+const useHasHydrated = () => {
   const [hasHydrated, setHasHydrated] = useState(false)
 
   useEffect(() => {
