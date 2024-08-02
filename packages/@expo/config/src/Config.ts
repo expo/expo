@@ -278,34 +278,28 @@ export async function modifyConfigAsync(
 ): Promise<{
   type: 'success' | 'warn' | 'fail';
   message?: string;
-  config: AppJSONConfig | null;
+  config: ExpoConfig | null;
 }> {
   const config = getConfig(projectRoot, readOptions);
-
-  // Helper to avoid writing when running in drymode
-  async function writeConfigAsync(configPath: string, mergedConfig: AppJSONConfig) {
-    if (writeOptions.dryRun) {
-      return false;
-    }
-
-    await JsonFile.writeAsync(configPath, mergedConfig, { json5: false });
-    return true;
-  }
+  const isDryRun = writeOptions.dryRun;
 
   // Create or modify the static config, when not using dynamic config
   if (!config.dynamicConfigPath) {
     const outputConfig = mergeConfigModifications(config, modifications);
-    await writeConfigAsync(config.staticConfigPath ?? 'app.json', outputConfig);
-    return { type: 'success', config: outputConfig };
+
+    if (!isDryRun) {
+      const configPath = config.staticConfigPath ?? path.join(projectRoot, 'app.json');
+      await JsonFile.writeAsync(configPath, outputConfig, { json5: false });
+    }
+
+    return { type: 'success', config: outputConfig.expo ?? outputConfig };
   }
 
   // Attempt to write to a function-like dynamic config, when used with a static config
   if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
     const outputConfig = mergeConfigModifications(config, modifications);
-    const configModified = await writeConfigAsync(config.staticConfigPath, outputConfig);
 
-    // When running in dry-mode, we cannot verify the config is updated properly
-    if (!configModified) {
+    if (isDryRun) {
       return {
         type: 'warn',
         message: `Cannot verify config modifications in dry-run mode for config at: ${path.relative(projectRoot, config.dynamicConfigPath)}`,
@@ -313,24 +307,21 @@ export async function modifyConfigAsync(
       };
     }
 
+    // Attempt to write the static config with the config modifications
+    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
+
     // Verify that the dynamic config is using the static config
     const newConfig = getConfig(projectRoot, readOptions);
     const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
     if (newConfighasModifications) {
-      // Note(cedric): we need to merge the dynamic result as the AppJSONConfig here,
-      // without this, we would lose the modifications the dynamic config made.
-      const mergedConfig = getIntersectingObject(
-        config.rootConfig.expo || config.rootConfig,
-        'expo' in config.rootConfig ? { expo: newConfig.exp } : newConfig.exp
-      );
       return {
         type: 'success',
-        config: mergedConfig,
+        config: newConfig.exp,
       };
     }
 
-    // Rollback the changes if the verification failed
-    await writeConfigAsync(config.staticConfigPath, config.rootConfig);
+    // Rollback the changes when the reloaded config did not include the modifications
+    await JsonFile.writeAsync(config.staticConfigPath, config.rootConfig, { json5: false });
   }
 
   // We cannot automatically write to a dynamic config
@@ -364,38 +355,21 @@ function isMatchingObject<T extends Record<string, any>>(
   actualValues: T
 ): boolean {
   for (const key in expectedValues) {
-    if (expectedValues.hasOwnProperty(key)) {
-      if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
-        if (!isMatchingObject(expectedValues[key], actualValues[key])) {
-          return false;
-        }
-      } else {
-        if (expectedValues[key] !== actualValues[key]) {
-          return false;
-        }
+    if (!expectedValues.hasOwnProperty(key)) {
+      continue;
+    }
+
+    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else {
+      if (expectedValues[key] !== actualValues[key]) {
+        return false;
       }
     }
   }
   return true;
-}
-
-function getIntersectingObject<T extends Record<string, any>>(
-  expectedValues: T,
-  actualValues: T
-): any {
-  const intersectingObject: Partial<T> = {};
-  for (const key in expectedValues) {
-    if (expectedValues.hasOwnProperty(key)) {
-      if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
-        intersectingObject[key] = getIntersectingObject(expectedValues[key], actualValues[key]);
-      } else {
-        if (actualValues.hasOwnProperty(key)) {
-          intersectingObject[key] = actualValues[key];
-        }
-      }
-    }
-  }
-  return intersectingObject;
 }
 
 function ensureConfigHasDefaultValues({

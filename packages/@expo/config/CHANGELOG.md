@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change the `config` return type from `AppJSONConfig` to `ExpoConfig` in `modifyConfigAsync`. ([#30783](https://github.com/expo/expo/pull/30783) by [@byCedric](https://github.com/byCedric))
+
 ### 🎉 New features
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
