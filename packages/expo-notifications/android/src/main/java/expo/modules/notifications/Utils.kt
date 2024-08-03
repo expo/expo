@@ -25,7 +25,7 @@ internal fun createDefaultResultReceiver(
 /**
  * Given an input bundle, creates a new bundle with non-convertible objects removed
  */
-internal fun filteredBundleForJSTypeConverter(bundle: Bundle): Bundle? {
+internal fun filteredBundleForJSTypeConverter(bundle: Bundle): Bundle {
   val result = Bundle()
   result.putAll(bundle)
   bundle.keySet().forEach { key: String ->
