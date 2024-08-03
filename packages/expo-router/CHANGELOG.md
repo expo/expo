@@ -10,6 +10,9 @@
 - Add virtual client boundary. ([#30534](https://github.com/expo/expo/pull/30534) by [@EvanBacon](https://github.com/EvanBacon))
 - Add better errors and warnings for malformed route exports. ([#30332](https://github.com/expo/expo/pull/30332) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `client-only` and `server-only` dependencies. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `reload` functionality to the router, allowing programmatic refresh of the current route. (#[#30791] by @[saulamsal])
+
+
 
 ### 🐛 Bug fixes
 
@@ -26,6 +29,7 @@
 - Remove debugger code ([#30686](https://github.com/expo/expo/pull/30686) by [@marklawlor](https://github.com/marklawlor))
 - Fix project linting errors ([#30687](https://github.com/expo/expo/pull/30687) by [@marklawlor](https://github.com/marklawlor))
 - Fix useGlobalSearchParams returning a string value for params ([#30415](https://github.com/expo/expo/pull/30415) by [@marklawlor](https://github.com/marklawlor))
+- Added test cases to verify the new `reload` functionality. (#[30791] by @[saulamsal])
 
 ## 3.5.19 - 2024-07-29
 
