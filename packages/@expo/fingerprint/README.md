@@ -203,33 +203,28 @@ You can customize the fingerprinting behavior by creating a **fingerprint.config
 Below is an example **fingerprint.config.js** configuration, assuming you have `@expo/fingerprint` installed as a direct dependency:
 
 ```js
-const { SourceSkips } = require('@expo/fingerprint');
-
 /** @type {import('@expo/fingerprint').Config} */
 const config = {
-  sourceSkips:
-    SourceSkips.ExpoConfigRuntimeVersionIfString |
-    SourceSkips.ExpoConfigVersions |
-    SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun,
+  sourceSkips: [
+    'ExpoConfigRuntimeVersionIfString',
+    'ExpoConfigVersions',
+    'PackageJsonAndroidAndIosScriptsIfNotContainRun',
+  ],
 };
-
 module.exports = config;
 ```
 
-If you are using `@expo/fingerprint` through `expo-updates` (where `@expo/fingerprint` is installed as a transitive dependency), you can use the following example **fingerprint.config.js** configuration with dynamic `require`:
+If you are using `@expo/fingerprint` through `expo-updates` (where `@expo/fingerprint` is installed as a transitive dependency), you can import fingerprint from `expo-updates/fingerprint`:
 
 ```js
-const { createRequire } = require('module');
-const requireFromUpdates = createRequire(require.resolve('expo-updates'));
-const { SourceSkips } = requireFromUpdates('@expo/fingerprint');
-
+/** @type {import('expo-updates/fingerprint').Config} */
 const config = {
-  sourceSkips:
-    SourceSkips.ExpoConfigRuntimeVersionIfString |
-    SourceSkips.ExpoConfigVersions |
-    SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun,
+  sourceSkips: [
+    'ExpoConfigRuntimeVersionIfString',
+    'ExpoConfigVersions',
+    'PackageJsonAndroidAndIosScriptsIfNotContainRun',
+  ],
 };
-
 module.exports = config;
 ```
 
