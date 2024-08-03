@@ -15,7 +15,7 @@ export function isIgnoredPath(
   let result = false;
   for (const minimatchObj of minimatchObjs) {
     const normalizedFilePath = normalizeFilePath(filePath);
-    const currMatch = minimatchObj.match(normalizeFilePath(normalizedFilePath));
+    const currMatch = minimatchObj.match(normalizedFilePath);
     if (minimatchObj.negate && result && !currMatch) {
       // Special handler for negate (!pattern).
       // As long as previous match result is true and not matched from the current negate pattern, we should early return.
