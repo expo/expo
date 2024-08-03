@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))

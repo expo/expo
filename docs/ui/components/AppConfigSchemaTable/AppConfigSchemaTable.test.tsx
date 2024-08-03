@@ -1,14 +1,12 @@
 import { screen } from '@testing-library/react';
 
-import AppConfigSchemaPropertiesTable, {
-  formatSchema,
-  createDescription,
-  Property,
-} from './AppConfigSchemaPropertiesTable';
+import AppConfigSchemaTable from './';
+import { formatSchema, createDescription } from './helpers';
+import { Property } from './types';
 
 import { renderWithHeadings } from '~/common/test-utilities';
 
-const testSchema: Record<string, Property> = {
+const TEST_SCHEMA: Record<string, Property> = {
   name: {
     description: 'Name of your app.',
     type: 'string',
@@ -95,15 +93,13 @@ const testSchema: Record<string, Property> = {
 
 describe('AppConfigSchemaPropertiesTable', () => {
   test('correctly matches snapshot', () => {
-    const { container } = renderWithHeadings(
-      <AppConfigSchemaPropertiesTable schema={testSchema} />
-    );
+    const { container } = renderWithHeadings(<AppConfigSchemaTable schema={TEST_SCHEMA} />);
     expect(container).toMatchSnapshot();
   });
 
   test('description includes all required components', () => {
     renderWithHeadings(
-      <AppConfigSchemaPropertiesTable schema={{ entry: testSchema.androidNavigationBar }} />
+      <AppConfigSchemaTable schema={{ entry: TEST_SCHEMA.androidNavigationBar }} />
     );
 
     expect(screen.getByText('Specifies the background color of the navigation bar.'));
@@ -114,7 +110,7 @@ describe('AppConfigSchemaPropertiesTable', () => {
 });
 
 describe('formatSchema', () => {
-  const formattedSchema = formatSchema(Object.entries(testSchema));
+  const formattedSchema = formatSchema(Object.entries(TEST_SCHEMA));
   test('name is property at root level', () => {
     expect(formattedSchema[0].name).toBe('name');
   });
@@ -146,7 +142,7 @@ describe('formatSchema', () => {
 
 describe('createDescription', () => {
   test('type and description are rendered correctly', () => {
-    const intentFiltersObject = Object.entries(testSchema)[2];
+    const intentFiltersObject = Object.entries(TEST_SCHEMA)[2];
     const intentFiltersObjectValue = intentFiltersObject[1] as any;
     const result = createDescription(intentFiltersObject);
 
@@ -155,7 +151,7 @@ describe('createDescription', () => {
 
   test('regexHuman is added correctly', () => {
     //Note: to access this subproperty is tedious without a call to formatSchema
-    const backgroundColorObject = Object.entries(Object.values(testSchema)[1].properties!)[1];
+    const backgroundColorObject = Object.entries(Object.values(TEST_SCHEMA)[1].properties!)[1];
     const backgroundColorObjectValue = backgroundColorObject[1];
     const result = createDescription(backgroundColorObject);
 

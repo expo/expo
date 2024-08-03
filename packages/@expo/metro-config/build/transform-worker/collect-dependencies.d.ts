@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
-export type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
 type AllowOptionalDependenciesWithOptions = {
     exclude: string[];
 };
@@ -67,6 +67,7 @@ export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
 }>;
 export interface DependencyTransformer {
     transformSyncRequire(path: NodePath<CallExpression>, dependency: InternalDependency, state: State): void;
+    transformImportMaybeSyncCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformImportCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void;
     transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;

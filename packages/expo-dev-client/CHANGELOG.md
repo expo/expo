@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))

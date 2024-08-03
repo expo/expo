@@ -6,8 +6,8 @@ maxHeadingDepth: 5
 
 {/* Hi! If you found an issue within the description of the manifest properties, please create a GitHub issue. */}
 
-import AppConfigSchemaPropertiesTable from '~/components/plugins/AppConfigSchemaPropertiesTable';
 import schema from '~/public/static/schemas/unversioned/app-config-schema.json';
+import AppConfigSchemaTable from '~/ui/components/AppConfigSchemaTable';
 
 The following is a list of properties that are available for you under the `"expo"` key in **app.json** or **app.config.json**. These properties can be passed to the top level object of **app.config.js** or **app.config.ts**.
 
@@ -15,4 +15,4 @@ For more general information on app configuration, such as the differences betwe
 
 ## Properties
 
-<AppConfigSchemaPropertiesTable schema={schema} />
+<AppConfigSchemaTable schema={schema} />
