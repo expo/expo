@@ -22,6 +22,7 @@
 - [Android] Upgrade dependencies and remove unused ones. Change multipart parser to okhttp. ([#29060](https://github.com/expo/expo/pull/29060) by [@wschurman](https://github.com/wschurman))
 - [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Re-exported `@expo/fingerprint` as `expo-updates/fingerprint`. ([#30757](https://github.com/expo/expo/pull/30757) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
