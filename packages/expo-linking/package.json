@@ -36,6 +36,10 @@
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "jest": {
     "preset": "expo-module-scripts"
   }

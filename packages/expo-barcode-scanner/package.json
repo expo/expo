@@ -38,9 +38,12 @@
     "expo-image-loader": "~4.7.0"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^12.5.1",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

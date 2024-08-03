@@ -5,6 +5,7 @@ import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
+import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -21,6 +22,7 @@ import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
@@ -136,8 +138,17 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental React Compiler is enabled.`);
   }
 
+  if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+    throw new CommandError(
+      'EXPO_UNSTABLE_TREE_SHAKING requires EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH to be enabled.'
+    );
+  }
+
   if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
+  }
+  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+    Log.warn(`Experimental tree shaking is enabled.`);
   }
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
@@ -175,6 +186,7 @@ export async function instantiateMetroAsync(
   }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
   metro: Metro.Server;
+  hmrServer: MetroHmrServer | null;
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
@@ -208,9 +220,14 @@ export async function instantiateMetroAsync(
 
   if (!isExporting) {
     // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
+    // From react-native 0.75, the exported `securityHeadersMiddleware` is a middleware factory that accepts single option parameter.
+    const securityHeadersMiddlewareHandler =
+      securityHeadersMiddleware.length === 1
+        ? securityHeadersMiddleware({})
+        : securityHeadersMiddleware;
     replaceMiddlewareWith(
       middleware as ConnectServer,
-      securityHeadersMiddleware,
+      securityHeadersMiddlewareHandler,
       createCorsMiddleware(exp)
     );
 
@@ -236,7 +253,7 @@ export async function instantiateMetroAsync(
   }
 
   // Attach Expo Atlas if enabled
-  const atlas = await attachAtlasAsync({
+  await attachAtlasAsync({
     isExporting,
     exp,
     projectRoot,
@@ -246,7 +263,7 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
-  const { server, metro } = await runServer(
+  const { server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
     {
@@ -261,9 +278,6 @@ export async function instantiateMetroAsync(
       mockServer: isExporting,
     }
   );
-
-  // If Atlas is enabled, and can register to Metro, attach it to listen for changes
-  atlas?.registerMetro(metro);
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
@@ -282,6 +296,7 @@ export async function instantiateMetroAsync(
 
   return {
     metro,
+    hmrServer,
     server,
     middleware,
     messageSocket: messageSocketEndpoint,

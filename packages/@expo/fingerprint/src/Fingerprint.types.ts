@@ -107,6 +107,8 @@ export interface Options {
   debug?: boolean;
 }
 
+type SourceSkipsKeys = keyof typeof SourceSkips;
+
 /**
  * Supported options from fingerprint.config.js
  */
@@ -114,11 +116,13 @@ export type Config = Pick<
   Options,
   | 'concurrentIoLimit'
   | 'hashAlgorithm'
+  | 'ignorePaths'
   | 'extraSources'
-  | 'sourceSkips'
   | 'enableReactImportsPatcher'
   | 'debug'
->;
+> & {
+  sourceSkips?: SourceSkips | SourceSkipsKeys[];
+};
 
 //#region internal types
 

@@ -247,3 +247,15 @@ describe('external routes', () => {
     expectType<void>(router.push('mailto:test@test.com'));
   });
 });
+
+describe('set params', () => {
+  it('is strongly typed', () => {
+    expectType<void>(router.setParams<'/folder/[slug]'>({ slug: 'test' }));
+  });
+  it('allows additional values', () => {
+    expectType<void>(router.setParams<'/folder/[slug]'>({ hello: 'world' }));
+  });
+  it('works without a generic', () => {
+    expectType<void>(router.setParams({ hello: 'world' }));
+  });
+});

@@ -17,7 +17,6 @@ import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
-import countLines from 'metro/src/lib/countLines';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 import { stableHash } from 'metro-cache';
 import getMetroCacheKey from 'metro-cache-key';
@@ -43,6 +42,7 @@ import collectDependencies, {
   Options as CollectDependenciesOptions,
   State,
 } from './collect-dependencies';
+import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 
@@ -332,7 +332,7 @@ async function transformJS(
   if (optimize && !options.experimentalImportSupport) {
     // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
     throw new Error(
-      'Experimental tree shaking support only works with experimentalImportSupport enabled.'
+      'Experimental graph optimizations only work with experimentalImportSupport enabled.'
     );
   }
 
@@ -509,11 +509,14 @@ async function transformJS(
         }
       : undefined;
 
+  let lineCount;
+  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+
   const output: ExpoJsOutput[] = [
     {
       data: {
         code,
-        lineCount: countLines(code),
+        lineCount,
         map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
@@ -632,9 +635,12 @@ async function transformJSON(
     jsType = 'js/module';
   }
 
+  let lineCount;
+  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount: countLines(code), map, functionMap: null },
+      data: { code, lineCount, map, functionMap: null },
       type: jsType,
     },
   ];
@@ -761,6 +767,7 @@ type InternalDependency = any;
 
 const disabledDependencyTransformer: DependencyTransformer = {
   transformSyncRequire: (path) => {},
+  transformImportMaybeSyncCall: () => {},
   transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
     // HACK: Ensure the async import code is included in the bundle when an import() call is found.
     let topParent = path;

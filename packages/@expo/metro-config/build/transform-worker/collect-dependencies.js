@@ -104,6 +104,24 @@ function collectDependencies(ast, options) {
                 visited.add(path.node);
                 return;
             }
+            // Match `require.unstable_importMaybeSync`
+            if (callee.type === 'MemberExpression' &&
+                // `require`
+                callee.object.type === 'Identifier' &&
+                callee.object.name === 'require' &&
+                // `unstable_importMaybeSync`
+                callee.property.type === 'Identifier' &&
+                callee.property.name === 'unstable_importMaybeSync' &&
+                !callee.computed &&
+                // Ensure `require` refers to the global and not something else.
+                !path.scope.getBinding('require')) {
+                processImportCall(path, state, {
+                    dynamicRequires: options.dynamicRequires,
+                    asyncType: 'maybeSync',
+                });
+                visited.add(path.node);
+                return;
+            }
             if (name != null && state.dependencyCalls.has(name) && !path.scope.getBinding(name)) {
                 processRequireCall(path, state);
                 visited.add(path.node);
@@ -297,11 +315,18 @@ function processImportCall(path, state, options) {
         exportNames: ['*'],
     }, path);
     const transformer = state.dependencyTransformer;
-    if (options.asyncType === 'async') {
-        transformer.transformImportCall(path, dep, state);
-    }
-    else {
-        transformer.transformPrefetch(path, dep, state);
+    switch (options.asyncType) {
+        case 'async':
+            transformer.transformImportCall(path, dep, state);
+            break;
+        case 'maybeSync':
+            transformer.transformImportMaybeSyncCall(path, dep, state);
+            break;
+        case 'prefetch':
+            transformer.transformPrefetch(path, dep, state);
+            break;
+        default:
+            throw new Error('Unreachable');
     }
 }
 function warnDynamicRequire({ node }, message = '') {
@@ -401,6 +426,12 @@ const makeAsyncPrefetchTemplate = template_1.default.expression(`
 const makeAsyncPrefetchTemplateWithName = template_1.default.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).prefetch(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
+const makeAsyncImportMaybeSyncTemplate = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+const makeAsyncImportMaybeSyncTemplateWithName = template_1.default.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
+`);
 const makeResolveWeakTemplate = template_1.default.expression(`
   MODULE_ID
 `);
@@ -416,6 +447,18 @@ const DefaultDependencyTransformer = {
         const makeNode = state.keepRequireNames
             ? makeAsyncRequireTemplateWithName
             : makeAsyncRequireTemplate;
+        const opts = {
+            ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+            MODULE_ID: createModuleIDExpression(dependency, state),
+            DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+            ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+        };
+        path.replaceWith(makeNode(opts));
+    },
+    transformImportMaybeSyncCall(path, dependency, state) {
+        const makeNode = state.keepRequireNames
+            ? makeAsyncImportMaybeSyncTemplateWithName
+            : makeAsyncImportMaybeSyncTemplate;
         const opts = {
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
             MODULE_ID: createModuleIDExpression(dependency, state),

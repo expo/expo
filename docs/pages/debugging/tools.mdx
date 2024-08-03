@@ -4,9 +4,6 @@ description: Learn about different tools available to inspect your Expo project 
 sidebar_title: Tools
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
@@ -83,7 +80,7 @@ You can enable the **JavaScript Profiler tab** within Chrome DevTools to record 
 <Collapsible summary="Screenshot of the Chrome DevTools command palette">
 
 <ContentSpotlight
-  alt="Chrome DevTools showing the command paletter."
+  alt="Chrome DevTools showing the command palette."
   src="/static/images/debugging/profiling-enable.png"
 />
 
@@ -250,15 +247,6 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
 - [Fiddler](http://www.telerik.com/fiddler)
 
-## Debugging production apps with Sentry
+## Debugging production apps
 
-In reality, apps often ship with bugs. Implementing a crash and bug reporting system in your production app is essential. It ensures that if any user hits fatal JavaScript errors (or any event you have configured), you can see the details. Sentry provides a crash reporting system with real-time insights into production deployments.
-
-You can add Sentry to your Expo project. It gathers crash data and alerts you about other events. You can also configure source maps. They make stack traces in Sentry deobfuscated and more readable.
-
-<BoxLink
-  title="Use Sentry"
-  description="A guide on installing and configuring Sentry for crash reporting in your Expo project."
-  href="/guides/using-sentry"
-  Icon={BookOpen02Icon}
-/>
+In reality, apps often ship with bugs. Implementing a crash and bug reporting system can help you get real-time insights of your production apps. See [Using error reporting services](/debugging/runtime-issues/#using-error-reporting-services) for more details.

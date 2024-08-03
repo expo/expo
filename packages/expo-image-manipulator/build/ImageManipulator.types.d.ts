@@ -102,6 +102,7 @@ export type SaveOptions = {
 };
 export declare class ImageManipulator extends NativeModule {
     Context: typeof Context;
+    Image: typeof ImageRef;
     /**
      * Loads an image from the given URI and creates a new image manipulation context.
      */

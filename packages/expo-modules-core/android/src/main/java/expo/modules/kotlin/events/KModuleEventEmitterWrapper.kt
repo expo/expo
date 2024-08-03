@@ -85,12 +85,12 @@ open class KEventEmitterWrapper(
 
   override fun emit(eventName: String, eventBody: Record?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {

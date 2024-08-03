@@ -6,12 +6,14 @@
 
 ### 🎉 New features
 
+- [iOS] include more error information in native rejections ([#30504](https://github.com/expo/expo/pull/30504) by [@vonovak](https://github.com/vonovak))
 - On `Android 14+`, when user gave only partial asset access, `presentPermissionsPickerAsync()` presents the permissions dialog to allow the user to change the selected assets. ([#29882](https://github.com/expo/expo/pull/29882) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
 - On `iOS`, getAssets crashed when result was is empty ([#29969](https://github.com/expo/expo/pull/29969) by [@vonovak](https://github.com/vonovak))
 - On `Android`, throw an error when deleting an asset was unsuccessful. ([#29777](https://github.com/expo/expo/pull/29777) by [@mathieupost](https://github.com/mathieupost))
+- Add missing `react-native` peer dependencies for isolated modules. ([#30476](https://github.com/expo/expo/pull/30476) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

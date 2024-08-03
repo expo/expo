@@ -7,6 +7,7 @@
   "main": "build/index",
   "types": "build/index.d.ts",
   "sideEffects": [
+    "entry-rsc.js",
     "entry.js"
   ],
   "files": [
@@ -22,10 +23,12 @@
     "_ctx-shared.js",
     "_error.js",
     "app.plugin.js",
+    "virtual-client-boundaries.js",
     "babel.js",
     "drawer.js",
     "drawer.d.ts",
     "entry.js",
+    "entry-rsc.js",
     "expo-module.config.json",
     "head.js",
     "head.d.ts",

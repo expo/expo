@@ -1,6 +1,6 @@
-import { type ExpoConfig } from '@expo/config';
-import { type ModPlatform } from '@expo/config-plugins';
 import spawnAsync from '@expo/spawn-async';
+import { type ExpoConfig } from 'expo/config';
+import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 

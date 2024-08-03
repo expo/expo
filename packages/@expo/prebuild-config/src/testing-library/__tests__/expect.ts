@@ -1,6 +1,6 @@
+import { AndroidConfig, type ExportedConfig, IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import matchers from 'expect/build/matchers';
-import { AndroidConfig, ExportedConfig, IOSConfig } from 'expo/config-plugins';
 import fs from 'fs';
 
 import { getInfoPlistPathLikePrebuild, getProjectRootLikePrebuild } from './prebuild-tester';

@@ -1,3 +1,4 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
@@ -47,9 +48,11 @@ interface State {
   mute: boolean;
   torchEnabled: boolean;
   cornerPoints?: BarcodePoint[];
+  mirror?: boolean;
   autoFocus: FocusMode;
   barcodeData: string;
   newPhotos: boolean;
+  previewPaused: boolean;
   permissionsGranted: boolean;
   micPermissionsGranted: boolean;
   permission?: PermissionStatus;
@@ -101,9 +104,11 @@ export default class CameraScreen extends React.Component<object, State> {
     torchEnabled: false,
     cornerPoints: undefined,
     mute: false,
+    mirror: false,
     barcodeData: '',
     autoFocus: 'off',
     newPhotos: false,
+    previewPaused: false,
     permissionsGranted: false,
     micPermissionsGranted: false,
     showGallery: false,
@@ -147,9 +152,13 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
 
+  togglePreviewPaused = () => this.setState((state) => ({ previewPaused: !state.previewPaused }));
+
   toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
 
   toggleMute = () => this.setState((state) => ({ mute: !state.mute }));
+
+  toggleMirror = () => this.setState((state) => ({ mirror: !state.mirror }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
@@ -216,6 +225,15 @@ export default class CameraScreen extends React.Component<object, State> {
         to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
       });
     }
+  };
+
+  updatePreviewState = () => {
+    if (this.state.previewPaused) {
+      this.camera?.current?.resumePreview();
+    } else {
+      this.camera?.current?.pausePreview();
+    }
+    this.togglePreviewPaused();
   };
 
   changeMode = () => {
@@ -293,6 +311,20 @@ export default class CameraScreen extends React.Component<object, State> {
           ]}>
           AF
         </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMirror}>
+        <MaterialCommunityIcons
+          name="mirror"
+          size={24}
+          color={this.state.mirror ? 'white' : '#858585'}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.updatePreviewState}>
+        {this.state.previewPaused ? (
+          <AntDesign name="playcircleo" size={24} color="white" />
+        ) : (
+          <AntDesign name="pausecircleo" size={24} color="white" />
+        )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
@@ -396,6 +428,7 @@ export default class CameraScreen extends React.Component<object, State> {
           autofocus={this.state.autoFocus}
           facing={this.state.facing}
           animateShutter
+          mirror={this.state.mirror}
           pictureSize={this.state.pictureSize}
           flash={this.state.flash}
           mode={this.state.mode}

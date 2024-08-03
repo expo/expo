@@ -81,7 +81,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
 
       if uri.pathExtension.isEmpty {
-        promise.reject(FileExtensionException())
+        promise.reject(EmptyFileExtensionException())
         return
       }
 
@@ -103,12 +103,12 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
 
         assetPlaceholder = changeRequest?.placeholderForCreatedAsset
-      } completionHandler: { success, _ in
+      } completionHandler: { success, error in
         if success {
           let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
           promise.resolve(exportAsset(asset: asset))
         } else {
-          promise.reject(SaveAssetException())
+          promise.reject(SaveAssetException(error))
         }
       }
     }
@@ -119,7 +119,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
 
       if localUrl.pathExtension.isEmpty {
-        promise.reject(FileExtensionException())
+        promise.reject(EmptyFileExtensionException())
         return
       }
 
@@ -133,7 +133,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         }
         self.delegates.remove(delegate)
         guard error == nil else {
-          promise.reject(SaveAssetException())
+          promise.reject(SaveAssetException(error))
           return
         }
         promise.resolve()
@@ -165,11 +165,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
     AsyncFunction("addAssetsToAlbumAsync") { (assetIds: [String], album: String, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
-        addAssets(ids: assetIds, to: album) { success, _ in
+        addAssets(ids: assetIds, to: album) { success, error in
           if success {
             promise.resolve(success)
           } else {
-            promise.reject(SaveAlbumException())
+            promise.reject(SaveAlbumException(error))
           }
         }
       }
@@ -185,11 +185,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
           let albumChangeRequest = PHAssetCollectionChangeRequest(for: collection, assets: assets)
           albumChangeRequest?.removeAssets(assets)
-        } completionHandler: { success, _ in
+        } completionHandler: { success, error in
           if success {
             promise.resolve(success)
           } else {
-            promise.reject(RemoveFromAlbumException())
+            promise.reject(RemoveFromAlbumException(error))
           }
         }
       }
@@ -203,11 +203,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       PHPhotoLibrary.shared().performChanges {
         let fetched = PHAsset.fetchAssets(withLocalIdentifiers: assetIds, options: nil)
         PHAssetChangeRequest.deleteAssets(fetched)
-      } completionHandler: { success, _ in
+      } completionHandler: { success, error in
         if success {
           promise.resolve(success)
         } else {
-          promise.reject(RemoveAssetsException())
+          promise.reject(RemoveAssetsException(error))
         }
       }
     }
@@ -257,21 +257,21 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
     AsyncFunction("createAlbumAsync") { (title: String, assetId: String?, promise: Promise) in
       runIfAllPermissionsWereGranted(reject: promise.legacyRejecter) {
-        createAlbum(with: title) { collection, _ in
+        createAlbum(with: title) { collection, createError in
           if let collection {
             if let assetId {
-              addAssets(ids: [assetId], to: collection.localIdentifier) { success, _ in
+              addAssets(ids: [assetId], to: collection.localIdentifier) { success, addError in
                 if success {
                   promise.resolve(exportCollection(collection))
                 } else {
-                  promise.reject(FailedToAddAssetException())
+                  promise.reject(FailedToAddAssetException(addError))
                 }
               }
             } else {
               promise.resolve(exportCollection(collection))
             }
           } else {
-            promise.reject(CreateAlbumFailedException())
+            promise.reject(CreateAlbumFailedException(createError))
           }
         }
       }
@@ -288,11 +288,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
             }
           }
           PHAssetCollectionChangeRequest.deleteAssetCollections(collections)
-        } completionHandler: { success, _ in
+        } completionHandler: { success, error in
           if success {
             promise.resolve(success)
           } else {
-            promise.reject(DeleteAlbumFailedException())
+            promise.reject(DeleteAlbumFailedException(error))
           }
         }
       }

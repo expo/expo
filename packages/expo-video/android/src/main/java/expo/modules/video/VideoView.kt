@@ -25,6 +25,8 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
+import expo.modules.video.enums.ContentFit
+import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -290,14 +292,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
     // Draw borders on top of the video
     if (borderDrawableLazyHolder.isInitialized()) {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
       }
 
       borderDrawable.apply {
-        resolvedLayoutDirection = layoutDirection
+        layoutDirection = newLayoutDirection
         setBounds(0, 0, width, height)
         draw(canvas)
       }

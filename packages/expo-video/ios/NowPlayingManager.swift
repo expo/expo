@@ -168,6 +168,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
       nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
       nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork

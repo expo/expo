@@ -12,11 +12,24 @@
 
 ### 🐛 Bug fixes
 
+- Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 11.0.12 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.11 - 2024-06-27
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.10 - 2024-06-13
 

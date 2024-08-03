@@ -1,5 +1,6 @@
 package expo.modules.video.records
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -13,7 +14,7 @@ import java.io.Serializable
 
 @OptIn(UnstableApi::class)
 class VideoSource(
-  @Field var uri: String? = null,
+  @Field var uri: Uri? = null,
   @Field var drm: DRMOptions? = null,
   @Field var metadata: VideoMetadata? = null,
   @Field var headers: Map<String, String>? = null
@@ -37,7 +38,7 @@ class VideoSource(
   fun toMediaItem() = MediaItem
     .Builder()
     .apply {
-      setUri(uri ?: "")
+      setUri(uri)
       setMediaId(toMediaId())
       drm?.let {
         if (it.type.isSupported()) {

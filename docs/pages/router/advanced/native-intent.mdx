@@ -25,9 +25,9 @@ Expo Router will always evaluate a URL with the assumption that the URL targets 
 
 In such scenarios, the URL needs to be rewritten to correctly target a route.
 
-To facilitate this, create a special file called **+native-intent.ts** at the top level of your project's **app** directory. This file exports a unique `redirectSystemPath` method designed to handle URL/path processing.
+To facilitate this, create a special file called **+native-intent.tsx** at the top level of your project's **app** directory. This file exports a unique `redirectSystemPath` method designed to handle URL/path processing.
 
-<FileTree files={['app/+native-intent.ts']} />
+<FileTree files={['app/+native-intent.tsx']} />
 
 <APIBox header="redirectSystemPath()">
 
@@ -40,7 +40,7 @@ This method's return value should be either a `string` or a `Promise<string>`. D
 
 By following these best practices, you can ensure the stability and reliability of your app's URL processing functionality and mitigate the risk of unexpected errors and crashes.
 
-```ts app/+native-intent.ts
+```ts app/+native-intent.tsx
 import ThirdPartyService from 'third-party-sdk';
 
 export function redirectSystemPath({ path, initial }) {

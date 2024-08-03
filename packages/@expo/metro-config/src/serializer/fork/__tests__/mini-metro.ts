@@ -139,7 +139,7 @@ export async function microBundle({
     )
   );
 
-  async function recurseWith(queue: string[], parent?: Module) {
+  async function recurseWith(queue: string[], parent?: Module, onResolve?: (fp: string) => void) {
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
@@ -152,6 +152,7 @@ export async function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
+      onResolve?.(absPath);
       const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
@@ -167,7 +168,10 @@ export async function microBundle({
 
         try {
           const resolved = resolve(id, dep.data.name);
-          await recurseWith([resolved], module);
+          await recurseWith([resolved], module, (fp) => {
+            // @ts-expect-error
+            dep.absolutePath = fp;
+          });
         } catch (error) {
           if (dep.data.data.isOptional) {
             // Skip optional modules that cannot be found.
@@ -321,7 +325,7 @@ export async function parseModule(
   };
 }
 
-function mockAbsolutePath(name: string) {
+function mockAbsolutePath(name: string, fp: string = name) {
   if (name.match(/^(\.|\/)/)) {
     return path.join(projectRoot, name.replace(/\.[tj]sx?/, '')) + '.js';
   }

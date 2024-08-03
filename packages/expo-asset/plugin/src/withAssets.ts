@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+import { type ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 import { withAssetsAndroid } from './withAssetsAndroid';
 import { withAssetsIos } from './withAssetsIos';
