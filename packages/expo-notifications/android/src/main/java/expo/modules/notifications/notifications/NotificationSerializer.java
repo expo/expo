@@ -1,6 +1,6 @@
 package expo.modules.notifications.notifications;
 
-import static expo.modules.notifications.UtilsKt.filteredBundleForWritableMap;
+import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
 import static expo.modules.notifications.UtilsKt.isValidJSONString;
 
 import android.os.Build;
@@ -228,9 +228,8 @@ public class NotificationSerializer {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", extras.getString("title"));
     String body = extras.getString("body");
-    String projectId = extras.getString("projectId");
-    if (projectId != null && isValidJSONString(body) ) {
-      // If projectId is set in the bundle, and the body is a JSON string,
+    if (isValidJSONString(body) ) {
+      // If the body is a JSON string,
       // the notification was sent by the Expo notification service,
       // so we do the expected remapping of fields
       serializedContent.putString("dataString", body);
@@ -238,8 +237,8 @@ public class NotificationSerializer {
     } else {
       // The notification came directly from Firebase or some other service,
       // so we copy the data as is from the extras bundle, after
-      // ensuring it can be converted to a WritableMap
-      serializedContent.putBundle("data", filteredBundleForWritableMap(extras));
+      // ensuring it can be converted for emitting to JS
+      serializedContent.putBundle("data", filteredBundleForJSTypeConverter(extras));
     }
 
     Bundle serializedTrigger = new Bundle();
