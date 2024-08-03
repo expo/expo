@@ -95,7 +95,7 @@ type SourceSkipsKeys = keyof typeof SourceSkips;
 /**
  * Supported options from fingerprint.config.js
  */
-export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'enableReactImportsPatcher' | 'debug'> & {
+export type Config = Pick<Options, 'concurrentIoLimit' | 'hashAlgorithm' | 'ignorePaths' | 'extraSources' | 'enableReactImportsPatcher' | 'debug'> & {
     sourceSkips?: SourceSkips | SourceSkipsKeys[];
 };
 export interface NormalizedOptions extends Options {

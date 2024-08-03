@@ -17,6 +17,26 @@ describe(normalizeOptionsAsync, () => {
     expect(options).toMatchSnapshot();
   });
 
+  it('should respect ignorePaths from both config and options', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const configContents = `\
+const config = {
+  ignorePaths: ['aaa', 'bbb'],
+};
+module.exports = config;
+`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+
+      const { ignorePaths } = await normalizeOptionsAsync('/app', { ignorePaths: ['ccc'] });
+      expect(ignorePaths).toContain('aaa');
+      expect(ignorePaths).toContain('bbb');
+      expect(ignorePaths).toContain('ccc');
+    });
+  });
+
   it('should respect fingerprint config', async () => {
     await jest.isolateModulesAsync(async () => {
       const configContents = `\

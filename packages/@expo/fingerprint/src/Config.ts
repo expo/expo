@@ -43,6 +43,7 @@ export async function loadConfigAsync(
   const supportedConfigKeys: (keyof Config)[] = [
     'concurrentIoLimit',
     'hashAlgorithm',
+    'ignorePaths',
     'extraSources',
     'sourceSkips',
     'enableReactImportsPatcher',
