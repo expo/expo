@@ -25,7 +25,7 @@ async function findGradleFilesAsync(revision: PackageRevision): Promise<string[]
     return configGradlePaths;
   }
 
-  const buildGradleFiles = await glob('*/build.gradle', {
+  const buildGradleFiles = await glob('*/build.gradle{,.kts}', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
@@ -50,17 +50,6 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const projects = buildGradleFiles.map((buildGradleFile) => {
-    const gradleFilePath = path.join(revision.path, buildGradleFile);
-    return {
-      name: convertPackageWithGradleToProjectName(
-        packageName,
-        path.relative(revision.path, gradleFilePath)
-      ),
-      sourceDir: path.dirname(gradleFilePath),
-    };
-  });
-
   const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
     ({ id, group, sourceDir }) => ({
       id,
@@ -81,6 +70,20 @@ export async function resolveModuleAsync(
       };
     }
   );
+
+  const projects = buildGradleFiles
+    .map((buildGradleFile) => {
+      const gradleFilePath = path.join(revision.path, buildGradleFile);
+      return {
+        name: convertPackageWithGradleToProjectName(
+          packageName,
+          path.relative(revision.path, gradleFilePath)
+        ),
+        sourceDir: path.dirname(gradleFilePath),
+      };
+    })
+    // Filter out projects that are already linked by plugins
+    .filter(({ sourceDir }) => !plugins.some((plugin) => plugin.sourceDir === sourceDir));
 
   return {
     packageName,

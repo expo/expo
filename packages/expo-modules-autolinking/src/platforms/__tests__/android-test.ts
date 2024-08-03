@@ -42,11 +42,38 @@ describe(resolveModuleAsync, () => {
     });
   });
 
+  it('should resolve android/build.gradle.kts', async () => {
+    const name = 'react-native-third-party';
+    const pkgDir = path.join('node_modules', name);
+
+    registerGlobMock(glob, ['android/build.gradle.kts'], pkgDir);
+
+    const result = await resolveModuleAsync(name, {
+      path: pkgDir,
+      version: '0.0.1',
+      config: new ExpoModuleConfig({ platforms: ['android'] }),
+    });
+    expect(result).toEqual({
+      packageName: 'react-native-third-party',
+      projects: [
+        {
+          name: 'react-native-third-party',
+          sourceDir: 'node_modules/react-native-third-party/android',
+        },
+      ],
+      modules: [],
+    });
+  });
+
   it('should resolve multiple gradle files', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, ['android/build.gradle', 'subproject/build.gradle'], pkgDir);
+    registerGlobMock(
+      glob,
+      ['android/build.gradle', 'subproject/build.gradle', 'kotlinSubProject/build.gradle.kts'],
+      pkgDir
+    );
 
     const result = await resolveModuleAsync(name, {
       path: pkgDir,
@@ -63,6 +90,10 @@ describe(resolveModuleAsync, () => {
         {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
+        },
+        {
+          name: 'react-native-third-party$kotlinSubProject',
+          sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
         },
       ],
       modules: [],
