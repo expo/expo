@@ -7,10 +7,13 @@
 ### 🎉 New features
 
 - Added support to pass string array for `sourceSkips` in the `fingerprint.config.js`. ([#30754](https://github.com/expo/expo/pull/30754) by [@kudo](https://github.com/kudo))
+- Added `ignorePaths` support to `fingerprint.config.js`. ([#30768](https://github.com/expo/expo/pull/30768) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Ignored nested node_modules by default. ([#30768](https://github.com/expo/expo/pull/30768) by [@kudo](https://github.com/kudo))
 
 ## 0.10.2 — 2024-07-22
 

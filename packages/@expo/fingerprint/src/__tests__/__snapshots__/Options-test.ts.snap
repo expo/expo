@@ -33,6 +33,7 @@ exports[`normalizeOptionsAsync should return the default options if no options a
     "app.config.js",
     "app.config.json",
     "app.json",
+    "**/node_modules/**/node_modules/**",
     "**/node_modules/@babel/**/*",
     "**/node_modules/@expo/**/*",
     "**/node_modules/@jridgewell/**/*",
