@@ -18,6 +18,8 @@ export type Router = {
   dismissAll: () => void;
   /** If there's history that supports invoking the `dismiss` and `dismissAll` function. */
   canDismiss: () => boolean;
+  /** Reload the current route. */
+  reload: () => void;
   /** Update the current route query params. */
   setParams: <T extends Routes>(params: Partial<RouteParamInput<T>>) => void;
 };
@@ -31,5 +33,6 @@ export const router: Router = {
   replace: (href) => store.replace(href),
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),
+  reload: () => store.reload(),
   setParams: (params) => store.setParams(params),
 };

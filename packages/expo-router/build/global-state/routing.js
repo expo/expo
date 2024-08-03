@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
+exports.linkTo = exports.setParams = exports.canDismiss = exports.reload = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
@@ -73,6 +73,13 @@ function canGoBack() {
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
 exports.canGoBack = canGoBack;
+function reload() {
+    const currentRoute = this.navigationRef?.current?.getCurrentRoute();
+    if (currentRoute) {
+        this.navigationRef?.current?.dispatch(native_1.StackActions.replace(currentRoute.name, currentRoute.params));
+    }
+}
+exports.reload = reload;
 function canDismiss() {
     let state = this.rootState;
     // Keep traversing down the state tree until we find a stack navigator that we can pop

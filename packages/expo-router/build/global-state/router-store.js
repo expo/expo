@@ -62,6 +62,7 @@ class RouterStore {
     getSortedRoutes = sort_routes_1.getSortedRoutes.bind(this);
     goBack = routing_1.goBack.bind(this);
     canGoBack = routing_1.canGoBack.bind(this);
+    reload = routing_1.reload.bind(this);
     push = routing_1.push.bind(this);
     dismiss = routing_1.dismiss.bind(this);
     replace = routing_1.replace.bind(this);

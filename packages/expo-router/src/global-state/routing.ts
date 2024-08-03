@@ -55,6 +55,15 @@ export function canGoBack(this: RouterStore): boolean {
   return this.navigationRef?.current?.canGoBack() ?? false;
 }
 
+export function reload(this: RouterStore) {
+  const currentRoute = this.navigationRef?.current?.getCurrentRoute();
+  if (currentRoute) {
+    this.navigationRef?.current?.dispatch(
+      StackActions.replace(currentRoute.name, currentRoute.params)
+    );
+  }
+}
+
 export function canDismiss(this: RouterStore): boolean {
   let state = this.rootState;
 
