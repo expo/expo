@@ -1,8 +1,11 @@
 import { ConfigPlugin, createRunOncePlugin, withPlugins } from 'expo/config-plugins';
 
+import { withAndroidEdgeToEdgeTheme } from './withAndroidEdgeToEdgeTheme';
+import { withAndroidGradleEdgeToEdgeProperty } from './withAndroidGradleEdgeToEdgeProperty';
 import { withAndroidRootViewBackgroundColor } from './withAndroidRootViewBackgroundColor';
 import { withAndroidUserInterfaceStyle } from './withAndroidUserInterfaceStyle';
 import { withIosRootViewBackgroundColor } from './withIosRootViewBackgroundColor';
+import { withIosStatusBarStyle } from './withIosStatusBarStyle';
 import { withIosUserInterfaceStyle } from './withIosUserInterfaceStyle';
 
 const pkg = require('expo-system-ui/package.json');
@@ -13,6 +16,9 @@ const withSystemUI: ConfigPlugin = (config) => {
     withIosRootViewBackgroundColor,
     withAndroidUserInterfaceStyle,
     withIosUserInterfaceStyle,
+    withAndroidEdgeToEdgeTheme,
+    withAndroidGradleEdgeToEdgeProperty,
+    withIosStatusBarStyle,
   ]);
 };
 

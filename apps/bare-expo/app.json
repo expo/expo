@@ -8,6 +8,7 @@
       "resizeMode": "cover",
       "backgroundColor": "#000020"
     },
+    "userInterfaceStyle": "automatic",
     "scheme": "bareexpo",
     "facebookScheme": "fb629712900716487",
     "facebookAppId": "629712900716487",
@@ -47,6 +48,9 @@
     },
     "runtimeVersion": {
       "policy": "appVersion"
+    },
+    "experiments": {
+      "edgeToEdge": true
     },
     "updates": {
       "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
