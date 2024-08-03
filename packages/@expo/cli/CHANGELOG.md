@@ -28,6 +28,7 @@
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads. ([#30424](https://github.com/expo/expo/pull/30424) by [@byCedric](https://github.com/byCedric))
 - Fixed the `CorsMiddleware` is a not registered since react-native 0.75. ([#30752](https://github.com/expo/expo/pull/30752) by [@kudo](https://github.com/kudo))
+- Fixes local iOS debugging when `UsbmuxdClient` returns binary plist. ([#30798] by [@mattvr](https://github.com/mattvr))
 
 ### 💡 Others
 
