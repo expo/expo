@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 
 import { assignColorValue } from './Colors';
-import { assignStylesValue, getAppThemeLightNoActionBarGroup } from './Styles';
+import { assignAppThemeValue } from './Styles';
 import { ConfigPlugin } from '../Plugin.types';
 import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins';
 
@@ -26,9 +26,8 @@ export const withPrimaryColorColors: ConfigPlugin = (config) => {
 
 export const withPrimaryColorStyles: ConfigPlugin = (config) => {
   return withAndroidStyles(config, (config) => {
-    config.modResults = assignStylesValue(config.modResults, {
+    config.modResults = assignAppThemeValue(config.modResults, {
       add: !!getPrimaryColor(config),
-      parent: getAppThemeLightNoActionBarGroup(),
       name: COLOR_PRIMARY_KEY,
       value: `@color/${COLOR_PRIMARY_KEY}`,
     });

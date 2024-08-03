@@ -60,15 +60,13 @@ export function setNavigationBarStyles(
   config: Pick<ExpoConfig, 'androidNavigationBar'>,
   styles: AndroidConfig.Resources.ResourceXML
 ): AndroidConfig.Resources.ResourceXML {
-  styles = AndroidConfig.Styles.assignStylesValue(styles, {
+  styles = AndroidConfig.Styles.assignAppThemeValue(styles, {
     add: getNavigationBarStyle(config) === 'dark-content',
-    parent: AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
     name: 'android:windowLightNavigationBar',
     value: 'true',
   });
-  styles = AndroidConfig.Styles.assignStylesValue(styles, {
+  styles = AndroidConfig.Styles.assignAppThemeValue(styles, {
     add: !!getNavigationBarColor(config),
-    parent: AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
     name: `android:${NAVIGATION_BAR_COLOR}`,
     value: `@color/${NAVIGATION_BAR_COLOR}`,
   });

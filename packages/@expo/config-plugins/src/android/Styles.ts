@@ -82,14 +82,18 @@ export function setStylesItem({
 }: {
   item: ResourceItemXML;
   xml: ResourceXML;
-  parent: { name: string; parent: string };
+  parent: { name: string; parent?: string };
 }): ResourceXML {
   xml = ensureDefaultStyleResourceXML(xml);
 
   let appTheme = getStyleParent(xml, parent);
 
   if (!appTheme) {
-    appTheme = buildResourceGroup(parent);
+    appTheme = buildResourceGroup({
+      parent: 'Theme.AppCompat.Light.NoActionBar', // Default AppTheme parent
+      ...parent,
+    });
+
     xml.resources!.style!.push(appTheme);
   }
 
@@ -116,7 +120,7 @@ export function removeStylesItem({
 }: {
   name: string;
   xml: ResourceXML;
-  parent: { name: string; parent: string };
+  parent: { name: string; parent?: string };
 }): ResourceXML {
   xml = ensureDefaultStyleResourceXML(xml);
   const appTheme = getStyleParent(xml, parent);
@@ -129,7 +133,11 @@ export function removeStylesItem({
   return xml;
 }
 
-// This is a very common theme so make it reusable.
+/**
+ * @deprecated You probably want to use `assignAppThemeValue` instead.
+ * As `AppTheme` style parent might change (for splashscreen or edge to edge),
+ * you should not match parent theme.
+ */
 export function getAppThemeLightNoActionBarGroup() {
   return { name: 'AppTheme', parent: 'Theme.AppCompat.Light.NoActionBar' };
 }
@@ -147,7 +155,7 @@ export function assignStylesValue(
     value: string;
     targetApi?: string;
     name: string;
-    parent: { name: string; parent: string };
+    parent: { name: string; parent?: string };
   }
 ): ResourceXML {
   if (add) {
@@ -165,6 +173,21 @@ export function assignStylesValue(
     xml,
     parent,
     name,
+  });
+}
+
+export function assignAppThemeValue(
+  xml: ResourceXML,
+  config: {
+    add: boolean;
+    value: string;
+    targetApi?: string;
+    name: string;
+  }
+): ResourceXML {
+  return assignStylesValue(xml, {
+    ...config,
+    parent: { name: 'AppTheme' },
   });
 }
 

@@ -23,7 +23,7 @@ export declare function setStylesItem({ item, xml, parent, }: {
     xml: ResourceXML;
     parent: {
         name: string;
-        parent: string;
+        parent?: string;
     };
 }): ResourceXML;
 export declare function removeStylesItem({ name, xml, parent, }: {
@@ -31,9 +31,14 @@ export declare function removeStylesItem({ name, xml, parent, }: {
     xml: ResourceXML;
     parent: {
         name: string;
-        parent: string;
+        parent?: string;
     };
 }): ResourceXML;
+/**
+ * @deprecated You probably want to use `assignAppThemeValue` instead.
+ * As `AppTheme` style parent might change (for splashscreen or edge to edge),
+ * you should not match parent theme.
+ */
 export declare function getAppThemeLightNoActionBarGroup(): {
     name: string;
     parent: string;
@@ -45,8 +50,14 @@ export declare function assignStylesValue(xml: ResourceXML, { add, value, target
     name: string;
     parent: {
         name: string;
-        parent: string;
+        parent?: string;
     };
+}): ResourceXML;
+export declare function assignAppThemeValue(xml: ResourceXML, config: {
+    add: boolean;
+    value: string;
+    targetApi?: string;
+    name: string;
 }): ResourceXML;
 /**
  * Helper to convert a styles.xml parent's children into a simple k/v pair.
