@@ -9,5 +9,8 @@ internal struct VideoMetadata: Record {
 
   @Field
   var artist: String? = nil
+    
+  @Field
+  var artwork: String? = nil
 }
 // swiftlint:enable redundant_optional_initialization
