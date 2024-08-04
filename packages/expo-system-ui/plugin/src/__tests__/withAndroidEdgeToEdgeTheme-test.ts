@@ -14,7 +14,7 @@ jest.mock('expo/config-plugins', () => {
 });
 
 describe(withAndroidEdgeToEdgeTheme, () => {
-  it(`update AppTheme style parent when edgeToEdge is enabled`, async () => {
+  it(`updates AppTheme style parent when edgeToEdge is enabled`, async () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { experiments: { edgeToEdge: true } },
       {
@@ -35,7 +35,7 @@ describe(withAndroidEdgeToEdgeTheme, () => {
     });
   });
 
-  it(`add windowLightSystemBars if userInterfaceStyle is set`, async () => {
+  it(`adds windowLightSystemBars if userInterfaceStyle is set`, async () => {
     const { modResults: lightModResults } = await compileMockModWithResultsAsync(
       {
         userInterfaceStyle: 'light',
@@ -81,7 +81,7 @@ describe(withAndroidEdgeToEdgeTheme, () => {
     });
   });
 
-  it(`filter unwanted attributes`, async () => {
+  it(`filters unwanted theme attributes`, async () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { experiments: { edgeToEdge: true } },
       {
@@ -107,7 +107,7 @@ describe(withAndroidEdgeToEdgeTheme, () => {
     });
   });
 
-  it(`remove Theme.EdgeToEdge if edgeToEdge is disabled`, async () => {
+  it(`removes Theme.EdgeToEdge if edgeToEdge is disabled`, async () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { experiments: { edgeToEdge: false } },
       {
