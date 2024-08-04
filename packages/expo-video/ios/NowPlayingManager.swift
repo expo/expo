@@ -175,7 +175,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       let artworkURL = URL(string: artworkURLString),
       let imageData = try? Data(contentsOf: artworkURL),
       let image = UIImage(data: imageData) {
-        let artwork = MPMediaItemArtwork(boundsSize: image.size) { size in
+        let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in
           return image
         }
         nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
