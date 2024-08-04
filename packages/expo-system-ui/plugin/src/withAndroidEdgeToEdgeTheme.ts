@@ -20,7 +20,9 @@ export const withAndroidEdgeToEdgeTheme: ConfigPlugin = (config) => {
 
             return (
               item.$.name !== 'android:statusBarColor' &&
-              item.$.name !== 'android:navigationBarColor'
+              item.$.name !== 'android:windowLightStatusBar' &&
+              item.$.name !== 'android:navigationBarColor' &&
+              item.$.name !== 'android:windowLightNavigationBar'
             );
           });
 
