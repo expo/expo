@@ -133,6 +133,15 @@ export function removeStylesItem({
   return xml;
 }
 
+/**
+ * @deprecated Use `getAppThemeGroup` instead.
+ * Matching on both style name and parent leads to prebuild issues, as `AppTheme`
+ * style parent might be changed (when edge to edge is enabled, for example).
+ */
+export function getAppThemeLightNoActionBarGroup() {
+  return { name: 'AppTheme', parent: 'Theme.AppCompat.Light.NoActionBar' };
+}
+
 // This is a very common theme so make it reusable.
 export function getAppThemeGroup() {
   return { name: 'AppTheme' };
