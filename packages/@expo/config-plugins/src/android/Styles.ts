@@ -133,13 +133,9 @@ export function removeStylesItem({
   return xml;
 }
 
-/**
- * @deprecated You probably want to use `assignAppThemeValue` instead.
- * As `AppTheme` style parent might change (for splashscreen or edge to edge),
- * you should not match parent theme.
- */
-export function getAppThemeLightNoActionBarGroup() {
-  return { name: 'AppTheme', parent: 'Theme.AppCompat.Light.NoActionBar' };
+// This is a very common theme so make it reusable.
+export function getAppThemeGroup() {
+  return { name: 'AppTheme' };
 }
 
 export function assignStylesValue(
@@ -173,21 +169,6 @@ export function assignStylesValue(
     xml,
     parent,
     name,
-  });
-}
-
-export function assignAppThemeValue(
-  xml: ResourceXML,
-  config: {
-    add: boolean;
-    value: string;
-    targetApi?: string;
-    name: string;
-  }
-): ResourceXML {
-  return assignStylesValue(xml, {
-    ...config,
-    parent: { name: 'AppTheme' },
   });
 }
 

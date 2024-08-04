@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 
 import { assignColorValue } from './Colors';
-import { assignAppThemeValue } from './Styles';
+import { assignStylesValue, getAppThemeGroup } from './Styles';
 import { ConfigPlugin } from '../Plugin.types';
 import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins';
 
@@ -26,8 +26,9 @@ export const withPrimaryColorColors: ConfigPlugin = (config) => {
 
 export const withPrimaryColorStyles: ConfigPlugin = (config) => {
   return withAndroidStyles(config, (config) => {
-    config.modResults = assignAppThemeValue(config.modResults, {
+    config.modResults = assignStylesValue(config.modResults, {
       add: !!getPrimaryColor(config),
+      parent: getAppThemeGroup(),
       name: COLOR_PRIMARY_KEY,
       value: `@color/${COLOR_PRIMARY_KEY}`,
     });

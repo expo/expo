@@ -3,9 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.assignAppThemeValue = assignAppThemeValue;
 exports.assignStylesValue = assignStylesValue;
-exports.getAppThemeLightNoActionBarGroup = getAppThemeLightNoActionBarGroup;
+exports.getAppThemeGroup = getAppThemeGroup;
 exports.getProjectStylesXMLPathAsync = getProjectStylesXMLPathAsync;
 exports.getStyleParent = getStyleParent;
 exports.getStylesGroupAsObject = getStylesGroupAsObject;
@@ -128,15 +127,10 @@ function removeStylesItem({
   return xml;
 }
 
-/**
- * @deprecated You probably want to use `assignAppThemeValue` instead.
- * As `AppTheme` style parent might change (for splashscreen or edge to edge),
- * you should not match parent theme.
- */
-function getAppThemeLightNoActionBarGroup() {
+// This is a very common theme so make it reusable.
+function getAppThemeGroup() {
   return {
-    name: 'AppTheme',
-    parent: 'Theme.AppCompat.Light.NoActionBar'
+    name: 'AppTheme'
   };
 }
 function assignStylesValue(xml, {
@@ -161,14 +155,6 @@ function assignStylesValue(xml, {
     xml,
     parent,
     name
-  });
-}
-function assignAppThemeValue(xml, config) {
-  return assignStylesValue(xml, {
-    ...config,
-    parent: {
-      name: 'AppTheme'
-    }
   });
 }
 

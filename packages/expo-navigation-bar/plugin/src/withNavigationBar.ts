@@ -214,16 +214,18 @@ export function setNavigationBarStyles(
   { backgroundColor, barStyle }: Pick<Props, 'backgroundColor' | 'barStyle'>,
   styles: AndroidConfig.Resources.ResourceXML
 ): AndroidConfig.Resources.ResourceXML {
-  styles = AndroidConfig.Styles.assignAppThemeValue(styles, {
+  styles = AndroidConfig.Styles.assignStylesValue(styles, {
     add: !!backgroundColor,
+    parent: AndroidConfig.Styles.getAppThemeGroup(),
     name: `android:${NAVIGATION_BAR_COLOR}`,
     value: `@color/${NAVIGATION_BAR_COLOR}`,
   });
 
-  styles = AndroidConfig.Styles.assignAppThemeValue(styles, {
+  styles = AndroidConfig.Styles.assignStylesValue(styles, {
     // Adding means the buttons will be darker to account for a light background color.
     // `setButtonStyleAsync('dark')` should do the same thing.
     add: barStyle === 'dark',
+    parent: AndroidConfig.Styles.getAppThemeGroup(),
     name: 'android:windowLightNavigationBar',
     value: 'true',
   });
