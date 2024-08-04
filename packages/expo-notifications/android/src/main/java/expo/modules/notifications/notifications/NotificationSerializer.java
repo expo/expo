@@ -60,8 +60,7 @@ public class NotificationSerializer {
     serializedRequest.putBundle("trigger", toBundle(request.getTrigger()));
     Bundle content = toBundle(request.getContent());
     Bundle existingContentData = content.getBundle("data");
-    if (existingContentData == null) {
-      FirebaseNotificationTrigger trigger = (FirebaseNotificationTrigger) request.getTrigger();
+    if (existingContentData == null && request.getTrigger() instanceof FirebaseNotificationTrigger trigger) {
       RemoteMessage message = trigger.getRemoteMessage();
       RemoteMessage.Notification notification = message.getNotification();
       Map<String, String> data = message.getData();
