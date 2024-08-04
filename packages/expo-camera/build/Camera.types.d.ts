@@ -297,8 +297,9 @@ export type CameraProps = ViewProps & {
     autofocus?: FocusMode;
     /**
      * A boolean that determines whether the camera should be active.
-     * Useful in situations where the camera may not have unmounted but you still need to clean up the camera session.
+     * Useful in situations where the camera may not have unmounted but you still want to stop the camera session.
      * @default true
+     * @platform ios
      */
     active?: boolean;
     /**
