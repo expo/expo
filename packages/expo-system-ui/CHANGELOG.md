@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `edgeToEdge` experiment. ([#30801](https://github.com/expo/expo/pull/30801) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30485](https://github.com/expo/expo/pull/30485) by [@byCedric](https://github.com/byCedric))
