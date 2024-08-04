@@ -18,6 +18,7 @@ import android.util.Size
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
@@ -126,7 +127,9 @@ class ExpoCameraView(
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
 
-  private var previewView = PreviewView(context)
+  private var previewView = PreviewView(context).apply {
+    elevation = 0f
+  }
   private val scope = CoroutineScope(Dispatchers.Main)
   private var shouldCreateCamera = false
   private var previewPaused = false
@@ -208,18 +211,30 @@ class ExpoCameraView(
   // Scanning-related properties
   private var shouldScanBarcodes = false
 
-  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-    val width = right - left
-    val height = bottom - top
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    measureChild(previewView, widthMeasureSpec, heightMeasureSpec)
 
-    previewView.layout(0, 0, width, height)
-    postInvalidate(left, top, right, bottom)
+    setMeasuredDimension(
+      ViewGroup.resolveSize(previewView.measuredWidth, widthMeasureSpec),
+      ViewGroup.resolveSize(previewView.measuredHeight, heightMeasureSpec)
+    )
   }
 
-  override fun onViewAdded(child: View) {
-    if (previewView === child) {
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    if (!changed) {
       return
     }
+    val width = right - left
+    val height = bottom - top
+    previewView.layout(0, 0, width, height)
+  }
+
+  override fun onViewAdded(child: View?) {
+    super.onViewAdded(child)
+    if (child == previewView) {
+      return
+    }
+    child?.bringToFront()
     removeView(previewView)
     addView(previewView, 0)
   }
@@ -339,6 +354,12 @@ class ExpoCameraView(
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
         val preview = Preview.Builder()
+          .setResolutionSelector(
+            ResolutionSelector.Builder()
+              .setAspectRatioStrategy(ratio.mapToStrategy())
+              .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+              .build()
+          )
           .build()
           .also {
             it.surfaceProvider = previewView.surfaceProvider
@@ -420,7 +441,7 @@ class ExpoCameraView(
 
   private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
-    val fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
+    val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
     val recorder = Recorder.Builder()
@@ -599,7 +620,13 @@ class ExpoCameraView(
         parent?.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
       }
     })
-    addView(previewView)
+    addView(
+      previewView,
+      ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT
+      )
+    )
   }
 
   fun onPictureSaved(response: Bundle) {
