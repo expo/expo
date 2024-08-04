@@ -52,8 +52,8 @@ object SystemUI {
 
     val isAppearanceLightSystemBars = activity
       .theme
-      .resolveAttribute(R.attr.windowLightSystemBars, typedValue, true)
-        && typedValue.data != 0
+      .resolveAttribute(R.attr.windowLightSystemBars, typedValue, true) &&
+      typedValue.data != 0
 
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
