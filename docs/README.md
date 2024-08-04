@@ -190,7 +190,7 @@ Once you have made sure the development setup is ready, proceed to the next sect
 
 #### Step 1: Update the package's TypeDoc
 
-- After you have identified which package docs you want to update, open a terminal window and navigate to that package’s directory. For example:
+- After you have identified which package docs you want to update, open a terminal window and navigate to that packages directory. For example:
 
 ```shell
 # Navigate to expo-constants package directory inside expo/ repo
@@ -212,7 +212,7 @@ cd expo/packages/expo-constants
   expoConfig: ExpoConfig | null;
   ```
 
-- In the above example, let’s fix the typo by changing `confg` to `config`:
+- In the above example, let's fix the typo by changing `confg` to `config`:
 
 ```ts
 /**
@@ -258,7 +258,7 @@ Now, in the terminal window, navigate to **expo/docs** repo and run the command 
 
 After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, and so on).
 
-This will make sure that the ExpoBot on GitHub will not complain about updating the package’s changelog (some of these changes, as described above, are not worth mentioning in the changelog).
+This will make sure that the ExpoBot on GitHub will not complain about updating the package's changelog (some of these changes, as described above, are not worth mentioning in the changelog).
 
 ##### Use the correct package name
 
