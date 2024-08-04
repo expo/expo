@@ -9,7 +9,7 @@ internal struct VideoMetadata: Record {
 
   @Field
   var artist: String? = nil
-    
+
   @Field
   var artwork: String? = nil
 }

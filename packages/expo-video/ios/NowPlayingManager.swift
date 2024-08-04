@@ -175,13 +175,13 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       let artworkURL = URL(string: artworkURLString),
       let imageData = try? Data(contentsOf: artworkURL),
       let image = UIImage(data: imageData) {
-          let artwork = MPMediaItemArtwork(boundsSize: image.size) { size in
-              return image
-          }
-          nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+        let artwork = MPMediaItemArtwork(boundsSize: image.size) { size in
+          return image
+        }
+        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
       } else if let artwork = artwork {
-          // If no URL string or error occurs, use the fallback artwork
-          nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+        // If no URL string or error occurs, use the fallback artwork
+        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
       }
 
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
