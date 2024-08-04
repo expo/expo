@@ -91,7 +91,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       updateSessionAudioIsMuted()
     }
   }
-  
+
   var active = true {
     didSet {
       updateCameraIsActive()
@@ -678,7 +678,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     self.backgroundColor = .black
     self.layer.insertSublayer(previewLayer.videoPreviewLayer, at: 0)
   }
-  
+
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
     self.stopSession()
@@ -686,7 +686,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     super.removeFromSuperview()
   }
-  
+
   func updateCameraIsActive() {
     if self.session.isRunning == active {
       return

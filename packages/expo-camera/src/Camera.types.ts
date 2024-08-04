@@ -339,6 +339,7 @@ export type CameraProps = ViewProps & {
    * A boolean that determines whether the camera should be active.
    * Useful in situations where the camera may not have unmounted but you still want to stop the camera session.
    * @default true
+   * @platform ios
    */
   active?: boolean;
   /**

@@ -149,7 +149,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
         view.mirror = false
       }
-      
+
       Prop("active") { (view, active: Bool?) in
         if let active {
           view.active = active
