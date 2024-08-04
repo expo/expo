@@ -171,7 +171,18 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
       nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
-      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      if let artworkURLString = userMetadata?.artwork,
+      let artworkURL = URL(string: artworkURLString),
+      let imageData = try? Data(contentsOf: artworkURL),
+      let image = UIImage(data: imageData) {
+          let artwork = MPMediaItemArtwork(boundsSize: image.size) { size in
+              return image
+          }
+          nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      } else if let artwork = artwork {
+          // If no URL string or error occurs, use the fallback artwork
+          nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      }
 
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
