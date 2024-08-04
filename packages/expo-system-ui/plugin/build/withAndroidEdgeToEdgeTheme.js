@@ -17,7 +17,9 @@ const withAndroidEdgeToEdgeTheme = (config) => {
                         return true;
                     }
                     return (item.$.name !== 'android:statusBarColor' &&
-                        item.$.name !== 'android:navigationBarColor');
+                        item.$.name !== 'android:windowLightStatusBar' &&
+                        item.$.name !== 'android:navigationBarColor' &&
+                        item.$.name !== 'android:windowLightNavigationBar');
                 });
                 if (edgeToEdge) {
                     style.item.push({
