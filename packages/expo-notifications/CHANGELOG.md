@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Eliminate unsupported types when processing notification intents from onCreate/onNewIntent. ([#30750](https://github.com/expo/expo/pull/30750) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.28.14 — 2024-07-30
