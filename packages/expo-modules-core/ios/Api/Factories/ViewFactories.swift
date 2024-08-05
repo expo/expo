@@ -10,6 +10,15 @@ public func View<ViewType: UIView>(
   return ViewDefinition(viewType, elements: elements())
 }
 
+/**
+ Creates a view definition describing the native SwiftUI view exported to React.
+ */
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>(
+  _ viewType: ViewType.Type
+) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
+  return ExpoSwiftUI.ViewDefinition(ViewType.self)
+}
+
 // MARK: Props
 
 /**
