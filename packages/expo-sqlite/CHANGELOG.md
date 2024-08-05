@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824) by [@kudo](https://github.com/kudo))
+- Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824), [#30825](https://github.com/expo/expo/pull/30825) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
