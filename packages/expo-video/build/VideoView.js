@@ -10,6 +10,22 @@ import NativeVideoView from './NativeVideoView';
 export function isPictureInPictureSupported() {
     return NativeVideoModule.isPictureInPictureSupported();
 }
+/**
+ * Cleans the video cache according to the cache policy.
+ *
+ * @platform ios
+ */
+export function cleanVideoCache() {
+    return NativeVideoModule.cleanVideoCache();
+}
+/**
+ * Cleans all video caches, regardless of the cache policy.
+ *
+ * @platform ios
+ */
+export function cleanAllVideoCache() {
+    return NativeVideoModule.cleanAllVideoCache();
+}
 export class VideoView extends PureComponent {
     nativeRef = createRef();
     /**

@@ -6,12 +6,16 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
-    OnCreate {
-      VideoCacheManager.shared.removeUnusedCache()
-    }
-
     Function("isPictureInPictureSupported") { () -> Bool in
       return AVPictureInPictureController.isPictureInPictureSupported()
+    }
+
+    Function("cleanVideoCache") {
+      return VideoCacheManager.shared.cleanCache()
+    }
+
+    Function("cleanAllVideoCache") {
+      return VideoCacheManager.shared.cleanAllCache()
     }
 
     View(VideoView.self) {

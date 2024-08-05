@@ -1,40 +1,38 @@
-//
-//  MediaFileHandle.swift
-//  CachingPlayerItem
-//
-//  Created by Gorjan Shukov on 10/24/20.
-//
-
 import Foundation
 
-/// File handle for local file operations.
 final class MediaFileHandle {
   private let filePath: String
+  private var fileUrl: URL? {
+    URL(string: filePath)
+  }
   private lazy var readHandle = FileHandle(forReadingAtPath: filePath)
   private lazy var writeHandle = FileHandle(forWritingAtPath: filePath)
 
   private let lock = NSLock()
 
-  // MARK: Init
-
   init(filePath: String) {
     self.filePath = filePath
 
+    if let fileUrl {
+      VideoCacheManager.shared.registerOpenFile(at: fileUrl)
+    }
+
     if !FileManager.default.fileExists(atPath: filePath) {
       FileManager.default.createFile(atPath: filePath, contents: nil, attributes: nil)
-    } else {
-      print("CachingPlayerItem warning: File already exists at \(filePath). A non empty file can cause unexpected behavior.")
     }
   }
 
   deinit {
-    guard FileManager.default.fileExists(atPath: filePath) else { return }
+    if let fileUrl {
+      VideoCacheManager.shared.unregisterOpenFile(at: fileUrl)
+    }
+    guard FileManager.default.fileExists(atPath: filePath) else {
+      return
+    }
 
     close()
   }
 }
-
-// MARK: Internal methods
 
 extension MediaFileHandle {
   var attributes: [FileAttributeKey : Any]? {

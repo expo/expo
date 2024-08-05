@@ -1,4 +1,9 @@
-export { VideoView, isPictureInPictureSupported } from './VideoView';
+export {
+  VideoView,
+  isPictureInPictureSupported,
+  cleanVideoCache,
+  cleanAllVideoCache,
+} from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
 export { VideoContentFit, VideoViewProps } from './VideoView.types';

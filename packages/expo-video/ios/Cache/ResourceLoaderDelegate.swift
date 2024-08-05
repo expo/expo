@@ -8,10 +8,13 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let lock = NSLock()
 
   private var bufferData = Data()
-  private let downloadBufferLimit = CachingPlayerItemConfiguration.downloadBufferLimit
-  private let readDataLimit = CachingPlayerItemConfiguration.readDataLimit
+  // How much data is downloaded in memory before stored on a file.
+  private let downloadBufferLimit = 1.MB
+  // How much data is allowed to be read in memory at a time.
+  private let readDataLimit = 10.MB
 
   private lazy var fileHandle = MediaFileHandle(filePath: pathWithExtension)
+  private weak var owner: CachingPlayerItem?
 
   private var session: URLSession?
   private var response: URLResponse?
@@ -22,9 +25,8 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let saveFilePath: String
   private let fileExtension: String
   
-  // For videos with uris without an extension the file extension is not known until we get mimeType response from the server
-  // We can't play local videos without an extension, which means that the cached file has to have it
-  // We should always receive it before creating the fileHandle
+
+  // When playing from an url without an extension appends an extension to the path based on the response from the server
   private var pathWithExtension: String {
     let ext = CachingPlayerItem.mimeTypeToExtension(mimeType: response?.mimeType)
     if let ext, self.fileExtension == "" {
@@ -32,9 +34,8 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     }
     return self.saveFilePath
   }
-  private weak var owner: CachingPlayerItem?
 
-  // MARK: Init
+  // MARK: - Init
 
   init(url: URL, saveFilePath: String, fileExtension: String, owner: CachingPlayerItem?) {
     self.url = url
@@ -50,7 +51,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     invalidateAndCancelSession()
   }
 
-  // MARK: AVAssetResourceLoaderDelegate
+  // MARK: - AVAssetResourceLoaderDelegate
 
   func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
     if session == nil {
@@ -70,7 +71,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     pendingRequests.remove(loadingRequest)
   }
 
-  // MARK: URLSessionDelegate
+  // MARK: - URLSessionDelegate
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
     bufferData.append(data)
@@ -106,7 +107,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     downloadComplete()
   }
 
-  // MARK: Internal methods
+  // MARK: - Internal methods
 
   func startDataRequest(with url: URL) {
     guard session == nil else { return }
@@ -123,22 +124,38 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     session?.invalidateAndCancel()
   }
 
-  // MARK: Private methods
+  // Saves the mime type of a video fetched from the server into a file. This allows playing videos without an extension in the
+  // url.
+  func saveMimeType(forUrl: URL, mimeType: String) {
+    let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension)
+    let mimeTypeCachePath = filePath + VideoCacheManager.mimeTypeSuffix
+
+    do {
+      if (FileManager.default.fileExists(atPath: mimeTypeCachePath)) {
+        try FileManager.default.removeItem(atPath: mimeTypeCachePath)
+      }
+      FileManager.default.createFile(atPath: mimeTypeCachePath, contents: Data(mimeType.utf8))
+    } catch {
+      print("Failed to create file at: \(mimeTypeCachePath)")
+    }
+  }
+
+  // MARK: - Private methods
 
   private func processPendingRequests() {
     lock.lock()
     defer { lock.unlock() }
 
-    // Filter out the unfullfilled requests
     let requestsFulfilled: Set<AVAssetResourceLoadingRequest> = pendingRequests.filter {
       fillInContentInformationRequest($0.contentInformationRequest)
-      guard haveEnoughDataToFulfillRequest($0.dataRequest!) else { return false }
+      guard haveEnoughDataToFulfillRequest($0.dataRequest!) else {
+        return false
+      }
 
       $0.finishLoading()
       return true
     }
 
-    // Remove fulfilled requests from pending requests
     requestsFulfilled.forEach { pendingRequests.remove($0) }
   }
 
@@ -150,7 +167,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     if let mimeType = response.mimeType {
       let rawUti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil)?.takeRetainedValue() as? String
-
       contentInformationRequest?.contentType = rawUti ?? response.mimeType
     }
     contentInformationRequest?.contentLength = response.expectedContentLength
@@ -194,21 +210,32 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     if let mimeType = response?.mimeType {
       saveMimeType(forUrl: url, mimeType: mimeType)
     }
+
+    VideoCacheManager.shared.maybeAutoCleanCache()
   }
 
-  func saveMimeType(forUrl: URL, mimeType: String) {
-    let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension)
-    let mimeTypeCachePath = filePath + VideoCacheManager.mimeTypeSuffix
+  private func verifyResponse() -> NSError? {
+    guard let response = response as? HTTPURLResponse else { return nil }
+    var error: NSError?
 
-    do {
-      if (FileManager.default.fileExists(atPath: mimeTypeCachePath)) {
-        try FileManager.default.removeItem(atPath: mimeTypeCachePath)
-      }
-      FileManager.default.createFile(atPath: mimeTypeCachePath, contents: Data(mimeType.utf8))
-    } catch {
-      print("Failed to delete file at: \(mimeTypeCachePath)")
+    if response.statusCode >= 400 {
+      error = NSError(domain: "Failed downloading asset. Reason: response status code \(response.statusCode).", code: response.statusCode, userInfo: nil)
     }
+    return error
   }
+
+  private func downloadFailed(with error: Error) {
+    fileHandle.deleteFile()
+  }
+
+  @objc private func handleAppWillTerminate() {
+    // We need to only remove the file if it hasn't been fully downloaded
+    guard isDownloadComplete == false else { return }
+
+    fileHandle.deleteFile()
+  }
+
+  // MARK: - Static functions
 
   static func readMimeType(forUrl url: URL) -> String? {
     let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension)
@@ -227,33 +254,8 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       return nil
     }
   }
+}
 
-  private func verifyResponse() -> NSError? {
-    guard let response = response as? HTTPURLResponse else { return nil }
-
-    let shouldVerifyDownloadedFileSize = CachingPlayerItemConfiguration.shouldVerifyDownloadedFileSize
-    let minimumExpectedFileSize = CachingPlayerItemConfiguration.minimumExpectedFileSize
-    var error: NSError?
-
-    if response.statusCode >= 400 {
-      error = NSError(domain: "Failed downloading asset. Reason: response status code \(response.statusCode).", code: response.statusCode, userInfo: nil)
-    } else if shouldVerifyDownloadedFileSize && response.expectedContentLength != -1 && response.expectedContentLength != fileHandle.fileSize {
-      error = NSError(domain: "Failed downloading asset. Reason: wrong file size, expected: \(response.expectedContentLength), actual: \(fileHandle.fileSize).", code: response.statusCode, userInfo: nil)
-    } else if minimumExpectedFileSize > 0 && minimumExpectedFileSize > fileHandle.fileSize {
-      error = NSError(domain: "Failed downloading asset. Reason: file size \(fileHandle.fileSize) is smaller than minimumExpectedFileSize", code: response.statusCode, userInfo: nil)
-    }
-
-    return error
-  }
-
-  private func downloadFailed(with error: Error) {
-    fileHandle.deleteFile()
-  }
-
-  @objc private func handleAppWillTerminate() {
-    // We need to only remove the file if it hasn't been fully downloaded
-    guard isDownloadComplete == false else { return }
-
-    fileHandle.deleteFile()
-  }
+fileprivate extension Int {
+  var MB: Int { return self * 1024 * 1024 }
 }

@@ -7,6 +7,18 @@ import type { VideoViewProps } from './VideoView.types';
  * @platform ios
  */
 export declare function isPictureInPictureSupported(): boolean;
+/**
+ * Cleans the video cache according to the cache policy.
+ *
+ * @platform ios
+ */
+export declare function cleanVideoCache(): void;
+/**
+ * Cleans all video caches, regardless of the cache policy.
+ *
+ * @platform ios
+ */
+export declare function cleanAllVideoCache(): void;
 export declare class VideoView extends PureComponent<VideoViewProps> {
     nativeRef: import("react").RefObject<any>;
     /**

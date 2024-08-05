@@ -6,9 +6,7 @@ class VideoPlayerItem: CachingPlayerItem {
   let videoSource: VideoSource
 
   init(url: URL, videoSource: VideoSource, avUrlAssetOptions: [String: Any]? = nil) {
-//  init(asset: AVAsset, videoSource: VideoSource) {
     self.videoSource = videoSource
-//    super.init(asset: asset, automaticallyLoadedAssetKeys: nil)
-    super.init(url: url, avUrlAssetOptions: avUrlAssetOptions)
+    super.init(url: url, useCaching: videoSource.useCaching, avUrlAssetOptions: avUrlAssetOptions)
   }
 }

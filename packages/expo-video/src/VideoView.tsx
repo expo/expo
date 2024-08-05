@@ -15,6 +15,24 @@ export function isPictureInPictureSupported(): boolean {
   return NativeVideoModule.isPictureInPictureSupported();
 }
 
+/**
+ * Cleans the video cache according to the cache policy.
+ *
+ * @platform ios
+ */
+export function cleanVideoCache(): void {
+  return NativeVideoModule.cleanVideoCache();
+}
+
+/**
+ * Cleans all video caches, regardless of the cache policy.
+ *
+ * @platform ios
+ */
+export function cleanAllVideoCache(): void {
+  return NativeVideoModule.cleanAllVideoCache();
+}
+
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
 
