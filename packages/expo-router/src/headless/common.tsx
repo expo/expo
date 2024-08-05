@@ -16,31 +16,35 @@ export type PolymorphicProps<E extends React.ElementType> = React.PropsWithChild
 
 export type ScreenTrigger<T extends string | object> = {
   href: Href<T>;
-  initialRoute?: boolean;
+  initialRoute?: boolean | string | string[];
 };
 
 export type ScreenConfig = {
   routeNode: RouteNode;
 };
 
-export function triggersToScreens<T extends ScreenTrigger<any>>(
-  triggers: T[],
+export function triggersToScreens<T extends string | object>(
+  triggers: ScreenTrigger<T>[],
   layoutRouteNode: RouteNode,
-  linking: LinkingOptions<ParamListBase>
+  linking: LinkingOptions<ParamListBase>,
+  currentGroups: string[],
+  initialRouteName = layoutRouteNode.initialRouteName
 ) {
-  let initialRouteName: string | undefined;
-
   const screenConfig = triggers.reduce((acc, { href, initialRoute }) => {
+    debugger;
     let state = linking.getStateFromPath?.(href as any, linking.config)?.routes[0];
 
     if (!state) {
       return acc;
     }
 
+    let a = linking.getStateFromPath?.(href as any, linking.config);
+    debugger;
+
     if (layoutRouteNode.route) {
       while (state?.state) {
         const previousState = state;
-        state = state.state.routes[0];
+        state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
         if (previousState.name === layoutRouteNode.route) break;
       }
     }
@@ -48,8 +52,12 @@ export function triggersToScreens<T extends ScreenTrigger<any>>(
     let routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
 
     if (routeNode) {
-      // const key = `${routeNode.route}#${index}`;
-      if (initialRoute) {
+      if (isInitialRoute(initialRoute, currentGroups)) {
+        if (process.env.NODE_ENV === 'development') {
+          if (initialRouteName) {
+            console.warn(`Initial route name has been set multiple times`);
+          }
+        }
         initialRouteName = routeNode.route;
       }
 
@@ -71,4 +79,18 @@ export function triggersToScreens<T extends ScreenTrigger<any>>(
     children,
     initialRouteName,
   };
+}
+
+function isInitialRoute(initialRoute: ScreenTrigger<any>['initialRoute'], groups: string[]) {
+  let match = false;
+
+  if (initialRoute === true) {
+    match = true;
+  } else if (Array.isArray(initialRoute)) {
+    match = initialRoute.some((route) => groups.includes(route));
+  } else if (typeof initialRoute === 'string') {
+    match = groups.includes(initialRoute);
+  }
+
+  return match;
 }

@@ -26,6 +26,7 @@ import { shouldLinkExternally } from '../utils/url';
 import { TabList, TabListProps, TabTrigger, TabTriggerOptions, TabTriggerProps } from './Tabs.list';
 import { TabSlot } from './Tabs.slot';
 import { triggersToScreens } from './common';
+import { useSegments } from '../hooks';
 
 export type UseTabsOptions = Omit<
   DefaultNavigatorOptions<
@@ -57,11 +58,20 @@ export function useTabsWithTriggers<T extends string | object>({
   const routeNode = useRouteNode();
   const linking = useContext(LinkingContext).options;
 
+  const currentGroups = useSegments().filter((segment) => {
+    return segment.startsWith('(') && segment.endsWith(')');
+  });
+
   if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
-  const { children, initialRouteName } = triggersToScreens(triggers, routeNode, linking);
+  const { children, initialRouteName } = triggersToScreens(
+    triggers,
+    routeNode,
+    linking,
+    currentGroups
+  );
 
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     TabNavigationState<any>,

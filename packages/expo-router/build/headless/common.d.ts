@@ -7,12 +7,12 @@ export type PolymorphicProps<E extends React.ElementType> = React.PropsWithChild
 }>;
 export type ScreenTrigger<T extends string | object> = {
     href: Href<T>;
-    initialRoute?: boolean;
+    initialRoute?: boolean | string | string[];
 };
 export type ScreenConfig = {
     routeNode: RouteNode;
 };
-export declare function triggersToScreens<T extends ScreenTrigger<any>>(triggers: T[], layoutRouteNode: RouteNode, linking: LinkingOptions<ParamListBase>): {
+export declare function triggersToScreens<T extends string | object>(triggers: ScreenTrigger<T>[], layoutRouteNode: RouteNode, linking: LinkingOptions<ParamListBase>, currentGroups: string[], initialRouteName?: string | undefined): {
     children: import("react").JSX.Element[];
     initialRouteName: string | undefined;
 };

@@ -11,6 +11,7 @@ const url_1 = require("../utils/url");
 const Tabs_list_1 = require("./Tabs.list");
 const Tabs_slot_1 = require("./Tabs.slot");
 const common_1 = require("./common");
+const hooks_1 = require("../hooks");
 function useTabsWithChildren({ children, ...options }) {
     return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
 }
@@ -18,10 +19,13 @@ exports.useTabsWithChildren = useTabsWithChildren;
 function useTabsWithTriggers({ triggers, ...options }) {
     const routeNode = (0, Route_1.useRouteNode)();
     const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
+    const currentGroups = (0, hooks_1.useSegments)().filter((segment) => {
+        return segment.startsWith('(') && segment.endsWith(')');
+    });
     if (!routeNode || !linking) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');
     }
-    const { children, initialRouteName } = (0, common_1.triggersToScreens)(triggers, routeNode, linking);
+    const { children, initialRouteName } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, currentGroups);
     const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.TabRouter, {
         children,
         backBehavior: react_native_1.Platform.OS === 'web' ? 'history' : 'firstRoute',
