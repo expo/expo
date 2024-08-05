@@ -54,23 +54,6 @@ object JSTypeConverter {
     }
   }
 
-  /**
-   * Tests that a converted value can be added to a map for inclusion in the payload of a JS event
-   * without throwing
-   */
-  @JvmStatic
-  fun valueIsConvertibleToJSValue(value: Any?, containerProvider: ContainerProvider = DefaultContainerProvider): Boolean {
-    val testMap = containerProvider.createMap()
-    try {
-      val convertedValue = JSTypeConverter.convertToJSValue(value, containerProvider)
-      testMap.putGeneric("testKey", convertedValue)
-    } catch (e: Throwable) {
-      return false
-    }
-    return true
-  }
-
-  @JvmStatic
   fun convertToJSValue(value: Any?, containerProvider: ContainerProvider = DefaultContainerProvider): Any? {
     return when (value) {
       null, is Unit -> null
