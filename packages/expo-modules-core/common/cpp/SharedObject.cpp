@@ -39,7 +39,30 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
       return jsi::Value::undefined();
     });
 
+  // Implements a JSON serializer for shared objects, whose properties are defined in the prototype instead of the instance itself.
+  // By default `JSON.stringify` visits only enumerable own properties.
+  jsi::Function toJSONFunction = jsi::Function::createFromHostFunction(
+    runtime,
+    jsi::PropNameID::forAscii(runtime, "toJSON"),
+    0,
+    [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+      jsi::Object thisObject = thisValue.getObject(runtime);
+      jsi::Object json = jsi::Object(runtime);
+      jsi::Array propertyNames = thisObject.getPropertyNames(runtime);
+
+      for (size_t i = 0, size = propertyNames.size(runtime); i < size; i++) {
+        jsi::String propertyName = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
+        jsi::Value value = thisObject.getProperty(runtime, propertyName);
+
+        if (!value.isObject() || !value.getObject(runtime).isFunction(runtime)) {
+          json.setProperty(runtime, propertyName, value);
+        }
+      }
+      return jsi::Value(runtime, json);
+    });
+
   prototype.setProperty(runtime, "release", releaseFunction);
+  prototype.setProperty(runtime, "toJSON", toJSONFunction);
 
   // This property should be deprecated, but it's still used when passing as a view prop.
   defineProperty(runtime, &prototype, "__expo_shared_object_id__", common::PropertyDescriptor {
