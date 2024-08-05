@@ -1,7 +1,7 @@
 ---
 title: Testing with Jest
 sidebar_title: Testing
-description: Learn how to set up and configure the jest-expo library to write unit and snapshot tests for a project.
+description: Learn how to set up and configure the jest-expo library to write unit and snapshot tests for a project with Jest.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -17,7 +17,7 @@ import { CODE } from '~/ui/components/Text';
 
 [Jest](https://jestjs.io) is the most widely used unit and snapshot JavaScript testing framework. In this guide, you will learn how to set up Jest in your project, write a unit test, write a snapshot test, and best practices for structuring your tests when using Jest with React Native.
 
-You will also use the [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) library, which is a Jest preset and mocks the native part of the Expo SDK and handles most of the configuration.
+You will also use the [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) library, which is a Jest preset that mocks the native part of the Expo SDK and handles most of the configuration required for your Expo project.
 
 ## Installation and configuration
 
@@ -78,7 +78,7 @@ You can transpile node modules your project uses by configuring [`transformIgnor
   "preset": "jest-expo",
   /* @info */
   "transformIgnorePatterns": [
-    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|@sentry/react-native|native-base|react-native-svg)"
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
   ]
   /* @end */
 }
@@ -93,7 +93,7 @@ You can transpile node modules your project uses by configuring [`transformIgnor
   "preset": "jest-expo",
   /* @info */
   "transformIgnorePatterns": [
-    "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|@sentry/react-native|native-base|react-native-svg))"
+    "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
   ]
   /* @end */
 }
@@ -103,7 +103,7 @@ You can transpile node modules your project uses by configuring [`transformIgnor
 
 </Tabs>
 
-Jest has various configuration options. The above configuration covers the majority of your needs. However, you can always add to this pattern list. For more details, see [Configuring Jest](https://jestjs.io/docs/configuration).
+Jest has many configuration options. The above configuration should cover most of your needs. However, you can always add to this pattern list. For more details, see [Configuring Jest](https://jestjs.io/docs/configuration).
 
 </Collapsible>
 
