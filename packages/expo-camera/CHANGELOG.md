@@ -10,6 +10,7 @@
 - Support mirroring the output of the front facing camera. ([#30430](https://github.com/expo/expo/pull/30430) by [@alanjhughes](https://github.com/alanjhughes))
 - On `Android`, support mirroring video when using front facing camera. Control mirroring with a prop. Deprecate `mirror` option on `takePictureAsync` and `recordAsync`. ([#30548](https://github.com/expo/expo/pull/30548) by [@alanjhughes](https://github.com/alanjhughes))
 - Support pausing and resuming the preview. ([#30666](https://github.com/expo/expo/pull/30666) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `active` prop to stop and start the camera session. Useful with navigation where the camera is can still be active on a previous screen. ([#30802](https://github.com/expo/expo/pull/30802) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
