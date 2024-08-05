@@ -88,7 +88,7 @@ describe('exports static', () => {
     // Posix path formatting is used to make paths the same across OSes.
     const files = klawSync(outputDir)
       .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+        if (!entry.stats.isFile()) {
           return null;
         }
         return path.posix.relative(outputDir, entry.path);
@@ -112,6 +112,11 @@ describe('exports static', () => {
     expect(files).toContain('[post].html');
     expect(files).toContain('welcome-to-the-universe.html');
     expect(files).toContain('other.html');
+
+    // Assets should not contain illegal characters
+    files.forEach((file) => {
+      expect(file).not.toMatch(/@/);
+    });
   });
 
   it('has source maps', async () => {

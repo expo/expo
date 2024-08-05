@@ -12,7 +12,10 @@ module.exports = function hashAssetFiles(asset) {
     if (asset.httpServerLocation.includes('?export_path=')) {
       asset.httpServerLocation = asset.httpServerLocation
         .match(/\?export_path=(.*)/)[1]
-        .replace(/\.\.\//g, '_');
+        .replace(/\.\.\//g, '_')
+        // See: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+        // Certain characters are URL-unsafe and should be avoided as part of output filenames
+        .replace(/[\0-\32\127&$@=;:+,?{}^%`[\]"'<>~|#]/g, '_');
     }
 
     // URL encode asset paths defined as `?export_path` or `?unstable_path` query parameters.

@@ -16,6 +16,7 @@ export default function Page() {
         <meta name="description" content="About page" />
       </Head>
       <Text testID="content">About</Text>
+      <EvilIcons name="bell" testID="icon" />
     </>
   );
 }

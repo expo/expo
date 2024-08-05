@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Remove illegal S3 characters from exported asset file paths. ([#30698](https://github.com/expo/expo/pull/30698) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing dependencies and follow proper dependency chains. ([#30500](https://github.com/expo/expo/pull/30500) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
