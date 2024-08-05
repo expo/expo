@@ -12,6 +12,7 @@ import { MetroConfigCheck } from './checks/MetroConfigCheck';
 import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
+import { PossiblyUnintentionallyBareCheck } from './checks/PossiblyUnintentionallyBareCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
@@ -133,6 +134,7 @@ export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConf
     new ProjectSetupCheck(),
     new MetroConfigCheck(),
     new NativeToolingVersionCheck(),
+    new PossiblyUnintentionallyBareCheck(),
   ];
 
   if (getReactNativeDirectoryCheckEnabled(pkg)) {
