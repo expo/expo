@@ -44,64 +44,64 @@ void NativeDatabaseBinding::registerNatives() {
   });
 }
 
-int NativeDatabaseBinding::sqlite3_changes() { return ::sqlite3_changes(db); }
+int NativeDatabaseBinding::sqlite3_changes() { return ::exsqlite3_changes(db); }
 
 int NativeDatabaseBinding::sqlite3_close() {
   // Not setting `db = nullptr` here because we may need the db pointer to get
-  // error messages if sqlite3_close has errors.
-  return ::sqlite3_close(db);
+  // error messages if exsqlite3_close has errors.
+  return ::exsqlite3_close(db);
 }
 
 std::string
 NativeDatabaseBinding::sqlite3_db_filename(const std::string &databaseName) {
-  return ::sqlite3_db_filename(db, databaseName.c_str());
+  return ::exsqlite3_db_filename(db, databaseName.c_str());
 }
 
 int NativeDatabaseBinding::sqlite3_enable_load_extension(int onoff) {
-  return ::sqlite3_enable_load_extension(db, onoff);
+  return ::exsqlite3_enable_load_extension(db, onoff);
 }
 
 int NativeDatabaseBinding::sqlite3_exec(const std::string &source) {
   char *error;
-  int ret = ::sqlite3_exec(db, source.c_str(), nullptr, nullptr, &error);
+  int ret = ::exsqlite3_exec(db, source.c_str(), nullptr, nullptr, &error);
   if (ret != SQLITE_OK && error) {
     std::string errorString(error);
-    ::sqlite3_free(error);
+    ::exsqlite3_free(error);
     jni::throwNewJavaException(SQLiteErrorException::create(errorString).get());
   }
   return ret;
 }
 
 int NativeDatabaseBinding::sqlite3_get_autocommit() {
-  return ::sqlite3_get_autocommit(db);
+  return ::exsqlite3_get_autocommit(db);
 }
 
 int64_t NativeDatabaseBinding::sqlite3_last_insert_rowid() {
-  return ::sqlite3_last_insert_rowid(db);
+  return ::exsqlite3_last_insert_rowid(db);
 }
 
 int NativeDatabaseBinding::sqlite3_load_extension(
     const std::string &libPath, const std::string &entryProc) {
   char *error;
   int ret =
-      ::sqlite3_load_extension(db, libPath.c_str(), entryProc.c_str(), &error);
+      ::exsqlite3_load_extension(db, libPath.c_str(), entryProc.c_str(), &error);
   if (ret != SQLITE_OK && error) {
     std::string errorString(error);
-    ::sqlite3_free(error);
+    ::exsqlite3_free(error);
     jni::throwNewJavaException(SQLiteErrorException::create(errorString).get());
   }
   return ret;
 }
 
 int NativeDatabaseBinding::sqlite3_open(const std::string &dbPath) {
-  return ::sqlite3_open(dbPath.c_str(), &db);
+  return ::exsqlite3_open(dbPath.c_str(), &db);
 }
 
 int NativeDatabaseBinding::sqlite3_prepare_v2(
     const std::string &source,
     jni::alias_ref<NativeStatementBinding::javaobject> statement) {
   NativeStatementBinding *cStatement = cthis(statement);
-  return ::sqlite3_prepare_v2(db, source.c_str(), source.size(),
+  return ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
                               &cStatement->stmt, nullptr);
 }
 
@@ -109,14 +109,14 @@ jni::local_ref<jni::JArrayByte>
 NativeDatabaseBinding::sqlite3_serialize(const std::string &databaseName) {
   ::sqlite3_int64 size = 0;
   unsigned char *bytes =
-      ::sqlite3_serialize(db, databaseName.c_str(), &size, 0);
+      ::exsqlite3_serialize(db, databaseName.c_str(), &size, 0);
   if (!bytes) {
     jni::throwNewJavaException(
         SQLiteErrorException::create(convertSqlLiteErrorToString()).get());
   }
   auto byteArray = jni::JArrayByte::newArray(size);
   byteArray->setRegion(0, size, reinterpret_cast<const signed char *>(bytes));
-  ::sqlite3_free(bytes);
+  ::exsqlite3_free(bytes);
   return byteArray;
 }
 
@@ -124,7 +124,7 @@ int NativeDatabaseBinding::sqlite3_deserialize(
     const std::string &databaseName,
     jni::alias_ref<jni::JArrayByte> serializedData) {
   ::sqlite3_int64 size = serializedData->size();
-  void *buffer = ::sqlite3_malloc64(size);
+  void *buffer = ::exsqlite3_malloc64(size);
   if (!buffer) {
     std::string message("Unable to allocate memory with size: ");
     message += size;
@@ -132,23 +132,23 @@ int NativeDatabaseBinding::sqlite3_deserialize(
   }
   serializedData->getRegion(0, size, reinterpret_cast<signed char *>(buffer));
   int flags = SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE;
-  return ::sqlite3_deserialize(db, databaseName.c_str(),
+  return ::exsqlite3_deserialize(db, databaseName.c_str(),
                                reinterpret_cast<unsigned char *>(buffer), size,
                                size, flags);
 }
 
 void NativeDatabaseBinding::sqlite3_update_hook(bool enabled) {
   if (enabled) {
-    ::sqlite3_update_hook(db, NativeDatabaseBinding::OnUpdateHook, this);
+    ::exsqlite3_update_hook(db, NativeDatabaseBinding::OnUpdateHook, this);
   } else {
-    ::sqlite3_update_hook(db, nullptr, nullptr);
+    ::exsqlite3_update_hook(db, nullptr, nullptr);
   }
 }
 
 jni::local_ref<jni::JString>
 NativeDatabaseBinding::convertSqlLiteErrorToString() {
-  int code = sqlite3_errcode(db);
-  const char *message = sqlite3_errmsg(db);
+  int code = exsqlite3_errcode(db);
+  const char *message = exsqlite3_errmsg(db);
   std::string result("Error code ");
   result += code;
   result += ": ";
