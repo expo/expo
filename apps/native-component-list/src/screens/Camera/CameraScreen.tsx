@@ -87,6 +87,11 @@ function Gestures({ children }: { children: React.ReactNode }) {
         }),
     []
   );
+
+  if (Platform.OS === 'web') {
+    return children;
+  }
+
   return (
     <GestureDetector gesture={Gesture.Race(doubleTapGesture, longPressGesture)}>
       {children}
