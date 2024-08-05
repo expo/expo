@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Ensure navigation keeps within the closest group. ([#30266](https://github.com/expo/expo/pull/30266) by [@marklawlor](https://github.com/marklawlor))
+- Fix Typed Routes with hoisted routes and groups. ([#30810](https://github.com/expo/expo/pull/30810) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
