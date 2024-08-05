@@ -20,6 +20,7 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
       ignoreRequireErrors: true,
       importMode: 'async',
     }),
+    '',
     staticRoutes,
     dynamicRoutes,
     dynamicRouteContextKeys
@@ -47,16 +48,19 @@ declare module 'expo-router' {
  */
 function walkRouteNode(
   routeNode: RouteNode | null,
+  parentRoutePath: string,
   staticRoutes: Set<string>,
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
 ) {
   if (!routeNode) return;
 
-  addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+  addRouteNode(routeNode, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+
+  parentRoutePath = `${removeSupportedExtensions(`${parentRoutePath}/${routeNode.route}`).replace(/\/?index$/, '')}`; // replace /index with /
 
   for (const child of routeNode.children) {
-    walkRouteNode(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    walkRouteNode(child, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
   }
 }
 
@@ -66,6 +70,7 @@ function walkRouteNode(
  */
 function addRouteNode(
   routeNode: RouteNode | null,
+  parentRoutePath: string,
   staticRoutes: Set<string>,
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
@@ -73,7 +78,7 @@ function addRouteNode(
   if (!routeNode?.route) return;
   if (!isTypedRoute(routeNode.route)) return;
 
-  let routePath = `${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
+  let routePath = `${parentRoutePath}/${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
 
   if (!routePath.startsWith('/')) {
     routePath = `/${routePath}`;
