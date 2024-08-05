@@ -23,6 +23,7 @@
 
 ### 🐛 Bug fixes
 
+- Use `react-server` resolution when experimental react canary support is enabled. ([#30747](https://github.com/expo/expo/pull/30747) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server closing in headless run commands. ([#30432](https://github.com/expo/expo/pull/30432) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix resolver fields for SSR + native platforms. ([#29701](https://github.com/expo/expo/pull/29701) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))

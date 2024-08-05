@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Add client boundary callback for production exports. ([#30747](https://github.com/expo/expo/pull/30747) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent duplicated `NSUserActivityTypes` strings in prebuild. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))
 - Ensure navigation keeps within the closest group. ([#30266](https://github.com/expo/expo/pull/30266) by [@marklawlor](https://github.com/marklawlor))
 
