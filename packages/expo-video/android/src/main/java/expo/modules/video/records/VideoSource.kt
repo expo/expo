@@ -36,7 +36,6 @@ class VideoSource(
       "NotificationDataTitle:${this.metadata?.title}" +
       "NotificationDataSecondaryText:${this.metadata?.artist}" +
       "NotificationDataArtwork:${this.metadata?.artwork}"
-
   }
 
   fun toMediaSource(context: Context): MediaSource {
