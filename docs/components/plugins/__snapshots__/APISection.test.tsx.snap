@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="!shadow-none css-7sex76"
+    class="!shadow-none css-18kpoqz-APISectionComponents"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -328,7 +328,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -343,7 +343,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 buttonStyle
@@ -405,7 +405,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -420,7 +420,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 buttonType
@@ -482,7 +482,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -497,7 +497,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 cornerRadius
@@ -567,7 +567,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -582,7 +582,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 onPress
@@ -663,7 +663,7 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -678,7 +678,7 @@ in here.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 style
@@ -917,7 +917,7 @@ properties.
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -965,29 +965,29 @@ properties.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -995,10 +995,10 @@ properties.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -1007,7 +1007,7 @@ properties.
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -1017,7 +1017,7 @@ properties.
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -1193,7 +1193,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1337,7 +1337,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1385,29 +1385,29 @@ value depending on the state of the credential.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -1415,10 +1415,10 @@ value depending on the state of the credential.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -1427,7 +1427,7 @@ value depending on the state of the credential.
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -1442,7 +1442,7 @@ value depending on the state of the credential.
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -1578,7 +1578,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1626,29 +1626,29 @@ refresh operation.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -1656,10 +1656,10 @@ refresh operation.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -1674,7 +1674,7 @@ refresh operation.
               </span>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -1689,7 +1689,7 @@ refresh operation.
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -1866,7 +1866,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -1914,29 +1914,29 @@ sign-in operation.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -1944,10 +1944,10 @@ sign-in operation.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -1956,7 +1956,7 @@ sign-in operation.
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -1971,7 +1971,7 @@ sign-in operation.
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2181,7 +2181,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -2229,24 +2229,24 @@ sign-out operation.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
@@ -2254,10 +2254,10 @@ sign-out operation.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2266,7 +2266,7 @@ sign-out operation.
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2373,14 +2373,14 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#appleauthenticationcredential"
         id="appleauthenticationcredential"
       >
@@ -2388,7 +2388,7 @@ sign-out operation.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationCredential
@@ -2518,29 +2518,29 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -2548,10 +2548,10 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2560,7 +2560,7 @@ for more details.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2580,7 +2580,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2599,10 +2599,10 @@ the app's server counterpart. Unlike
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2611,7 +2611,7 @@ the app's server counterpart. Unlike
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2631,7 +2631,7 @@ the app's server counterpart. Unlike
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2652,10 +2652,10 @@ an Apple domain.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2664,7 +2664,7 @@ an Apple domain.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2689,7 +2689,7 @@ an Apple domain.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2723,10 +2723,10 @@ your app.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2735,7 +2735,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2755,7 +2755,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2766,10 +2766,10 @@ your app.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2778,7 +2778,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2793,7 +2793,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2804,10 +2804,10 @@ your app.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2816,7 +2816,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2836,7 +2836,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2871,10 +2871,10 @@ will be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -2883,7 +2883,7 @@ will be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -2893,7 +2893,7 @@ will be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -2911,14 +2911,14 @@ developers.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#appleauthenticationfullname"
         id="appleauthenticationfullname"
       >
@@ -2926,7 +2926,7 @@ developers.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationFullName
@@ -2973,29 +2973,29 @@ may be
       . Only applicable fields that the user has allowed your app to access will be nonnull.
     </p>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -3003,10 +3003,10 @@ may be
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3015,7 +3015,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3035,7 +3035,7 @@ may be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3045,10 +3045,10 @@ may be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3057,7 +3057,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3077,7 +3077,7 @@ may be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3087,10 +3087,10 @@ may be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3099,7 +3099,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3119,7 +3119,7 @@ may be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3129,10 +3129,10 @@ may be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3141,7 +3141,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3161,7 +3161,7 @@ may be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3171,10 +3171,10 @@ may be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3183,7 +3183,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3203,7 +3203,7 @@ may be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3213,10 +3213,10 @@ may be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3225,7 +3225,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3245,7 +3245,7 @@ may be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3259,14 +3259,14 @@ may be
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#appleauthenticationrefreshoptions"
         id="appleauthenticationrefreshoptions"
       >
@@ -3274,7 +3274,7 @@ may be
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationRefreshOptions
@@ -3379,29 +3379,29 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -3409,10 +3409,10 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3427,7 +3427,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3443,7 +3443,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3479,10 +3479,10 @@ requests they will be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3497,7 +3497,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3507,7 +3507,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3530,10 +3530,10 @@ OAuth 2.0 protocol
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3542,7 +3542,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3552,7 +3552,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -3566,14 +3566,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#appleauthenticationsigninoptions"
         id="appleauthenticationsigninoptions"
       >
@@ -3581,7 +3581,7 @@ OAuth 2.0 protocol
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationSignInOptions
@@ -3686,29 +3686,29 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -3716,10 +3716,10 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3734,7 +3734,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3744,7 +3744,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3765,10 +3765,10 @@ for more details.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3783,7 +3783,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3799,7 +3799,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3835,10 +3835,10 @@ requests they will be
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -3853,7 +3853,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -3863,7 +3863,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -3890,14 +3890,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#appleauthenticationsignoutoptions"
         id="appleauthenticationsignoutoptions"
       >
@@ -3905,7 +3905,7 @@ OAuth 2.0 protocol
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationSignOutOptions
@@ -4010,29 +4010,29 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -4040,10 +4040,10 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -4058,7 +4058,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -4068,7 +4068,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -4091,10 +4091,10 @@ OAuth 2.0 protocol
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -4103,7 +4103,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -4113,7 +4113,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -4127,14 +4127,14 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#subscription"
         id="subscription"
       >
@@ -4142,7 +4142,7 @@ OAuth 2.0 protocol
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             Subscription
@@ -4181,29 +4181,29 @@ OAuth 2.0 protocol
       A subscription object that allows to conveniently remove an event listener from the emitter.
     </p>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -4211,10 +4211,10 @@ OAuth 2.0 protocol
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -4223,7 +4223,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="css-ite7ne-TextComponent"
@@ -4244,7 +4244,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -4300,7 +4300,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4565,7 +4565,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -4873,7 +4873,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5228,7 +5228,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5518,7 +5518,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -5807,7 +5807,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -6158,7 +6158,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="!shadow-none css-7sex76"
+    class="!shadow-none css-18kpoqz-APISectionComponents"
   >
     <div
       class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-md-gutters:mx-[-17px]"
@@ -6370,7 +6370,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -6385,7 +6385,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 barCodeTypes
@@ -6486,7 +6486,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -6501,7 +6501,7 @@ minimize battery usage.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6640,7 +6640,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 css-17cktl8"
+        class="!pb-4 [&>*:last-child]:!mb-0 css-qoy1vb-APISectionProps"
       >
         <h3
           class="group css-eynke-TextComponent"
@@ -6655,7 +6655,7 @@ data has been retrieved.
               class="inline"
             >
               <code
-                class="wrap-anywhere css-1odgxmq-TextComponent"
+                class="wrap-anywhere css-831ndn-APISectionProps"
                 data-text="true"
               >
                 type
@@ -6882,7 +6882,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -6930,24 +6930,24 @@ Same as
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
@@ -6955,10 +6955,10 @@ Same as
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -6973,7 +6973,7 @@ Same as
               </span>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -7277,7 +7277,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7424,7 +7424,7 @@ This uses both
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7593,7 +7593,7 @@ This uses both
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7641,29 +7641,29 @@ This uses both
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -7671,10 +7671,10 @@ This uses both
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -7683,7 +7683,7 @@ This uses both
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -7693,7 +7693,7 @@ This uses both
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -7704,10 +7704,10 @@ This uses both
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -7722,7 +7722,7 @@ This uses both
               </span>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -7732,7 +7732,7 @@ This uses both
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -7933,7 +7933,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-ztgmkf-APISectionInterfaces"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -7998,29 +7998,29 @@ code.
       </span>
     </p>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -8028,10 +8028,10 @@ code.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8040,7 +8040,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8050,7 +8050,7 @@ code.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8063,10 +8063,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8075,7 +8075,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8090,7 +8090,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8101,10 +8101,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8113,7 +8113,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8123,7 +8123,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8134,10 +8134,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8146,7 +8146,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8161,7 +8161,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8217,14 +8217,14 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#barcodebounds"
         id="barcodebounds"
       >
@@ -8232,7 +8232,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeBounds
@@ -8265,29 +8265,29 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -8295,10 +8295,10 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8307,7 +8307,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8322,7 +8322,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8333,10 +8333,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8345,7 +8345,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8360,7 +8360,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8375,7 +8375,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -8455,29 +8455,29 @@ in order to enable/disable the permission.
     </p>
     <br />
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -8485,10 +8485,10 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8503,7 +8503,7 @@ in order to enable/disable the permission.
               </span>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8513,7 +8513,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -8527,14 +8527,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#barcodeeventcallbackarguments"
         id="barcodeeventcallbackarguments"
       >
@@ -8542,7 +8542,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeEventCallbackArguments
@@ -8575,29 +8575,29 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -8605,10 +8605,10 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8617,7 +8617,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8632,7 +8632,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <span
                 class="text-quaternary"
@@ -8646,14 +8646,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#barcodepoint"
         id="barcodepoint"
       >
@@ -8661,7 +8661,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodePoint
@@ -8701,29 +8701,29 @@ in order to enable/disable the permission.
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
     </p>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -8731,10 +8731,10 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8743,7 +8743,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8753,7 +8753,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8771,10 +8771,10 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -8783,7 +8783,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8793,7 +8793,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -8815,14 +8815,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#barcodescannedcallback"
         id="barcodescannedcallback"
       >
@@ -8830,7 +8830,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeScannedCallback
@@ -8865,24 +8865,24 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </h3>
     <div>
       <div
-        class="table-wrapper css-1uyflf8-Table"
+        class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
       >
         <table
-          class="css-e41t9x-Table"
+          class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
-            class="bg-subtle border-b border-b-default border-solid"
+            class="bg-subtle border-b border-b-default"
           >
             <tr
-              class="css-190f936-Row"
+              class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <th
-                class="css-17s7rsv-HeaderCell"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
               >
                 Name
               </th>
               <th
-                class="css-17s7rsv-HeaderCell"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
               >
                 Type
               </th>
@@ -8890,10 +8890,10 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </thead>
           <tbody>
             <tr
-              class="css-190f936-Row"
+              class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <td
-                class="css-zstkv9-Cell"
+                class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
               >
                 <strong
                   class="css-bvflvn-TextComponent"
@@ -8902,7 +8902,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </strong>
               </td>
               <td
-                class="css-zstkv9-Cell"
+                class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
               >
                 <code
                   class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -8923,14 +8923,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#barcodescannerresult"
         id="barcodescannerresult"
       >
@@ -8938,7 +8938,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeScannerResult
@@ -8971,29 +8971,29 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -9001,10 +9001,10 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -9013,7 +9013,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -9028,7 +9028,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -9063,10 +9063,10 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -9075,7 +9075,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -9091,7 +9091,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -9125,10 +9125,10 @@ you don't get this value.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -9137,7 +9137,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -9147,7 +9147,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -9158,10 +9158,10 @@ you don't get this value.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -9170,7 +9170,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -9180,7 +9180,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -9195,14 +9195,14 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#barcodesize"
         id="barcodesize"
       >
@@ -9210,7 +9210,7 @@ you don't get this value.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeSize
@@ -9243,29 +9243,29 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -9273,10 +9273,10 @@ you don't get this value.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -9285,7 +9285,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -9295,7 +9295,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -9306,10 +9306,10 @@ you don't get this value.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -9318,7 +9318,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -9328,7 +9328,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -9343,7 +9343,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -9479,7 +9479,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"
@@ -9771,7 +9771,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -9896,7 +9896,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <div
       class="flex flex-row items-center mb-2"
@@ -9987,29 +9987,29 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -10017,10 +10017,10 @@ exports[`APISection expo-pedometer 1`] = `
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -10029,7 +10029,7 @@ exports[`APISection expo-pedometer 1`] = `
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -10046,7 +10046,7 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -10057,10 +10057,10 @@ exports[`APISection expo-pedometer 1`] = `
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -10069,7 +10069,7 @@ exports[`APISection expo-pedometer 1`] = `
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -10086,7 +10086,7 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -10261,7 +10261,7 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10399,7 +10399,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10524,7 +10524,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="css-17cktl8"
+    class="css-1q9cex2-APISectionMethods"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10572,29 +10572,29 @@ available on this device.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -10602,10 +10602,10 @@ available on this device.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -10614,7 +10614,7 @@ available on this device.
               </strong>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -10629,7 +10629,7 @@ available on this device.
               </code>
             </td>
             <td
-              class="css-zstkv9-Cell"
+              class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -10845,7 +10845,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="css-17cktl8"
+    class="css-ztgmkf-APISectionInterfaces"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -10910,29 +10910,29 @@ On iOS, the
       </span>
     </p>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -10940,10 +10940,10 @@ On iOS, the
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -10952,7 +10952,7 @@ On iOS, the
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -10962,7 +10962,7 @@ On iOS, the
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -10975,10 +10975,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -10987,7 +10987,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -11002,7 +11002,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -11013,10 +11013,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -11025,7 +11025,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -11035,7 +11035,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -11046,10 +11046,10 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -11058,7 +11058,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -11073,7 +11073,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -11129,14 +11129,14 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#pedometerresult"
         id="pedometerresult"
       >
@@ -11144,7 +11144,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PedometerResult
@@ -11177,29 +11177,29 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -11207,10 +11207,10 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -11219,7 +11219,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -11229,7 +11229,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -11244,14 +11244,14 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#pedometerupdatecallback"
         id="pedometerupdatecallback"
       >
@@ -11259,7 +11259,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PedometerUpdateCallback
@@ -11300,24 +11300,24 @@ in order to enable/disable the permission.
     </p>
     <div>
       <div
-        class="table-wrapper css-1uyflf8-Table"
+        class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
       >
         <table
-          class="css-e41t9x-Table"
+          class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
-            class="bg-subtle border-b border-b-default border-solid"
+            class="bg-subtle border-b border-b-default"
           >
             <tr
-              class="css-190f936-Row"
+              class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <th
-                class="css-17s7rsv-HeaderCell"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
               >
                 Name
               </th>
               <th
-                class="css-17s7rsv-HeaderCell"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
               >
                 Type
               </th>
@@ -11325,10 +11325,10 @@ in order to enable/disable the permission.
           </thead>
           <tbody>
             <tr
-              class="css-190f936-Row"
+              class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <td
-                class="css-zstkv9-Cell"
+                class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
               >
                 <strong
                   class="css-bvflvn-TextComponent"
@@ -11337,7 +11337,7 @@ in order to enable/disable the permission.
                 </strong>
               </td>
               <td
-                class="css-zstkv9-Cell"
+                class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
               >
                 <code
                   class="[&>span]:!text-inherit css-ite7ne-TextComponent"
@@ -11358,7 +11358,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
@@ -11460,14 +11460,14 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-7sex76"
+    class="css-176db5m"
   >
     <h3
       class="group css-eynke-TextComponent"
       data-heading="true"
     >
       <a
-        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12"
+        class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-12 break-words wrap-anywhere"
         href="#subscription"
         id="subscription"
       >
@@ -11475,7 +11475,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere css-yd3r23-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             Subscription
@@ -11514,29 +11514,29 @@ in order to enable/disable the permission.
       A subscription object that allows to conveniently remove an event listener from the emitter.
     </p>
     <div
-      class="table-wrapper css-1uyflf8-Table"
+      class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="css-e41t9x-Table"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
-          class="bg-subtle border-b border-b-default border-solid"
+          class="bg-subtle border-b border-b-default"
         >
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Name
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="css-17s7rsv-HeaderCell"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
               Description
             </th>
@@ -11544,10 +11544,10 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-190f936-Row"
+            class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
                 class="css-bvflvn-TextComponent"
@@ -11556,7 +11556,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
                 class="css-ite7ne-TextComponent"
@@ -11577,7 +11577,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-18p3734-Cell"
+              class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
                 class="mb-3.5 css-1kfqm4n-TextComponent"
@@ -11633,7 +11633,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 css-gz86c1-APISectionEnum"
+    class="!p-0 css-e9fasf-APISectionEnum"
   >
     <div
       class="px-5 pt-4"

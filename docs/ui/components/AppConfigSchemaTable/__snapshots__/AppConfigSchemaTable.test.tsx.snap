@@ -4,7 +4,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -149,7 +149,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -371,7 +371,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
@@ -524,7 +524,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </details>
         <div
-          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
         >
           <p
             class="group css-1kfqm4n-TextComponent"
@@ -601,7 +601,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
@@ -692,7 +692,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
     >
       <p
         class="group css-1kfqm4n-TextComponent"
@@ -864,7 +864,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
@@ -940,7 +940,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
       </div>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
       >
         <p
           class="group css-1kfqm4n-TextComponent"
@@ -1009,7 +1009,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <div
-          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-qc2h9a-APIBox"
+          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 css-1x1iwss-APIBox"
         >
           <p
             class="group css-1kfqm4n-TextComponent"
