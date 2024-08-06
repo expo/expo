@@ -71,7 +71,10 @@ export function canDismiss(this: RouterStore): boolean {
   return false;
 }
 
-export function setParams(this: RouterStore, params: Record<string, string | number> = {}) {
+export function setParams(
+  this: RouterStore,
+  params: Record<string, string | number | (string | number)[]> = {}
+) {
   assertIsReady(this);
   return (this.navigationRef?.current?.setParams as any)(params);
 }
