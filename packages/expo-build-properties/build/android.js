@@ -60,6 +60,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
     },
     {
+        propName: 'android.enablePngCrunchInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
+    },
+    {
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },

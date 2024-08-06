@@ -3,7 +3,7 @@ import {
   exportEmbedAssetsAsync,
 } from '@expo/cli/build/src/export/embed/exportEmbedAsync';
 import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
-import { resolveEntryPoint } from '@expo/config/paths';
+import { convertEntryPointToRelative, resolveRelativeEntryPoint } from '@expo/config/paths';
 import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
 import { EmbeddedManifest } from 'expo-manifests';
@@ -16,26 +16,19 @@ import { filterPlatformAssetScales } from './filterPlatformAssetScales';
 
 export async function createManifestForBuildAsync(
   platform: 'ios' | 'android',
-  possibleProjectRoot: string,
+  projectRoot: string,
   destinationDir: string,
   entryFileArg?: string
 ): Promise<void> {
-  const entryFile =
+  let entryFile =
     entryFileArg ||
     process.env.ENTRY_FILE ||
-    getRelativeEntryPoint(possibleProjectRoot, platform) ||
+    resolveRelativeEntryPoint(projectRoot, { platform }) ||
     'index.js';
 
-  // Remove projectRoot validation when we no longer support React Native <= 62
-  let projectRoot: string;
-  if (fs.existsSync(path.join(possibleProjectRoot, entryFile))) {
-    projectRoot = path.resolve(possibleProjectRoot);
-  } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
-    projectRoot = path.resolve(possibleProjectRoot, '..');
-  } else {
-    throw new Error(
-      'Error loading application entry point. If your entry point is not index.js, please set ENTRY_FILE environment variable with your app entry point.'
-    );
+  // Android uses absolute paths for the entry file, so we need to convert that to a relative path.
+  if (path.isAbsolute(entryFile)) {
+    entryFile = convertEntryPointToRelative(projectRoot, entryFile);
   }
 
   process.chdir(projectRoot);
@@ -106,17 +99,6 @@ export async function createManifestForBuildAsync(
   });
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
-}
-
-/**
- * Resolve the relative entry file using Expo's resolution method.
- */
-function getRelativeEntryPoint(projectRoot: string, platform: 'ios' | 'android'): string {
-  const entry = resolveEntryPoint(projectRoot, { platform });
-  if (entry) {
-    return path.relative(projectRoot, entry);
-  }
-  return entry;
 }
 
 function getAndroidResourceFolderName(asset: HashedAssetData) {

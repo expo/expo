@@ -37,8 +37,7 @@
     "@expo/spawn-async": "^1.7.2",
     "@types/fs-extra": "^9.0.11",
     "expo-module-scripts": "~3.5.0",
-    "minimatch": "^3.0.4",
-    "tempy": "^0.7.1"
+    "minimatch": "^3.0.4"
   },
   "dependencies": {
     "chalk": "^4.1.0",

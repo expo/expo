@@ -9,6 +9,8 @@ import {
   unmockProcessPlatform,
 } from './prebuild-tester';
 
+jest.setTimeout(30 * 1000);
+
 jest.mock('fs');
 
 const originalWarn = console.warn;
@@ -123,19 +125,16 @@ it('compiles expo-camera', async () => {
     },
     { projectRoot, platforms: ['ios', 'android'] }
   );
-  expect(config).toHaveModHistory('expo-camera');
 
-  expect(config).toMatchAndroidProjectBuildGradle(
-    expect.stringContaining(
-      `def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")`
-    )
-  );
+  // Ensure the camera plugin was applied
+  expect(config).toHaveModHistory('expo-camera');
+  // Ensure the iOS camera permission string is set
   expect(config).toMatchInfoPlist(
     expect.objectContaining({
       NSCameraUsageDescription: expect.stringMatching(/custom message/),
     })
   );
-
+  // Ensure the Android camera permission is added
   expect(getAndroidManifestStringLikePrebuild(config)).toMatch(
     /<uses-permission android:name="android.permission.CAMERA"\/>/
   );

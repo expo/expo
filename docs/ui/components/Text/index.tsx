@@ -201,6 +201,13 @@ const paragraphStyle = {
   },
 };
 
+const delStyle = {
+  textDecoration: 'line-through',
+  '& code': {
+    textDecoration: 'line-through',
+  },
+};
+
 export const H1 = createTextComponent(TextElement.H1, css(h1Style));
 export const RawH2 = createTextComponent(TextElement.H2, css(h2Style));
 export const H2 = createPermalinkedComponent(RawH2, { baseNestingLevel: 2 });
@@ -241,6 +248,7 @@ export const KBD = createTextComponent(
   css([typography.utility.pre as CSSObject, kbdStyle])
 );
 export const MONOSPACE = createTextComponent(TextElement.CODE);
+export const DEL = createTextComponent(TextElement.DEL, css(delStyle));
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
