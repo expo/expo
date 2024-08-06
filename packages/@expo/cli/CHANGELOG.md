@@ -125,6 +125,7 @@ _This version does not introduce any user-facing changes._
 _This version does not introduce any user-facing changes._
 
 - Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
+- Do not replace modified scripts on prebuild. ([#29490](https://github.com/expo/expo/pull/29490) by [@Simek](https://github.com/Simek))
 
 ## 0.18.15 — 2024-06-05
 
