@@ -5,7 +5,7 @@ export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
-export type CameraRatio = '4:3' | '16:9';
+export type CameraRatio = '4:3' | '16:9' | '1:1';
 /**
  * This option specifies the mode of focus on the device.
  * - `on` - Indicates that the device should autofocus once and then lock the focus.
@@ -354,7 +354,7 @@ export type CameraProps = ViewProps & {
     responsiveOrientationWhenOrientationLocked?: boolean;
     /**
      * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
-     * @default 4:3
+     * @default 1:1
      * @platform android
      */
     ratio?: CameraRatio;

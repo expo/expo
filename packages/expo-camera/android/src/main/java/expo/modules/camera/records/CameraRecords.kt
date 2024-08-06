@@ -21,11 +21,13 @@ enum class CameraType(val value: String) : Enumerable {
 
 enum class CameraRatio(val value: String) : Enumerable {
   FOUR_THREE("4:3"),
-  SIXTEEN_NINE("16:9");
+  SIXTEEN_NINE("16:9"),
+  ONE_ONE("1:1");
 
   fun mapToStrategy() = when (this) {
     FOUR_THREE -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
     SIXTEEN_NINE -> AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
+    else -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
   }
 }
 
