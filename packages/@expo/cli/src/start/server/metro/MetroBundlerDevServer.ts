@@ -234,8 +234,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getServerManifestAsync(): Promise<{ serverManifest: ExpoRouterServerManifestV1 }> {
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
-      typeof import('expo-router/build/rsc/getServerManifest')
-    >('expo-router/build/rsc/getServerManifest.js', {
+      typeof import('expo-router/build/static/getServerManifest')
+    >('expo-router/build/static/getServerManifest.js', {
       environment: 'react-server',
     });
 
@@ -652,7 +652,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
-    const isReactServerComponentsEnabled = !!exp.experiments?.reactCanary;
+    const isReactServerComponentsEnabled =
+      !!exp.experiments?.reactCanary &&
+      // @ts-expect-error: not on type yet.
+      !!exp.experiments?.reactServerComponents;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const baseUrl = getBaseUrlFromExpoConfig(exp);
@@ -998,8 +1001,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
-          // TODO: NOT THIS!!
-          environment: 'react-server',
           isExporting: true,
           platform,
         });

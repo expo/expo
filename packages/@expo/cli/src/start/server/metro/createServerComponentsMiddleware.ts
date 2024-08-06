@@ -26,6 +26,12 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
   extras?: { hot?: boolean }
 ) => Promise<T>;
 
+type RscExportPayload = {
+  rsc: string;
+  input: string;
+  path: string;
+};
+
 const getMetroServerRootMemo = memoize(getMetroServerRoot);
 
 export function createServerComponentsMiddleware(
@@ -219,6 +225,24 @@ export function createServerComponentsMiddleware(
 
   const clientModuleMap = new Map<string, Map<string, Set<string>>>();
 
+  const registerModuleId = (platform: string, input: string, moduleId: string) => {
+    let platformSet = clientModuleMap.get(platform);
+    if (!platformSet) {
+      platformSet = new Map();
+      clientModuleMap.set(platform, platformSet);
+    }
+    const normalizedRouteKey = getNameFromFilePath(input);
+
+    // Collect the client boundaries while rendering the server components.
+    // Indexed by routes.
+    let idSet = platformSet.get(normalizedRouteKey);
+    if (!idSet) {
+      idSet = new Set();
+      platformSet.set(normalizedRouteKey, idSet);
+    }
+    idSet.add(moduleId);
+  };
+
   async function renderRscToReadableStream(
     {
       input,
@@ -261,25 +285,8 @@ export function createServerComponentsMiddleware(
         contentType,
         moduleIdCallback: !isExporting
           ? undefined
-          : (moduleInfo: { id: string; chunks: string[]; name: string; async: boolean }) => {
-              let platformSet = clientModuleMap.get(platform);
-              if (!platformSet) {
-                platformSet = new Map();
-                clientModuleMap.set(platform, platformSet);
-              }
-              //TODO: This isn't right
-              const normalizedRouteKey = (
-                require('expo-router/build/matchers') as typeof import('expo-router/build/matchers')
-              ).getNameFromFilePath(input);
-
-              // Collect the client boundaries while rendering the server components.
-              // Indexed by routes.
-              let idSet = platformSet.get(normalizedRouteKey);
-              if (!idSet) {
-                idSet = new Set();
-                platformSet.set(normalizedRouteKey, idSet);
-              }
-              idSet.add(moduleInfo.id);
+          : (moduleInfo: { id: string }) => {
+              registerModuleId(platform, input, moduleInfo.id);
             },
       },
       {
@@ -291,9 +298,7 @@ export function createServerComponentsMiddleware(
   }
 
   const getClientModules = (platform: string, input: string) => {
-    const key = (
-      require('expo-router/build/matchers') as typeof import('expo-router/build/matchers')
-    ).getNameFromFilePath(input);
+    const key = getNameFromFilePath(input);
 
     const platformSet = clientModuleMap.get(platform);
     if (!platformSet) {
@@ -316,7 +321,7 @@ export function createServerComponentsMiddleware(
   };
 
   return {
-    exportPathsWithChunks: async (
+    updateFlightModulesWithExportedClientBoundaries: (
       payloads: RscExportPayload[],
       moduleIdToSplitBundle: Record<string, string>,
       files: ExportAssetMap
@@ -326,28 +331,26 @@ export function createServerComponentsMiddleware(
 
         // TODO: Flight files need to be platform-segmented.
         // HACK: This basically just replaces the module ID in the manifest with the new module ID since we don't know until after the server bundle has run.
+        // Unclear what the correct approach is though.
 
-        console.log('Updating RSC:', input, rsc);
+        debug('Updating RSC payload:', input, rsc);
         for (const match of contents.matchAll(/"(chunk:([^"]+))"/g)) {
-          const [_, moduleIdPlaceholder] = match;
-          console.log('- Match:', moduleIdPlaceholder);
+          const [, moduleIdPlaceholder] = match;
           const moduleId = moduleIdPlaceholder.replace(/^chunk:/, '');
-          if (moduleId in moduleIdToSplitBundle) {
-            console.log('- Match+bundle:', moduleIdToSplitBundle[moduleIdPlaceholder]);
+          if (moduleIdToSplitBundle[moduleId] != null) {
+            debug('Match client module to split chunk:', moduleId, moduleIdToSplitBundle[moduleId]);
             const newModuleId = moduleIdToSplitBundle[moduleId];
             if (newModuleId) {
-              console.log('Replacing', moduleId, 'with', newModuleId);
               contents = contents.replace(moduleIdPlaceholder, newModuleId);
-            } else {
-              console.log('Removing', moduleId);
-              contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
             }
           } else {
-            // Can occur on iOS where there is no bundle splitting.
-            console.warn('Removing missing', moduleId, Object.keys(moduleIdToSplitBundle));
+            // Can occur when there is no bundle splitting.
+            debug(
+              'Removing unmatched client boundary',
+              moduleId,
+              Object.keys(moduleIdToSplitBundle)
+            );
             contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
-            // Remove the `"chunk:..."` entry from the manifest.
-            // contents = contents.replace(`"${moduleId}"`, '');
           }
         }
 
@@ -362,7 +365,7 @@ export function createServerComponentsMiddleware(
     async exportRoutesAsync({ platform }: { platform: string }) {
       const payloads: RscExportPayload[] = [];
 
-      // TODO: Extract CSS Modules / Assets from the bundler process
+      // TODO: When we add web SSR support, we need to extract CSS Modules / Assets from the bundler process to prevent FLOUC.
       const { getBuildConfig } = (await getExpoRouterRscEntriesGetterAsync({ platform })).default;
 
       // Get all the routes to render.
@@ -378,7 +381,6 @@ export function createServerComponentsMiddleware(
           for (const { input } of entries || []) {
             const destRscFile = path.join('_flight', encodeInput(input));
 
-            // TODO: Expose via middleware
             const pipe = await renderRscToReadableStream(
               {
                 input,
@@ -405,6 +407,7 @@ export function createServerComponentsMiddleware(
           }
         })
       );
+
       return { clientBoundaries: Array.from(clientModules), payloads };
     },
 
@@ -423,12 +426,6 @@ export function createServerComponentsMiddleware(
     },
   };
 }
-
-type RscExportPayload = {
-  rsc: string;
-  input: string;
-  path: string;
-};
 
 const getFullUrl = (url: string) => {
   try {
@@ -460,3 +457,18 @@ const encodeInput = (input: string) => {
   }
   return input + '.txt';
 };
+
+// NOTE: This must stay aligned with expo-router/build/matchers.tsx
+function getNameFromFilePath(name: string): string {
+  return removeSupportedExtensions(removeFileSystemDots(name));
+}
+
+/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
+function removeSupportedExtensions(name: string): string {
+  return name.replace(/(\+api)?\.[jt]sx?$/g, '');
+}
+
+// Remove any amount of `./` and `../` from the start of the string
+function removeFileSystemDots(filePath: string): string {
+  return filePath.replace(/^(?:\.\.?\/)+/g, '');
+}

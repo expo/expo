@@ -25,7 +25,8 @@ test.beforeAll('bundle and serve', async () => {
     env: {
       E2E_ROUTER_JS_ENGINE: 'hermes',
       EXPO_USE_METRO_REQUIRE: '1',
-      EXPO_E2E_RSC: '1',
+      E2E_CANARY_ENABLED: '1',
+      E2E_RSC_ENABLED: '1',
       EXPO_USE_STATIC: 'single',
       EXPO_PUBLIC_USE_RSC: '1',
       NODE_ENV: 'production',

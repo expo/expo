@@ -198,7 +198,7 @@ export async function exportAppForAssetsAsync(
           // });
 
           // Persist rsc and update with split client chunks.
-          await devServer.rscRenderer!.exportPathsWithChunks(
+          await devServer.rscRenderer!.updateFlightModulesWithExportedClientBoundaries(
             payloads,
             moduleIdToSplitBundle,
             files
