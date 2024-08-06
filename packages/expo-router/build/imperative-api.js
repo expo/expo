@@ -11,6 +11,7 @@ exports.router = {
     replace: (href) => router_store_1.store.replace(href),
     back: () => router_store_1.store.goBack(),
     canGoBack: () => router_store_1.store.canGoBack(),
+    reload: () => router_store_1.store.reload(),
     setParams: (params) => router_store_1.store.setParams(params),
 };
 //# sourceMappingURL=imperative-api.js.map

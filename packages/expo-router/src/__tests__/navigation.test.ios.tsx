@@ -332,6 +332,47 @@ it('can check goBack before navigation mounts', () => {
   expect(router.canGoBack()).toBe(false);
 });
 
+it('can reload the current route', () => {
+  let renderCount = 0;
+  renderRouter({
+    index: () => {
+      renderCount++;
+      return <Text testID="index">{`Render count: ${renderCount}`}</Text>;
+    },
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toHaveTextContent('Render count: 1');
+
+  act(() => router.reload());
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toHaveTextContent('Render count: 2');
+});
+
+it('can reload a nested route', () => {
+  let renderCount = 0;
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    'nested/_layout': () => <Stack />,
+    'nested/page': () => {
+      renderCount++;
+      return <Text testID="nested">{`Render count: ${renderCount}`}</Text>;
+    },
+  });
+
+  act(() => router.push('/nested/page'));
+  expect(screen).toHavePathname('/nested/page');
+  expect(screen.getByTestId('nested')).toHaveTextContent('Render count: 1');
+
+  act(() => router.reload());
+
+  expect(screen).toHavePathname('/nested/page');
+  expect(screen.getByTestId('nested')).toHaveTextContent('Render count: 2');
+});
+
+
 it('can push back from a nested modal to a nested sibling', async () => {
   renderRouter({
     _layout: () => (

@@ -28,6 +28,7 @@ export declare class RouterStore {
     getSortedRoutes: any;
     goBack: any;
     canGoBack: any;
+    reload: any;
     push: any;
     dismiss: any;
     replace: any;
