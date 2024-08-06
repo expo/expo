@@ -91,5 +91,5 @@ export const expoStart: Command = async (argv) => {
   }
 
   const { startAsync } = await import('./startAsync.js');
-  return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);
+  return startAsync(projectRoot, options, { webOnly: options?.web ?? false }).catch(logCmdError);
 };

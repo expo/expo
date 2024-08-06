@@ -154,6 +154,10 @@ export async function resolvePortsAsync(
 ) {
   const multiBundlerSettings: { webpackPort?: number; metroPort?: number } = {};
 
+  const fallbackPort = process.env.RCT_METRO_PORT
+      ? parseInt(process.env.RCT_METRO_PORT, 10)
+      : 8081;
+
   if (settings.webOnly) {
     const webpackPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
@@ -164,10 +168,8 @@ export async function resolvePortsAsync(
       throw new AbortCommandError();
     }
     multiBundlerSettings.webpackPort = webpackPort;
+    multiBundlerSettings.metroPort = fallbackPort;
   } else {
-    const fallbackPort = process.env.RCT_METRO_PORT
-      ? parseInt(process.env.RCT_METRO_PORT, 10)
-      : 8081;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
       fallbackPort,
