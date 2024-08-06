@@ -8,7 +8,7 @@ import type { VideoViewProps } from './VideoView.types';
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.
  *
- * > **Note:** All major web browsers, except Firefox, support Picture in Picture (PiP) mode.
+ * > **Note:** All major web browsers support Picture in Picture (PiP) mode except Firefox.
  * > For more information, see [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/API/Picture-in-Picture_API#browser_compatibility).
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
  */
@@ -22,15 +22,15 @@ export class VideoView extends PureComponent<VideoViewProps> {
   /**
    * Enters fullscreen mode.
    */
-  enterFullscreen() {
-    this.nativeRef.current?.enterFullscreen();
+  async enterFullscreen() {
+    return await this.nativeRef.current?.enterFullscreen();
   }
 
   /**
    * Exits fullscreen mode.
    */
-  exitFullscreen() {
-    this.nativeRef.current?.exitFullscreen();
+  async exitFullscreen() {
+    return await this.nativeRef.current?.exitFullscreen();
   }
 
   /**
@@ -40,15 +40,15 @@ export class VideoView extends PureComponent<VideoViewProps> {
    * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-app-config)
    * > has to be configured for the PiP to work.
    */
-  startPictureInPicture(): void {
-    return this.nativeRef.current?.startPictureInPicture();
+  async startPictureInPicture(): Promise<void> {
+    return await this.nativeRef.current?.startPictureInPicture();
   }
 
   /**
    * Exits Picture in Picture (PiP) mode.
    */
-  stopPictureInPicture(): void {
-    return this.nativeRef.current?.stopPictureInPicture();
+  async stopPictureInPicture(): Promise<void> {
+    return await this.nativeRef.current?.stopPictureInPicture();
   }
 
   render(): ReactNode {

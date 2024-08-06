@@ -37,27 +37,30 @@ export const VideoView = forwardRef((props, ref) => {
     const audioContextRef = useRef(null);
     const zeroGainNodeRef = useRef(null);
     useImperativeHandle(ref, () => ({
-        enterFullscreen: () => {
+        enterFullscreen: async () => {
             if (!props.allowsFullscreen) {
                 return;
             }
-            videoRef.current?.requestFullscreen();
+            await videoRef.current?.requestFullscreen();
         },
-        exitFullscreen: () => {
-            document.exitFullscreen();
+        exitFullscreen: async () => {
+            await document.exitFullscreen();
         },
-        startPictureInPicture: () => {
-            videoRef.current?.requestPictureInPicture();
+        startPictureInPicture: async () => {
+            await videoRef.current?.requestPictureInPicture();
         },
-        stopPictureInPicture: () => {
-            document.exitPictureInPicture().catch((e) => {
+        stopPictureInPicture: async () => {
+            try {
+                await document.exitPictureInPicture();
+            }
+            catch (e) {
                 if (e instanceof DOMException && e.name === 'InvalidStateError') {
                     console.warn('The VideoView is not in Picture-in-Picture mode.');
                 }
                 else {
                     throw e;
                 }
-            });
+            }
         },
     }));
     useEffect(() => {
