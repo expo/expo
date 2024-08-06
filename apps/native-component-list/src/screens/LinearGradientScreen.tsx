@@ -31,7 +31,8 @@ export default function LinearGradientScreen() {
   }, []);
 
   const location = Math.sin(count / 100) * 0.5;
-  const position = Math.sin(count / 100);
+  const position = Math.abs(Math.sin(count / 100));
+
   return (
     <ScrollView
       style={{ flex: 1 }}
