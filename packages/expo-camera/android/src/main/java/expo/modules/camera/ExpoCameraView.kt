@@ -95,7 +95,7 @@ class ExpoCameraView(
   CameraViewInterface {
   private val currentActivity
     get() = appContext.currentActivity as? AppCompatActivity
-            ?: throw Exceptions.MissingActivity()
+      ?: throw Exceptions.MissingActivity()
 
   val orientationEventListener by lazy {
     object : OrientationEventListener(currentActivity) {
@@ -332,7 +332,7 @@ class ExpoCameraView(
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
                     event.cause?.message
-                    ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
+                      ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
                   )
                 )
               }
@@ -340,7 +340,7 @@ class ExpoCameraView(
           }
         }
     }
-    ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
+      ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
   }
 
   @SuppressLint("UnsafeOptInUsageError")
