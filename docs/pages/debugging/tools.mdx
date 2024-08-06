@@ -19,12 +19,13 @@ The **Developer menu** provides access to useful debugging functions. It is buil
 - Android device (without USB): Shake the device vertically.
 - Android Emulator or device (with USB):
 
-  - Press <kbd>Cmd ⌘</kbd> + <kbd>m</kbd> or <kbd>Ctrl</kbd> + <kbd>m</kbd>
-  - Run `adb shell input keyevent 82`
+  - Press <kbd>Cmd ⌘</kbd> + <kbd>m</kbd> or <kbd>Ctrl</kbd> + <kbd>m</kbd>.
+  - Run the following command in the terminal to simulate pressing the menu button:
+    <Terminal cmd={['$ adb shell input keyevent 82']} />
 
 - iOS device (without USB):
   - Shake the device.
-  - Touch 3 fingers to the screen.
+  - Touch three fingers to the screen.
 - iOS Simulator or device (with USB):
   - Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>z</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd>
 
