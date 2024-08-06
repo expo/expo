@@ -1,10 +1,11 @@
 import ExpoFontLoader from './ExpoFontLoader';
+
 export const loadPromises: { [name: string]: Promise<void> } = {};
 
 // cache the value on the js side for fast access to the fonts that are loaded
 let _cache: { [name: string]: boolean } = {};
 
-export const markLoaded = (fontFamily: string) => {
+export function markLoaded(fontFamily: string) {
   _cache[fontFamily] = true;
 };
 
