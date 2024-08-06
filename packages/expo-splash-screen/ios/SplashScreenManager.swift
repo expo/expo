@@ -10,7 +10,7 @@ public class SplashScreenManager: NSObject {
 
   private override init() {}
 
-  public func initWith(rootView: UIView) {
+  public func initWith(_ rootView: UIView) {
     if RCTRunningInAppExtension() {
       return
     }

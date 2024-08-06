@@ -2,5 +2,5 @@ import ExpoModulesCore
 
 internal struct SplashScreenOptions: Record {
   @Field var fade: Bool = false
-  @Field var duration: Double = 800
+  @Field var duration: Double = 400
 }

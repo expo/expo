@@ -1,7 +1,9 @@
 import { ConfigPlugin, IOSConfig, withDangerousMod } from '@expo/config-plugins';
-import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
+import { generateImageAsync } from '@expo/image-utils';
 import Debug from 'debug';
 import fs from 'fs-extra';
+// @ts-ignore
+import Jimp from 'jimp-compact';
 import path from 'path';
 
 import { IOSPluginConfig } from './getIosSplashConfig';

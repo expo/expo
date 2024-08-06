@@ -33,6 +33,13 @@ function _fsExtra() {
   };
   return data;
 }
+function _jimpCompact() {
+  const data = _interopRequireDefault(require("jimp-compact"));
+  _jimpCompact = function () {
+    return data;
+  };
+  return data;
+}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -47,7 +54,9 @@ function _AssetContents() {
   };
   return data;
 }
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// @ts-ignore
+
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
@@ -134,7 +143,7 @@ async function copyImageFiles({
     ratio,
     suffix
   }) => {
-    const filePath = path().resolve(iosNamedProjectRoot, IMAGESET_PATH, `${PNG_FILENAME}${suffix}.png`);
+    const filePath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${PNG_FILENAME}${suffix}.png`);
     const size = logoWidth * ratio;
     const height = Math.ceil(size * (logo.bitmap.height / logo.bitmap.width));
     return logo.clone().resize(size, height).writeAsync(filePath);
@@ -171,64 +180,6 @@ async function generateImagesAssetsAsync({
   const items = [[anyItem, PNG_FILENAME], [darkItem, DARK_PNG_FILENAME], [tabletItem, TABLET_PNG_FILENAME], [darkTabletItem, DARK_TABLET_PNG_FILENAME]].filter(([item]) => !!item);
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
-<<<<<<< HEAD
-async function createSplashScreenBackgroundImageAsync({
-  iosNamedProjectRoot,
-  splash
-}) {
-  const color = splash.backgroundColor;
-  const darkColor = splash.dark?.backgroundColor;
-  const tabletColor = splash.tabletBackgroundColor;
-  const darkTabletColor = splash.dark?.tabletBackgroundColor;
-  const imagesetPath = _path().default.join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
-  // Ensure the Images.xcassets/... path exists
-  await _fsExtra().default.remove(imagesetPath);
-  await _fsExtra().default.ensureDir(imagesetPath);
-  await createBackgroundImagesAsync({
-    iosNamedProjectRoot,
-    color,
-    darkColor: darkColor ? darkColor : null,
-    tabletColor: tabletColor ? tabletColor : null,
-    darkTabletColor: darkTabletColor ? darkTabletColor : null
-  });
-  await writeContentsJsonFileAsync({
-    assetPath: _path().default.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
-    image: PNG_FILENAME,
-    darkImage: darkColor ? DARK_PNG_FILENAME : null,
-    tabletImage: tabletColor ? TABLET_PNG_FILENAME : null,
-    darkTabletImage: darkTabletColor ? DARK_TABLET_PNG_FILENAME : null
-  });
-}
-||||||| parent of a1ac4fc818 (Adjust iOS part of plugin)
-async function createSplashScreenBackgroundImageAsync({
-  iosNamedProjectRoot,
-  splash
-}) {
-  const color = splash.backgroundColor;
-  const darkColor = splash.dark?.backgroundColor;
-  const tabletColor = splash.tabletBackgroundColor;
-  const darkTabletColor = splash.dark?.tabletBackgroundColor;
-  const imagesetPath = path().join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
-  // Ensure the Images.xcassets/... path exists
-  await _fsExtra().default.remove(imagesetPath);
-  await _fsExtra().default.ensureDir(imagesetPath);
-  await createBackgroundImagesAsync({
-    iosNamedProjectRoot,
-    color,
-    darkColor: darkColor ? darkColor : null,
-    tabletColor: tabletColor ? tabletColor : null,
-    darkTabletColor: darkTabletColor ? darkTabletColor : null
-  });
-  await writeContentsJsonFileAsync({
-    assetPath: path().resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
-    image: PNG_FILENAME,
-    darkImage: darkColor ? DARK_PNG_FILENAME : null,
-    tabletImage: tabletColor ? TABLET_PNG_FILENAME : null,
-    darkTabletImage: darkTabletColor ? DARK_TABLET_PNG_FILENAME : null
-  });
-}
-=======
->>>>>>> a1ac4fc818 (Adjust iOS part of plugin)
 const darkAppearances = [{
   appearance: 'luminosity',
   value: 'dark'
