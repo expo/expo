@@ -25,6 +25,7 @@ function getSSRManifest(distFolder: string, platform: string): Record<string, st
 export async function renderRscWithImportsAsync(
   distFolder: string,
   imports: {
+    serverRoot: string;
     renderer: () => Promise<typeof import('expo-router/src/rsc/rsc-renderer')>;
     router: () => Promise<typeof import('expo-router/src/rsc/router/expo-definedRouter')>;
   },
@@ -61,10 +62,11 @@ export async function renderRscWithImportsAsync(
       isExporting: true,
       resolveClientEntry(file: string) {
         // Convert file path to a split chunk path.
-        console.log('Resolve client entry:', file, ssrManifest[file]);
+        console.log('Resolve client entry:', imports.serverRoot, file, ssrManifest[file]);
+        const id = path.relative(imports.serverRoot, file);
         return {
-          id: file,
-          chunks: ssrManifest[file] ? [ssrManifest[file]] : [],
+          id: id,
+          chunks: ssrManifest[id] ? [ssrManifest[id]] : [],
         };
       },
 

@@ -8,6 +8,7 @@ export default function IndexRoute() {
       <Text testID="index-text">Hello World</Text>
       <Text>Platform: {process.env.EXPO_OS}</Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
+      <Text>Render: {Date.now()}</Text>
 
       <Counter />
     </View>

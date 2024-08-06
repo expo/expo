@@ -159,6 +159,11 @@ export async function exportAppForAssetsAsync(
           if (isHermes) {
             await assertEngineMismatchAsync(projectRoot, exp, platform);
           }
+
+          const serverRoot = getMetroServerRoot(projectRoot);
+
+          // TODO: This is a hack to get around having to make custom IDs for export. We should have random IDs later.
+          process.env.EXPO_PUBLIC_SERVER_ROOT = serverRoot;
           // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
           const clientBoundaries = devServer.isReactServerComponentsEnabled
             ? await devServer.rscRenderer!.getExpoRouterClientReferencesAsync({
@@ -185,7 +190,6 @@ export async function exportAppForAssetsAsync(
           });
 
           if (clientBoundaries) {
-            const serverRoot = getMetroServerRoot(projectRoot);
             // TODO: Perform this transform in the bundler.
             const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
               path.relative(serverRoot, boundary)
@@ -213,13 +217,13 @@ export async function exportAppForAssetsAsync(
             });
 
             // Export the static RSC files
-            await devServer.rscRenderer!.exportRoutesAsync(
-              {
-                platform,
-                ssrManifest,
-              },
-              files
-            );
+            // await devServer.rscRenderer!.exportRoutesAsync(
+            //   {
+            //     platform,
+            //     ssrManifest,
+            //   },
+            //   files
+            // );
 
             // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
             files.set(`_expo/rsc/${platform}/ssr-manifest.json`, {
