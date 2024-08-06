@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `npm-package-arg@^7` to `npm-package-arg@^11`.
+
 ## 1.5.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
