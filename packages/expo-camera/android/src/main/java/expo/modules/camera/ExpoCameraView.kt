@@ -14,6 +14,7 @@ import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.util.Rational
 import android.util.Size
 import android.view.OrientationEventListener
 import android.view.Surface
@@ -37,6 +38,8 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -359,12 +362,20 @@ class ExpoCameraView(
           PreviewView.ScaleType.FILL_CENTER
         }
 
-        val resolutionSelector = ResolutionSelector.Builder().apply {
-          if (ratio != CameraRatio.ONE_ONE) {
-            setAspectRatioStrategy(ratio.mapToStrategy())
-          }
-          setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-        }.build()
+        val resolutionSelector = if (ratio == CameraRatio.ONE_ONE) {
+          ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+            return@setResolutionFilter supportedSizes.filter {
+              it.width == it.height
+            }
+          }.setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
+        } else {
+          ResolutionSelector.Builder().apply {
+            if (ratio != CameraRatio.ONE_ONE) {
+              setAspectRatioStrategy(ratio.mapToStrategy())
+            }
+            setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+          }.build()
+        }
 
         val preview = Preview.Builder()
           .setResolutionSelector(resolutionSelector)
