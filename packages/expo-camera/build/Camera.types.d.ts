@@ -354,6 +354,7 @@ export type CameraProps = ViewProps & {
     responsiveOrientationWhenOrientationLocked?: boolean;
     /**
      * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
+     * Note: Setting the aspect ratio here will change the scaleType of the camera preview from `FILL` to `FIT`.
      * @default 1:1
      * @platform android
      */
