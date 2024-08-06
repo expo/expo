@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.5. ([#30822](https://github.com/expo/expo/pull/30822) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 5.0.17 — 2024-07-29
 
 ### 🐛 Bug fixes
