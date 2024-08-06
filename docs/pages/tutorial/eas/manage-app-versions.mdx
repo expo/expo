@@ -23,7 +23,7 @@ Both Google Play Store and Apple App Store rely on developer-facing values to id
 
 > **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `11.0.0`. If you are using an older version of the CLI, be aware that **`local` will be the default behavior**.
 
-EAS Build can assist us in automating these values by utilizing the [remote version resource](/build-reference/app-versions/#remote-version-source). This feature automatically increments developer-facing values and keeps track of them whenever a new production release is made. This behavior is enabled by default, but we can also explicitly set the `cli.appVersionSource` and `build.production.autoIncrement` values.
+EAS Build can assist us in automating these values by utilizing the [remote version resource](/build-reference/app-versions/#remote-version-source). This feature automatically increments developer-facing values and keeps track of them whenever a new production release is made. This is the default behavior and to enable it we need to set the `cli.appVersionSource` and `build.production.autoIncrement` values.
 
 In **eas.json**:
 
