@@ -666,15 +666,6 @@ exports[`built-in plugins introspects mods 1`] = `
             "type": "empty",
           },
           {
-            "type": "comment",
-            "value": "Automatically convert third-party libraries to use AndroidX",
-          },
-          {
-            "key": "android.enableJetifier",
-            "type": "property",
-            "value": "true",
-          },
-          {
             "type": "empty",
           },
           {
