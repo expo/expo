@@ -1,11 +1,15 @@
 package expo.modules.filesystem.next
 
+import android.webkit.URLUtil
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
 import java.net.URI
 
 class FileSystemNextModule : Module() {
@@ -13,6 +17,33 @@ class FileSystemNextModule : Module() {
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
+
+    AsyncFunction("download") { url: URI, to: FileSystemPath, promise: Promise ->
+      try {
+        with(url.toURL().openConnection() as HttpURLConnection) {
+          // check if code is 200 to 299
+          if (responseCode !in 200..299) {
+            promise.reject(UnableToDownloadException("response has status: $responseCode"))
+            return@AsyncFunction
+          }
+
+          val destination = if (to is FileSystemDirectory) {
+            val contentDisposition = headerFields["Content-Disposition"]?.first()
+            val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
+            File(to.path, fileName)
+          } else {
+            to.path
+          }
+          FileOutputStream(destination).use { output ->
+            inputStream.copyTo(output)
+            promise.resolve(destination.path)
+          }
+        }
+      } catch (e: Exception) {
+        promise.reject(UnableToDownloadException(e.message))
+        return@AsyncFunction
+      }
+    }
 
     Class(FileSystemFile::class) {
       Constructor { path: URI ->

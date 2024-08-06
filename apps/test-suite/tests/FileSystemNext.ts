@@ -1,6 +1,7 @@
 'use strict';
 import * as FS from 'expo-file-system';
-import { File, Directory } from 'expo-file-system/next';
+import { File, Directory, download } from 'expo-file-system/next';
+import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
 
@@ -259,6 +260,45 @@ export async function test({ describe, expect, it, ...t }) {
         dst.create();
         expect(() => src.move(dst)).toThrow();
       });
+    });
+
+    describe('Downloads files', () => {
+      // describe('by using fetch', () => {
+      // import { fetch } from 'expo/fetch';
+      // it('downloads a file', async () => {
+      //   const url = 'https://httpbin.org/image/jpeg';
+      //   const result = await fetch(url, { method: 'GET' });
+      //   const blob = await result.blob();
+      //   // const file = new File([blob], testDirectory + 'image.jpeg');
+      //   console.log(blob, result);
+      //   // expect(file.exists()).toBe(true);
+      // });
+      // });
+      it('downloads a file to a target file', async () => {
+        const url = 'https://httpbin.org/image/jpeg';
+        const file = new File(testDirectory + 'image.jpeg');
+        const output = await download(url, file);
+        expect(file.exists()).toBe(true);
+        expect(output.path).toBe(file.path);
+      });
+
+      it('downloads a file to a target directory', async () => {
+        const url = 'https://httpbin.org/image/jpeg';
+        const directory = new Directory(testDirectory);
+        const output = await download(url, directory);
+        const file = new File(
+          testDirectory + (Platform.OS === 'android' ? 'jpeg.jpg' : 'jpeg.jpeg')
+        );
+        expect(file.exists()).toBe(true);
+        expect(output.path).toBe(file.path);
+      });
+
+      // it('errors out on invalid url', async () => {
+      //   const url = 'https://www.apple.com/%';
+      //   const directory = new Directory(testDirectory);
+
+      //   // await download(url, directory).rejects.toMatch('404');
+      // });
     });
   });
 }

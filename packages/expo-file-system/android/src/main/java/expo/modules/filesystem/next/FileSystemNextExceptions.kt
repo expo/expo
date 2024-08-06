@@ -15,3 +15,8 @@ internal class InvalidTypeFileException :
 
 internal class DestinationDoesNotExistException :
   CodedException("The destination path does not exist")
+
+internal class UnableToDownloadException(reason: String?) :
+  CodedException(
+    "Unable to download a file: '$reason'"
+  )

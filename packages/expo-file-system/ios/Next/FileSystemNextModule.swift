@@ -6,6 +6,43 @@ public final class FileSystemNextModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
+    AsyncFunction("download") { (url: URL, to: FileSystemPath, promise: Promise) in
+      let downloadTask = URLSession.shared.downloadTask(with: url) {
+        urlOrNil, responseOrNil, errorOrNil in
+
+        guard errorOrNil == nil else {
+          promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
+          return
+        }
+        guard let httpResponse = responseOrNil as? HTTPURLResponse else {
+          promise.reject(UnableToDownloadException("no response"))
+          return
+        }
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
+          promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
+          return
+        }
+        guard let fileURL = urlOrNil else { return }
+
+        do {
+          if let to = to as? FileSystemDirectory {
+            let filename = httpResponse.suggestedFilename ?? url.lastPathComponent
+            let destination = to.url.appendingPathComponent(filename)
+            try FileManager.default.copyItem(at: fileURL, to: to.url.appendingPathComponent(filename))
+            // TODO: Remove .url.absoluteString once returning shared objects works
+            promise.resolve(FileSystemFile(url: destination).url.absoluteString)
+          } else {
+            try FileManager.default.moveItem(at: fileURL, to: to.url)
+            // TODO: Remove .url once returning shared objects works
+            promise.resolve(to.url.absoluteString)
+          }
+        } catch {
+          promise.reject(error)
+        }
+      }
+      downloadTask.resume()
+    }
+
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
         return FileSystemFile(url: url.standardizedFileURL)

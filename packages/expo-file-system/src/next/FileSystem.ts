@@ -19,3 +19,8 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
 export async function write(file: File, contents: string) {
   return file.write(contents);
 }
+
+export async function download(url: string, to: Directory | File) {
+  const outputPath = await ExpoFileSystem.download(url, to);
+  return new File(outputPath);
+}
