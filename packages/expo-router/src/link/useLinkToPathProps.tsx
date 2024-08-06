@@ -1,11 +1,11 @@
+import { isWebview } from 'expo/dom';
+import { emit } from 'expo/dom/internal';
 import * as React from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
 import { stripGroupSegmentsFromPath } from '../matchers';
-import { emit } from 'expo/dom/internal';
-import { isWebview } from 'expo/dom';
 
 function eventShouldPreventDefault(
   e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent

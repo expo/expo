@@ -28,6 +28,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
+const dom_1 = require("expo/dom");
+const internal_1 = require("expo/dom/internal");
 const expo_status_bar_1 = require("expo-status-bar");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
@@ -37,8 +39,6 @@ const router_store_1 = require("./global-state/router-store");
 const serverContext_1 = __importDefault(require("./global-state/serverContext"));
 const statusbar_1 = require("./utils/statusbar");
 const Splash_1 = require("./views/Splash");
-const internal_1 = require("expo/dom/internal");
-const dom_1 = require("expo/dom");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {

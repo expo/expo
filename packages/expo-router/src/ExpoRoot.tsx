@@ -1,6 +1,8 @@
 'use client';
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
+import { isWebview } from 'expo/dom';
+import { addEventListener } from 'expo/dom/internal';
 import { StatusBar } from 'expo-status-bar';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -13,8 +15,6 @@ import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
-import { addEventListener } from 'expo/dom/internal';
-import { isWebview } from 'expo/dom';
 
 export type ExpoRootProps = {
   context: RequireContext;

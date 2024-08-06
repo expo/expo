@@ -8,8 +8,8 @@ exports.ErrorBoundary = void 0;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
-const optional_safe_area_1 = require("./optional-safe-area");
 const Pressable_1 = require("./Pressable");
+const optional_safe_area_1 = require("./optional-safe-area");
 const Link_1 = require("../link/Link");
 let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {

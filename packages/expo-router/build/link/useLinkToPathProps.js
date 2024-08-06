@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const dom_1 = require("expo/dom");
+const internal_1 = require("expo/dom/internal");
 const react_native_1 = require("react-native");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
-const internal_1 = require("expo/dom/internal");
-const dom_1 = require("expo/dom");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
