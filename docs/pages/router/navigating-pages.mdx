@@ -83,10 +83,10 @@ The URL of the current screen is a document URL (a URL without a trailing slash)
 
 | Href       | Current URL | `relativeToDirectory` | Result            |
 | ---------- | ----------- | --------------------- | ----------------- |
-| ./article  | /route/v1   |                       | /route/article    |
-| ./article  | /route/v1   | true                  | /route/v1/article |
-| ../article | /route/v1   |                       | /article          |
-| ../article | /route/v1   | true                  | /route/article    |
+| `./article`  | `/route/v1`   |                       | `/route/article`    |
+| `./article`  | `/route/v1`   | `true`                  | `/route/v1/article` |
+| `../article` | `/route/v1`   |                       | `/article`          |
+| `../article` | `/route/v1`   | true                  | `/route/article`    |
 
 ```ts
 // Using `relativeToDirectory` with Link
