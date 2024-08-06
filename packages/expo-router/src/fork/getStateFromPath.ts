@@ -5,8 +5,8 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
 import { RouteNode } from '../Route';
-import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import { RouterStore } from '../global-state/router-store';
+import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 
 type Options<ParamList extends object> = {
   initialRouteName?: string;
