@@ -412,7 +412,4 @@ const RENAMED_PAGES: Record<string, string> = {
   // Based on SEO tool reports
   '/build-reference/eas-json/': '/eas/json/',
   '/build-reference/custom-builds/schema/': '/custom-builds/schema/',
-
-  // Based on changes applied to previously called Unit testing guide
-  '/develop/unit-testing/': '/develop/testing/',
 };
