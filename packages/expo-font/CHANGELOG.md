@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
+- Add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
@@ -30,7 +30,7 @@
 
 ### 🎉 New features
 
-- Allow woff and woff2 format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
+- Allow `woff` and `woff2` format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
 
 ## 12.0.7 - 2024-06-06
 
