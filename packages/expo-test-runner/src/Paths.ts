@@ -1,5 +1,5 @@
-import { join } from 'path';
 import { mkdirSync } from 'fs';
+import { join } from 'path';
 import tempDir from 'temp-dir';
 import uniqueString from 'unique-string';
 

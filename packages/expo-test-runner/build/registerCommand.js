@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerCommand = void 0;
-const Paths_1 = require("./Paths");
 const ConfigReader_1 = __importDefault(require("./ConfigReader"));
+const Paths_1 = require("./Paths");
 const Platform_1 = require("./Platform");
 function mapPlatform(platform) {
     if (platform === 'android') {

@@ -1,8 +1,8 @@
 import { CommanderStatic } from 'commander';
 
-import { temporaryDirectory } from './Paths';
 import { Config } from './Config';
 import ConfigReader from './ConfigReader';
+import { temporaryDirectory } from './Paths';
 import { Platform } from './Platform';
 
 export interface DefaultOptions {
