@@ -34,6 +34,8 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 
+const debug = require('debug')('expo:export') as typeof console.log;
+
 export async function exportAppAsync(
   projectRoot: string,
   props: Pick<
@@ -160,10 +162,6 @@ export async function exportAppForAssetsAsync(
             await assertEngineMismatchAsync(projectRoot, exp, platform);
           }
 
-          const serverRoot = getMetroServerRoot(projectRoot);
-
-          // TODO: This is a hack to get around having to make custom IDs for export. We should have random IDs later.
-          process.env.EXPO_PUBLIC_SERVER_ROOT = serverRoot;
           // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
           const clientBoundaries = devServer.isReactServerComponentsEnabled
             ? await devServer.rscRenderer!.getExpoRouterClientReferencesAsync({
@@ -190,6 +188,8 @@ export async function exportAppForAssetsAsync(
           });
 
           if (clientBoundaries) {
+            const serverRoot = getMetroServerRoot(projectRoot);
+
             // TODO: Perform this transform in the bundler.
             const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
               path.relative(serverRoot, boundary)
@@ -203,7 +203,7 @@ export async function exportAppForAssetsAsync(
                 .flat() as Record<string, string>[]
             ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
-            console.log('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
+            debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
 
             const ssrManifest = new Map<string, string>();
 
@@ -217,18 +217,26 @@ export async function exportAppForAssetsAsync(
             });
 
             // Export the static RSC files
-            // await devServer.rscRenderer!.exportRoutesAsync(
-            //   {
-            //     platform,
-            //     ssrManifest,
-            //   },
-            //   files
-            // );
+            await devServer.rscRenderer!.exportRoutesAsync(
+              {
+                platform,
+                ssrManifest,
+              },
+              files
+            );
 
             // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
             files.set(`_expo/rsc/${platform}/ssr-manifest.json`, {
               targetDomain: 'server',
-              contents: JSON.stringify(Object.fromEntries(Array.from(ssrManifest.entries()))),
+              contents: JSON.stringify(
+                // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+                Object.fromEntries(
+                  Array.from(ssrManifest.entries()).map(([key, value]) => [
+                    path.join(serverRoot, key),
+                    [key, value],
+                  ])
+                )
+              ),
             });
           }
 
