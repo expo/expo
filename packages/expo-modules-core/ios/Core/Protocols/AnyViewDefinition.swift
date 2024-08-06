@@ -23,6 +23,11 @@ public protocol AnyViewDefinition {
   func propsDict() -> [String: AnyViewProp]
 
   /**
+   Returns a list of prop names supported by the view.
+   */
+  func getSupportedPropNames() -> [String]
+
+  /**
    Calls defined lifecycle methods with the given type.
    */
   func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView)
