@@ -53,10 +53,8 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
         (await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'android', 'build.gradle'))))
     ) {
       // get the name of the config file
-      const myStaticConfigPath = staticConfigPath ?? 'app.json';
-      const myDynamicConfigPath = dynamicConfigPath ?? 'app.config.js';
-      const configFilePath = myStaticConfigPath ? myStaticConfigPath : myDynamicConfigPath;
-      const configFileName = path.basename(configFilePath);
+      const configFilePath = dynamicConfigPath ?? staticConfigPath;
+      const configFileName = path.basename(configFilePath ?? 'app.json');
 
       issues.push(
         `This project has native project folders but also has native configuration fields in ${configFileName}, indicating it is configured to use Prebuild. When the iOS or Android folders are present, EAS Build will not sync the following ${configFileName} fields: ${unsyncedFields.join(', ')}. \n`
