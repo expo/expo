@@ -11,21 +11,6 @@ function getRandomImageUri(): string {
   return `https://picsum.photos/seed/${seed}/3000/2000`;
 }
 
-// Shared objects' properties are defined in the prototype, thus they're not picked by `JSON.stringify`.
-// In this screen we show the contents of the image object, so `toJSON` needs to be overridden to include prototype's properties.
-// TODO: We may want to override this globally for all shared objects. Keep it here for now until we decide what to do.
-// @ts-expect-error
-Image.Image.prototype.toJSON = function () {
-  const json: Record<string, any> = {};
-
-  for (const key in this) {
-    if (typeof (this as any)[key] !== 'function') {
-      json[key] = (this as any)[key];
-    }
-  }
-  return json;
-};
-
 export default function ImageSharedRefScreen() {
   const [imageRef, setImageRef] = useState<ImageRef | null>(null);
   const [sourceUri, setSourceUri] = useState<string>(getRandomImageUri());

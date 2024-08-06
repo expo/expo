@@ -114,5 +114,5 @@ export function resolveTransition(
  * Checks whether the given value is an instance of the ImageRef class.
  */
 export function isImageRef(value: any): value is ImageRef {
-  return value instanceof ImageModule.Image;
+  return !!ImageModule.Image && value instanceof ImageModule.Image;
 }

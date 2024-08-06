@@ -8,12 +8,25 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, Build settings related to gradle.properties will now be **merged** (*and deduped*) if they are `Arrays` instead of overwritten. For now the only array value is `extraMavenRepos`. This allow library plugins to use `extraMavenRepos` even if they are not the last plugin called. ([#30269](https://github.com/expo/expo/pull/30269) by [@Titozzz](https://github.com/Titozzz))
-- On `Android`, fix setting `translucent` on the status bar. ([#29803](https://github.com/expo/expo/pull/29803) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
 
 - Upgrade `glob@7` to `glob@10`. ([#29894](https://github.com/expo/expo/pull/29894) by [@byCedric](https://github.com/byCedric))
+
+## 8.0.8 - 2024-07-11
+
+### 🐛 Bug fixes
+
+- On `Android`, Build settings related to gradle.properties will now be **merged** (*and deduped*) if they are `Arrays` instead of overwritten. For now the only array value is `extraMavenRepos`. This allow library plugins to use `extraMavenRepos` even if they are not the last plugin called. ([#30269](https://github.com/expo/expo/pull/30269) by [@Titozzz](https://github.com/Titozzz))
+
+## 8.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.6 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- On `Android`, fix setting `translucent` on the status bar. ([#29803](https://github.com/expo/expo/pull/29803) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 8.0.5 - 2024-06-05
 

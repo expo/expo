@@ -1,9 +1,16 @@
+import os from 'os';
 import fs from 'fs-extra';
+import crypto from 'crypto';
 import { join } from 'path';
-import temporary from 'tempy';
 
 import { GitDirectory } from '../../../../tools/src/Git';
 import { autolinkingRunAsync, yarnSync, combinations } from '../TestUtils';
+
+function tempDirectory() {
+  const directory = join(fs.realpathSync(os.tmpdir()), crypto.randomBytes(16).toString('hex'));
+  fs.mkdirSync(directory);
+  return directory;
+}
 
 const monorepoConfig = {
   source: 'https://github.com/byCedric/eas-monorepo-example.git',
@@ -25,7 +32,7 @@ describe('monorepo', () => {
   }
 
   beforeAll(async () => {
-    const temp = join(temporary.directory(), 'monorepo');
+    const temp = join(tempDirectory(), 'monorepo');
     console.log(`Cloning monorepo into: ${temp}`);
     await GitDirectory.shallowCloneAsync(temp, monorepoConfig.source, monorepoConfig.ref);
     console.log('Yarning');

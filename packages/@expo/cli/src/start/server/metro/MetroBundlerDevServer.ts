@@ -110,6 +110,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
   private hmrServer: MetroHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
+  private isReactServerComponentsEnabled?: boolean;
 
   get name(): string {
     return 'metro';
@@ -251,7 +252,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
-        'expo-router/node/render.js'
+        'expo-router/node/render.js',
+        {
+          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+          // the previous React SSG utilities which aren't available in React 19.
+          environment: 'node',
+        }
       );
 
     const { exp } = getConfig(this.projectRoot);
@@ -345,6 +351,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const { getStaticContent } = await this.ssrLoadModule<
         typeof import('expo-router/build/static/renderStaticContent')
       >('expo-router/node/render.js', {
+        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+        // the previous React SSG utilities which aren't available in React 19.
+        environment: 'node',
         minify: false,
         isExporting,
         platform,
@@ -383,7 +392,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
 
-    if (extras.hot) {
+    if (extras.hot && this.instanceMetroOptions.isExporting !== true) {
       // Register SSR HMR
       const serverRoot = getMetroServerRoot(this.projectRoot);
       const relativePath = path.relative(serverRoot, res.filename);
@@ -526,8 +535,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       engine: 'hermes',
       minify: false,
       bytecode: false,
-      // Bundle in Node.js mode for SSR.
-      environment: 'node',
+      // Bundle in Node.js mode for SSR unless RSC is enabled.
+      environment: this.isReactServerComponentsEnabled ? 'react-server' : 'node',
       platform: 'web',
       mode: 'development',
       //
@@ -641,6 +650,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
+    // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
+    const isReactServerComponentsEnabled = !!exp.experiments?.reactCanary;
+    this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
@@ -729,7 +741,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
-      if (exp.experiments?.reactCanary) {
+      if (isReactServerComponentsEnabled) {
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           getServerUrl: () => {
             return this.getDevServerUrlOrAssert();

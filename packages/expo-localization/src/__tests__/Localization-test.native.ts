@@ -19,7 +19,7 @@ const pl = {
   morning: 'rano',
 };
 
-const fakeLocalization = {
+const fakeLocalization: Partial<typeof ExpoLocalization> = {
   locale: 'en-US',
   locales: ['en-US', 'fr'],
   timezone: 'Etc/UTC',
@@ -34,8 +34,12 @@ const fakeLocalization = {
 
 beforeEach(() => {
   for (const property of Object.keys(fakeLocalization)) {
-    mockProperty(ExpoLocalization, property, fakeLocalization[property]);
-    mockProperty(Localization, property, fakeLocalization[property]);
+    mockProperty(
+      ExpoLocalization,
+      property as keyof typeof ExpoLocalization,
+      fakeLocalization[property]
+    );
+    mockProperty(Localization, property as keyof typeof Localization, fakeLocalization[property]);
   }
   mockProperty(
     ExpoLocalization,
