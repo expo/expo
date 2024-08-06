@@ -13,7 +13,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '13.4',
+    deploymentTarget: '15.1',
   },
 };
 
