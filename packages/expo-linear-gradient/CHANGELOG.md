@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add experimental support for React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30471](https://github.com/expo/expo/pull/30471) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

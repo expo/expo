@@ -24,7 +24,11 @@ public final class BarometerModule: Module {
 
     OnStartObserving {
       if CMAltimeter.authorizationStatus() == .notDetermined {
-        CMSensorRecorder().recordAccelerometer(forDuration: 0.1)
+        if #available(iOS 17.4, *) {
+          // There's a bug in iOS 17.4 where the motion permissions popup won't display
+          // even when the NSMotionUsageDescription is in the plist while using the altimeter.
+          CMSensorRecorder().recordAccelerometer(forDuration: 0.1)
+        }
       }
 
       altimeter.startRelativeAltitudeUpdates(to: operationQueue) { [weak self] data, _ in

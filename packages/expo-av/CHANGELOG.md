@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `loadAsync()` promise never settled when given an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))
+- Fixed putting app to background stops non-mixable audio playback in other apps on iOS ([#20380](https://github.com/expo/expo/pull/20380) by [@de1acr0ix](https://github.com/de1acr0ix))
+- Fix unhandled promise rejection when start recording fails [#29826](https://github.com/expo/expo/pull/29826) by [@anirudhsama](https://github.com/anirudhsama)
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30456](https://github.com/expo/expo/pull/30456) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 14.0.6 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed broken Video view on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
 
 ## 14.0.5 — 2024-05-15
 

@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Add NULL check before releasing `textureRef` in `EXGLCameraObject`. ([#29092](https://github.com/expo/expo/pull/29092) by [@hakonk](https://github.com/hakonk))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30468](https://github.com/expo/expo/pull/30468) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 14.0.2 — 2024-04-24
 

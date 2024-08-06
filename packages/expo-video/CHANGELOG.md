@@ -6,14 +6,79 @@
 
 ### 🎉 New features
 
+- [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
+- [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
+
+### 🐛 Bug fixes
+
+- [Android] Fix support for local file playback. ([#30472](https://github.com/expo/expo/pull/30472) by [@behenate](https://github.com/behenate))
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.2.4 - 2024-07-30
+
+### 🐛 Bug fixes
+
+- [Android] Fix Audio Manager pausing player on the wrong thread and conflicts between players. ([#30453](https://github.com/expo/expo/pull/30453) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Refactor `VideoPlayer.kt`, organize files ([#30452](https://github.com/expo/expo/pull/30452) by [@behenate](https://github.com/behenate))
+
+## 1.2.3 - 2024-07-11
+
+### 🛠 Breaking changes
+
+- [Android][iOS] Now Picture in Picture has to be enabled via the config plugin to work. ([#30068](https://github.com/expo/expo/pull/30068) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- [Web] Add support for events. ([#29742](https://github.com/expo/expo/pull/29742) by [@behenate](https://github.com/behenate))
+- [iOS] Add ability to disable live text interaction. ([#30093](https://github.com/expo/expo/pull/30093) by [@fobos531](https://github.com/fobos531))
+
+### 🐛 Bug fixes
+
+- [Web] Fix `AudioContext` being created before user interaction causing playback issues. ([#29695](https://github.com/expo/expo/pull/29695) by [@behenate](https://github.com/behenate))
+- [iOS] Fix a race condition causing crashes when deallocating the player. ([#30022](https://github.com/expo/expo/pull/30022) by [@behenate](https://github.com/behenate))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30489](https://github.com/expo/expo/pull/30489) by [@byCedric](https://github.com/byCedric))
+
+## 1.2.2 - 2024-07-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crashes on iOS 16 and lower when source HTTP headers are undefined. ([#30104](https://github.com/expo/expo/pull/30104) by [@behenate](https://github.com/behenate))
+
+## 1.2.1 - 2024-06-27
+
+### 🎉 New features
+
+- [iOS] Support Apple TV. ([#29560](https://github.com/expo/expo/pull/29560) by [@douglowder](https://github.com/douglowder))
+
+## 1.2.0 - 2024-06-20
+
+### 🎉 New features
+
 - Add `isLive` property on all platforms. ([#28903](https://github.com/expo/expo/pull/28903) by [@justjoostnl](https://github.com/justjoostnl))
 - [iOS] Add base64 certificate support for FairPlay DRM. ([#28990](https://github.com/expo/expo/pull/28990) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add support for request headers to in the video source. ([#29539](https://github.com/expo/expo/pull/29539) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix wrong content fit "fill" and "cover". ([#29364](https://github.com/expo/expo/pull/29364) by [@RRaideRR](https://github.com/RRaideRR))
+- [iOS] Fix player status property always returning `undefined` on iOS. ([#29505](https://github.com/expo/expo/pull/29505) by [@behenate](https://github.com/behenate))
+- [Android] Fix `VideoPlayer.replace` not working when the previous source caused an error. ([#29598](https://github.com/expo/expo/pull/29598) by [@lukmccall](https://github.com/lukmccall))
+- [Web] Fix default behavior for `nativeControls` to match documentation. ([#29667](https://github.com/expo/expo/pull/29667) by [@nahn20](https://github.com/nahn20))
+- [iOS] Fix crashes when creating new players. ([#29428](https://github.com/expo/expo/pull/29428) by [@behenate](https://github.com/behenate))
+- Fix errors on setting a null video source. ([#29613](https://github.com/expo/expo/pull/29613) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
+
+- [iOS] Make appropriate references weak in `VideoPlayerObserver`. ([#29427](https://github.com/expo/expo/pull/29427) by [@behenate](https://github.com/behenate))
 
 ## 1.1.10 - 2024-05-29
 

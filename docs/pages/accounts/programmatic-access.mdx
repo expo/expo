@@ -3,6 +3,8 @@ title: Programmatic access
 description: Learn about types of access tokens and how to use them.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 When setting up CI or writing a script to help manage your projects, we recommend avoiding using your username and password to authenticate. With these credentials, anyone will be able to log in and use your account.
 
 Instead of providing credentials, you can generate tokens that will allow you to manage each integration point separately. Anyone who has access to these tokens will be able to perform actions against your account. Please treat them with the same care as a user password. In case something is leaked, you can revoke these tokens to block access.
@@ -13,13 +15,19 @@ You can create Personal access tokens from the [Access tokens](https://expo.dev/
 
 ## Robot users and access tokens
 
-Accounts can create Robot users to take actions on resources owned by the Account. Bot Users can be assigned [a role](/accounts/working-together) to limit the actions they are authorized to perform. Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
+Accounts can create Robot users to take actions on resources owned by the Account. Bot Users can be assigned [a role](/accounts/account-types/#manage-access) to limit the actions they are authorized to perform. Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
 
 ## Access tokens usage
 
-You can use any tokens you have created to perform actions with the Expo CLI (other than signing in and out). To use tokens, you need to define an environment variable, like `EXPO_TOKEN="token"`, before running commands.
+You can use any tokens you have created to perform actions with the EAS CLI. To use tokens, you need to define an environment variable, like `EXPO_TOKEN="token"`, before running commands.
 
-If you are using GitHub Actions, [you can configure the `token` property](https://github.com/expo/expo-github-action#configuration-options) to include this environment variable in all of the job steps.
+Once you set the `EXPO_TOKEN` environment variable, you can run any EAS CLI command authenticated with the token without running the `eas login` command. The `eas login` command is only used for username and password authentication. The `EXPO_TOKEN` auth method takes precedence over the username and password if both are configured.
+
+For example, once you obtain a token, you can run the following EAS CLI command to trigger a build:
+
+<Terminal cmd={['EXPO_TOKEN=my_token eas build']} />
+
+If you are using GitHub Actions, [you can configure the `token` property](https://github.com/expo/expo-github-action#configuration-options) to include this environment variable in all the job steps.
 
 Common situations where access tokens are useful:
 

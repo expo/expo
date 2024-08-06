@@ -4,7 +4,7 @@ module.exports = {
   name: 'Router E2E',
   slug: 'expo-router-e2e',
 
-  sdkVersion: 'UNVERSIONED',
+  sdkVersion: process.env.E2E_ROUTER_USE_PUBLISHED_EXPO_GO ? undefined : 'UNVERSIONED',
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
@@ -27,12 +27,26 @@ module.exports = {
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
     reactCanary: process.env.EXPO_E2E_RSC,
+    reactCompiler: process.env.E2E_ROUTER_COMPILER,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
     bundler: 'metro',
   },
   plugins: [
+    [
+      'expo-build-properties',
+      {
+        ios: {
+          newArchEnabled: true,
+          ccacheEnabled: true,
+        },
+        android: {
+          newArchEnabled: true,
+        },
+      },
+    ],
+
     [
       'expo-router',
       {

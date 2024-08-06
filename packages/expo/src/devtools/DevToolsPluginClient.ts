@@ -2,7 +2,7 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
-import type { ConnectionInfo } from './devtools.types';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 import * as logger from './logger';
 
 // This version should be synced with the one in the **createMessageSocketEndpoint.ts** in @react-native-community/cli-server-api
@@ -23,7 +23,10 @@ export abstract class DevToolsPluginClient {
   protected isClosed = false;
   protected retries = 0;
 
-  public constructor(public readonly connectionInfo: ConnectionInfo) {
+  public constructor(
+    public readonly connectionInfo: ConnectionInfo,
+    private readonly options?: DevToolsPluginClientOptions
+  ) {
     this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
   }
 
@@ -107,6 +110,7 @@ export abstract class DevToolsPluginClient {
   protected connectAsync(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+        binaryType: this.options?.websocketBinaryType,
         onError: (e: unknown) => {
           if (e instanceof Error) {
             console.warn(`Error happened from the WebSocket connection: ${e.message}\n${e.stack}`);

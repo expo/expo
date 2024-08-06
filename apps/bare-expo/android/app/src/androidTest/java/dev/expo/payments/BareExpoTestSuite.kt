@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException
 
 private const val TEST_RESULT_ID = "test_suite_text_results"
 private const val TEST_TIMEOUT_MS = 20000L
-private const val TEST_EXPECTED_RESULT = "Complete: 0 tests failed."
+private const val TEST_EXPECTED_RESULT = "Success!"
 
 @RunWith(Parameterized::class)
 @LargeTest

@@ -3,7 +3,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
-import glob from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -21,7 +20,8 @@ function getExpoDependencyChunks({
     ['@expo/config-types', '@expo/env'],
     ['@expo/config'],
     ['@expo/config-plugins'],
-    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-core', 'expo-modules-autolinking'],
+    ['expo-modules-core'],
+    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
     [
       'babel-preset-expo',
@@ -51,6 +51,7 @@ function getExpoDependencyChunks({
             'expo-localization',
             'expo-crypto',
             'expo-network',
+            'expo-video',
           ],
         ]
       : []),
@@ -109,26 +110,13 @@ async function packExpoDependency(
     )
   );
 
+  let dependencyTarballPath: string;
   try {
-    await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
-      cwd: dependencyPath,
-      stdio: 'pipe',
-    });
+    dependencyTarballPath = await spawnNpmPackAsync({ cwd: dependencyPath, outputDir: destPath });
   } finally {
     // Restore the original package JSON
     await fs.copyFile(packageJsonCopyPath, packageJsonPath);
     await fs.rm(packageJsonCopyPath);
-  }
-
-  // Ensure the file was created as expected
-  const dependencyTarballName =
-    dependencyComponents[0] === '@expo'
-      ? `expo-${dependencyComponents[1]}`
-      : `${dependencyComponents[0]}`;
-  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyTarballName}-*.tgz`))[0];
-
-  if (!dependencyTarballPath) {
-    throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
   }
 
   // Return the dependency in the form needed by package.json, as a relative path
@@ -138,6 +126,30 @@ async function packExpoDependency(
     dependency,
     e2eVersion,
   };
+}
+
+async function spawnNpmPackAsync({
+  cwd,
+  outputDir,
+}: {
+  cwd: string;
+  outputDir: string;
+}): Promise<string> {
+  const { stdout } = await spawnAsync(
+    'npm',
+    // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
+    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
+    { cwd, stdio: 'pipe' }
+  );
+
+  // Validate the tarball output data
+  const output = JSON.parse(stdout);
+  if (output.length !== 1) {
+    throw new Error(`Expected a single tarball to be created, received: ${output.length}`);
+  }
+
+  // Return the absolute path to the tarball
+  return path.join(outputDir, output[0].filename);
 }
 
 async function copyCommonFixturesToProject(
@@ -179,6 +191,15 @@ async function copyCommonFixturesToProject(
 
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
+
+  // Copy react-native patch
+  if (!isTV) {
+    await fs.mkdir(path.join(projectRoot, 'patches'));
+    await fs.copyFile(
+      path.resolve(repoRoot, 'patches', 'react-native+0.75.0-rc.5.patch'),
+      path.join(projectRoot, 'patches', 'react-native+0.75.0-rc.5.patch')
+    );
+  }
 
   // Modify specific files for TV
   if (isTV) {
@@ -283,6 +304,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -299,6 +321,7 @@ async function preparePackageJson(
         'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
+        'patch-package': '^8.0.0',
       }
     : {};
 
@@ -341,8 +364,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.1-0',
-        '@react-native-tvos/config-tv': '^0.0.9',
+        'react-native': 'npm:react-native-tvos@~0.74.3-0',
+        '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
         install: {
@@ -599,16 +622,10 @@ export async function initAsync(
   // pack typescript template
   const templateName = 'expo-template-blank-typescript';
   const localTSTemplatePath = path.join(repoRoot, 'templates', templateName);
-  await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
+  const localTSTemplatePathName = await spawnNpmPackAsync({
     cwd: localTSTemplatePath,
-    stdio: 'ignore',
+    outputDir: repoRoot,
   });
-
-  const localTSTemplatePathName = glob.sync(path.join(repoRoot, `${templateName}-*.tgz`))[0];
-
-  if (!localTSTemplatePathName) {
-    throw new Error(`Failed to locate packed template in ${repoRoot}`);
-  }
 
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
@@ -664,18 +681,10 @@ export async function initAsync(
   const prebuildTemplateName = 'expo-template-bare-minimum';
 
   const localTemplatePath = path.join(repoRoot, 'templates', prebuildTemplateName);
-  await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {
+  const localTemplatePathName = await spawnNpmPackAsync({
     cwd: localTemplatePath,
-    stdio: 'ignore',
+    outputDir: projectRoot,
   });
-
-  const localTemplatePathName = glob.sync(
-    path.join(projectRoot, `${prebuildTemplateName}-*.tgz`)
-  )[0];
-
-  if (!localTemplatePathName) {
-    throw new Error(`Failed to locate packed template in ${projectRoot}`);
-  }
 
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {

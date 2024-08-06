@@ -38,6 +38,8 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> lock();
 
+  std::shared_ptr<jsi::WeakObject> getWeak();
+
 private:
   JavaScriptWeakObject(WeakRuntimeHolder runtime,
                        std::shared_ptr<jsi::Object> jsObject);

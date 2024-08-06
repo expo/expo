@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -46,9 +46,9 @@ export function ApiVersionSelect() {
   );
 }
 
-function versionToText(version: string): string {
+export function versionToText(version: string): string {
   if (version === 'unversioned') {
-    return 'Unversioned';
+    return 'Next (unversioned)';
   } else if (version === 'latest') {
     return `${formatSdkVersion(LATEST_VERSION)} (latest)`;
   } else if (BETA_VERSION && version === BETA_VERSION.toString()) {

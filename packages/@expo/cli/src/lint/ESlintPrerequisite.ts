@@ -6,15 +6,10 @@ import { Log } from '../log';
 import { PrerequisiteCommandError, ProjectPrerequisite } from '../start/doctor/Prerequisite';
 import { ensureDependenciesAsync } from '../start/doctor/dependencies/ensureDependenciesAsync';
 import { findFileInParents } from '../utils/findUp';
+import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:lint') as typeof console.log;
-
-const ESLINT_TEMPLATE_BASE = `// https://docs.expo.dev/guides/using-eslint/
-module.exports = {
-  extends: 'expo',
-};
-`;
 
 // TODO(cedric): if we want to add prettier, also configure proper prettier rules
 // const ESLINT_TEMPLATE_PRETTIER = `// https://docs.expo.dev/guides/using-eslint/
@@ -41,12 +36,15 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
 
     const hasEslintConfig = await eslintIsConfigured(this.projectRoot);
     if (!hasEslintConfig) {
-      const shouldSetupLint = await confirmAsync({
-        message: 'No ESLint config found. Install and configure ESLint in this project?',
-      });
-
-      if (!shouldSetupLint) {
-        throw new PrerequisiteCommandError('ESLint is not configured for this project.');
+      if (!isInteractive()) {
+        Log.warn(`No ESLint config found. Configuring automatically.`);
+      } else {
+        const shouldSetupLint = await confirmAsync({
+          message: 'No ESLint config found. Install and configure ESLint in this project?',
+        });
+        if (!shouldSetupLint) {
+          throw new PrerequisiteCommandError('ESLint is not configured for this project.');
+        }
       }
 
       // TODO(cedric): if we want to add prettier, also configure proper prettier rules
@@ -75,7 +73,11 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
       //   await fs.writeFile(path.join(this.projectRoot, '.prettierrc'), '{}', 'utf8');
       // }
 
-      await fs.writeFile(path.join(this.projectRoot, '.eslintrc.js'), ESLINT_TEMPLATE_BASE, 'utf8');
+      await fs.writeFile(
+        path.join(this.projectRoot, '.eslintrc.js'),
+        await fs.readFile(require.resolve(`@expo/cli/static/template/.eslintrc.js`), 'utf8'),
+        'utf8'
+      );
     }
 
     const hasLintScript = await lintScriptIsConfigured(this.projectRoot);
@@ -112,7 +114,6 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
         requiredPackages: [
           { version: '^8.57.0', pkg: 'eslint', file: 'eslint/package.json', dev: true },
           {
-            version: '^7.0.0',
             pkg: 'eslint-config-expo',
             file: 'eslint-config-expo/package.json',
             dev: true,

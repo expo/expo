@@ -8,7 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependencies for isolated modules. ([#30485](https://github.com/expo/expo/pull/30485) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+## 3.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.5 - 2024-06-05
 

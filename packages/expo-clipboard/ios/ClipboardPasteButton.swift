@@ -47,6 +47,22 @@ class ClipboardPasteButton: ExpoView {
     ])
   }
 
+  override func canPaste(_ itemProviders: [NSItemProvider]) -> Bool {
+    guard #available(iOS 14.0, *) else {
+      // never called below iOS 16
+      return true
+    }
+    let hasConformantItem = itemProviders.contains { provider in
+      provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) ||
+      provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) ||
+      provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) ||
+      provider.hasItemConformingToTypeIdentifier(UTType.utf8PlainText.identifier) && !acceptedContentTypes.contains(.html)
+    }
+
+    // intra-device, when copying simple stuff like images and plain text, `itemProviders` are empty
+    return hasConformantItem || itemProviders.isEmpty
+  }
+
   override func paste(itemProviders: [NSItemProvider]) {
     guard #available(iOS 14.0, *) else {
       return
@@ -69,7 +85,7 @@ class ClipboardPasteButton: ExpoView {
 
           self.onPastePressed([
             "type": "text",
-            "text": data?.absoluteString
+            "text": data?.absoluteString as Any
           ])
         }
       } else if provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) {
@@ -87,7 +103,7 @@ class ClipboardPasteButton: ExpoView {
             return
           }
 
-          guard let data = data as? String else {
+          guard let data else {
             log.error("Failed to read text data")
             return
           }
@@ -126,11 +142,6 @@ class ClipboardPasteButton: ExpoView {
       return
     }
 
-    guard let fileSystem = appContext?.fileSystem else {
-      log.error("Failed to access FileSystem")
-      return
-    }
-
     let imageData = "data:\(imageOptions.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
     self.onPastePressed([
       "type": "image",
@@ -143,7 +154,7 @@ class ClipboardPasteButton: ExpoView {
   }
 
   private func processHtml(data: String?) {
-    guard let htmlString = data as? String else {
+    guard let htmlString = data else {
       log.error("Failed to read html data")
       return
     }

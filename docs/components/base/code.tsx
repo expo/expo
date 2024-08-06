@@ -1,7 +1,9 @@
 import { css } from '@emotion/react';
 import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
+import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
+import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import {
@@ -303,30 +305,6 @@ const STYLES_CODE_BLOCK = css`
   white-space: inherit;
   padding: 0;
   margin: 0;
-
-  .code-annotation {
-    transition: 200ms ease all;
-    transition-property: text-shadow, opacity;
-    text-shadow:
-      ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px;
-  }
-
-  .code-annotation.with-tooltip:hover {
-    cursor: pointer;
-    animation: none;
-    opacity: 0.8;
-  }
-
-  .code-hidden {
-    display: none;
-  }
-
-  .code-placeholder {
-    opacity: 0.5;
-  }
 `;
 
 const STYLES_CODE_CONTAINER_BLOCK = css`

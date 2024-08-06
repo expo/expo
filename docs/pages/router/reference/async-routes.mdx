@@ -3,13 +3,13 @@ title: Async routes
 description: Learn how to speed up development with async bundling in Expo Router.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **info** This feature is experimental. Available from Expo SDK 49 and Expo Router v2.
+> **warning** Async routes is an experimental feature.
 
-<Video file="expo-router/async-routes.mp4" loop={false} />
+<ContentSpotlight file="expo-router/async-routes.mp4" loop={false} />
 
 Expo Router can automatically split your JavaScript bundle based on the route files using [React Suspense](https://react.dev/reference/react/Suspense). This enables faster development as only the routes you navigate to will be bundled or loaded into memory. This can also be useful for reducing the initial bundle size for your application.
 
@@ -27,7 +27,7 @@ Loading errors are handled in the parent route, via the [`ErrorBoundary`](/route
 
 Async routes cannot be statically analyzed during development, so all files will be treated as routes even if they don't export a default component. After the component is bundled and loaded, any invalid route will use a fallback warning screen.
 
-For those familiar with advanced bundling techniques, the async routes feature is comprised of [React Suspense](https://react.dev/docs/concurrent-mode-suspense), [route-based bundle splitting](https://legacy.reactjs.org/docs/code-splitting.html#route-based-code-splitting) and [lazy bundling](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0605-lazy-bundling.md) (in development).
+For those familiar with advanced bundling techniques, the async routes feature is composed of [React Suspense](https://react.dev/docs/concurrent-mode-suspense), [route-based bundle splitting](https://legacy.reactjs.org/docs/code-splitting.html#route-based-code-splitting) and [lazy bundling](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0605-lazy-bundling.md) (in development).
 
 ## Setup
 
@@ -35,29 +35,9 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router config
 
 <Tabs>
 
-<Tab label="SDK 49">
-   
-    ```json app.json
-    {
-      "expo": {
-        "plugins": [
-          [
-            "expo-router",
-            {
-              "origin": "https://acme.com",
-              "asyncRoutes": "development"
-            }
-          ]
-        ]
-      }
-    }
-    ```
-
-</Tab>
-
 <Tab label="SDK 50 and above">
 
-    > SDK 50 supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
+    > SDK 50 and above supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
 
     ```json app.json
     {
@@ -79,6 +59,27 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router config
     ```
 
 </Tab>
+
+<Tab label="SDK 49">
+
+    ```json app.json
+    {
+      "expo": {
+        "plugins": [
+          [
+            "expo-router",
+            {
+              "origin": "https://acme.com",
+              "asyncRoutes": "development"
+            }
+          ]
+        ]
+      }
+    }
+    ```
+
+</Tab>
+
 </Tabs>
 
 You can set platform-specific settings (`default`, `android`, `ios` or `web`) for `asyncRoutes` using an object:

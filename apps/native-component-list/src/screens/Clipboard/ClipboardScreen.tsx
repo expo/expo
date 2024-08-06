@@ -96,13 +96,23 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       type: 'constant',
       value: '[selected from image picker]',
     },
+    {
+      name: 'quality',
+      type: 'enum',
+      values: [
+        { name: 'RAW', value: 1.0 },
+        { name: '0.5', value: 0.5 },
+        { name: '0', value: 0 },
+      ],
+    },
   ],
-  actions: async () => {
+  actions: async (_, quality) => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         base64: true,
+        quality,
       });
       if (!result.canceled) {
         const [asset] = result.assets;

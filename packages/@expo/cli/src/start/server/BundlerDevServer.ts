@@ -190,8 +190,9 @@ export abstract class BundlerDevServer {
     return {
       // Create a mock server
       server: {
-        close: () => {
+        close: (callback: () => void) => {
           this.instance = null;
+          callback?.();
         },
         addListener() {},
       },
@@ -226,9 +227,9 @@ export abstract class BundlerDevServer {
     ) {
       await this._startTunnelAsync();
     }
-    await this.startDevSessionAsync();
 
     if (!options.isExporting) {
+      await this.startDevSessionAsync();
       this.watchConfig();
     }
   }
@@ -386,6 +387,18 @@ export abstract class BundlerDevServer {
       return `${location.protocol}://localhost:${location.port}`;
     }
     return location.url ?? null;
+  }
+
+  public getDevServerUrlOrAssert(options: { hostType?: 'localhost' } = {}): string {
+    const instance = this.getDevServerUrl(options);
+    if (!instance) {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the dev server URL before the server has started - bundler[${this.name}]`
+      );
+    }
+
+    return instance;
   }
 
   /** Get the base URL for JS inspector */

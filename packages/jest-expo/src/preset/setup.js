@@ -183,11 +183,10 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 }));
 
 // Mock the `createSnapshotFriendlyRef` to return an ref that can be serialized in snapshots.
-jest.doMock('expo-modules-core/build/Refs', () => ({
+jest.doMock('expo-modules-core/src/Refs', () => ({
   createSnapshotFriendlyRef: () => {
-    const { createSnapshotFriendlyRef } = jest.requireActual('expo-modules-core/build/Refs');
-    // Fixes: `cannot define property "toJSON", object is not extensible
-    const ref = Object.create(createSnapshotFriendlyRef());
+    // We cannot use `createRef` since it is not extensible.
+    const ref = { current: null };
     Object.defineProperty(ref, 'toJSON', {
       value: () => '[React.ref]',
     });
@@ -215,7 +214,7 @@ function attemptLookup(moduleName) {
 try {
   jest.doMock('expo-modules-core', () => {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
-    const uuid = jest.requireActual('expo-modules-core/build/uuid/uuid.web');
+    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid.web');
 
     const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
@@ -262,6 +261,13 @@ try {
         }
         return nativeModule;
       },
+      requireNativeViewManager: (name) => {
+        const nativeModuleMock = attemptLookup(name);
+        if (!nativeModuleMock || !nativeModuleMock.View) {
+          return ExpoModulesCore.requireNativeViewManager(name);
+        }
+        return nativeModuleMock.View;
+      },
     };
   });
 } catch (error) {
@@ -272,7 +278,7 @@ try {
 }
 
 // Installs web implementations of global things that are normally installed through JSI.
-require('expo-modules-core/build/web/index.web');
+require('expo-modules-core/src/web/index.web');
 
 // Ensure the environment globals are installed before the first test runs.
-require('expo/build/winter');
+require('expo/src/winter');

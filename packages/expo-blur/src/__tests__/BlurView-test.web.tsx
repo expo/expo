@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, getByTestId } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { Animated } from 'react-native';
 
@@ -26,8 +26,8 @@ afterAll(() => {
 });
 
 it(`prefers filters to background color`, () => {
-  const withNativeBlur = render(<BlurView tint="light" testID="blur" />);
-  const view = getByTestId(withNativeBlur.container, 'blur');
+  render(<BlurView tint="light" testID="blur" />);
+  const view = screen.getByTestId('blur');
 
   expect(view.style['backdropFilter']).toBeDefined();
 });
@@ -39,8 +39,8 @@ it(`supports Animated API`, () => {
 });
 
 it(`intensity is capped at 100`, () => {
-  const withNativeBlur = render(<BlurView intensity={3737} tint="light" testID="blur" />);
-  const view = getByTestId(withNativeBlur.container, 'blur');
+  render(<BlurView intensity={3737} tint="light" testID="blur" />);
+  const view = screen.getByTestId('blur');
 
   expect(view.style['backdropFilter']).toContain('blur(20px)');
   expect(view.style['backgroundColor']).toContain('0.78');

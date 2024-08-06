@@ -46,9 +46,11 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     try {
-      if (env.EXPO_OFFLINE) {
+      if (env.CI || env.EXPO_OFFLINE) {
         debug(
-          'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
+          env.CI
+            ? 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in CI.'
+            : 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
         );
         this.stopNotifying();
         return;
@@ -99,20 +101,33 @@ export class DevelopmentSession {
     this.timeout = null;
   }
 
-  public async closeAsync(): Promise<void> {
+  /** Try to close any pending development sessions, but always resolve */
+  public async closeAsync(): Promise<boolean> {
     this.stopNotifying();
 
-    const deviceIds = await this.getDeviceInstallationIdsAsync();
-
-    if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
-      return;
+    if (env.CI || env.EXPO_OFFLINE) {
+      return false;
     }
 
-    if (this.url) {
-      await closeDevelopmentSessionAsync({
-        url: this.url,
-        deviceIds,
-      });
+    try {
+      const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+        return false;
+      }
+
+      if (this.url) {
+        await closeDevelopmentSessionAsync({
+          url: this.url,
+          deviceIds,
+        });
+      }
+
+      return true;
+    } catch (error: any) {
+      debug(`Error closing development session API: ${error}`);
+      this.onError(error);
+      return false;
     }
   }
 }

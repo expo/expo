@@ -11,6 +11,7 @@ import {
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
+  BoxSectionHeader,
   CommentTextBlock,
   getCommentContent,
   getCommentOrSignatureComment,
@@ -21,7 +22,6 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
@@ -133,7 +133,7 @@ export const renderProp = (
       key={`prop-entry-${name}`}
       css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}
       className="!pb-4 [&>*:last-child]:!mb-0">
-      <APISectionDeprecationNote comment={extractedComment} />
+      <APISectionDeprecationNote comment={extractedComment} sticky />
       <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <MONOSPACE
@@ -173,11 +173,12 @@ const APISectionProps = ({
       ) : (
         <div>
           {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4 key={`${header}-props-header`} hideInSidebar>
-              {header}
-            </H4>
-          </div>
+          <BoxSectionHeader
+            text={header}
+            className="!text-secondary !font-medium"
+            exposeInSidebar
+            baseNestingLevel={99}
+          />
           {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
         </div>
       )}

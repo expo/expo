@@ -9,6 +9,8 @@ import {
   unmockProcessPlatform,
 } from './prebuild-tester';
 
+jest.setTimeout(30 * 1000);
+
 jest.mock('fs');
 
 const originalWarn = console.warn;

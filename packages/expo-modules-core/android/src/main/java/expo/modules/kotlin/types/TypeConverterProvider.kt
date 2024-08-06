@@ -73,7 +73,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCachedConverters(false)
   private val nullableCachedConverters = createCachedConverters(true)
 
-  private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
+  private val cachedRecordConverters = mutableMapOf<KType, TypeConverter<*>>()
 
   private fun getCachedConverter(inputType: KType): TypeConverter<*>? {
     return if (inputType.isMarkedNullable) {
@@ -116,14 +116,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
-    val cachedConverter = cachedRecordConverters[kClass]
+    val cachedConverter = cachedRecordConverters[type]
     if (cachedConverter != null) {
       return cachedConverter
     }
 
     if (Record::class.java.isAssignableFrom(jClass)) {
       val converter = RecordTypeConverter<Record>(this, type)
-      cachedRecordConverters[kClass] = converter
+      cachedRecordConverters[type] = converter
       return converter
     }
 
@@ -213,6 +213,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
         val jsArray = it.asArray()
         IntArray(jsArray.size()) { index ->
           jsArray.getInt(index)
+        }
+      },
+      LongArray::class to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.LONG)
+      ) {
+        val jsArray = it.asArray()
+        LongArray(jsArray.size()) { index ->
+          jsArray.getDouble(index).toLong()
         }
       },
       DoubleArray::class to createTrivialTypeConverter(

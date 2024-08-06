@@ -39,6 +39,7 @@
     "jest-expo": "~51.0.0-unreleased"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }

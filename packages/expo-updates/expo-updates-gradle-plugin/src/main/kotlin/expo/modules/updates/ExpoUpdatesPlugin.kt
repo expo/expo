@@ -34,7 +34,6 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       val targetName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
       val projectRoot = project.rootProject.projectDir.parentFile.toPath()
-      val entryFileRelativePath = projectRoot.relativize(entryFile.toPath())
       val isDebuggableVariant =
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
 
@@ -43,7 +42,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
         it.projectRoot.set(projectRoot.toString())
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.debuggableVariant.set(isDebuggableVariant)
-        it.entryFile.set(entryFileRelativePath.toString())
+        it.entryFile.set(entryFile.toPath().toString())
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
     }

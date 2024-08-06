@@ -9,7 +9,7 @@ object DevMenuDevSettings {
     val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactHost)
     val devSettings = devDelegate.devSettings
 
-    val jsBundleURL = reactHost.devSupportManager?.jsBundleURLForRemoteDebugging ?: ""
+    val jsBundleURL = reactHost.devSupportManager?.jSBundleURLForRemoteDebugging ?: ""
 
     if (devSettings != null) {
       return Bundle().apply {

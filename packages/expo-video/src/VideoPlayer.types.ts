@@ -17,6 +17,13 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   loop: boolean;
 
   /**
+   * Determines whether the player should allow external playback.
+   * @default true
+   * @platform ios
+   */
+  allowsExternalPlayback: boolean;
+
+  /**
    * Boolean value whether the player is currently muted.
    * Setting this property to `true`/`false` will mute/unmute the player.
    * @default false
@@ -129,7 +136,7 @@ export type VideoPlayerEvents = {
   statusChange(
     newStatus: VideoPlayerStatus,
     oldStatus: VideoPlayerStatus,
-    error: PlayerError
+    error?: PlayerError
   ): void;
   /**
    * Handler for an event emitted when the player starts or stops playback.
@@ -178,6 +185,13 @@ export type VideoSource =
        * When undefined the player will display information contained in the video metadata.
        */
       metadata?: VideoMetadata;
+      /**
+       * Specifies headers sent with the video request.
+       * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+       * @platform android
+       * @platform ios
+       */
+      headers?: Record<string, string>;
     }
   | null;
 

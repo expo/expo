@@ -11,7 +11,7 @@ export interface ExpoConfig {
      */
     description?: string;
     /**
-     * The friendly URL name for publishing. For example, `myAppName` will refer to the `expo.dev/@project-owner/myAppName` project.
+     * A URL-friendly name for your project that is unique across your account.
      */
     slug: string;
     /**
@@ -258,6 +258,10 @@ export interface ExpoConfig {
          * Experimentally use a vendored canary build of React for testing upcoming features.
          */
         reactCanary?: boolean;
+        /**
+         * Experimentally enable React Compiler.
+         */
+        reactCompiler?: boolean;
     };
     /**
      * Internal properties for developer tools

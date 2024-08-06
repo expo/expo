@@ -48,26 +48,57 @@ class PersistentFileLogSpec: ExpoSpec {
   }
 
   static func clearEntriesSync(log: PersistentFileLog) {
-    var didClear = false
+    let didClear = Synchronized(false)
     log.clearEntries { _ in
-      didClear = true
+      didClear.value = true
     }
-    expect(didClear).toEventually(beTrue(), timeout: .milliseconds(500))
+    expect(didClear.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
   static func filterEntriesSync(log: PersistentFileLog, filter: @escaping PersistentFileLogFilter) {
-    var didPurge = false
+    let didPurge = Synchronized(false)
     log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
-      didPurge = true
+      didPurge.value = true
     }
-    expect(didPurge).toEventually(beTrue(), timeout: .milliseconds(500))
+    expect(didPurge.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
   static func appendEntrySync(log: PersistentFileLog, entry: String) {
-    var didAppend = false
+    let didAppend = Synchronized(false)
     log.appendEntry(entry: entry) { _ in
-      didAppend = true
+      didAppend.value = true
     }
-    expect(didAppend).toEventually(beTrue(), timeout: .milliseconds(500))
+    expect(didAppend.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
+}
+
+/// Allows for synchronization pertaining to the file scope.
+private final class Synchronized<T> {
+  private var _storage: T
+  private let lock = NSLock()
+
+  /// Thread safe access here.
+  var value: T {
+    get {
+      return lockAround {
+        _storage
+      }
+    }
+    set {
+      lockAround {
+        _storage = newValue
+      }
+    }
+  }
+
+  init(_ storage: T) {
+    self._storage = storage
+  }
+
+  private func lockAround<U>(_ closure: () -> U) -> U {
+    lock.lock()
+    defer { lock.unlock() }
+    return closure()
+  }
+
 }

@@ -61,6 +61,40 @@ enum BarcodeType: String, Enumerable {
       return .aztec
     }
   }
+
+  static func toBarcodeType(type: AVMetadataObject.ObjectType) -> BarcodeType {
+    if #available(iOS 15.4, *) {
+      if type == .codabar {
+        return .codabar
+      }
+    }
+    switch type {
+    case .aztec:
+      return .aztec
+    case .qr:
+      return .qr
+    case .ean13:
+      return .ean13
+    case .ean8:
+      return .ean8
+    case .pdf417:
+      return .pdf417
+    case .itf14:
+      return .itf14
+    case .upce:
+      return .upc_e
+    case .code39:
+      return .code39
+    case .code93:
+      return .code93
+    case .dataMatrix:
+      return .datamatrix
+    case .code128:
+      return .code128
+    default:
+      return .aztec
+    }
+  }
 }
 
 enum VNBarcodeType: String, Enumerable {

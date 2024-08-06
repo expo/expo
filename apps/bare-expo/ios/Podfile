@@ -16,8 +16,9 @@ install! 'cocoapods',
   :incremental_installation => true,
   :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-inhibit_all_warnings!
-
+if ENV['CI']
+  inhibit_all_warnings!
+end
 prepare_react_native_project!
 
 abstract_target 'BareExpoMain' do

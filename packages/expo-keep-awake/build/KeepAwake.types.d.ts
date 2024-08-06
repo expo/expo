@@ -5,6 +5,9 @@ export type KeepAwakeEvent = {
 export declare enum KeepAwakeEventState {
     RELEASE = "release"
 }
+/**
+ * @platform web
+ */
 export type KeepAwakeListener = (event: KeepAwakeEvent) => void;
 export type KeepAwakeOptions = {
     /**

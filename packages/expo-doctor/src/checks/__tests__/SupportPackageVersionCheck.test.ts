@@ -91,5 +91,35 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
+    expect(result.advice).toEqual(
+      'Upgrade dependencies that are using the invalid package versions.'
+    );
+  });
+
+  it('warns if package.json resolutions are not pinned to a valid version', async () => {
+    jest
+      .mocked(getRemoteVersionsForSdkAsync)
+      .mockResolvedValueOnce(mockGetRemoteVersionsForSdkAsyncResult);
+    jest.mocked(getDeepDependenciesWarningAsync).mockImplementation(async (pkg, projectRoot) => {
+      if (pkg.name === 'metro') {
+        return 'warning';
+      }
+      return null;
+    });
+    const check = new SupportPackageVersionCheck();
+    const result = await check.runAsync({
+      projectRoot: '/path/to/project',
+      ...additionalProjectProps,
+      pkg: {
+        ...additionalProjectProps.pkg,
+        resolutions: {
+          metro: '999.999.999',
+        },
+      },
+    });
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.advice).toContain(
+      'Upgrade dependencies that are using the invalid package versions and remove resolutions'
+    );
   });
 });

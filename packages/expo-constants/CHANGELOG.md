@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependencies for isolated modules. ([#30464](https://github.com/expo/expo/pull/30464) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Deprecate `Constants.appOwnership`. ([#30021](https://github.com/expo/expo/pull/30021) by [@amandeepmittal](https://github.com/amandeepmittal))
 
 ## 16.0.2 - 2024-05-29
 

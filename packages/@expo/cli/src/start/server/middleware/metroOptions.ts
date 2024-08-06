@@ -26,21 +26,32 @@ export type ExpoMetroOptions = {
   asyncRoutes?: boolean;
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot: string;
+  /** Enable React compiler support in Babel. */
+  reactCompiler: boolean;
   baseUrl?: string;
   isExporting: boolean;
   inlineSourceMap?: boolean;
+  clientBoundaries?: string[];
   splitChunks?: boolean;
+  usedExports?: boolean;
+  /** Enable optimized bundling (required for tree shaking). */
+  optimize?: boolean;
 };
 
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  usedExports?: boolean;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
   serializerOptions?: SerializerOptions;
 };
+
+export function isServerEnvironment(environment?: any): boolean {
+  return environment === 'node' || environment === 'react-server';
+}
 
 export function shouldEnableAsyncImports(projectRoot: string): boolean {
   if (env.EXPO_NO_METRO_LAZY) {
@@ -54,14 +65,10 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
   return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
 }
 
-export function isServerEnvironment(environment?: any): boolean {
-  return environment === 'node' || environment === 'react-server';
-}
-
 function withDefaults({
   mode = 'development',
   minify = mode === 'production',
-  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
+  preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
@@ -74,10 +81,18 @@ function withDefaults({
     }
   }
 
+  const optimize =
+    props.optimize ??
+    (props.environment !== 'node' &&
+      mode === 'production' &&
+      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+
   return {
     mode,
     minify,
     preserveEnvVars,
+    optimize,
+    usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     ...props,
   };
@@ -86,6 +101,7 @@ function withDefaults({
 export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
+
 export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
   let asyncRoutesSetting;
 
@@ -104,10 +120,11 @@ export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, plat
 export function getMetroDirectBundleOptionsForExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
-  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot' | 'asyncRoutes'>
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'reactCompiler' | 'routerRoot' | 'asyncRoutes'>
 ): Partial<ExpoMetroBundleOptions> {
   return getMetroDirectBundleOptions({
     ...options,
+    reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
@@ -135,6 +152,10 @@ export function getMetroDirectBundleOptions(
     isExporting,
     inlineSourceMap,
     splitChunks,
+    usedExports,
+    reactCompiler,
+    optimize,
+    clientBoundaries,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -165,26 +186,32 @@ export function getMetroDirectBundleOptions(
     dev,
     minify: minify ?? !dev,
     inlineSourceMap: inlineSourceMap ?? false,
-    lazy,
+    lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
       __proto__: null,
+      optimize: optimize || undefined,
       engine,
-      preserveEnvVars,
-      asyncRoutes,
+      clientBoundaries,
+      preserveEnvVars: preserveEnvVars || undefined,
+      // Use string to match the query param behavior.
+      asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
       environment,
-      baseUrl,
+      baseUrl: baseUrl || undefined,
       routerRoot,
-      bytecode,
+      bytecode: bytecode || undefined,
+      reactCompiler: reactCompiler || undefined,
     },
     customResolverOptions: {
       __proto__: null,
       environment,
+      exporting: isExporting || undefined,
     },
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
     },
@@ -196,19 +223,24 @@ export function getMetroDirectBundleOptions(
 export function createBundleUrlPathFromExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
-  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+  options: Omit<ExpoMetroOptions, 'reactCompiler' | 'baseUrl' | 'routerRoot'>
 ): string {
   return createBundleUrlPath({
     ...options,
+    reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
   });
 }
 
 export function createBundleUrlPath(options: ExpoMetroOptions): string {
+  const queryParams = createBundleUrlSearchParams(options);
+  return `/${encodeURI(options.mainModuleName.replace(/^\/+/, ''))}.bundle?${queryParams.toString()}`;
+}
+
+export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearchParams {
   const {
     platform,
-    mainModuleName,
     mode,
     minify,
     environment,
@@ -221,9 +253,13 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     asyncRoutes,
     baseUrl,
     routerRoot,
+    reactCompiler,
     inlineSourceMap,
     isExporting,
+    clientBoundaries,
     splitChunks,
+    usedExports,
+    optimize,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -256,7 +292,6 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (bytecode) {
     queryParams.append('transform.bytecode', String(bytecode));
   }
-
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
   }
@@ -266,8 +301,14 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
   }
+  if (clientBoundaries?.length) {
+    queryParams.append('transform.clientBoundaries', JSON.stringify(clientBoundaries));
+  }
   if (routerRoot != null) {
     queryParams.append('transform.routerRoot', routerRoot);
+  }
+  if (reactCompiler) {
+    queryParams.append('transform.reactCompiler', String(reactCompiler));
   }
 
   if (environment) {
@@ -275,8 +316,18 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('transform.environment', environment);
   }
 
+  if (isExporting) {
+    queryParams.append('resolver.exporting', String(isExporting));
+  }
+
   if (splitChunks) {
     queryParams.append('serializer.splitChunks', String(splitChunks));
+  }
+  if (usedExports) {
+    queryParams.append('serializer.usedExports', String(usedExports));
+  }
+  if (optimize) {
+    queryParams.append('transform.optimize', String(optimize));
   }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
@@ -284,6 +335,21 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
   }
+  if (engine === 'hermes') {
+    queryParams.append('unstable_transformProfile', 'hermes-stable');
+  }
 
-  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+  return queryParams;
+}
+
+/**
+ * Convert all path separators to `/`, including on Windows.
+ * Metro asumes that all module specifiers are posix paths.
+ * References to directories can still be Windows-style paths in Metro.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script
+ * @see https://github.com/facebook/metro/pull/1286
+ */
+export function convertPathToModuleSpecifier(pathLike: string) {
+  return pathLike.replaceAll('\\', '/');
 }

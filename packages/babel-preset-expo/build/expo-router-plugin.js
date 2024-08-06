@@ -4,6 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoRouterBabelPlugin = void 0;
+/**
+ * Copyright © 2024 650 Industries.
+ */
 const core_1 = require("@babel/core");
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -69,7 +72,7 @@ function expoRouterBabelPlugin(api) {
                                 path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
                             }
                             else if (key.value.startsWith('EXPO_ROUTER_APP_ROOT')) {
-                                path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(possibleProjectRoot, routerAbsoluteRoot)));
+                                path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(projectRoot, routerAbsoluteRoot)));
                             }
                         }
                     }

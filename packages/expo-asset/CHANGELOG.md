@@ -8,7 +8,28 @@
 
 ### 🐛 Bug fixes
 
+- Add missing dependencies and follow proper dependency chains. ([#30500](https://github.com/expo/expo/pull/30500) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Remove unused `pathJoin` function. ([#29963](https://github.com/expo/expo/pull/29963) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 10.0.10 - 2024-06-20
+
+### 🐛 Bug fixes
+
+- Fixed `PlatformUtils.ts` to have the correct export placeholders for react-native-web ([#29791](https://github.com/expo/expo/pull/29791) by [@Bram-dc](https://github.com/Bram-dc))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30454](https://github.com/expo/expo/pull/30454) by [@byCedric](https://github.com/byCedric))
+
+## 10.0.9 - 2024-06-13
+
+### 💡 Others
+
+- Removed @react-native/assets-registry dependency. ([#29541](https://github.com/expo/expo/pull/29541) by [@kudo](https://github.com/kudo))
+
+## 10.0.8 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 10.0.7 - 2024-06-05
 

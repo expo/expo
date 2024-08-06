@@ -3,11 +3,12 @@ title: TypeScript functions
 description: Learn how to create and use EAS Build functions in your custom build configurations.
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
 
 EAS Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash (more information in [`command` in the config schema](./schema.mdx#functionsfunction_namecommand)). This guide provides a walkthrough of creating a function in TypeScript.
 
@@ -145,7 +146,7 @@ functions:
     path: ./myFunction
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a custom build config using a JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function.png"
 />
@@ -248,7 +249,7 @@ async function myFunction(
 export default myFunction;
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a custom build config using custom JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function-advanced.png"
 />

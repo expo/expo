@@ -1,11 +1,8 @@
 package expo.interfaces.devmenu
 
 import android.app.Activity
-import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.facebook.react.bridge.ReadableMap
-import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import kotlinx.coroutines.CoroutineScope
 
 interface DevMenuManagerInterface {
@@ -52,27 +49,6 @@ interface DevMenuManagerInterface {
   fun initializeWithReactHost(reactHost: ReactHostWrapper)
 
   /**
-   * Finds and dispatches action with provided [actionId].
-   * If such action doesn't exist, ignore it.
-   */
-  fun dispatchCallable(actionId: String, args: ReadableMap?)
-
-  /**
-   * Registers an extra [DevMenuExtensionInterface] to the manager.
-   */
-  fun registerExtensionInterface(extensionInterface: DevMenuExtensionInterface)
-
-  /**
-   * @return a list of dev menu items serialized to the [Bundle].
-   */
-  fun serializedItems(): List<Bundle>
-
-  /**
-   * @return a list of dev menu screens serialized to the [Bundle].
-   */
-  fun serializedScreens(): List<Bundle>
-
-  /**
    * @return a instance of [DevMenuPreferencesInterface] that keeps all settings for current dev menu delegate,
    * or `null` if delegate wasn't provided.
    */
@@ -89,11 +65,6 @@ interface DevMenuManagerInterface {
   fun synchronizeDelegate()
 
   /**
-   * Set the current screen on which all action will be dispatched.
-   */
-  fun setCurrentScreen(screen: String?)
-
-  /**
    * Sends an event to the delegate's bridge if exists.
    */
   fun sendEventToDelegateBridge(eventName: String, eventData: Any?)
@@ -107,8 +78,6 @@ interface DevMenuManagerInterface {
    * Whether to automatically show the dev menu on app load. Defaults to true if not set.
    */
   fun setCanLaunchDevMenuOnStart(shouldAutoLaunch: Boolean)
-
-  suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem>
 
   val coroutineScope: CoroutineScope
 }

@@ -45,7 +45,7 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  it.only('will throw if navigation is attempted before navigation is ready', async () => {
+  it('will throw if navigation is attempted before navigation is ready', async () => {
     renderRouter({
       index: function MyIndexRoute() {
         return <Text>Press me</Text>;
@@ -476,6 +476,73 @@ it('can check goBack before navigation mounts', () => {
 
   // NOTE: This also tests that `canGoBack` does not throw.
   expect(router.canGoBack()).toBe(false);
+});
+
+it('should stay within the same group', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/(home)/_layout': () => <Stack />,
+      '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
+      '(tabs)/(home)/shared': () => <Text testID="text">Home Shared</Text>,
+      '(tabs)/(profile)/_layout': () => <Stack />,
+      '(tabs)/(profile)/index': () => <Text testID="text">Profile Index</Text>,
+      '(tabs)/(profile)/shared': () => <Text testID="text">Profile Shared</Text>,
+    },
+    {
+      initialUrl: '/(profile)',
+    }
+  );
+
+  expect(screen).toHaveSegments(['(tabs)', '(profile)']);
+  act(() => router.push('/shared'));
+  expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
+});
+
+it('should stay within the same group for hoisted routes', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/(home)/_layout': () => <Stack />,
+      '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
+      '(tabs)/(home)/shared': () => <Text testID="text">Home Shared</Text>,
+      // This is missing a layout, so the screens are hoisted
+      '(tabs)/(profile)/index': () => <Text testID="text">Profile Index</Text>,
+      '(tabs)/(profile)/shared': () => <Text testID="text">Profile Shared</Text>,
+    },
+    {
+      initialUrl: '/(profile)',
+    }
+  );
+
+  expect(screen).toHaveSegments(['(tabs)', '(profile)']);
+  act(() => router.push('/shared'));
+  expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
+});
+
+it('should stay within the same group even if another group has more specific route', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/(home)/_layout': () => <Stack />,
+      '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
+      // This is more specific (more segments)
+      '(tabs)/(home)/(nested)/shared': () => <Text testID="text">Home Shared</Text>,
+      '(tabs)/(profile)/_layout': () => <Stack />,
+      '(tabs)/(profile)/index': () => <Text testID="text">Profile Index</Text>,
+      '(tabs)/(profile)/shared': () => <Text testID="text">Profile Shared</Text>,
+    },
+    {
+      initialUrl: '/(profile)',
+    }
+  );
+
+  expect(screen).toHaveSegments(['(tabs)', '(profile)']);
+  act(() => router.push('/shared'));
+  expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
 });
 
 it('can navigate back from a nested modal to a nested sibling', async () => {
@@ -924,10 +991,10 @@ describe('shared routes with tabs', () => {
       expect(screen).toHaveSegments(['(two)', 'two']);
     });
 
-    it('pushes post in tab two with absolute `/post` goes to default tab', async () => {
+    it('pushes post in tab two with absolute `/post` stays within the group', async () => {
       act(() => router.push('/post'));
       expect(screen).toHavePathname('/post');
-      expect(screen).toHaveSegments(['(one)', 'post']);
+      expect(screen).toHaveSegments(['(two)', 'post']);
     });
     it('pushes post in tab two using absolute /(tabs)/(two)/post', async () => {
       act(() => router.push('/(two)/post'));

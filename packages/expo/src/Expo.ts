@@ -9,6 +9,7 @@ export {
   // Core classes
   EventEmitter,
   SharedObject,
+  SharedRef,
   NativeModule,
 
   // Methods
@@ -16,3 +17,5 @@ export {
   requireOptionalNativeModule,
   reloadAppAsync,
 } from 'expo-modules-core';
+
+export { useEvent } from './hooks/useEvent';

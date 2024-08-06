@@ -17,6 +17,7 @@ import {
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
+  convertPathToModuleSpecifier,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
@@ -61,11 +62,11 @@ export function getEntryWithServerRoot(
 }
 
 export function getMetroServerRoot(projectRoot: string) {
-  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
-    return getWorkspaceRoot(projectRoot) ?? projectRoot;
+  if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
+    return projectRoot;
   }
 
-  return projectRoot;
+  return getWorkspaceRoot(projectRoot) ?? projectRoot;
 }
 
 /** Get the main entry module ID (file) relative to the project root. */
@@ -77,7 +78,7 @@ export function resolveMainModuleName(
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
-  return stripExtension(entryPoint, 'js');
+  return convertPathToModuleSpecifier(stripExtension(entryPoint, 'js'));
 }
 
 /** Info about the computer hosting the dev server. */
@@ -183,6 +184,7 @@ export abstract class ManifestMiddleware<
       ),
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
       protocol,
+      reactCompiler: !!projectConfig.exp.experiments?.reactCompiler,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -239,6 +241,7 @@ export abstract class ManifestMiddleware<
     asyncRoutes,
     routerRoot,
     protocol,
+    reactCompiler,
   }: {
     platform: string;
     hostname?: string | null;
@@ -249,6 +252,7 @@ export abstract class ManifestMiddleware<
     isExporting?: boolean;
     routerRoot: string;
     protocol?: 'http' | 'https';
+    reactCompiler: boolean;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -262,6 +266,7 @@ export abstract class ManifestMiddleware<
       isExporting: !!isExporting,
       asyncRoutes,
       routerRoot,
+      reactCompiler,
     });
 
     return (

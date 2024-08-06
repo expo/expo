@@ -5,9 +5,9 @@ description: Learn about current approaches to preview and edit rich text in Rea
 
 A lot of applications need to allow users to type in text. For example, if you want to build a messaging or social media app, you will probably rely heavily on text inputs. React Native has a built-in `<TextInput>` component to implement this without much effort for many simple cases.
 
-However, sometimes you need to be more flexible. Think of long social media posts, note apps, or document editors. Ideally, you need to allow different text styles, lists, headings, embedded images, and more. This is called a rich text editor, and it’s a difficult problem to solve everywhere, including in React Native.
+However, sometimes you need to be more flexible. Think of long social media posts, note apps, or document editors. Ideally, you need to allow different text styles, lists, headings, embedded images, and more. This is called a rich text editor, and it's a difficult problem to solve everywhere, including in React Native.
 
-There’s currently no default solution for that in the React Native ecosystem. In this guide, we explore some options and promising approaches, each with its own tradeoffs.
+There's currently no default solution for that in the React Native ecosystem. In this guide, we explore some options and promising approaches, each with its own tradeoffs.
 
 # Render rich text
 
@@ -43,7 +43,7 @@ You will not be able to use native UI components inside the editor. Any implemen
 
 ### Existing webview-based React Native libraries
 
-There are a couple of existing React Native libraries to allow rich-text editing. These are the easiest options to get started if you need a basic rich text editor with limited configuration and don’t have strict performance or UX requirements:
+There are a couple of existing React Native libraries to allow rich-text editing. These are the easiest options to get started if you need a basic rich text editor with limited configuration and don't have strict performance or UX requirements:
 
 - [`react-native-rich-editor`](https://github.com/wxik/react-native-rich-editor)
 - [`react-native-cn-quill`](https://github.com/imnapo/react-native-cn-quill)
@@ -57,7 +57,7 @@ If you need more configurability, you can build a similar library with an existi
 - [lexical](https://github.com/facebook/lexical)
 - [slate](https://github.com/ianstormtaylor/slate)
 
-You will need to use message passing to pass text and `onChange` events to and from the webview. Since rich texts often end up long, it’s better to model it as an uncontrolled component to prevent lag on each keystroke. Also, if you can avoid serializing and sending the entire state on each keystroke that also improves performance.
+You will need to use message passing to pass text and `onChange` events to and from the webview. Since rich texts often end up long, it's better to model it as an uncontrolled component to prevent lag on each keystroke. Also, if you can avoid serializing and sending the entire state on each keystroke that also improves performance.
 
 ## Building on top of React Native TextInput
 

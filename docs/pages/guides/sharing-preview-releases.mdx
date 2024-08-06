@@ -4,8 +4,6 @@ description: Learn about various methods to share pre-release versions of your a
 sidebar_title: Share preview releases
 ---
 
-import Video from '~/components/plugins/Video';
-
 During the development process you'll want to share your progress with both technical and non-technical stakeholders of the project to gather feedback and test it, and there are several official approaches you can take for doing this.
 
 ## Internal distribution
@@ -29,7 +27,7 @@ You will need to know the UDID (Unique Device Identifier) of each device that wi
 with someone who is not a developer. Adding a new device will require a rebuild of your application.
 
 Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before, and tedious even if you have.
-If you're using [EAS Build](/build/internal-distribution.mdx), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts
+If you're using [EAS Build](/build/internal-distribution/), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts
 of setting up Ad Hoc credentials for you.
 
 ### iOS enterprise distribution
@@ -43,5 +41,5 @@ which requires your organization to be a legal entity and go through Apple's ver
 
 TestFlight is another option to distribute your application to iOS devices. TestFlight also requires a paid Apple Developer account,
 but allows you to share your application with up to 10,000 users that can be invited with their email or a public link.
-This method requires you to [upload your application](/submit/ios.mdx) to App Store Connect and wait for the automated review before you can share a build.
+This method requires you to [upload your application](/submit/ios) to App Store Connect and wait for the automated review before you can share a build.
 If you intend to ship new builds frequently, investing the time to set up Ad Hoc distribution will be worthwhile.

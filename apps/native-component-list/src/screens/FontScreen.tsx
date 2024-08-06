@@ -82,6 +82,40 @@ export default function FontScreen() {
           <FontAwesome5 name="twitter" size={25} />
           <FontAwesome5 name="apple" size={25} />
         </View>
+
+        <Text style={styles.vectorIconsName}>Custom Fonts</Text>
+        <View style={styles.customFonts}>
+          <View style={{ flex: 1 }}>
+            {/* Loaded from .otf files in asset directory */}
+            <Text style={{ fontFamily: 'Inter-ThinItalic', fontSize: 16 }}>Inter-ThinItalic</Text>
+            <Text style={{ fontFamily: 'Inter-BoldItalic', fontSize: 16 }}>Inter-BoldItalic</Text>
+            <Text style={{ fontFamily: 'Inter-ExtraBoldItalic', fontSize: 16 }}>
+              Inter-ExtraBoldItalic
+            </Text>
+            {/* Loaded from @expo-google-fonts/inter */}
+            <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 16 }}>Inter_500Medium</Text>
+            <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 16 }}>Inter_600SemiBold</Text>
+            <Text style={{ fontFamily: 'Inter_800ExtraBold', fontSize: 16 }}>
+              Inter_800ExtraBold
+            </Text>
+            <Text style={{ fontFamily: 'Inter_900Black', fontSize: 16 }}>Inter_900Black</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: 'OpenSans_Condensed-SemiBold', fontSize: 16 }}>
+              OpenSans_Condensed-SemiBold
+            </Text>
+            <Text style={{ fontFamily: 'OpenSans_Condensed-BoldItalic', fontSize: 16 }}>
+              OpenSans_Condensed-BoldItalic
+            </Text>
+            <Text style={{ fontFamily: 'OpenSans-Light', fontSize: 16 }}>OpenSans-Light</Text>
+            <Text style={{ fontFamily: 'OpenSans-Medium', fontSize: 16 }}>OpenSans-Medium</Text>
+            <Text style={{ fontFamily: 'OpenSans-SemiBold', fontSize: 16 }}>OpenSans-SemiBold</Text>
+
+            <Text style={{ fontFamily: 'OpenSans-ExtraBoldItalic', fontSize: 16 }}>
+              OpenSans-ExtraBoldItalic
+            </Text>
+          </View>
+        </View>
       </View>
     </ScrollView>
   );
@@ -105,5 +139,11 @@ const styles = StyleSheet.create({
   vectorIconsName: {
     margin: 15,
     fontSize: 22,
+  },
+  customFonts: {
+    padding: 15,
+    flex: 1,
+    gap: 4,
+    flexDirection: 'row',
   },
 });

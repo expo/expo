@@ -75,6 +75,7 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   }
 
   @objc
+  @discardableResult
   public func ensureDirExists(withPath path: String) -> Bool {
     let url = URL(fileURLWithPath: path)
     return FileSystemUtilities.ensureDirExists(at: url)
@@ -82,7 +83,7 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
   @objc
   public func getPathPermissions(_ path: String) -> EXFileSystemPermissionFlags {
-    guard let url = URL(string: path) else {
+    guard let url = convertToUrl(string: path) else {
       return []
     }
     let permissionsForInternalDirectories = getInternalPathPermissions(url)
@@ -110,10 +111,10 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
       return []
     }
     var filePermissions: EXFileSystemPermissionFlags = []
-    if FileManager.default.isReadableFile(atPath: url.absoluteString) {
+    if FileManager.default.isReadableFile(atPath: url.path) {
       filePermissions.insert(.read)
     }
-    if FileManager.default.isWritableFile(atPath: url.absoluteString) {
+    if FileManager.default.isWritableFile(atPath: url.path) {
       filePermissions.insert(.write)
     }
     return filePermissions

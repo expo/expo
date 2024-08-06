@@ -44,6 +44,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '@expo/metro-runtime/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
+    // Expo's metro-runtime require patch:
+    '@expo/metro-config/require/.+',
 
     // Block all whatwg polyfills
     'node_modules/whatwg-.+\\.js$',
@@ -55,6 +57,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '.+?ctx=[a-zA-Z0-9]+$',
     // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
     '/react-native-web/dist/.+\\.js$',
+    // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
+    'node_modules/react-server-dom-webpack/.+\\.js$',
   ].join('|')
 );
 

@@ -1,69 +1,97 @@
 ---
 title: Safe areas
-description: Learn how to add safe areas for your Expo project and other best practices.
+description: Learn how to add safe areas for screen components inside your Expo project.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-Creating a safe area is a great way to ensure that your app's content is appropriately positioned around notches, status bars, home indicators, and other device and operating system interface elements.
+Creating a safe area ensures your app screen's content is positioned correctly. This means it doesn't get overlapped by notches, status bars, home indicators, and other interface elements that are part of the device's physical hardware or are controlled by the operating system. When the content gets overlapped, it gets concealed by these interface elements.
 
-When the content on your app's screen is not positioned within the safe area, it can be obscured by the device's interface elements, as shown in the example below:
+Here's an example of an app screen's content getting concealed by the status bar on Android. On iOS, the same content is concealed by rounded corners, notch, and the status bar.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Without defining a safe area, the content can be obscured by the device's interface elements."
   src="/static/images/safe-area/without-safe-area.png"
-  style={{ maxWidth: 540 }}
+  className="max-w-[480px]"
 />
 
-The content is positioned at the top of the screen in the above example. On Android, it is concealed by the status bar. On iOS, it is concealed by the rounder corners, the notch, and the status bar.
+## Use `react-native-safe-area-context` library
 
-## Use `react-native-safe-area-context`
-
-[`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) provides a flexible API for accessing device-safe area inset information for both Android and iOS. It also provides a `SafeAreaView` component that you can use in place of View to inset your views to account for safe areas automatically.
+[`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) provides a flexible API for handling Android and iOS device's safe area insets. It also provides a `SafeAreaView` component that you can use instead of a [`<View>`](https://reactnative.dev/docs/view) to account for safe areas automatically in your screen components.
 
 Using the library, the result of the previous example changes as it displays the content inside a safe area, as shown below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="On using react-native-safe-area-context, the content is positioned within the safe area."
   src="/static/images/safe-area/with-safe-area.png"
-  style={{ maxWidth: 540 }}
+  className="max-w-[480px]"
 />
 
 ### Installation
 
-Install `react-native-safe-area-context` by running the command below:
+You can skip installing `react-native-safe-area-context` if you have created a project using [the default template](/get-started/create-a-project/). This library is installed as peer dependency for Expo Router library. Otherwise, install it by running the following command:
 
 <Terminal cmd={['$ npx expo install react-native-safe-area-context']} />
 
 ### Usage
 
-#### Add `SafeAreaProvider`
+You can directly use [`SafeAreaView`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaview) to wrap the content of your screen's component. It is a regular `<View>` with the safe area insets applied as extra padding or margin.
 
-To use the library, you first need to import [`<SafeAreaProvider>`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider) in your app's root component.
+```tsx app/index.tsx
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-```jsx App.js
-import { View, Text } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-export default function App() {
+export default function HomeScreen() {
   return (
-    <SafeAreaProvider>
-      <View>
-        <Text>My App</Text>
-      </View>
-    </SafeAreaProvider>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Text>Content is in safe area.</Text>
+    </SafeAreaView>
   );
 }
 ```
 
-Then you can use the [`<SafeAreaView>`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaview), which is a regular `<View>` with the safe area insets applied as padding or margin.
+<Collapsible summary="Using a different Expo template and don't have Expo Router installed?">
 
-#### Use `useSafeAreaInsets` hook
+Import and add [`SafeAreaProvider`](https://github.com/th3rdwave/react-native-safe-area-context#safeareaprovider) to the root component file (such as **App.tsx**) before using `SafeAreaView` in your screen component.
 
-Alternate to `<SafeAreaView>`, you can also use [`useSafeAreaInsets`](https://github.com/th3rdwave/react-native-safe-area-context#usesafeareainsets) hook that gives direct access to the safe area insets. It offers more flexibility and gives you more control. You can apply padding for each edge using an inset from this hook. The hook provides the insets in the following form:
+```tsx App.tsx
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-```js
+export default function App() {
+  return (
+    return <SafeAreaProvider>...</SafeAreaProvider>;
+  );
+}
+```
+
+</Collapsible>
+
+## Alternate: `useSafeAreaInsets` hook
+
+Alternate to `SafeAreaView`, you can use [`useSafeAreaInsets`](https://github.com/th3rdwave/react-native-safe-area-context#usesafeareainsets) hook in your screen component. It provides direct access to the safe area insets, allowing you to apply padding for each edge of the `<View>` using an inset from this hook.
+
+The example below uses the `useSafeAreaInsets` hook. It applies top padding to a `<View>` using `insets.top`.
+
+```tsx app/index.tsx
+import { Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View style={{ flex: 1, paddingTop: insets.top }}>
+      <Text>Content is in safe area.</Text>
+    </View>
+  );
+}
+```
+
+The hook provides the insets in the following object:
+
+```ts
 {
   top: number,
   right: number,
@@ -72,13 +100,15 @@ Alternate to `<SafeAreaView>`, you can also use [`useSafeAreaInsets`](https://gi
 }
 ```
 
-## Minimal working example
+## Additional information
+
+### Minimal example
 
 Below is a minimal working example that uses the `useSafeAreaInsets` hook to apply top padding to a view.
 
 <SnackInline label="Using react-native-safe-area-context" dependencies={['react-native-safe-area-context']}>
 
-```jsx collapseHeight=320
+```tsx collapseHeight=320
 import { Text, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -102,10 +132,10 @@ export default function App() {
 
 </SnackInline>
 
-## Usage with React Navigation
+### Usage with React Navigation
 
-By default, React Navigation supports safe areas and uses `react-native-safe-area-context` as a peer dependency. For more information on how it uses the library, see the [React Navigation documentation](https://reactnavigation.org/docs/handling-safe-area/).
+By default, React Navigation supports safe areas and uses `react-native-safe-area-context` as a peer dependency. For more information, see the [React Navigation documentation](https://reactnavigation.org/docs/handling-safe-area/).
 
-## Usage with web
+### Usage with web
 
-If you are targeting the web, you must set up `<SafeAreaProvider>` as described in the [hooks section](#use-usesafeareainsets-hook). If you are doing server-side rendering (SSR), we recommend checking out the [Web SSR section](https://github.com/th3rdwave/react-native-safe-area-context#web-ssr) in the library's documentation.
+If you are targeting the web, set up `SafeAreaProvider` as described in the [usage section](#usage). If you are doing server-side rendering (SSR), see the [Web SSR section](https://github.com/th3rdwave/react-native-safe-area-context#web-ssr) in the library's documentation.

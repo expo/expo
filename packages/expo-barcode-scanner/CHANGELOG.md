@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30457](https://github.com/expo/expo/pull/30457) by [@byCedric](https://github.com/byCedric))
+- Fixed `bounds` incorrectly being returned as `boundingBox` in BarcodeScanningResult when using ExpoCameraView on Android. ([#30510](https://github.com/expo/expo/pull/30510) by [@devon94](https://github.com/devon94))
+
 ### 💡 Others
 
 ## 13.0.1 — 2024-04-23

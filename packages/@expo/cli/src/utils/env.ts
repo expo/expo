@@ -4,6 +4,8 @@ import { boolish, int, string } from 'getenv';
 
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
 
+import { Log } from '../log';
+
 class Env {
   /** Enable profiling metrics */
   get EXPO_PROFILE() {
@@ -99,9 +101,15 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
-  /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
-  get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean {
-    return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
+  /** Disable auto server root detection for Metro. This will change the server root to the workspace root. */
+  get EXPO_NO_METRO_WORKSPACE_ROOT(): boolean {
+    if (string('EXPO_USE_METRO_WORKSPACE_ROOT', '')) {
+      Log.warn(
+        'EXPO_USE_METRO_WORKSPACE_ROOT is enabled by default, use EXPO_NO_METRO_WORKSPACE_ROOT instead to disable.'
+      );
+    }
+
+    return boolish('EXPO_NO_METRO_WORKSPACE_ROOT', false);
   }
 
   /**
@@ -198,6 +206,21 @@ class Env {
   /** Enable unstable/experimental Atlas to gather bundle information during development or export */
   get EXPO_UNSTABLE_ATLAS() {
     return boolish('EXPO_UNSTABLE_ATLAS', false);
+  }
+
+  /** Unstable: Enable tree shaking for Metro. */
+  get EXPO_UNSTABLE_TREE_SHAKING() {
+    return boolish('EXPO_UNSTABLE_TREE_SHAKING', false);
+  }
+
+  /** Unstable: Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and less optimized for development bundling. */
+  get EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH() {
+    return boolish('EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH', false);
+  }
+
+  /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
+  get EXPO_USE_METRO_REQUIRE() {
+    return boolish('EXPO_USE_METRO_REQUIRE', false);
   }
 }
 

@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [iOS][Web] Introduce a new API for image manipulation. ([#30135](https://github.com/expo/expo/pull/30135), [#30194](https://github.com/expo/expo/pull/30194) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Introduce a new API for image manipulation. ([#30232](https://github.com/expo/expo/pull/30232) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Use the `src` folder as the Metro target. ([#30079](https://github.com/expo/expo/pull/30079) by [@tsapeta](https://github.com/tsapeta))
+- Prefer `UIGraphicsImageRenderer` over `UIGraphicsBeginImageContext`. ([#30211](https://github.com/expo/expo/pull/30211) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.0.5 — 2024-05-13
 

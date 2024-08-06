@@ -52,8 +52,10 @@ export function getTestModules() {
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/FileSystem'),
+    require('./tests/FileSystemNext'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
+    require('./tests/ModulesCore'),
     optionalRequire(() => require('./tests/Image'))
   );
 
@@ -69,6 +71,7 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
+    require('./tests/Fetch'),
     optionalRequire(() => require('./tests/SQLiteLegacy'))
   );
 

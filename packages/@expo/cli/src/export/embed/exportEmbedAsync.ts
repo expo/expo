@@ -75,7 +75,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
     options.assetsDest
-      ? persistMetroAssetsAsync(assets, {
+      ? persistMetroAssetsAsync(projectRoot, assets, {
           platform: options.platform,
           outputDirectory: options.assetsDest,
           iosAssetCatalogDirectory: options.assetCatalogDest,
@@ -116,7 +116,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     const bundles = await devServer.legacySinglePageExportBundleAsync(
       {
         splitChunks: false,
-        mainModuleName: options.entryFile,
+        mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,
         mode: options.dev ? 'development' : 'production',
@@ -125,6 +125,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
         bytecode: false,
         // source map inline
+        reactCompiler: !!exp.experiments?.reactCompiler,
       },
       {
         sourceMapUrl,

@@ -52,11 +52,11 @@ exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessi
  * @param options Extra options to fine-tune how to parse the path.
  */
 function getStateFromPath(path, options) {
-    const { initialRoutes, configs } = getMatchableRouteConfigs(options);
+    const { initialRoutes, configs } = getMatchableRouteConfigs(options, this?.routeInfo?.segments);
     return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
 exports.default = getStateFromPath;
-function getMatchableRouteConfigs(options) {
+function getMatchableRouteConfigs(options, previousSegments = []) {
     if (options) {
         (0, validatePathConfig_1.default)(options);
     }
@@ -85,7 +85,7 @@ function getMatchableRouteConfigs(options) {
         isInitial: resolvedInitialPatterns.includes(config.routeNames.join('/')),
     }));
     // Sort in order of resolution. This is extremely important for the algorithm to work.
-    const configs = convertedWithInitial.sort(sortConfigs);
+    const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, previousSegments));
     // Assert any duplicates before we start parsing.
     assertConfigDuplicates(configs);
     return { configs, initialRoutes };
@@ -123,7 +123,7 @@ function assertConfigDuplicates(configs) {
         });
     }, {});
 }
-function sortConfigs(a, b) {
+function sortConfigs(a, b, previousSegments = []) {
     // Sort config so that:
     // - the most exhaustive ones are always at the beginning
     // - patterns with wildcard are always at the end
@@ -155,6 +155,19 @@ function sortConfigs(a, b) {
     const bParts = b.pattern.split('/').filter((part) => (0, matchers_1.matchGroupName)(part) == null);
     if (b.screen === 'index' || b.screen.match(/\/index$/)) {
         bParts.push('index');
+    }
+    // When we navigate, we need to stay within groups as close as possible
+    // Hence, a route is sorted based upon is similiarity to the current state
+    const similarToPreviousA = previousSegments.filter((value, index) => {
+        return value === a.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
+    });
+    const similarToPreviousB = previousSegments.filter((value, index) => {
+        return value === b.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
+    });
+    if ((similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
+        similarToPreviousA.length !== similarToPreviousB.length) {
+        // They both match to some degree, so pick the one that matches more
+        return similarToPreviousB.length - similarToPreviousA.length;
     }
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
         // if b is longer, b get higher priority
@@ -453,6 +466,9 @@ const createConfigItem = (screen, routeNames, pattern, path, hasChildren, parse,
         path,
         // The routeNames array is mutated, so copy it to keep the current state
         routeNames: [...routeNames],
+        expandedRouteNames: screen.includes('/')
+            ? [...routeNames.slice(0, -1), ...screen.split('/')]
+            : [...routeNames],
         parse,
         userReadableName: [...routeNames.slice(0, -1), path || screen].join('/'),
         hasChildren: !!hasChildren,
@@ -485,7 +501,7 @@ const createStateObject = (route, isEmpty, initialRoute) => {
         if (initialRoute) {
             return {
                 index: 1,
-                routes: [{ name: initialRoute }, route],
+                routes: [{ name: initialRoute, params: route.params }, route],
             };
         }
         return {
@@ -495,7 +511,10 @@ const createStateObject = (route, isEmpty, initialRoute) => {
     if (initialRoute) {
         return {
             index: 1,
-            routes: [{ name: initialRoute }, { ...route, state: { routes: [] } }],
+            routes: [
+                { name: initialRoute, params: route.params },
+                { ...route, state: { routes: [] } },
+            ],
         };
     }
     return {

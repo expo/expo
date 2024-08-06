@@ -7,7 +7,6 @@ exports.downloadImage = exports.downloadOrUseCachedImage = void 0;
 const fs_extra_1 = __importDefault(require("fs-extra"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
-const node_fetch_1 = __importDefault(require("node-fetch"));
 const path_1 = __importDefault(require("path"));
 const stream_1 = __importDefault(require("stream"));
 const tempy_1 = __importDefault(require("tempy"));
@@ -32,14 +31,19 @@ async function downloadOrUseCachedImage(url) {
 exports.downloadOrUseCachedImage = downloadOrUseCachedImage;
 async function downloadImage(url) {
     const outputPath = tempy_1.default.directory();
-    const response = await (0, node_fetch_1.default)(url);
+    const response = await fetch(url);
     if (!response.ok) {
         throw new Error(`It was not possible to download image from '${url}'`);
+    }
+    if (!response.body) {
+        throw new Error(`No response received from '${url}'`);
     }
     // Download to local file
     const streamPipeline = util_1.default.promisify(stream_1.default.pipeline);
     const localPath = path_1.default.join(outputPath, path_1.default.basename(stripQueryParams(url)));
-    await streamPipeline(response.body, fs_extra_1.default.createWriteStream(localPath));
+    // Type casting is required, see: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    const readableBody = stream_1.default.Readable.fromWeb(response.body);
+    await streamPipeline(readableBody, fs_extra_1.default.createWriteStream(localPath));
     // If an image URL doesn't have a name, get the mime type and move the file.
     const img = await jimp_compact_1.default.read(localPath);
     const mime = img.getMIME().split('/').pop();

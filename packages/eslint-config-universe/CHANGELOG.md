@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Bring over more lint rules from Expo server for typescript configs. ([#30491](https://github.com/expo/expo/pull/30491) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -6,7 +6,14 @@
 
 ### 🎉 New features
 
+- Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Fix expo update getting disabled in custom debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
+- Fix data race in `AppLauncherWithDatabaseMock.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+- Add missing `react` peer dependencies for isolated modules. ([#30488](https://github.com/expo/expo/pull/30488) by [@byCedric](https://github.com/byCedric))
+- Use relative entry point from `@expo/config/paths` with support for server root. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
@@ -14,7 +21,39 @@
 - [Android] Change from kapt to ksp for room. ([#29055](https://github.com/expo/expo/pull/29055) by [@wschurman](https://github.com/wschurman))
 - [Android] Upgrade dependencies and remove unused ones. Change multipart parser to okhttp. ([#29060](https://github.com/expo/expo/pull/29060) by [@wschurman](https://github.com/wschurman))
 - [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
+- Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Re-exported `@expo/fingerprint` as `expo-updates/fingerprint`. ([#30757](https://github.com/expo/expo/pull/30757) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.25.21 - 2024-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.20 - 2024-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.19 - 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.18 - 2024-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.17 - 2024-06-13
+
+### 💡 Others
+
 - Improved stability of E2E testing. ([#29402](https://github.com/expo/expo/pull/29402) by [@kudo](https://github.com/kudo))
+- Improved JS event performance on Android and stability of E2E testing. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
+
+## 0.25.16 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
 
 ## 0.25.15 — 2024-05-29
 

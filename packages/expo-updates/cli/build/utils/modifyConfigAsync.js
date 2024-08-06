@@ -43,17 +43,11 @@ async function attemptModification(projectRoot, edits, exactEdits) {
     }
 }
 exports.attemptModification = attemptModification;
-function logNoConfig() {
-    Log.log(chalk_1.default.yellow(`No Expo config was found. Please create an Expo config (${chalk_1.default.bold `app.json`} or ${chalk_1.default.bold `app.config.js`}) in your project root.`));
-}
 function warnAboutConfigAndThrow(type, message, edits) {
     Log.log();
     if (type === 'warn') {
         // The project is using a dynamic config, give the user a helpful log and bail out.
         Log.log(chalk_1.default.yellow(message));
-    }
-    else {
-        logNoConfig();
     }
     notifyAboutManualConfigEdits(edits);
     throw new Error();
