@@ -141,20 +141,17 @@ const styles = StyleSheet.create({
 
 ## Playing local media from the assets directory
 
-`expo-video` does not support playing media directly from a result of calling the `require` function. First, the video has to be loaded using `expo-asset`:
+`expo-video` does not support playing media directly from a result of calling the `require` function. Use `expo-asset` to load the video before using it as the video source:
 
-```jsx
+```tsx
 import { Asset } from 'expo-asset';
 import { VideoSource } from 'expo-video';
 
-const id = require('./assets/bigbuckbunny.mp4');
-const asset = Asset.fromModule(id);
-
-// asset.localUri or asset.uri will be used depending on if the app was built in release or debug mode
-const uri = asset.localUri || asset.uri;
+const asset = Asset.fromModule(require('./assets/bigbuckbunny.mp4'));
 
 const bigBuckBunnySource: VideoSource = {
-  uri,
+  // asset.localUri or asset.uri will be used depending on if the app was built in release or debug mode
+  uri: asset.localUri || asset.uri,
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
