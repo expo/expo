@@ -21,6 +21,8 @@
 
 ### 💡 Others
 
+- [docs] Add a section on playing media from the `assets` folder. ([#30837](https://github.com/expo/expo/pull/30837) by [@behenate](https://github.com/behenate))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
