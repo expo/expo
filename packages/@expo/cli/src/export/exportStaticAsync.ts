@@ -34,7 +34,6 @@ type Options = {
   minify: boolean;
   exportServer: boolean;
   baseUrl: string;
-  // rscPath: string;
   includeSourceMaps: boolean;
   entryPoint?: string;
   clear: boolean;
