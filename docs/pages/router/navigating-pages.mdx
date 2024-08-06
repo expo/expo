@@ -79,14 +79,14 @@ To navigate, you can provide a full path (`/profile/settings`), a relative path 
 
 A relative URL is a URL prefix with `./`, such as `./article`, or `./article/`. Relative URLs are resolved relative to the current rendered screen.
 
-The URL of the current screen is a document URL (a URL without a trailing slash), so relative URLs will be resolved relative to the documents directory. This can be confusing when the current screen is rendered by an `index` file as the relative URL is resolved from the URL's directory, not the file system. By using the `relativeToDirectory` option, Expo Router will instead treat the current URL as a directory URL.
+The URL of the current screen is a document URL (a URL without a trailing slash), so relative URLs will be resolved relative to the directory. This can be confusing when the current screen is rendered by an `index` file as the relative URL is resolved from the URL's directory, not the file system. By using the `relativeToDirectory` option, Expo Router will instead treat the current URL as a directory URL.
 
-| Href       | Current URL | `relativeToDirectory` | Result            |
-| ---------- | ----------- | --------------------- | ----------------- |
-| `./article`  | `/route/v1`   |                       | `/route/article`    |
-| `./article`  | `/route/v1`   | `true`                  | `/route/v1/article` |
-| `../article` | `/route/v1`   |                       | `/article`          |
-| `../article` | `/route/v1`   | true                  | `/route/article`    |
+| Href         | Current URL | `relativeToDirectory` | Result              |
+| ------------ | ----------- | --------------------- | ------------------- |
+| `./article`  | `/route/v1` |                       | `/route/article`    |
+| `./article`  | `/route/v1` | `true`                | `/route/v1/article` |
+| `../article` | `/route/v1` |                       | `/article`          |
+| `../article` | `/route/v1` | `true`                | `/route/article`    |
 
 ```ts
 // Using `relativeToDirectory` with Link
