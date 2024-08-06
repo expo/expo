@@ -1,6 +1,6 @@
 import { CommanderStatic } from 'commander';
-import * as tempy from 'tempy';
 
+import { temporaryDirectory } from './Paths';
 import { Config } from './Config';
 import ConfigReader from './ConfigReader';
 import { Platform } from './Platform';
@@ -46,7 +46,7 @@ export function registerCommand<OptionsType extends DefaultOptions>(
 
       // clean temp folder if the path wasn't provided.
       providedOptions.shouldBeCleaned = !providedOptions.path;
-      providedOptions.path = providedOptions.path ?? tempy.directory();
+      providedOptions.path = providedOptions.path ?? temporaryDirectory();
 
       providedOptions.configFile = ConfigReader.getFilePath(providedOptions.configFile);
 
