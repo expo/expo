@@ -15,6 +15,7 @@
 
 - Upgrade `glob@7` to `glob@10`. ([#29927](https://github.com/expo/expo/pull/29927) by [@byCedric](https://github.com/byCedric))
 - Ignored nested node_modules by default. ([#30768](https://github.com/expo/expo/pull/30768) by [@kudo](https://github.com/kudo))
+- Improved performance from matching ignoredPaths. ([#30784](https://github.com/expo/expo/pull/30784) by [@kudo](https://github.com/kudo))
 
 ## 0.10.2 - 2024-07-22
 
