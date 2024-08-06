@@ -17,8 +17,14 @@ import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRe
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
 import { logMetroError } from './metroErrorInterface';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
+
+type SSRLoadModuleArtifactsFunc = (
+  filePath: string,
+  specificOptions?: Partial<ExpoMetroOptions>
+) => Promise<{ artifacts: SerialAsset[] }>;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
@@ -40,11 +46,13 @@ export function createServerComponentsMiddleware(
     rscPath,
     instanceMetroOptions,
     ssrLoadModule,
+    ssrLoadModuleArtifacts,
     getServerUrl,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
+    ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     getServerUrl: () => string;
   }
 ) {
@@ -92,6 +100,29 @@ export function createServerComponentsMiddleware(
     rscPathPrefix += '/';
   }
 
+  async function getExpoRouterClientReferencesAsync({ platform }: { platform: string }) {
+    const contents = await ssrLoadModuleArtifacts(
+      'expo-router/build/rsc/router/expo-definedRouter',
+      {
+        environment: 'react-server',
+        platform,
+      }
+    );
+
+    const reactClientReferences = contents.artifacts
+      .filter((a) => a.type === 'js')[0]
+      .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+
+    if (!reactClientReferences) {
+      throw new Error(
+        'Static client references were not returned from the Metro SSR bundle for definedRouter'
+      );
+    }
+    debug('React client boundaries:', reactClientReferences);
+
+    return reactClientReferences;
+  }
+
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
     return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
       'expo-router/build/rsc/router/expo-definedRouter',
@@ -105,7 +136,11 @@ export function createServerComponentsMiddleware(
     );
   }
 
-  function getResolveClientEntry(context: { platform: string; engine?: 'hermes' | null }) {
+  function getResolveClientEntry(context: {
+    platform: string;
+    engine?: 'hermes' | null;
+    ssrManifest?: Map<string, string>;
+  }) {
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const {
@@ -131,13 +166,19 @@ export function createServerComponentsMiddleware(
 
     return (file: string) => {
       if (isExporting) {
+        assert(context.ssrManifest, 'SSR manifest must exist when exporting');
         const relativeFilePath = path.relative(serverRoot, file);
+
+        assert(
+          context.ssrManifest.has(relativeFilePath),
+          `SSR manifest is missing client boundary "${relativeFilePath}"`
+        );
+
+        const chunk = context.ssrManifest.get(relativeFilePath);
+
         return {
           id: relativeFilePath,
-          chunks: [
-            // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-            'chunk:' + relativeFilePath,
-          ],
+          chunks: chunk != null ? [chunk] : [],
         };
       }
 
@@ -252,6 +293,7 @@ export function createServerComponentsMiddleware(
       body,
       engine,
       contentType,
+      ssrManifest,
     }: {
       input: string;
       searchParams: URLSearchParams;
@@ -260,6 +302,7 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
+      ssrManifest?: Map<string, string>;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
@@ -292,7 +335,7 @@ export function createServerComponentsMiddleware(
       {
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
-        resolveClientEntry: getResolveClientEntry({ platform, engine }),
+        resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
       }
     );
   }
@@ -321,48 +364,60 @@ export function createServerComponentsMiddleware(
   };
 
   return {
-    updateFlightModulesWithExportedClientBoundaries: (
-      payloads: RscExportPayload[],
-      moduleIdToSplitBundle: Record<string, string>,
+    // updateFlightModulesWithExportedClientBoundaries: (
+    //   payloads: RscExportPayload[],
+    //   moduleIdToSplitBundle: Record<string, string>,
+    //   files: ExportAssetMap
+    // ) => {
+    //   payloads.forEach(({ rsc, input, path }) => {
+    //     let contents = rsc;
+
+    //     // TODO: Flight files need to be platform-segmented.
+    //     // HACK: This basically just replaces the module ID in the manifest with the new module ID since we don't know until after the server bundle has run.
+    //     // Unclear what the correct approach is though.
+
+    //     debug('Updating RSC payload:', input, rsc);
+    //     for (const match of contents.matchAll(/"(chunk:([^"]+))"/g)) {
+    //       const [, moduleIdPlaceholder] = match;
+    //       const moduleId = moduleIdPlaceholder.replace(/^chunk:/, '');
+    //       if (moduleIdToSplitBundle[moduleId] != null) {
+    //         debug('Match client module to split chunk:', moduleId, moduleIdToSplitBundle[moduleId]);
+    //         const newModuleId = moduleIdToSplitBundle[moduleId];
+    //         if (newModuleId) {
+    //           contents = contents.replace(moduleIdPlaceholder, newModuleId);
+    //         }
+    //       } else {
+    //         // Can occur when there is no bundle splitting.
+    //         debug(
+    //           'Removing unmatched client boundary',
+    //           moduleId,
+    //           Object.keys(moduleIdToSplitBundle)
+    //         );
+    //         contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
+    //       }
+    //     }
+
+    //     files.set(path, {
+    //       contents,
+    //       targetDomain: 'client',
+    //       rscId: input,
+    //     });
+    //   });
+    // },
+
+    // Get the static client boundaries (no dead code elimination allowed) for the production export.
+    getExpoRouterClientReferencesAsync,
+
+    async exportRoutesAsync(
+      {
+        platform,
+        ssrManifest,
+      }: {
+        platform: string;
+        ssrManifest: Map<string, string>;
+      },
       files: ExportAssetMap
-    ) => {
-      payloads.forEach(({ rsc, input, path }) => {
-        let contents = rsc;
-
-        // TODO: Flight files need to be platform-segmented.
-        // HACK: This basically just replaces the module ID in the manifest with the new module ID since we don't know until after the server bundle has run.
-        // Unclear what the correct approach is though.
-
-        debug('Updating RSC payload:', input, rsc);
-        for (const match of contents.matchAll(/"(chunk:([^"]+))"/g)) {
-          const [, moduleIdPlaceholder] = match;
-          const moduleId = moduleIdPlaceholder.replace(/^chunk:/, '');
-          if (moduleIdToSplitBundle[moduleId] != null) {
-            debug('Match client module to split chunk:', moduleId, moduleIdToSplitBundle[moduleId]);
-            const newModuleId = moduleIdToSplitBundle[moduleId];
-            if (newModuleId) {
-              contents = contents.replace(moduleIdPlaceholder, newModuleId);
-            }
-          } else {
-            // Can occur when there is no bundle splitting.
-            debug(
-              'Removing unmatched client boundary',
-              moduleId,
-              Object.keys(moduleIdToSplitBundle)
-            );
-            contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
-          }
-        }
-
-        files.set(path, {
-          contents,
-          targetDomain: 'client',
-          rscId: input,
-        });
-      });
-    },
-
-    async exportRoutesAsync({ platform }: { platform: string }) {
+    ) {
       const payloads: RscExportPayload[] = [];
 
       // TODO: When we add web SSR support, we need to extract CSS Modules / Assets from the bundler process to prevent FLOUC.
@@ -387,6 +442,7 @@ export function createServerComponentsMiddleware(
                 method: 'GET',
                 platform,
                 searchParams: new URLSearchParams(),
+                ssrManifest,
               },
               true
             );
@@ -394,12 +450,19 @@ export function createServerComponentsMiddleware(
             const rsc = await streamToStringAsync(pipe);
             debug('RSC Payload', { platform, input, rsc });
 
-            payloads.push({
-              path: destRscFile,
-              rsc,
-              input,
+            // payloads.push({
+            //   path: destRscFile,
+            //   rsc,
+            //   input,
+            // });
+
+            files.set(destRscFile, {
+              contents: rsc,
+              targetDomain: 'client',
+              rscId: input,
             });
 
+            // TODO: Maybe no longer needed.
             const clientBoundaries = getClientModules(platform, input);
             for (const clientBoundary of clientBoundaries) {
               clientModules.add(clientBoundary);
@@ -408,7 +471,11 @@ export function createServerComponentsMiddleware(
         })
       );
 
-      return { clientBoundaries: Array.from(clientModules), payloads };
+      return {
+        // TODO: Maybe no longer needed.
+        clientBoundaries: Array.from(clientModules),
+        payloads,
+      };
     },
 
     middleware: createBuiltinAPIRequestHandler(

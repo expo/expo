@@ -16,38 +16,10 @@ function getRscRenderContext(platform) {
     rscRenderContext.set(platform, context);
     return context;
 }
-// const IMPORT_MAP = {
-//   renderer: () => require(`virtual:web:renderer.js`),
-//   router: () => require(`virtual:web:router.js`),
-// };
-// function getRscRendererAsync(
-//   distFolder: string,
-//   platform: string
-// ): typeof import('expo-router/src/rsc/rsc-renderer') {
-//   return IMPORT_MAP['renderer']();
-//   // TODO: Read from a predetermined location in the dist folder.
-//   // const filePath = path.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
-//   // return eval('require')(filePath);
-//   // if (/\.[cj]s$/.test(filePath)) {
-//   //   }
-//   //   return import(filePath);
-// }
 function getSSRManifest(distFolder, platform) {
-    return {};
-    // const filePath = path.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
-    // return eval('require')(filePath);
-    // TODO: ...
+    const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
+    return $$require_external(filePath);
 }
-// function getEntries(
-//   distFolder: string,
-//   platform: string
-// ): typeof import('expo-router/src/rsc/router/expo-definedRouter') {
-//   return IMPORT_MAP['router']();
-//   // expo-definedRouter.ts
-//   // const filePath = path.join(distFolder, `_expo/rsc/${platform}/router.js`);
-//   // return eval('require')(filePath);
-//   // TODO: ...
-// }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType }) {
     if (method === 'POST') {
         if (!body)
@@ -61,6 +33,7 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         entries.default.getBuildConfig(async (input) => []);
     }
     const ssrManifest = getSSRManifest(distFolder, platform);
+    console.log('SSR Manifest:', ssrManifest);
     return renderRsc({
         body: body ?? undefined,
         searchParams,
@@ -75,8 +48,8 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
             // Convert file path to a split chunk path.
             console.log('Resolve client entry:', file, ssrManifest[file]);
             return {
-                id: 'TODO',
-                url: [ssrManifest[file]].filter(Boolean),
+                id: file,
+                chunks: ssrManifest[file] ? [ssrManifest[file]] : [],
             };
         },
         entries: entries,
@@ -90,9 +63,6 @@ async function renderRscAsync(distFolder, args) {
             // TODO: Read from a predetermined location in the dist folder.
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
             return require(filePath);
-            // if (/\.[cj]s$/.test(filePath)) {
-            //   }
-            //   return import(filePath);
         },
         router: () => {
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/router.js`);

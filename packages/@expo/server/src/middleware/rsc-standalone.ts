@@ -18,8 +18,8 @@ function getRscRenderContext(platform: string) {
 }
 
 function getSSRManifest(distFolder: string, platform: string): Record<string, string> {
-  // TODO
-  return {};
+  const filePath = path.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
+  return $$require_external(filePath);
 }
 
 export async function renderRscWithImportsAsync(
@@ -46,6 +46,7 @@ export async function renderRscWithImportsAsync(
   }
 
   const ssrManifest = getSSRManifest(distFolder, platform);
+  console.log('SSR Manifest:', ssrManifest);
   return renderRsc(
     {
       body: body ?? undefined,
@@ -58,13 +59,12 @@ export async function renderRscWithImportsAsync(
     },
     {
       isExporting: true,
-      resolveClientEntry(file: string | number) {
+      resolveClientEntry(file: string) {
         // Convert file path to a split chunk path.
         console.log('Resolve client entry:', file, ssrManifest[file]);
-
         return {
-          id: 'TODO',
-          url: [ssrManifest[file]].filter(Boolean),
+          id: file,
+          chunks: ssrManifest[file] ? [ssrManifest[file]] : [],
         };
       },
 

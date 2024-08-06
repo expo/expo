@@ -25,7 +25,10 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 // import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
+import {
+  getEntryWithServerRoot,
+  getMetroServerRoot,
+} from '../start/server/middleware/ManifestMiddleware';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
@@ -156,11 +159,12 @@ export async function exportAppForAssetsAsync(
           if (isHermes) {
             await assertEngineMismatchAsync(projectRoot, exp, platform);
           }
-
-          // NOTE(EvanBacon): This will not account for client boundaries used in server actions. This will need to be added later.
-          const { clientBoundaries, payloads } = await devServer.rscRenderer!.exportRoutesAsync({
-            platform,
-          });
+          // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
+          const clientBoundaries = devServer.isReactServerComponentsEnabled
+            ? await devServer.rscRenderer!.getExpoRouterClientReferencesAsync({
+                platform,
+              })
+            : undefined;
 
           console.log('Collected evaluated client boundaries:', clientBoundaries);
 
@@ -180,29 +184,49 @@ export async function exportAppForAssetsAsync(
             reactCompiler: !!exp.experiments?.reactCompiler,
           });
 
-          const moduleIdToSplitBundle = (
-            bundle.artifacts
-              .map(
-                (artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths)
-              )
-              .filter(Boolean)
-              .flat() as Record<string, string>[]
-          ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
+          if (clientBoundaries) {
+            const serverRoot = getMetroServerRoot(projectRoot);
+            // TODO: Perform this transform in the bundler.
+            const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
+              path.relative(serverRoot, boundary)
+            );
+            const moduleIdToSplitBundle = (
+              bundle.artifacts
+                .map(
+                  (artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths)
+                )
+                .filter(Boolean)
+                .flat() as Record<string, string>[]
+            ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
-          console.log('SSR Manifest:', moduleIdToSplitBundle);
+            console.log('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
 
-          // Save the SSR manifest so we can perform more replacements in the server bundle.
-          // files.set(`_expo/rsc/${platform}/ssr-manifest.json`, {
-          //   targetDomain: 'server',
-          //   contents: JSON.stringify(moduleIdToSplitBundle),
-          // });
+            const ssrManifest = new Map<string, string>();
 
-          // Persist rsc and update with split client chunks.
-          await devServer.rscRenderer!.updateFlightModulesWithExportedClientBoundaries(
-            payloads,
-            moduleIdToSplitBundle,
-            files
-          );
+            clientBoundariesAsOpaqueIds.forEach((boundary) => {
+              if (boundary in moduleIdToSplitBundle) {
+                // Account for nullish values (bundle is in main chunk).
+                ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
+              } else {
+                throw new Error(`Could not find boundary "${boundary}" in the SSR manifest.`);
+              }
+            });
+
+            // Export the static RSC files
+            await devServer.rscRenderer!.exportRoutesAsync(
+              {
+                platform,
+                ssrManifest,
+              },
+              files
+            );
+
+            // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+            files.set(`_expo/rsc/${platform}/ssr-manifest.json`, {
+              targetDomain: 'server',
+              contents: JSON.stringify(Object.fromEntries(Array.from(ssrManifest.entries()))),
+            });
+          }
 
           bundles[platform] = bundle;
 

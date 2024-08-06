@@ -110,7 +110,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
   private hmrServer: MetroHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
-  private isReactServerComponentsEnabled?: boolean;
+  isReactServerComponentsEnabled?: boolean;
 
   get name(): string {
     return 'metro';
@@ -753,6 +753,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
+          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -822,6 +823,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
+          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
         });
         this.rscRenderer = rscMiddleware;
       }
