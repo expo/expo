@@ -111,7 +111,8 @@ export class NpmPackageManager extends BasePackageManager {
       .forEach((spec) => {
         // When using a dist-tag version of a library, we need to consider it as "unversioned".
         // Doing so will install that version with `npm install --save(-dev)`, and resolve the dist-tag properly.
-        if (spec && spec.rawSpec && spec.type !== 'tag') {
+        const hasExactSpec = !!spec && spec.rawSpec !== '' && spec.rawSpec !== '*';
+        if (spec && hasExactSpec && spec.type !== 'tag') {
           result.versioned.push(spec);
         } else if (spec) {
           result.unversioned.push(spec);
