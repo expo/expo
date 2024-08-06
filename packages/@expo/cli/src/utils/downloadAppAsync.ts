@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { Readable, Stream } from 'stream';
-import temporary from 'tempy';
 import { Agent } from 'undici';
 import { promisify } from 'util';
 
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
+import { createTempFilePath } from './createTempPath';
 import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 
@@ -71,7 +71,7 @@ export async function downloadAppAsync({
     // In the future we should just pipe the `res.body -> tar.extract` directly.
     // I tried this and it created some weird errors where observing the data stream
     // would corrupt the file causing tar to fail with `TAR_BAD_ARCHIVE`.
-    const tmpPath = temporary.file({ name: path.basename(outputPath) });
+    const tmpPath = createTempFilePath(path.basename(outputPath));
     await downloadAsync({ url, outputPath: tmpPath, cacheDirectory, onProgress });
     debug(`Extracting ${tmpPath} to ${outputPath}`);
     await ensureDirectoryAsync(outputPath);

@@ -1,7 +1,8 @@
 import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import tempy from 'tempy';
+
+import { createTempFilePath } from '../../utils/createTempPath';
 
 import type { TelemetryClient, TelemetryRecord, TelemetryRecordWithDate } from './types';
 import type { Actor } from '../../api/user/user';
@@ -37,7 +38,7 @@ export class DetachedClient implements TelemetryClient {
       return debug('No records to flush, skipping...');
     }
 
-    const file = tempy.file({ name: 'expo-telemetry.json' });
+    const file = createTempFilePath('expo-telemetry.json');
     const data: DetachedTelemetry = { actor: this.actor, records: this.records };
 
     this.records = [];
