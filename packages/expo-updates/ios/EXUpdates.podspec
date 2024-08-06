@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
   s.dependency 'ReachabilitySwift'
-  if podfile_properties['expo.updates.use3rdPartySQLitePod'] === 'true'
+  if podfile_properties['expo.updates.useThirdPartySQLitePod'] === 'true'
     s.dependency 'sqlite3'
   end
 
