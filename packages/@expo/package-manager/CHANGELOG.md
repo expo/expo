@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update `npm-package-arg@^7` to `npm-package-arg@^11`.
+- Update `npm-package-arg@^7` to `npm-package-arg@^11`. ([#30842](https://github.com/expo/expo/pull/30842) by [@kitten](https://github.com/kitten))
 
 ## 1.5.2 — 2024-04-23
 
