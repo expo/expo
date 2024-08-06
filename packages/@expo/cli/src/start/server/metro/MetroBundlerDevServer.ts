@@ -815,7 +815,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
     } else {
       // If React 19 is enabled, then add RSC middleware to the dev server.
-      if (exp.experiments?.reactCanary) {
+      if (isReactServerComponentsEnabled) {
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           getServerUrl: () => {
             return this.getDevServerUrlOrAssert();

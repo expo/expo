@@ -264,26 +264,6 @@ export function createServerComponentsMiddleware(
     return context;
   }
 
-  const clientModuleMap = new Map<string, Map<string, Set<string>>>();
-
-  const registerModuleId = (platform: string, input: string, moduleId: string) => {
-    let platformSet = clientModuleMap.get(platform);
-    if (!platformSet) {
-      platformSet = new Map();
-      clientModuleMap.set(platform, platformSet);
-    }
-    const normalizedRouteKey = getNameFromFilePath(input);
-
-    // Collect the client boundaries while rendering the server components.
-    // Indexed by routes.
-    let idSet = platformSet.get(normalizedRouteKey);
-    if (!idSet) {
-      idSet = new Set();
-      platformSet.set(normalizedRouteKey, idSet);
-    }
-    idSet.add(moduleId);
-  };
-
   async function renderRscToReadableStream(
     {
       input,
@@ -326,11 +306,6 @@ export function createServerComponentsMiddleware(
         method,
         input,
         contentType,
-        moduleIdCallback: !isExporting
-          ? undefined
-          : (moduleInfo: { id: string }) => {
-              registerModuleId(platform, input, moduleInfo.id);
-            },
       },
       {
         isExporting,
@@ -340,71 +315,7 @@ export function createServerComponentsMiddleware(
     );
   }
 
-  const getClientModules = (platform: string, input: string) => {
-    const key = getNameFromFilePath(input);
-
-    const platformSet = clientModuleMap.get(platform);
-    if (!platformSet) {
-      throw new CommandError(
-        `No client modules found for platform "${platform}". Expected one of: ${Array.from(
-          clientModuleMap.keys()
-        ).join(', ')}`
-      );
-    }
-
-    if (!platformSet.has(key)) {
-      throw new CommandError(
-        `No client modules found for "${key}". Expected one of: ${Array.from(
-          platformSet.keys()
-        ).join(', ')}`
-      );
-    }
-    const idSet = platformSet.get(key);
-    return Array.from(idSet || []);
-  };
-
   return {
-    // updateFlightModulesWithExportedClientBoundaries: (
-    //   payloads: RscExportPayload[],
-    //   moduleIdToSplitBundle: Record<string, string>,
-    //   files: ExportAssetMap
-    // ) => {
-    //   payloads.forEach(({ rsc, input, path }) => {
-    //     let contents = rsc;
-
-    //     // TODO: Flight files need to be platform-segmented.
-    //     // HACK: This basically just replaces the module ID in the manifest with the new module ID since we don't know until after the server bundle has run.
-    //     // Unclear what the correct approach is though.
-
-    //     debug('Updating RSC payload:', input, rsc);
-    //     for (const match of contents.matchAll(/"(chunk:([^"]+))"/g)) {
-    //       const [, moduleIdPlaceholder] = match;
-    //       const moduleId = moduleIdPlaceholder.replace(/^chunk:/, '');
-    //       if (moduleIdToSplitBundle[moduleId] != null) {
-    //         debug('Match client module to split chunk:', moduleId, moduleIdToSplitBundle[moduleId]);
-    //         const newModuleId = moduleIdToSplitBundle[moduleId];
-    //         if (newModuleId) {
-    //           contents = contents.replace(moduleIdPlaceholder, newModuleId);
-    //         }
-    //       } else {
-    //         // Can occur when there is no bundle splitting.
-    //         debug(
-    //           'Removing unmatched client boundary',
-    //           moduleId,
-    //           Object.keys(moduleIdToSplitBundle)
-    //         );
-    //         contents = contents.replace(`"${moduleIdPlaceholder}"`, '');
-    //       }
-    //     }
-
-    //     files.set(path, {
-    //       contents,
-    //       targetDomain: 'client',
-    //       rscId: input,
-    //     });
-    //   });
-    // },
-
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
 
@@ -429,8 +340,6 @@ export function createServerComponentsMiddleware(
         []
       );
 
-      const clientModules = new Set<string>();
-
       await Promise.all(
         Array.from(buildConfig).map(async ({ entries }) => {
           for (const { input } of entries || []) {
@@ -450,30 +359,16 @@ export function createServerComponentsMiddleware(
             const rsc = await streamToStringAsync(pipe);
             debug('RSC Payload', { platform, input, rsc });
 
-            // payloads.push({
-            //   path: destRscFile,
-            //   rsc,
-            //   input,
-            // });
-
             files.set(destRscFile, {
               contents: rsc,
               targetDomain: 'client',
               rscId: input,
             });
-
-            // TODO: Maybe no longer needed.
-            const clientBoundaries = getClientModules(platform, input);
-            for (const clientBoundary of clientBoundaries) {
-              clientModules.add(clientBoundary);
-            }
           }
         })
       );
 
       return {
-        // TODO: Maybe no longer needed.
-        clientBoundaries: Array.from(clientModules),
         payloads,
       };
     },
@@ -524,18 +419,3 @@ const encodeInput = (input: string) => {
   }
   return input + '.txt';
 };
-
-// NOTE: This must stay aligned with expo-router/build/matchers.tsx
-function getNameFromFilePath(name: string): string {
-  return removeSupportedExtensions(removeFileSystemDots(name));
-}
-
-/** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
-function removeSupportedExtensions(name: string): string {
-  return name.replace(/(\+api)?\.[jt]sx?$/g, '');
-}
-
-// Remove any amount of `./` and `../` from the start of the string
-function removeFileSystemDots(filePath: string): string {
-  return filePath.replace(/^(?:\.\.?\/)+/g, '');
-}
