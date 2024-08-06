@@ -4,10 +4,10 @@ import { Readable, Stream } from 'stream';
 import { Agent } from 'undici';
 import { promisify } from 'util';
 
+import { createTempFilePath } from './createTempPath';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
-import { createTempFilePath } from './createTempPath';
 import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 

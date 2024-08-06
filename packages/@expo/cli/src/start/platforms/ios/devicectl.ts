@@ -16,9 +16,9 @@ import { Ora } from 'ora';
 import { EOL } from 'os';
 import path from 'path';
 
-import { createTempFilePath } from '../../../utils/createTempPath';
 import { xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
+import { createTempFilePath } from '../../../utils/createTempPath';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';

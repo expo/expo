@@ -2,10 +2,9 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { createTempFilePath } from '../../utils/createTempPath';
-
 import type { TelemetryClient, TelemetryRecord, TelemetryRecordWithDate } from './types';
 import type { Actor } from '../../api/user/user';
+import { createTempFilePath } from '../../utils/createTempPath';
 
 const debug = require('debug')('expo:telemetry:detachedClient') as typeof console.log;
 

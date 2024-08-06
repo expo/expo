@@ -7,7 +7,7 @@ import { DetachedClient } from '../DetachedClient';
 jest.mock('fs');
 jest.mock('child_process', () => ({ spawn: jest.fn(() => ({ unref: jest.fn() })) }));
 jest.mock('../../createTempPath', () => ({
-  createTempFilePath: jest.fn(() => '/tmp/expo-telemetry.json')
+  createTempFilePath: jest.fn(() => '/tmp/expo-telemetry.json'),
 }));
 jest.mock('../../../api/user/UserSettings', () => ({
   getDirectory: jest.fn(() => '/home/user/.expo'),
