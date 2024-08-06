@@ -4,20 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
 
+import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
-import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { streamToStringAsync } from '../../../utils/stream';
-import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
+import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
-import { logMetroError } from './metroErrorInterface';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
