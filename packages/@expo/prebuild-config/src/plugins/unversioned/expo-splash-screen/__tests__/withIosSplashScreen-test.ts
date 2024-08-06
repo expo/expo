@@ -80,7 +80,9 @@ describe(withIosSplashScreen, () => {
     const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
 
     // Image is not defined
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).not.toBeDefined();
+    expect(
+      after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image.png']
+    ).not.toBeDefined();
   });
 
   it(`runs entire process`, async () => {
@@ -119,16 +121,24 @@ describe(withIosSplashScreen, () => {
     const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
 
     // Image is defined
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).toBeDefined();
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image.png']).toBeDefined();
 
     // Ensure images are created
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image@2x.png']).toMatch(/PNG/);
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image@3x.png']).toMatch(/PNG/);
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image@2x.png']).toMatch(
+      /PNG/
+    );
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image@3x.png']).toMatch(
+      /PNG/
+    );
 
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/dark_image.png']).toMatch(/PNG/);
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/dark_image.png']).toMatch(
+      /PNG/
+    );
 
     // Image JSON
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json']).toBeDefined();
+    expect(
+      after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/Contents.json']
+    ).toBeDefined();
 
     // Test the splash screen XML
     expect(after['HelloWorld/SplashScreen.storyboard']).toMatch(/contentMode="scaleAspectFit"/);

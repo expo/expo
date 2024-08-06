@@ -388,7 +388,6 @@ export function applyImageToSplashScreenXML(
     imageSection.splice(existingImageIndex, 1);
   }
   imageSection.push({
-    // <image name="SplashScreen" width="414" height="736"/>
     $: {
       name: imageName,
       width,

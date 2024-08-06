@@ -6,17 +6,12 @@ public class SplashScreenManager: NSObject {
   private var loadingView: UIView?
   private var rootView: UIView?
   private var options = SplashScreenOptions()
-  private var nativeHidden = false
 
   private override init() {}
 
   public func initWith(_ rootView: UIView) {
     if RCTRunningInAppExtension() {
       return
-    }
-
-    Timer.scheduledTimer(withTimeInterval: 0.35, repeats: false) { _ in
-      self.nativeHidden = true
     }
 
     self.rootView = rootView
@@ -36,7 +31,7 @@ public class SplashScreenManager: NSObject {
   }
 
   func hide() {
-    if RCTRunningInAppExtension() || !nativeHidden {
+    if RCTRunningInAppExtension() {
       return
     }
 
