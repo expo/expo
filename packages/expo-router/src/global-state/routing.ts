@@ -85,7 +85,7 @@ export type LinkToOptions = {
 
   /**
    * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
-   * @see: https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references
+   * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
   relativeToDirectory?: boolean;
 };
