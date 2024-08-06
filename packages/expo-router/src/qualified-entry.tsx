@@ -11,6 +11,8 @@ import React from 'react';
 import { ExpoRoot } from './ExpoRoot';
 import { Head } from './head';
 
+import './fast-refresh';
+
 // Must be exported or Fast Refresh won't update the context
 export function App() {
   return (
