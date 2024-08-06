@@ -44,7 +44,7 @@ fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Fact
 fun buildMediaSourceWithHeaders(context: Context, videoSource: VideoSource): MediaSource {
   val dataSourceFactory = buildDataSourceFactory(context, videoSource)
   val mediaSourceFactory = buildMediaSourceFactory(context, dataSourceFactory)
-  val mediaItem = videoSource.toMediaItem()
+  val mediaItem = videoSource.toMediaItem(context)
   return mediaSourceFactory.createMediaSource(mediaItem)
 }
 
