@@ -281,7 +281,7 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx app/_layout.tsx
 // Rest of the import statements
-/* @info Import <CODE>useFonts</CODE> hook from <CODE>expo-font</CODE>. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/ import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
 /* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 import {useEffect} from 'react';
 
@@ -399,7 +399,7 @@ Now, you can any icon from the `Ionicons` library in a React component:
 
 > **warning** **If you're loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
 
-Loading fronts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
+Loading fonts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
 
 However, loading a font file directly from web is done by replacing the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
 

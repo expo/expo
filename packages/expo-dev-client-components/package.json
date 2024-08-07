@@ -34,6 +34,10 @@
   "devDependencies": {
     "@testing-library/react-native": "^12.5.1"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "jest": {
     "preset": "@testing-library/react-native",
     "setupFilesAfterEnv": [

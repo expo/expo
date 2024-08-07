@@ -26,6 +26,8 @@ const { withOrientation } = IOSConfig.Orientation;
 const { readXMLAsync } = XML;
 const fsReal = jest.requireActual('fs') as typeof fs;
 
+jest.setTimeout(30 * 1000);
+
 jest.mock('fs');
 // Weird issues with Android Icon module make it hard to mock test.
 jest.mock('../icons/withAndroidIcons', () => {

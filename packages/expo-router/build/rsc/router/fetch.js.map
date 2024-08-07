@@ -1,0 +1,1 @@
+{"version":3,"file":"fetch.js","sourceRoot":"","sources":["../../../src/rsc/router/fetch.ts"],"names":[],"mappings":";;;AAAA,oCAAmC;AAA1B,8FAAA,KAAK,OAAA","sourcesContent":["export { fetch } from 'expo/fetch';\n"]}

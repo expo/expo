@@ -6,6 +6,8 @@ description: Learn how to migrate a project using React Navigation to Expo Route
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Both React Navigation and Expo Router are Expo frameworks for routing and navigation. Expo Router is a wrapper around React Navigation and many of the concepts are the same.
 
@@ -22,7 +24,7 @@ If your app uses a custom `getPathFromState` or `getStateFromPath` component, it
 We recommend making the following modifications to your codebase before beginning the migration:
 
 - Split React Navigation screen components into individual files. For example, if you have `<Stack.Screen component={HomeScreen} />`, then ensure the `HomeScreen` class is in its own file.
-- Convert the project to [TypeScript](/guides/typescript/#path-aliases-optional). This will make it easier to spot errors that may occur during the migration.
+- Convert the project to [TypeScript](/guides/typescript/#migrating-existing-javascript-project). This will make it easier to spot errors that may occur during the migration.
 - Convert relative imports to [typed aliases](/guides/typescript/#path-aliases-optional). For example, `../../components/button.tsx` to `@/components/button` before starting the migration. This makes it easier to move screens around the filesystem without having to update the relative paths.
 - Migrate away from `resetRoot`. This is used to "restart" the app while running. This is generally considered bad practice, and you should restructure your app's navigation so this never needs to happen.
 - Rename the initial route to `index`. Expo Router considers the route that is opened on launch to match `/`, React Navigation users will generally use something such as "Home" for the initial route.
@@ -499,3 +501,52 @@ export default function Screen() {
 ### Migrate TypeScript types
 
 Expo Router can automatically generate [statically typed routes](/router/reference/typed-routes), this will ensure you can only navigate to valid routes.
+
+## Additional information
+
+### React Navigation themes
+
+React Navigation navigators `<Stack>`, `<Drawer>`, and `<Tabs>` use a shared appearance provider. In React Navigation, you set the theme for the entire app using the `<NavigationContainer />` component. Expo Router manages the root container so that you can set the theme using the `ThemeProvider` directly.
+
+```tsx app/_layout.tsx
+/* @info Import theme APIs from React Navigation directly. */
+import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from '@react-navigation/native';
+/* @end */
+import { Slot } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    /* @info All layouts inside this provider will use the dark theme. */
+    <ThemeProvider value={DarkTheme}>
+      /* @end */
+      <Slot />
+    </ThemeProvider>
+  );
+}
+```
+
+You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed via `useTheme` hook from `@react-navigation/native`.
+
+### React Navigation Elements
+
+The [`@react-navigation/elements`](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
+
+To use it with Expo Router, you need to install the library:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm install @react-navigation/elements']} />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add @react-navigation/elements']} />
+
+</Tab>
+
+</Tabs>
+
+To learn more about the components and utilities the library provides, see [Elements library](https://reactnavigation.org/docs/elements/) documentation.

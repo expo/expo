@@ -215,6 +215,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
           jsArray.getInt(index)
         }
       },
+      LongArray::class to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.LONG)
+      ) {
+        val jsArray = it.asArray()
+        LongArray(jsArray.size()) { index ->
+          jsArray.getDouble(index).toLong()
+        }
+      },
       DoubleArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.DOUBLE)
       ) {

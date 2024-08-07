@@ -4,22 +4,60 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
+- [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
+
+### 🐛 Bug fixes
+
+- [Android] Fix support for local file playback. ([#30472](https://github.com/expo/expo/pull/30472) by [@behenate](https://github.com/behenate))
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.2.4 - 2024-07-30
+
+### 🐛 Bug fixes
+
+- [Android] Fix Audio Manager pausing player on the wrong thread and conflicts between players. ([#30453](https://github.com/expo/expo/pull/30453) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Refactor `VideoPlayer.kt`, organize files ([#30452](https://github.com/expo/expo/pull/30452) by [@behenate](https://github.com/behenate))
+
+## 1.2.3 - 2024-07-11
+
+### 🛠 Breaking changes
+
 - [Android][iOS] Now Picture in Picture has to be enabled via the config plugin to work. ([#30068](https://github.com/expo/expo/pull/30068) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
-- [iOS] Support Apple TV. ([#29560](https://github.com/expo/expo/pull/29560) by [@douglowder](https://github.com/douglowder))
 - [Web] Add support for events. ([#29742](https://github.com/expo/expo/pull/29742) by [@behenate](https://github.com/behenate))
 - [iOS] Add ability to disable live text interaction. ([#30093](https://github.com/expo/expo/pull/30093) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 
 - [Web] Fix `AudioContext` being created before user interaction causing playback issues. ([#29695](https://github.com/expo/expo/pull/29695) by [@behenate](https://github.com/behenate))
-- [iOS] Fix crashes on iOS 16 and lower when source HTTP headers are undefined. ([#30104](https://github.com/expo/expo/pull/30104) by [@behenate](https://github.com/behenate))
 - [iOS] Fix a race condition causing crashes when deallocating the player. ([#30022](https://github.com/expo/expo/pull/30022) by [@behenate](https://github.com/behenate))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30489](https://github.com/expo/expo/pull/30489) by [@byCedric](https://github.com/byCedric))
 
-### 💡 Others
+## 1.2.2 - 2024-07-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crashes on iOS 16 and lower when source HTTP headers are undefined. ([#30104](https://github.com/expo/expo/pull/30104) by [@behenate](https://github.com/behenate))
+
+## 1.2.1 - 2024-06-27
+
+### 🎉 New features
+
+- [iOS] Support Apple TV. ([#29560](https://github.com/expo/expo/pull/29560) by [@douglowder](https://github.com/douglowder))
 
 ## 1.2.0 - 2024-06-20
 

@@ -11,6 +11,10 @@
 - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Add the ability to change the name of the exported shared object. ([#30040](https://github.com/expo/expo/pull/30040) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Supported returning of the `SharedObject` from functions. ([#30426](https://github.com/expo/expo/pull/30426) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Added support for primitive arrays in functions. ([#30657](https://github.com/expo/expo/pull/30657) by [@lukmccall](https://github.com/lukmccall))
+- Implemented `toJSON` function on shared objects that includes dynamic properties defined in their prototype chain. ([#30813](https://github.com/expo/expo/pull/30813) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added experimental support for rendering SwiftUI views. ([#19888](https://github.com/expo/expo/pull/19888) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -21,22 +25,19 @@
 - [iOS] Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
 - [Android] Fix the event emitter, which might crash during the reloads. ([#29176](https:/github.com/expo/expo/pull/29176) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix random conversion errors when converting JavaScript floating point numbers to `Swift.Float`. ([#29053](https://github.com/expo/expo/pull/29053) by [@behenate](https://github.com/behenate))
-- [Android] Reduce the number of global references to JSIContext. ([#29936](https://github.com/expo/expo/pull/29936) by [@lukmccall](https://github.com/lukmccall))
-- Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
-- Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
-- [iOS] Fixed broken `addUIBlock` and `executeUIBlock` on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
-- Fixed blocking SSE responses from network interceptor on Android. ([#30062](https://github.com/expo/expo/pull/30062) by [@kudo](https://github.com/kudo))
 - Fixed a crash when the event listener throws an error. ([#30065](https://github.com/expo/expo/pull/30065) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Fixed the record's constructor with default parameters were being ignored when converting from JavaScript to native. ([#30217](https://github.com/expo/expo/pull/30217) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fixed returning already registered shared objects. ([#30241](https://github.com/expo/expo/pull/30241) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
 - [Android] When a `SharedObject` that was passed as an argument is returned, it no longer creates a new object. ([#30231](https://github.com/expo/expo/pull/30231) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed some types weren't correctly converted when using coroutines. ([#30227](https://github.com/expo/expo/pull/30227) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix getExternalPathPermissions returns no read/write permissions. ([#30540](https://github.com/expo/expo/pull/30540) by [@dispelpowerone](https://github.com/dispelpowerone))
 - [Android] Fixed not throwing when setting read-only properties. ([#30428](https://github.com/expo/expo/pull/30428) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `expo.modules.kotlin.jni.tests.RuntimeHolder` class not found crash when R8 is enabled. ([#30572](https://github.com/expo/expo/pull/30572) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `Class declares 0 type parameters, but X were provided` on Android when R8 is enabled. ([#30659](https://github.com/expo/expo/pull/30659) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
-- [Android] Use getter methods in convertibles. ([#30239](https://github.com/expo/expo/pull/30239) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Change `sideEffects` to use `src` folder. ([#29964](https://github.com/expo/expo/pull/29964) by [@EvanBacon](https://github.com/EvanBacon))
 - [web] Use global `crypto` object for UUID. ([#29828](https://github.com/expo/expo/pull/29828) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Send open url event to all matching subscribers. ([#29645](https://github.com/expo/expo/pull/29645) by [@aleqsio](https://github.com/aleqsio))
@@ -47,15 +48,44 @@
 - Moved `process` object declaration to global declaration. ([#29745](https://github.com/expo/expo/pull/29745) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
 - Make it possible for TypeScript to infer EventEmitter's events map. ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Exposed `Utilities` class for Expo Modules common tasks. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
 - [iOS] Stop throwing runtime errors when the promise is settled more than once. ([#30000](https://github.com/expo/expo/pull/30000) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Renamed `pointer` property in the `SharedRef` class to `ref` for parity with Android. ([#30061](https://github.com/expo/expo/pull/30061) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Started using `noexcept`. ([#30128](https://github.com/expo/expo/pull/30128) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Decouple the modules state from the `AppContext` ([#30098](https://github.com/expo/expo/pull/30098) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Added `customizeRootView:` support to `EXAppDelegateWrapper.createRCTRootViewFactory`. ([#30245](https://github.com/expo/expo/pull/30245) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Bump Kotlin coroutines version to 1.7.3. ([#30226](https://github.com/expo/expo/pull/30226) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Limit the number of "Current Activity is of incorrect class" log entries. ([#30427](https://github.com/expo/expo/pull/30427) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Refactor and expose `URLSessionSessionDelegateProxy` class. ([#30173](https://github.com/expo/expo/pull/30173) by [@kudo](https://github.com/kudo))
+- [Android] Supports passing `Accept: text/event-stream` header to bypass streaming requests from `ExpoNetworkInspectOkHttpInterceptors`. ([#30219](https://github.com/expo/expo/pull/30219) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.12.19 - 2024-07-11
+
+### 💡 Others
+
+- [iOS] Added `customizeRootView:` support to `EXAppDelegateWrapper.createRCTRootViewFactory`. ([#30245](https://github.com/expo/expo/pull/30245) by [@kudo](https://github.com/kudo))
+
+## 1.12.18 - 2024-06-28
+
+### 🐛 Bug fixes
+
+- Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
+- Fixed blocking SSE responses from network interceptor on Android. ([#30062](https://github.com/expo/expo/pull/30062) by [@kudo](https://github.com/kudo))
+
+## 1.12.17 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- [Android] Reduce the number of global references to JSIContext. ([#29936](https://github.com/expo/expo/pull/29936) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed broken `addUIBlock` and `executeUIBlock` on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [iOS] Exposed `Utilities` class for Expo Modules common tasks. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
 
 ## 1.12.16 - 2024-06-20
 

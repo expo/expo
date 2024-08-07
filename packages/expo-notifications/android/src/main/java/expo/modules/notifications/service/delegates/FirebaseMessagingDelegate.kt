@@ -1,10 +1,12 @@
 package expo.modules.notifications.service.delegates
 
 import android.content.Context
+import android.os.Build
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder
 import expo.modules.notifications.notifications.RemoteMessageSerializer
 import expo.modules.notifications.notifications.background.BackgroundRemoteNotificationTaskConsumer
+import expo.modules.notifications.notifications.debug.DebugLogging
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
@@ -12,6 +14,7 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
+import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.*
@@ -89,7 +92,12 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    NotificationsService.receive(context, createNotification(remoteMessage))
+    DebugLogging.logRemoteMessage("FirebaseMessagingDelegate.onMessageReceived: message", remoteMessage)
+    val notification = createNotification(remoteMessage)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      DebugLogging.logNotification("FirebaseMessagingDelegate.onMessageReceived: notification", notification)
+    }
+    NotificationsService.receive(context, notification)
     getBackgroundTasks().forEach {
       it.scheduleJob(RemoteMessageSerializer.toBundle(remoteMessage))
     }
@@ -98,6 +106,14 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
     val identifier = getNotificationIdentifier(remoteMessage)
     val payload = JSONObject(remoteMessage.data as Map<*, *>)
+    val vibrationPattern = remoteMessage.notification?.vibrateTimings
+    if (vibrationPattern != null) {
+      val jsonVibrationTimings = JSONArray()
+      vibrationPattern.forEach {
+        jsonVibrationTimings.put(it.toInt())
+      }
+      payload.put("vibrate", jsonVibrationTimings)
+    }
     val content = JSONNotificationContentBuilder(context).setPayload(payload).build()
     val request = createNotificationRequest(identifier, content, FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))

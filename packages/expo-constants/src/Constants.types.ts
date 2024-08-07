@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import type {
   EASConfig as ManifestsEASConfig,
   ExpoGoConfig as ManifestsExpoGoConfig,

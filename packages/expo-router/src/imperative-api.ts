@@ -19,7 +19,7 @@ export type Router = {
   /** If there's history that supports invoking the `dismiss` and `dismissAll` function. */
   canDismiss: () => boolean;
   /** Update the current route query params. */
-  setParams: <T extends Routes>(params: RouteParamInput<T>) => void;
+  setParams: <T extends Routes>(params: Partial<RouteParamInput<T>>) => void;
 };
 
 export const router: Router = {

@@ -1,5 +1,7 @@
 import { EventEmitter, type EventSubscription } from 'fbemitter';
 
+import type { DevToolsPluginClientOptions } from './devtools.types';
+
 export interface Options {
   /**
    * Reconnect interval in milliseconds.
@@ -29,6 +31,11 @@ export interface Options {
    * @default no-op
    */
   onReconnect?: (reason: string) => void;
+
+  /**
+   * The [`binaryType`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType).
+   */
+  binaryType?: DevToolsPluginClientOptions['websocketBinaryType'];
 }
 
 export class WebSocketWithReconnect implements WebSocket {
@@ -47,6 +54,7 @@ export class WebSocketWithReconnect implements WebSocket {
 
   private readonly emitter = new EventEmitter();
   private readonly eventSubscriptions: EventSubscription[] = [];
+  private readonly wsBinaryType?: Options['binaryType'];
 
   constructor(
     public readonly url: string,
@@ -61,6 +69,7 @@ export class WebSocketWithReconnect implements WebSocket {
         throw error;
       });
     this.onReconnect = options?.onReconnect ?? (() => {});
+    this.wsBinaryType = options?.binaryType;
 
     this.connect();
   }
@@ -113,6 +122,9 @@ export class WebSocketWithReconnect implements WebSocket {
     this.connectTimeoutHandle = setTimeout(this.handleConnectTimeout, this.connectTimeout);
 
     this.ws = new WebSocket(this.url.toString());
+    if (this.wsBinaryType != null) {
+      this.ws.binaryType = this.wsBinaryType;
+    }
     this.ws.addEventListener('message', this.handleMessage);
     this.ws.addEventListener('open', this.handleOpen);
     // @ts-ignore TypeScript expects (e: Event) => any, but we want (e: WebSocketErrorEvent) => any

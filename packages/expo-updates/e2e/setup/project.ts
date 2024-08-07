@@ -20,7 +20,8 @@ function getExpoDependencyChunks({
     ['@expo/config-types', '@expo/env'],
     ['@expo/config'],
     ['@expo/config-plugins'],
-    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-core', 'expo-modules-autolinking'],
+    ['expo-modules-core'],
+    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
     [
       'babel-preset-expo',
@@ -191,6 +192,15 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
+  // Copy react-native patch
+  if (!isTV) {
+    await fs.mkdir(path.join(projectRoot, 'patches'));
+    await fs.copyFile(
+      path.resolve(repoRoot, 'patches', 'react-native+0.75.0-rc.5.patch'),
+      path.join(projectRoot, 'patches', 'react-native+0.75.0-rc.5.patch')
+    );
+  }
+
   // Modify specific files for TV
   if (isTV) {
     // Modify .detoxrc.json for TV
@@ -294,6 +304,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -310,6 +321,7 @@ async function preparePackageJson(
         'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
+        'patch-package': '^8.0.0',
       }
     : {};
 
@@ -352,7 +364,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.2-0',
+        'react-native': 'npm:react-native-tvos@~0.74.3-0',
         '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {

@@ -13,6 +13,6 @@ export async function getExpoGoIntermediateCertificateAsync(easProjectId: string
   if (!response.ok) {
     throw new CommandError('API', `Unexpected error from Expo servers: ${response.statusText}.`);
   }
-  const buffer = await response.buffer();
-  return buffer.toString('utf8');
+
+  return await response.text();
 }

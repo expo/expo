@@ -5,7 +5,7 @@ export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
-export type CameraRatio = '4:3' | '16:9';
+export type CameraRatio = '4:3' | '16:9' | '1:1';
 /**
  * This option specifies the mode of focus on the device.
  * - `on` - Indicates that the device should autofocus once and then lock the focus.
@@ -128,6 +128,7 @@ export type CameraPictureOptions = {
      * @default false
      * @platform ios
      * @platform android
+     * @deprecated Use `mirror` prop on `CameraView` instead.
      */
     mirror?: boolean;
     /**
@@ -155,7 +156,7 @@ export type CameraRecordingOptions = {
     /**
      * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
      * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
-     * @platform ios
+     * @deprecated Use `mirror` prop on `CameraView` instead.
      */
     mirror?: boolean;
     /**
@@ -284,11 +285,23 @@ export type CameraProps = ViewProps & {
      */
     mute?: boolean;
     /**
+     * A boolean that determines whether the camera should mirror the image when using the front camera.
+     * @default false
+     */
+    mirror?: boolean;
+    /**
      * Indicates the focus mode to use.
      * @default off
      * @platform ios
      */
     autofocus?: FocusMode;
+    /**
+     * A boolean that determines whether the camera should be active.
+     * Useful in situations where the camera may not have unmounted but you still want to stop the camera session.
+     * @default true
+     * @platform ios
+     */
+    active?: boolean;
     /**
      * Specify the quality of the recorded video. Use one of `VideoQuality` possible values:
      * for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
@@ -341,7 +354,8 @@ export type CameraProps = ViewProps & {
     responsiveOrientationWhenOrientationLocked?: boolean;
     /**
      * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
-     * @default 4:3
+     * Note: Setting the aspect ratio here will change the scaleType of the camera preview from `FILL` to `FIT`.
+     * @default 1:1
      * @platform android
      */
     ratio?: CameraRatio;
@@ -381,6 +395,8 @@ export interface CameraViewRef {
     }>;
     readonly stopRecording: () => Promise<void>;
     readonly launchModernScanner: () => Promise<void>;
+    readonly resumePreview: () => Promise<void>;
+    readonly pausePreview: () => Promise<void>;
 }
 /**
  * @hidden

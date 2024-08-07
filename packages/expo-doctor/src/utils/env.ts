@@ -20,6 +20,15 @@ class Env {
   get EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK() {
     return boolish('EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK', false);
   }
+
+  /** Opt in to ReactNativeDirectoryCheck */
+  get EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK() {
+    if (typeof process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK === 'undefined') {
+      return null;
+    }
+
+    return boolish('EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK', false);
+  }
 }
 
 export const env = new Env();

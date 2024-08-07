@@ -7,8 +7,11 @@
 ### 🎉 New features
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `resolveRelativeEntryPoint` that takes possible server root into account. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
+
+- Move entry point path modifications to Node script instead of Gradle plugin. ([#30654](https://github.com/expo/expo/pull/30654) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

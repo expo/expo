@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const withExpoVideo = (config, { supportsBackgroundPlayback, supportsPictureInPicture } = {}) => {
     (0, config_plugins_1.withInfoPlist)(config, (config) => {
         const currentBackgroundModes = config.modResults.UIBackgroundModes ?? [];

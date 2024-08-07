@@ -5,7 +5,6 @@ description: The Expo CLI is a command-line tool that is the primary interface b
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 import { StatusTag } from '~/ui/components/Tag';
 
 > **info** This documentation refers to the Local Expo CLI. For information on legacy CLI, see [Global Expo CLI](/archive/expo-cli).
@@ -258,10 +257,6 @@ The following options are provided:
 
 > Experimental functionality. Available from SDK 50.
 
-<Tabs>
-
-<Tab label="SDK 50 and above">
-
 You can configure the prefix for static assets by setting the `experiments.baseUrl` field in your [app config](/workflow/configuration/):
 
 ```json app.json
@@ -320,16 +315,6 @@ export default function Blog() {
 }
 ```
 
-</Tab>
-
-<Tab label="SDK 49 and below">
-
-    Exporting for a sub-path is not supported in SDK 49 and below.
-
-</Tab>
-
-</Tabs>
-
 ### Exporting with webpack
 
 > **warning** **Deprecated**: In SDK 50 and above, Expo Webpack has been deprecated in favor of universal Metro (`npx expo export`). Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
@@ -347,7 +332,7 @@ This command will be disabled if your project is configured to use `metro` for b
 
 <Terminal cmd={['$ npx expo prebuild']} />
 
-Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild.mdx).
+Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild/).
 
 ## Config
 
@@ -478,7 +463,7 @@ From here, you can choose to generate basic project files like:
 
 | Name                                 | Type        | Description                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `HTTP_PROXY`                         | **string**  | HTTP/HTTPS proxy URL to connect for all network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).                                                                                                                                                                                                                                                                                      |
+| `HTTP_PROXY`                         | **string**  | HTTP/HTTPS proxy URL to connect for all network requests. Configures [Undici EnvHttpProxyAgent](https://github.com/nodejs/undici/blob/main/docs/docs/api/EnvHttpProxyAgent.md).                                                                                                                                                                                                                                                 |
 | `EXPO_NO_WEB_SETUP`                  | **boolean** | Prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality.<br/>This is useful for cases where you wish to perform non-standard web development.                                                                                                                                                                                   |
 | `EXPO_OFFLINE`                       | **boolean** | Skip all network requests when applicable. This leads to faster development in areas with poor network connection.                                                                                                                                                                                                                                                                                                              |
 | `EXPO_NO_TYPESCRIPT_SETUP`           | **boolean** | Prevents the CLI from forcing TypeScript to be configured on `npx expo start`.<br/>For more information, see [TypeScript guide](/guides/typescript/).                                                                                                                                                                                                                                                                           |
@@ -502,14 +487,17 @@ From here, you can choose to generate basic project files like:
 | `EXPO_NO_METRO_LAZY`                 | **boolean** | Prevent adding the `lazy=true` query parameter to Metro URLs (`metro@0.76.3` and greater). This disables `import()` support.                                                                                                                                                                                                                                                                                                    |
 | `EXPO_USE_TYPED_ROUTES`              | **boolean** | Use `expo.experiments.typedRoutes` to enable statically typed routes in Expo Router.                                                                                                                                                                                                                                                                                                                                            |
 | `EXPO_METRO_UNSTABLE_ERRORS`         | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /></div>Enable unstable error message improvements in Metro bundler. The features behind this flag are subject to removal and may be upstreamed.                                                                                                                                                                                                     |
-| `EXPO_USE_METRO_WORKSPACE_ROOT`      | **boolean** | Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                                                                                                                      |
+| ~~`EXPO_USE_METRO_WORKSPACE_ROOT`~~  | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="deprecated" note="SDK 52+" /></div>Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                      |
+| `EXPO_NO_METRO_WORKSPACE_ROOT`       | **boolean** | <div className="flex items-center pb-1.5"><StatusTag note="SDK 52+" /></div>Disable auto server root detection for Metro. Disabling will not change the server root to the workspace root. Enabling this is useful for monorepos.                                                                                                                                                                                               |
 | `EXPO_USE_UNSTABLE_DEBUGGER`         | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /></div>Enable the experimental debugger from React Native.                                                                                                                                                                                                                                                                                          |
 | `EXPO_ADB_USER`                      | **string**  | <div className="flex items-center pb-1.5"><StatusTag status="SDK 50+" /></div>Set the `user` number that should be passed to `--user` with ADB commands. Used for installing APKs on Android devices with multiple profiles. Defaults to `0`.                                                                                                                                                                                   |
 | `EXPO_NO_TELEMETRY_DETACH`           | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 51+" /></div>Send telemetry events in the main thread of `@expo/cli`. This causes the CLI to slow down as it waits for all the events to be sent.                                                                                                                                                                                                              |
+| `EXPO_USE_FAST_RESOLVER`             | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 51+" /></div>Enable up to 6x faster resolving in Metro. There are no known issues and this will likely become the default.                                                                                                                                                                                                                                     |
 | `EXPO_UNSTABLE_ATLAS`                | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 51+" /></div>Gather Metro bundle information during development or export.                                                                                                                                                                                                                                                  |
 | `EXPO_NO_BUNDLE_SPLITTING`           | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 51+" /></div>Disable Metro splitting chunks on async imports in production (web-only).                                                                                                                                                                                                                                      |
 | `EXPO_USE_METRO_REQUIRE`             | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 52+" /></div>Enable the use of Expo's custom Metro `require` implementation and `string` based module IDs. This enables better debugging and deterministic IDs for React Server Components. Does not support legacy RAM bundles.                                                                                                                               |
 | `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH` | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and is less optimized for development bundling.                                                                                                                |
+| `EXPO_UNSTABLE_TREE_SHAKING`         | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable unstable tree shaking support across all platforms. See [tree shaking](/guides/tree-shaking) for more details.                                                                                                                                                                                          |
 
 ## Telemetry
 

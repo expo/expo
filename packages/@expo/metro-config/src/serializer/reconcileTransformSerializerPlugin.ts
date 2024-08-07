@@ -8,7 +8,6 @@ import generate from '@babel/generator';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import countLines from 'metro/src/lib/countLines';
 import { SerializerConfigT } from 'metro-config';
 import { toSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
@@ -19,6 +18,7 @@ import collectDependencies, {
   Dependency,
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from '../transform-worker/collect-dependencies';
+import { countLinesAndTerminateMap } from '../transform-worker/count-lines';
 import {
   applyImportSupport,
   InvalidRequireCallError,
@@ -35,7 +35,7 @@ const FORCE_REQUIRE_NAME_HINTS = false;
 
 // Some imports may change order during the transform, so we need to resort them.
 // Resort the dependencies to match the current order of the AST.
-function sortDependencies(
+export function sortDependencies(
   dependencies: readonly Dependency[],
   accordingTo: Module['dependencies']
 ): Map<string, Dependency> {
@@ -219,13 +219,16 @@ export async function reconcileTransformSerializerPlugin(
       ));
     }
 
+    let lineCount;
+    ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+
     return {
       ...outputItem,
       data: {
         ...outputItem.data,
         code,
         map,
-        lineCount: countLines(code),
+        lineCount,
         functionMap:
           // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
           ast.metadata?.metro?.functionMap ??

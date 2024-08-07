@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = void 0;
+exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = exports.sortDependencies = void 0;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -36,12 +36,12 @@ exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = void 0;
 const generator_1 = __importDefault(require("@babel/generator"));
 const assert_1 = __importDefault(require("assert"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const jsOutput_1 = require("./jsOutput");
 const sideEffects_1 = require("./sideEffects");
 const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
+const count_lines_1 = require("../transform-worker/count-lines");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
@@ -61,6 +61,7 @@ function sortDependencies(dependencies, accordingTo) {
     });
     return nextDependencies;
 }
+exports.sortDependencies = sortDependencies;
 function isOptimizeEnabled(graph) {
     return isEnvBoolean(graph, 'optimize');
 }
@@ -178,13 +179,15 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             const source = value.getSource().toString('utf-8');
             ({ map, code } = await (0, metro_transform_worker_1.minifyCode)(reconcile.minify, value.path, result.code, source, map, reserved));
         }
+        let lineCount;
+        ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
         return {
             ...outputItem,
             data: {
                 ...outputItem.data,
                 code,
                 map,
-                lineCount: (0, countLines_1.default)(code),
+                lineCount,
                 functionMap: 
                 // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
                 ast.metadata?.metro?.functionMap ??

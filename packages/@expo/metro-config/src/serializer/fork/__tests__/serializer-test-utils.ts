@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
+import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
 import {
   SerialAsset,
   SerializerConfigOptions,
@@ -65,6 +66,20 @@ export async function serializeSplitAsync(
   });
 }
 
+// Serialize to a split bundle
+export async function serializeShakingAsync(
+  fs: Record<string, string>,
+  options: {
+    isReactServer?: boolean;
+    treeshake?: boolean;
+    optimize?: boolean;
+    splitChunks?: boolean;
+    minify?: boolean;
+  } = {}
+) {
+  return serializeOptimizeAsync(fs, { treeshake: true, ...options });
+}
+
 export async function serializeOptimizeAsync(
   fs: Record<string, string>,
   options: {
@@ -90,7 +105,7 @@ export async function serializeOptimizeAsync(
         ...options,
       },
     },
-    [reconcileTransformSerializerPlugin]
+    [treeShakeSerializer, reconcileTransformSerializerPlugin]
   );
 }
 

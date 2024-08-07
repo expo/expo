@@ -49,6 +49,7 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
+  allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
 

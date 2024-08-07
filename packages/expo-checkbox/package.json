@@ -35,6 +35,16 @@
     "@testing-library/react-native": "^12.5.1",
     "expo-module-scripts": "^3.0.0"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
+  },
   "jest": {
     "preset": "expo-module-scripts"
   }
