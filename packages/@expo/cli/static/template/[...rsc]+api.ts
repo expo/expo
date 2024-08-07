@@ -1,7 +1,10 @@
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import { renderRscAsync } from '@expo/server/build/middleware/rsc-standalone';
 
-const distFolder = process.env.EXPO_SERVER_DIST;
+import { join } from 'node:path';
+
+// Target the `dist/server` directory.
+const distFolder = join(__dirname, '../../..');
 
 const rscMiddleware = getRscMiddleware({
   config: {},

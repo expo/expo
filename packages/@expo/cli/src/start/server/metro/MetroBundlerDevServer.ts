@@ -175,13 +175,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
 
-      const outputFilepath =
-        route.page === rscPath ? path.join(appDir, '.' + rscPath + '.js') : filepath;
+      const artifactFilename =
+        route.page === rscPath
+          ? // HACK: Add RSC renderer to the output...
+            path.join(outputDir, '.' + rscPath + '.js')
+          : path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')));
 
-      const artifactFilename = path.join(
-        outputDir,
-        path.relative(appDir, outputFilepath.replace(/\.[tj]sx?$/, '.js'))
-      );
       if (contents) {
         let src = contents.src;
 

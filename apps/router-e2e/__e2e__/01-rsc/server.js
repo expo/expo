@@ -17,7 +17,6 @@ const port = portArg ? portArg.split('=')[1] : process.env.PORT || 3000;
 const CLIENT_BUILD_DIR = path.join(process.cwd(), distDirectory, 'client');
 const SERVER_BUILD_DIR = path.join(process.cwd(), distDirectory, 'server');
 
-process.env.EXPO_SERVER_DIST = SERVER_BUILD_DIR;
 const app = express();
 
 app.use(compression());
