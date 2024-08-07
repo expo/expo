@@ -1,23 +1,16 @@
 import ExpoModulesCore
 
 public final class FontLoaderModule: Module {
-  private let customNativeFonts: [String]
   // could be a Set, but to be able to pass to JS we keep it as an array
   private var registeredFonts: [String]
 
   public required init(appContext: AppContext) {
-    let nativeFonts = queryCustomNativeFonts()
-    self.customNativeFonts = nativeFonts
-    self.registeredFonts = nativeFonts
+    self.registeredFonts = queryCustomNativeFonts()
     super.init(appContext: appContext)
   }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoFontLoader")
-
-    Constants([
-      "customNativeFonts": self.customNativeFonts
-    ])
 
     // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
     // and potentially consumed outside of Expo (e.g. RN vector icons)
