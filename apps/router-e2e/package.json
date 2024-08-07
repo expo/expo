@@ -6,10 +6,12 @@
     "start": "expo start",
     "start:rsc": "E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 EXPO_E2E_RSC=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=rsc EXPO_PUBLIC_USE_RSC=1 expo start",
     "start:react-native-canary": "EXPO_E2E_RSC=1 E2E_ROUTER_SRC=react-native-canary expo start",
+    "start:headless": "E2E_ROUTER_SRC=headless yarn start",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@stylexjs/stylex": "^0.7.5",
     "expo": "~51.0.0",
     "expo-linking": "~6.3.0",
     "expo-router": "^3.0.0",
@@ -18,6 +20,8 @@
     "react-native-safe-area-context": "4.10.7"
   },
   "devDependencies": {
+    "@stylexjs/babel-plugin": "latest",
+    "react-strict-dom": "latest",
     "autoprefixer": "^10.4.16",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",
