@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.assignStylesValue = assignStylesValue;
 exports.getAppThemeGroup = getAppThemeGroup;
+exports.getAppThemeLightNoActionBarGroup = getAppThemeLightNoActionBarGroup;
 exports.getProjectStylesXMLPathAsync = getProjectStylesXMLPathAsync;
 exports.getStyleParent = getStyleParent;
 exports.getStylesGroupAsObject = getStylesGroupAsObject;
@@ -125,6 +126,18 @@ function removeStylesItem({
     }
   }
   return xml;
+}
+
+/**
+ * @deprecated Use `getAppThemeGroup` instead.
+ * Matching on both style name and parent leads to prebuild issues, as `AppTheme`
+ * style parent might be changed (when edge-to-edge is enabled, for example).
+ */
+function getAppThemeLightNoActionBarGroup() {
+  return {
+    name: 'AppTheme',
+    parent: 'Theme.AppCompat.Light.NoActionBar'
+  };
 }
 
 // This is a very common theme so make it reusable.
