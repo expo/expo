@@ -1,6 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeEventEmitter } from 'react-native';
 
+const MIN_DURATION = 400;
+const ANIMATION_DURATION = 150;
+
+const emitter = new NativeEventEmitter({
+  addListener() {},
+  removeListeners() {},
+});
+
 export default function DevLoadingView() {
   const show = useFastRefresh();
 
@@ -8,17 +16,41 @@ export default function DevLoadingView() {
 
   const toast = useMemo(
     () => (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 48 48"
-        width={24}
-        height={24}
-        stroke="#ffffff00">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width={24} height={24}>
         <path
-          fill="#ecedee"
+          fill="#ECEDEE"
           d="M36.764 1.716a1.477 1.477 0 0 0-2.325-.268L11.721 24.609c-1.464 1.493-.438 4.064 1.623 4.064h4.484a1 1 0 0 1 .889 1.46l-7.54 14.591a1.588 1.588 0 0 0 .059 1.56 1.477 1.477 0 0 0 2.325.268l22.718-23.161c1.464-1.493.438-4.064-1.623-4.064H28.53l8.295-16.051a1.588 1.588 0 0 0-.06-1.56Z"
         />
       </svg>
+    ),
+    []
+  );
+  const style = useMemo(
+    () => (
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+.__expo_fast_refresh {  
+  position: fixed;
+  pointer-events: none;
+  bottom: 8px;
+  left: 8px;
+  z-index: 9999;
+  display: flex;
+  background-color: #1B1D1E;
+  border: 1px solid #4D5155;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all ${ANIMATION_DURATION}ms;
+  opacity: 0; 
+  filter: blur(4px); 
+  transform: translateY(20%);
+}
+
+.__expo_fast_refresh_show { opacity: 1; filter: blur(0); transform: scale(1); }
+`,
+        }}
+      />
     ),
     []
   );
@@ -26,14 +58,25 @@ export default function DevLoadingView() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationClass, setAnimationClass] = useState('');
 
+  const refreshIndicator = useMemo(
+    () => (
+      <>
+        {style}
+
+        <div className={'__expo_fast_refresh ' + animationClass}>{toast}</div>
+      </>
+    ),
+    [animationClass, style, toast]
+  );
+
   useEffect(() => {
     timer.current && clearTimeout(timer.current);
 
     if (show) {
-      setAnimationClass('');
+      setAnimationClass('__expo_fast_refresh_show');
     } else {
       setIsAnimating(true);
-      setAnimationClass('__expo_popupHide');
+      setAnimationClass('');
       timer.current = setTimeout(() => {
         setIsAnimating(false);
       }, MIN_DURATION - ANIMATION_DURATION);
@@ -47,63 +90,17 @@ export default function DevLoadingView() {
     return null;
   }
 
-  return (
-    <>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-.__expo_fast_refresh {  
-  position: fixed;
-  pointer-events: none;
-  bottom: 8px;
-  left: 8px;
-  z-index: 9999;
-  display: flex;
-  background-color: #151718;
-  border: 1px solid #313538;
-  padding: 8px;
-  border-radius: 8px;
-  
-  animation: __fastrefreshtoast ${ANIMATION_DURATION}ms forwards;
-  
-  opacity: 0; filter: blur(4px); transform: translateY(20%);
+  return <>{refreshIndicator}</>;
 }
-
-.__expo_popupHide { animation: __fastrefreshtoastDown ${ANIMATION_DURATION}ms forwards; }
-
-@keyframes __fastrefreshtoast {
-  0% { opacity: 0; filter: blur(4px); transform: translateY(20%); }
-  100% { filter: blur(0); transform: scale(1); opacity: 1; }
-}
-
-@keyframes __fastrefreshtoastDown {
-  0% { filter: blur(0); transform: scale(1); opacity: 1; }
-  100% { opacity: 0; filter: blur(4px); transform: translateY(20%); }
-}`,
-        }}
-      />
-
-      <div className={'__expo_fast_refresh ' + animationClass}>{toast}</div>
-    </>
-  );
-}
-
-const emitter = new NativeEventEmitter({
-  addListener() {},
-  removeListeners() {},
-});
-
-const MIN_DURATION = 400;
-const ANIMATION_DURATION = 150;
 
 function useFastRefresh() {
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isShown, setShown] = useState(false);
   const duration = useRef<number | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     function handleShowMessage() {
-      setIsAnimating(true);
+      setShown(true);
       duration.current = Date.now();
     }
 
@@ -119,7 +116,7 @@ function useFastRefresh() {
 
       timeout.current = setTimeout(() => {
         timeout.current = null;
-        setIsAnimating(false);
+        setShown(false);
       }, min);
     }
     const show = emitter.addListener('devLoadingView:showMessage', handleShowMessage);
@@ -134,5 +131,5 @@ function useFastRefresh() {
     };
   }, [emitter]);
 
-  return isAnimating;
+  return isShown;
 }
