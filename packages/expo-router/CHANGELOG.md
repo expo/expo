@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - Added experimental server renderer. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - Added support for macOS platform. ([#29185](https://github.com/expo/expo/pull/29185) by [@hassankhan](https://github.com/hassankhan))
