@@ -639,14 +639,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const ssrManifest = new Map<string, string>();
 
-    clientBoundariesAsOpaqueIds.forEach((boundary) => {
-      if (boundary in moduleIdToSplitBundle) {
-        // Account for nullish values (bundle is in main chunk).
-        ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
-      } else {
-        throw new Error(`Could not find boundary "${boundary}" in the SSR manifest.`);
-      }
-    });
+    if (Object.keys(moduleIdToSplitBundle).length) {
+      clientBoundariesAsOpaqueIds.forEach((boundary) => {
+        if (boundary in moduleIdToSplitBundle) {
+          // Account for nullish values (bundle is in main chunk).
+          ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
+        } else {
+          throw new Error(
+            `Could not find boundary "${boundary}" in the SSR manifest. Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
+          );
+        }
+      });
+    } else {
+      clientBoundariesAsOpaqueIds.forEach((boundary) => {
+        ssrManifest.set(boundary, null);
+      });
+      debug('No split bundles');
+    }
 
     const files = new Map();
     // Export the static RSC files
