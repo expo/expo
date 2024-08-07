@@ -56,6 +56,9 @@ function getRscMiddleware(options) {
         let encodedInput = url.pathname.replace(
         // TODO: baseUrl support
         rscPathPrefix, '');
+        // First segment should be the target platform.
+        // This is used for aligning with production exports which are statically exported to a single location at build-time.
+        encodedInput = encodedInput.replace(new RegExp(`^${platform}/`), '');
         try {
             encodedInput = (0, exports.decodeInput)(encodedInput);
         }

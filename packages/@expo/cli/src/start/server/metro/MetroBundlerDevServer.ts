@@ -652,6 +652,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     } else {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
+        // @ts-expect-error
         ssrManifest.set(boundary, null);
       });
       debug('No split bundles');

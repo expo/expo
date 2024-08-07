@@ -32,7 +32,7 @@ import { getDevServer } from '../../getDevServer';
 const { createFromFetch, encodeReply } = RSDWClient;
 
 // NOTE: Ensured to start with `/`.
-const RSC_PATH = '/_flight'; // process.env.EXPO_RSC_PATH;
+const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
 
 let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
 

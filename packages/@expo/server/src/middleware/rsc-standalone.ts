@@ -72,12 +72,9 @@ export async function renderRscWithImportsAsync(
     {
       isExporting: true,
       resolveClientEntry(file: string) {
-        // Convert file path to a split chunk path.
-        console.log('Resolve client entry:', file, ssrManifest[file]);
         const [id, chunk] = ssrManifest[file];
-        // const id = path.relative(imports.serverRoot, file);
         return {
-          id: id,
+          id,
           chunks: chunk ? [chunk] : [],
         };
       },

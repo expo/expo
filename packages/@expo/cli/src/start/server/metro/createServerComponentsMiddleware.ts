@@ -372,7 +372,7 @@ export function createServerComponentsMiddleware(
       await Promise.all(
         Array.from(buildConfig).map(async ({ entries }) => {
           for (const { input } of entries || []) {
-            const destRscFile = path.join('_flight', encodeInput(input));
+            const destRscFile = path.join('_flight', platform, encodeInput(input));
 
             const pipe = await renderRscToReadableStream(
               {
@@ -403,7 +403,7 @@ export function createServerComponentsMiddleware(
     },
 
     middleware: createBuiltinAPIRequestHandler(
-      // Match `/_flight/[...path]`
+      // Match `/_flight/[platform]/[...path]`
       (req) => {
         return getFullUrl(req.url).pathname.startsWith(rscPathPrefix);
       },

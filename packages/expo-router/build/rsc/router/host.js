@@ -46,7 +46,7 @@ const fetch_1 = require("./fetch");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;
 // NOTE: Ensured to start with `/`.
-const RSC_PATH = '/_flight'; // process.env.EXPO_RSC_PATH;
+const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
 let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
 if (!BASE_PATH.startsWith('/')) {
     BASE_PATH = '/' + BASE_PATH;
