@@ -614,7 +614,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     console.log('Collected evaluated client boundaries:', clientBoundaries);
 
     // Run metro bundler and create the JS bundles/source maps.
-    const bundle = await this.legacySinglePageExportBundleAsync(options, extraOptions);
+    const bundle = await this.legacySinglePageExportBundleAsync(
+      {
+        ...options,
+        clientBoundaries,
+      },
+      extraOptions
+    );
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 

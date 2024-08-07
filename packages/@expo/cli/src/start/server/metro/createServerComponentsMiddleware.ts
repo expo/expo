@@ -23,7 +23,7 @@ const debug = require('debug')('expo:rsc') as typeof console.log;
 type SSRLoadModuleArtifactsFunc = (
   filePath: string,
   specificOptions?: Partial<ExpoMetroOptions>
-) => Promise<{ artifacts: SerialAsset[] }>;
+) => Promise<{ artifacts: SerialAsset[]; src: string }>;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
@@ -318,6 +318,36 @@ export function createServerComponentsMiddleware(
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
 
+    exportServerRenderer: async ({ platforms }: { platforms: string[] }, files: ExportAssetMap) => {
+      // This module is technically platform agnostic, we'll render it with web by default.
+      const renderer = await ssrLoadModuleArtifacts('expo-router/build/rsc/rsc-renderer', {
+        environment: 'react-server',
+        platform: 'web',
+      });
+
+      files.set(`_expo/rsc/rsc-renderer.js`, {
+        targetDomain: 'server',
+        contents: wrapBundle(renderer.src),
+      });
+
+      await Promise.all(
+        platforms.map(async (platform) => {
+          const renderer = await ssrLoadModuleArtifacts(
+            'expo-router/build/rsc/router/expo-definedRouter',
+            {
+              environment: 'react-server',
+              platform,
+            }
+          );
+
+          files.set(`_expo/rsc/${platform}/router.js`, {
+            targetDomain: 'server',
+            contents: wrapBundle(renderer.src),
+          });
+        })
+      );
+    },
+
     async exportRoutesAsync(
       {
         platform,
@@ -418,3 +448,10 @@ const encodeInput = (input: string) => {
   }
   return input + '.txt';
 };
+
+function wrapBundle(str: string) {
+  // Skip the metro runtime so debugging is a bit easier.
+  // Replace the __r() call with an export statement.
+  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
+  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+}

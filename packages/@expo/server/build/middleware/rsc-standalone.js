@@ -64,11 +64,11 @@ async function renderRscAsync(distFolder, args) {
         renderer: () => {
             // TODO: Read from a predetermined location in the dist folder.
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
-            return require(filePath);
+            return $$require_external(filePath);
         },
         router: () => {
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/router.js`);
-            return require(filePath);
+            return $$require_external(filePath);
         },
     }, args);
 }

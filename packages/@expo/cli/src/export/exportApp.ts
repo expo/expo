@@ -7,7 +7,7 @@ import path from 'path';
 import { createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import { exportFromServerAsync } from './exportStaticAsync';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -195,6 +195,18 @@ export async function exportAppAsync(
           }
         })
       );
+
+      if (devServer.isReactServerComponentsEnabled) {
+        await devServer.rscRenderer!.exportServerRenderer({ platforms }, files);
+
+        if (!(platforms.includes('web') && useServerRendering)) {
+          await exportApiRoutesStandaloneAsync(devServer, {
+            outputDir: outputPath,
+            files,
+            platform: 'web',
+          });
+        }
+      }
 
       // TODO: Use same asset system across platforms again.
       const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
