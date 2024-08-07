@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { RenderRscArgs } from './rsc';
+import type { RenderRscArgs } from './rsc';
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
@@ -31,15 +31,19 @@ function getSSRManifest(
   ]
 > {
   const filePath = path.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
+  // @ts-expect-error: Special syntax for expo/metro to access `require`
   return $$require_external(filePath);
 }
 
+// The import map allows us to use external modules from different bundling contexts.
+type ImportMap = {
+  renderer: () => Promise<typeof import('expo-router/src/rsc/rsc-renderer')>;
+  router: () => Promise<typeof import('expo-router/src/rsc/router/expo-definedRouter')>;
+};
+
 export async function renderRscWithImportsAsync(
   distFolder: string,
-  imports: {
-    renderer: () => Promise<typeof import('expo-router/src/rsc/rsc-renderer')>;
-    router: () => Promise<typeof import('expo-router/src/rsc/router/expo-definedRouter')>;
-  },
+  imports: ImportMap,
   { body, platform, searchParams, config, method, input, contentType }: RenderRscArgs
 ): Promise<ReadableStream<any>> {
   if (method === 'POST') {
@@ -58,7 +62,7 @@ export async function renderRscWithImportsAsync(
   }
 
   const ssrManifest = getSSRManifest(distFolder, platform);
-  console.log('SSR Manifest:', ssrManifest);
+
   return renderRsc(
     {
       body: body ?? undefined,
@@ -83,6 +87,7 @@ export async function renderRscWithImportsAsync(
     }
   );
 }
+
 export async function renderRscAsync(
   distFolder: string,
   args: RenderRscArgs
@@ -92,12 +97,13 @@ export async function renderRscAsync(
     distFolder,
     {
       renderer: () => {
-        // TODO: Read from a predetermined location in the dist folder.
         const filePath = path.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
+        // @ts-expect-error: Special syntax for expo/metro to access `require`
         return $$require_external(filePath);
       },
       router: () => {
         const filePath = path.join(distFolder, `_expo/rsc/${platform}/router.js`);
+        // @ts-expect-error: Special syntax for expo/metro to access `require`
         return $$require_external(filePath);
       },
     },

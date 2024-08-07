@@ -18,6 +18,7 @@ function getRscRenderContext(platform) {
 }
 function getSSRManifest(distFolder, platform) {
     const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
+    // @ts-expect-error: Special syntax for expo/metro to access `require`
     return $$require_external(filePath);
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType }) {
@@ -33,7 +34,6 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         entries.default.getBuildConfig(async (input) => []);
     }
     const ssrManifest = getSSRManifest(distFolder, platform);
-    console.log('SSR Manifest:', ssrManifest);
     return renderRsc({
         body: body ?? undefined,
         searchParams,
@@ -59,12 +59,13 @@ async function renderRscAsync(distFolder, args) {
     const platform = args.platform;
     return renderRscWithImportsAsync(distFolder, {
         renderer: () => {
-            // TODO: Read from a predetermined location in the dist folder.
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
+            // @ts-expect-error: Special syntax for expo/metro to access `require`
             return $$require_external(filePath);
         },
         router: () => {
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/router.js`);
+            // @ts-expect-error: Special syntax for expo/metro to access `require`
             return $$require_external(filePath);
         },
     }, args);
