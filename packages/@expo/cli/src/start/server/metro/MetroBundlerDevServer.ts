@@ -21,6 +21,7 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -74,7 +75,6 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import resolveFrom from 'resolve-from';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
