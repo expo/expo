@@ -32,6 +32,13 @@ function _fsExtra() {
   };
   return data;
 }
+function _jimp() {
+  const data = _interopRequireDefault(require("jimp"));
+  _jimp = function () {
+    return data;
+  };
+  return data;
+}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -159,7 +166,7 @@ async function setIconAsync(projectRoot, {
   } else {
     await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_WEBP);
   }
-  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, monochromeImage, isAdaptive);
+  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, backgroundColor, monochromeImage, isAdaptive);
   return true;
 }
 
@@ -197,7 +204,7 @@ async function generateRoundIconAsync(projectRoot, icon, backgroundImage, backgr
  * - A backgroundImage is provided, or
  * - A backgroundColor was specified
  */
-async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, monochromeImage, isAdaptive) {
+async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, backgroundColor, monochromeImage, isAdaptive) {
   if (monochromeImage) {
     await generateMonochromeImageAsync(projectRoot, {
       icon: monochromeImage,
@@ -206,7 +213,7 @@ async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgrou
     });
   }
   await generateMultiLayerImageAsync(projectRoot, {
-    backgroundColor: 'transparent',
+    backgroundColor,
     backgroundImage,
     backgroundImageCacheFolder: 'android-adaptive-background',
     outputImageFileName: IC_LAUNCHER_FOREGROUND_WEBP,
@@ -275,25 +282,22 @@ async function generateMultiLayerImageAsync(projectRoot, {
       src: icon,
       scale,
       // backgroundImage overrides backgroundColor
-      backgroundColor: backgroundImage ? 'transparent' : backgroundColor ?? 'transparent',
-      borderRadiusRatio
+      backgroundColor: backgroundColor ?? 'transparent',
+      borderRadiusRatio,
+      foreground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
     });
     if (backgroundImage) {
       const backgroundLayer = await generateIconAsync(projectRoot, {
         cacheType: backgroundImageCacheFolder,
         src: backgroundImage,
         scale,
-        backgroundColor: 'transparent',
+        backgroundColor: backgroundColor ?? 'transparent',
         borderRadiusRatio
       });
-      if (backgroundImageFileName) {
-        await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, backgroundImageFileName), backgroundLayer);
-      } else {
-        iconLayer = await (0, _imageUtils().compositeImagesAsync)({
-          foreground: iconLayer,
-          background: backgroundLayer
-        });
-      }
+      iconLayer = await (0, _imageUtils().compositeImagesAsync)({
+        foreground: iconLayer,
+        background: backgroundLayer
+      });
     } else if (backgroundImageFileName) {
       // Remove any instances of ic_launcher_background.png that are there from previous icons
       await deleteIconNamedAsync(projectRoot, backgroundImageFileName);
@@ -339,19 +343,22 @@ async function generateIconAsync(projectRoot, {
   src,
   scale,
   backgroundColor,
-  borderRadiusRatio
+  borderRadiusRatio,
+  foreground
 }) {
-  const iconSizePx = ICON_BASELINE_PIXEL_SIZE * scale;
-  return (await (0, _imageUtils().generateImageAsync)({
-    projectRoot,
-    cacheType
-  }, {
-    src,
-    width: iconSizePx,
-    height: iconSizePx,
-    resizeMode: 'contain',
-    backgroundColor,
-    borderRadius: borderRadiusRatio ? iconSizePx * borderRadiusRatio : undefined
-  })).source;
+  const baseline = foreground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
+  const iconSizePx = baseline * scale;
+  const image = await _jimp().default.read(src);
+  const newSize = iconSizePx * 0.4;
+  image.scaleToFit(newSize, newSize);
+  let background = await _jimp().default.create(iconSizePx, iconSizePx, foreground ? 'transparent' : backgroundColor);
+  // Calculate the position to center the scaled image on the new background
+  const x = (iconSizePx - image.bitmap.width) / 2;
+  const y = (iconSizePx - image.bitmap.height) / 2;
+  if (borderRadiusRatio) {
+    background = background.circle(() => {});
+  }
+  const output = background.composite(image, x, y);
+  return output.getBufferAsync(_jimp().default.MIME_PNG);
 }
 //# sourceMappingURL=withAndroidIcons.js.map
