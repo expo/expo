@@ -14,9 +14,7 @@ extension UIView {
 
   func safeAreaInsetsOrEmulate() -> UIEdgeInsets {
     if nativeSafeAreaSupport {
-      if #available(iOS 11.0, *) {
-        return safeAreaInsets
-      }
+      return safeAreaInsets
     }
     return emulatedSafeAreaInsets()
   }

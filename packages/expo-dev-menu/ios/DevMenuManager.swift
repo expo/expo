@@ -227,7 +227,6 @@ open class DevMenuManager: NSObject {
     }
   }
 
-  @available(iOS 12.0, *)
   var userInterfaceStyle: UIUserInterfaceStyle {
     return UIUserInterfaceStyle.unspecified
   }

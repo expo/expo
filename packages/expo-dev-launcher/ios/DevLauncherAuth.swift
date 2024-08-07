@@ -19,31 +19,23 @@ public class DevLauncherAuth: Module {
       }
       self.redirectPromise = promise
 
-      if #available(iOS 11.0, *) {
-        let completionHandler: (URL?, Error?) -> Void = { [weak self] callbackURL, error in
-          // check if flow didn't already finish
-          guard let redirectPromise = self?.redirectPromise else {
-            return
-          }
-
-          if let callbackURL, error == nil {
-            let url = callbackURL.absoluteString
-            redirectPromise.resolve(["type": "success", "url": url])
-          } else {
-            redirectPromise.resolve(["type": "cancel"])
-          }
-          self?.flowDidFinish()
+      let completionHandler: (URL?, Error?) -> Void = { [weak self] callbackURL, error in
+        // check if flow didn't already finish
+        guard let redirectPromise = self?.redirectPromise else {
+          return
         }
 
-        self.authSession = SFAuthenticationSession(url: authURL, callbackURLScheme: redirectURL, completionHandler: completionHandler)
-        self.authSession?.start()
-      } else {
-        promise.resolve([
-          "type": "cancel",
-          "message": "openAuthSessionAsync requires iOS 11 or greater"
-        ])
-        self.flowDidFinish()
+        if let callbackURL, error == nil {
+          let url = callbackURL.absoluteString
+          redirectPromise.resolve(["type": "success", "url": url])
+        } else {
+          redirectPromise.resolve(["type": "cancel"])
+        }
+        self?.flowDidFinish()
       }
+
+      self.authSession = SFAuthenticationSession(url: authURL, callbackURLScheme: redirectURL, completionHandler: completionHandler)
+      self.authSession?.start()
     }
 
     AsyncFunction("getAuthSchemeAsync") { () -> String in

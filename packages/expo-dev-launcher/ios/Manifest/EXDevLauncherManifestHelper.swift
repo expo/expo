@@ -58,7 +58,6 @@ public class EXDevLauncherManifestHelper: NSObject {
   }
 
   @objc
-  @available(iOS 12.0, *)
   public static func exportManifestUserInterfaceStyle(_ userInterfaceStyle: String?) -> UIUserInterfaceStyle {
     switch userInterfaceStyle {
       case "light":
