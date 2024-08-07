@@ -25,6 +25,8 @@ test.describe(inputDir, () => {
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
       E2E_ROUTER_ASYNC: 'development',
+      E2E_RSC_ENABLED: '1',
+      E2E_CANARY_ENABLED: '1',
 
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',
