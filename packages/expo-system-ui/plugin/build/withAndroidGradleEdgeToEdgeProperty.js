@@ -5,7 +5,7 @@ const config_plugins_1 = require("expo/config-plugins");
 const withAndroidGradleEdgeToEdgeProperty = (config) => {
     const comment = {
         type: 'comment',
-        value: 'Enable edge to edge',
+        value: 'Enable edge-to-edge',
     };
     return (0, config_plugins_1.withGradleProperties)(config, async (config) => {
         const { experiments = {} } = config;

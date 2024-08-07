@@ -3,7 +3,7 @@ import { ConfigPlugin, withGradleProperties } from 'expo/config-plugins';
 export const withAndroidGradleEdgeToEdgeProperty: ConfigPlugin = (config) => {
   const comment = {
     type: 'comment',
-    value: 'Enable edge to edge',
+    value: 'Enable edge-to-edge',
   } as const;
 
   return withGradleProperties(config, async (config) => {
