@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Upgrade `glob@7` to `glob@10`. ([#29894](https://github.com/expo/expo/pull/29894) by [@byCedric](https://github.com/byCedric))
-- Don't recreate `AppTheme` on prebuild if its parent changed. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
+- Deprecated the Android style method `getAppThemeLightNoActionBarGroup` and replaced it with `getAppThemeGroup`, which does not override the parent theme if its parent theme changes. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 
 ## 8.0.8 - 2024-07-11
 
