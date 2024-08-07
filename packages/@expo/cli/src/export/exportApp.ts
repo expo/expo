@@ -156,6 +156,7 @@ export async function exportAppAsync(
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
             files,
+            isServerHosted: devServer.isReactServerComponentsEnabled,
           });
 
           if (platform === 'web') {

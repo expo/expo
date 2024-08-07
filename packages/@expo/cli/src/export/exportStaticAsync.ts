@@ -198,6 +198,7 @@ export async function exportFromServerAsync(
     platform,
     includeSourceMaps,
     files,
+    isServerHosted: true,
   });
 
   if (resources.assets) {
