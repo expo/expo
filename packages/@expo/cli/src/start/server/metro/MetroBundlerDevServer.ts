@@ -592,7 +592,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return this.legacySinglePageExportBundleAsync(options, extraOptions);
   }
 
-  async singlePageReactServerComponentExportAsync(
+  private async singlePageReactServerComponentExportAsync(
     options: Omit<
       ExpoMetroOptions,
       'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
