@@ -28,7 +28,7 @@
     "wrap-ansi": "^7"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
+    "@emotion/react": "^11.13.0",
     "@expo/styleguide": "^8.2.3",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/styleguide-icons": "2.0.0-alpha.7",
@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.6.4",
-    "@emotion/jest": "^11.11.0",
+    "@emotion/jest": "^11.13.0",
     "@expo/spawn-async": "^1.7.2",
     "@ocular-d/vale-bin": "^2.29.6",
     "@tailwindcss/typography": "^0.5.12",
