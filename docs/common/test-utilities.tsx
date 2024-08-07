@@ -1,3 +1,4 @@
+import { createSerializer } from '@emotion/jest';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { render, RenderOptions } from '@testing-library/react';
 import GithubSlugger from 'github-slugger';
@@ -27,4 +28,8 @@ export function renderWithTestRouter(element: ReactElement, router: Partial<Next
   return render(
     <RouterContext.Provider value={router as NextRouter}>{element}</RouterContext.Provider>
   );
+}
+
+export function attachEmotionSerializer(expect: any) {
+  expect.addSnapshotSerializer(createSerializer({ includeStyles: false }));
 }
