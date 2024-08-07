@@ -7,7 +7,6 @@
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { logMetroError } from './metroErrorInterface';
 import { stripAnsi } from '../../../utils/ansi';
@@ -84,7 +83,7 @@ export function createServerComponentsMiddleware(
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
     return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
-      resolveFrom(projectRoot, 'expo-router/src/rsc/router/expo-definedRouter.ts'),
+      'expo-router/build/rsc/router/expo-definedRouter',
       {
         environment: 'react-server',
         platform,
@@ -177,7 +176,7 @@ export function createServerComponentsMiddleware(
 
     // TODO: Extract CSS Modules / Assets from the bundler process
     const renderer = await ssrLoadModule<typeof import('expo-router/src/rsc/rsc-renderer')>(
-      'expo-router/src/rsc/rsc-renderer.ts',
+      'expo-router/build/rsc/rsc-renderer',
       {
         environment: 'react-server',
         platform,
@@ -222,7 +221,10 @@ export function createServerComponentsMiddleware(
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
-    assert(isExporting != null, 'The server must be started before calling ssrLoadModule.');
+    assert(
+      isExporting != null,
+      'The server must be started before calling renderRscToReadableStream.'
+    );
 
     if (method === 'POST') {
       assert(body, 'Server request must be provided when method is POST (server actions)');

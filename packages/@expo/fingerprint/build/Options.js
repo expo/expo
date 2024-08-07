@@ -9,6 +9,7 @@ const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const Config_1 = require("./Config");
 const SourceSkips_1 = require("./sourcer/SourceSkips");
+const Path_1 = require("./utils/Path");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 exports.DEFAULT_IGNORE_PATHS = [
     exports.FINGERPRINT_IGNORE_FILENAME,
@@ -88,7 +89,7 @@ async function normalizeOptionsAsync(projectRoot, options) {
         // Explicit options
         ...options,
         // These options are computed by both default and explicit options, so we put them last.
-        ignorePaths: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
+        ignorePathMatchObjects: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
     };
 }
 exports.normalizeOptionsAsync = normalizeOptionsAsync;
@@ -111,6 +112,6 @@ async function collectIgnorePathsAsync(projectRoot, pathsFromConfig, options) {
         }
     }
     catch { }
-    return ignorePaths;
+    return (0, Path_1.buildPathMatchObjects)(ignorePaths);
 }
 //# sourceMappingURL=Options.js.map
