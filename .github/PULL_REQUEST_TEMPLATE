@@ -19,9 +19,9 @@ Please describe how you tested this change and how a reviewer could reproduce yo
 # Checklist
 
 <!--
-Please check the appropriate items below if they apply to your diff. This is required for changes to Expo modules.
+Please check the appropriate items below if they apply to your diff.
 -->
 
-- [ ] Documentation is up to date to reflect these changes (eg: https://docs.expo.dev and README.md).
-- [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
+- [ ] I added a `changelog.md` entry and rebuilt the sources according to [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
 - [ ] This diff will work correctly for `npx expo prebuild` & EAS Build (eg: updated a module plugin).
+- [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
