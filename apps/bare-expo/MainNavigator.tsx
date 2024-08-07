@@ -96,10 +96,17 @@ function TabNavigator() {
         headerShown: false,
         tabBarActiveTintColor: theme.text.info,
         tabBarInactiveTintColor: theme.text.default,
+        tabBarStyle: {
+          backgroundColor: theme.background.default,
+          borderTopColor: theme.border.default,
+        },
       }}
-      safeAreaInsets={{
-        top: 5,
-      }}
+      safeAreaInsets={Platform.select({
+        android: {
+          bottom: 5,
+        },
+        default: undefined,
+      })}
       initialRouteName="test-suite">
       {Object.keys(routes).map((name) => (
         <Tab.Screen

@@ -3,7 +3,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { HeaderStyleInterpolators } from '@react-navigation/stack';
 import { ThemeType } from 'ThemeProvider';
 import * as React from 'react';
-import { View, Platform, TouchableOpacity } from 'react-native';
+import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { ThemeToggle } from '../../../common/ThemeToggler';
 
@@ -14,17 +14,16 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
     },
     screenOptions: () => ({
       headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
-      headerStyle: Platform.select({
-        default: {
-          backgroundColor: theme.background.default,
-          borderBottomColor: theme.border.secondary,
-        },
-        android: {
-          elevation: 0,
-          borderBottomWidth: 1,
-          borderBottomColor: theme.border.secondary,
-        },
-      }),
+      headerStyle: {
+        backgroundColor: theme.background.default,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.border.secondary,
+        ...Platform.select({
+          android: {
+            elevation: 0,
+          },
+        }),
+      },
       headerTintColor: theme.icon.info,
       headerTitleStyle: {
         color: theme.text.default,
@@ -38,7 +37,7 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
             alignItems: 'center',
             marginRight: 16,
             marginBottom: 4,
-            gap: 12,
+            gap: 14,
           }}>
           <TouchableOpacity onPress={() => navigation.navigate('searchNavigator')}>
             <Ionicons

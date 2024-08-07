@@ -200,7 +200,7 @@ function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
           paddingBottom: isRunningInBareExpo ? 0 : bottom,
           paddingLeft: left,
           paddingRight: right,
-          borderTopColor: theme.border.secondary,
+          borderColor: theme.border.default,
           backgroundColor: theme.background.default,
         },
       ]}>
