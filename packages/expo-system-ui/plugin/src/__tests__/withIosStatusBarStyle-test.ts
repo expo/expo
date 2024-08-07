@@ -28,7 +28,7 @@ describe(withIosStatusBarStyle, () => {
     expect(modResults).toStrictEqual({ UIStatusBarStyle: 'UIStatusBarStyleDarkContent' });
   });
 
-  it(`doesn't update UIStatusBarStyle property when edge to edge is disabled`, async () => {
+  it(`doesn't update UIStatusBarStyle property when edge-to-edge is disabled`, async () => {
     const { modResults } = await compileMockModWithResultsAsync(
       {
         experiments: { edgeToEdge: false },

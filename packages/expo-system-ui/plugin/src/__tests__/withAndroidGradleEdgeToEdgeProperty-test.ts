@@ -23,7 +23,7 @@ describe(withAndroidGradleEdgeToEdgeProperty, () => {
     );
 
     expect(modResults).toStrictEqual([
-      { type: 'comment', value: 'Enable edge to edge' },
+      { type: 'comment', value: 'Enable edge-to-edge' },
       { key: 'edgeToEdgeEnabled', type: 'property', value: 'true' },
     ]);
   });
@@ -35,14 +35,14 @@ describe(withAndroidGradleEdgeToEdgeProperty, () => {
         plugin: withAndroidGradleEdgeToEdgeProperty,
         mod: withGradleProperties,
         modResults: [
-          { type: 'comment', value: 'Enable edge to edge' },
+          { type: 'comment', value: 'Enable edge-to-edge' },
           { key: 'edgeToEdgeEnabled', type: 'property', value: 'true' },
         ],
       }
     );
 
     expect(modResults).toStrictEqual([
-      { type: 'comment', value: 'Enable edge to edge' },
+      { type: 'comment', value: 'Enable edge-to-edge' },
       { key: 'edgeToEdgeEnabled', type: 'property', value: 'false' },
     ]);
   });
