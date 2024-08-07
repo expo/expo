@@ -316,6 +316,26 @@ export default function User() {
 }
 ```
 
+{/* prettier-ignore */}
+{/*
+TODO: REMOVE COMMENT WHEN https://github.com/expo/expo/pull/30268 IS PUBLISHED
+
+## Array support
+
+URL parameters that are present multiple times will be grouped together as an array.
+
+```tsx app/hash.tsx
+import { router, useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  // If the current URL is `/route?myParam=1&myParam=2
+  const { myParam } = useLocalSearchParams();
+  // myParam === ["1", "2"]
+}
+```
+
+\*/}
+
 ## Hash support
 
 The URL [hash](https://developer.mozilla.org/en-US/docs/Web/API/URL/hash) is a string that follows the `#` symbol in a URL. It is commonly used on websites to link to a specific section of a page, but it can also be used to store data. Expo Router treats the hash as a special search parameter using the name `#`. It can be accessed and modified using the same hooks and APIs from [search parameters](#local-versus-global-search-parameters).

@@ -6,7 +6,7 @@ podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {
 
 prepare_react_native_project!
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
   :deterministic_uuids => false
 

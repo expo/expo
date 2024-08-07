@@ -2267,25 +2267,25 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
-  EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
-  EXJSONUtils: fa6c5cd41afdcec8f0eca28a78b96abb86c28493
-  EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
-  expo-dev-launcher: c31fb8f1eae3f8a4a26ab3f27ea50376c5c82567
-  expo-dev-menu: e57a168ee12b99a3cc9f081a7ff107eba6ac7020
-  expo-dev-menu-interface: 3e97a7c7d79caff5f62acb00d053d4ec86d0ca1f
-  ExpoClipboard: 6483bd23f5868c9e0a481f261f36aaa5d4f70082
-  ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
-  ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
-  ExpoMediaLibrary: d94d530648c1051a09fa906e93b9b6eb225d70db
-  ExpoModulesCore: c7ccbb5dcc627e35eb5ff8b9802cf7ca25e9738d
-  ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
-  EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
-  EXUpdates: 71c3f060330b1e4974029d0b5e3cd12f55d8c341
-  EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
+  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
+  EXJSONUtils: 047b3da7cef41bb7b6b595bb9867563e964fb0d3
+  EXManifests: 50d7a3c95ffe2080a91462b0cb6926ecb18b20ad
+  expo-dev-launcher: a5b0aa864a2401e6b15909e23f2f02af6ed62bfb
+  expo-dev-menu: bbaf4067945864effc93b40070219d07734fa2e4
+  expo-dev-menu-interface: 3d0293c6a9330f01d4601c347c7a695f8947cd30
+  ExpoClipboard: 811323cf2da38ce4e4a07ceb8339a0ee6f314552
+  ExpoFileSystem: 4fe2130545fed1936aa8eb3022d4720036f00824
+  ExpoImage: 8bc89db2f2c7705064afe2083c450f4147c0ea7c
+  ExpoMediaLibrary: ff80f9210432e0e77428c24ed9ea9eb61e8f5d52
+  ExpoModulesCore: 91a839f26cac0bc9d4f90492eeceb802830dbf35
+  ExpoModulesTestCore: 0ac6cceba4dce3798d9c2c9ab755ce307ca34545
+  EXStructuredHeaders: 404356f2621ca76fd54e8c5c686091d0fa00cbc7
+  EXUpdates: c3281515ce53277b8209e4acd2804eb3910cabed
+  EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: ef2d8805f4910e0fd527cca94cf657ef5ec74f0a
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   hermes-engine: a8e85fde08f5659a7a3389b3cd49805835e42c07
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -2293,7 +2293,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 045d6ecaa59d826c5736dfba0b2f4083ff8d79df
+  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: ad5d0aa8ca58822fc812b7d1d14cadd35655284e
   RCTRequired: 669d843dfd6d4b798d1528efce99132fd5aa0034
   RCTTypeSafety: a897280f4afdd7317043bccf8d0eef28c8f04218
@@ -2357,6 +2357,6 @@ SPEC CHECKSUMS:
   sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: ac38ef8dfa1ce56514c8197f19175e97ab7e7c2d
 
-PODFILE CHECKSUM: ebdb586983bd08e4e9e7f3ec6f7f22082841ac94
+PODFILE CHECKSUM: 1ef3be393d92f7edf59a545cfa76162a99f60143
 
 COCOAPODS: 1.15.2

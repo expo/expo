@@ -53,6 +53,7 @@
     "@expo/websql": "^1.0.1"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^12.5.2",
     "@types/better-sqlite3": "^7.6.6",
     "better-sqlite3": "^11.0.0",
     "expo-module-scripts": "^3.0.0",
