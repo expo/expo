@@ -312,18 +312,11 @@ export function createServerComponentsMiddleware(
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
 
-    exportServerRenderer: async ({ platforms }: { platforms: string[] }, files: ExportAssetMap) => {
-      // This module is technically platform agnostic, we'll render it with web by default.
-      const renderer = await ssrLoadModuleArtifacts('expo-router/build/rsc/rsc-renderer', {
-        environment: 'react-server',
-        platform: 'web',
-      });
-
-      files.set(`_expo/rsc/rsc-renderer.js`, {
-        targetDomain: 'server',
-        contents: wrapBundle(renderer.src),
-      });
-
+    /** Export the production server renderers which are used for dynamic rendering. */
+    exportServerRenderersAsync: async (
+      { platforms }: { platforms: string[] },
+      files: ExportAssetMap
+    ) => {
       await Promise.all(
         platforms.map(async (platform) => {
           const renderer = await ssrLoadModuleArtifacts(

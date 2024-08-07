@@ -1,9 +1,18 @@
 "use strict";
+/**
+ * Copyright © 2024 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRscAsync = exports.renderRscWithImportsAsync = void 0;
+// This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
+const rsc_renderer_1 = require("expo-router/build/rsc/rsc-renderer");
 const node_path_1 = __importDefault(require("node:path"));
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map();
@@ -26,7 +35,6 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         if (!body)
             throw new Error('Server request must be provided when method is POST (server actions)');
     }
-    const { renderRsc } = await imports.renderer();
     const context = getRscRenderContext(platform);
     const entries = await imports.router();
     if (method === 'POST') {
@@ -34,7 +42,7 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         entries.default.getBuildConfig(async (input) => []);
     }
     const ssrManifest = getSSRManifest(distFolder, platform);
-    return renderRsc({
+    return (0, rsc_renderer_1.renderRsc)({
         body: body ?? undefined,
         searchParams,
         context,
@@ -58,11 +66,6 @@ exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
 async function renderRscAsync(distFolder, args) {
     const platform = args.platform;
     return renderRscWithImportsAsync(distFolder, {
-        renderer: () => {
-            const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
-            // @ts-expect-error: Special syntax for expo/metro to access `require`
-            return $$require_external(filePath);
-        },
         router: () => {
             const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/router.js`);
             // @ts-expect-error: Special syntax for expo/metro to access `require`

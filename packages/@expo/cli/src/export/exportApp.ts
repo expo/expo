@@ -197,7 +197,7 @@ export async function exportAppAsync(
       );
 
       if (devServer.isReactServerComponentsEnabled) {
-        await devServer.rscRenderer!.exportServerRenderer({ platforms }, files);
+        await devServer.rscRenderer!.exportServerRenderersAsync({ platforms }, files);
 
         if (!(platforms.includes('web') && useServerRendering)) {
           await exportApiRoutesStandaloneAsync(devServer, {

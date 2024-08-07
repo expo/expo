@@ -1,3 +1,13 @@
+/**
+ * Copyright © 2024 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+// This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
+import { renderRsc } from 'expo-router/build/rsc/rsc-renderer';
 import path from 'node:path';
 
 import type { RenderRscArgs } from './rsc';
@@ -37,8 +47,7 @@ function getSSRManifest(
 
 // The import map allows us to use external modules from different bundling contexts.
 type ImportMap = {
-  renderer: () => Promise<typeof import('expo-router/src/rsc/rsc-renderer')>;
-  router: () => Promise<typeof import('expo-router/src/rsc/router/expo-definedRouter')>;
+  router: () => Promise<typeof import('expo-router/build/rsc/router/expo-definedRouter')>;
 };
 
 export async function renderRscWithImportsAsync(
@@ -50,8 +59,6 @@ export async function renderRscWithImportsAsync(
     if (!body)
       throw new Error('Server request must be provided when method is POST (server actions)');
   }
-
-  const { renderRsc } = await imports.renderer();
 
   const context = getRscRenderContext(platform);
 
@@ -96,11 +103,6 @@ export async function renderRscAsync(
   return renderRscWithImportsAsync(
     distFolder,
     {
-      renderer: () => {
-        const filePath = path.join(distFolder, `_expo/rsc/${platform}/rsc-renderer.js`);
-        // @ts-expect-error: Special syntax for expo/metro to access `require`
-        return $$require_external(filePath);
-      },
       router: () => {
         const filePath = path.join(distFolder, `_expo/rsc/${platform}/router.js`);
         // @ts-expect-error: Special syntax for expo/metro to access `require`
