@@ -7,9 +7,7 @@ public final class FileSystemNextModule: Module {
     Name("FileSystemNext")
 
     AsyncFunction("download") { (url: URL, to: FileSystemPath, promise: Promise) in
-      let downloadTask = URLSession.shared.downloadTask(with: url) {
-        urlOrNil, responseOrNil, errorOrNil in
-
+      let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
           promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
           return
@@ -22,7 +20,9 @@ public final class FileSystemNextModule: Module {
           promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
           return
         }
-        guard let fileURL = urlOrNil else { return }
+        guard let fileURL = urlOrNil else {
+          return
+        }
 
         do {
           if let to = to as? FileSystemDirectory {
