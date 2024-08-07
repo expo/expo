@@ -151,7 +151,6 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
                 method: 'POST',
                 // @ts-expect-error: non-standard feature for streaming.
                 duplex: 'half',
-                reactNative: { textStreaming: true },
                 ...requestOpts,
                 headers: {
                     ...requestOpts.headers,
@@ -179,8 +178,6 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
-            // @ts-expect-error: TODO: Add expo streaming fetch
-            reactNative: { textStreaming: true },
         });
     delete prefetched[url];
     const data = createFromFetch(checkStatus(response), options);
@@ -221,8 +218,6 @@ const prefetchRSC = (input, searchParamsString) => {
             headers: {
                 'expo-platform': process.env.EXPO_OS,
             },
-            // @ts-expect-error: non-standard feature for streaming.
-            reactNative: { textStreaming: true },
         });
     }
 };
