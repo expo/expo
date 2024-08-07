@@ -14,7 +14,6 @@ import android.media.MediaActionSound
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.util.Rational
 import android.util.Size
 import android.view.OrientationEventListener
 import android.view.Surface
@@ -38,8 +37,6 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
-import androidx.camera.core.ViewPort
-import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -98,7 +95,7 @@ class ExpoCameraView(
   CameraViewInterface {
   private val currentActivity
     get() = appContext.currentActivity as? AppCompatActivity
-            ?: throw Exceptions.MissingActivity()
+      ?: throw Exceptions.MissingActivity()
 
   val orientationEventListener by lazy {
     object : OrientationEventListener(currentActivity) {
@@ -335,7 +332,7 @@ class ExpoCameraView(
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
                     event.cause?.message
-                    ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
+                      ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
                   )
                 )
               }
@@ -343,7 +340,7 @@ class ExpoCameraView(
           }
         }
     }
-    ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
+      ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
   }
 
   @SuppressLint("UnsafeOptInUsageError")
@@ -447,9 +444,7 @@ class ExpoCameraView(
     }.setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
   } else {
     ResolutionSelector.Builder().apply {
-      if (ratio != CameraRatio.ONE_ONE) {
-        setAspectRatioStrategy(ratio.mapToStrategy())
-      }
+      setAspectRatioStrategy(ratio.mapToStrategy())
       setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
     }.build()
   }
