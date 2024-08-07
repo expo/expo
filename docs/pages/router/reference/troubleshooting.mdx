@@ -15,10 +15,7 @@ If `process.env.EXPO_ROUTER_APP_ROOT` is not defined you'll see the following er
   ]}
 />
 
-This can happen when:
-
-- The project is using an `expo` version lower than `expo@^46.0.13`. Version `46.0.13` enables context modules and injects `process.env.EXPO_ROUTER_APP_ROOT` into the process.
-- The babel plugin `expo-router/babel` is not being used in the project **babel.config.js**. You can try clearing the cache with:
+This can happen when the Babel plugin `expo-router/babel` is not used in the project **babel.config.js**. You can try clearing the cache with:
 
 <Terminal cmd={['$ npx expo start --clear']} />
 
@@ -41,6 +38,4 @@ registerRootComponent(App);
 
 ## `require.context` not enabled
 
-This can happen if you are using an `expo` version lower than `expo@^46.0.13`. Version `46.0.13` enables context modules and injects `process.env.EXPO_ROUTER_APP_ROOT` into the process.
-
-This can also be the result of using a custom version of `@expo/metro-config` that does not enable context modules. Expo Router requires the project **metro.config.js** to use `expo-router/metro` as the default configuration. Delete the **metro.config.js**, or extend `expo/metro-config`. See [Customizing metro](/guides/customizing-metro/) for more information.
+This can happen when using a custom version of `@expo/metro-config` that does not enable context modules. Expo Router requires the project **metro.config.js** to use `expo-router/metro` as the default configuration. Delete the **metro.config.js**, or extend `expo/metro-config`. See [Customizing metro](/guides/customizing-metro/) for more information.
