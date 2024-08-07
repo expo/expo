@@ -571,6 +571,104 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
+  async nativeExportBundleAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ): Promise<{
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files?: ExportAssetMap;
+  }> {
+    if (this.isReactServerComponentsEnabled) {
+      return this.singlePageReactServerComponentExportAsync(options, extraOptions);
+    }
+
+    return this.legacySinglePageExportBundleAsync(options, extraOptions);
+  }
+
+  async singlePageReactServerComponentExportAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ): Promise<{
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files: ExportAssetMap;
+  }> {
+    // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
+    const clientBoundaries = await this.rscRenderer!.getExpoRouterClientReferencesAsync({
+      platform: options.platform,
+    });
+
+    console.log('Collected evaluated client boundaries:', clientBoundaries);
+
+    // Run metro bundler and create the JS bundles/source maps.
+    const bundle = await this.legacySinglePageExportBundleAsync(options, extraOptions);
+
+    const serverRoot = getMetroServerRoot(this.projectRoot);
+
+    // TODO: Perform this transform in the bundler.
+    const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
+      path.relative(serverRoot, boundary)
+    );
+    const moduleIdToSplitBundle = (
+      bundle.artifacts
+        .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
+        .filter(Boolean)
+        .flat() as Record<string, string>[]
+    ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
+
+    debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
+
+    const ssrManifest = new Map<string, string>();
+
+    clientBoundariesAsOpaqueIds.forEach((boundary) => {
+      if (boundary in moduleIdToSplitBundle) {
+        // Account for nullish values (bundle is in main chunk).
+        ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
+      } else {
+        throw new Error(`Could not find boundary "${boundary}" in the SSR manifest.`);
+      }
+    });
+
+    const files = new Map();
+    // Export the static RSC files
+    await this.rscRenderer!.exportRoutesAsync(
+      {
+        platform: options.platform,
+        ssrManifest,
+      },
+      files
+    );
+
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${options.platform}/ssr-manifest.json`, {
+      targetDomain: 'server',
+      contents: JSON.stringify(
+        // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+        Object.fromEntries(
+          Array.from(ssrManifest.entries()).map(([key, value]) => [
+            path.join(serverRoot, key),
+            [key, value],
+          ])
+        )
+      ),
+    });
+
+    return { ...bundle, files };
+  }
+
   async legacySinglePageExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,

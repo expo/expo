@@ -23,6 +23,7 @@ import {
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -41,8 +42,6 @@ type Options = {
   reactCompiler: boolean;
   maxWorkers?: number;
   isExporting: boolean;
-  includeRSC: boolean;
-  platform: string;
   exp?: ExpoConfig;
 };
 
@@ -133,18 +132,6 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
   });
 }
 
-export async function getClientBoundariesAsync(
-  devServer: MetroBundlerDevServer,
-  { files = new Map(), platform }: { files?: ExportAssetMap; platform: string }
-) {
-  return await devServer.emitRscFiles(
-    {
-      platform,
-    },
-    files
-  );
-}
-
 /** Perform all fs commits */
 export async function exportFromServerAsync(
   projectRoot: string,
@@ -153,7 +140,6 @@ export async function exportFromServerAsync(
     outputDir,
     baseUrl,
     exportServer,
-    includeRSC,
     includeSourceMaps,
     routerRoot,
     files = new Map(),
@@ -175,49 +161,38 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const { serverManifest, manifest, renderAsync } = await devServer.getStaticRenderFunctionAsync();
-  let clientBoundaries: string[] = [];
-
-  if (includeRSC) {
-    const rscResults = await getClientBoundariesAsync(devServer, {
-      platform,
-      files,
-      // TODO
-      engine: 'hermes',
-    });
-    clientBoundaries = rscResults.clientBoundaries;
-  }
-
-  const resources = await devServer.getStaticResourcesAsync({
-    includeSourceMaps,
-    clientBoundaries,
-  });
+  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
+    devServer.getStaticResourcesAsync({
+      includeSourceMaps,
+    }),
+    devServer.getStaticRenderFunctionAsync(),
+  ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
-  // await getFilesToExportFromServerAsync(projectRoot, {
-  //   files,
-  //   manifest,
-  //   exportServer,
-  //   async renderAsync({ pathname, route }) {
-  //     const template = await renderAsync(pathname);
-  //     let html = await serializeHtmlWithAssets({
-  //       isExporting,
-  //       resources: resources.artifacts,
-  //       template,
-  //       baseUrl,
-  //       route,
-  //     });
+  await getFilesToExportFromServerAsync(projectRoot, {
+    files,
+    manifest,
+    exportServer,
+    async renderAsync({ pathname, route }) {
+      const template = await renderAsync(pathname);
+      let html = await serializeHtmlWithAssets({
+        isExporting,
+        resources: resources.artifacts,
+        template,
+        baseUrl,
+        route,
+      });
 
-  //     if (injectFaviconTag) {
-  //       html = injectFaviconTag(html);
-  //     }
+      if (injectFaviconTag) {
+        html = injectFaviconTag(html);
+      }
 
-  //     return html;
-  //   },
-  // });
+      return html;
+    },
+  });
 
   getFilesFromSerialAssets(resources.artifacts, {
     platform,
@@ -238,12 +213,12 @@ export async function exportFromServerAsync(
 
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
-      // outputDir,
+      outputDir,
+      platform: 'web',
       server: devServer,
       manifest: serverManifest,
       // NOTE(kitten): For now, we always output source maps for API route exports
       includeSourceMaps: true,
-      platform: 'web',
     });
 
     // Add the api routes to the files to export.
@@ -410,9 +385,11 @@ export function getPathVariations(routePath: string): string[] {
 export async function exportApiRoutesStandaloneAsync(
   devServer: MetroBundlerDevServer,
   {
+    outputDir,
     files = new Map(),
     platform,
   }: {
+    outputDir: string;
     files?: ExportAssetMap;
     platform: string;
   }
@@ -420,7 +397,7 @@ export async function exportApiRoutesStandaloneAsync(
   const { serverManifest } = await devServer.getServerManifestAsync();
 
   const apiRoutes = await exportApiRoutesAsync({
-    // outputDir,
+    outputDir,
     server: devServer,
     manifest: serverManifest,
     // NOTE(kitten): For now, we always output source maps for API route exports
@@ -436,15 +413,16 @@ export async function exportApiRoutesStandaloneAsync(
   return files;
 }
 
-export async function exportApiRoutesAsync({
+async function exportApiRoutesAsync({
   includeSourceMaps,
+  outputDir,
   server,
   platform,
   ...props
-}: Pick<Options, 'includeSourceMaps'> & {
-  platform: string;
+}: Pick<Options, 'outputDir' | 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
+  platform: string;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
@@ -452,6 +430,8 @@ export async function exportApiRoutesAsync({
     includeSourceMaps,
     platform,
   });
+
+  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),
