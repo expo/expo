@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.25.22 — 2024-08-07
+
+### 💡 Others
+
 - Re-exported `@expo/fingerprint` as `expo-updates/fingerprint`. ([#30757](https://github.com/expo/expo/pull/30757) by [@kudo](https://github.com/kudo))
 
 ## 0.25.21 — 2024-07-22

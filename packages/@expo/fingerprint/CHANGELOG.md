@@ -6,10 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.3 — 2024-08-07
+
+### 🎉 New features
+
 - Added support to pass string array for `sourceSkips` in the `fingerprint.config.js`. ([#30754](https://github.com/expo/expo/pull/30754) by [@kudo](https://github.com/kudo))
 - Added `ignorePaths` support to `fingerprint.config.js`. ([#30768](https://github.com/expo/expo/pull/30768) by [@kudo](https://github.com/kudo))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

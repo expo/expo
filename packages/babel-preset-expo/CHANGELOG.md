@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 11.0.13 — 2024-08-07
+
 ### 📚 3rd party library updates
 
 - Update @react-native/babel-preset to 0.74.87. ([#30822](https://github.com/expo/expo/pull/30822) by [@gabrieldonadel](https://github.com/gabrieldonadel))
