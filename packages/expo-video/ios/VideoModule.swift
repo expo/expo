@@ -7,10 +7,7 @@ public final class VideoModule: Module {
     Name("ExpoVideo")
 
     Function("isPictureInPictureSupported") { () -> Bool in
-      if #available(iOS 13.4, tvOS 14.0, *) {
-        return AVPictureInPictureController.isPictureInPictureSupported()
-      }
-      return false
+      return AVPictureInPictureController.isPictureInPictureSupported()
     }
 
     View(VideoView.self) {

@@ -31,7 +31,7 @@ export class VideoView extends PureComponent {
      * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
      * > has to be configured for the PiP to work.
      * @platform android
-     * @platform ios 14+
+     * @platform ios
      */
     startPictureInPicture() {
         return this.nativeRef.current?.startPictureInPicture();
@@ -39,7 +39,7 @@ export class VideoView extends PureComponent {
     /**
      * Exits Picture in Picture (PiP) mode.
      * @platform android
-     * @platform ios 14+
+     * @platform ios
      */
     stopPictureInPicture() {
         return this.nativeRef.current?.stopPictureInPicture();
