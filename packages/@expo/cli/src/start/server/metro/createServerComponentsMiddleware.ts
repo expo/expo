@@ -252,7 +252,7 @@ export function createServerComponentsMiddleware(
 
   return {
     middleware: createBuiltinAPIRequestHandler(
-      // Match `/_flight/[...path]`
+      // Match `/_flight/[platform]/[...path]`
       (req) => {
         return getFullUrl(req.url).pathname.startsWith(rscPathPrefix);
       },

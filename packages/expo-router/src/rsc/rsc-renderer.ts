@@ -50,17 +50,11 @@ export type RenderRscArgs = {
 
 type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
 
-type RenderRscOpts =
-  | {
-      isExporting: true;
-      entries: EntriesPrd;
-      resolveClientEntry?: ResolveClientEntry;
-    }
-  | {
-      isExporting: false;
-      entries: EntriesDev;
-      resolveClientEntry: ResolveClientEntry;
-    };
+type RenderRscOpts = {
+  isExporting: boolean;
+  entries: EntriesDev;
+  resolveClientEntry: ResolveClientEntry;
+};
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
   const { searchParams, method, input, body, contentType, context } = args;
@@ -103,22 +97,8 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
         });
         // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
         // This is similar to how we handle lazy bundling.
-        if (resolveClientEntry) {
-          const resolved = resolveClientEntry(filePath);
-          return { id: resolved.id, chunks: resolved.chunks, name, async: true };
-        }
-
-        // TODO: Drop this code path after production exports are added.
-        return {
-          // TODO: Make relative to server root for production exports.
-          id: filePath,
-          chunks: [
-            // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-            'chunk:' + filePath,
-          ],
-          name,
-          async: true,
-        };
+        const resolved = resolveClientEntry(filePath);
+        return { id: resolved.id, chunks: resolved.chunks, name, async: true };
       },
     }
   );

@@ -32,7 +32,7 @@ import { getDevServer } from '../../getDevServer';
 const { createFromFetch, encodeReply } = RSDWClient;
 
 // NOTE: Ensured to start with `/`.
-const RSC_PATH = '/_flight'; // process.env.EXPO_RSC_PATH;
+const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
 
 let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
 
@@ -171,7 +171,6 @@ export const fetchRSC = (
         method: 'POST',
         // @ts-expect-error: non-standard feature for streaming.
         duplex: 'half',
-        reactNative: { textStreaming: true },
         ...requestOpts,
         headers: {
           ...requestOpts.headers,
@@ -202,8 +201,6 @@ export const fetchRSC = (
       headers: {
         'expo-platform': process.env.EXPO_OS!,
       },
-      // @ts-expect-error: TODO: Add expo streaming fetch
-      reactNative: { textStreaming: true },
     });
   delete prefetched[url];
   const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
@@ -254,8 +251,6 @@ export const prefetchRSC = (input: string, searchParamsString: string): void => 
       headers: {
         'expo-platform': process.env.EXPO_OS!,
       },
-      // @ts-expect-error: non-standard feature for streaming.
-      reactNative: { textStreaming: true },
     });
   }
 };
