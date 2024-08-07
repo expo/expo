@@ -64,7 +64,7 @@ class VideoSource(
     }
     .build()
 
-  // Using expo-asset to generate a local asset URI returns a resource name for android production builds
+  // Using `resolveAssetSource` to generate a local asset URI returns a resource name for android release builds
   // we have to get the raw resource URI to play the video
   @SuppressLint("DiscouragedApi") // AFAIK, in this case, there's no other way to get the resource URI
   private fun parseLocalAssetId(uri: Uri?, context: Context): Uri? {

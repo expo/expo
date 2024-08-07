@@ -143,11 +143,11 @@ export type VideoPlayerEvents = {
  * - `error`: The player has encountered an error while loading or playing the video.
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
-export type VideoSource = string | {
+export type VideoSource = string | number | {
     /**
-     * The URI of the video.
+     * The URI of the video or a result of a `require` call for local media sources.
      */
-    uri: string;
+    uri: string | number;
     /**
      * Specifies the DRM options which will be used by the player while loading the video.
      */
