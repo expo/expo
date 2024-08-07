@@ -74,6 +74,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import resolveFrom from 'resolve-from';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -153,12 +154,33 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const files: ExportAssetMap = new Map();
 
+    // Inject RSC middleware.
+    const rscPath = '/_flight/[...rsc]';
+
+    if (
+      // If the RSC route is not already in the manifest, add it.
+      !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
+    ) {
+      debug('Adding RSC route to the manifest:', rscPath);
+      // NOTE: This might need to be sorted to the correct spot in the future.
+      manifest.apiRoutes.push({
+        file: resolveFrom(this.projectRoot, '@expo/cli/static/template/[...rsc]+api.ts'),
+        page: rscPath,
+        namedRegex: '^/_flight(?:/(?<rsc>.+?))?(?:/)?$',
+        routeKeys: { rsc: 'rsc' },
+      });
+    }
+
     for (const route of manifest.apiRoutes) {
-      const filepath = path.join(appDir, route.file);
+      const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
+
+      const outputFilepath =
+        route.page === rscPath ? path.join(appDir, '.' + rscPath + '.js') : filepath;
+
       const artifactFilename = path.join(
         outputDir,
-        path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
+        path.relative(appDir, outputFilepath.replace(/\.[tj]sx?$/, '.js'))
       );
       if (contents) {
         let src = contents.src;

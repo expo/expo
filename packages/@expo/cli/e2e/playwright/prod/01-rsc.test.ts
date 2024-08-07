@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 import execa from 'execa';
+import fs from 'fs';
+import klawSync from 'klaw-sync';
+import path from 'path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -38,6 +41,7 @@ test.beforeAll('bundle and serve', async () => {
 
   serveCmd = new ServeLocalCommand(projectRoot, {
     NODE_ENV: 'production',
+    TEST_SECRET_VALUE: 'test-secret-dynamic',
   });
 
   console.time('npx serve');
@@ -50,9 +54,17 @@ test.afterAll(async () => {
   await serveCmd.stopAsync();
 });
 
-test.describe(inputDir, () => {
+const STATIC_RSC_PATH = path.join(projectRoot, inputDir, 'client/_flight');
+
+test.describe.serial(inputDir, () => {
   // This test generally ensures no errors are thrown during an export loading.
   test('loads without hydration errors', async ({ page }) => {
+    // Ensure the JS code has string module IDs
+    const rscFiles = klawSync(STATIC_RSC_PATH, {
+      nodir: true,
+    }).map((entry) => path.relative(STATIC_RSC_PATH, entry.path));
+    expect(rscFiles).toEqual(['web/index.txt']);
+
     console.time('Open page');
     // Navigate to the app
     await page.goto(serveCmd.url);
@@ -96,5 +108,20 @@ test.describe(inputDir, () => {
     await page.locator('[data-testid="client-button"]').click();
 
     await expect(page.locator('[data-testid="client-button"]')).toHaveText('Count: 1');
+  });
+
+  test('dynamically renders RSC', async ({ page }) => {
+    await fs.promises.rm(STATIC_RSC_PATH, { recursive: true, force: true });
+
+    // Navigate to the app
+    await page.goto(serveCmd.url);
+
+    // Wait for the app to load
+    await page.waitForSelector('[data-testid="index-text"]');
+
+    await expect(page.locator('[data-testid="secret-text"]')).toHaveText(
+      // Value should match the env var that we pass to the server after the build was completed, this will only work with dynamic rendering.
+      'Secret: test-secret-dynamic'
+    );
   });
 });
