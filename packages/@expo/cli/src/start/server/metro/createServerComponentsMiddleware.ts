@@ -31,12 +31,6 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
   extras?: { hot?: boolean }
 ) => Promise<T>;
 
-type RscExportPayload = {
-  rsc: string;
-  input: string;
-  path: string;
-};
-
 const getMetroServerRootMemo = memoize(getMetroServerRoot);
 
 export function createServerComponentsMiddleware(
@@ -358,8 +352,6 @@ export function createServerComponentsMiddleware(
       },
       files: ExportAssetMap
     ) {
-      const payloads: RscExportPayload[] = [];
-
       // TODO: When we add web SSR support, we need to extract CSS Modules / Assets from the bundler process to prevent FLOUC.
       const { getBuildConfig } = (await getExpoRouterRscEntriesGetterAsync({ platform })).default;
 
@@ -396,10 +388,6 @@ export function createServerComponentsMiddleware(
           }
         })
       );
-
-      return {
-        payloads,
-      };
     },
 
     middleware: createBuiltinAPIRequestHandler(
