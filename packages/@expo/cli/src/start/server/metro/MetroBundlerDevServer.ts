@@ -576,6 +576,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       ExpoMetroOptions,
       'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
+    files: ExportAssetMap,
     extraOptions: {
       sourceMapUrl?: string;
       unstable_transformProfile?: TransformProfile;
@@ -586,7 +587,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files?: ExportAssetMap;
   }> {
     if (this.isReactServerComponentsEnabled) {
-      return this.singlePageReactServerComponentExportAsync(options, extraOptions);
+      return this.singlePageReactServerComponentExportAsync(options, files, extraOptions);
     }
 
     return this.legacySinglePageExportBundleAsync(options, extraOptions);
@@ -597,6 +598,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       ExpoMetroOptions,
       'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
+    files: ExportAssetMap,
     extraOptions: {
       sourceMapUrl?: string;
       unstable_transformProfile?: TransformProfile;
@@ -606,8 +608,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     assets: readonly BundleAssetWithFileHashes[];
     files: ExportAssetMap;
   }> {
-    const files = new Map();
-
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
     const clientBoundaries = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
       {

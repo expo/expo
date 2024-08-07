@@ -134,25 +134,22 @@ export async function exportAppAsync(
           }
 
           // Run metro bundler and create the JS bundles/source maps.
-          const bundle = await devServer.nativeExportBundleAsync({
-            platform,
-            splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
-            mainModuleName: getEntryWithServerRoot(projectRoot, {
+          const bundle = await devServer.nativeExportBundleAsync(
+            {
               platform,
-              pkg: projectConfig.pkg,
-            }),
-            mode: dev ? 'development' : 'production',
-            engine: isHermes ? 'hermes' : undefined,
-            serializerIncludeMaps: sourceMaps,
-            bytecode: bytecode && isHermes,
-            reactCompiler: !!exp.experiments?.reactCompiler,
-          });
-
-          if (bundle.files) {
-            for (const file of bundle.files.entries()) {
-              files.set(file[0], file[1]);
-            }
-          }
+              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+              mainModuleName: getEntryWithServerRoot(projectRoot, {
+                platform,
+                pkg: projectConfig.pkg,
+              }),
+              mode: dev ? 'development' : 'production',
+              engine: isHermes ? 'hermes' : undefined,
+              serializerIncludeMaps: sourceMaps,
+              bytecode: bytecode && isHermes,
+              reactCompiler: !!exp.experiments?.reactCompiler,
+            },
+            files
+          );
 
           bundles[platform] = bundle;
 
