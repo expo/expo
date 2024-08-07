@@ -36,22 +36,20 @@ class EXDevLauncherRemoteLogsManager {
 
     batch.removeAll()
 
-    if #available(iOS 13.0, *) {
-      let group = DispatchGroup()
-      group.enter()
+    let group = DispatchGroup()
+    group.enter()
 
-      let task = URLSession.shared.webSocketTask(with: self.url)
-      task.resume()
+    let task = URLSession.shared.webSocketTask(with: self.url)
+    task.resume()
 
-      guard let dataString = String(data: data, encoding: .utf8) else {
-        group.leave()
-        return
-      }
-      let message = URLSessionWebSocketTask.Message.string(dataString)
-      task.send(message) { _ in
-        group.leave()
-      }
-      _ = group.wait(timeout: DispatchTime.now() + .seconds(2))
+    guard let dataString = String(data: data, encoding: .utf8) else {
+      group.leave()
+      return
     }
+    let message = URLSessionWebSocketTask.Message.string(dataString)
+    task.send(message) { _ in
+      group.leave()
+    }
+    _ = group.wait(timeout: DispatchTime.now() + .seconds(2))
   }
 }
