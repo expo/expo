@@ -93,7 +93,10 @@ export function createServerComponentsMiddleware(
     rscPathPrefix += '/';
   }
 
-  async function getExpoRouterClientReferencesAsync({ platform }: { platform: string }) {
+  async function getExpoRouterClientReferencesAsync(
+    { platform }: { platform: string },
+    files: ExportAssetMap
+  ) {
     const contents = await ssrLoadModuleArtifacts(
       'expo-router/build/rsc/router/expo-definedRouter',
       {
@@ -112,6 +115,12 @@ export function createServerComponentsMiddleware(
       );
     }
     debug('React client boundaries:', reactClientReferences);
+
+    // While we're here, export the router for the server to dynamically render RSC.
+    files.set(`_expo/rsc/${platform}/router.js`, {
+      targetDomain: 'server',
+      contents: wrapBundle(contents.src),
+    });
 
     return reactClientReferences;
   }
@@ -311,29 +320,6 @@ export function createServerComponentsMiddleware(
   return {
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
-
-    /** Export the production server renderers which are used for dynamic rendering. */
-    exportServerRenderersAsync: async (
-      { platforms }: { platforms: string[] },
-      files: ExportAssetMap
-    ) => {
-      await Promise.all(
-        platforms.map(async (platform) => {
-          const renderer = await ssrLoadModuleArtifacts(
-            'expo-router/build/rsc/router/expo-definedRouter',
-            {
-              environment: 'react-server',
-              platform,
-            }
-          );
-
-          files.set(`_expo/rsc/${platform}/router.js`, {
-            targetDomain: 'server',
-            contents: wrapBundle(renderer.src),
-          });
-        })
-      );
-    },
 
     async exportRoutesAsync(
       {

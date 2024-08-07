@@ -606,10 +606,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     assets: readonly BundleAssetWithFileHashes[];
     files: ExportAssetMap;
   }> {
+    const files = new Map();
+
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const clientBoundaries = await this.rscRenderer!.getExpoRouterClientReferencesAsync({
-      platform: options.platform,
-    });
+    const clientBoundaries = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
+      {
+        platform: options.platform,
+      },
+      files
+    );
 
     console.log('Collected evaluated client boundaries:', clientBoundaries);
 
@@ -658,7 +663,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debug('No split bundles');
     }
 
-    const files = new Map();
     // Export the static RSC files
     await this.rscRenderer!.exportRoutesAsync(
       {
