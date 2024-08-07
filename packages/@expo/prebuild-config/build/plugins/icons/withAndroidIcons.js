@@ -32,9 +32,9 @@ function _fsExtra() {
   };
   return data;
 }
-function _jimp() {
-  const data = _interopRequireDefault(require("jimp"));
-  _jimp = function () {
+function _jimpCompact() {
+  const data = _interopRequireDefault(require("jimp-compact"));
+  _jimpCompact = function () {
     return data;
   };
   return data;
@@ -53,7 +53,9 @@ function _withAndroidManifestIcons() {
   };
   return data;
 }
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// @ts-ignore
+
 const {
   Colors
 } = _configPlugins().AndroidConfig;
@@ -281,7 +283,6 @@ async function generateMultiLayerImageAsync(projectRoot, {
       cacheType: imageCacheFolder,
       src: icon,
       scale,
-      // backgroundImage overrides backgroundColor
       backgroundColor: backgroundColor ?? 'transparent',
       borderRadiusRatio,
       foreground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
@@ -294,10 +295,14 @@ async function generateMultiLayerImageAsync(projectRoot, {
         backgroundColor: backgroundColor ?? 'transparent',
         borderRadiusRatio
       });
-      iconLayer = await (0, _imageUtils().compositeImagesAsync)({
-        foreground: iconLayer,
-        background: backgroundLayer
-      });
+      if (backgroundImageFileName) {
+        await _fsExtra().default.writeFile(_path().default.resolve(dpiFolder, backgroundImageFileName), backgroundLayer);
+      } else {
+        iconLayer = await (0, _imageUtils().compositeImagesAsync)({
+          foreground: iconLayer,
+          background: backgroundLayer
+        });
+      }
     } else if (backgroundImageFileName) {
       // Remove any instances of ic_launcher_background.png that are there from previous icons
       await deleteIconNamedAsync(projectRoot, backgroundImageFileName);
@@ -348,17 +353,16 @@ async function generateIconAsync(projectRoot, {
 }) {
   const baseline = foreground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
   const iconSizePx = baseline * scale;
-  const image = await _jimp().default.read(src);
+  const image = await _jimpCompact().default.read(src);
   const newSize = iconSizePx * 0.4;
   image.scaleToFit(newSize, newSize);
-  let background = await _jimp().default.create(iconSizePx, iconSizePx, foreground ? 'transparent' : backgroundColor);
-  // Calculate the position to center the scaled image on the new background
+  let background = await _jimpCompact().default.create(iconSizePx, iconSizePx, foreground ? 'transparent' : backgroundColor);
   const x = (iconSizePx - image.bitmap.width) / 2;
   const y = (iconSizePx - image.bitmap.height) / 2;
   if (borderRadiusRatio) {
     background = background.circle(() => {});
   }
   const output = background.composite(image, x, y);
-  return output.getBufferAsync(_jimp().default.MIME_PNG);
+  return output.getBufferAsync(_jimpCompact().default.MIME_PNG);
 }
 //# sourceMappingURL=withAndroidIcons.js.map
