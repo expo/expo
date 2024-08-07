@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRootViewBackgroundColor = exports.withRootViewBackgroundColorStyles = exports.withRootViewBackgroundColorColors = exports.withAndroidRootViewBackgroundColor = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const { assignColorValue } = config_plugins_1.AndroidConfig.Colors;
-const { assignStylesValue, getAppThemeLightNoActionBarGroup } = config_plugins_1.AndroidConfig.Styles;
+const { assignStylesValue, getAppThemeGroup } = config_plugins_1.AndroidConfig.Styles;
 const ANDROID_WINDOW_BACKGROUND = 'android:windowBackground';
 const WINDOW_BACKGROUND_COLOR = 'activityBackground';
 const withAndroidRootViewBackgroundColor = (config) => {
@@ -26,7 +26,7 @@ const withRootViewBackgroundColorStyles = (config) => {
     return (0, config_plugins_1.withAndroidStyles)(config, async (config) => {
         config.modResults = assignStylesValue(config.modResults, {
             add: !!getRootViewBackgroundColor(config),
-            parent: getAppThemeLightNoActionBarGroup(),
+            parent: getAppThemeGroup(),
             name: ANDROID_WINDOW_BACKGROUND,
             value: `@color/${WINDOW_BACKGROUND_COLOR}`,
         });

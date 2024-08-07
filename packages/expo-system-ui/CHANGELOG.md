@@ -10,6 +10,7 @@
 
 - Add missing `react-native` peer dependencies for isolated modules. ([#30485](https://github.com/expo/expo/pull/30485) by [@byCedric](https://github.com/byCedric))
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+- Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
