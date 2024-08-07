@@ -917,7 +917,7 @@ properties.
     </a>
   </h2>
   <div
-    class="emotion-74"
+    class="emotion-29"
   >
     <h3
       class="group emotion-2"
@@ -1193,7 +1193,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="emotion-74"
+    class="emotion-29"
   >
     <h3
       class="group emotion-2"
@@ -1337,7 +1337,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="emotion-74"
+    class="emotion-29"
   >
     <h3
       class="group emotion-2"
@@ -1578,7 +1578,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="emotion-74"
+    class="emotion-29"
   >
     <h3
       class="group emotion-2"
@@ -1866,7 +1866,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="emotion-74"
+    class="emotion-29"
   >
     <h3
       class="group emotion-2"
@@ -2181,7 +2181,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="emotion-74"
+    class="emotion-29"
   >
     <h3
       class="group emotion-2"
@@ -2373,7 +2373,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="emotion-183"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -2911,7 +2911,7 @@ developers.
     </div>
   </div>
   <div
-    class="emotion-183"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -3259,7 +3259,7 @@ may be
     </div>
   </div>
   <div
-    class="emotion-183"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -3566,7 +3566,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="emotion-183"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -3890,7 +3890,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="emotion-183"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -4127,7 +4127,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="emotion-183"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -4300,7 +4300,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 emotion-321"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -4565,7 +4565,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 emotion-321"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -4873,7 +4873,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 emotion-321"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -5228,7 +5228,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 emotion-321"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -5518,7 +5518,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 emotion-321"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -5807,7 +5807,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 emotion-321"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -6882,7 +6882,7 @@ Same as
     </a>
   </h2>
   <div
-    class="emotion-60"
+    class="emotion-18"
   >
     <h3
       class="group emotion-10"
@@ -7277,7 +7277,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="emotion-60"
+    class="emotion-18"
   >
     <h3
       class="group emotion-10"
@@ -7424,7 +7424,7 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-60"
+    class="emotion-18"
   >
     <h3
       class="group emotion-10"
@@ -7593,7 +7593,7 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-60"
+    class="emotion-18"
   >
     <h3
       class="group emotion-10"
@@ -7933,7 +7933,7 @@ code.
     </a>
   </h2>
   <div
-    class="emotion-129"
+    class="emotion-18"
   >
     <h3
       class="group emotion-10"
@@ -8217,7 +8217,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -8375,7 +8375,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -8527,7 +8527,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -8646,7 +8646,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -8815,7 +8815,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -8923,7 +8923,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -9195,7 +9195,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -9343,7 +9343,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="emotion-150"
+    class="emotion-1"
   >
     <h3
       class="group emotion-10"
@@ -9479,7 +9479,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 emotion-238"
+    class="!p-0 emotion-1"
   >
     <div
       class="px-5 pt-4"
@@ -10845,7 +10845,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="emotion-82"
+    class="emotion-1"
   >
     <h3
       class="group emotion-2"
@@ -11633,7 +11633,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 emotion-135"
+    class="!p-0 emotion-103"
   >
     <div
       class="px-5 pt-4"
