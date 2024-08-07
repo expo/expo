@@ -266,6 +266,10 @@ export interface ExpoConfig {
      * Experimentally enable React Compiler.
      */
     reactCompiler?: boolean;
+    /**
+     * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+     */
+    reactServerComponents?: boolean;
   };
   /**
    * Internal properties for developer tools
