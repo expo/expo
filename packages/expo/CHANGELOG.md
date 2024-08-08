@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 51.0.26 — 2024-08-08
+
+_This version does not introduce any user-facing changes._
+
 ## 51.0.25 — 2024-08-07
 
 ### 📚 3rd party library updates
