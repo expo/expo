@@ -2,12 +2,10 @@ import { useColorScheme as useRNColorScheme } from 'react-native'
 import { useState, useEffect } from 'react'
 
 export function useColorScheme() {
-  // NOTE: The default React Native styling doesn't support server rendering.
-  // Server rendered styles should not change between the first render of the HTML
-  // and the first render on the client. So, we need to ensure that the color scheme
-  // is only determined on the client side after hydration. This way, we avoid any
-  // mismatch in styles that could occur if the server-rendered styles were different
-  // from the client-rendered styles.
+  // Server rendered content and the content on first render on the clien must be same.
+  // So, we need to ensure that the color scheme is only determined on the client side
+  // after hydration in order to avoid style mismatches between server-rendered and
+  // client-rendered content.
   const hasHydrated = useHasHydrated()
 
   const colorScheme = useRNColorScheme()
