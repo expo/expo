@@ -60,10 +60,10 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.18.27",
+    "@expo/cli": "0.18.28",
     "@expo/config": "9.0.3",
     "@expo/config-plugins": "8.0.8",
-    "@expo/metro-config": "0.18.10",
+    "@expo/metro-config": "0.18.11",
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~11.0.13",
     "expo-asset": "~10.0.10",

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `TypeError: (0 , sourceMapString_1.default) is not a function` bug due to an incompatibiliy with `metro@0.80.10`'s `sourceMapString` module. ([#30905](https://github.com/expo/expo/pull/30905) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 0.18.11 — 2024-08-08
+
+### 🐛 Bug fixes
+
+- Fix `TypeError: (0 , sourceMapString_1.default) is not a function` bug due to an incompatibiliy with `metro@0.80.10`'s `sourceMapString` module. ([#30905](https://github.com/expo/expo/pull/30905) by [@kitten](https://github.com/kitten))
 
 ## 0.18.10 — 2024-07-29
 
