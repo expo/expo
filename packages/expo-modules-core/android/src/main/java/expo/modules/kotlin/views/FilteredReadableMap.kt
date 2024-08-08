@@ -41,7 +41,16 @@ class FilteredReadableMap(
   private val backingMap: ReadableMap,
   private val filteredKeys: List<String>
 ) : ReadableMap by backingMap {
+  @Suppress("NOTHING_TO_OVERRIDE")
   override fun getEntryIterator(): Iterator<Map.Entry<String, Any>> =
+    FilteredIterator(backingMap.getEntryIterator()) {
+      !filteredKeys.contains(it.key)
+    }
+
+  // Fallback for react-native 0.75.0 compatibility
+  @Suppress("NOTHING_TO_OVERRIDE")
+  @get:JvmName("getEntryIteratorFromProperty")
+  override val entryIterator: Iterator<Map.Entry<String, Any>> =
     FilteredIterator(backingMap.entryIterator) {
       !filteredKeys.contains(it.key)
     }

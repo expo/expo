@@ -4,7 +4,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactDelegate
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.devsupport.DisabledDevSupportManager
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -70,7 +69,15 @@ class CoreModule : Module() {
         ?: return@AsyncFunction
       if (!ReactFeatureFlags.enableBridgelessArchitecture) {
         val reactInstanceManager = reactDelegate.reactInstanceManager
-        if (reactInstanceManager.devSupportManager is DisabledDevSupportManager) {
+
+        var devSupportManagerClass: Class<*>
+        try {
+          // react-native version 0.75.0 renamed DisabledDevSupportManager to ReleaseDevSupportManager
+          devSupportManagerClass = Class.forName("com.facebook.react.devsupport.ReleaseDevSupportManager")
+        } catch (e: ClassNotFoundException) {
+          devSupportManagerClass = Class.forName("com.facebook.react.devsupport.DisabledDevSupportManager")
+        }
+        if (devSupportManagerClass.isInstance(reactInstanceManager.devSupportManager)) {
           UiThreadUtil.runOnUiThread {
             reactInstanceManager.recreateReactContextInBackground()
           }
