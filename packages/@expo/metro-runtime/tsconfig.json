@@ -2,7 +2,9 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "outDir": "./build",
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "module": "Node16",
+    "moduleResolution": "Node16"
   },
   "include": ["./src", "../../expo/src/ts-declarations"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"]

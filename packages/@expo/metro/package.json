@@ -1,0 +1,103 @@
+{
+  "name": "@expo/metro",
+  "version": "0.0.0",
+  "description": "The Metro integration for Expo",
+  "scripts": {
+    "build": "expo-module tsc",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && expo-module tsc",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch --preserveWatchOutput"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro"
+  },
+  "keywords": [
+    "expo",
+    "metro"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro#readme",
+  "dependencies": {
+    "@types/eventemitter3": "^2.0.2",
+    "metro": "0.80.9",
+    "metro-babel-transformer": "0.80.9",
+    "metro-cache": "0.80.9",
+    "metro-cache-key": "0.80.9",
+    "metro-config": "0.80.9",
+    "metro-core": "0.80.9",
+    "metro-file-map": "0.80.9",
+    "metro-resolver": "0.80.9",
+    "metro-runtime": "0.80.9",
+    "metro-source-map": "0.80.9",
+    "metro-transform-plugins": "0.80.9",
+    "metro-transform-worker": "0.80.9"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^3.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build"
+  ],
+  "exports": {
+    "./metro": {
+      "types": "./build/metro/metro.d.ts",
+      "default": "./build/metro/metro.js"
+    },
+    "./metro-babel-transformer": {
+      "types": "./build/metro/metro-babel-transformer.d.ts",
+      "default": "./build/metro/metro-babel-transformer.js"
+    },
+    "./metro-cache": {
+      "types": "./build/metro/metro-cache.d.ts",
+      "default": "./build/metro/metro-cache.js"
+    },
+    "./metro-cache-key": {
+      "types": "./build/metro/metro-cache-key.d.ts",
+      "default": "./build/metro/metro-cache-key.js"
+    },
+    "./metro-config": {
+      "types": "./build/metro/metro-config.d.ts",
+      "default": "./build/metro/metro-config.js"
+    },
+    "./metro-core": {
+      "types": "./build/metro/metro-core.d.ts",
+      "default": "./build/metro/metro-core.js"
+    },
+    "./metro-file-map": {
+      "types": "./build/metro/metro-file-map.d.ts",
+      "default": "./build/metro/metro-file-map.js"
+    },
+    "./metro-resolver": {
+      "types": "./build/metro/metro-resolver.d.ts",
+      "default": "./build/metro/metro-resolver.js"
+    },
+    "./metro-runtime": {
+      "types": "./build/metro/metro-runtime.d.ts",
+      "default": "./build/metro/metro-runtime.js"
+    },
+    "./metro-source-map": {
+      "types": "./build/metro/metro-source-map.d.ts",
+      "default": "./build/metro/metro-source-map.js"
+    },
+    "./metro-transform-plugins": {
+      "types": "./build/metro/metro-transform-plugins.d.ts",
+      "default": "./build/metro/metro-transform-plugins.js"
+    },
+    "./metro-transform-worker": {
+      "types": "./build/metro/metro-transform-worker.d.ts",
+      "default": "./build/metro/metro-transform-worker.js"
+    }
+  }
+}
