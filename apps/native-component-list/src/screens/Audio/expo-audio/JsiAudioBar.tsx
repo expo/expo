@@ -43,11 +43,11 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
   });
 
   if (!player.isAudioSamplingSupported) {
-    return <Text style={styles.errorText}>JSI Audio is not supported on this platform</Text>;
+    return <Text style={styles.errorText}>Audio sampling is not supported on this platform</Text>;
   }
 
   if (!isPlaying) {
-    return <Text style={styles.infoText}>Press play to see audio sample</Text>;
+    return <Text style={styles.infoText}>Press play to render waveform</Text>;
   }
 
   return (
