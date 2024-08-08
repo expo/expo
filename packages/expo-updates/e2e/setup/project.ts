@@ -494,6 +494,32 @@ function transformAppJsonForE2E(
 }
 
 /**
+ * Modifies app.json in the E2E test app to add the properties we need, and sets the runtime version policy to fingerprint
+ */
+export function transformAppJsonForE2EWithFingerprint(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      runtimeVersion: {
+        policy: 'fingerprint',
+      },
+    },
+  };
+}
+
+/**
  * Modifies app.json in the E2E test app to add the properties we need, plus a fallback to cache timeout for testing startup procedure
  */
 export function transformAppJsonForE2EWithFallbackToCacheTimeout(
@@ -852,6 +878,38 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesFingerprintE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    [
+      'tsconfig.json',
+      '.fingerprintignore',
+      '.detoxrc.json',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'includedAssets',
+      'scripts',
+    ],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-fingerprint.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }
