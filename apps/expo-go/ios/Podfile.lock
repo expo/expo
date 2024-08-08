@@ -90,7 +90,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImage/Tests (1.12.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
@@ -98,7 +97,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (12.0.5):
     - EXImageLoader
     - ExpoModulesCore
@@ -2378,7 +2376,7 @@ SPEC CHECKSUMS:
   ExpoGL: 538b9cfb79816799a06c6557571d08bf50654a7e
   ExpoHaptics: 0b0a0bbbf3eeda6d2101e8987a0530dd00f7e0d2
   ExpoHead: ffaa3a54a24ab83b1f20460c107802ce5e7911ae
-  ExpoImage: 8bc89db2f2c7705064afe2083c450f4147c0ea7c
+  ExpoImage: 64e08fd55723edc561f8c9b031c66b0f3474e57b
   ExpoImageManipulator: b70951c53b638b8a2535a9533b730b63ccf7b051
   ExpoImagePicker: 645d49aff6a6c9592bdd16c9488b6b8717621348
   ExpoKeepAwake: a273e4ddd0ef6bfd967f088df97b4734729b93c3
