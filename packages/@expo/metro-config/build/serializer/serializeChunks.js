@@ -29,6 +29,9 @@ function pathToRegex(path) {
     // Create a RegExp object with the modified string
     return new RegExp('^' + regexSafePath + '$');
 }
+const sourceMapString = typeof sourceMapString_1.default !== 'function'
+    ? sourceMapString_1.default.sourceMapString
+    : sourceMapString_1.default;
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
@@ -335,7 +338,7 @@ class Chunk {
                 return module;
             });
             // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-            const sourceMap = mutateSourceMapWithDebugId((0, sourceMapString_1.default)(modules, {
+            const sourceMap = mutateSourceMapWithDebugId(sourceMapString(modules, {
                 excludeSource: false,
                 ...this.options,
             }));

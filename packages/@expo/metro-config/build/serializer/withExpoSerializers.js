@@ -18,6 +18,9 @@ const environmentVariableSerializerPlugin_1 = require("./environmentVariableSeri
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const serializeChunks_1 = require("./serializeChunks");
 const env_1 = require("../env");
+const sourceMapString = typeof sourceMapString_1.default !== 'function'
+    ? sourceMapString_1.default.sourceMapString
+    : sourceMapString_1.default;
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
@@ -85,7 +88,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             })).code;
         }
         const getEnsuredMaps = () => {
-            bundleMap ??= (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+            bundleMap ??= sourceMapString([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 // TODO: Surface this somehow.
                 excludeSource: false,
                 // excludeSource: options.serializerOptions?.excludeSource,
