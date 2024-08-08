@@ -221,12 +221,23 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
   import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
   import type { Module } from 'metro';
 
-  function sourceMapString(
-    modules: readonly Array<Module>,
+  declare function sourceMapString(
+    modules: readonly Array<Module<any>>,
     options: SourceMapGeneratorOptions
   ): string;
 
-  export default sourceMapString;
+  declare async function sourceMapStringNonBlocking(
+    modules: readonly Array<Module<any>>,
+    options: SourceMapGeneratorOptions
+  ): Promise<string>;
+
+  declare var _export: {
+    sourceMapString: typeof sourceMapString,
+    sourceMapStringNonBlocking: typeof sourceMapStringNonBlocking,
+  } | typeof sourceMapString
+
+  // NOTE(@kitten): The export changed to an object in metro@0.80.10
+  export = _export;
 }
 
 declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
