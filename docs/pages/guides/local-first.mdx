@@ -4,7 +4,7 @@ sidebar_title: Local-first
 description: An introduction to the emerging local-first software movement, including links to relevant learning resources and tools.
 ---
 
-> **info** This guide is a work in progress. If you have any feedback, please [open an issue](https://github.com/expo/expo/issues/new/choose).
+> **info** This guide is a work in progress. If you have any feedback, [open an issue](https://github.com/expo/expo/issues/new/choose) in our GitHub repository.
 
 The term "local-first" was first coined in the paper ["Local-first software"](https://www.inkandswitch.com/local-first/), written by the research lab [Ink & Switch](https://www.inkandswitch.com/), but the ideas behind it have been around for a long time. It's the architecture that powers some of our favorite apps, like [Linear](https://linear.app/), [Superhuman](https://superhuman.com/), [Excalidraw](https://excalidraw.com/), and even [Apple Notes](<https://en.wikipedia.org/wiki/Notes_(Apple)>).
 
@@ -20,11 +20,11 @@ Local-first software feels **fast** because interactions are no longer network-b
 
 You can trust the software to work offline, and you know that when you are connected to the internet, your data will be seamlessly synced and available on any of your devices running the app.
 
-Another characteristic of local-first software is that it is collaborative - multiple devices can work on the same data, and changes are synced across all of them. This can happen in real-time, like when you collaborate on a design in [Figma](https://www.figma.com/), or asynchronously, like when you create a task while offline in Linear and it is synced when you are online again.
+Another characteristic of local-first software is that it is collaborative &mdash; multiple devices can work on the same data, and changes are synced across all of them. This can happen in real-time when you collaborate on a design in [Figma](https://www.figma.com/) or asynchronously when you create a task while offline in Linear and it is synced when you are online again.
 
 ### Developer experience benefits
 
-You no longer have to manage various states of your app for each network request - "loaded", "loading", "error", etc., with their corresponding UI states and other logic. Write to a local database, and the app will automatically sync the changes to the server. This means that you can focus on building the app, and not worry as much about the networking and offline states.
+You no longer have to manage various states of your app for each network request &mdash; "loaded", "loading", "error", and so on, with their corresponding UI states and other logic. Write to a local database, and the app will automatically sync the changes to the server. This means that you can focus on building the app, and not worry as much about the networking and offline states.
 
 Your server availability may still be important, but in the event of an outage your users can still access the app and continue working. You may even provide a mechanism to sync the data without going through your server.
 
@@ -40,23 +40,23 @@ One way to think of local-first tools is to group them by the following categori
 
 ### TinyBase
 
-[TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started with it using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase): `npx create-expo-app --example with-tinybase`.
+[TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started by using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase): `npx create-expo-app --example with-tinybase`.
 
 ### SQLite
 
-[Expo SQLite](/versions/latest/sdk/sqlite/) is a SQLite library that is a great choice for persistence for local-first apps. You can use SQLite with different state management and syncing layers in front of it, such as [y-expo-sqlite](https://github.com/brentvatne/y-expo-sqlite) to persist [Yjs](#yjs) documents, and [TinyBase](#tinybase) as a state management layer. Using SQLite is flexible, but you will need to combine it with other tools or build your own tools to get a complete local-first solution. [Learn more](https://docs.expo.dev/versions/latest/sdk/sqlite/).
+[Expo SQLite](/versions/latest/sdk/sqlite/) is a SQLite library that is a great choice for persistence for local-first apps. You can use SQLite with different state management and syncing layers in front of it, such as [`y-expo-sqlite`](https://github.com/brentvatne/y-expo-sqlite) to persist [Yjs](#yjs) documents, and [TinyBase](#tinybase) as a state management layer. Using SQLite is flexible, but you will need to combine it with other tools or build your own tools to get a complete local-first solution. See [Expo SQLite API reference](/versions/latest/sdk/sqlite/) for more information.
 
 ### Yjs
 
-[Yjs](https://github.com/yjs/yjs) is a [CRDT implementation](https://github.com/yjs/yjs?tab=readme-ov-file#yjs-crdt-algorithm) that provides data types that can be synced across multiple clients. When building an app with Yjs and working with data that you would like to be able to sync, then you would use `Y.Array` and `Y.Map` to represent your data, rather than `Array` and `Object`. You may use a library like [TinyBase](#tinybase) for state management on top of Yjs, and persistence can be handled by a variety of tools, from a JSON file on your filesystem to a full-fledged database (such as [y-expo-sqlite](https://github.com/brentvatne/y-expo-sqlite)) and everything in between. [Learn more](https://github.com/yjs/yjs).
+[Yjs](https://github.com/yjs/yjs) is a [CRDT implementation](https://github.com/yjs/yjs?tab=readme-ov-file#yjs-crdt-algorithm) that provides data types that can be synced across multiple clients. When building an app with Yjs and working with data that you would like to be able to sync, then you would use `Y.Array` and `Y.Map` to represent your data rather than `Array` and `Object`. You may use a library like [TinyBase](#tinybase) for state management on top of Yjs, and persistence can be handled by a variety of tools, from a JSON file on your filesystem to a full-fledged database (such as [`y-expo-sqlite`](https://github.com/brentvatne/y-expo-sqlite)) and everything in between. See [Yjs's GitHub repository](https://github.com/yjs/yjs) for more information.
 
 ### Prisma
 
-[Prisma](https://prisma.io) is well known as the most popular ORM for Node.js and TypeScript backends, and it's now available for Expo and React Native in early access. [Learn more](https://www.prisma.io/blog/bringing-prisma-orm-to-react-native-and-expo). Prisma aims to provide a complete local-first solution, with state management, syncing, and persistence all covered for you. While it's still early, [Beto Moedano](https://github.com/betomoedano) has put together full walkthrough of using Prisma with Expo to build a local-first Notion clone, [watch it on YouTube](https://www.youtube.com/watch?v=uTrPte0sCiw) and [check out the code on GitHub](https://github.com/betomoedano/React-Native-Notion-Clone).
+[Prisma](https://prisma.io) is well known as the most popular ORM for Node.js and TypeScript backends, and it's now available for [Expo and React Native in early access](https://www.prisma.io/blog/bringing-prisma-orm-to-react-native-and-expo). Prisma aims to provide a complete local-first solution, with state management, syncing, and persistence all covered for you. While it's still early, [Beto Moedano](https://github.com/betomoedano) has put together full walkthrough of using Prisma with Expo to build a local-first Notion clone, [watch it on YouTube](https://www.youtube.com/watch?v=uTrPte0sCiw) and [check out the code on GitHub](https://github.com/betomoedano/React-Native-Notion-Clone).
 
 ### Other tools
 
-Far from a comprehensive list, the following iis a list of some other tools that have caught our attention and that you may find interesting to explore. For a more thorough list of tools on the ["Local-first software" community website](https://localfirstweb.dev/).
+The following list, far from being comprehensive, provides other tools that have caught our attention and that you may find interesting to explore. For a more thorough list of tools, see ["Local-first software" community website](https://localfirstweb.dev/).
 
 - [LiveStore](https://github.com/livestorejs/livestore)
 - [Automerge](https://automerge.org/)
