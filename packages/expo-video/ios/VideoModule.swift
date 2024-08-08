@@ -164,7 +164,7 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
-      Property("currentDate") { player -> Double in
+      Property("currentDate") { player -> Double? in
         guard let currentDate = player.pointer.currentItem?.currentDate() else {
           return nil
         }
@@ -172,7 +172,7 @@ public final class VideoModule: Module {
         return Double(timeIntervalSince * 1000)
       }
 
-      Property("currentOffsetFromLive") { player -> Double in
+      Property("currentOffsetFromLive") { player -> Double? in
         guard let currentDate = player.pointer.currentItem?.currentDate() else {
           return nil
         }
