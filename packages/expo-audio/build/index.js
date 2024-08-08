@@ -15,9 +15,13 @@ export function useAudioPlayerStatus(player) {
     return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
 }
 export function useAudioSampleListener(player, listener) {
+    player.setAudioSamplingEnabled(true);
     useEffect(() => {
         const subscription = player.addListener('onAudioSampleUpdate', listener);
-        return () => subscription.remove();
+        return () => {
+            player.setAudioSamplingEnabled(false);
+            subscription.remove();
+        };
     }, [player.id]);
 }
 export function useAudioRecorder(options, statusListener) {

@@ -125,6 +125,12 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 
   /**
+   *
+   * @hidden
+   */
+  setAudioSamplingEnabled(enabled: boolean): void;
+
+  /**
    * Remove the player from memory to free up resources.
    */
   remove(): void;

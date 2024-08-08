@@ -37,9 +37,13 @@ export function useAudioSampleListener(
   player: AudioPlayer,
   listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
 ) {
+  player.setAudioSamplingEnabled(true);
   useEffect(() => {
     const subscription = player.addListener('onAudioSampleUpdate', listener);
-    return () => subscription.remove();
+    return () => {
+      player.setAudioSamplingEnabled(false);
+      subscription.remove();
+    };
   }, [player.id]);
 }
 

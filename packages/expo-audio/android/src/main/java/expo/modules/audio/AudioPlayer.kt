@@ -41,6 +41,7 @@ class AudioPlayer(
   var isPaused = false
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
+  private var samplingEnabled = false
 
   private val visualizer = Visualizer(player.audioSessionId).apply {
     captureSize = Visualizer.getCaptureSizeRange()[1]
@@ -48,8 +49,8 @@ class AudioPlayer(
       object : Visualizer.OnDataCaptureListener {
         override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
           waveform?.let {
-            val data = extractAmplitudes(it)
-            if (ref.isPlaying) {
+            if (samplingEnabled) {
+              val data = extractAmplitudes(it)
               sendAudioSampleUpdate(data)
             }
           }
@@ -62,7 +63,6 @@ class AudioPlayer(
       true,
       false
     )
-
     enabled = true
   }
 
@@ -97,6 +97,10 @@ class AudioPlayer(
         }
       }
     })
+  }
+
+  fun setSamplingEnabled(enabled: Boolean) {
+    samplingEnabled = enabled
   }
 
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->

@@ -263,6 +263,10 @@ class AudioModule : Module() {
         }
       }
 
+      Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
+        ref.setSamplingEnabled(enabled)
+      }
+
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
         ref.player.seekTo(seekTime.toLong())
       }.runOnQueue(Queues.MAIN)
