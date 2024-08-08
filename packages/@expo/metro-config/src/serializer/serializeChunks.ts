@@ -412,16 +412,16 @@ export class Chunk {
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
         paths: jsCode.paths,
-        webviewReferences: [
+        expoDomComponentReferences: [
           ...new Set(
             [...this.deps]
               .map((module) => {
                 return module.output.map((output) => {
                   if (
-                    'webviewReference' in output.data &&
-                    typeof output.data.webviewReference === 'string'
+                    'expoDomComponentReference' in output.data &&
+                    typeof output.data.expoDomComponentReference === 'string'
                   ) {
-                    return output.data.webviewReference;
+                    return output.data.expoDomComponentReference;
                   }
                   return undefined;
                 });

@@ -156,8 +156,8 @@ export async function exportEmbedBundleAndAssetsAsync(
     await Promise.all(
       bundles.artifacts.map(async (artifact) => {
         // TODO: Remove duplicates...
-        if (Array.isArray(artifact.metadata.webviewReferences)) {
-          for (const ref of artifact.metadata.webviewReferences) {
+        if (Array.isArray(artifact.metadata.expoDomComponentReferences)) {
+          for (const ref of artifact.metadata.expoDomComponentReferences) {
             console.log('Bundle www entry:', ref);
             // file path
 

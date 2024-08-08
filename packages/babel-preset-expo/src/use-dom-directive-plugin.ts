@@ -86,13 +86,15 @@ export default React.forwardRef((props, ref) => {
         assertExpoMetadata(state.file.metadata);
 
         // Save the client reference in the metadata.
-        state.file.metadata.webviewReference = outputKey;
+        state.file.metadata.expoDomComponentReference = outputKey;
       },
     },
   };
 }
 
-function assertExpoMetadata(metadata: any): asserts metadata is { webviewReference?: string } {
+function assertExpoMetadata(
+  metadata: any
+): asserts metadata is { expoDomComponentReference?: string } {
   if (metadata && typeof metadata === 'object') {
     return;
   }
