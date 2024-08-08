@@ -5,10 +5,10 @@ let cache = {};
 export function markLoaded(fontFamily) {
     cache[fontFamily] = true;
 }
-export const isLoadedInCache = (fontFamily) => {
+export function isLoadedInCache(fontFamily) {
     return fontFamily in cache;
-};
-export const isLoadedNative = (fontFamily) => {
+}
+export function isLoadedNative(fontFamily) {
     if (isLoadedInCache(fontFamily)) {
         return true;
     }
@@ -19,11 +19,11 @@ export const isLoadedNative = (fontFamily) => {
         });
         return fontFamily in cache;
     }
-};
-export const purgeFontFamilyFromCache = (fontFamily) => {
+}
+export function purgeFontFamilyFromCache(fontFamily) {
     delete cache[fontFamily];
-};
-export const purgeCache = () => {
+}
+export function purgeCache() {
     cache = {};
-};
+}
 //# sourceMappingURL=memory.js.map
