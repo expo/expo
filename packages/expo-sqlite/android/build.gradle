@@ -76,6 +76,8 @@ android {
 }
 
 dependencies {
-  compileOnly 'com.android.ndk.thirdparty:openssl:1.1.1q-beta-1'
+  if (project.ext.USE_SQLCIPHER) {
+    compileOnly 'com.android.ndk.thirdparty:openssl:1.1.1q-beta-1'
+  }
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 }
