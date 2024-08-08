@@ -9,11 +9,11 @@ export function markLoaded(fontFamily: string) {
   cache[fontFamily] = true;
 }
 
-export const isLoadedInCache = (fontFamily: string) => {
+export function isLoadedInCache(fontFamily: string): boolean {
   return fontFamily in cache;
-};
+}
 
-export const isLoadedNative = (fontFamily: string) => {
+export function isLoadedNative(fontFamily: string): boolean {
   if (isLoadedInCache(fontFamily)) {
     return true;
   } else {
@@ -23,11 +23,12 @@ export const isLoadedNative = (fontFamily: string) => {
     });
     return fontFamily in cache;
   }
-};
+}
 
-export const purgeFontFamilyFromCache = (fontFamily: string) => {
+export function purgeFontFamilyFromCache(fontFamily: string): void {
   delete cache[fontFamily];
-};
-export const purgeCache = () => {
+}
+
+export function purgeCache(): void {
   cache = {};
-};
+}
