@@ -14,8 +14,8 @@ void AmplitudeProcessor::registerNatives() {
 }
 
 jni::local_ref<AmplitudeProcessor::jhybriddata>
-AmplitudeProcessor::initHybrid(const jni::alias_ref<jhybridobject> jThis) {
-  return makeCxxInstance(jThis);
+AmplitudeProcessor::initHybrid(jni::alias_ref<jhybridobject> jThis) {
+  return makeCxxInstance();
 }
 
 jni::local_ref<jni::JArrayFloat>

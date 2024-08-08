@@ -18,16 +18,10 @@ public:
   extractAmplitudesNative(jni::alias_ref<jni::JArrayByte> chunk, jint size);
 
 private:
-  explicit AmplitudeProcessor(
-    jni::alias_ref<AmplitudeProcessor::jhybridobject> jThis)
-    : javaPart_(jni::make_global(jThis)) {}
-
-private:
   static jni::local_ref<jhybriddata>
   initHybrid(jni::alias_ref<jhybridobject> jThis);
 
   friend HybridBase;
-  jni::global_ref<AmplitudeProcessor::javaobject> javaPart_;
 };
 
 } // namespace expo

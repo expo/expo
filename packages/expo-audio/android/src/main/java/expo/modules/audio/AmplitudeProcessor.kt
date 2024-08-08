@@ -8,11 +8,7 @@ import java.io.Closeable
 @DoNotStrip
 class AmplitudeProcessor : Closeable {
   @DoNotStrip
-  private val mHybridData: HybridData
-
-  init {
-    mHybridData = initHybrid()
-  }
+  private val mHybridData: HybridData = initHybrid()
 
   external fun extractAmplitudesNative(chunk: ByteArray, size: Int): FloatArray
   private external fun initHybrid(): HybridData

@@ -22,7 +22,6 @@ target_include_directories(
     ${SRC_DIR}
 )
 
-find_library(LOG_LIB log)
 find_package(fbjni REQUIRED CONFIG)
 
 target_link_libraries(
