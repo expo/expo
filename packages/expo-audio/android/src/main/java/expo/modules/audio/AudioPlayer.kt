@@ -39,7 +39,6 @@ class AudioPlayer(
   val player = ref
   var preservesPitch = false
   var isPaused = false
-  val amplitudeProcessor = AmplitudeProcessor()
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
 
@@ -49,7 +48,7 @@ class AudioPlayer(
       object : Visualizer.OnDataCaptureListener {
         override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
           waveform?.let {
-            val data = amplitudeProcessor.extractAmplitudesNative(it, it.size)
+            val data = AmplitudeProcessor.extractAmplitudes(it, it.size)
             if (ref.isPlaying) {
               playerScope.launch {
                 sendAudioSampleUpdate(data)

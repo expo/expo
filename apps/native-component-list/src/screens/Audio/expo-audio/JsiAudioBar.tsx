@@ -33,6 +33,7 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
   }, [audioRmsValue]);
 
   useAudioSampleListener(player, (sample) => {
+    console.log(sample.channels[0].frames);
     const frames = sample.channels[0].frames;
     const frameSum = frames.slice(0, 200).reduce((prev, curr) => prev + curr ** 2, 0);
     const rmsValue = Math.sqrt(frameSum / 200);
@@ -46,7 +47,7 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
   }
 
   if (!isPlaying) {
-    return <Text style={styles.infoText}>Press play to set JSI audioSampleCallback</Text>;
+    return <Text style={styles.infoText}>Press play to see audio sample</Text>;
   }
 
   return (
