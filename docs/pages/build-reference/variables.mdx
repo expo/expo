@@ -53,6 +53,8 @@ Any reference to `process.env.EXPO_PUBLIC_API_URL` will be substituted for the a
 
 > `EXPO_PUBLIC_` variable replacement is available in SDK 49 and higher.
 
+> Regardless of naming convention, build profiles that use the Expo Development Client (that is, where `developmentClient: true`) cannot use env values declared in `eas.json` from that build's runtime. For more info, see [below](#how-do-environment-variables-work-for-my-expo-development-client-builds).
+
 ### For use by your Expo config
 
 You can use environment variables in a [dynamic config](/workflow/configuration/#dynamic-configuration) (**app.config.js**) to change how your app is built. For instance, you might want to change your app icon or short name for a test build.
@@ -83,6 +85,8 @@ module.exports = {
 ```
 
 > All environment variables in your **eas.json** build profile are available when evaluating **app.config.js**. It's a good practice to only use the `EXPO_PUBLIC_` prefix for variables used within your application code.
+
+> Note that the same limitations when using the Expo Development Client apply to their use in **ap.config.js**. For more information, see [below](#how-do-environment-variables-work-for-my-expo-development-client-builds).
 
 ### For use by other build steps
 
@@ -228,7 +232,7 @@ For example, if you create a secret with the name `MY_TOKEN` and value `secret` 
 
 ### How do environment variables work for my Expo Development Client builds?
 
-Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `npx expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used.
+Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `npx expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used. No values delcared for the build profile in `eas.json` will be made available in the runtime.
 
 ### Can I just set my environment variables on a CI provider?
 
