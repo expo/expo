@@ -24,13 +24,13 @@ export declare class VideoView extends PureComponent<VideoViewProps> {
      * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
      * > has to be configured for the PiP to work.
      * @platform android
-     * @platform ios 14+
+     * @platform ios
      */
     startPictureInPicture(): void;
     /**
      * Exits Picture in Picture (PiP) mode.
      * @platform android
-     * @platform ios 14+
+     * @platform ios
      */
     stopPictureInPicture(): void;
     render(): ReactNode;
