@@ -281,10 +281,12 @@ import { Text } from 'react-native';
 export default function Page() {
   return (
     <>
-      <Head>
+      <Head.Provider>
+       <Head>
         <title>My Blog Website</title>
         <meta name="description" content="This is my blog." />
-      </Head>
+       </Head>
+      </Head.Provider>
       <Text>About my blog</Text>
     </>
   );
