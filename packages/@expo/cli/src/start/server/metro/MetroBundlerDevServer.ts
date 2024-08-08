@@ -8,6 +8,8 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
+import fs from 'fs';
+
 import chalk from 'chalk';
 import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
@@ -21,6 +23,7 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
+import crypto from 'crypto';
 
 import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -74,6 +77,8 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { fileExistsAsync } from '../../../utils/dir';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -561,7 +566,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async legacySinglePageExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     extraOptions: {
       sourceMapUrl?: string;
@@ -569,6 +574,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } = {}
   ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(options.mainModuleName != null, 'mainModuleName must be provided in options.');
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
       'The server must be started before calling legacySinglePageExportBundleAsync.'
@@ -628,6 +634,30 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
+  async getWebviewProxyEntry(file: string) {
+    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
+    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+
+    const generatedEntry = path.join(this.projectRoot, '.expo/@dom', hash + '.js');
+
+    const entryFile = getWebviewProxyForFilepath(generatedEntry, filePath);
+
+    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
+
+    const exists = await fileExistsAsync(entryFile.filePath);
+    // TODO: Assert no default export at runtime.
+    await fs.promises.writeFile(entryFile.filePath, entryFile.contents);
+
+    if (!exists) {
+      // Give time for watchman to compute the file...
+      // TODO: Virtual modules which can have dependencies.
+      await new Promise((res) => setTimeout(res, 1000));
+    }
+
+    return generatedEntry;
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -648,7 +678,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
-    this.instanceMetroOptions = {
+    const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
       mode,
@@ -658,6 +688,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
     };
+    this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {
       port: options.port,
@@ -715,6 +746,62 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         },
       });
       middleware.use(deepLinkMiddleware.getHandler());
+
+      const serverRoot = getMetroServerRoot(this.projectRoot);
+
+      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        if (!req.url) return next();
+
+        const url = coreceUrl(req.url);
+
+        // Match `/_expo/@dom`
+        if (!url.pathname.startsWith('/_expo/@dom')) {
+          return next();
+        }
+
+        const file = url.searchParams.get('file');
+
+        if (!file || !file.startsWith('file://')) {
+          res.statusCode = 400;
+          res.statusMessage = 'Invalid file path';
+          return res.end();
+        }
+
+        // Generate a unique entry file for the webview.
+        const generatedEntry = await this.getWebviewProxyEntry(file);
+
+        // Use public URL for dev + physical devices.
+        // e.g. `http://111.222.333.444:8081`
+        const publicUrl = this.urlCreator?.constructUrl({
+          hostType: 'lan',
+          scheme: 'http',
+        })!;
+        // Create the script URL
+        const metroUrl = new URL(
+          createBundleUrlPath({
+            ...instanceMetroOptions,
+            isDOM: true,
+            mainModuleName: path.relative(serverRoot, generatedEntry),
+            bytecode: false,
+            platform: 'web',
+            isExporting: false,
+            engine: 'hermes',
+            // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
+            lazy: true,
+          }),
+          // TODO: This doesn't work on all public wifi configurations.
+          // publicUrl
+          this.getDevServerUrlOrAssert()
+        ).toString();
+
+        res.statusCode = 200;
+        // Return HTML file
+        res.setHeader('Content-Type', 'text/html');
+        res.end(
+          // Create the entry HTML file.
+          getWebviewProxyHtml(metroUrl, { title: path.basename(file) })
+        );
+      });
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
@@ -1395,4 +1482,70 @@ async function sourceMapStringAsync(
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
     excludeSource: options.excludeSource,
   });
+}
+
+function coreceUrl(url: string) {
+  try {
+    return new URL(url);
+  } catch {
+    return new URL(url, 'https://localhost:0');
+  }
+}
+
+const fileURLToFilePath = (fileURL: string) => {
+  if (!fileURL.startsWith('file://')) {
+    throw new Error('Not a file URL');
+  }
+  return decodeURI(fileURL.slice('file://'.length));
+};
+
+function getWebviewProxyForFilepath(generatedEntry: string, filePath: string) {
+  // filePath relative to the generated entry
+  let relativeFilePath = path.relative(path.dirname(generatedEntry), filePath);
+
+  if (!relativeFilePath.startsWith('.')) {
+    relativeFilePath = './' + relativeFilePath;
+  }
+
+  const templatePath = require.resolve(`@expo/cli/static/template/webview-entry.tsx`);
+  const template = fs.readFileSync(templatePath, 'utf8');
+
+  return {
+    filePath: generatedEntry,
+    contents: template.replace('[$$GENERATED_ENTRY]', relativeFilePath),
+  };
+}
+
+export function getWebviewProxyHtml(src?: string, { title }: { title?: string } = {}) {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        ${title ? `<title>${title}</title>` : ''}
+        <style id="expo-reset">
+        /* These styles make the body full-height */
+        html,
+        body {
+          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
+          /* height: 100%; */
+        }
+        /* These styles make the root element full-height */
+        #root {
+          display: flex;
+          flex: 1;
+        }
+        </style>
+      </head>
+      <body>
+      <noscript>
+      WebView requires <code>javaScriptEnabled</code>
+      </noscript>
+      <!-- Root element for the DOM component. -->
+      <div id="root"></div>
+      ${src ? `<script crossorigin src="${src}"></script>` : ''}
+      </body>
+    </html>`;
 }

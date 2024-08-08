@@ -30,6 +30,8 @@ export type ExpoMetroOptions = {
   reactCompiler: boolean;
   baseUrl?: string;
   isExporting: boolean;
+  /** Is bundling a DOM Component ("use dom"). */
+  isDOM?: boolean;
   inlineSourceMap?: boolean;
   clientBoundaries?: string[];
   splitChunks?: boolean;
@@ -155,6 +157,7 @@ export function getMetroDirectBundleOptions(
     usedExports,
     reactCompiler,
     optimize,
+    isDOM,
     clientBoundaries,
   } = withDefaults(options);
 
@@ -201,6 +204,7 @@ export function getMetroDirectBundleOptions(
       routerRoot,
       bytecode: bytecode || undefined,
       reactCompiler: reactCompiler || undefined,
+      dom: isDOM ? '1' : undefined,
     },
     customResolverOptions: {
       __proto__: null,
@@ -260,6 +264,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     splitChunks,
     usedExports,
     optimize,
+    isDOM,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -309,6 +314,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (reactCompiler) {
     queryParams.append('transform.reactCompiler', String(reactCompiler));
+  }
+  if (isDOM) {
+    queryParams.append('transform.dom', '1');
   }
 
   if (environment) {
