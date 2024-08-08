@@ -33,6 +33,16 @@ export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
 }
 
+export function useAudioSampleListener(
+  player: AudioPlayer,
+  listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
+) {
+  useEffect(() => {
+    const subscription = player.addListener('onAudioSampleUpdate', listener);
+    return () => subscription.remove();
+  }, [player.id]);
+}
+
 export function useAudioRecorder(
   options: RecordingOptions,
   statusListener?: (status: RecordingStatus) => void

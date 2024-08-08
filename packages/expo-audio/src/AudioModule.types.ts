@@ -61,6 +61,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   isLoaded: boolean;
 
   /**
+   * Boolean value indicating whether audio sampling is supported on the platform.
+   */
+  isAudioSamplingSupported: boolean;
+
+  /**
    * Boolean value indicating whether the player is buffering.
    */
   isBuffering: boolean;
@@ -125,8 +130,14 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   remove(): void;
 }
 
+type AudioSample = {
+  channels: { frames: number[] }[];
+  timestamp: number;
+};
+
 type AudioEvents = {
   onPlaybackStatusUpdate(status: AudioStatus): void;
+  onAudioSampleUpdate(data: AudioSample): void;
 };
 
 export declare class AudioRecorder extends SharedObject<RecordingEvents> {

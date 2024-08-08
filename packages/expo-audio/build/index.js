@@ -14,6 +14,12 @@ export function useAudioPlayerStatus(player) {
     const currentStatus = useMemo(() => player.currentStatus, [player.id]);
     return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
 }
+export function useAudioSampleListener(player, listener) {
+    useEffect(() => {
+        const subscription = player.addListener('onAudioSampleUpdate', listener);
+        return () => subscription.remove();
+    }, [player.id]);
+}
 export function useAudioRecorder(options, statusListener) {
     const platformOptions = createRecordingOptions(options);
     const recorder = useReleasingSharedObject(() => {

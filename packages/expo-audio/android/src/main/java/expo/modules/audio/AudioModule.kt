@@ -173,6 +173,10 @@ class AudioModule : Module() {
         }
       }
 
+      Property("isAudioSamplingSupported") { _ ->
+        true
+      }
+
       Property("loop") { ref ->
         runOnMain {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE

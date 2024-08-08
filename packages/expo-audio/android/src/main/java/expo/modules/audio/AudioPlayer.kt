@@ -1,6 +1,8 @@
 package expo.modules.audio
 
 import android.content.Context
+import android.media.audiofx.Visualizer
+import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -38,8 +40,30 @@ class AudioPlayer(
   val player = ref
   var preservesPitch = false
   var isPaused = false
+  val amplitudeProcessor = AmplitudeProcessor()
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
+
+  private val visualizer = Visualizer(player.audioSessionId).apply {
+    captureSize = Visualizer.getCaptureSizeRange()[1]
+    setDataCaptureListener(object : Visualizer.OnDataCaptureListener {
+      override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+        waveform?.let {
+          val data = amplitudeProcessor.extractAmplitudesNative(it, it.size)
+          if (ref.isPlaying) {
+            playerScope.launch {
+              sendAudioSampleUpdate(data)
+            }
+          }
+        }
+      }
+
+      override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
+      }
+    }, Visualizer.getMaxCaptureRate() / 2, true, false)
+
+    enabled = true
+  }
 
   init {
     addPlayerListeners()
@@ -104,6 +128,16 @@ class AudioPlayer(
       emit("onPlaybackStatusUpdate", body)
     }
 
+  private suspend fun sendAudioSampleUpdate(sample: FloatArray) = withContext(Dispatchers.Main) {
+    val body = mapOf(
+      "channels" to listOf(
+        mapOf("frames" to sample)
+      ),
+      "timestamp" to player.currentPosition
+    )
+    emit("onAudioSampleUpdate", body)
+  }
+
   private fun playbackStateToString(state: Int): String {
     return when (state) {
       Player.STATE_READY -> "ready"
@@ -117,6 +151,7 @@ class AudioPlayer(
   override fun deallocate() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
+      visualizer.release()
       player.release()
     }
   }
