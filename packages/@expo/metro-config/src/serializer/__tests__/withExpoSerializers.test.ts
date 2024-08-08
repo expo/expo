@@ -857,6 +857,11 @@ describe('serializes', () => {
       ]
     `);
 
+    console.log('imports async bundles in second module');
+    for (const artifact of artifacts) {
+      console.log(`---- BUNDLE: ${artifact.originFilename} ----\n`, artifact.source);
+    }
+
     // Split bundle
     expect(artifacts.length).toBe(2);
     expect(artifacts[1].metadata).toEqual({
@@ -866,6 +871,67 @@ describe('serializes', () => {
       paths: {},
       reactClientReferences: [],
     });
+  });
+
+  it(`supports sync and async import to shared module`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import './shared';
+          import('./async')
+        `,
+      'async.js': `
+          import './shared';
+        `,
+      'shared.js': `
+          export const shared = 'shared';
+        `,
+    });
+
+    expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
+      [
+        "_expo/static/js/web/index-d2a7f497138ad55a8b2afebb0e8a677a.js",
+        "_expo/static/js/web/async-a07fff0b75d88a950322633a8802da20.js",
+      ]
+    `);
+
+    // Split bundle
+    console.log('supports sync and async import to shared module');
+    for (const artifact of artifacts) {
+      console.log(`---- BUNDLE: ${artifact.originFilename} ----\n`, artifact.source);
+    }
+
+    expect(artifacts.length).toBe(2);
+  });
+
+  it(`supports async import from async and sync module to shared module`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import('./shared')
+          import('./async')
+        `,
+      'async.js': `
+          import('./shared')
+        `,
+      'shared.js': `
+          export const shared = 'shared';
+        `,
+    });
+
+    expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
+      [
+        "_expo/static/js/web/index-0300ddcdb76beecf679b536398af63bd.js",
+        "_expo/static/js/web/shared-c7ee22f634a2a3efff5cefbe46d07a49.js",
+        "_expo/static/js/web/async-3b5893dc22a9557b2be6d8c669c47964.js",
+      ]
+    `);
+
+    // Split bundle
+    console.log('supports sync and async import to shared module');
+    for (const artifact of artifacts) {
+      console.log(`---- BUNDLE: ${artifact.originFilename} ----\n`, artifact.source);
+    }
+
+    expect(artifacts.length).toBe(3);
   });
 
   // NOTE: This has been disabled pending a shared runtime chunk.
