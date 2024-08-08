@@ -45,7 +45,7 @@
     "@expo/env": "~0.2.2",
     "@expo/image-utils": "^0.4.0",
     "@expo/json-file": "^8.2.37",
-    "@expo/metro-config": "~0.17.0",
+    "@expo/metro-config": "0.17.7",
     "@expo/osascript": "^2.0.31",
     "@expo/package-manager": "^1.1.1",
     "@expo/plist": "^0.1.0",
