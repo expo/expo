@@ -4,6 +4,7 @@ package expo.modules.video
 
 import android.app.Activity
 import android.net.Uri
+import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
@@ -202,7 +203,11 @@ class VideoModule : Module() {
             if (!ref.player.currentTimeline.isEmpty) {
               ref.player.currentTimeline.getWindow(ref.player.currentMediaItemIndex, window)
             }
-            window.windowStartTimeMs + ref.player.currentPosition
+            if (window.windowStartTimeMs == C.TIME_UNSET) {
+              null
+            } else {
+              window.windowStartTimeMs + ref.player.currentPosition
+            }
           }
         }
 
@@ -210,7 +215,11 @@ class VideoModule : Module() {
         .get { ref: VideoPlayer ->
           // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
-            ref.player.currentLiveOffset / 1000f
+            if (ref.player.currentLiveOffset == C.TIME_UNSET) {
+              null
+            } else {
+              ref.player.currentLiveOffset / 1000f
+            }
           }
         }
 

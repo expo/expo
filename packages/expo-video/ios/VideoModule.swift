@@ -165,14 +165,18 @@ public final class VideoModule: Module {
       }
 
       Property("currentDate") { player -> Double in
-        let currentDate = player.pointer.currentItem?.currentDate()
-        let timeIntervalSince = currentDate?.timeIntervalSince1970 ?? 0
+        guard let currentDate = player.pointer.currentItem?.currentDate() else {
+          return nil
+        }
+        let timeIntervalSince = currentDate.timeIntervalSince1970
         return Double(timeIntervalSince * 1000)
       }
 
       Property("currentOffsetFromLive") { player -> Double in
-        let currentDate = player.pointer.currentItem?.currentDate()
-        let timeIntervalSince = currentDate?.timeIntervalSince1970 ?? 0
+        guard let currentDate = player.pointer.currentItem?.currentDate() else {
+          return nil
+        }
+        let timeIntervalSince = currentDate.timeIntervalSince1970
         let unixTime = Date().timeIntervalSince1970
         return unixTime - timeIntervalSince
       }
