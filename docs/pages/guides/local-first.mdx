@@ -13,7 +13,7 @@ In local-first software, "the availability of another computer should never prev
 To dig deeper into what local-first is and how it works, refer to the [additional resources](#additional-resources) below.
 
 
-## Why use a local-first architecture?
+## Why use local-first architecture?
 
 ### User experience benefits
 
@@ -39,13 +39,13 @@ A comprehensive list of tools is available on the ["Local-first software" commun
 
 One way to think of local-first tools is to group them by the following categories: persistence, state management, and syncing. Some tools will fit into multiple categories if they handle multiple aspects of the problem. Syncing can be further subdivided into syncable data structures and transport layers.
 
-### SQLite
-
-[Expo SQLite](/versions/latest/sdk/sqlite/) is a SQLite library that is a great choice for persistence for local-first apps. You can use SQLite with different state management and syncing layers in front of it, such as [y-expo-sqlite](https://github.com/brentvatne/y-expo-sqlite) to persist [Yjs](#yjs) documents, and [TinyBase](#tinybase) as a state management layer. Using SQLite is flexible, but you will need to combine it with other tools or build your own tools to get a complete local-first solution. [Learn more](https://docs.expo.dev/versions/latest/sdk/sqlite/).
-
 ### TinyBase
 
 [TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started with it using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase): `npx create-expo-app --example with-tinybase`.
+
+### SQLite
+
+[Expo SQLite](/versions/latest/sdk/sqlite/) is a SQLite library that is a great choice for persistence for local-first apps. You can use SQLite with different state management and syncing layers in front of it, such as [y-expo-sqlite](https://github.com/brentvatne/y-expo-sqlite) to persist [Yjs](#yjs) documents, and [TinyBase](#tinybase) as a state management layer. Using SQLite is flexible, but you will need to combine it with other tools or build your own tools to get a complete local-first solution. [Learn more](https://docs.expo.dev/versions/latest/sdk/sqlite/).
 
 ### Yjs
 
