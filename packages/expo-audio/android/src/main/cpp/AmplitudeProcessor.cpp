@@ -25,9 +25,9 @@ AmplitudeProcessor::extractAmplitudesNative(jni::alias_ref<jni::JArrayByte> chun
 
   std::vector<uint8_t> buffer(size);
   chunk->getRegion(0, size, reinterpret_cast<int8_t *>(buffer.data()));
-  for (size_t ii = 0; ii < size; ii++) {
-    double frame = (static_cast<double>(buffer[ii]) - 128) / 128.0;
-    nativeOutput[ii] = frame;
+  for (size_t i = 0; i < size; i++) {
+    double frame = (static_cast<double>(buffer[i]) - 128) / 128.0;
+    nativeOutput[i] = frame;
   }
 
   nativeOutput.release();
