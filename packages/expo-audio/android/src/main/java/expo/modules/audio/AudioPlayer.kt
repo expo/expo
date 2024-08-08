@@ -48,7 +48,7 @@ class AudioPlayer(
       object : Visualizer.OnDataCaptureListener {
         override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
           waveform?.let {
-            val data = AmplitudeProcessor.extractAmplitudes(it, it.size)
+            val data = extractAmplitudes(it, it.size)
             if (ref.isPlaying) {
               playerScope.launch {
                 sendAudioSampleUpdate(data)
@@ -99,6 +99,16 @@ class AudioPlayer(
         }
       }
     })
+  }
+
+  private fun extractAmplitudes(chunk: ByteArray, size: Int): FloatArray {
+    val output = FloatArray(size)
+    for (i in 0 until size) {
+      val unsignedByte = chunk[i].toInt() and 0xFF
+      val frame = (unsignedByte - 128).toDouble() / 128.0
+      output[i] = frame.toFloat()
+    }
+    return output
   }
 
   fun currentStatus(): Map<String, Any?> {
