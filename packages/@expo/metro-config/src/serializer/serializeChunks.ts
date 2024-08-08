@@ -58,9 +58,10 @@ function pathToRegex(path: string) {
   return new RegExp('^' + regexSafePath + '$');
 }
 
-const sourceMapString = typeof sourceMapStringMod !== 'function'
-  ? sourceMapStringMod.sourceMapString
-  : sourceMapStringMod;
+const sourceMapString =
+  typeof sourceMapStringMod !== 'function'
+    ? sourceMapStringMod.sourceMapString
+    : sourceMapStringMod;
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
