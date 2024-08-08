@@ -168,14 +168,14 @@ class AppContext(
         @Suppress("DEPRECATION")
         if (reactContext.isBridgeless) {
           val runtimeExecutor: RuntimeExecutor = try {
-              // When react-native version >= 0.75.0 get runtimeExecutor from catalystInstance
-              val catalystInstanceField = reactContext.javaClass.getDeclaredField("catalystInstance")
-              val catalystInstance = catalystInstanceField.get(reactContext)
-              val runtimeExecutorField = catalystInstance.javaClass.getDeclaredField("runtimeExecutor")
-              runtimeExecutorField.get(catalystInstance) as RuntimeExecutor
+            // When react-native version >= 0.75.0 get runtimeExecutor from catalystInstance
+            val catalystInstanceField = reactContext.javaClass.getDeclaredField("catalystInstance")
+            val catalystInstance = catalystInstanceField.get(reactContext)
+            val runtimeExecutorField = catalystInstance.javaClass.getDeclaredField("runtimeExecutor")
+            runtimeExecutorField.get(catalystInstance) as RuntimeExecutor
           } catch (e: NoSuchFieldException) {
-              val runtimeExecutorField = reactContext.javaClass.getDeclaredField("runtimeExecutor")
-              runtimeExecutorField.get(reactContext) as RuntimeExecutor
+            val runtimeExecutorField = reactContext.javaClass.getDeclaredField("runtimeExecutor")
+            runtimeExecutorField.get(reactContext) as RuntimeExecutor
           }
 
           jsiInterop.installJSIForBridgeless(
