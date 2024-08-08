@@ -24,7 +24,7 @@ const appConfigFieldsToSyncWithNative = [
 ];
 
 export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorCheck {
-  description = 'Check for app config fields not synced to native projects';
+  description = 'Check for app config fields that may not be synced in a non-CNG project';
 
   sdkVersionRange = '*';
 
