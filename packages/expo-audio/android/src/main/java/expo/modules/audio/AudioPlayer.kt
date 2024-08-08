@@ -50,9 +50,7 @@ class AudioPlayer(
           waveform?.let {
             val data = extractAmplitudes(it)
             if (ref.isPlaying) {
-              playerScope.launch {
-                sendAudioSampleUpdate(data)
-              }
+              sendAudioSampleUpdate(data)
             }
           }
         }
@@ -136,7 +134,7 @@ class AudioPlayer(
       emit("onPlaybackStatusUpdate", body)
     }
 
-  private suspend fun sendAudioSampleUpdate(sample: List<Float>) = withContext(Dispatchers.Main) {
+  private fun sendAudioSampleUpdate(sample: List<Float>) {
     val body = mapOf(
       "channels" to listOf(
         mapOf("frames" to sample)
