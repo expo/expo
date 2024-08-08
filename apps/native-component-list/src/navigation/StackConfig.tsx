@@ -5,7 +5,7 @@ import { ThemeType } from 'ThemeProvider';
 import * as React from 'react';
 import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { ThemeToggle } from '../../../common/ThemeToggler';
+import ThemeToggler from '../../../common/ThemeToggler';
 
 export default function getStackConfig(navigation: BottomTabNavigationProp<any>, theme: ThemeType) {
   return {
@@ -46,7 +46,7 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
               color={theme.icon.info}
             />
           </TouchableOpacity>
-          <ThemeToggle />
+          <ThemeToggler />
         </View>
       ),
     }),

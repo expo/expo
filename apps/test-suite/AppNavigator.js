@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
 import { useTheme } from '../common/ThemeProvider';
-import { ThemeToggle } from '../common/ThemeToggler';
+import ThemeToggler from '../common/ThemeToggler';
 
 // @tsapeta: This navigator is also being used by `bare-expo` app,
 // so make sure it still works there once you change something here.
@@ -75,7 +75,7 @@ export default function AppNavigator(props) {
                 marginBottom: 4,
                 gap: 12,
               }}>
-              <ThemeToggle />
+              <ThemeToggler />
             </View>
           ),
         }}

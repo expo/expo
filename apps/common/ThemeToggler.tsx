@@ -3,7 +3,7 @@ import { TouchableOpacity, Platform } from 'react-native';
 
 import { useTheme } from './ThemeProvider';
 
-export function ThemeToggle() {
+export default function ThemeToggler() {
   const { theme, name, setTheme } = useTheme();
   return (
     <TouchableOpacity onPress={() => setTheme(name === 'light' ? 'dark' : 'light')} hitSlop={4}>
