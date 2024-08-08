@@ -13,7 +13,7 @@ export function isLoadedNative(fontFamily) {
         return true;
     }
     else {
-        const loadedNativeFonts = ExpoFontLoader.loadedFonts;
+        const loadedNativeFonts = ExpoFontLoader.getLoadedFonts();
         loadedNativeFonts.forEach((font) => {
             cache[font] = true;
         });

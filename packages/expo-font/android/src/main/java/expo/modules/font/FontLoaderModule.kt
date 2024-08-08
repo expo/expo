@@ -27,8 +27,8 @@ open class FontLoaderModule : Module() {
 
     Name("ExpoFontLoader")
 
-    Property("loadedFonts") {
-      return@Property loadedFonts
+    Function("getLoadedFonts") {
+      return@Function loadedFonts
     }
 
     AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->

@@ -48,7 +48,7 @@ export function isLoaded(fontFamily: string): boolean {
  * @returns Returns array of font family names that have been loaded.
  */
 export function getLoadedFonts(): string[] {
-  return ExpoFontLoader.loadedFonts;
+  return ExpoFontLoader.getLoadedFonts();
 }
 
 // @needsAudit

@@ -15,7 +15,7 @@ public final class FontLoaderModule: Module {
     // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
     // and potentially consumed outside of Expo (e.g. RN vector icons)
     // do NOT change the property as it'll break consumers!
-    Property("loadedFonts") {
+    Function("getLoadedFonts") {
       return registeredFonts
     }
 

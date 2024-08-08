@@ -92,7 +92,7 @@ export default {
     resetServerContext() {
         serverContext.clear();
     },
-    get loadedFonts() {
+    getLoadedFonts() {
         if (typeof window === 'undefined') {
             return [...serverContext.values()].map(({ name }) => name);
         }

@@ -30,7 +30,7 @@ function _createMockAsset({
 beforeEach(() => {
   ({ NativeModulesProxy } = require('expo-modules-core'));
   NativeModulesProxy.ExpoFontLoader.loadAsync.mockImplementation(async () => {});
-  NativeModulesProxy.ExpoFontLoader.loadedFonts = [];
+  NativeModulesProxy.ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
   Font = require('expo-font');
 });
 
@@ -287,5 +287,6 @@ describe('in bare workflow', () => {
 
   it('getLoadedFonts is available', () => {
     expect(Font.getLoadedFonts()).toHaveLength(0);
+    expect(NativeModulesProxy.ExpoFontLoader.getLoadedFonts).toHaveBeenCalledTimes(1);
   });
 });

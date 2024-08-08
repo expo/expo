@@ -1,7 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { Platform } from 'expo-modules-core';
+import { NativeModulesProxy, Platform } from 'expo-modules-core';
 
-import ExpoFontLoader from '../ExpoFontLoader';
 import * as Font from '../Font';
 import { useFonts } from '../FontHooks';
 
@@ -21,7 +20,7 @@ describe('useFonts', () => {
 
   beforeAll(() => {
     if (Platform.OS !== 'web') {
-      ExpoFontLoader.loadedFonts = [];
+      NativeModulesProxy.ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
     }
   });
 

@@ -17,7 +17,7 @@ export function isLoadedNative(fontFamily: string): boolean {
   if (isLoadedInCache(fontFamily)) {
     return true;
   } else {
-    const loadedNativeFonts: string[] = ExpoFontLoader.loadedFonts;
+    const loadedNativeFonts: string[] = ExpoFontLoader.getLoadedFonts();
     loadedNativeFonts.forEach((font) => {
       cache[font] = true;
     });
