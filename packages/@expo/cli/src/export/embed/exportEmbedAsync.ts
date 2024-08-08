@@ -20,10 +20,8 @@ import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
-import {
-  getWebviewProxyHtml,
-  MetroBundlerDevServer,
-} from '../../start/server/metro/MetroBundlerDevServer';
+import { getDomComponentHtml } from '../../start/server/metro/dom-components';
+import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
@@ -164,7 +162,7 @@ export async function exportEmbedBundleAndAssetsAsync(
             // MUST MATCH THE BABEL PLUGIN!
             const hash = crypto.createHash('sha1').update(ref).digest('hex');
             const outputName = `${rootDir}/${hash}.html`;
-            const generatedEntryPath = await devServer.getWebviewProxyEntry(ref);
+            const generatedEntryPath = await devServer.getDomComponentVirtualEntryModuleAsync(ref);
             const baseUrl = `/${rootDir}`;
             // Run metro bundler and create the JS bundles/source maps.
             const bundle = await devServer.legacySinglePageExportBundleAsync({
@@ -183,7 +181,7 @@ export async function exportEmbedBundleAndAssetsAsync(
             const html = await serializeHtmlWithAssets({
               isExporting: true,
               resources: bundle.artifacts,
-              template: getWebviewProxyHtml(),
+              template: getDomComponentHtml(),
               baseUrl: './',
             });
 

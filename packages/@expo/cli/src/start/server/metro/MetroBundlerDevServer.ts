@@ -634,14 +634,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
-  async getWebviewProxyEntry(file: string) {
+  async getDomComponentVirtualEntryModuleAsync(file: string) {
     const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
 
     const hash = crypto.createHash('sha1').update(filePath).digest('hex');
 
     const generatedEntry = path.join(this.projectRoot, '.expo/@dom', hash + '.js');
 
-    const entryFile = getWebviewProxyForFilepath(generatedEntry, filePath);
+    const entryFile = getDomComponentVirtualProxy(generatedEntry, filePath);
 
     fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
 
@@ -749,59 +749,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const serverRoot = getMetroServerRoot(this.projectRoot);
 
-      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-        if (!req.url) return next();
-
-        const url = coreceUrl(req.url);
-
-        // Match `/_expo/@dom`
-        if (!url.pathname.startsWith('/_expo/@dom')) {
-          return next();
-        }
-
-        const file = url.searchParams.get('file');
-
-        if (!file || !file.startsWith('file://')) {
-          res.statusCode = 400;
-          res.statusMessage = 'Invalid file path';
-          return res.end();
-        }
-
-        // Generate a unique entry file for the webview.
-        const generatedEntry = await this.getWebviewProxyEntry(file);
-
-        // Use public URL for dev + physical devices.
-        // e.g. `http://111.222.333.444:8081`
-        const publicUrl = this.urlCreator?.constructUrl({
-          hostType: 'lan',
-          scheme: 'http',
-        })!;
-        // Create the script URL
-        const metroUrl = new URL(
-          createBundleUrlPath({
-            ...instanceMetroOptions,
-            isDOM: true,
-            mainModuleName: path.relative(serverRoot, generatedEntry),
-            bytecode: false,
-            platform: 'web',
-            isExporting: false,
-            engine: 'hermes',
-            // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
-            lazy: true,
-          }),
-          // TODO: This doesn't work on all public wifi configurations.
-          // publicUrl
-          this.getDevServerUrlOrAssert()
-        ).toString();
-
-        res.statusCode = 200;
-        // Return HTML file
-        res.setHeader('Content-Type', 'text/html');
-        res.end(
-          // Create the entry HTML file.
-          getWebviewProxyHtml(metroUrl, { title: path.basename(file) })
-        );
-      });
+      // Add support for DOM components.
+      // TODO: Maybe put behind a flag for now?
+      middleware.use(
+        createDomComponentsMiddleware(
+          {
+            projectRoot: this.projectRoot,
+            metroRoot: serverRoot,
+            getDevServerUrl: this.getDevServerUrlOrAssert.bind(this),
+          },
+          instanceMetroOptions
+        )
+      );
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
@@ -1499,53 +1458,5 @@ const fileURLToFilePath = (fileURL: string) => {
   return decodeURI(fileURL.slice('file://'.length));
 };
 
-function getWebviewProxyForFilepath(generatedEntry: string, filePath: string) {
-  // filePath relative to the generated entry
-  let relativeFilePath = path.relative(path.dirname(generatedEntry), filePath);
-
-  if (!relativeFilePath.startsWith('.')) {
-    relativeFilePath = './' + relativeFilePath;
-  }
-
-  const templatePath = require.resolve(`@expo/cli/static/template/webview-entry.tsx`);
-  const template = fs.readFileSync(templatePath, 'utf8');
-
-  return {
-    filePath: generatedEntry,
-    contents: template.replace('[$$GENERATED_ENTRY]', relativeFilePath),
-  };
-}
-
-export function getWebviewProxyHtml(src?: string, { title }: { title?: string } = {}) {
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        ${title ? `<title>${title}</title>` : ''}
-        <style id="expo-reset">
-        /* These styles make the body full-height */
-        html,
-        body {
-          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
-          /* height: 100%; */
-        }
-        /* These styles make the root element full-height */
-        #root {
-          display: flex;
-          flex: 1;
-        }
-        </style>
-      </head>
-      <body>
-      <noscript>
-      WebView requires <code>javaScriptEnabled</code>
-      </noscript>
-      <!-- Root element for the DOM component. -->
-      <div id="root"></div>
-      ${src ? `<script crossorigin src="${src}"></script>` : ''}
-      </body>
-    </html>`;
-}
+import { getDomComponentVirtualProxy, getDomComponentHtml } from './dom-components';
+import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
