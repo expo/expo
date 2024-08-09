@@ -30,7 +30,7 @@
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
 - Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
 - Fix `TypeError: (0 , sourceMapString_1.default) is not a function` bug due to an incompatibiliy with `metro@0.80.10`'s `sourceMapString` module. ([#30905](https://github.com/expo/expo/pull/30905) by [@kitten](https://github.com/kitten))
-- Add explicit Metro dependency chains.
+- Add explicit Metro dependency chains. ([#30919](https://github.com/expo/expo/pull/30919) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
