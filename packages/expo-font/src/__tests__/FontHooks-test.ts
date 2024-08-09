@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
+import { NativeModulesProxy, Platform } from 'expo-modules-core';
 
 import * as Font from '../Font';
 import { useFonts } from '../FontHooks';
@@ -16,6 +17,12 @@ describe('useFonts', () => {
     'OpenSans-Regular': 'path/to/font.ttf',
     'ComicSans-Regular': 'path/to/jailed/font.ttf',
   };
+
+  beforeAll(() => {
+    if (Platform.OS !== 'web') {
+      NativeModulesProxy.ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
+    }
+  });
 
   const loadAsyncSpy = jest.spyOn(Font, 'loadAsync').mockResolvedValue();
 
