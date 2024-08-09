@@ -5,6 +5,7 @@ const DevMenuPreferences = requireNativeModule('DevMenuPreferences');
 export type DevMenuPreferencesType = Partial<{
   motionGestureEnabled: boolean;
   touchGestureEnabled: boolean;
+  buttonGestureEnabled: boolean;
   keyCommandsEnabled: boolean;
   showsAtLaunch: boolean;
 }>;

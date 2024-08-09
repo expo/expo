@@ -11,6 +11,8 @@ export type DevMenuPreferencesContext = {
   setMotionGestureEnabled: (enabled: boolean) => void;
   touchGestureEnabled: boolean;
   setTouchGestureEnabled: (enabled: boolean) => void;
+  buttonGestureEnabled: boolean;
+  setButtonGestureEnabled: (enabled: boolean) => void;
   showsAtLaunch: boolean;
   setShowsAtLaunch: (enabled: boolean) => void;
 };
@@ -33,6 +35,9 @@ export function DevMenuPreferencesProvider({
   const [touchGestureEnabled, setTouchGestureEnabled] = React.useState(
     initialPreferences?.touchGestureEnabled
   );
+  const [buttonGestureEnabled, setButtonGestureEnabled] = React.useState(
+    initialPreferences?.buttonGestureEnabled
+  );
   const [showsAtLaunch, setShowsAtLaunch] = React.useState(initialPreferences?.showsAtLaunch);
 
   React.useEffect(() => {
@@ -43,6 +48,10 @@ export function DevMenuPreferencesProvider({
 
       if (settings.touchGestureEnabled) {
         setTouchGestureEnabled(true);
+      }
+
+      if (settings.buttonGestureEnabled) {
+        setButtonGestureEnabled(true);
       }
 
       if (settings.showsAtLaunch) {
@@ -84,6 +93,17 @@ export function DevMenuPreferencesProvider({
     setTouchGestureEnabled(enabled);
   };
 
+  const onButtonGestureChange = (enabled: boolean) => {
+    setMenuPreferencesAsync({
+      buttonGestureEnabled: enabled,
+    }).catch(() => {
+      // restore to previous value in case of error
+      setButtonGestureEnabled(buttonGestureEnabled);
+    });
+
+    setButtonGestureEnabled(enabled);
+  };
+
   return (
     <Context.Provider
       value={{
@@ -91,6 +111,8 @@ export function DevMenuPreferencesProvider({
         setMotionGestureEnabled: onMotionGestureChange,
         touchGestureEnabled,
         setTouchGestureEnabled: onTouchGestureChange,
+        buttonGestureEnabled,
+        setButtonGestureEnabled: onButtonGestureChange,
         showsAtLaunch,
         setShowsAtLaunch: onShowsAtLaunchChange,
       }}>

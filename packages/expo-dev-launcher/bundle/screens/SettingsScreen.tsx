@@ -10,6 +10,7 @@ import {
   ShowMenuIcon,
   ThreeFingerPressIcon,
   CheckIcon,
+  ToolbarOverlayIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
@@ -38,6 +39,8 @@ export function SettingsScreen() {
     setTouchGestureEnabled,
     motionGestureEnabled,
     setMotionGestureEnabled,
+    buttonGestureEnabled,
+    setButtonGestureEnabled,
   } = useDevMenuPreferences();
 
   const buildInfo = useBuildInfo();
@@ -147,6 +150,26 @@ export function SettingsScreen() {
                 </Text>
                 <Spacer.Horizontal />
                 {touchGestureEnabled && <CheckIcon />}
+              </Row>
+            </Button.FadeOnPressContainer>
+
+            <Divider />
+
+            <Button.FadeOnPressContainer
+              bg="default"
+              roundedBottom="large"
+              roundedTop="none"
+              onPress={() => setButtonGestureEnabled(!buttonGestureEnabled)}
+              accessibilityState={{ checked: buttonGestureEnabled }}>
+              <Row px="medium" py="small" bg="default">
+                {/* TODO: Replace with a floating button icon, this is kind of close enough for now */}
+                <ToolbarOverlayIcon />
+                <Spacer.Horizontal size="small" />
+                <Text size="large" color="default">
+                  Floating button
+                </Text>
+                <Spacer.Horizontal />
+                {buttonGestureEnabled && <CheckIcon />}
               </Row>
             </Button.FadeOnPressContainer>
           </View>
