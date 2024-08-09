@@ -327,6 +327,10 @@ export interface IOS {
    */
   backgroundColor?: string;
   /**
+   * The Apple development team ID to use for all build configurations.
+   */
+  developmentTeam?: string;
+  /**
    * Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
    *
    *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
