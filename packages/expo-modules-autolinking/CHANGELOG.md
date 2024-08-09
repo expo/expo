@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Added missing `project.android.packageName` in react-native-config for Android core autolinking. ([#30913](https://github.com/expo/expo/pull/30913) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.11.1 — 2024-04-23

@@ -90,3 +90,16 @@ export interface RNConfigReactNativeLibraryConfig {
 export type RNConfigReactNativeConfig =
   | RNConfigReactNativeProjectConfig
   | RNConfigReactNativeLibraryConfig;
+
+/**
+ * The `project` config represents the app project configuration.
+ */
+export interface RNConfigReactNativeAppProjectConfig {
+  android?: {
+    sourceDir: string;
+    packageName: string;
+  };
+  ios?: {
+    sourceDir: string;
+  };
+}
