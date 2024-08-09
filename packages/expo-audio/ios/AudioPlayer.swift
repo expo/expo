@@ -48,7 +48,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     return true
   }
-  
+
   func setSamplingEnabled(enabled: Bool) {
     samplingEnabled = enabled
     if enabled {
@@ -57,7 +57,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       uninstallTap()
     }
   }
-  
+
   func installTap() {
     if let item = ref.currentItem, !tapInstalled {
       audioProcessor = AudioTapProcessor(playerItem: item)
@@ -68,17 +68,17 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         let data = audioBuffer.mData else {
           return
         }
-                
+
         let channelCount = Int(audioBuffer.mNumberChannels)
         let dataPointer = data.assumingMemoryBound(to: Float.self)
-        
+
         let channels = (0..<channelCount).map { channelIndex in
           let channelData = stride(from: channelIndex, to: frameCount, by: channelCount).map { frameIndex in
             dataPointer[frameIndex]
           }
           return ["frames": channelData]
         }
-        
+
         self.emit(event: audioSample, arguments: [
           "channels": channels,
           "timestamp": timestamp
@@ -86,12 +86,12 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       }
     }
   }
-  
+
   func uninstallTap() {
     audioProcessor?.uninstallTap()
     audioProcessor = nil
   }
-  
+
   func currentStatus() -> [String: Any] {
     let time = ref.currentItem?.duration
     let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
@@ -119,7 +119,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     self.emit(event: playbackStatus, arguments: body)
   }
-  
+
   // temporary until we have delegate methods for releasing the SharedObject
   deinit {
     uninstallTap()
