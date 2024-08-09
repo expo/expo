@@ -8,6 +8,7 @@ useUnstableCoreAutolinking = '1'
 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   if (useUnstableCoreAutolinking == '1') {
+    println('\u001B[32mUsing expo-modules-autolinking as core autolinking source\u001B[0m')
     def command = [
       'node',
       '--no-warnings',

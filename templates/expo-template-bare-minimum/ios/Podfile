@@ -17,6 +17,7 @@ target 'HelloWorld' do
   use_expo_modules!
 
   if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
     config_command = [
       'node',
       '--no-warnings',

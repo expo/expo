@@ -23,6 +23,7 @@ target 'NativeTests' do
   pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
 
   if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
     config_command = [
       'node',
       '--no-warnings',
