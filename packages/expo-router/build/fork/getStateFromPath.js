@@ -156,26 +156,13 @@ function sortConfigs(a, b, previousSegments = []) {
     if (b.screen === 'index' || b.screen.match(/\/index$/)) {
         bParts.push('index');
     }
-    const isAStaticRoute = !a.hasChildren && // We only want route files which never have children
+    const isAStaticRoute = !a.hasChildren && // Layout configs will have children
         !aParts.some((part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found'));
     const isBStaticRoute = !b.hasChildren &&
         !bParts.some((part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found'));
     /*
      * Static routes should always be higher than dynamic routes.
-     *
-     * - /(apple)/_layout
-     * - /(apple)/[fruit]/index
-     * - /([fruit])/[fruit]/_layout
-     * - /([fruit])/[fruit]/index
-     *
-     * Given this structure, it is valid to navigate to /(apple)
-     *
-     * This does NOT match on /(apple)/[fruit]/index because not value was provided for [fruit]
-     * It will match on /([fruit])/[fruit]/index because the group can inherit the [fruit] value
-     *
-     * We also need to be careful because `(apple)` is a valid matcher for `./(apple)/_layout`
-     * When its a _layout for a (group) should only be sorted by their segments, not by their static/dynamic nature.
-     * This only applies to groups, if we don't have groups the
+     * Layouts are excluded from this and are ranked lower than routes
      */
     if (isAStaticRoute && !isBStaticRoute) {
         return -1;
@@ -183,8 +170,9 @@ function sortConfigs(a, b, previousSegments = []) {
     else if (!isAStaticRoute && isBStaticRoute) {
         return 1;
     }
-    // When we navigate, we need to stay within groups as close as possible
-    // Hence, a route is sorted based upon is similiarity to the current state
+    /*
+     * If both are static/dynamic or a layout file, then we check group similarity
+     */
     const similarToPreviousA = previousSegments.filter((value, index) => {
         return value === a.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
     });
@@ -196,6 +184,9 @@ function sortConfigs(a, b, previousSegments = []) {
         // One matches more than the other, so pick the one that matches more
         return similarToPreviousB.length - similarToPreviousA.length;
     }
+    /*
+     * If there is not difference in similarity, then each non-group segment is compared against each other
+     */
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
         // if b is longer, b get higher priority
         if (aParts[i] == null) {
@@ -256,12 +247,25 @@ function sortConfigs(a, b, previousSegments = []) {
             return -1;
         }
     }
-    // Sort initial routes with a higher priority than routes which will push more screens
-    // this ensures shared routes go to the shortest path.
+    /*
+     * Both configs are identical in specificity and segments count/type
+     * Try and sort by initial instead.
+     *
+     * TODO: We don't differentiate between the default initialRoute and group specific default routes
+     *
+     * const unstable_settings = {
+     *   "group": {
+     *     initialRouteName: "article"
+     *  }
+     * }
+     *
+     * "article" will be ranked higher because its an initialRoute for a group - even if not your not currently in
+     * that group. The current work around is to ways provide initialRouteName for all groups
+     */
     if (a.isInitial && !b.isInitial) {
         return -1;
     }
-    if (!a.isInitial && b.isInitial) {
+    else if (!a.isInitial && b.isInitial) {
         return 1;
     }
     return bParts.length - aParts.length;
