@@ -100,8 +100,35 @@ object ExpoReactHostFactory {
         handler.onWillCreateReactInstance(useDeveloperSupport)
       }
 
-      val reactHostImpl =
-        ReactHostImpl(
+      var reactHostImpl: ReactHostImpl
+      try {
+        // react-native 0.75.0 removed the ReactJsExceptionHandler parameter
+        val constructorWithoutHandler = ReactHostImpl::class.java.getConstructor(
+          Context::class.java,
+          ReactHostDelegate::class.java,
+          ComponentFactory::class.java,
+          Boolean::class.javaPrimitiveType,
+          Boolean::class.javaPrimitiveType
+        )
+
+        reactHostImpl = constructorWithoutHandler.newInstance(
+          context,
+          reactHostDelegate,
+          componentFactory,
+          true,
+          useDeveloperSupport
+        )
+      } catch (e: NoSuchMethodException) {
+        val constructorWithHandler = ReactHostImpl::class.java.getConstructor(
+          Context::class.java,
+          ReactHostDelegate::class.java,
+          ComponentFactory::class.java,
+          Boolean::class.javaPrimitiveType,
+          ReactJsExceptionHandler::class.java,
+          Boolean::class.javaPrimitiveType
+        )
+
+        reactHostImpl = constructorWithHandler.newInstance(
           context,
           reactHostDelegate,
           componentFactory,
@@ -109,9 +136,11 @@ object ExpoReactHostFactory {
           reactJsExceptionHandler,
           useDeveloperSupport
         )
-          .apply {
-            jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
-          }
+      }
+
+      reactHostImpl.apply {
+        jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
+      }
 
       reactNativeHost.reactNativeHostHandlers.forEach { handler ->
         handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)

@@ -9,6 +9,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
@@ -166,11 +167,22 @@ class AppContext(
 
         @Suppress("DEPRECATION")
         if (reactContext.isBridgeless) {
+          val runtimeExecutor: RuntimeExecutor = try {
+            // When react-native version >= 0.75.0 get runtimeExecutor from catalystInstance
+            val catalystInstanceField = reactContext.javaClass.getDeclaredField("catalystInstance")
+            val catalystInstance = catalystInstanceField.get(reactContext)
+            val runtimeExecutorField = catalystInstance.javaClass.getDeclaredField("runtimeExecutor")
+            runtimeExecutorField.get(catalystInstance) as RuntimeExecutor
+          } catch (e: NoSuchFieldException) {
+            val runtimeExecutorField = reactContext.javaClass.getDeclaredField("runtimeExecutor")
+            runtimeExecutorField.get(reactContext) as RuntimeExecutor
+          }
+
           jsiInterop.installJSIForBridgeless(
             this,
             jsRuntimePointer,
             jniDeallocator,
-            reactContext.runtimeExecutor!!
+            runtimeExecutor
           )
         } else {
           jsiInterop.installJSI(
