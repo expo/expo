@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
 import { isFileIgnoredAsync } from '../utils/isFileIgnoredAsync';
 
 const appConfigFieldsToSyncWithNative = [
@@ -60,8 +61,7 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
         `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Continuous Native Generation (CNG). When the 'android' / 'ios' folders are present, EAS Build will not sync the following properties: ${unsyncedFields.join(', ')}. \n`
       );
 
-      advice =
-        'Add the "android" and "ios" folders to your .gitignore file if you intend to use CNG. Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build.';
+      advice = `Add the "android" and "ios" folders to your .gitignore file if you intend to use CNG. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
     }
 
     return {
