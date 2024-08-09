@@ -51,8 +51,8 @@
     "expo-module-scripts": "^3.0.0",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-native": "0.75.0-rc.5",
+    "react": "18.3.1",
+    "react-native": "0.75.0-rc.7",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },

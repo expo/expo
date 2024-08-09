@@ -1,0 +1,48 @@
+diff --git a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts
+index 8528900..9114c01 100644
+--- a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts
++++ b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts
+@@ -51,7 +51,6 @@ dependencies {
+ 
+   testImplementation(libs.junit)
+   testImplementation(libs.assertj)
+-  testImplementation(project(":shared-testutil"))
+ 
+   testRuntimeOnly(
+       files(
+diff --git a/node_modules/@react-native/gradle-plugin/settings-plugin/build.gradle.kts b/node_modules/@react-native/gradle-plugin/settings-plugin/build.gradle.kts
+index 92a44ac..b6687a8 100644
+--- a/node_modules/@react-native/gradle-plugin/settings-plugin/build.gradle.kts
++++ b/node_modules/@react-native/gradle-plugin/settings-plugin/build.gradle.kts
+@@ -40,7 +40,6 @@ dependencies {
+   implementation(libs.javapoet)
+ 
+   testImplementation(libs.junit)
+-  testImplementation(project(":shared-testutil"))
+ 
+   testRuntimeOnly(
+       files(
+diff --git a/node_modules/@react-native/gradle-plugin/settings.gradle.kts b/node_modules/@react-native/gradle-plugin/settings.gradle.kts
+index 565cea4..f342618 100644
+--- a/node_modules/@react-native/gradle-plugin/settings.gradle.kts
++++ b/node_modules/@react-native/gradle-plugin/settings.gradle.kts
+@@ -19,7 +19,6 @@ include(
+     ":react-native-gradle-plugin",
+     ":settings-plugin",
+     ":shared",
+-    ":shared-testutil",
+ )
+ 
+ rootProject.name = "gradle-plugins-root"
+diff --git a/node_modules/@react-native/gradle-plugin/shared/build.gradle.kts b/node_modules/@react-native/gradle-plugin/shared/build.gradle.kts
+index fa76599..bccaeb4 100644
+--- a/node_modules/@react-native/gradle-plugin/shared/build.gradle.kts
++++ b/node_modules/@react-native/gradle-plugin/shared/build.gradle.kts
+@@ -18,7 +18,6 @@ dependencies {
+   implementation(libs.gson)
+   implementation(libs.guava)
+   testImplementation(libs.junit)
+-  testImplementation(project(":shared-testutil"))
+ }
+ 
+ java { targetCompatibility = JavaVersion.VERSION_11 }
