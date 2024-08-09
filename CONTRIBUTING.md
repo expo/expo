@@ -22,7 +22,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 > 💡 How does `bare-expo` relate to `test-suite`?
 >
-> `bare-expo` is a bare workflow app that links all of the Expo SDK dependencies in the `packages/` directory in order to be able to run projects in the `apps/` directory in the bare workflow rather than the Expo client. It currently only runs `test-suite`. `test-suite` is a regular managed workflow Expo app with some custom code to turn it into a test runner. If you run `expo start` in the `test-suite` directory you can load the project in Expo client. `bare-expo` imports the `test-suite` app root component and uses it as its own root component.
+> `bare-expo` is a bare RN app that links all of the Expo SDK dependencies in the `packages/` directory in order to be able to run projects in the `apps/` directory. It currently only runs `test-suite` which is an Expo app with some custom code to turn it into a test runner. If you run `expo start` in the `test-suite` directory you can load the project in Expo Go. `bare-expo` imports the `test-suite` app root component and uses it as its own root component.
 
 ## 📦 Download and Setup
 
