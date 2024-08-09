@@ -14,6 +14,8 @@ const bigBuckBunnySource: VideoSource = {
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
+    artwork:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
   },
 };
 

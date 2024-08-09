@@ -6,5 +6,6 @@ import java.io.Serializable
 
 class VideoMetadata(
   @Field var title: String? = null,
-  @Field var artist: String? = null
+  @Field var artist: String? = null,
+  @Field var artwork: String? = null
 ) : Record, Serializable

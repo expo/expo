@@ -190,6 +190,10 @@ export type VideoMetadata = {
      * Secondary text that will be displayed under the title.
      */
     artist?: string;
+    /**
+     * The artwork of the video.
+     */
+    artwork?: string;
 };
 /**
  * Specifies which type of DRM to use. Android supports Widevine, PlayReady and ClearKey, iOS supports FairPlay.
