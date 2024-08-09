@@ -34,7 +34,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoKeepAwake (13.0.2):
     - ExpoModulesCore
   - ExpoLinearGradient (13.0.2):
@@ -111,7 +110,6 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
@@ -126,18 +124,6 @@ PODS:
     - libavif/core
     - libdav1d (>= 0.6.0)
   - libdav1d (1.2.0)
-  - libwebp (1.3.2):
-    - libwebp/demux (= 1.3.2)
-    - libwebp/mux (= 1.3.2)
-    - libwebp/sharpyuv (= 1.3.2)
-    - libwebp/webp (= 1.3.2)
-  - libwebp/demux (1.3.2):
-    - libwebp/webp
-  - libwebp/mux (1.3.2):
-    - libwebp/demux
-  - libwebp/sharpyuv (1.3.2)
-  - libwebp/webp (1.3.2):
-    - libwebp/sharpyuv
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1637,13 +1623,7 @@ PODS:
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.7.0):
     - SDWebImage/Core (~> 5.6)
-  - SDWebImageWebPCoder (0.14.6):
-    - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - "sqlite3 (3.45.3+1)":
-    - "sqlite3/common (= 3.45.3+1)"
-  - "sqlite3/common (3.45.3+1)"
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
   - ZXingObjC/OneD (3.6.9):
@@ -1742,14 +1722,11 @@ SPEC REPOS:
   trunk:
     - libavif
     - libdav1d
-    - libwebp
     - ReachabilitySwift
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
-    - SDWebImageWebPCoder
     - SocketRocket
-    - sqlite3
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -1937,13 +1914,13 @@ SPEC CHECKSUMS:
   ExpoCamera: ed6079c35ad5f8c47f1c34a84891c5b6d541d70d
   ExpoFileSystem: 4fe2130545fed1936aa8eb3022d4720036f00824
   ExpoFont: 8052e556507ff9c37bbd3fd24a4d52e79d60892e
-  ExpoImage: 8bc89db2f2c7705064afe2083c450f4147c0ea7c
+  ExpoImage: 64e08fd55723edc561f8c9b031c66b0f3474e57b
   ExpoKeepAwake: a273e4ddd0ef6bfd967f088df97b4734729b93c3
   ExpoLinearGradient: 88044e57782ec9b0e8e09f097f65bfb8e3060e44
   ExpoModulesCore: 8573f92864a507d07ff1c146b916d569252e0677
   EXSplashScreen: c8efdcce5fd100ac2c21fca9bb4cd44ee6016c09
   EXStructuredHeaders: 404356f2621ca76fd54e8c5c686091d0fa00cbc7
-  EXUpdates: 76839a7d4f4b7b5d096a68d0a27f9b81d42ceaa0
+  EXUpdates: 992e73bb96f83c8ed958949bb2475c883a3119ae
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: ef2d8805f4910e0fd527cca94cf657ef5ec74f0a
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -1951,7 +1928,6 @@ SPEC CHECKSUMS:
   hermes-engine: a8e85fde08f5659a7a3389b3cd49805835e42c07
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
-  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: ad5d0aa8ca58822fc812b7d1d14cadd35655284e
   RCTRequired: 669d843dfd6d4b798d1528efce99132fd5aa0034
@@ -2011,9 +1987,7 @@ SPEC CHECKSUMS:
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: ac38ef8dfa1ce56514c8197f19175e97ab7e7c2d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 

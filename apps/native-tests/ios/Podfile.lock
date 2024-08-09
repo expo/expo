@@ -311,7 +311,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImage/Tests (1.12.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
@@ -319,7 +318,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoMediaLibrary (16.0.3):
     - ExpoModulesCore
     - React-Core
@@ -407,7 +405,6 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdates/Tests (0.25.14):
     - DoubleConversion
@@ -436,7 +433,6 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
@@ -451,18 +447,6 @@ PODS:
     - libavif/core
     - libdav1d (>= 0.6.0)
   - libdav1d (1.2.0)
-  - libwebp (1.3.2):
-    - libwebp/demux (= 1.3.2)
-    - libwebp/mux (= 1.3.2)
-    - libwebp/sharpyuv (= 1.3.2)
-    - libwebp/webp (= 1.3.2)
-  - libwebp/demux (1.3.2):
-    - libwebp/webp
-  - libwebp/mux (1.3.2):
-    - libwebp/demux
-  - libwebp/sharpyuv (1.3.2)
-  - libwebp/webp (1.3.2):
-    - libwebp/sharpyuv
   - Nimble (13.0.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
@@ -1977,13 +1961,7 @@ PODS:
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.7.0):
     - SDWebImage/Core (~> 5.6)
-  - SDWebImageWebPCoder (0.14.6):
-    - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - "sqlite3 (3.45.3+1)":
-    - "sqlite3/common (= 3.45.3+1)"
-  - "sqlite3/common (3.45.3+1)"
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2084,7 +2062,6 @@ SPEC REPOS:
   trunk:
     - libavif
     - libdav1d
-    - libwebp
     - Nimble
     - OHHTTPStubs
     - Quick
@@ -2092,9 +2069,7 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
-    - SDWebImageWebPCoder
     - SocketRocket
-    - sqlite3
 
 EXTERNAL SOURCES:
   boost:
@@ -2276,12 +2251,12 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 3d0293c6a9330f01d4601c347c7a695f8947cd30
   ExpoClipboard: 811323cf2da38ce4e4a07ceb8339a0ee6f314552
   ExpoFileSystem: 4fe2130545fed1936aa8eb3022d4720036f00824
-  ExpoImage: 8bc89db2f2c7705064afe2083c450f4147c0ea7c
+  ExpoImage: 64e08fd55723edc561f8c9b031c66b0f3474e57b
   ExpoMediaLibrary: ff80f9210432e0e77428c24ed9ea9eb61e8f5d52
   ExpoModulesCore: 91a839f26cac0bc9d4f90492eeceb802830dbf35
   ExpoModulesTestCore: 0ac6cceba4dce3798d9c2c9ab755ce307ca34545
   EXStructuredHeaders: 404356f2621ca76fd54e8c5c686091d0fa00cbc7
-  EXUpdates: c3281515ce53277b8209e4acd2804eb3910cabed
+  EXUpdates: 65dadd2a00b843b15bf3b37a40648bef44dc2e4f
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: ef2d8805f4910e0fd527cca94cf657ef5ec74f0a
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -2289,7 +2264,6 @@ SPEC CHECKSUMS:
   hermes-engine: a8e85fde08f5659a7a3389b3cd49805835e42c07
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
-  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
@@ -2352,9 +2326,7 @@ SPEC CHECKSUMS:
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: ac38ef8dfa1ce56514c8197f19175e97ab7e7c2d
 
 PODFILE CHECKSUM: 1ef3be393d92f7edf59a545cfa76162a99f60143
