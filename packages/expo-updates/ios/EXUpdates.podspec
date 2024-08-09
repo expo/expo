@@ -1,6 +1,7 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
 use_dev_client = false
 begin
@@ -31,7 +32,9 @@ Pod::Spec.new do |s|
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
   s.dependency 'ReachabilitySwift'
-  s.dependency 'sqlite3', '~> 3.45.3+1'
+  if podfile_properties['expo.updates.useThirdPartySQLitePod'] === 'true'
+    s.dependency 'sqlite3'
+  end
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.
