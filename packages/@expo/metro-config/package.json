@@ -5,10 +5,11 @@
   "main": "build/ExpoMetroConfig.js",
   "types": "build/ExpoMetroConfig.d.ts",
   "scripts": {
-    "build": "expo-module tsc",
-    "clean": "expo-module clean",
+    "build": "expo-module tsc && taskr",
+    "build:metro": "taskr",
+    "clean": "expo-module clean && taskr clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module tsc",
+    "prepare": "expo-module clean && expo-module tsc && taskr",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
@@ -68,11 +69,19 @@
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
+    "@taskr/clear": "^1.1.0",
+    "@taskr/esnext": "^1.1.0",
     "dedent": "^1.5.3",
     "expo-module-scripts": "^3.3.0",
-    "sass": "^1.60.0"
+    "sass": "^1.60.0",
+    "taskr": "^1.1.0"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-reexport.js"
+    ]
   }
 }
