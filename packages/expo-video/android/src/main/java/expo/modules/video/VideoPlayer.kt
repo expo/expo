@@ -67,11 +67,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
     player.volume = if (muted) 0f else new
+    userVolume = volume
     sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(new, muted), VolumeEvent(old, muted)))
   }
 
   var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
-    volume = if (new) 0f else userVolume
+    player.volume = if (new) 0f else userVolume
     sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(volume, new), VolumeEvent(volume, old)))
   }
 
@@ -113,7 +114,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
     override fun onVolumeChanged(volume: Float) {
-      this@VideoPlayer.volume = volume
+      if (!muted) {
+        this@VideoPlayer.volume = volume
+      }
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
