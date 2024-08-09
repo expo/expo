@@ -170,7 +170,7 @@ const executeCommand = async (
       const minifiedJson = recursiveOmitBy(
         trimmedOutput,
         ({ key, node }) =>
-          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
+          ['id', 'groups', 'kindString', 'originalName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));

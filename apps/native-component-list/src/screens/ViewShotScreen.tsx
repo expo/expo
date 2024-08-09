@@ -8,7 +8,7 @@ import { captureRef as takeSnapshotAsync, captureScreen } from 'react-native-vie
 import Button from '../components/Button';
 
 // Source: https://codepen.io/zessx/pen/rDEAl <3
-const gradientColors = ['#90dffe', '#38a3d1'];
+const gradientColors = ['#90dffe', '#38a3d1'] as const;
 
 export default function ViewShotScreen() {
   const view = useRef<View>();
