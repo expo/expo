@@ -310,8 +310,8 @@ export function getDefaultConfig(
     transformerPath: require.resolve('./transform-worker/transform-worker'),
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      // @ts-expect-error: not on type.
       unstable_renameRequire: false,
+      // @ts-expect-error: not on type.
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg.browserslist
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
