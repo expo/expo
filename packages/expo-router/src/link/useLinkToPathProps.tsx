@@ -3,6 +3,7 @@ import { GestureResponderEvent, Platform } from 'react-native';
 
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
+import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
 
 function eventShouldPreventDefault(
@@ -29,7 +30,11 @@ function eventShouldPreventDefault(
   return false;
 }
 
-export default function useLinkToPathProps(props: { href: string; event?: string }) {
+type UseLinkToPathPropsOptions = LinkToOptions & {
+  href: string;
+};
+
+export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const { linkTo } = useExpoRouter();
 
   const onPress = (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
@@ -43,13 +48,13 @@ export default function useLinkToPathProps(props: { href: string; event?: string
     }
 
     if (shouldHandle) {
-      linkTo(props.href, props.event);
+      linkTo(href, options);
     }
   };
 
   return {
     // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-    href: appendBaseUrl(stripGroupSegmentsFromPath(props.href) || '/'),
+    href: appendBaseUrl(stripGroupSegmentsFromPath(href) || '/'),
     role: 'link' as const,
     onPress,
   };

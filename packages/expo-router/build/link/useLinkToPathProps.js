@@ -23,7 +23,7 @@ function eventShouldPreventDefault(e) {
     }
     return false;
 }
-function useLinkToPathProps(props) {
+function useLinkToPathProps({ href, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (e) => {
         let shouldHandle = false;
@@ -35,12 +35,12 @@ function useLinkToPathProps(props) {
             shouldHandle = true;
         }
         if (shouldHandle) {
-            linkTo(props.href, props.event);
+            linkTo(href, options);
         }
     };
     return {
         // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-        href: (0, getPathFromState_1.appendBaseUrl)((0, matchers_1.stripGroupSegmentsFromPath)(props.href) || '/'),
+        href: (0, getPathFromState_1.appendBaseUrl)((0, matchers_1.stripGroupSegmentsFromPath)(href) || '/'),
         role: 'link',
         onPress,
     };

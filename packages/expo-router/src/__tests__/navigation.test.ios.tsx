@@ -868,42 +868,83 @@ it('can push the same route multiple times', () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
-it('can push relative links from index routes', async () => {
-  renderRouter({
-    _layout: () => <Slot />,
-    '(app)/index': () => <Text testID="one" />,
-    '(app)/test/_layout': () => <Stack />,
-    '(app)/test/index': () => <Text testID="two" />,
-    '(app)/test/bar': () => <Text testID="three" />,
+describe('relative urls', () => {
+  it('can push relative links from index routes', async () => {
+    renderRouter(
+      {
+        _layout: () => <Slot />,
+        '(app)/test/_layout': () => <Stack />,
+        '(app)/test/index': () => <Text testID="two" />,
+        '(app)/test/bar': () => <Text testID="three" />,
+      },
+      {
+        initialUrl: '/test',
+      }
+    );
+
+    expect(screen).toHavePathname('/test');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+    act(() => router.push('./test/bar'));
+    expect(screen.getByTestId('three')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test/bar');
   });
 
-  expect(screen).toHavePathname('/');
-  expect(screen.getByTestId('one')).toBeOnTheScreen();
+  it('can push relative links relative to the directory', async () => {
+    renderRouter(
+      {
+        _layout: () => <Slot />,
+        '(app)/index': () => <Text testID="one" />,
+        '(app)/test/_layout': () => <Stack />,
+        '(app)/test/index': () => <Text testID="two" />,
+        '(app)/test/bar': () => <Text testID="three" />,
+      },
+      {
+        initialUrl: '/test',
+      }
+    );
 
-  act(() => router.push('./test'));
-  expect(screen).toHavePathname('/test');
-  expect(screen.getByTestId('two')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
 
-  act(() => router.push('./bar'));
-  expect(screen.getByTestId('three')).toBeOnTheScreen();
-  expect(screen).toHavePathname('/test/bar');
-});
+    act(() => router.push('./bar', { relativeToDirectory: true }));
+    expect(screen.getByTestId('three')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test/bar');
+  });
 
-it('can push relative links from hoisted routes', () => {
-  renderRouter(
-    {
-      _layout: () => <Stack />,
-      'parent/index': () => <Link testID="link" href="./child" />,
-      'parent/child': () => <View testID="child" />,
-    },
-    {
-      initialUrl: '/parent',
-    }
-  );
+  it('can push relative links from hoisted routes', () => {
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        'parent/index': () => <Link testID="link" href="./parent/child" />,
+        'parent/child': () => <View testID="child" />,
+      },
+      {
+        initialUrl: '/parent',
+      }
+    );
 
-  expect(screen.getByTestId('link')).toBeOnTheScreen();
-  fireEvent(screen.getByTestId('link'), 'press');
-  expect(screen.getByTestId('child')).toBeOnTheScreen();
+    expect(screen.getByTestId('link')).toBeOnTheScreen();
+    fireEvent(screen.getByTestId('link'), 'press');
+    expect(screen.getByTestId('child')).toBeOnTheScreen();
+  });
+
+  it('can push relative links from hoisted routes relative to the directory', () => {
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        'parent/index': () => <Link testID="link" href="./child" relativeToDirectory />,
+        'parent/child': () => <View testID="child" />,
+      },
+      {
+        initialUrl: '/parent',
+      }
+    );
+
+    expect(screen.getByTestId('link')).toBeOnTheScreen();
+    fireEvent(screen.getByTestId('link'), 'press');
+    expect(screen.getByTestId('child')).toBeOnTheScreen();
+  });
 });
 
 it('can navigation to a relative route without losing path params', async () => {
@@ -1324,4 +1365,23 @@ describe('stack unwinding', () => {
 
     expect(router.canGoBack()).toBe(true); //
   });
+});
+
+it.skip('can push relative links that are relative to the directory', () => {
+  renderRouter(
+    {
+      '(stack)/_layout': () => <Stack />,
+      '(stack)/[fruit]/index': function Fruit() {
+        const { fruit } = useLocalSearchParams();
+        return <Text testID="fruit">{fruit}</Text>;
+      },
+    },
+    {
+      initialUrl: '/apple',
+    }
+  );
+
+  expect(screen.getByText('apple')).toBeOnTheScreen();
+  act(() => router.push('./banana'));
+  expect(screen.getByText('banana')).toBeOnTheScreen();
 });

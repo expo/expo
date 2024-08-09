@@ -28,7 +28,6 @@ const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
 const href_1 = require("../link/href");
-const path_1 = require("../link/path");
 const matchers_1 = require("../matchers");
 const url_1 = require("../utils/url");
 function assertIsReady(store) {
@@ -36,20 +35,20 @@ function assertIsReady(store) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
-function navigate(url) {
-    return this.linkTo((0, href_1.resolveHref)(url), 'NAVIGATE');
+function navigate(url, options) {
+    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
 exports.navigate = navigate;
-function push(url) {
-    return this.linkTo((0, href_1.resolveHref)(url), 'PUSH');
+function push(url, options) {
+    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
 exports.push = push;
 function dismiss(count) {
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
 exports.dismiss = dismiss;
-function replace(url) {
-    return this.linkTo((0, href_1.resolveHref)(url), 'REPLACE');
+function replace(url, options) {
+    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }
 exports.replace = replace;
 function dismissAll() {
@@ -92,7 +91,7 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, event) {
+function linkTo(href, { event, relativeToDirectory } = {}) {
     if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
@@ -133,10 +132,10 @@ function linkTo(href, event) {
         })
             .filter(Boolean)
             .join('/') ?? '/';
-        if (!this.routeInfo?.isIndex) {
-            base += '/..';
+        if (relativeToDirectory) {
+            base = `${base}/`;
         }
-        href = (0, path_1.resolve)(base, href);
+        href = new URL(href, `http://hostname/${base}`).pathname;
     }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {

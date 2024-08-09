@@ -105,7 +105,7 @@ const useHrefAttrs = react_native_1.Platform.select({
 });
 function ExpoRouterLink({ href, replace, push, 
 // TODO: This does not prevent default on the anchor tag.
-asChild, rel, target, download, ...rest }, ref) {
+relativeToDirectory, asChild, rel, target, download, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
     const style = useInteropClassName(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
@@ -121,7 +121,7 @@ asChild, rel, target, download, ...rest }, ref) {
         event = 'PUSH';
     if (replace)
         event = 'REPLACE';
-    const props = (0, useLinkToPathProps_1.default)({ href: resolvedHref, event });
+    const props = (0, useLinkToPathProps_1.default)({ href: resolvedHref, event, relativeToDirectory });
     const onPress = (e) => {
         if ('onPress' in rest) {
             rest.onPress?.(e);
