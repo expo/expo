@@ -21,7 +21,7 @@
 - Fix web styling bug. ([#30438](https://github.com/expo/expo/pull/30438) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix exceptions native import. ([#30433](https://github.com/expo/expo/pull/30433) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve error message for `window.location` polyfill. ([#30331](https://github.com/expo/expo/pull/30331) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix Metro imports by using `@expo/metro-config`.
+- Fix Metro imports by using `@expo/metro-config`. ([#30920](https://github.com/expo/expo/pull/30920) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
