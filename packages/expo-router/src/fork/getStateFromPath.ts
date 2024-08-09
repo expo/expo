@@ -236,12 +236,16 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
     bParts.push('index');
   }
 
-  const isAStatic = !aParts.some(
-    (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
-  );
-  const isBStatic = !bParts.some(
-    (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
-  );
+  const isAStaticRoute =
+    !a.hasChildren && // We only want route files which never have children
+    !aParts.some(
+      (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
+    );
+  const isBStaticRoute =
+    !b.hasChildren &&
+    !bParts.some(
+      (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
+    );
 
   /*
    * Static routes should always be higher than dynamic routes.
@@ -261,9 +265,9 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
    * When its a _layout for a (group) should only be sorted by their segments, not by their static/dynamic nature.
    * This only applies to groups, if we don't have groups the
    */
-  if (isAStatic && !isBStatic && !a.hasChildren) {
+  if (isAStaticRoute && !isBStaticRoute) {
     return -1;
-  } else if (!isAStatic && isBStatic && !b.hasChildren) {
+  } else if (!isAStaticRoute && isBStaticRoute) {
     return 1;
   }
 
