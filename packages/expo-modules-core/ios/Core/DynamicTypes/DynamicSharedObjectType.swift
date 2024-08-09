@@ -29,7 +29,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
-    if let value = value as? SharedObject, type(of: value) == innerType {
+    if let value = value as? SharedObject {
       // Given value is a shared object already
       return value
     }

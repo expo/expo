@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add copying and moving files to the new file system module.
 - Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes

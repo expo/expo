@@ -87,3 +87,9 @@ internal class FunctionCallException: GenericException<String> {
     return cause.code
   }
 }
+
+internal class ArgumentConversionException: Exception {
+  override var reason: String {
+    "Failed to downcast arguments"
+  }
+}

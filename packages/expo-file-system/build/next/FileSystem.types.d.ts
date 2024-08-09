@@ -38,6 +38,14 @@ export declare class Directory {
      * Creates a directory.
      */
     create(): void;
+    /**
+     * Copies a directory.
+     */
+    copy(to: Directory | File): any;
+    /**
+     * Moves a directory.
+     */
+    move(to: Directory | File): any;
 }
 /**
  * Represents a file on the file system.
@@ -81,5 +89,13 @@ export declare class File {
      * Creates a file.
      */
     create(): void;
+    /**
+     * Copies a directory.
+     */
+    copy(to: Directory | File): any;
+    /**
+     * Moves a directory.
+     */
+    move(to: Directory | File): any;
 }
 //# sourceMappingURL=FileSystem.types.d.ts.map
