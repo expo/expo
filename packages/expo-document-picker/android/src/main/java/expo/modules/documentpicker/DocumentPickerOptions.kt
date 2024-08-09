@@ -13,5 +13,8 @@ data class DocumentPickerOptions(
   val type: List<String>,
 
   @Field
-  val multiple: Boolean
+  val multiple: Boolean,
+
+  @Field
+  val useGetContentAction: Boolean
 ) : Record

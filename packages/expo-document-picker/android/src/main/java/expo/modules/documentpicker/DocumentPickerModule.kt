@@ -35,7 +35,7 @@ class DocumentPickerModule : Module() {
       }
       pendingPromise = promise
       copyToCacheDirectory = options.copyToCacheDirectory
-      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+      val intent = Intent(if (options.useGetContentAction) Intent.ACTION_GET_CONTENT else Intent.ACTION_OPEN_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, options.multiple)
         type = if (options.type.size > 1) {
