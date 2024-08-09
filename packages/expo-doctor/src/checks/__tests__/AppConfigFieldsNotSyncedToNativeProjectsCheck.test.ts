@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
-import { ProjectSetupCheck } from '../ProjectSetupCheck';
+import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../AppConfigFieldsNotSyncedToNativeProjectsCheck';
 
 jest.mock('fs');
 
@@ -50,9 +50,9 @@ describe('runAsync', () => {
     vol.reset();
     jest.resetAllMocks();
   });
-  // ignoring native files for local modules check
-  it('returns result with isSuccessful = true if no local expo modules are present', async () => {
-    const check = new ProjectSetupCheck();
+
+  it('returns result with isSuccessful = true if no ios/android folders and no config plugins', async () => {
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
@@ -60,12 +60,11 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  it('returns result with isSuccessful = true if local module with ios folder and ios folder is not gitignored', async () => {
-    mockIsGitIgnoredResult(false);
+  it('returns result with isSuccessful = true if ios/android folders but no config plugins', async () => {
     vol.fromJSON({
-      [projectRoot + '/modules/HelloModule/ios/HelloModule.podspec']: 'test',
+      [projectRoot + '/ios/something.pbxproj']: 'test',
     });
-    const check = new ProjectSetupCheck();
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
@@ -73,81 +72,94 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  it('returns result with isSuccessful = true if local module with android folder and android folder is not gitignored', async () => {
+  it('returns result with isSuccessful = false with ios/ android folders and config plugins present, not in gitignore', async () => {
     mockIsGitIgnoredResult(false);
+
     vol.fromJSON({
-      [projectRoot + '/modules/HelloModule/android/build.gradle']: 'test',
+      [projectRoot + '/ios/Podfile']: 'test',
     });
-    const check = new ProjectSetupCheck();
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
+      exp: {
+        name: 'name',
+        slug: 'slug',
+        plugins: ['expo-something'],
+      },
     });
-    expect(result.isSuccessful).toBeTruthy();
+    expect(result.isSuccessful).toBeFalsy();
   });
 
-  it('returns result with isSuccessful = false if local module with ios folder and ios folder is gitignored', async () => {
+  it('returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore', async () => {
     mockIsGitIgnoredResult(true);
     vol.fromJSON({
-      [projectRoot + '/modules/HelloModule/ios/HelloModule.podspec']: 'test',
+      [projectRoot + '/ios/Podfile']: 'test',
     });
-    const check = new ProjectSetupCheck();
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeFalsy();
-  });
-
-  it('returns result with isSuccessful = false if local module with android folder and android folder is gitignored', async () => {
-    mockIsGitIgnoredResult(true);
-    vol.fromJSON({
-      [projectRoot + '/modules/HelloModule/android/build.gradle']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeFalsy();
-  });
-
-  // multiple lock files
-  it('returns result with isSuccessful = true if just one lock file', async () => {
-    vol.fromJSON({
-      [projectRoot + '/yarn.lock']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
+      exp: {
+        name: 'name',
+        slug: 'slug',
+        plugins: ['expo-something'],
+      },
     });
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  it('returns result with isSuccessful = false if more than one lockfile (yarn + npm)', async () => {
+  it('mentions app.config.ts in issue when dynamic config is used', async () => {
+    mockIsGitIgnoredResult(false);
     vol.fromJSON({
-      [projectRoot + '/yarn.lock']: 'test',
-      [projectRoot + '/package-lock.json']: 'test',
+      [projectRoot + '/ios/Podfile']: 'test',
     });
-    const check = new ProjectSetupCheck();
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
+      exp: {
+        name: 'name',
+        slug: 'slug',
+        plugins: ['expo-something'],
+        ios: {},
+        android: {},
+      },
+      dynamicConfigPath: '/tmp/project/app.config.ts',
     });
+
     expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues[0]).toContain('app.config.ts');
+    expect(result.issues[0]).toContain('ios');
+    expect(result.issues[0]).toContain('android');
+    expect(result.issues[0]).toContain('plugins');
   });
 
-  it('returns result with isSuccessful = false if more than one lockfile (yarn + pnpm)', async () => {
+  it('reports multiple unsynced fields correctly', async () => {
+    mockIsGitIgnoredResult(false);
     vol.fromJSON({
-      [projectRoot + '/yarn.lock']: 'test',
-      [projectRoot + '/pnpm-lock.yaml']: 'test',
+      [projectRoot + '/ios/Podfile']: 'test',
     });
-    const check = new ProjectSetupCheck();
+    const check = new AppConfigFieldsNotSyncedToNativeProjectsCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
+      exp: {
+        name: 'name',
+        slug: 'slug',
+        ios: {},
+        android: {},
+        splash: {},
+        icon: 'path/to/icon.png',
+      },
+      staticConfigPath: '/tmp/project/app.json',
     });
+
     expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues[0]).toContain('app.json');
+    expect(result.issues[0]).toContain('ios');
+    expect(result.issues[0]).toContain('android');
+    expect(result.issues[0]).toContain('splash');
+    expect(result.issues[0]).toContain('icon');
   });
 });

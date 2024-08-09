@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add check for native folders and configuration fields in app.json. This warns that EAS Build will not sync the fields if the native folders are present. ([#30817](https://github.com/expo/expo/pull/30817) by [@betomoedano](https://github.com/betomoedano))
+
 ## 1.9.0 — 2024-07-26
 
 ### 🐛 Bug fixes
@@ -43,7 +45,7 @@
 
 ### 🎉 New features
 
-- Add experimental check to validate packages against known issues in React Native Directory. Enable it with `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK=1`.  ([#30496](https://github.com/expo/expo/pull/30496) by [@brentvatne](https://github.com/brentvatne))
+- Add experimental check to validate packages against known issues in React Native Directory. Enable it with `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK=1`. ([#30496](https://github.com/expo/expo/pull/30496) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.6.1 — 2024-05-16
 
