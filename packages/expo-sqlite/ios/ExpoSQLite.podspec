@@ -3,8 +3,6 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
-sqliteVersion = '3.45.3+1'
-
 Pod::Spec.new do |s|
   s.name           = 'ExpoSQLite'
   s.version        = package['version']
@@ -20,18 +18,31 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.dependency 'ExpoModulesCore'
 
-  s.dependency 'sqlite3', "~> #{sqliteVersion}"
-  s.dependency 'sqlite3/bytecodevtab', "~> #{sqliteVersion}"
+  sqlite_cflags = '-DHAVE_USLEEP=1 -DSQLITE_ENABLE_LOCKING_STYLE=0 -DSQLITE_ENABLE_BYTECODE_VTAB=1'
   unless podfile_properties['expo.sqlite.enableFTS'] === 'false'
-    s.dependency 'sqlite3/fts', "~> #{sqliteVersion}"
-    s.dependency 'sqlite3/fts5', "~> #{sqliteVersion}"
+    sqlite_cflags << ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   end
+
+  if podfile_properties['expo.sqlite.useSQLCipher'] === 'true'
+    prepare_command = 'cp -f ../vendor/sqlcipher/* .'
+    # SQLCipher will have build error in sqlite3.c on debug build without the `-DNDEBUG`
+    sqlite_cflags << ' -DSQLITE_HAS_CODEC=1 -DSQLCIPHER_CRYPTO_CC -DNDEBUG'
+  else
+    prepare_command = 'cp -f ../vendor/sqlite3/* .'
+  end
+
+  if podfile_properties['expo.sqlite.customBuildFlags']
+    sqlite_cflags << " " << podfile_properties['expo.sqlite.customBuildFlags']
+  end
+  Pod::UI.message("SQLite build flags: #{sqlite_cflags}")
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
+    'OTHER_CFLAGS' => '$(inherited) ' + sqlite_cflags,
   }
 
-  s.source_files = "**/*.{h,m,swift}"
+  s.prepare_command = prepare_command
+  s.source_files = "**/*.{c,h,m,swift}"
   s.vendored_frameworks = 'crsqlite.xcframework'
 end
