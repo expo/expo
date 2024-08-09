@@ -10,8 +10,9 @@
 /** Generate all files that re-exports a single package. */
 module.exports = function reexportPlugin(task) {
   /** @param {TaskrFile} file */
-  task.plugin('reexportModule', { every: false }, function* (files, { packageName } = {}) {
+  task.plugin('reexport', { every: false }, function* (files, { packageName } = {}) {
     for (const file of files) {
+      // Find the relative path from the start of the package name
       const fileRelativePath = `${file.dir}/${file.base}`.split(packageName).pop();
 
       if (file.base.endsWith('.js')) {

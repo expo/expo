@@ -38,7 +38,7 @@ export async function vendor(task) {
       .source(`${packageDir}/src/**/*.{js,d.ts}`, {
         ignore: ['**/*.flow.js', '**/__tests__/**', '**/__mocks__/**', '**/integration_tests/**'],
       })
-      .reexportModule({ packageName, outputDir })
+      .reexport({ packageName })
       .target(outputDir);
   }
 }
