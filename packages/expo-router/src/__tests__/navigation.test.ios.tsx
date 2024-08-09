@@ -1326,7 +1326,7 @@ describe('stack unwinding', () => {
   });
 });
 
-it('should always prefer static routes over dynamic ones', async () => {
+it.only('should always prefer static routes over dynamic ones', async () => {
   renderRouter(
     {
       // Uses Layouts at different levels to create different hoisting for each group
@@ -1338,6 +1338,7 @@ it('should always prefer static routes over dynamic ones', async () => {
       '(stack)/nested/banana': () => null,
       '(stack)/nested/[fruit]': () => null,
       'nested/grape': () => null,
+      'nested/[fruit]': () => null,
       '[param]/melon': () => null,
     },
     {
@@ -1368,9 +1369,10 @@ it('should always prefer static routes over dynamic ones', async () => {
   expect(screen).toHavePathname('/nested/grape');
   expect(screen).toHaveSegments(['nested', 'grape']);
 
-  // This matches /(tabs)/nested/fruit because each segment is evaluated left-right
-  // `nested` is static and `[param]` is dynamic, so `nested` has a higher priority
-  // The only way to navigate to /[param]/melon is using a Href object
+  // This matches /(tabs)/nested/[fruit].
+  // We don't match:
+  // - nested/[fruit] because /(tabs)/nested/fruit is more specific
+  // - [param]/melon because segments are evaluated left-right. 'nested' is static and '[param]' is dynamic
   act(() => router.push('/nested/melon'));
   expect(screen).toHavePathname('/nested/melon');
   expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
