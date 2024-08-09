@@ -143,7 +143,7 @@ export function getMatchableRouteConfigs<ParamList extends object>(
   }));
 
   // Sort in order of resolution. This is extremely important for the algorithm to work.
-  const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, [...previousSegments]));
+  const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, previousSegments));
 
   // Assert any duplicates before we start parsing.
   assertConfigDuplicates(configs);
@@ -249,7 +249,6 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
 
   /*
    * Static routes should always be higher than dynamic routes.
-   * However there is one exception with static group layouts
    *
    * - /(apple)/_layout
    * - /(apple)/[fruit]/index

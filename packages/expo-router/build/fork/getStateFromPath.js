@@ -85,7 +85,7 @@ function getMatchableRouteConfigs(options, previousSegments = []) {
         isInitial: resolvedInitialPatterns.includes(config.routeNames.join('/')),
     }));
     // Sort in order of resolution. This is extremely important for the algorithm to work.
-    const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, [...previousSegments]));
+    const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, previousSegments));
     // Assert any duplicates before we start parsing.
     assertConfigDuplicates(configs);
     return { configs, initialRoutes };
@@ -162,7 +162,6 @@ function sortConfigs(a, b, previousSegments = []) {
         !bParts.some((part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found'));
     /*
      * Static routes should always be higher than dynamic routes.
-     * However there is one exception with static group layouts
      *
      * - /(apple)/_layout
      * - /(apple)/[fruit]/index
