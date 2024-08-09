@@ -61,7 +61,7 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
       );
 
       advice =
-        'Add the 'android' and 'ios' folders to your .gitignore file if you intend to use CNG. Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build.';
+        'Add the "android" and "ios" folders to your .gitignore file if you intend to use CNG. Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build.';
     }
 
     return {
