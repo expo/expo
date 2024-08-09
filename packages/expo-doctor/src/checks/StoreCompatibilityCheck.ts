@@ -20,11 +20,12 @@ export class StoreCompatibilityCheck implements DoctorCheck {
         path.join(projectRoot, 'android', 'build.gradle'),
         'utf8'
       );
-      if (
-        buildGradle.includes(
-          `targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')`
-        )
-      ) {
+      // checks for exact string from SDK 49 bare template, will not work if it was changed
+      const targetSdkVersionRegex =
+        /^targetSdkVersion\s*=\s*(?:Integer\.parseInt\(findProperty\('android\.targetSdkVersion'\)\s*\?:\s*'(\d+)'\)|'(\d+)')/m;
+      const match = buildGradle.match(targetSdkVersionRegex);
+      const targetSdkVersion = match ? parseInt(match[1], 10) : undefined;
+      if (targetSdkVersion && targetSdkVersion < 34) {
         issue = 'This project appears to be targeting Android API level 33 or lower. ';
       }
     } else {
