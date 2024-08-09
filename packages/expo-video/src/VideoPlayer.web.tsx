@@ -52,6 +52,9 @@ export default class VideoPlayerWeb
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
+  currentDate: number | null = null; // Not supported on web. Dummy to match the interface.
+  currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
+  targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
