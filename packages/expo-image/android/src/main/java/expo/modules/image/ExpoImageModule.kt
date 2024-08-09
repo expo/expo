@@ -1,6 +1,7 @@
 package expo.modules.image
 
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -9,6 +10,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
+import com.github.penfeizhou.animation.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
@@ -26,6 +28,9 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -96,7 +101,37 @@ class ExpoImageModule : Module() {
       }
     }
 
-    AsyncFunction<Boolean>("clearMemoryCache") {
+    AsyncFunction("loadAsync") { source: SourceMap, promise: Promise ->
+      CoroutineScope(Dispatchers.Main).launch {
+        ImageLoadTask(appContext, source).load(promise)
+      }
+    }
+
+    Class(Image::class) {
+      Property("width") { image: Image ->
+        image.ref?.intrinsicWidth
+      }
+      Property("height") { image: Image ->
+        image.ref?.intrinsicHeight
+      }
+      Property("scale") { image: Image ->
+        // Not relying on `2x` in the filename, but want to make the following true:
+        //  If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+        val screenDensity = appContext.reactContext?.resources?.displayMetrics?.density ?: 1f
+        (image.ref?.toBitmapOrNull()?.density ?: 1) / (screenDensity * 160.0f)
+      }
+      Property("isAnimated") { image: Image ->
+        if (image.ref is GifDrawable) {
+          return@Property true
+        }
+        false
+      }
+      Property("mediaType") { ->
+        null // not easily supported on Android https://github.com/bumptech/glide/issues/1378#issuecomment-236879983
+      }
+    }
+
+    AsyncFunction("clearMemoryCache") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false
       Glide.get(activity).clearMemory()
       return@AsyncFunction true
