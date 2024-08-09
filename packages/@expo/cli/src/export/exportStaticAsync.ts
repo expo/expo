@@ -198,6 +198,7 @@ export async function exportFromServerAsync(
     platform,
     includeSourceMaps,
     files,
+    isServerHosted: true,
   });
 
   if (resources.assets) {
@@ -214,6 +215,7 @@ export async function exportFromServerAsync(
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
       outputDir,
+      platform: 'web',
       server: devServer,
       manifest: serverManifest,
       // NOTE(kitten): For now, we always output source maps for API route exports
@@ -381,20 +383,53 @@ export function getPathVariations(routePath: string): string[] {
   return Array.from(variations);
 }
 
+export async function exportApiRoutesStandaloneAsync(
+  devServer: MetroBundlerDevServer,
+  {
+    outputDir,
+    files = new Map(),
+    platform,
+  }: {
+    outputDir: string;
+    files?: ExportAssetMap;
+    platform: string;
+  }
+) {
+  const { serverManifest } = await devServer.getServerManifestAsync();
+
+  const apiRoutes = await exportApiRoutesAsync({
+    outputDir,
+    server: devServer,
+    manifest: serverManifest,
+    // NOTE(kitten): For now, we always output source maps for API route exports
+    includeSourceMaps: true,
+    platform,
+  });
+
+  // Add the api routes to the files to export.
+  for (const [route, contents] of apiRoutes) {
+    files.set(route, contents);
+  }
+
+  return files;
+}
+
 async function exportApiRoutesAsync({
   includeSourceMaps,
   outputDir,
   server,
+  platform,
   ...props
 }: Pick<Options, 'outputDir' | 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
+  platform: string;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     includeSourceMaps,
-    platform: 'web',
+    platform,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);

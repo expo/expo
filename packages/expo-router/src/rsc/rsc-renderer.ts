@@ -8,6 +8,8 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 
+// This file must remain platform agnostic for production exports.
+
 import type { ReactNode } from 'react';
 import {
   renderToReadableStream,

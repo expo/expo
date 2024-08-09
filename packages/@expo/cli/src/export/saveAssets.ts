@@ -259,17 +259,19 @@ export function getFilesFromSerialAssets(
     includeSourceMaps,
     files = new Map(),
     platform,
+    isServerHosted = platform === 'web',
   }: {
     includeSourceMaps: boolean;
     files?: ExportAssetMap;
     platform?: string;
+    isServerHosted?: boolean;
   }
 ) {
   resources.forEach((resource) => {
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
-      targetDomain: platform === 'web' ? 'client' : undefined,
+      targetDomain: isServerHosted ? 'client' : undefined,
     });
   });
 

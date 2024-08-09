@@ -7,7 +7,7 @@ import path from 'path';
 import { createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import { exportFromServerAsync } from './exportStaticAsync';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -134,25 +134,29 @@ export async function exportAppAsync(
           }
 
           // Run metro bundler and create the JS bundles/source maps.
-          const bundle = await devServer.legacySinglePageExportBundleAsync({
-            platform,
-            splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
-            mainModuleName: getEntryWithServerRoot(projectRoot, {
+          const bundle = await devServer.nativeExportBundleAsync(
+            {
               platform,
-              pkg: projectConfig.pkg,
-            }),
-            mode: dev ? 'development' : 'production',
-            engine: isHermes ? 'hermes' : undefined,
-            serializerIncludeMaps: sourceMaps,
-            bytecode: bytecode && isHermes,
-            reactCompiler: !!exp.experiments?.reactCompiler,
-          });
+              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+              mainModuleName: getEntryWithServerRoot(projectRoot, {
+                platform,
+                pkg: projectConfig.pkg,
+              }),
+              mode: dev ? 'development' : 'production',
+              engine: isHermes ? 'hermes' : undefined,
+              serializerIncludeMaps: sourceMaps,
+              bytecode: bytecode && isHermes,
+              reactCompiler: !!exp.experiments?.reactCompiler,
+            },
+            files
+          );
 
           bundles[platform] = bundle;
 
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
             files,
+            isServerHosted: devServer.isReactServerComponentsEnabled,
           });
 
           if (platform === 'web') {
@@ -189,6 +193,16 @@ export async function exportAppAsync(
           }
         })
       );
+
+      if (devServer.isReactServerComponentsEnabled) {
+        if (!(platforms.includes('web') && useServerRendering)) {
+          await exportApiRoutesStandaloneAsync(devServer, {
+            outputDir: outputPath,
+            files,
+            platform: 'web',
+          });
+        }
+      }
 
       // TODO: Use same asset system across platforms again.
       const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
