@@ -57,11 +57,11 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
       const configFileName = path.basename(configFilePath ?? 'app.json');
 
       issues.push(
-        `This project has native project folders but also has native configuration fields in ${configFileName}, indicating it is configured to use Prebuild. When the iOS or Android folders are present, EAS Build will not sync the following ${configFileName} fields: ${unsyncedFields.join(', ')}. \n`
+        `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Continuous Native Generation (CNG). When the 'android' / 'ios' folders are present, EAS Build will not sync the following properties: ${unsyncedFields.join(', ')}. \n`
       );
 
       advice =
-        'Add these folders to your .gitignore file if you intend to use Prebuild (also known as the "managed" workflow). Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build.';
+        'Add the 'android' and 'ios' folders to your .gitignore file if you intend to use CNG. Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build.';
     }
 
     return {
