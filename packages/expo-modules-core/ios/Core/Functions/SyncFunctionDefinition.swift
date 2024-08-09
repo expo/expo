@@ -81,7 +81,10 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
       // Convert arguments to the types desired by the function.
       arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
 
-      let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+      guard let argumentsTuple = try Conversions.toTuple(arguments) as? Args else {
+        throw ArgumentConversionException()
+      }
+
       return try body(argumentsTuple)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
