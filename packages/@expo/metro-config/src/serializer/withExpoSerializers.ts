@@ -83,7 +83,7 @@ export function withSerializerPlugins(
     serializer: {
       ...config.serializer,
       customSerializer: createSerializerFromSerialProcessors(
-        config,
+        config as any,
         processors,
         originalSerializer ?? null,
         options

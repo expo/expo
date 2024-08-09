@@ -30,15 +30,22 @@ export async function clean(task) {
 
 export async function vendor(task) {
   for (const packageName of REEXPORT_PACKAGES) {
-    const packageDir = path.dirname(require.resolve(`${packageName}/package.json`));
+    const packageFile = require.resolve(`${packageName}/package.json`);
+    const packageDir = path.dirname(packageFile);
     const outputDir = path.join(ROOT_DIR, packageName);
+
+    // Generate a re-exported "package.json" file, to import as `@expo/metro-config/metro-*/package.json`.
+    // This can be used to determine the version of the re-exported package.
+    await task.source(packageFile).reexport({ packageDir, packageName }).target(outputDir);
 
     // Generate the re-exporting files and type definitions
     await task
       .source(`${packageDir}/src/**/*.{js,d.ts}`, {
         ignore: ['**/*.flow.js', '**/__tests__/**', '**/__mocks__/**', '**/integration_tests/**'],
       })
-      .reexport({ packageName })
+      .reexport({ packageDir, packageName })
       .target(outputDir);
+
+    this.$.log('> Re-exported files for', packageName);
   }
 }
