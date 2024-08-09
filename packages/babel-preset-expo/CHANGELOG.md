@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for inlining constants for native server environments. ([#30586](https://github.com/expo/expo/pull/30586) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `hasCjsExports` metadata for tracking static exports. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `process.env.EXPO_SERVER` for detecting when the JS was bundled for a server or react server environment. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 - Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
