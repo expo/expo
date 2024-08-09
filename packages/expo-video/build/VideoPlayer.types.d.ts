@@ -134,6 +134,14 @@ export type VideoPlayerEvents = {
      * Handler for an event emitted when the current media source of the player changes.
      */
     sourceChange(newSource: VideoSource, previousSource: VideoSource): void;
+    /**
+     * Handler for an event emitted when the player enters the fullscreen mode
+     */
+    onFullscreenEnter(): void;
+    /**
+     * Handler for an event emitted when the player exits the fullscreen mode
+     */
+    onFullscreenExit(): void;
 };
 /**
  * Describes the current status of the player.

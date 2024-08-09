@@ -350,5 +350,13 @@ export default class VideoPlayerWeb
     video.onloadstart = () => {
       this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
     };
+
+    video.onfullscreenchange = () => {
+      if (document.fullscreenElement) {
+        this._emitOnce(video, 'onFullscreenEnter');
+      } else {
+        this._emitOnce(video, 'onFullscreenExit');
+      }
+    };
   }
 }

@@ -283,6 +283,14 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         video.onloadstart = () => {
             this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
         };
+        video.onfullscreenchange = () => {
+            if (document.fullscreenElement) {
+                this._emitOnce(video, 'onFullscreenEnter');
+            }
+            else {
+                this._emitOnce(video, 'onFullscreenExit');
+            }
+        };
     }
 }
 //# sourceMappingURL=VideoPlayer.web.js.map
