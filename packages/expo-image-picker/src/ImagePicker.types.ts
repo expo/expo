@@ -376,7 +376,7 @@ export type ImagePickerOptions = {
    *
    * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
    *
-   * @default 0.2
+   * @default 1.0
    * @platform ios
    * @platform android
    */

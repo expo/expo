@@ -91,7 +91,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
                                         options: options,
                                         imagePickerHandler: imagePickerDelegate)
 
-    if #available(iOS 14, *), !options.allowsEditing && sourceType != .camera {
+    if !options.allowsEditing && sourceType != .camera {
       self.launchMultiSelectPicker(pickingContext: pickingContext)
     } else {
       self.launchLegacyImagePicker(sourceType: sourceType, pickingContext: pickingContext)
@@ -151,7 +151,6 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     }
   }
 
-  @available(iOS 14, *)
   private func launchMultiSelectPicker(pickingContext: PickingContext) {
     var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
     let options = pickingContext.options
@@ -160,9 +159,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     configuration.selectionLimit = options.allowsMultipleSelection ? options.selectionLimit : SINGLE_SELECTION
     configuration.filter = options.mediaTypes.toPickerFilter()
     configuration.preferredAssetRepresentationMode = options.preferredAssetRepresentationMode.toAssetRepresentationMode()
-    if #available(iOS 15, *) {
-      configuration.selection = options.orderedSelection ? .ordered : .default
-    }
+    configuration.selection = options.orderedSelection ? .ordered : .default
 
     let picker = PHPickerViewController(configuration: configuration)
 
@@ -201,7 +198,6 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     self.currentPickingContext = nil
   }
 
-  @available(iOS 14, *)
   func didPickMultipleMedia(selection: [PHPickerResult]) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
@@ -218,10 +214,12 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // Clean up the currently stored picking context
     self.currentPickingContext = nil
 
-    mediaHandler.handleMultipleMedia(selection) { result -> Void in
-      switch result {
-      case .failure(let error): return promise.reject(error)
-      case .success(let response): return promise.resolve(response)
+    Task {
+      do {
+        let assets = try await mediaHandler.handleMultipleMedia(selection)
+        promise.resolve(ImagePickerResponse(assets: assets, canceled: false))
+      } catch {
+        promise.reject(error)
       }
     }
   }
@@ -241,10 +239,12 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     let mediaHandler = MediaHandler(fileSystem: fileSystem,
                                     options: options)
-    mediaHandler.handleMedia(mediaInfo) { result -> Void in
-      switch result {
-      case .failure(let error): return promise.reject(error)
-      case .success(let response): return promise.resolve(response)
+    Task {
+      do {
+        let asset = try await mediaHandler.handleMedia(mediaInfo)
+        promise.resolve(ImagePickerResponse(assets: [asset], canceled: false))
+      } catch {
+        promise.reject(error)
       }
     }
   }
