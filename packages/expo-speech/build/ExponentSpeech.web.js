@@ -95,5 +95,5 @@ class ExpoSpeech extends NativeModule {
     }
     maxSpeechInputLength = MAX_SPEECH_INPUT_LENGTH;
 }
-export default registerWebModule('ExpoSpeech', ExpoSpeech);
+export default registerWebModule(ExpoSpeech);
 //# sourceMappingURL=ExponentSpeech.web.js.map
