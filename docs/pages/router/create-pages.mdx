@@ -112,3 +112,20 @@ export default function Page() {
   return <Text>Blog post: {slug}</Text>;
 }
 ```
+
+## Non-route files
+
+Your non-route files such as components and hooks cannot be placed within the `app` directory. For smaller projects may introduce seemly extra folder structure, but this rule helps prevents refactors as you adopt more advanced navigation patterns.
+
+For example, this file structure has two different route files that both map to `/profile` and both show an identical "profile" screen. The difference between the two files are their containing `_layout`.
+
+<FileTree
+  files={[
+    'app/(home)/_layout.tsx',
+    ['app/(home)/profile.tsx', '/profile'],
+    'app/(modal)/_layout.tsx',
+    ['app/(modal)/profile.tsx', '/profile'],
+  ]}
+/>
+
+> **info** **Tip**: Expo recommends sorting components and hooks by "feature" and routes by "navigation pattern". While the two concepts can overlap, there is enough difference to structure them differently.
