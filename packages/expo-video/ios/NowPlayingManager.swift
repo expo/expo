@@ -35,7 +35,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     player.observer.registerDelegate(delegate: self)
 
     if mostRecentInteractionPlayer == nil {
-      setMostRecentInteractionPlayer(player: player.pointer)
+      setMostRecentInteractionPlayer(player: player.ref)
     }
   }
 
@@ -43,9 +43,9 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     players.remove(player)
     player.observer.unregisterDelegate(delegate: self)
 
-    if mostRecentInteractionPlayer == player.pointer {
+    if mostRecentInteractionPlayer == player.ref {
       let newPlayer = players.allObjects.first(where: { $0.playbackRate != 0 })
-      setMostRecentInteractionPlayer(player: newPlayer?.pointer)
+      setMostRecentInteractionPlayer(player: newPlayer?.ref)
     }
 
     if players.allObjects.isEmpty {
@@ -99,7 +99,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       }
 
       for player in players.allObjects {
-        player.pointer.pause()
+        player.ref.pause()
       }
       return .success
     }
@@ -212,8 +212,8 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
     if newRate == 0 && mostRecentInteractionPlayer == player {
-      if let newPlayer = players.allObjects.first(where: { $0.pointer.rate != 0 }) {
-        setMostRecentInteractionPlayer(player: newPlayer.pointer)
+      if let newPlayer = players.allObjects.first(where: { $0.ref.rate != 0 }) {
+        setMostRecentInteractionPlayer(player: newPlayer.ref)
       }
     } else if newRate != 0 && mostRecentInteractionPlayer != player {
       setMostRecentInteractionPlayer(player: player)

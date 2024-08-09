@@ -8,7 +8,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   weak var player: VideoPlayer? {
     didSet {
-      playerViewController.player = player?.pointer
+      playerViewController.player = player?.ref
     }
   }
 
@@ -161,12 +161,12 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   ) {
     // Platform's behavior is to pause the player when exiting the fullscreen mode.
     // It seems better to continue playing, so we resume the player once the dismissing animation finishes.
-    let wasPlaying = player?.pointer.timeControlStatus == .playing
+    let wasPlaying = player?.ref.timeControlStatus == .playing
 
     coordinator.animate(alongsideTransition: nil) { context in
       if !context.isCancelled {
         if wasPlaying {
-          self.player?.pointer.play()
+          self.player?.ref.play()
         }
         self.isFullscreen = false
       }

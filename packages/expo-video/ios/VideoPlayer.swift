@@ -17,9 +17,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         safeEmit(event: "playbackRateChange", arguments: playbackRate, oldValue)
       }
       if #available(iOS 16.0, tvOS 16.0, *) {
-        pointer.defaultRate = playbackRate
+        ref.defaultRate = playbackRate
       }
-      pointer.rate = playbackRate
+      ref.rate = playbackRate
     }
   }
 
@@ -33,7 +33,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   var preservesPitch = true {
     didSet {
-      pointer.currentItem?.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+      ref.currentItem?.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
     }
   }
 
@@ -45,7 +45,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
         safeEmit(event: "volumeChange", arguments: newVolumeEvent, oldVolumeEvent)
       }
-      pointer.volume = volume
+      ref.volume = volume
     }
   }
 
@@ -57,7 +57,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
         safeEmit(event: "volumeChange", arguments: newVolumeEvent, oldVolumeEvent)
       }
-      pointer.isMuted = isMuted
+      ref.isMuted = isMuted
       VideoManager.shared.setAppropriateAudioSessionOrWarn()
     }
   }
@@ -90,8 +90,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // The current item has to be replaced with nil from the main thread. When replacing from the SharedObjectRegistry queue
     // sometimes the KVOs used by AVPlayerViewController would try to deliver updates about the item being changed to nil after the
     // player was deallocated, which caused crashes.
-    DispatchQueue.main.async { [pointer] in
-      pointer.replaceCurrentItem(with: nil)
+    DispatchQueue.main.async { [ref] in
+      ref.replaceCurrentItem(with: nil)
     }
   }
 
@@ -100,7 +100,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       let videoSource = videoSource,
       let url = videoSource.uri
     else {
-      pointer.replaceCurrentItem(with: nil)
+      ref.replaceCurrentItem(with: nil)
       return
     }
 
@@ -117,7 +117,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
-    pointer.replaceCurrentItem(with: playerItem)
+    ref.replaceCurrentItem(with: playerItem)
   }
 
   /**
@@ -126,7 +126,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
    * video invisible for around a second after foregrounding, disabling the tracks requires more code, but works a lot faster.
    */
   func setTracksEnabled(_ enabled: Bool) {
-    pointer.currentItem?.tracks.forEach({ track in
+    ref.currentItem?.tracks.forEach({ track in
       guard let assetTrack = track.assetTrack else {
         return
       }
@@ -161,7 +161,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     } else if newRate != 0 && newRate != playbackRate {
       // On iOS < 16 play() method always returns the rate to 1.0, we have to keep resetting it back to desiredRate
       // iOS < 16 uses an older player UI, so we don't have to worry about changes to the rate that come from the player UI
-      pointer.rate = playbackRate
+      ref.rate = playbackRate
     }
   }
 
@@ -176,8 +176,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onPlayedToEnd(player: AVPlayer) {
     safeEmit(event: "playToEnd")
     if loop {
-      self.pointer.seek(to: .zero)
-      self.pointer.play()
+      ref.seek(to: .zero)
+      ref.play()
     }
   }
 
