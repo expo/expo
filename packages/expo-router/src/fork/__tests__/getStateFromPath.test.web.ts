@@ -168,7 +168,12 @@ it(`supports spaces`, () => {
   // TODO: Test rest params
 });
 
-it(`matches unmatched existing groups against 404`, () => {
+it(`matches against dynamic groups`, () => {
+  /*
+   * This will match (app)/([user])/[user]/index with a user = '(explore)'
+   * It doesn't match '(app)/(explore)/[user]/index'. As while a group name is provided it
+   * still needs a value for '[user]'.
+   */
   expect(
     getStateFromPath(
       '/(app)/(explore)',

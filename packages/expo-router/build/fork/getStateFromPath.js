@@ -85,7 +85,7 @@ function getMatchableRouteConfigs(options, previousSegments = []) {
         isInitial: resolvedInitialPatterns.includes(config.routeNames.join('/')),
     }));
     // Sort in order of resolution. This is extremely important for the algorithm to work.
-    const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, previousSegments));
+    const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, [...previousSegments]));
     // Assert any duplicates before we start parsing.
     assertConfigDuplicates(configs);
     return { configs, initialRoutes };
@@ -156,6 +156,32 @@ function sortConfigs(a, b, previousSegments = []) {
     if (b.screen === 'index' || b.screen.match(/\/index$/)) {
         bParts.push('index');
     }
+    const isAStatic = !aParts.some((part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found'));
+    const isBStatic = !bParts.some((part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found'));
+    /*
+     * Static routes should always be higher than dynamic routes.
+     * However there is one exception with static group layouts
+     *
+     * - /(apple)/_layout
+     * - /(apple)/[fruit]/index
+     * - /([fruit])/[fruit]/_layout
+     * - /([fruit])/[fruit]/index
+     *
+     * Given this structure, it is valid to navigate to /(apple)
+     *
+     * This does NOT match on /(apple)/[fruit]/index because not value was provided for [fruit]
+     * It will match on /([fruit])/[fruit]/index because the group can inherit the [fruit] value
+     *
+     * We also need to be careful because `(apple)` is a valid matcher for `./(apple)/_layout`
+     * When its a _layout for a (group) should only be sorted by their segments, not by their static/dynamic nature.
+     * This only applies to groups, if we don't have groups the
+     */
+    if (isAStatic && !isBStatic && !a.hasChildren) {
+        return -1;
+    }
+    else if (!isAStatic && isBStatic && !b.hasChildren) {
+        return 1;
+    }
     // When we navigate, we need to stay within groups as close as possible
     // Hence, a route is sorted based upon is similiarity to the current state
     const similarToPreviousA = previousSegments.filter((value, index) => {
@@ -166,7 +192,7 @@ function sortConfigs(a, b, previousSegments = []) {
     });
     if ((similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
         similarToPreviousA.length !== similarToPreviousB.length) {
-        // They both match to some degree, so pick the one that matches more
+        // One matches more than the other, so pick the one that matches more
         return similarToPreviousB.length - similarToPreviousA.length;
     }
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
@@ -466,9 +492,9 @@ const createConfigItem = (screen, routeNames, pattern, path, hasChildren, parse,
         path,
         // The routeNames array is mutated, so copy it to keep the current state
         routeNames: [...routeNames],
-        expandedRouteNames: screen.includes('/')
-            ? [...routeNames.slice(0, -1), ...screen.split('/')]
-            : [...routeNames],
+        expandedRouteNames: routeNames.flatMap((name) => {
+            return name.split('/');
+        }),
         parse,
         userReadableName: [...routeNames.slice(0, -1), path || screen].join('/'),
         hasChildren: !!hasChildren,
