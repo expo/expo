@@ -1,6 +1,7 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import NativeVideoModule from './NativeVideoModule';
+// TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = NativeVideoModule.VideoPlayer.prototype.replace;
 NativeVideoModule.VideoPlayer.prototype.replace = function (source) {
     return replace.call(this, parseSource(source));
@@ -25,8 +26,8 @@ function parseSource(source) {
     else if (typeof source === 'string') {
         return { uri: source };
     }
-    if (typeof source?.uri === 'number') {
-        return { ...source, uri: resolveAssetSource(source.uri).uri };
+    if (typeof source?.assetId === 'number' && !source.uri) {
+        return { ...source, uri: resolveAssetSource(source.assetId).uri };
     }
     return source;
 }

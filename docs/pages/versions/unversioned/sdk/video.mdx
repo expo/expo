@@ -141,22 +141,22 @@ const styles = StyleSheet.create({
 
 ## Playing local media from the assets directory
 
-`expo-video` supports playing local media loaded using the `require` function. You can use the result as a source directly, or assign it to the `uri` parameter of a [`VideoSource`](#videosource) if you also want to configure other properties.
+`expo-video` supports playing local media loaded using the `require` function. You can use the result as a source directly, or assign it to the `assetId` parameter of a [`VideoSource`](#videosource) if you also want to configure other properties.
 
 ```tsx
 import { VideoSource } from 'expo-video';
 
-const asset = require('./assets/bigbuckbunny.mp4');
+const assetId = require('./assets/bigbuckbunny.mp4');
 
 const videoSource: VideoSource = {
-  uri: asset,
+  assetId,
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
   },
 };
 
-const player1 = useVideoPlayer(asset); // You can use the `asset` directly as a video source
+const player1 = useVideoPlayer(assetId); // You can use the `asset` directly as a video source
 const player2 = useVideoPlayer(videoSource);
 ```
 

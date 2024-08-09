@@ -145,9 +145,17 @@ export type VideoPlayerEvents = {
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 export type VideoSource = string | number | {
     /**
-     * The URI of the video or a result of a `require` call for local media sources.
+     * The URI of the video.
+     *
+     * This property is exclusive with the `assetId` property, when both are present the `assetId` will be ignored.
      */
-    uri: string | number;
+    uri?: string;
+    /**
+     * The assetId of a local video asset, acquired with the `require` function.
+     *
+     * This property is exclusive with the `uri` property, when both are present the `assetId` will be ignored.
+     */
+    assetId?: number;
     /**
      * Specifies the DRM options which will be used by the player while loading the video.
      */

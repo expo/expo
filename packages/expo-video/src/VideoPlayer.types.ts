@@ -174,18 +174,30 @@ export type VideoSource =
   | number
   | {
       /**
-       * The URI of the video or a result of a `require` call for local media sources.
+       * The URI of the video.
+       *
+       * This property is exclusive with the `assetId` property, when both are present the `assetId` will be ignored.
        */
-      uri: string | number;
+      uri?: string;
+
+      /**
+       * The assetId of a local video asset, acquired with the `require` function.
+       *
+       * This property is exclusive with the `uri` property, when both are present the `assetId` will be ignored.
+       */
+      assetId?: number;
+
       /**
        * Specifies the DRM options which will be used by the player while loading the video.
        */
       drm?: DRMOptions;
+
       /**
        * Specifies information which will be displayed in the now playing notification.
        * When undefined the player will display information contained in the video metadata.
        */
       metadata?: VideoMetadata;
+
       /**
        * Specifies headers sent with the video request.
        * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).

@@ -9,14 +9,14 @@ export function useVideoPlayer(source, setup) {
     }, [JSON.stringify(source)]);
 }
 export function getSourceUri(source) {
-    if (typeof source == 'string') {
+    if (typeof source === 'string') {
         return source;
     }
-    if (typeof source == 'number') {
+    if (typeof source === 'number') {
         return resolveAssetSource(source)?.uri ?? null;
     }
-    if (typeof source?.uri == 'number') {
-        return resolveAssetSource(source.uri)?.uri ?? null;
+    if (typeof source?.assetId === 'number' && !source?.uri) {
+        return resolveAssetSource(source.assetId)?.uri ?? null;
     }
     return source?.uri ?? null;
 }
