@@ -28,6 +28,8 @@ export interface ConnectedDevice {
   name: string;
   /** @example `iPhone13,4` */
   model: string;
+  /** @example `iPhone 12 mini` */
+  modelName: string;
   /** @example `device` */
   deviceType: 'device' | 'catalyst';
   /** @example `USB` */
@@ -52,6 +54,7 @@ async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevi
         return {
           name: device.deviceProperties.name,
           model: device.hardwareProperties.productType,
+          modelName: device.hardwareProperties.marketingName,
           osVersion: device.deviceProperties.osVersionNumber,
           udid: device.hardwareProperties.udid,
           deviceType: 'device',
@@ -122,6 +125,7 @@ async function getConnectedDevicesUsingCustomToolingAsync(): Promise<ConnectedDe
         // TODO(EvanBacon): Better name
         name: deviceValues.DeviceName ?? deviceValues.ProductType ?? 'unknown iOS device',
         model: deviceValues.ProductType,
+        modelName: deviceValues.ProductName,
         osVersion: deviceValues.ProductVersion,
         deviceType: 'device',
         connectionType: device.Properties.ConnectionType,
