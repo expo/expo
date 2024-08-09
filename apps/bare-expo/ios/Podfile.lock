@@ -506,10 +506,6 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (14.0.3):
     - ExpoModulesCore
-    - "sqlite3 (~> 3.45.3+1)"
-    - "sqlite3/bytecodevtab (~> 3.45.3+1)"
-    - "sqlite3/fts (~> 3.45.3+1)"
-    - "sqlite3/fts5 (~> 3.45.3+1)"
   - ExpoStoreReview (7.0.2):
     - ExpoModulesCore
   - ExpoSymbols (0.1.4):
@@ -577,7 +573,6 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdates/Tests (0.25.14):
     - DoubleConversion
@@ -606,7 +601,6 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
@@ -2304,15 +2298,6 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - "sqlite3 (3.45.3+1)":
-    - "sqlite3/common (= 3.45.3+1)"
-  - "sqlite3/bytecodevtab (3.45.3+1)":
-    - sqlite3/common
-  - "sqlite3/common (3.45.3+1)"
-  - "sqlite3/fts (3.45.3+1)":
-    - sqlite3/common
-  - "sqlite3/fts5 (3.45.3+1)":
-    - sqlite3/common
   - UMAppLoader (4.6.0)
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
@@ -2503,7 +2488,6 @@ SPEC REPOS:
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
     - SocketRocket
-    - sqlite3
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -2936,7 +2920,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
   ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
   ExpoSpeech: bd49d99ccf7ec89e89cd2f677f88795870e30f54
-  ExpoSQLite: ff4c3d91d5b25e6830bbf6027b6727e8105b068a
+  ExpoSQLite: f001ea8ef222eb93eb79c5cda6cac4e11a370c35
   ExpoStoreReview: 92cbbce52bbb5c7c45d00956356eea404bcb8f98
   ExpoSymbols: bd22f3ef7bb28605084b355a407552e96915d493
   ExpoSystemUI: ab9245591d740dd89acb4648dee2ae1714bd2262
@@ -2947,7 +2931,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 9caa8b94e52b789a0f25727f8844f582fca766e2
   EXStructuredHeaders: 404356f2621ca76fd54e8c5c686091d0fa00cbc7
   EXTaskManager: 080da17150fba107155b6800be1370dd1a252c39
-  EXUpdates: c3281515ce53277b8209e4acd2804eb3910cabed
+  EXUpdates: 65dadd2a00b843b15bf3b37a40648bef44dc2e4f
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: ef2d8805f4910e0fd527cca94cf657ef5ec74f0a
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -3038,7 +3022,6 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
   Yoga: ac38ef8dfa1ce56514c8197f19175e97ab7e7c2d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
