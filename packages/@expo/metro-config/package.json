@@ -32,7 +32,19 @@
   "files": [
     "build",
     "file-store",
-    "babel-transformer"
+    "babel-transformer",
+    "metro",
+    "metro-babel-transformer",
+    "metro-cache",
+    "metro-cache-key",
+    "metro-config",
+    "metro-core",
+    "metro-file-map",
+    "metro-resolver",
+    "metro-runtime",
+    "metro-source-map",
+    "metro-transform-plugins",
+    "metro-transform-worker"
   ],
   "dependencies": {
     "@babel/core": "^7.20.0",
