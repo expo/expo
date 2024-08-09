@@ -37,6 +37,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   let onPictureInPictureStart = EventDispatcher()
   let onPictureInPictureStop = EventDispatcher()
+  let onFullscreenEnter = EventDispatcher()
+  let onFullscreenExit = EventDispatcher()
 
   public override var bounds: CGRect {
     didSet {
@@ -82,6 +84,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       wasPlaying = player?.isPlaying == true
       self.playerViewController.view.removeFromSuperview()
       self.reactViewController().present(self.playerViewController, animated: true)
+      onFullscreenEnter()
       isFullscreen = true
       #endif
     }
@@ -132,6 +135,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   public func playerViewControllerDidEndDismissalTransition(_ playerViewController: AVPlayerViewController) {
+    self.onFullscreenExit()
     self.isFullscreen = false
     // Reset the bounds of the view controller and add it back to our view
     self.playerViewController.view.frame = self.bounds
@@ -152,6 +156,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     _ playerViewController: AVPlayerViewController,
     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
   ) {
+    onFullscreenEnter()
     isFullscreen = true
   }
 
@@ -168,6 +173,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
         if wasPlaying {
           self.player?.pointer.play()
         }
+        self.onFullscreenExit()
         self.isFullscreen = false
       }
     }

@@ -10,6 +10,7 @@
 
 - [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
 - [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
+- Add fullscreen enter and exit events.([#30922](https://github.com/expo/expo/pull/30922) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 

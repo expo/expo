@@ -100,4 +100,14 @@ export interface VideoViewProps extends ViewProps {
    * @platform ios 16.0+
    */
   allowsVideoFrameAnalysis?: boolean;
+
+  /**
+   * A callback to call after the video player enters fullscreen mode.
+   */
+  onFullscreenEnter?: () => void;
+
+  /**
+   * A callback to call after the video player exits fullscreen mode.
+   */
+  onFullscreenExit?: () => void;
 }
