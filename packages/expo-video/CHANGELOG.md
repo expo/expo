@@ -10,6 +10,7 @@
 
 - [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
 - [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
+- Add support for playback of local assets imported with the `require` function. ([#30837](https://github.com/expo/expo/pull/30837) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
