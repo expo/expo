@@ -40,10 +40,7 @@ export function useAudioSampleListener(
   player.setAudioSamplingEnabled(true);
   useEffect(() => {
     const subscription = player.addListener('onAudioSampleUpdate', listener);
-    return () => {
-      player.setAudioSamplingEnabled(false);
-      subscription.remove();
-    };
+    return () => subscription.remove();
   }, [player.id]);
 }
 

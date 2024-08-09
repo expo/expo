@@ -4,6 +4,8 @@ import { StyleProp, ViewStyle } from 'react-native';
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
+import { useEffect } from 'react';
+
 type AudioPlayerProps = {
   source: AudioSource | string | number;
   style?: StyleProp<ViewStyle>;
@@ -28,6 +30,10 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     player.shouldCorrectPitch = shouldCorrectPitch;
     player.setPlaybackRate(rate);
   };
+
+  useEffect(() => {
+    return () => player.remove();
+  }, []);
 
   return (
     <Player

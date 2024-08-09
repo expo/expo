@@ -83,6 +83,10 @@ public class AudioModule: Module {
       Property("id") { player in
         player.id
       }
+      
+      Property("isAudioSamplingSupported") {
+        true
+      }
 
       Property("isBuffering") { player in
         player.isBuffering
@@ -177,6 +181,10 @@ public class AudioModule: Module {
         }
         player.ref.pause()
         players.removeValue(forKey: player.id)
+      }
+      
+      Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
+        player.setSamplingEnabled(enabled: enabled)
       }
 
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
