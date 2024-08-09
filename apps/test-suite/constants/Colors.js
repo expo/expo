@@ -8,5 +8,4 @@ export default {
   tintColor: '#4630EB', // Expo Blue
   activeTintColor: '#4630ec',
   inactiveTintColor: '#595959',
-  border: '#dddddd',
 };

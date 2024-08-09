@@ -1,9 +1,13 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "baseUrl": ".",
     "lib": [
       "dom",
       "esnext"
-    ]
-  },
-  "extends": "expo/tsconfig.base"
+    ],
+    "paths": {
+      "ThemeProvider": ["../common/ThemeProvider"],
+    }
+  }
 }

@@ -4,10 +4,11 @@ import { FlatList, StyleSheet, View } from 'react-native';
 
 import DoneText from './DoneText';
 import SuiteResult from './SuiteResult';
-import Colors from '../constants/Colors';
+import { useTheme } from '../../common/ThemeProvider';
 
 export default function Suites({ suites, done, numFailed, results }) {
   const ref = React.useRef(null);
+  const { theme } = useTheme();
 
   return (
     <FlatList
@@ -18,7 +19,14 @@ export default function Suites({ suites, done, numFailed, results }) {
       keyExtractor={(item) => item.get('result').get('id')}
       renderItem={({ item }) => <SuiteResult r={item} depth={0} />}
       ListHeaderComponent={() => (
-        <View style={styles.headerContainer}>
+        <View
+          style={[
+            styles.headerContainer,
+            {
+              backgroundColor: theme.background.default,
+              borderBottomColor: theme.border.secondary,
+            },
+          ]}>
           <DoneText done={done} numFailed={numFailed} results={results} />
         </View>
       )}
@@ -37,6 +45,5 @@ const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
 });

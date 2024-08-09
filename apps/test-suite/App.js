@@ -3,6 +3,7 @@ import * as Linking from 'expo-linking';
 import * as React from 'react';
 
 import AppNavigator from './AppNavigator';
+import { ThemeProvider } from '../common/ThemeProvider';
 
 const linking = {
   prefixes: [Linking.createURL('/')],
@@ -13,8 +14,11 @@ const linking = {
     },
   },
 };
+
 export default () => (
-  <NavigationContainer linking={linking}>
-    <AppNavigator />
-  </NavigationContainer>
+  <ThemeProvider>
+    <NavigationContainer linking={linking}>
+      <AppNavigator />
+    </NavigationContainer>
+  </ThemeProvider>
 );

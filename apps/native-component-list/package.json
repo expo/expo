@@ -34,6 +34,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^3.8.0",
+    "@expo/styleguide-base": "^1.0.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.0.0",
     "@react-native-community/netinfo": "11.3.1",
