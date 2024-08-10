@@ -5,6 +5,7 @@ description: Learn about rendering React DOM elements in Expo native apps.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
@@ -13,6 +14,10 @@ Expo offers a novel approach to working with modern web code directly in a nativ
 The Expo native runtime generally does not support using `<div>` or `<img>` tags, but you may find that you want to quickly drop in some web components. This is where DOM components come in.
 
 ## Usage
+
+First, install `react-native-webview` in your project:
+
+<Terminal cmd={['$ npx expo install react-native-webview']} />
 
 To render a React component to the DOM, simply add the `'use dom'` directive to the top of a file:
 
