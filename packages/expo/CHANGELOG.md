@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add initial version of DOM Components and `expo/dom` module.
 - Support `URL.canParse`. ([#30697](https://github.com/expo/expo/pull/30697) by [@EvanBacon](https://github.com/EvanBacon))
 - Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
 - Introduced `useEvent` hook for EventEmitter objects (e.g. native modules and shared objects). ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
