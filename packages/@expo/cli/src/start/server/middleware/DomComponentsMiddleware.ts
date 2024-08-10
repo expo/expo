@@ -2,9 +2,9 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-import { fileExistsAsync } from '../../../utils/dir';
-import { getDomComponentHtml, getDomComponentVirtualProxy } from '../metro/dom-components';
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
+import { getDomComponentHtml, getDomComponentVirtualProxy } from '../metro/dom-components';
+import { fileExistsAsync } from '../../../utils/dir';
 
 import type { ServerRequest, ServerResponse } from './server.types';
 
@@ -52,7 +52,7 @@ export function createDomComponentsMiddleware(
   return async (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (!req.url) return next();
 
-    const url = coreceUrl(req.url);
+    const url = coerceUrl(req.url);
 
     // Match `/_expo/@dom`.
     // This URL can contain additional paths like `/_expo/@dom/foo.js?file=...` to help the Safari dev tools.
@@ -91,6 +91,7 @@ export function createDomComponentsMiddleware(
     res.statusCode = 200;
     // Return HTML file
     res.setHeader('Content-Type', 'text/html');
+
     res.end(
       // Create the entry HTML file.
       getDomComponentHtml(metroUrl, { title: path.basename(file) })
@@ -98,7 +99,7 @@ export function createDomComponentsMiddleware(
   };
 }
 
-function coreceUrl(url: string) {
+function coerceUrl(url: string) {
   try {
     return new URL(url);
   } catch {

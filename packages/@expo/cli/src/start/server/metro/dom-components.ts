@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 
 export function getDomComponentVirtualProxy(generatedEntry: string, filePath: string) {
@@ -9,17 +8,18 @@ export function getDomComponentVirtualProxy(generatedEntry: string, filePath: st
     relativeFilePath = './' + relativeFilePath;
   }
 
-  // NOTE: This might need to be in the Metro transform cache.
-  const templatePath = require.resolve(`@expo/cli/static/template/dom-entry.tsx`);
-  const template = fs.readFileSync(templatePath, 'utf8');
+  const stringifiedFilePath = JSON.stringify(relativeFilePath);
+  // NOTE: This might need to be in the Metro transform cache if we ever change it.
+  const contents = `
+// Entry file for the web-side of a DOM Component.
+import { registerDOMComponent } from 'expo/dom/internal';
+
+registerDOMComponent(() => import(${stringifiedFilePath}), ${stringifiedFilePath});
+`;
 
   return {
     filePath: generatedEntry,
-    contents: template.replace(
-      // Matches the string in the template file.
-      '[$$GENERATED_ENTRY]',
-      relativeFilePath
-    ),
+    contents,
   };
 }
 
