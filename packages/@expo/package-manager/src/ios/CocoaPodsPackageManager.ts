@@ -184,8 +184,8 @@ export class CocoaPodsPackageManager {
   }
 
   /** Runs `pod install` and attempts to automatically run known troubleshooting steps automatically. */
-  async installAsync({ spinner }: { spinner?: Ora } = {}) {
-    await this._installAsync({ spinner });
+  async installAsync({ spinner, verbose }: { spinner?: Ora, verbose?: boolean } = {}) {
+    await this._installAsync({ spinner, verbose });
   }
 
   public isCLIInstalledAsync() {
@@ -204,11 +204,13 @@ export class CocoaPodsPackageManager {
     shouldUpdate = true,
     updatedPackages = [],
     spinner,
+    verbose = false,
   }: {
     error: any;
     spinner?: Ora;
     shouldUpdate?: boolean;
     updatedPackages?: string[];
+    verbose?: boolean;
   }) {
     // Unknown errors are rethrown.
     if (!error.output) {
@@ -239,6 +241,7 @@ export class CocoaPodsPackageManager {
         // Include a boolean to ensure pod install --repo-update isn't invoked in the unlikely case where the pods fail to update.
         shouldUpdate: false,
         updatedPackages,
+        verbose,
       });
     }
     // Store the package we should update to prevent a loop.
@@ -249,7 +252,7 @@ export class CocoaPodsPackageManager {
 
     // Attempt `pod update <package> <--no-repo-update>` and then try again.
     return await this.runInstallTypeCommandAsync(
-      ['update', updatePackage, shouldUpdateRepo ? '' : '--no-repo-update'].filter(Boolean),
+      ['update', updatePackage, shouldUpdateRepo ? '' : '--no-repo-update', verbose ? '--verbose' : ''].filter(Boolean),
       {
         formatWarning() {
           const updateMessage = `Failed to update ${chalk.bold(
@@ -271,15 +274,17 @@ export class CocoaPodsPackageManager {
 
   private async _installAsync({
     shouldRepoUpdate,
+    verbose,
     ...props
   }: {
     spinner?: Ora;
     shouldUpdate?: boolean;
     updatedPackages?: string[];
     shouldRepoUpdate?: boolean;
+    verbose?: boolean;
   } = {}): Promise<SpawnResult> {
     return await this.runInstallTypeCommandAsync(
-      ['install', shouldRepoUpdate ? '--repo-update' : ''].filter(Boolean),
+      ['install', shouldRepoUpdate ? '--repo-update' : '', verbose ? '--verbose' : ''].filter(Boolean),
       {
         formatWarning(error: any) {
           // Extract useful information from the error message and push it to the spinner.
@@ -300,6 +305,7 @@ export class CocoaPodsPackageManager {
       spinner?: Ora;
       shouldUpdate?: boolean;
       updatedPackages?: string[];
+      verbose?: boolean;
     } = {}
   ): Promise<SpawnResult> {
     try {
