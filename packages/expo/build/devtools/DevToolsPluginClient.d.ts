@@ -15,6 +15,8 @@ export declare abstract class DevToolsPluginClient {
     private readonly wsStore;
     protected isClosed: boolean;
     protected retries: number;
+    private readonly useTransportationNext;
+    private readonly messageFramePacker;
     constructor(connectionInfo: ConnectionInfo, options?: DevToolsPluginClientOptions | undefined);
     /**
      * Initialize the connection.
@@ -31,6 +33,8 @@ export declare abstract class DevToolsPluginClient {
      * @param params any extra payload.
      */
     sendMessage(method: string, params: any): void;
+    private sendMessageImplLegacy;
+    private sendMessageImplTransportationNext;
     /**
      * Subscribe to a message from the other end of DevTools.
      * @param method Subscribe to a message with a method name.
@@ -52,6 +56,8 @@ export declare abstract class DevToolsPluginClient {
      */
     protected connectAsync(): Promise<WebSocket>;
     protected handleMessage: (event: WebSocketMessageEvent) => void;
+    private handleMessageImplLegacy;
+    private handleMessageImplTransportationNext;
     /**
      * Get the WebSocket backing store. Exposed for testing.
      * @hidden
