@@ -29,6 +29,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - [Web] `getPermissionsAsync` no longer prompts the user for permission instead we use the new browser API `navigator.permissions.query` to check the permission status. ([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems)) ([#26837](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
 - **`expo-local-authentication`**
   - `SecurityLevel.BIOMETRIC` has been deprecated in favour of `SecurityLevel.BIOMETRIC_STRONG` and `SecurityLevel.BIOMETRIC_WEAK`. Using `SecurityLevel.BIOMETRIC` might lead to unexpected behaviour. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+  - `description` field has been added to `LocalAuthenticationOptions` to be shown in Biometric prompt. ([#30931](https://github.com/expo/expo/pull/30931) by [@amir-hossein-karimi](https://github.com/amir-hossein-karimi))
 - **`expo-modules-core`**
   - Removed `ReactNativeHostHandler.onRegisterJSIModules` interface. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
   - Dropped supports for React Native 0.73 and lower. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689), [#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
