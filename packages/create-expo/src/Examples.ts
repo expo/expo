@@ -122,8 +122,8 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     files,
     name: projectName,
   });
-  await sanitizeTemplateAsync(root);
-  await sanitizeScriptsAsync(root);
+
+  await Promise.all([sanitizeTemplateAsync(root), sanitizeScriptsAsync(root)]);
 }
 
 function exampleHasNativeCode(root: string): boolean {
