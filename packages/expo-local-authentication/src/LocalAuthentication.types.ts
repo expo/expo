@@ -78,6 +78,14 @@ export type LocalAuthenticationOptions = {
    * A message that is shown alongside the TouchID or FaceID prompt.
    */
   promptMessage?: string;
+
+  /**
+   * A description that is shown below the promptMessage.
+   *
+   * Platform: android
+   */
+  description?: string;
+
   /**
    * Allows to customize the default `Cancel` label shown.
    */

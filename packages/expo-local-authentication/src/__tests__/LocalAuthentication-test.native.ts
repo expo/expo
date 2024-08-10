@@ -9,6 +9,7 @@ beforeEach(() => {
 it(`uses options`, async () => {
   const options = {
     promptMessage: 'Authentication is required',
+    description: 'prompt description',
     cancelLabel: 'Abort',
     fallbackLabel: 'Use passcode',
     disableDeviceFallback: false,

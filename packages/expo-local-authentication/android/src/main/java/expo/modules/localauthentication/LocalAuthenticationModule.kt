@@ -209,6 +209,7 @@ class LocalAuthenticationModule : Module() {
     }
 
     val promptMessage = options.promptMessage
+    val description = options.description
     val cancelLabel = options.cancelLabel
     val requireConfirmation = options.requireConfirmation
     val allowedAuthenticators = if (options.disableDeviceFallback) {
@@ -223,6 +224,7 @@ class LocalAuthenticationModule : Module() {
     biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
     val promptInfoBuilder = PromptInfo.Builder().apply {
       setTitle(promptMessage)
+      setDescription(description)
       setAllowedAuthenticators(allowedAuthenticators)
       if (options.disableDeviceFallback) {
         setNegativeButtonText(cancelLabel)
@@ -251,6 +253,7 @@ class LocalAuthenticationModule : Module() {
     }
 
     val promptMessage = options.promptMessage
+    val description = options.description
     val requireConfirmation = options.requireConfirmation
 
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
@@ -270,6 +273,7 @@ class LocalAuthenticationModule : Module() {
 
       val promptInfoBuilder = PromptInfo.Builder().apply {
         setTitle(promptMessage)
+        setDescription(description)
         setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
         setConfirmationRequired(requireConfirmation)
       }
