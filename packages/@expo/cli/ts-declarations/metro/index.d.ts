@@ -22,6 +22,7 @@ declare module 'metro/src/shared/types.flow' {
     shallow: boolean;
   };
 }
+
 declare module 'metro-runtime/src/modules/types.flow' {
   export type HmrModule = {
     module: [number, string];

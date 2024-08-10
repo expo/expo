@@ -3,7 +3,7 @@
   "version": "0.18.4",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
-  "types": "build/ExpoMetroConfig.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "expo-module tsc && taskr",
     "build:metro": "taskr",
@@ -33,6 +33,7 @@
     "build",
     "file-store",
     "babel-transformer",
+    "types",
     "metro",
     "metro-babel-transformer",
     "metro-cache",

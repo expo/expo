@@ -23,10 +23,20 @@ type SourceFileImportRef = {
 };
 
 // We are incrementally rolling this out, the imports in this list are expected to be invalid
-const IGNORED_IMPORTS = ['expo-modules-core', 'typescript'];
+const IGNORED_IMPORTS = [
+  'expo-modules-core',
+  'typescript',
+  // Added
+  '@react-native-community/cli-server-api',
+  'expo-modules-autolinking',
+  'expo-router',
+  'express',
+  'webpack',
+  'webpack-dev-server',
+];
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
-  '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
+  // '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
   '@expo/html-elements', // package: react, react-native, react-native-web
   '@expo/image-utils', // package: sharp, sharp-cli
   '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
