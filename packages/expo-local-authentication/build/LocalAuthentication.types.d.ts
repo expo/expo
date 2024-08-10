@@ -56,6 +56,12 @@ export type LocalAuthenticationOptions = {
      */
     promptMessage?: string;
     /**
+     * A description that is shown below the promptMessage.
+     *
+     * Platform: android
+     */
+    description?: string;
+    /**
      * Allows to customize the default `Cancel` label shown.
      */
     cancelLabel?: string;
