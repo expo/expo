@@ -72,10 +72,11 @@ export async function transform(
     filename,
     assetDataPlugins,
     options.platform,
-    (isDomComponent && isExport) ? 
-      // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
-      // relative to the www.bundle on ios.
-    `/assets?export_path=assets` : options.publicPath
+    isDomComponent && isExport
+      ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
+        // relative to the www.bundle on ios.
+        `/assets?export_path=assets`
+      : options.publicPath
   );
 
   return {

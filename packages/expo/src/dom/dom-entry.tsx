@@ -7,6 +7,8 @@ import React from 'react';
 import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
 
+declare let window: any;
+
 const ACTIONS = getActionsObject!();
 
 function isBaseObject(obj: any) {

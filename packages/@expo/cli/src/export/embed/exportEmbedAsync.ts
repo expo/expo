@@ -7,8 +7,8 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
-import fs from 'fs';
 import crypto from 'crypto';
+import fs from 'fs';
 import { sync as globSync } from 'glob';
 import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
@@ -20,13 +20,15 @@ import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
-import { getDomComponentHtml } from '../../start/server/metro/dom-components';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import { getDomComponentHtml } from '../../start/server/metro/dom-components';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
+import { serializeHtmlWithAssets } from '../../start/server/metro/serializeHtml';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
+import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
@@ -36,8 +38,6 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
-import { env } from '../../utils/env';
-import { serializeHtmlWithAssets } from '../../start/server/metro/serializeHtml';
 
 const debug = require('debug')('expo:export:embed');
 

@@ -8,6 +8,7 @@ const expo_router_plugin_1 = require("./expo-router-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
+const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     return {
@@ -121,6 +122,7 @@ function babelPresetExpo(api, options = {}) {
         inlines['process.env.EXPO_BASE_URL'] = baseUrl;
     }
     extraPlugins.push([require('./define-plugin'), inlines]);
+    extraPlugins.push(use_dom_directive_plugin_1.expoUseDomDirectivePlugin);
     if (isProduction) {
         // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
         // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.

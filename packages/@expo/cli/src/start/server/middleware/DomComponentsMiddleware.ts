@@ -3,10 +3,9 @@ import fs from 'fs';
 import path from 'path';
 
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
-import { getDomComponentHtml, getDomComponentVirtualProxy } from '../metro/dom-components';
-import { fileExistsAsync } from '../../../utils/dir';
-
 import type { ServerRequest, ServerResponse } from './server.types';
+import { fileExistsAsync } from '../../../utils/dir';
+import { getDomComponentHtml, getDomComponentVirtualProxy } from '../metro/dom-components';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

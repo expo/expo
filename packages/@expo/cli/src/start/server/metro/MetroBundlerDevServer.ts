@@ -8,9 +8,9 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
-import fs from 'fs';
-
 import chalk from 'chalk';
+import crypto from 'crypto';
+import fs from 'fs';
 import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
@@ -23,10 +23,10 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
-import crypto from 'crypto';
 
 import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { getDomComponentVirtualProxy } from './dom-components';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
@@ -43,6 +43,7 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
@@ -56,6 +57,7 @@ import {
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
+import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -77,8 +79,6 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { fileExistsAsync } from '../../../utils/dir';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
@@ -1443,20 +1443,9 @@ async function sourceMapStringAsync(
   });
 }
 
-function coreceUrl(url: string) {
-  try {
-    return new URL(url);
-  } catch {
-    return new URL(url, 'https://localhost:0');
-  }
-}
-
 const fileURLToFilePath = (fileURL: string) => {
   if (!fileURL.startsWith('file://')) {
     throw new Error('Not a file URL');
   }
   return decodeURI(fileURL.slice('file://'.length));
 };
-
-import { getDomComponentVirtualProxy, getDomComponentHtml } from './dom-components';
-import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
