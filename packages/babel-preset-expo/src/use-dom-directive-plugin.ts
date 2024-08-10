@@ -23,7 +23,7 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
         }
 
         const isUseWebview = path.node.directives.some(
-          (directive: any) => directive.value.value === 'use dom'
+          (directive) => directive.value.value === 'use dom'
         );
 
         const filePath = state.file.opts.filename;
@@ -39,9 +39,31 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
           return;
         }
 
+        // Assert that a default export must exist and that no other exports should be present.
+        // NOTE: In the future we could support other exports with extraction.
+
+        let hasDefaultExport = false;
+        // Collect all of the exports
+        path.traverse({
+          ExportNamedDeclaration(path) {
+            throw path.buildCodeFrameError(
+              'Modules with the "use dom" directive only support a single default export.'
+            );
+          },
+          ExportDefaultDeclaration() {
+            hasDefaultExport = true;
+          },
+        });
+
+        if (!hasDefaultExport) {
+          throw path.buildCodeFrameError(
+            'The "use dom" directive requires a default export to be present in the file.'
+          );
+        }
+
         const outputKey = url.pathToFileURL(filePath).href;
 
-        let proxyModule: string[] = [
+        const proxyModule: string[] = [
           `import React from 'react';
 import { WebView } from 'expo/dom/internal';`,
         ];
@@ -51,29 +73,29 @@ import { WebView } from 'expo/dom/internal';`,
 
           if (platform === 'ios') {
             const outputName = `www.bundle/${hash}.html`;
-            proxyModule = [`const proxy = { uri: ${JSON.stringify(outputName)} };`];
+            proxyModule.push(`const source = { uri: ${JSON.stringify(outputName)} };`);
           } else if (platform === 'android') {
             // TODO: This is a guess.
             const outputName = `www/${hash}.html`;
-            proxyModule = [
-              `const proxy = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`,
-            ];
+            proxyModule.push(
+              `const source = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`
+            );
           } else {
             throw new Error(
               'production "use dom" directive is not supported yet for platform: ' + platform
             );
           }
         } else {
-          proxyModule = [
+          proxyModule.push(
             // Add the basename to improve the Safari debug preview option.
-            `const proxy = { uri: new URL("/_expo/@dom/${basename(filePath)}?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`,
-          ];
+            `const source = { uri: new URL("/_expo/@dom/${basename(filePath)}?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`
+          );
         }
 
         proxyModule.push(
           `
 export default React.forwardRef((props, ref) => {
-  return React.createElement(WebView, { ref, ...props, $$source: proxy });
+  return React.createElement(WebView, { ref, ...props, source });
 });`
         );
 

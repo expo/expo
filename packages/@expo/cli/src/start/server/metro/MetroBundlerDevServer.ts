@@ -24,7 +24,10 @@ import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 
-import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
+import {
+  createServerComponentsMiddleware,
+  fileURLToFilePath,
+} from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { getDomComponentVirtualProxy } from './dom-components';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
@@ -1442,10 +1445,3 @@ async function sourceMapStringAsync(
     excludeSource: options.excludeSource,
   });
 }
-
-const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
-};

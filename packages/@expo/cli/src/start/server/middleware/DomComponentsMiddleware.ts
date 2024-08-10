@@ -5,16 +5,10 @@ import path from 'path';
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { fileExistsAsync } from '../../../utils/dir';
+import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 import { getDomComponentHtml, getDomComponentVirtualProxy } from '../metro/dom-components';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
-};
 
 export function createDomComponentsMiddleware(
   {

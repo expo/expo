@@ -21,7 +21,7 @@ function mergeRefs(...props) {
   };
 }
 
-const RawWebView = React.forwardRef(({ dom, $$source, ...marshalProps }: any, ref) => {
+const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref) => {
   const webviewRef = React.useRef<WebView>(null);
 
   const setRef = React.useMemo(() => mergeRefs(webviewRef, {}, ref), [webviewRef, ref]);
@@ -74,7 +74,7 @@ const RawWebView = React.forwardRef(({ dom, $$source, ...marshalProps }: any, re
         .filter(Boolean)
         .join('\n')}
       ref={setRef}
-      source={$$source}
+      source={source}
       style={[
         dom?.style
           ? { flex: 1, backgroundColor: 'transparent' }
