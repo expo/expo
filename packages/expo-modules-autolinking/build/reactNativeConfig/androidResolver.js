@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseComponentDescriptorsAsync = exports.parseLibraryNameAsync = exports.parseNativePackageClassNameAsync = exports.parsePackageNameAsync = exports.resolveDependencyConfigImplAndroidAsync = void 0;
+exports.findGradleAndManifestAsync = exports.parseComponentDescriptorsAsync = exports.parseLibraryNameAsync = exports.parseNativePackageClassNameAsync = exports.parsePackageNameAsync = exports.resolveDependencyConfigImplAndroidAsync = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -14,23 +14,7 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
         return null;
     }
     const androidDir = path_1.default.join(packageRoot, 'android');
-    const globExcludes = [
-        'node_modules/**',
-        '**/build/**',
-        '**/debug/**',
-        'Examples/**',
-        'examples/**',
-        '**/Pods/**',
-        '**/sdks/hermes/android/**',
-        '**/src/androidTest/**',
-        '**/src/test/**',
-    ];
-    const [manifests, gradles] = await Promise.all([
-        (0, fast_glob_1.default)('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
-        (0, fast_glob_1.default)('build.gradle{,.kts}', { cwd: androidDir, ignore: globExcludes }),
-    ]);
-    const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
-    const gradle = gradles[0];
+    const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
     if (!manifest && !gradle) {
         return null;
     }
@@ -199,4 +183,26 @@ function matchComponentDescriptors(filePath, contents) {
     }
     return null;
 }
+async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {
+    const globExcludes = [
+        'node_modules/**',
+        '**/build/**',
+        '**/debug/**',
+        'Examples/**',
+        'examples/**',
+        '**/Pods/**',
+        '**/sdks/hermes/android/**',
+        '**/src/androidTest/**',
+        '**/src/test/**',
+    ];
+    const gradlePattern = isLibrary ? 'build.gradle{,.kts}' : 'app/build.gradle{,.kts}';
+    const [manifests, gradles] = await Promise.all([
+        (0, fast_glob_1.default)('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
+        (0, fast_glob_1.default)(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
+    ]);
+    const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
+    const gradle = gradles[0];
+    return { gradle, manifest };
+}
+exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 //# sourceMappingURL=androidResolver.js.map

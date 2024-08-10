@@ -13,7 +13,7 @@ import {
   ReadOnlyGraph,
   SerializerOptions,
 } from 'metro';
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
@@ -57,6 +57,11 @@ function pathToRegex(path: string) {
   // Create a RegExp object with the modified string
   return new RegExp('^' + regexSafePath + '$');
 }
+
+const sourceMapString =
+  typeof sourceMapStringMod !== 'function'
+    ? sourceMapStringMod.sourceMapString
+    : sourceMapStringMod;
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,

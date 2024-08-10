@@ -5,6 +5,7 @@ declare const _default: {
     unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void>;
     getServerResources(): string[];
     resetServerContext(): void;
+    getLoadedFonts(): string[];
     isLoaded(fontFamilyName: string, resource?: UnloadFontOptions): boolean;
     loadAsync(fontFamilyName: string, resource: FontResource): Promise<void>;
 };

@@ -17,6 +17,13 @@ export declare function processFontFamily(fontFamily: string | null): string | n
  */
 export declare function isLoaded(fontFamily: string): boolean;
 /**
+ * Synchronously get all the fonts that have been loaded.
+ * This includes fonts that were bundled at build time using the config plugin, as well as those loaded at runtime using `loadAsync`.
+ *
+ * @returns Returns array of font family names that have been loaded.
+ */
+export declare function getLoadedFonts(): string[];
+/**
  * Synchronously detect if the font for `fontFamily` is still being loaded.
  *
  * @param fontFamily The name used to load the `FontResource`.
@@ -38,15 +45,17 @@ export declare function isLoading(fontFamily: string): boolean;
 export declare function loadAsync(fontFamilyOrFontMap: string | Record<string, FontSource>, source?: FontSource): Promise<void>;
 /**
  * Unloads all the custom fonts. This is used for testing.
+ * @hidden
  */
 export declare function unloadAllAsync(): Promise<void>;
 /**
  * Unload custom fonts matching the `fontFamily`s and display values provided.
- * Because fonts are automatically unloaded on every platform this is mostly used for testing.
+ * This is used for testing.
  *
  * @param fontFamilyOrFontMap The name or names of the custom fonts that will be unloaded.
  * @param options When `fontFamilyOrFontMap` is a string, this should be the font source used to load
  * the custom font originally.
+ * @hidden
  */
 export declare function unloadAsync(fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>, options?: UnloadFontOptions): Promise<void>;
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
