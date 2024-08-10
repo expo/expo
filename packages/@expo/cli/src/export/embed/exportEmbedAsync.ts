@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
@@ -149,79 +149,24 @@ export async function exportEmbedBundleAndAssetsAsync(
 
     const files: ExportAssetMap = new Map();
 
-    const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
+    // TODO: Remove duplicates...
+    const expoDomComponentReferences = bundles.artifacts
+      .map((artifact) =>
+        Array.isArray(artifact.metadata.expoDomComponentReferences)
+          ? artifact.metadata.expoDomComponentReferences
+          : []
+      )
+      .flat();
 
-    await Promise.all(
-      bundles.artifacts.map(async (artifact) => {
-        // TODO: Remove duplicates...
-        if (Array.isArray(artifact.metadata.expoDomComponentReferences)) {
-          for (const ref of artifact.metadata.expoDomComponentReferences) {
-            console.log('Bundle www entry:', ref);
-            // file path
-
-            // MUST MATCH THE BABEL PLUGIN!
-            const hash = crypto.createHash('sha1').update(ref).digest('hex');
-            const outputName = `${rootDir}/${hash}.html`;
-            const generatedEntryPath = await devServer.getDomComponentVirtualEntryModuleAsync(ref);
-            const baseUrl = `/${rootDir}`;
-            // Run metro bundler and create the JS bundles/source maps.
-            const bundle = await devServer.legacySinglePageExportBundleAsync({
-              platform: 'web',
-              isDOM: true,
-              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
-              mainModuleName: resolveRealEntryFilePath(projectRoot, generatedEntryPath),
-              mode: options.dev ? 'development' : 'production',
-              engine: isHermes ? 'hermes' : undefined,
-              serializerIncludeMaps: !!sourceMapUrl,
-              bytecode: false,
-              reactCompiler: !!exp.experiments?.reactCompiler,
-              baseUrl: './',
-            });
-
-            const html = await serializeHtmlWithAssets({
-              isExporting: true,
-              resources: bundle.artifacts,
-              template: getDomComponentHtml(),
-              baseUrl: './',
-            });
-
-            getFilesFromSerialAssets(
-              bundle.artifacts.map((a) => {
-                return {
-                  ...a,
-                  filename: path.join(baseUrl, a.filename),
-                };
-              }),
-              {
-                includeSourceMaps: !!sourceMapUrl,
-                files,
-                platform: 'web',
-              }
-            );
-
-            files.set(outputName, {
-              contents: html,
-            });
-
-            if (options.assetsDest) {
-              // Save assets like a typical bundler, preserving the file paths on web.
-              // TODO: Update React Native Web to support loading files from asset hashes.
-              await persistMetroAssetsAsync(
-                projectRoot,
-                bundle.assets.map((asset) => ({
-                  ...asset,
-                  httpServerLocation: path.join(rootDir, asset.httpServerLocation),
-                })),
-                {
-                  files,
-                  platform: 'web',
-                  outputDirectory: options.assetsDest,
-                }
-              );
-            }
-          }
-        }
-      })
+    await exportDomComponentsAsync(
+      projectRoot,
+      expoDomComponentReferences,
+      options,
+      devServer,
+      isHermes,
+      sourceMapUrl,
+      exp,
+      files
     );
 
     return {
@@ -249,6 +194,86 @@ export async function exportEmbedBundleAndAssetsAsync(
   } finally {
     devServerManager.stopAsync();
   }
+}
+
+// TODO(EvanBacon): Move this to expo export in the future when we determine how to support DOM Components with hosting.
+async function exportDomComponentsAsync(
+  projectRoot: string,
+  expoDomComponentReferences: string[],
+  options: Options,
+  devServer: MetroBundlerDevServer,
+  isHermes: boolean,
+  sourceMapUrl: string | undefined,
+  exp: ExpoConfig,
+  files: ExportAssetMap
+) {
+  const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
+
+  await Promise.all(
+    expoDomComponentReferences.map(async (filePath) => {
+      debug('Bundle DOM Component:', filePath);
+      // MUST MATCH THE BABEL PLUGIN!
+      const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+      const outputName = `${rootDir}/${hash}.html`;
+      const generatedEntryPath = await devServer.getDomComponentVirtualEntryModuleAsync(filePath);
+      const baseUrl = `/${rootDir}`;
+      // Run metro bundler and create the JS bundles/source maps.
+      const bundle = await devServer.legacySinglePageExportBundleAsync({
+        platform: 'web',
+        isDOM: true,
+        splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
+        mainModuleName: resolveRealEntryFilePath(projectRoot, generatedEntryPath),
+        mode: options.dev ? 'development' : 'production',
+        engine: isHermes ? 'hermes' : undefined,
+        serializerIncludeMaps: !!sourceMapUrl,
+        bytecode: false,
+        reactCompiler: !!exp.experiments?.reactCompiler,
+        baseUrl: './',
+      });
+
+      const html = await serializeHtmlWithAssets({
+        isExporting: true,
+        resources: bundle.artifacts,
+        template: getDomComponentHtml(),
+        baseUrl: './',
+      });
+
+      getFilesFromSerialAssets(
+        bundle.artifacts.map((a) => {
+          return {
+            ...a,
+            filename: path.join(baseUrl, a.filename),
+          };
+        }),
+        {
+          includeSourceMaps: !!sourceMapUrl,
+          files,
+          platform: 'web',
+        }
+      );
+
+      files.set(outputName, {
+        contents: html,
+      });
+
+      if (options.assetsDest) {
+        // Save assets like a typical bundler, preserving the file paths on web.
+        // This is saving web-style inside of a native app's binary.
+        await persistMetroAssetsAsync(
+          projectRoot,
+          bundle.assets.map((asset) => ({
+            ...asset,
+            httpServerLocation: path.join(rootDir, asset.httpServerLocation),
+          })),
+          {
+            files,
+            platform: 'web',
+            outputDirectory: options.assetsDest,
+          }
+        );
+      }
+    })
+  );
 }
 
 // Exports for expo-updates

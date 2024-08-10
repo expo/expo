@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 
 export function getDomComponentVirtualProxy(generatedEntry: string, filePath: string) {
   // filePath relative to the generated entry
@@ -11,16 +10,21 @@ export function getDomComponentVirtualProxy(generatedEntry: string, filePath: st
   }
 
   // NOTE: This might need to be in the Metro transform cache.
-  const templatePath = require.resolve(`@expo/cli/static/template/webview-entry.tsx`);
+  const templatePath = require.resolve(`@expo/cli/static/template/dom-entry.tsx`);
   const template = fs.readFileSync(templatePath, 'utf8');
 
   return {
     filePath: generatedEntry,
-    contents: template.replace('[$$GENERATED_ENTRY]', relativeFilePath),
+    contents: template.replace(
+      // Matches the string in the template file.
+      '[$$GENERATED_ENTRY]',
+      relativeFilePath
+    ),
   };
 }
 
 export function getDomComponentHtml(src?: string, { title }: { title?: string } = {}) {
+  // This HTML is not optimized for `react-native-web` since DOM Components are meant for general React DOM web development.
   return `
 <!DOCTYPE html>
 <html>
@@ -29,22 +33,21 @@ export function getDomComponentHtml(src?: string, { title }: { title?: string } 
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         ${title ? `<title>${title}</title>` : ''}
-        <style id="expo-reset">
+        <style id="expo-dom-component-style">
         /* These styles make the body full-height */
         html,
         body {
-        -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
-        /* height: 100%; */
+          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
         }
         /* These styles make the root element full-height */
         #root {
-        display: flex;
-        flex: 1;
+          display: flex;
+          flex: 1;
         }
         </style>
     </head>
     <body>
-    <noscript>WebView requires <code>javaScriptEnabled</code></noscript>
+    <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
         <!-- Root element for the DOM component. -->
         <div id="root"></div>
         ${src ? `<script crossorigin src="${src}"></script>` : ''}
