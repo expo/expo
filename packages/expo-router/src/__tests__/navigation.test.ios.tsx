@@ -1326,7 +1326,7 @@ describe('stack unwinding', () => {
   });
 });
 
-it.only('should always prefer static routes over dynamic ones', async () => {
+it('should always prefer static routes over dynamic ones', async () => {
   renderRouter(
     {
       // Uses Layouts at different levels to create different hoisting for each group
