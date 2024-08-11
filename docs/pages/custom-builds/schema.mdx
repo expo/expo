@@ -24,7 +24,7 @@ Defined to describe a custom workflow. All config options to create a workflow a
 
 The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
 
-For example, the workflow's name is `Run tests`:
+For example, the workflow name is `Run tests`:
 
 ```yaml
 build:
@@ -40,7 +40,7 @@ build:
 
 ### `steps`
 
-Steps are used to describe a list of actions either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
+Steps are used to describe a list of actions, either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
 
 Each step is configured with the following properties:
 
@@ -173,7 +173,7 @@ build:
 
 #### `steps[].run.name`
 
-The name that is used in build logs to display the name of the step.
+The name used in build logs to display the name of the step.
 
 #### `steps[].run.command`
 
@@ -904,7 +904,7 @@ steps:
 
 #### `eas/checkout`
 
-Checks out you project source files.
+Checks out your project source files.
 
 For example, a workflow with the following `steps` will check out the project and list the files in the **assets** directory:
 
@@ -2037,7 +2037,7 @@ build:
 
 ## Override values in a `build`
 
-You can override values for following properties:
+You can override values for the following properties:
 
 - `working_directory`
 - `name`
