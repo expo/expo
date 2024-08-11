@@ -740,10 +740,10 @@ You can replace the `eas/build` command call by using these steps in your YAML c
 
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
 
-| Input       | Type     | Description                                                                                                                                                                                                                      |
-| ----------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flow_path` | `string` | Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run.                                                                                 |
-| `app_path`  | `string` | Path (or regex pattern) to the emulator/simulator app that should be tested. If not provided, it defaults to **android/app/build/outputs/\*\*/\*.apk** for Android and to **ios/build/Build/Products/simulator/\*.app** for iOS. |
+| Input       | Type     | Description                                                                                                                                                                                                                        |
+| ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flow_path` | `string` | Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run.                                                                                   |
+| `app_path`  | `string` | Path (or regex pattern) to the emulator/simulator app that should be tested. If not provided, it defaults to **android/app/build/outputs/\*\*/\*.apk** for Android and to **ios/build/Build/Products/\*simulator/\*.app** for iOS. |
 
 ```yaml build-and-test.yml
 build:
@@ -990,7 +990,7 @@ This function is automatically executed by the [`eas/build`](#easbuild) function
 
 #### `eas/resolve_apple_team_id_from_credentials`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Resolves the Apple team ID value based on build credentials provided in the `inputs.credentials`. The resolved Apple team ID is stored in the `outputs.apple_team_id` output value.
 
@@ -1067,7 +1067,7 @@ build:
 
 #### `eas/configure_eas_update`
 
-> **Warning** To use this function you need to have EAS Update configured for your project
+> **Warning** To use this function you need to have EAS Update configured for your project.
 
 Configures runtime version and release channel for your build.
 
@@ -1113,7 +1113,7 @@ build:
 
 #### `eas/inject_android_credentials`
 
-> **Warning** This function is only available for Android builds
+> **Warning** This function is only available for Android builds.
 
 Configures Android keystore with credentials on the builder and injects app signing config using these credentials into gradle config.
 
@@ -1143,7 +1143,7 @@ build:
 
 #### `eas/configure_ios_credentials`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Configures iOS credentials on the builder. Modifies the configuration of the Xcode project by assigning provisioning profiles to the targets.
 
@@ -1179,7 +1179,7 @@ build:
 
 #### `eas/configure_android_version`
 
-> **Warning** This function is only available for Android builds
+> **Warning** This function is only available for Android builds.
 
 Configures the version of your Android app. It's used to set a version when using [remote app version management](/build-reference/app-versions/).
 
@@ -1231,7 +1231,7 @@ build:
 
 #### `eas/configure_ios_version`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Configures the version of your iOS app. It's used to set a version when using [remote app version management](/build-reference/app-versions/).
 
@@ -1295,7 +1295,7 @@ build:
 
 #### `eas/run_gradle`
 
-> **Warning** This function is only available for Android builds
+> **Warning** This function is only available for Android builds.
 
 Runs a Gradle command to build an Android app.
 
@@ -1343,7 +1343,7 @@ build:
 
 #### `eas/generate_gymfile_from_template`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Generates a [`Gymfile`](https://docs.fastlane.tools/actions/gym/#gymfile) used to build the iOS app using Fastlane from a template.
 
@@ -1500,7 +1500,7 @@ build:
 
 #### `eas/run_fastlane`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Runs [`fastlane gym`](https://docs.fastlane.tools/actions/gym/#gym) command against the [`Gymfile`](https://docs.fastlane.tools/actions/gym/#gymfile) located in the `ios` project directory to build the iOS app.
 
