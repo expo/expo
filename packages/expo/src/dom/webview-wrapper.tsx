@@ -93,7 +93,6 @@ const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref)
           }
 
           const action = marshalProps[data.actionId];
-          // const fnName = `${data.actionId}(${data.args})`;
 
           const emitError = (error) => {
             emit({
@@ -106,7 +105,7 @@ const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref)
             });
           };
           const emitResolve = (result?: any) => {
-            // Send async results back to the webview proxy for return values.
+            // Send async results back to the DOM proxy for return values.
             emit({
               type: NATIVE_ACTION_RESULT,
               data: {

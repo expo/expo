@@ -22,7 +22,7 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
           return;
         }
 
-        const isUseWebview = path.node.directives.some(
+        const hasUseDomDirective = path.node.directives.some(
           (directive) => directive.value.value === 'use dom'
         );
 
@@ -34,7 +34,7 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
         }
 
         // File starts with "use dom" directive.
-        if (!isUseWebview) {
+        if (!hasUseDomDirective) {
           // Do nothing for code that isn't marked as a dom component.
           return;
         }

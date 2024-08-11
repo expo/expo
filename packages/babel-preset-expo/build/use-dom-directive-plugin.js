@@ -24,14 +24,14 @@ function expoUseDomDirectivePlugin(api) {
                 if (platform === 'web') {
                     return;
                 }
-                const isUseWebview = path.node.directives.some((directive) => directive.value.value === 'use dom');
+                const hasUseDomDirective = path.node.directives.some((directive) => directive.value.value === 'use dom');
                 const filePath = state.file.opts.filename;
                 if (!filePath) {
                     // This can happen in tests or systems that use Babel standalone.
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
                 // File starts with "use dom" directive.
-                if (!isUseWebview) {
+                if (!hasUseDomDirective) {
                     // Do nothing for code that isn't marked as a dom component.
                     return;
                 }
