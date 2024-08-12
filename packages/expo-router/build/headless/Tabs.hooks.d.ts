@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
 import { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabRouterOptions, TabNavigationState } from '@react-navigation/native';
+import { ReactNode } from 'react';
 import { ExpoTabsScreenOptions, TabNavigationEventMap } from './Tabs.common';
-import { Href } from '../types';
 import { TabTriggerOptions } from './Tabs.list';
+import { Href } from '../types';
 export type UseTabsOptions = Omit<DefaultNavigatorOptions<ParamListBase, TabNavigationState<any>, ExpoTabsScreenOptions, TabNavigationEventMap>, 'children'> & Omit<TabRouterOptions, 'initialRouteName'>;
 export type UseTabsWithChildrenOptions = UseTabsOptions & {
     children: ReactNode;
@@ -420,5 +420,5 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
     };
     NavigationContent: (props: any) => import("react").JSX.Element;
 };
-export type ExpoTabHrefs = Record<string, Omit<ExpoTabsScreenOptions, 'action'>> | Array<Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>]>;
+export type ExpoTabHrefs = Record<string, Omit<ExpoTabsScreenOptions, 'action'>> | (Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>])[];
 //# sourceMappingURL=Tabs.hooks.d.ts.map

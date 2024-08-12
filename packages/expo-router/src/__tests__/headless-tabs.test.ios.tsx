@@ -1,9 +1,10 @@
 import React from 'react';
 import { Text } from 'react-native';
+
 import { TabList, TabSlot, TabTrigger, Tabs } from '../headless';
-import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
+import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
 
 const render = (options: RenderRouterOptions = {}) =>
   renderRouter(

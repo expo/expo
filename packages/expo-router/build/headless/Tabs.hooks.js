@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useTabsWithTriggers = exports.useTabsWithChildren = void 0;
+const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const native_1 = require("@react-navigation/native");
 const Tabs_common_1 = require("./Tabs.common");
-const Route_1 = require("../Route");
-const href_1 = require("../link/href");
-const url_1 = require("../utils/url");
 const Tabs_list_1 = require("./Tabs.list");
 const Tabs_slot_1 = require("./Tabs.slot");
 const common_1 = require("./common");
+const Route_1 = require("../Route");
+const href_1 = require("../link/href");
+const url_1 = require("../utils/url");
 function useTabsWithChildren({ children, ...options }) {
     return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
 }
@@ -102,8 +102,7 @@ function parseTriggersFromChildren(children, screenTriggers = []) {
         if ((0, url_1.shouldLinkExternally)(href)) {
             return;
         }
-        screenTriggers.push({ href });
-        return;
+        return screenTriggers.push({ href });
     });
     return screenTriggers;
 }

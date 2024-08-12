@@ -1,4 +1,3 @@
-import { createContext, useContext } from 'react';
 import {
   BottomTabNavigationOptions,
   BottomTabNavigationConfig,
@@ -12,6 +11,7 @@ import {
   TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
+import { createContext } from 'react';
 
 export type ExpoTabsProps = DefaultNavigatorOptions<
   ParamListBase,

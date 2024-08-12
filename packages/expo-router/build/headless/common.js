@@ -22,7 +22,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName)
                     break;
             }
         }
-        let routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
+        const routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
         if (!routeNode) {
             continue;
         }

@@ -1,13 +1,4 @@
 import {
-  Fragment,
-  FunctionComponentElement,
-  isValidElement,
-  useContext,
-  Children,
-  ReactNode,
-} from 'react';
-import { Platform } from 'react-native';
-import {
   DefaultNavigatorOptions,
   LinkingContext,
   ParamListBase,
@@ -18,18 +9,28 @@ import {
   TabNavigationState,
 } from '@react-navigation/native';
 import {
+  Fragment,
+  FunctionComponentElement,
+  isValidElement,
+  useContext,
+  Children,
+  ReactNode,
+} from 'react';
+import { Platform } from 'react-native';
+
+import {
   ExpoTabsScreenOptions,
   TabNavigationEventMap,
   TabsDescriptorsContext,
   TabsStateContext,
 } from './Tabs.common';
+import { TabList, TabListProps, TabTrigger, TabTriggerOptions, TabTriggerProps } from './Tabs.list';
+import { TabSlot } from './Tabs.slot';
+import { triggersToScreens } from './common';
 import { useContextKey, useRouteNode } from '../Route';
 import { resolveHref } from '../link/href';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
-import { TabList, TabListProps, TabTrigger, TabTriggerOptions, TabTriggerProps } from './Tabs.list';
-import { TabSlot } from './Tabs.slot';
-import { triggersToScreens } from './common';
 
 export type UseTabsOptions = Omit<
   DefaultNavigatorOptions<
@@ -133,7 +134,7 @@ export function useTabsWithTriggers<T extends string | object>({
 
 export type ExpoTabHrefs =
   | Record<string, Omit<ExpoTabsScreenOptions, 'action'>>
-  | Array<Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>]>;
+  | (Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>])[];
 
 function isTabListOrFragment(
   child: ReactNode
@@ -184,8 +185,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    screenTriggers.push({ href });
-    return;
+    return screenTriggers.push({ href });
   });
 
   return screenTriggers;

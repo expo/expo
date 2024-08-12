@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import { StyleSheet, ViewProps, View } from 'react-native';
+
 import { UseTabsOptions, useTabsWithChildren } from './Tabs.hooks';
 
 export * from './Tabs.common';

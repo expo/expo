@@ -1,14 +1,13 @@
-import { createContext } from 'react';
-
 import { LinkingOptions, ParamListBase, createNavigatorFactory } from '@react-navigation/native';
+
 import { RouteNode } from '../Route';
 import { sortRoutesWithInitial } from '../sortRoutes';
+import { Href } from '../types';
 import {
   createGetIdForRoute,
   getQualifiedRouteComponent,
   screenOptionsFactory,
 } from '../useScreens';
-import { Href } from '../types';
 
 // `@react-navigation/core` does not expose the Screen or Group components directly, so we have to
 // do this hack.
@@ -51,7 +50,7 @@ export function triggersToScreens<T extends string | object>(
       }
     }
 
-    let routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
+    const routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
 
     if (!routeNode) {
       continue;

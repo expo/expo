@@ -1,8 +1,9 @@
 import { Slot } from '@radix-ui/react-slot';
 import { ComponentType, ReactNode } from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
-import { Link, LinkProps } from '../link/Link';
+
 import { ScreenTrigger } from './common';
+import { Link, LinkProps } from '../link/Link';
 
 export type TabTriggerOptions<T extends string | object> = ScreenTrigger<T>;
 
