@@ -1,7 +1,6 @@
 'use strict';
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
-import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
 
