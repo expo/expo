@@ -2,12 +2,8 @@ import Foundation
 import ExpoModulesCore
 
 internal final class FileSystemDirectory: FileSystemPath {
-  override init(url: URL) {
-    if url.hasDirectoryPath {
-      super.init(url: url)
-      return
-    }
-    super.init(url: url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent, isDirectory: true))
+  init(url: URL) {
+    super.init(url: url, isDirectory: true)
   }
   func create() throws {
     try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)

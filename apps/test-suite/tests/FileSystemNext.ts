@@ -43,14 +43,10 @@ export async function test({ describe, expect, it, ...t }) {
 
     it("Doesn't allow changing the path property", () => {
       const file = new File('file:///path/to/file');
-      if (Platform.OS === 'ios') {
-        expect(() => {
-          file.path = 'file:///new/path';
-        }).toThrow();
-      } else {
+      expect(() => {
+        // @ts-expect-error
         file.path = 'file:///new/path';
-        expect(file.path).toBe('file:///path/to/file');
-      }
+      }).toThrow();
     });
 
     describe('When a wrong class already exists', () => {

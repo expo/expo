@@ -90,7 +90,7 @@ export declare class File {
      */
     create(): void;
     /**
-     * Copies a directory.
+     * Copies a file.
      */
     copy(to: Directory | File): any;
     /**

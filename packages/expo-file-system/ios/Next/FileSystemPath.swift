@@ -4,34 +4,35 @@ import ExpoModulesCore
 internal class FileSystemPath: SharedObject {
   let url: URL
 
-  init(url: URL) {
-    self.url = url
+  init(url: URL, isDirectory: Bool) {
+    let standardizedUrl = url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent, isDirectory: isDirectory)
+    self.url = standardizedUrl
   }
 
   func delete() throws {
     try FileManager.default.removeItem(at: url)
   }
-  func copy(to: FileSystemPath) throws {
-    if to is FileSystemDirectory {
-      try FileManager.default.copyItem(at: url, to: to.url.appendingPathComponent(url.lastPathComponent))
+  func copy(to destination: FileSystemPath) throws {
+    if destination is FileSystemDirectory {
+      try FileManager.default.copyItem(at: url, to: destination.url.appendingPathComponent(url.lastPathComponent))
     }
-    if to is FileSystemFile {
+    if destination is FileSystemFile {
       guard !url.hasDirectoryPath else {
         throw CopyFolderToFileException()
       }
-      try FileManager.default.copyItem(at: url, to: to.url)
+      try FileManager.default.copyItem(at: url, to: destination.url)
     }
   }
 
-  func move(to: FileSystemPath) throws {
-    if to is FileSystemDirectory {
-      try FileManager.default.moveItem(at: url, to: to.url.appendingPathComponent(url.lastPathComponent))
+  func move(to destination: FileSystemPath) throws {
+    if destination is FileSystemDirectory {
+      try FileManager.default.moveItem(at: url, to: destination.url.appendingPathComponent(url.lastPathComponent))
     }
-    if to is FileSystemFile {
+    if destination is FileSystemFile {
       guard !url.hasDirectoryPath else {
         throw MoveFolderToFileException()
       }
-      try FileManager.default.moveItem(at: url, to: to.url)
+      try FileManager.default.moveItem(at: url, to: destination.url)
     }
   }
 }
