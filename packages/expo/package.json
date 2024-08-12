@@ -24,6 +24,7 @@
     "expo-module.config.json",
     "metro-config.js",
     "metro-config.d.ts",
+    "dom",
     "config.js",
     "config.d.ts",
     "config-plugins.js",
@@ -89,7 +90,17 @@
     "react-native": "0.75.0-rc.7"
   },
   "peerDependencies": {
+    "@expo/metro-runtime": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/metro-runtime": {
+      "optional": true
+    },
+    "react-native-webview": {
+      "optional": true
+    }
   }
 }
