@@ -1,14 +1,14 @@
 import { mergeClasses, SnackLogo } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
-import { useEffect, useRef, useState, PropsWithChildren, ReactElement, Children } from 'react';
+import { useEffect, useRef, useState, PropsWithChildren, ReactElement } from 'react';
 
 import { Snippet } from '../Snippet';
 import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 
+import { cleanCopyValue, findPropInChildren } from '~/common/code-utilities';
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
-import { cleanCopyValue } from '~/components/base/code';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
@@ -27,29 +27,6 @@ type Props = PropsWithChildren<{
   buttonTitle?: string;
   contentHidden?: boolean;
 }>;
-
-function findPropInChildren(element: ReactElement, propToFind: string): string | null {
-  if (!element || typeof element !== 'object') return null;
-
-  if (element.props && element.props[propToFind]) {
-    return element.props[propToFind];
-  }
-
-  if (element.props && element.props.children) {
-    const children = element.props.children;
-
-    if (Array.isArray(children)) {
-      for (const child of Children.toArray(children)) {
-        const wantedProp: string | null = findPropInChildren(child as ReactElement, propToFind);
-        if (wantedProp) return wantedProp;
-      }
-    } else {
-      return findPropInChildren(children as ReactElement, propToFind);
-    }
-  }
-
-  return null;
-}
 
 export const SnackInline = ({
   dependencies = [],
