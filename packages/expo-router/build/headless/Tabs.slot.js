@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultTabsSlotRender = exports.TabSlot = exports.useTabSlot = void 0;
+const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
@@ -26,24 +27,22 @@ function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'we
     </react_native_screens_1.ScreenContainer>);
 }
 exports.useTabSlot = useTabSlot;
-function TabSlot(props) {
-    return (<react_native_1.View style={{
-            flexGrow: 1,
-            flexShrink: 0,
-        }} {...props}>
-      {useTabSlot()}
-    </react_native_1.View>);
+function TabSlot({ options, asChild, ...props }) {
+    const Element = asChild ? react_slot_1.Slot : react_native_1.View;
+    return (<Element style={styles.flexBoxGrowOnly} {...props}>
+      {useTabSlot(options)}
+    </Element>);
 }
 exports.TabSlot = TabSlot;
 function defaultTabsSlotRender(descriptor, { isFocused, loaded }) {
     const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
-    // if (unmountOnBlur && !isFocused) {
-    //   return null;
-    // }
-    // if (lazy && !loaded && !isFocused) {
-    //   // Don't render a lazy screen if we've never navigated to it
-    //   return null;
-    // }
+    if (unmountOnBlur && !isFocused) {
+        return null;
+    }
+    if (lazy && !loaded && !isFocused) {
+        // Don't render a lazy screen if we've never navigated to it
+        return null;
+    }
     return (<react_native_screens_1.Screen key={descriptor.route.key} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
       <react_native_1.View style={styles.flexBoxGrowOnly}>{descriptor.render()}</react_native_1.View>
     </react_native_screens_1.Screen>);

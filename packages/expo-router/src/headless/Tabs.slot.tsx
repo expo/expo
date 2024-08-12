@@ -1,9 +1,10 @@
-import { useState, useContext } from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { ComponentType, useState, useContext } from 'react';
 import { View, Platform, ViewProps, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 import { TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './Tabs.common';
 
-export type UseTabsSlotOptions = {
+export type UseTabSlotOptions = {
   detachInactiveScreens?: boolean;
   renderFn?: typeof defaultTabsSlotRender;
 };
@@ -19,7 +20,7 @@ export function useTabSlot({
     Platform.OS === 'android' ||
     Platform.OS === 'ios',
   renderFn = defaultTabsSlotRender,
-}: UseTabsSlotOptions = {}) {
+}: UseTabSlotOptions = {}) {
   const state = useContext(TabsStateContext);
   const descriptors = useContext(TabsDescriptorsContext);
   const focusedRouteKey = state.routes[state.index].key;
@@ -42,16 +43,17 @@ export function useTabSlot({
   );
 }
 
-export function TabSlot(props: ViewProps) {
+export type TabSlotProps = ViewProps & {
+  asChild?: boolean;
+  options?: UseTabSlotOptions;
+};
+
+export function TabSlot({ options, asChild, ...props }: TabSlotProps) {
+  const Element: ComponentType<any> = asChild ? Slot : View;
   return (
-    <View
-      style={{
-        flexGrow: 1,
-        flexShrink: 0,
-      }}
-      {...props}>
-      {useTabSlot()}
-    </View>
+    <Element style={styles.flexBoxGrowOnly} {...props}>
+      {useTabSlot(options)}
+    </Element>
   );
 }
 
@@ -61,14 +63,14 @@ export function defaultTabsSlotRender(
 ) {
   const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
 
-  // if (unmountOnBlur && !isFocused) {
-  //   return null;
-  // }
+  if (unmountOnBlur && !isFocused) {
+    return null;
+  }
 
-  // if (lazy && !loaded && !isFocused) {
-  //   // Don't render a lazy screen if we've never navigated to it
-  //   return null;
-  // }
+  if (lazy && !loaded && !isFocused) {
+    // Don't render a lazy screen if we've never navigated to it
+    return null;
+  }
 
   return (
     <Screen
