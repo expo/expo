@@ -31,12 +31,12 @@ export async function test({ describe, expect, it, ...t }) {
       expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
     });
 
-    it('Accepts and correctly handles paths to files', async () => {
+    it('Accepts and correctly handles paths to files', () => {
       expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
       expect(new File('file:/path/to/file/').path).toBe('file:///path/to/file');
     });
 
-    it('Accepts and correctly handles paths to files', async () => {
+    it('Accepts and correctly handles paths to directories', () => {
       expect(new Directory('file:/path/to/file').path).toBe('file:///path/to/file/');
       expect(new Directory('file:/path/to/file/').path).toBe('file:///path/to/file/');
     });
