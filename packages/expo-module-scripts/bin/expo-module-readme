@@ -59,7 +59,10 @@ function generateREADME() {
 
   if (isIOS) {
     const podspecs = globSync('{ios/**/,}*.podspec');
-    const podspecPath = podspecs[0] ?? '';
+    if (!podspecs[0]) throw new Error(
+      `The Expo module named "${packageName}" contains an "ios" directory but does not define a Podspec, which is required for modules with iOS implementations.`
+    );
+    const podspecPath = podspecs[0];
     const podName = (() => {
       const parts = podspecPath.split('/');
       return parts[parts.length - 1].replace('.podspec', '');
