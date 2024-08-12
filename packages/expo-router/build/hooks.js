@@ -33,6 +33,7 @@ function useRouter() {
         canDismiss: router_store_1.store.canDismiss,
         back: router_store_1.store.goBack,
         replace: router_store_1.store.replace,
+        switch: router_store_1.store.switch,
         setParams: router_store_1.store.setParams,
         canGoBack: router_store_1.store.canGoBack,
         navigate: router_store_1.store.navigate,

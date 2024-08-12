@@ -33,6 +33,7 @@ export function useRouter(): Router {
       canDismiss: store.canDismiss,
       back: store.goBack,
       replace: store.replace,
+      switch: store.switch,
       setParams: store.setParams,
       canGoBack: store.canGoBack,
       navigate: store.navigate,
