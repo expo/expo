@@ -62,6 +62,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725",
     "expo-module-scripts": "^3.3.0",
     "jest": "^29.2.1"
   }
