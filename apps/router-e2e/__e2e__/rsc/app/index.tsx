@@ -1,3 +1,4 @@
+import 'server-only';
 import { View, Image, Text, Button } from '../lib/react-native';
 
 export default function Page() {
