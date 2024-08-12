@@ -50,17 +50,11 @@ export type RenderRscArgs = {
 
 type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
 
-type RenderRscOpts =
-  | {
-      isExporting: true;
-      entries: EntriesPrd;
-      resolveClientEntry?: ResolveClientEntry;
-    }
-  | {
-      isExporting: false;
-      entries: EntriesDev;
-      resolveClientEntry: ResolveClientEntry;
-    };
+type RenderRscOpts = {
+  isExporting: boolean;
+  entries: EntriesDev;
+  resolveClientEntry: ResolveClientEntry;
+};
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
   const { searchParams, method, input, body, contentType, context } = args;
@@ -91,23 +85,20 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
 
-        // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
-        // This is similar to how we handle lazy bundling.
-        if (resolveClientEntry) {
-          const resolved = resolveClientEntry(filePath);
-          return { id: resolved.id, chunks: resolved.chunks, name, async: true };
-        }
-
-        return {
-          // TODO: Make relative to server root for production exports.
+        args.moduleIdCallback?.({
           id: filePath,
           chunks: [
             // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+            // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
             'chunk:' + filePath,
           ],
           name,
           async: true,
-        };
+        });
+        // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
+        // This is similar to how we handle lazy bundling.
+        const resolved = resolveClientEntry(filePath);
+        return { id: resolved.id, chunks: resolved.chunks, name, async: true };
       },
     }
   );

@@ -42,6 +42,7 @@
     "public/static/data",
     "public/static/diffs",
     "public/static/examples",
-    "public/static/libs"
+    "public/static/libs",
+    "out"
   ]
 }

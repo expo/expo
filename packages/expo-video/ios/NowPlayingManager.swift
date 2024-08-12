@@ -168,6 +168,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
       nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
       nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
@@ -177,11 +178,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
-    if #available(iOS 15.0, tvOS 15.0, *) {
-      return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
-    }
-
-    return mediaItem.asset.metadata
+    return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress

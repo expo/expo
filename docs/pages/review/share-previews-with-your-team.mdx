@@ -1,0 +1,37 @@
+---
+title: Share previews with your team
+description: Share previews of your app with your team by publishing updates on branches.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+Once you've made changes on a branch, you can share them with your team by publishing an update. This allows you to get feedback on your changes during review.
+
+## Publish a preview of your changes
+
+You can publish a preview of your current changes by running the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas update --auto']} />
+
+This command will publish an update under the current branch name.
+
+## Share with your team
+
+Once the preview is published, you'll see output like this in the terminal window:
+
+<Terminal
+  cmd={[
+    '✔ Published!',
+    '',
+    '...',
+    'EAS Dashboard      https://expo.dev/accounts/your-account/projects/your-project/updates/708b05d8-9bcf-4212-a052-ce40583b04fd',
+  ]}
+/>
+
+Share the **EAS dashboard** link with a reviewer. After opening the link, they can click on the **Preview** button. They will see a QR code that they can scan to open the preview on their device.
+
+<ContentSpotlight
+  alt="Preview update QR code UI on expo.dev."
+  src="/static/images/eas-update/preview-updates-qr-code.png"
+/>

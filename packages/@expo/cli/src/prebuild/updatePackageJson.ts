@@ -66,9 +66,9 @@ export async function updatePackageJSONAsync(
  * 3. Update `package.json` `main`.
  *
  * @param projectRoot The root directory of the project.
- * @param props.templatePkg Template project package.json as JSON.
- * @param props.pkg Current package.json as JSON.
- * @param props.skipDependencyUpdate Array of dependencies to skip updating.
+ * @param templatePkg Template project package.json as JSON.
+ * @param pkg Current package.json as JSON.
+ * @param skipDependencyUpdate Array of dependencies to skip updating.
  * @returns
  */
 function modifyPackageJson(
@@ -239,19 +239,27 @@ export function createDependenciesMap(dependencies: any): DependenciesMap {
 }
 
 /**
- * Update package.json scripts - `npm start` should default to `expo
- * start --dev-client` rather than `expo start` after prebuilding, for example.
+ * Updates the package.json scripts for prebuild if the scripts match
+ * the default values used in project templates.
  */
-function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
+export function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
   let hasChanged = false;
   if (!pkg.scripts) {
     pkg.scripts = {};
   }
-  if (!pkg.scripts.android?.includes('run')) {
+  if (
+    !pkg.scripts.android ||
+    pkg.scripts.android === 'expo start --android' ||
+    pkg.scripts.android === 'react-native run-android'
+  ) {
     pkg.scripts.android = 'expo run:android';
     hasChanged = true;
   }
-  if (!pkg.scripts.ios?.includes('run')) {
+  if (
+    !pkg.scripts.ios ||
+    pkg.scripts.ios === 'expo start --ios' ||
+    pkg.scripts.ios === 'react-native run-ios'
+  ) {
     pkg.scripts.ios = 'expo run:ios';
     hasChanged = true;
   }

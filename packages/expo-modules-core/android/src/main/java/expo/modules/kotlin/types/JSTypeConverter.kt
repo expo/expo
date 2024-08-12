@@ -54,7 +54,11 @@ object JSTypeConverter {
     }
   }
 
-  fun convertToJSValue(value: Any?, containerProvider: ContainerProvider = DefaultContainerProvider): Any? {
+  fun convertToJSValue(
+    value: Any?,
+    containerProvider: ContainerProvider = DefaultContainerProvider,
+    useExperimentalConverter: Boolean = false
+  ): Any? {
     return when (value) {
       null, is Unit -> null
       is Bundle -> value.toJSValue(containerProvider)
@@ -71,6 +75,11 @@ object JSTypeConverter {
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
       is RawTypedArrayHolder -> value.rawArray
+      is List<*> -> if (useExperimentalConverter) {
+        value.toJSValue()
+      } else {
+        value.toJSValue(containerProvider)
+      }
       is Iterable<*> -> value.toJSValue(containerProvider)
       else -> value
     }

@@ -1,8 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useTheme } from 'ThemeProvider';
 import React from 'react';
 import { Platform } from 'react-native';
-
-import { Colors } from '../constants';
 
 type Props = {
   name: string;
@@ -11,7 +10,8 @@ type Props = {
 };
 
 const TabIcon = ({ size = 27, name, focused }: Props) => {
-  const color = focused ? Colors.tabIconSelected : Colors.tabIconDefault;
+  const { theme } = useTheme();
+  const color = focused ? theme.icon.info : theme.icon.default;
   const platformSize = Platform.select({
     ios: size,
     default: size - 2,

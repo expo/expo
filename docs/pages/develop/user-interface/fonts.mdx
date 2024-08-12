@@ -37,7 +37,7 @@ If the font you're using have both OTF and TTF versions, prefer OTF. The **.otf*
 
 Copy the file into your project's **assets/fonts** directory.
 
-> **info** **assets/fonts** directory path is a common convention in React Native apps to put font files. You can place these files if elsewhere if you follow a custom convention.
+> **info** **assets/fonts** directory path is a common convention in React Native apps to put font files. You can place these files elsewhere if you follow a custom convention.
 
 Two ways to use the local font file your project:
 
@@ -399,7 +399,7 @@ Now, you can any icon from the `Ionicons` library in a React component:
 
 > **warning** **If you're loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
 
-Loading fronts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
+Loading fonts from a local asset is the safest way to load a font in your app. When including fonts as local assets, after you submit your app to the app stores, these fonts are bundled with the app download and will be available immediately. You don't have to worry about CORS or other potential issues.
 
 However, loading a font file directly from web is done by replacing the `require('./assets/fonts/FontName.otf')` with the URL of your font as shown in the example below.
 

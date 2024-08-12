@@ -155,6 +155,7 @@ export function getMetroDirectBundleOptions(
     usedExports,
     reactCompiler,
     optimize,
+    clientBoundaries,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -191,6 +192,7 @@ export function getMetroDirectBundleOptions(
       __proto__: null,
       optimize: optimize || undefined,
       engine,
+      clientBoundaries,
       preserveEnvVars: preserveEnvVars || undefined,
       // Use string to match the query param behavior.
       asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,

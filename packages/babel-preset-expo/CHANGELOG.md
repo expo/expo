@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
@@ -20,7 +21,7 @@
 
 ### ⚠️ Notices
 
-- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 11.0.12 - 2024-07-03
 

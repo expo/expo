@@ -19,7 +19,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
   private var photoCaptureOptions: TakePictureOptions?
-  private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
   private var physicalOrientation: UIDeviceOrientation = .unknown
   private var motionManager: CMMotionManager = {
@@ -90,6 +89,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   var isMuted = false {
     didSet {
       updateSessionAudioIsMuted()
+    }
+  }
+
+  var active = true {
+    didSet {
+      updateCameraIsActive()
     }
   }
 
@@ -555,12 +560,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     sessionQueue.async {
       if let videoFileOutput = self.videoFileOutput, !videoFileOutput.isRecording && self.videoRecordedPromise == nil {
         if let connection = videoFileOutput.connection(with: .video) {
-          if !connection.isVideoStabilizationSupported {
-            log.warn("\(#function): Video Stabilization is not supported on this device.")
+          if connection.isVideoStabilizationSupported {
+            connection.preferredVideoStabilizationMode = .auto
           } else {
-            if let videoStabilizationMode = self.videoStabilizationMode {
-              connection.preferredVideoStabilizationMode = videoStabilizationMode
-            }
+            log.warn("\(#function): Video Stabilization is not supported on this device.")
           }
 
           let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
@@ -684,6 +687,19 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     super.removeFromSuperview()
   }
 
+  func updateCameraIsActive() {
+    if self.session.isRunning == active {
+      return
+    }
+    sessionQueue.async {
+      if self.active {
+        self.session.startRunning()
+      } else {
+        self.session.stopRunning()
+      }
+    }
+  }
+
   public func fileOutput(
     _ output: AVCaptureFileOutput,
     didFinishRecordingTo outputFileURL: URL,
@@ -781,7 +797,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.session.commitConfiguration()
 
       self.motionManager.stopAccelerometerUpdates()
-      self.session.stopRunning()
+      if self.session.isRunning {
+        self.session.stopRunning()
+      }
     }
   }
 

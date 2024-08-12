@@ -47,10 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
   if (activityType >= CLActivityTypeOther && activityType <= CLActivityTypeOtherNavigation) {
     return activityType;
   }
-  if (@available(iOS 12.0, *)) {
-    if (activityType == CLActivityTypeAirborne) {
-      return activityType;
-    }
+  if (activityType == CLActivityTypeAirborne) {
+    return activityType;
   }
   return CLActivityTypeOther;
 }

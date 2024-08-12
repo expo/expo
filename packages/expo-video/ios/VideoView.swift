@@ -22,9 +22,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   #else
   var startPictureInPictureAutomatically = false {
     didSet {
-      if #available(iOS 14.2, *) {
-        playerViewController.canStartPictureInPictureAutomaticallyFromInline = startPictureInPictureAutomatically
-      }
+      playerViewController.canStartPictureInPictureAutomaticallyFromInline = startPictureInPictureAutomatically
     }
   }
   #endif
@@ -32,10 +30,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   var allowPictureInPicture: Bool = false {
     didSet {
       // PiP requires `.playback` audio session category in `.moviePlayback` mode
-      if #available(iOS 13.4, tvOS 14.0, *) {
-        VideoManager.shared.setAppropriateAudioSessionOrWarn()
-          playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
-      }
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
+      playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
     }
   }
 
@@ -47,13 +43,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       playerViewController.view.frame = self.bounds
     }
   }
-
-  lazy var supportsPictureInPicture: Bool = {
-    if #available(iOS 13.4, tvOS 14.0, *) {
-      return AVPictureInPictureController.isPictureInPictureSupported()
-    }
-    return false
-  }()
 
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -111,7 +100,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   func startPictureInPicture() throws {
-    if !supportsPictureInPicture {
+    if !AVPictureInPictureController.isPictureInPictureSupported() {
       throw PictureInPictureUnsupportedException()
     }
 

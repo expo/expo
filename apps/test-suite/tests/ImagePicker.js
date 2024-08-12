@@ -79,7 +79,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
           } catch ({ code }) {
             err = code;
           }
-          expect(err).toBe('CAMERA_MISSING');
+          expect(err).toBe('ERR_CAMERA_UNAVAILABLE_ON_SIMULATOR');
         });
       }
     });

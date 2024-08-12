@@ -261,3 +261,39 @@ it(`adds dynamic route params from all levels of the path`, () => {
     ],
   });
 });
+
+it(`handles query params`, () => {
+  expect(
+    getStateFromPath('/?test=true&hello=world&array=1&array=2', getMockConfig(['index.tsx']))
+  ).toEqual({
+    routes: [
+      {
+        name: 'index',
+        params: {
+          test: 'true',
+          hello: 'world',
+          array: ['1', '2'],
+        },
+        path: '/?test=true&hello=world&array=1&array=2',
+      },
+    ],
+  });
+});
+
+it(`handles query params`, () => {
+  expect(
+    getStateFromPath('/?test=true&hello=world&array=1&array=2', getMockConfig(['index.tsx']))
+  ).toEqual({
+    routes: [
+      {
+        name: 'index',
+        params: {
+          test: 'true',
+          hello: 'world',
+          array: ['1', '2'],
+        },
+        path: '/?test=true&hello=world&array=1&array=2',
+      },
+    ],
+  });
+});

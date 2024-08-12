@@ -4,7 +4,7 @@ import assert from 'assert';
 import crypto from 'crypto';
 import fs from 'fs';
 import slugify from 'slugify';
-import { PassThrough, Stream } from 'stream';
+import { PassThrough, Readable, Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
@@ -130,11 +130,11 @@ export type ExtractProps = {
 
 async function createUrlStreamAsync(url: string) {
   const response = await cachedFetch(url);
-  if (!response.ok) {
+  if (!response.ok || !response.body) {
     throw new Error(`Unexpected response: ${response.statusText}. From url: ${url}`);
   }
 
-  return response.body;
+  return Readable.fromWeb(response.body);
 }
 
 export async function extractNpmTarballFromUrlAsync(

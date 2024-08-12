@@ -15,6 +15,13 @@ class SyncFunctionComponent(
   desiredArgsTypes: Array<AnyType>,
   private val body: (args: Array<out Any?>) -> Any?
 ) : AnyFunction(name, desiredArgsTypes) {
+  private var shouldUseExperimentalConverter = false
+
+  @Suppress("FunctionName")
+  fun UseExperimentalConverter(shouldUse: Boolean = true) = apply {
+    shouldUseExperimentalConverter = shouldUse
+  }
+
   @Throws(CodedException::class)
   fun call(args: ReadableArray): Any? {
     return body(convertArgs(args))
@@ -30,7 +37,7 @@ class SyncFunctionComponent(
         FunctionCallException(name, moduleName, it)
       }) {
         val result = call(args, appContext)
-        return@exceptionDecorator JSTypeConverter.convertToJSValue(result)
+        return@exceptionDecorator JSTypeConverter.convertToJSValue(result, useExperimentalConverter = shouldUseExperimentalConverter)
       }
     }
   }
