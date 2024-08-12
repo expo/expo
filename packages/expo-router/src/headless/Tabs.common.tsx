@@ -52,15 +52,16 @@ export type TabsContextValue = ReturnType<
   >
 >;
 
-export const TabsContext = createContext<TabsContextValue | null>(null);
-
-export function useTabsContext() {
-  const tabsContext = useContext(TabsContext);
-  if (!tabsContext) {
-    throw new Error('useBuilderContext used');
-  }
-  return tabsContext;
-}
+export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
+export const TabsStateContext = createContext<TabsContextValue['state']>({
+  type: 'tab',
+  history: [],
+  index: -1,
+  key: '',
+  stale: false,
+  routeNames: [],
+  routes: [],
+});
 
 export type Route = TabNavigationState<ParamListBase>['routes'][number];
 export type TabsDescriptor = TabsContextValue['descriptors'][number];

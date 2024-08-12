@@ -15,26 +15,19 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tabs = void 0;
-const react_1 = require("react");
 const react_native_1 = require("react-native");
-const Tabs_common_1 = require("./Tabs.common");
 const Tabs_hooks_1 = require("./Tabs.hooks");
 __exportStar(require("./Tabs.common"), exports);
 __exportStar(require("./Tabs.hooks"), exports);
 __exportStar(require("./Tabs.list"), exports);
 __exportStar(require("./Tabs.slot"), exports);
 function Tabs({ children, options, ...props }) {
-    const { NavigationContent, state, descriptors, navigation } = (0, Tabs_hooks_1.useTabsWithChildren)({
+    const { NavigationContent } = (0, Tabs_hooks_1.useTabsWithChildren)({
         children,
         ...options,
     });
-    const a = (0, react_1.useMemo)(() => {
-        return { state, descriptors, NavigationContent, navigation };
-    }, [state, descriptors, NavigationContent, navigation]);
     return (<react_native_1.View style={styles.tabsRoot} {...props}>
-      <Tabs_common_1.TabsContext.Provider value={a}>
-        <NavigationContent>{children}</NavigationContent>
-      </Tabs_common_1.TabsContext.Provider>
+      <NavigationContent>{children}</NavigationContent>
     </react_native_1.View>);
 }
 exports.Tabs = Tabs;

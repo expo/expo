@@ -4,6 +4,7 @@ exports.useTabsWithTriggers = exports.useTabsWithChildren = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("@react-navigation/native");
+const Tabs_common_1 = require("./Tabs.common");
 const Route_1 = require("../Route");
 const href_1 = require("../link/href");
 const url_1 = require("../utils/url");
@@ -60,14 +61,14 @@ function useTabsWithTriggers({ triggers, ...options }) {
             },
         ];
     }));
-    // const newNavigationContent = (props) => {
-    //   return (
-    //     <TabsContext.Provider value={{ state, descriptors, navigation, NavigationContent }}>
-    //       <NavigationContent {...props} />
-    //     </TabsContext.Provider>
-    //   );
-    // };
-    return { state, descriptors, navigation, routes, NavigationContent };
+    const navigationContent = (props) => {
+        return (<Tabs_common_1.TabsDescriptorsContext.Provider value={descriptors}>
+        <Tabs_common_1.TabsStateContext.Provider value={state}>
+          <NavigationContent {...props}/>
+        </Tabs_common_1.TabsStateContext.Provider>
+      </Tabs_common_1.TabsDescriptorsContext.Provider>);
+    };
+    return { state, descriptors, navigation, routes, NavigationContent: navigationContent };
 }
 exports.useTabsWithTriggers = useTabsWithTriggers;
 function isTabListOrFragment(child) {

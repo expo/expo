@@ -3,10 +3,8 @@ import {
   FunctionComponentElement,
   isValidElement,
   useContext,
-  useMemo,
   Children,
   ReactNode,
-  useCallback,
 } from 'react';
 import { Platform } from 'react-native';
 import {
@@ -19,7 +17,12 @@ import {
   useNavigationBuilder,
   TabNavigationState,
 } from '@react-navigation/native';
-import { TabsContext, ExpoTabsScreenOptions, TabNavigationEventMap } from './Tabs.common';
+import {
+  ExpoTabsScreenOptions,
+  TabNavigationEventMap,
+  TabsDescriptorsContext,
+  TabsStateContext,
+} from './Tabs.common';
 import { useContextKey, useRouteNode } from '../Route';
 import { resolveHref } from '../link/href';
 import { Href } from '../types';
@@ -115,15 +118,17 @@ export function useTabsWithTriggers<T extends string | object>({
     })
   );
 
-  // const newNavigationContent = (props) => {
-  //   return (
-  //     <TabsContext.Provider value={{ state, descriptors, navigation, NavigationContent }}>
-  //       <NavigationContent {...props} />
-  //     </TabsContext.Provider>
-  //   );
-  // };
+  const navigationContent = (props) => {
+    return (
+      <TabsDescriptorsContext.Provider value={descriptors}>
+        <TabsStateContext.Provider value={state}>
+          <NavigationContent {...props} />
+        </TabsStateContext.Provider>
+      </TabsDescriptorsContext.Provider>
+    );
+  };
 
-  return { state, descriptors, navigation, routes, NavigationContent };
+  return { state, descriptors, navigation, routes, NavigationContent: navigationContent };
 }
 
 export type ExpoTabHrefs =

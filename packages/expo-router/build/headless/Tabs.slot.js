@@ -8,7 +8,8 @@ const Tabs_common_1 = require("./Tabs.common");
 function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
     react_native_1.Platform.OS === 'android' ||
     react_native_1.Platform.OS === 'ios', renderFn = defaultTabsSlotRender, } = {}) {
-    const { state, descriptors } = (0, Tabs_common_1.useTabsContext)();
+    const state = (0, react_1.useContext)(Tabs_common_1.TabsStateContext);
+    const descriptors = (0, react_1.useContext)(Tabs_common_1.TabsDescriptorsContext);
     const focusedRouteKey = state.routes[state.index].key;
     const [loaded, setLoaded] = (0, react_1.useState)({ [focusedRouteKey]: true });
     if (!loaded[focusedRouteKey]) {

@@ -1,14 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useTabsContext = exports.TabsContext = void 0;
+exports.TabsStateContext = exports.TabsDescriptorsContext = void 0;
 const react_1 = require("react");
-exports.TabsContext = (0, react_1.createContext)(null);
-function useTabsContext() {
-    const tabsContext = (0, react_1.useContext)(exports.TabsContext);
-    if (!tabsContext) {
-        throw new Error('useBuilderContext used');
-    }
-    return tabsContext;
-}
-exports.useTabsContext = useTabsContext;
+exports.TabsDescriptorsContext = (0, react_1.createContext)({});
+exports.TabsStateContext = (0, react_1.createContext)({
+    type: 'tab',
+    history: [],
+    index: -1,
+    key: '',
+    stale: false,
+    routeNames: [],
+    routes: [],
+});
 //# sourceMappingURL=Tabs.common.js.map

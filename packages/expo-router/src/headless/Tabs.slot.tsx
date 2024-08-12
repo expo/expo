@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { View, Platform, ViewProps, StyleSheet } from 'react-native';
-import { NavigationContext, NavigationRouteContext } from '@react-navigation/native';
 import { ScreenContainer, Screen } from 'react-native-screens';
-import { Route, TabsDescriptor, useTabsContext } from './Tabs.common';
+import { TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './Tabs.common';
 
 export type UseTabsSlotOptions = {
   detachInactiveScreens?: boolean;
@@ -21,7 +20,8 @@ export function useTabSlot({
     Platform.OS === 'ios',
   renderFn = defaultTabsSlotRender,
 }: UseTabsSlotOptions = {}) {
-  const { state, descriptors } = useTabsContext();
+  const state = useContext(TabsStateContext);
+  const descriptors = useContext(TabsDescriptorsContext);
   const focusedRouteKey = state.routes[state.index].key;
   const [loaded, setLoaded] = useState({ [focusedRouteKey]: true });
 

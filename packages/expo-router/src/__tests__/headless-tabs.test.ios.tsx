@@ -58,30 +58,25 @@ const render = (options: RenderRouterOptions = {}) =>
     options
   );
 
-it.only('should render the correct screen with nested navigators', () => {
+it('should render the correct screen with nested navigators', () => {
   render({ initialUrl: '/apple' });
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
   fireEvent.press(screen.getByTestId('goto-banana'));
-  // expect(screen).toHaveSegments(['(group)', 'banana']);
-  // act(() => router.push('/banana/color'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'color']);
-  // act(() => router.push('/banana/shape'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  expect(screen).toHaveSegments(['(group)', 'banana']);
+  act(() => router.push('/banana/color'));
+  expect(screen).toHaveSegments(['(group)', 'banana', 'color']);
+  act(() => router.push('/banana/shape'));
+  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 
-  // fireEvent.press(screen.getByTestId('goto-orange'));
-  // expect(screen).toHaveSegments(['(group)', 'orange']);
-  // act(() => router.push('/orange/color'));
-  // expect(screen).toHaveSegments(['(group)', 'orange', 'color']);
+  fireEvent.press(screen.getByTestId('goto-orange'));
+  expect(screen).toHaveSegments(['(group)', 'orange']);
+  act(() => router.push('/orange/color'));
+  expect(screen).toHaveSegments(['(group)', 'orange', 'color']);
 
   // Banana should retain its state
-  // fireEvent.press(screen.getByTestId('goto-banana'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
-
-  // act(() => router.replace('/banana/color'));
-
-  expect(screen).toHaveRouterState({});
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  fireEvent.press(screen.getByTestId('goto-banana'));
+  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 });
 
 it('should respect `unstable_settings', () => {

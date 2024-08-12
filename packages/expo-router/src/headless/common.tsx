@@ -1,3 +1,5 @@
+import { createContext } from 'react';
+
 import { LinkingOptions, ParamListBase, createNavigatorFactory } from '@react-navigation/native';
 import { RouteNode } from '../Route';
 import { sortRoutesWithInitial } from '../sortRoutes';
