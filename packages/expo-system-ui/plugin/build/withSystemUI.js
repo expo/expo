@@ -6,7 +6,6 @@ const withAndroidGradleEdgeToEdgeProperty_1 = require("./withAndroidGradleEdgeTo
 const withAndroidRootViewBackgroundColor_1 = require("./withAndroidRootViewBackgroundColor");
 const withAndroidUserInterfaceStyle_1 = require("./withAndroidUserInterfaceStyle");
 const withIosRootViewBackgroundColor_1 = require("./withIosRootViewBackgroundColor");
-const withIosStatusBarStyle_1 = require("./withIosStatusBarStyle");
 const withIosUserInterfaceStyle_1 = require("./withIosUserInterfaceStyle");
 const pkg = require('expo-system-ui/package.json');
 const withSystemUI = (config) => {
@@ -17,7 +16,6 @@ const withSystemUI = (config) => {
         withIosUserInterfaceStyle_1.withIosUserInterfaceStyle,
         withAndroidEdgeToEdgeTheme_1.withAndroidEdgeToEdgeTheme,
         withAndroidGradleEdgeToEdgeProperty_1.withAndroidGradleEdgeToEdgeProperty,
-        withIosStatusBarStyle_1.withIosStatusBarStyle,
     ]);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withSystemUI, pkg.name, pkg.version);

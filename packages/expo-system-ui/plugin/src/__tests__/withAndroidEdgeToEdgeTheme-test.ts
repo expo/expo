@@ -31,53 +31,6 @@ describe(withAndroidEdgeToEdgeTheme, () => {
 
     expect(modResults.resources.style?.at(0)).toStrictEqual({
       $: { name: 'AppTheme', parent: 'Theme.EdgeToEdge' },
-      item: [],
-    });
-  });
-
-  it(`adds windowLightSystemBars if userInterfaceStyle is set`, async () => {
-    const { modResults: lightModResults } = await compileMockModWithResultsAsync(
-      {
-        userInterfaceStyle: 'light',
-        experiments: { edgeToEdge: true },
-      },
-      {
-        plugin: withAndroidEdgeToEdgeTheme,
-        mod: withAndroidStyles,
-        modResults: (await parseXMLAsync(`
-<resources>
-  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-  </style>
-</resources>
-`)) as AndroidConfig.Resources.ResourceXML,
-      }
-    );
-
-    expect(lightModResults.resources.style?.at(0)).toStrictEqual({
-      $: { name: 'AppTheme', parent: 'Theme.EdgeToEdge' },
-      item: [{ $: { name: 'windowLightSystemBars' }, _: 'true' }],
-    });
-
-    const { modResults: darkModResults } = await compileMockModWithResultsAsync(
-      {
-        userInterfaceStyle: 'dark',
-        experiments: { edgeToEdge: true },
-      },
-      {
-        plugin: withAndroidEdgeToEdgeTheme,
-        mod: withAndroidStyles,
-        modResults: (await parseXMLAsync(`
-<resources>
-  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-  </style>
-</resources>
-`)) as AndroidConfig.Resources.ResourceXML,
-      }
-    );
-
-    expect(darkModResults.resources.style?.at(0)).toStrictEqual({
-      $: { name: 'AppTheme', parent: 'Theme.EdgeToEdge' },
-      item: [{ $: { name: 'windowLightSystemBars' }, _: 'false' }],
     });
   });
 
@@ -116,7 +69,7 @@ describe(withAndroidEdgeToEdgeTheme, () => {
         modResults: (await parseXMLAsync(`
 <resources>
   <style name="AppTheme" parent="Theme.EdgeToEdge">
-    <item name="windowLightSystemBars">true</item>
+    <item name="colorPrimary">@color/colorPrimary</item>
   </style>
 </resources>
 `)) as AndroidConfig.Resources.ResourceXML,
@@ -125,7 +78,7 @@ describe(withAndroidEdgeToEdgeTheme, () => {
 
     expect(modResults.resources.style?.at(0)).toStrictEqual({
       $: { name: 'AppTheme', parent: 'Theme.AppCompat.Light.NoActionBar' },
-      item: [],
+      item: [{ _: '@color/colorPrimary', $: { name: 'colorPrimary' } }],
     });
   });
 });

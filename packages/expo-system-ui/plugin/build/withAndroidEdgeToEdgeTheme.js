@@ -3,29 +3,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withAndroidEdgeToEdgeTheme = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const withAndroidEdgeToEdgeTheme = (config) => {
+    const ignoreList = new Set([
+        'android:enforceNavigationBarContrast',
+        'android:enforceStatusBarContrast',
+        'android:fitsSystemWindows',
+        'android:navigationBarColor',
+        'android:statusBarColor',
+        'android:windowDrawsSystemBarBackgrounds',
+        'android:windowLayoutInDisplayCutoutMode',
+        'android:windowLightNavigationBar',
+        'android:windowLightStatusBar',
+        'android:windowTranslucentNavigation',
+        'android:windowTranslucentStatus',
+    ]);
     return (0, config_plugins_1.withAndroidStyles)(config, (config) => {
-        const { experiments = {}, userInterfaceStyle = 'automatic' } = config;
+        const { experiments = {} } = config;
         const { edgeToEdge = false } = experiments;
         config.modResults.resources.style = config.modResults.resources.style?.map((style) => {
             if (style.$.name === 'AppTheme') {
                 style.$.parent = edgeToEdge ? 'Theme.EdgeToEdge' : 'Theme.AppCompat.Light.NoActionBar';
-                style.item = (style.item ?? []).filter((item) => {
-                    if (item.$.name === 'windowLightSystemBars') {
-                        return false;
-                    }
-                    if (!edgeToEdge) {
-                        return true;
-                    }
-                    return (item.$.name !== 'android:statusBarColor' &&
-                        item.$.name !== 'android:windowLightStatusBar' &&
-                        item.$.name !== 'android:navigationBarColor' &&
-                        item.$.name !== 'android:windowLightNavigationBar');
-                });
-                if (edgeToEdge && userInterfaceStyle !== 'automatic') {
-                    style.item.push({
-                        $: { name: 'windowLightSystemBars' },
-                        _: String(userInterfaceStyle === 'light'),
-                    });
+                if (style.item != null && edgeToEdge) {
+                    style.item = style.item.filter((item) => !ignoreList.has(item.$.name));
                 }
             }
             return style;

@@ -5,7 +5,6 @@ import { withAndroidGradleEdgeToEdgeProperty } from './withAndroidGradleEdgeToEd
 import { withAndroidRootViewBackgroundColor } from './withAndroidRootViewBackgroundColor';
 import { withAndroidUserInterfaceStyle } from './withAndroidUserInterfaceStyle';
 import { withIosRootViewBackgroundColor } from './withIosRootViewBackgroundColor';
-import { withIosStatusBarStyle } from './withIosStatusBarStyle';
 import { withIosUserInterfaceStyle } from './withIosUserInterfaceStyle';
 
 const pkg = require('expo-system-ui/package.json');
@@ -18,7 +17,6 @@ const withSystemUI: ConfigPlugin = (config) => {
     withIosUserInterfaceStyle,
     withAndroidEdgeToEdgeTheme,
     withAndroidGradleEdgeToEdgeProperty,
-    withIosStatusBarStyle,
   ]);
 };
 
