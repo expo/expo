@@ -74,7 +74,7 @@ import { WebView } from 'expo/dom/internal';`,
                 else {
                     proxyModule.push(
                     // Add the basename to improve the Safari debug preview option.
-                    `const source = { uri: new URL("/_expo/@dom/${(0, path_1.basename)(filePath)}?file=" + ${JSON.stringify(outputKey)}, window.location.href).toString() };`);
+                    `const source = { uri: new URL("/_expo/@dom/${(0, path_1.basename)(filePath)}?file=" + ${JSON.stringify(outputKey)}, require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString() };`);
                 }
                 proxyModule.push(`
 export default React.forwardRef((props, ref) => {

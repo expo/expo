@@ -77,7 +77,7 @@ export default function App() {
       "import React from 'react';
       import { WebView } from 'expo/dom/internal';
       var source = {
-        uri: new URL("/_expo/@dom/unknown?file=" + "file:///unknown", window.location.href).toString()
+        uri: new URL("/_expo/@dom/unknown?file=" + "file:///unknown", require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString()
       };
       export default React.forwardRef(function (props, ref) {
         return React.createElement(WebView, Object.assign({

@@ -4,10 +4,16 @@ import path from 'path';
 
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
+import { Log } from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
+import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+const warnUnstable = memoize(() =>
+  Log.warn('Using experimental DOM Components API. Production exports may not work as expected.')
+);
 
 export function createDomComponentsMiddleware(
   {
@@ -56,9 +62,11 @@ export function createDomComponentsMiddleware(
 
     if (!file || !file.startsWith('file://')) {
       res.statusCode = 400;
-      res.statusMessage = 'Invalid file path';
+      res.statusMessage = 'Invalid file path: ' + file;
       return res.end();
     }
+
+    warnUnstable();
 
     // Generate a unique entry file for the webview.
     const generatedEntry = await getDomComponentVirtualEntryModuleAsync(file);
