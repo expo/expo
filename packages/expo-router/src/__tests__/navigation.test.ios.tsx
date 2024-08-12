@@ -1325,3 +1325,55 @@ describe('stack unwinding', () => {
     expect(router.canGoBack()).toBe(true); //
   });
 });
+
+it('should always prefer static routes over dynamic ones', async () => {
+  renderRouter(
+    {
+      // Uses Layouts at different levels to create different hoisting for each group
+      '(tabs)/nested/_layout': () => null,
+      '(tabs)/nested/index': () => null,
+      '(tabs)/nested/[fruit]': () => null,
+      '(tabs)/nested/orange': () => null,
+      '(stack)/_layout': () => null,
+      '(stack)/nested/banana': () => null,
+      '(stack)/nested/[fruit]': () => null,
+      'nested/grape': () => null,
+      'nested/[fruit]': () => null,
+      '[param]/melon': () => null,
+    },
+    {
+      initialUrl: '/(tabs)/nested/apple',
+    }
+  );
+
+  // We start in (tabs)
+  expect(screen).toHavePathname('/nested/apple');
+  expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
+
+  // Banana is more specific in (stack) so we move
+  act(() => router.push('/nested/banana'));
+  expect(screen).toHaveSegments(['(stack)', 'nested', 'banana']);
+
+  // Apple could be in either (tabs) or (stack) so we stay in the same group
+  act(() => router.push('/nested/apple'));
+  expect(screen).toHavePathname('/nested/apple');
+  expect(screen).toHaveSegments(['(stack)', 'nested', '[fruit]']);
+
+  // Orange is more specific in (tabs) so we move
+  act(() => router.push('/nested/orange'));
+  expect(screen).toHavePathname('/nested/orange');
+  expect(screen).toHaveSegments(['(tabs)', 'nested', 'orange']);
+
+  // Grape is more specific outside any group
+  act(() => router.push('/nested/grape'));
+  expect(screen).toHavePathname('/nested/grape');
+  expect(screen).toHaveSegments(['nested', 'grape']);
+
+  // This matches /(tabs)/nested/[fruit].
+  // We don't match:
+  // - nested/[fruit] because /(tabs)/nested/fruit is more specific
+  // - [param]/melon because segments are evaluated left-right. 'nested' is static and '[param]' is dynamic
+  act(() => router.push('/nested/melon'));
+  expect(screen).toHavePathname('/nested/melon');
+  expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
+});
