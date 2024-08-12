@@ -1,9 +1,10 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
+
 import { router } from '../imperative-api';
-import { Tabs } from '../layouts/Tabs';
 import Stack from '../layouts/Stack';
+import { Tabs } from '../layouts/Tabs';
+import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
 
 const render = (options: RenderRouterOptions = {}) =>
   renderRouter(
