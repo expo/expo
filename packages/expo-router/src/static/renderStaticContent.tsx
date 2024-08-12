@@ -22,8 +22,6 @@ import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
-AppRegistry.registerComponent('App', () => ExpoRoot);
-
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options: Options = {}) {
   const routeTree = getRoutes(ctx, {
@@ -57,49 +55,63 @@ export async function getStaticContent(location: URL): Promise<string> {
 
   const ref = React.createRef<ServerContainerRef>();
 
-  const {
-    // NOTE: The `element` that's returned adds two extra Views and
-    // the seemingly unused `RootTagContext.Provider`.
-    element,
-    getStyleElement,
-  } = AppRegistry.getApplication('App', {
-    initialProps: {
-      location,
-      context: ctx,
-      wrapper: ({ children }) => (
-        <Root>
-          <div id="root">{children}</div>
-        </Root>
-      ),
+  const Root = getRootComponent();
+
+  function Main() {
+    return (
+      <ExpoRoot
+        location={location}
+        context={ctx}
+        wrapper={({ children }) => (
+          <Root>
+            <div id="root">{children}</div>
+          </Root>
+        )}
+      />
+    );
+  }
+
+  // Based on the legacy implementation in `@expo/next-adapter` for parity until we have server components.
+  const getInitialProps =
+    Root.getInitialProps ||
+    (async ({ renderPage }) => {
+      // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
+      // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
+      Font.resetServerContext();
+
+      // This MUST be run before `ReactDOMServer.renderToString` to prevent
+      // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
+      resetReactNavigationContexts();
+
+      AppRegistry.registerComponent('main', () => Main);
+      const { getStyleElement } = AppRegistry.getApplication('main');
+      const page = await renderPage();
+      const styles = [getStyleElement()];
+      return { ...page, styles: React.Children.toArray(styles) };
+    });
+
+  const { styles, ...initialProps } = await getInitialProps({
+    renderPage() {
+      return { children: <Main /> };
     },
   });
 
-  const Root = getRootComponent();
-
-  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-  Font.resetServerContext();
-
-  // This MUST be run before `ReactDOMServer.renderToString` to prevent
-  // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
-  resetReactNavigationContexts();
-
   const html = await ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>{element}</ServerContainer>
+      <ServerContainer ref={ref} {...initialProps} />
     </Head.Provider>
   );
 
   // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+  const css = ReactDOMServer.renderToStaticMarkup(styles);
 
   let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
 
   output = output.replace('</head>', `${css}</head>`);
 
+  // TODO: Make this use React JSX in the future to unify with other server-based styling libraries.
   const fonts = Font.getServerResources();
   debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
 

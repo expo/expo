@@ -1,7 +1,7 @@
 import '../Expo.fx';
 
 import { type ComponentType } from 'react';
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry } from 'react-native';
 
 type InitialProps = {
   exp?: {
@@ -41,17 +41,4 @@ export default function registerRootComponent<P extends InitialProps>(
   }
 
   AppRegistry.registerComponent('main', () => qualifiedComponent);
-  // Skip querying the DOM if we're in a Node.js environment.
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    const rootTag = document.getElementById('root');
-    if (process.env.NODE_ENV !== 'production') {
-      if (!rootTag) {
-        throw new Error('Required HTML element with id "root" was not found in the document HTML.');
-      }
-    }
-    AppRegistry.runApplication('main', {
-      rootTag,
-      hydrate: process.env.EXPO_PUBLIC_USE_STATIC === '1',
-    });
-  }
 }

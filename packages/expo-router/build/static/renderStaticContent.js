@@ -47,7 +47,6 @@ const getRoutes_1 = require("../getRoutes");
 const head_1 = require("../head");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 const debug = require('debug')('expo:router:renderStaticContent');
-react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {
     const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
@@ -74,35 +73,42 @@ function resetReactNavigationContexts() {
 async function getStaticContent(location) {
     const headContext = {};
     const ref = react_1.default.createRef();
-    const { 
-    // NOTE: The `element` that's returned adds two extra Views and
-    // the seemingly unused `RootTagContext.Provider`.
-    element, getStyleElement, } = react_native_web_1.AppRegistry.getApplication('App', {
-        initialProps: {
-            location,
-            context: _ctx_1.ctx,
-            wrapper: ({ children }) => (<Root>
-          <div id="root">{children}</div>
-        </Root>),
+    const Root = (0, getRootComponent_1.getRootComponent)();
+    function Main() {
+        return (<ExpoRoot_1.ExpoRoot location={location} context={_ctx_1.ctx} wrapper={({ children }) => (<Root>
+            <div id="root">{children}</div>
+          </Root>)}/>);
+    }
+    // Based on the legacy implementation in `@expo/next-adapter` for parity until we have server components.
+    const getInitialProps = Root.getInitialProps ||
+        (async ({ renderPage }) => {
+            // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
+            // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
+            Font.resetServerContext();
+            // This MUST be run before `ReactDOMServer.renderToString` to prevent
+            // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
+            resetReactNavigationContexts();
+            react_native_web_1.AppRegistry.registerComponent('main', () => Main);
+            const { getStyleElement } = react_native_web_1.AppRegistry.getApplication('main');
+            const page = await renderPage();
+            const styles = [getStyleElement()];
+            return { ...page, styles: react_1.default.Children.toArray(styles) };
+        });
+    const { styles, ...initialProps } = await getInitialProps({
+        renderPage() {
+            return { children: <Main /> };
         },
     });
-    const Root = (0, getRootComponent_1.getRootComponent)();
-    // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-    // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-    Font.resetServerContext();
-    // This MUST be run before `ReactDOMServer.renderToString` to prevent
-    // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
-    resetReactNavigationContexts();
     const html = await server_node_1.default.renderToString(<head_1.Head.Provider context={headContext}>
-      <native_1.ServerContainer ref={ref}>{element}</native_1.ServerContainer>
+      <native_1.ServerContainer ref={ref} {...initialProps}/>
     </head_1.Head.Provider>);
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-    const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
+    const css = server_node_1.default.renderToStaticMarkup(styles);
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
+    // TODO: Make this use React JSX in the future to unify with other server-based styling libraries.
     const fonts = Font.getServerResources();
     debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-    // debug('Push static fonts:', fonts)
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
     return '<!DOCTYPE html>' + output;
