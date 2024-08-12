@@ -128,27 +128,47 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
     reader.onload = ({ target }) => {
       const uri = (target as any).result;
       const returnRaw = () => resolve({ uri, width: 0, height: 0 });
+      const returnMediaData = (uri, width, height, mimeType, fileName) => {
+        resolve({
+          uri,
+          width,
+          height,
+          mimeType,
+          fileName,
+          ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+        });
+      };
 
       if (typeof uri === 'string') {
-        const image = new Image();
-        image.src = uri;
-
-        image.onload = () => {
-          resolve({
-            uri,
-            width: image.naturalWidth ?? image.width,
-            height: image.naturalHeight ?? image.height,
-            mimeType: targetFile.type,
-            fileName: targetFile.name,
-            // The blob's result cannot be directly decoded as Base64 without
-            // first removing the Data-URL declaration preceding the
-            // Base64-encoded data. To retrieve only the Base64 encoded string,
-            // first remove data:*/*;base64, from the result.
-            // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
-            ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
-          });
-        };
-        image.onerror = () => returnRaw();
+        if (targetFile.type.startsWith('image/')) {
+          const image = new Image();
+          image.src = uri;
+          image.onload = () => {
+            returnMediaData(
+              uri,
+              image.naturalWidth ?? image.width,
+              image.naturalHeight ?? image.height,
+              targetFile.type,
+              targetFile.name
+            );
+          };
+          image.onerror = () => returnRaw();
+        } else if (targetFile.type.startsWith('video/')) {
+          const video = document.createElement('video');
+          video.src = uri;
+          video.onloadeddata = () => {
+            returnMediaData(
+              uri,
+              video.videoWidth,
+              video.videoHeight,
+              targetFile.type,
+              targetFile.name
+            );
+          };
+          video.onerror = () => returnRaw();
+        } else {
+          returnRaw();
+        }
       } else {
         returnRaw();
       }
