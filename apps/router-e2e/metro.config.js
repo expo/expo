@@ -32,8 +32,10 @@ config.transformer.getTransformOptions = () => ({
   },
 });
 
+const isRSC = require('getenv').boolish('E2E_RSC_ENABLED', false);
+
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (process.env.E2E_RSC_ENABLED && moduleName === 'expo-router/entry') {
+  if (isRSC && moduleName === 'expo-router/entry') {
     // Prevent loading the routes in client-first mode with the standard require.context module.
     moduleName = 'expo-router/entry-rsc';
   }
