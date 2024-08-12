@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Make `babel-plugin-react-compiler` an optional peer dependency.
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### ⚠️ Notices
