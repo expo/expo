@@ -148,7 +148,7 @@ You can configure any `splash` properties for a native platform using [`splash.a
 
 </Collapsible>
 
-<Collapsible summary="Using bare workflow?">
+<Collapsible summary="Not using prebuild?">
 
 If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **iOS** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
@@ -236,7 +236,7 @@ You may also want to provide a separate icon for older Android devices that do n
 For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You should also:
 
 - Use a **.png** file.
-- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. If you are using a bare workflow, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
+- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of a bare React Native project, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 

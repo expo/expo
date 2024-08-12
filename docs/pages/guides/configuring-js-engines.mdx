@@ -22,7 +22,7 @@ If you want to use JSC instead, set the `jsEngine` field in the app config:
 }
 ```
 
-<Collapsible summary="Are you using the bare workflow?">
+<Collapsible summary="Usage in bare React Native projects">
 
 To change the JavaScript engine in a bare React Native project, update the `expo.jsEngine` value in **android/gradle.properties** and **ios/Podfile.properties.json**.
 
@@ -38,9 +38,9 @@ To use the V8 engine, you need to install [`react-native-v8`](https://github.com
 
 Make sure to remove the `jsEngine` field from the app config.
 
-<Collapsible summary="Are you using the bare workflow?">
+<Collapsible summary="Usage with Expo Prebuild">
 
-You can run `npx expo prebuild -p android --clean` after the installation to prebuild again.
+Run `npx expo prebuild -p android --clean` after the installation to prebuild again.
 
 </Collapsible>
 

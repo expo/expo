@@ -385,7 +385,7 @@ Configuring `sentry-expo` is done through the config plugin in your [app config]
 
 <ConfigReactNative>
 
-If you use bare workflow, **you should not use the `plugins` property in app config**. Instead, run `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra import statement and `Sentry.init` to your project's root file (usually **App.js**) as shown below. Make sure you remove it, however, keep the `sentry-expo` import and original `Sentry.init` call.
+If you are in a bare React Native app, **you should not use the `plugins` property in app config**. Instead, run `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra import statement and `Sentry.init` to your project's root file (usually **App.js**) as shown below. Make sure you remove it, however, keep the `sentry-expo` import and original `Sentry.init` call.
 
 ```js
 import * as Sentry from '@sentry/react-native';
