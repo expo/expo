@@ -3,7 +3,6 @@ import { forwardRef, useRef, useMemo, useImperativeHandle, } from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 import CameraManager from './ExpoCameraManager.web';
-import { CameraType } from './legacy/Camera.types';
 import { capture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
 import { useWebCameraStream } from './web/useWebCameraStream';
@@ -24,7 +23,7 @@ const ExponentCamera = forwardRef(({ facing, poster, ...props }, ref) => {
     useWebQRScanner(video, {
         interval: 300,
         isEnabled: isQRScannerEnabled,
-        captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
+        captureOptions: { scale: 1, isImageMirror: native.type === 'front' },
         onScanned(event) {
             if (props.onBarcodeScanned) {
                 props.onBarcodeScanned(event);

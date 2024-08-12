@@ -11,7 +11,7 @@ import {
   ImageType,
   WebCameraSettings,
   CameraPictureOptions,
-} from '../legacy/Camera.types';
+} from '../Camera.types';
 
 interface ConstrainLongRange {
   max?: number;
@@ -36,15 +36,14 @@ export function toDataURL(
   imageType: ImageType,
   quality: number
 ): string {
+  const types = ['png', 'jpg'];
   invariant(
-    Object.values(ImageType).includes(imageType),
-    `expo-camera: ${imageType} is not a valid ImageType. Expected a string from: ${Object.values(
-      ImageType
-    ).join(', ')}`
+    types.includes(imageType),
+    `expo-camera: ${imageType} is not a valid ImageType. Expected a string from: ${types.join(', ')}`
   );
 
   const format = ImageTypeFormat[imageType];
-  if (imageType === ImageType.jpg) {
+  if (imageType === 'jpg') {
     invariant(
       quality <= 1 && quality >= 0,
       `expo-camera: ${quality} is not a valid image quality. Expected a number from 0...1`
@@ -66,7 +65,7 @@ export function hasValidConstraints(
 function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPictureOptions {
   const captureOptions = {
     scale: 1,
-    imageType: ImageType.png,
+    imageType: 'png' as ImageType,
     isImageMirror: false,
   };
 
@@ -164,8 +163,8 @@ export function getIdealConstraints(
   if (!supports || !supports.facingMode || !supports.width || !supports.height) {
     return MinimumConstraints;
   }
-
-  if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
+  const types = ['front', 'back'];
+  if (preferredCameraType && types.includes(preferredCameraType)) {
     const facingMode = CameraTypeToFacingMode[preferredCameraType];
     if (isWebKit()) {
       const key = facingMode === 'user' ? 'exact' : 'ideal';
@@ -209,8 +208,7 @@ export async function getPreferredStreamDevice(
     // A hack on desktop browsers to ensure any camera is used.
     // eslint-disable-next-line no-undef
     if (error instanceof OverconstrainedError && error.constraint === 'facingMode') {
-      const nextCameraType =
-        preferredCameraType === CameraType.back ? CameraType.front : CameraType.back;
+      const nextCameraType = preferredCameraType === 'back' ? 'front' : 'back';
       return await getStreamDevice(nextCameraType, preferredWidth, preferredHeight);
     }
     throw error;

@@ -11,9 +11,13 @@ import {
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-import { CameraNativeProps, CameraCapturedPicture } from './Camera.types';
+import {
+  CameraNativeProps,
+  CameraCapturedPicture,
+  CameraPictureOptions,
+  CameraType,
+} from './Camera.types';
 import CameraManager from './ExpoCameraManager.web';
-import { CameraPictureOptions, CameraType } from './legacy/Camera.types';
 import { capture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
 import { useWebCameraStream } from './web/useWebCameraStream';
@@ -51,7 +55,7 @@ const ExponentCamera = forwardRef(
     useWebQRScanner(video, {
       interval: 300,
       isEnabled: isQRScannerEnabled,
-      captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
+      captureOptions: { scale: 1, isImageMirror: native.type === 'front' },
       onScanned(event) {
         if (props.onBarcodeScanned) {
           props.onBarcodeScanned(event);
