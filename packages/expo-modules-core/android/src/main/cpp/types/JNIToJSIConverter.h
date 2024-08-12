@@ -6,6 +6,7 @@
 #include "../JSharedObject.h"
 #include "../JNIUtils.h"
 #include "ObjectDeallocator.h"
+#include "../javaclasses/Collections.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -26,7 +27,7 @@ namespace expo {
 jsi::Value convert(
   JNIEnv *env,
   jsi::Runtime &rt,
-  jni::local_ref<jobject> value
+  const jni::local_ref<jobject> &value
 );
 
 /**
@@ -333,6 +334,30 @@ public:
     auto jsArray = jsi::Array(rt, value.size);
     for (size_t i = 0; i < value.size; i++) {
       jsArray.setValueAtIndex(rt, i, JNIToJSIConverter<T>::convert(rt, value.data[i]));
+    }
+    return jsArray;
+  }
+};
+
+template<>
+class JNIToJSIConverter<jni::local_ref<jni::JList<jobject>>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    jsi::Runtime &rt,
+    const jni::local_ref<jni::JList<jobject>> &list
+  ) {
+    size_t size = list->size();
+    auto jsArray = jsi::Array(rt, size);
+    size_t index = 0;
+
+    for (const auto &item: *list) {
+      jsArray.setValueAtIndex(
+        rt,
+        index++,
+        ::expo::convert(jni::Environment::current(), rt, item)
+      );
     }
     return jsArray;
   }
