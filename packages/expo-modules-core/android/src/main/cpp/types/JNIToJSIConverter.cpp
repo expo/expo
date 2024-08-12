@@ -44,7 +44,7 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
 jsi::Value convert(
   JNIEnv *env,
   jsi::Runtime &rt,
-  jni::local_ref<jobject> value
+  const jni::local_ref<jobject> &value
 ) {
   if (value == nullptr) {
     return jsi::Value::undefined();
@@ -68,6 +68,10 @@ jsi::Value convert(
   CAST_AND_RETURN(JavaScriptModuleObject::javaobject, expo/modules/kotlin/jni/JavaScriptModuleObject)
   CAST_AND_RETURN(JSharedObject::javaobject, expo/modules/kotlin/sharedobjects/SharedObject)
   CAST_AND_RETURN(JavaScriptTypedArray::javaobject, expo/modules/kotlin/jni/JavaScriptTypedArray)
+
+  if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/util/List").clazz)) {
+    return convertToJS(rt, jni::static_ref_cast<jni::JList<jobject>>(value));
+  }
 
   // Primitives arrays
   CAST_AND_RETURN(jni::JArrayDouble, [D)
