@@ -12,6 +12,6 @@
     </style>
 
     <style name="Theme.EdgeToEdge" parent="Theme.EdgeToEdge.Common">
-        <item name="android:navigationBarColor">@color/systemBarBackgroundSemiTransparent</item>
+        <item name="android:navigationBarColor">@color/systemBarDarkScrim</item>
     </style>
 </resources>

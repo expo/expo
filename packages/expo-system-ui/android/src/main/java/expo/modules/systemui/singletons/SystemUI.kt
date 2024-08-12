@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import expo.modules.systemui.R
@@ -50,18 +51,20 @@ object SystemUI {
 
   @JvmStatic
   fun enableEdgeToEdge(activity: Activity) {
-    val window = activity.window
-    val decorView = window.decorView
-    val isDarkMode = detectDarkMode(decorView.resources)
-
-    WindowCompat.setDecorFitsSystemWindows(window, false)
-
     activity.runOnUiThread {
+      val window = activity.window
+      val view = window.decorView
+      val context = view.context
+      val isDarkMode = detectDarkMode(view.resources)
+
+      WindowCompat.setDecorFitsSystemWindows(window, false)
+
       window.statusBarColor = Color.TRANSPARENT
 
       window.navigationBarColor = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
-        else -> R.color.systemBarBackgroundSemiTransparent
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> ContextCompat.getColor(context, R.color.systemBarLightScrim)
+        else -> ContextCompat.getColor(context, R.color.systemBarDarkScrim)
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -69,9 +72,9 @@ object SystemUI {
         window.isNavigationBarContrastEnforced = true
       }
 
-      WindowInsetsControllerCompat(window, decorView).run {
+      WindowInsetsControllerCompat(window, view).run {
         isAppearanceLightStatusBars = !isDarkMode
-        isAppearanceLightNavigationBars = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isDarkMode // has no effect on API < 26
+        isAppearanceLightNavigationBars = !isDarkMode
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
