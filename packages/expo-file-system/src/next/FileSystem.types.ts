@@ -47,11 +47,11 @@ export declare class Directory {
   /**
    * Copies a directory.
    */
-  copy(to: Directory | File);
+  copy(destination: Directory | File);
   /**
    * Moves a directory.
    */
-  move(to: Directory | File);
+  move(destination: Directory | File);
 }
 
 /**
@@ -107,10 +107,10 @@ export declare class File {
   /**
    * Copies a file.
    */
-  copy(to: Directory | File);
+  copy(destination: Directory | File);
 
   /**
    * Moves a directory.
    */
-  move(to: Directory | File);
+  move(destination: Directory | File);
 }
