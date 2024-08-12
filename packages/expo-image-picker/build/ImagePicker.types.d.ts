@@ -229,8 +229,12 @@ export type ImagePickerAsset = {
     height: number;
     /**
      * The type of the asset.
+     * - `'image'` - for images.
+     * - `'video'` - for videos.
+     * - `'livePhoto'` - for live photos. (ios only)
+     * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (ios only)
      */
-    type?: 'image' | 'video';
+    type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
     /**
      * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
      * or user gave limited permission to access the media library.
@@ -268,6 +272,12 @@ export type ImagePickerAsset = {
      * The MIME type of the selected asset or `null` if could not be determined.
      */
     mimeType?: string;
+    /**
+     * Contains information about the video paired with the image file. This property is only set when `useLivePhotos` is set to true and a live photo has been selected.
+     *
+     * @platform ios
+     */
+    pairedVideoAsset?: ImagePickerAsset | null;
 };
 export type ImagePickerErrorResult = {
     /**
@@ -337,6 +347,16 @@ export type ImagePickerOptions = {
      * @platform android
      */
     allowsEditing?: boolean;
+    /**
+     * Whether to enable live photo support when picking images. When this property is `true` and a live photo is selected,
+     * the resulting `ImagePickerAsset` will contain an unaltered image and the `pairedVideoAsset` field will contain a
+     * video asset paired with the image. This option will be ignored when the `allowsEditing` option is enabled. Due
+     * to platform limitations live photos are returned at original quality, regardless of the `quality` option.
+     *
+     * @default false
+     * @platform ios
+     */
+    useLivePhotos?: boolean;
     /**
      * An array with two entries `[x, y]` specifying the aspect ratio to maintain if the user is
      * allowed to edit the image (by passing `allowsEditing: true`). This is only applicable on

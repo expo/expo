@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for picking live photos from the library. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 - [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
