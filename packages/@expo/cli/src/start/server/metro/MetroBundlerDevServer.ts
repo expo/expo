@@ -29,7 +29,6 @@ import {
   fileURLToFilePath,
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { getDomComponentVirtualProxy } from './dom-components';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
@@ -60,7 +59,10 @@ import {
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
-import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
+import {
+  createDomComponentsMiddleware,
+  getDomComponentVirtualProxy,
+} from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';

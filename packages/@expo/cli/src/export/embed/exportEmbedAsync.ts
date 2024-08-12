@@ -21,10 +21,10 @@ import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompiler
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
-import { getDomComponentHtml } from '../../start/server/metro/dom-components';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { serializeHtmlWithAssets } from '../../start/server/metro/serializeHtml';
+import { getDomComponentHtml } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
