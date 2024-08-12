@@ -4,6 +4,8 @@ sidebar_title: DOM Components
 description: Learn about rendering React DOM elements in Expo native apps.
 ---
 
+> **warning** **Warning:** DOM Components are an experimental feature, the public API (`expo/dom`, `dom` prop), prop transport system, asset handling, and export embedding system are subject to breaking changes. Use WebViews directly for a production-ready approach.
+
 import { Terminal } from '~/ui/components/Snippet';
 
 Expo offers a novel approach to working with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app, simply moving on a per-component basis.
@@ -151,13 +153,7 @@ Think of these functions like React Server Actions, but instead of living on the
 Because DOM components run websites, you may find yourself needing extra qualifiers to better support libraries. You can detect if a component is running in a DOM component with the following:
 
 ```js
-if (
-  typeof window !== 'undefined' &&
-  // Detect if the webview global is available.
-  typeof window.ReactNativeWebView !== 'undefined'
-) {
-  // ...
-}
+const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 ```
 
 ## Public assets
