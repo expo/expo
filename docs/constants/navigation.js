@@ -143,6 +143,7 @@ const general = [
     makePage('guides/environment-variables.mdx'),
     makePage('guides/linking.mdx'),
     makePage('guides/deep-linking.mdx'),
+    makeGroup('Linking', [makePage('linking/into-other-apps.mdx')], { expanded: false }),
     makeGroup(
       'Custom native code',
       [
