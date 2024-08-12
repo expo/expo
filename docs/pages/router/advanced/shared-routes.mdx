@@ -43,3 +43,21 @@ export default function DynamicLayout({ segment }) {
   return <Stack />;
 }
 ```
+
+To enable the **array syntax**, specify the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) for each group using `unstable_settings` object in the dynamic layout:
+
+{/* prettier-ignore */}
+```tsx app/(home,search)/_layout.tsx
+export const unstable_settings = {
+  intialRouteName: 'home',
+  search: {
+    initialRouteName: 'search',
+  },
+};
+
+export default function DynamicLayout({ segment }) {
+  /* @hide  ... */ /* @end */
+}
+```
+
+In the above example, the `home` route is the default route for the `home` group and the app, and the `search` route is the default route for the `search` group.
