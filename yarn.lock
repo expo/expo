@@ -1550,6 +1550,13 @@
   dependencies:
     cross-spawn "^7.0.3"
 
+"@expo/styleguide-base@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-1.0.1.tgz#c05b64370fc1754ed7e3c627fd2d788582445cd2"
+  integrity sha512-Iu52/esfpMXB5cOT3oyTvcSdkwok9re9Wtu4Tz7cmeumjh+81kTIB1GHZn8W1RFhSx9dys0NXr3UqPD8MkngtQ==
+  dependencies:
+    "@radix-ui/colors" "^0.1.8"
+
 "@expo/styleguide-native@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@expo/styleguide-native/-/styleguide-native-1.0.1.tgz#b9889266664f885dad15566b5b2956e086b1aa22"
@@ -2935,6 +2942,11 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
+
+"@radix-ui/colors@^0.1.8":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-0.1.9.tgz#aad732ecc4ce1018adcb3aedd3ce3c573c2256cc"
+  integrity sha512-Vxq944ErPJsdVepjEUhOLO9ApUVOocA63knc+V2TkJ09D/AVOjiMIgkca/7VoYgODcla0qbSIBjje0SMfZMbAw==
 
 "@radix-ui/react-compose-refs@1.0.0":
   version "1.0.0"
