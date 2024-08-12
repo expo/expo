@@ -119,7 +119,7 @@ function readFile(targetFile, options) {
                 else if (targetFile.type.startsWith('video/')) {
                     const video = document.createElement('video');
                     video.src = uri;
-                    video.onloadeddata = () => {
+                    video.onloadedmetadata = () => {
                         returnMediaData(uri, video.videoWidth, video.videoHeight, targetFile.type, targetFile.name, targetFile.size);
                     };
                     video.onerror = () => returnRaw();

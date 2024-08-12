@@ -158,7 +158,7 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
         } else if (targetFile.type.startsWith('video/')) {
           const video = document.createElement('video');
           video.src = uri;
-          video.onloadeddata = () => {
+          video.onloadedmetadata = () => {
             returnMediaData(
               uri,
               video.videoWidth,
