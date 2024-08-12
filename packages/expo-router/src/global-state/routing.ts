@@ -264,16 +264,6 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
-  console.log({
-    type,
-    target: navigationState.key,
-    payload: {
-      key: rootPayload.key,
-      name: rootPayload.screen,
-      params: rootPayload.params,
-    },
-  });
-
   return {
     type,
     target: navigationState.key,
