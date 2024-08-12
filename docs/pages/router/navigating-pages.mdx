@@ -93,9 +93,9 @@ The URL of the current screen is a document URL (a URL without a trailing slash)
 <Link href="./article" relativeToDirectory>Go to article</Link>
 
 // Using `relativeToDirectory` with the imperative API
-router.push("./article, { relativeToDirectory: true })
-router.navigate("./article, { relativeToDirectory: true })
-router.replace("./article, { relativeToDirectory: true })
+router.push("./article", { relativeToDirectory: true })
+router.navigate("./article", { relativeToDirectory: true })
+router.replace("./article", { relativeToDirectory: true })
 ```
 
 > **info** Relative URLs without a `./` prefix, such as `article`, are not supported.
