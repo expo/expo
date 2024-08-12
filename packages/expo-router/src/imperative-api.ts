@@ -12,6 +12,8 @@ export type Router = {
   navigate: <T extends string | object>(href: Href<T>) => void;
   /** Navigate to route without appending to the history. */
   replace: <T extends string | object>(href: Href<T>) => void;
+  /** Change the current rendered tab to a tab that could render the provided href. */
+  switch: <T extends string | object>(href: Href<T>) => void;
   /** Navigate to a screen with a stack lower than the current screen. Using the provided count if possible, otherwise 1. */
   dismiss: (count?: number) => void;
   /** Navigate to first screen within the lowest stack. */
@@ -29,6 +31,7 @@ export const router: Router = {
   dismissAll: () => store.dismissAll(),
   canDismiss: () => store.canDismiss(),
   replace: (href) => store.replace(href),
+  switch: (href) => store.switch(href),
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),
   setParams: (params) => store.setParams(params),

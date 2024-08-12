@@ -4,6 +4,7 @@ export declare function navigate(this: RouterStore, url: Href): any;
 export declare function push(this: RouterStore, url: Href): any;
 export declare function dismiss(this: RouterStore, count?: number): void;
 export declare function replace(this: RouterStore, url: Href): any;
+export declare function switchLinkTo(this: RouterStore, url: Href): any;
 export declare function dismissAll(this: RouterStore): void;
 export declare function goBack(this: RouterStore): void;
 export declare function canGoBack(this: RouterStore): boolean;

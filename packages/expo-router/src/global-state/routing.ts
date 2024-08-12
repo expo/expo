@@ -34,6 +34,10 @@ export function replace(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url), 'REPLACE');
 }
 
+export function switchLinkTo(this: RouterStore, url: Href) {
+  return this.linkTo(resolveHref(url), 'SWITCH');
+}
+
 export function dismissAll(this: RouterStore) {
   this.navigationRef?.dispatch(StackActions.popToTop());
 }
@@ -84,7 +88,6 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     Linking.openURL(href);
     return;
   }
-
   assertIsReady(this);
   const navigationRef = this.navigationRef.current;
 
@@ -241,8 +244,17 @@ function getNavigateAction(
     }
   }
 
-  if (type === 'REPLACE' && navigationState.type === 'tab') {
+  if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
     type = 'JUMP_TO';
+  }
+
+  if (type === 'SWITCH') {
+    if (navigationState.type === 'tab' || navigationState.type === 'drawer') {
+      type = 'JUMP_TO';
+      rootPayload.params = undefined;
+    } else {
+      type = 'NAVIGATE';
+    }
   }
 
   return {

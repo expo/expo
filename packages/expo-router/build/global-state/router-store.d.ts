@@ -31,6 +31,7 @@ export declare class RouterStore {
     push: any;
     dismiss: any;
     replace: any;
+    switch: any;
     dismissAll: any;
     canDismiss: any;
     setParams: any;

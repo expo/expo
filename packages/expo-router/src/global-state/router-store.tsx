@@ -19,6 +19,7 @@ import {
   push,
   replace,
   setParams,
+  switchLinkTo,
 } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
@@ -60,6 +61,7 @@ export class RouterStore {
   push = push.bind(this);
   dismiss = dismiss.bind(this);
   replace = replace.bind(this);
+  switch = switchLinkTo.bind(this);
   dismissAll = dismissAll.bind(this);
   canDismiss = canDismiss.bind(this);
   setParams = setParams.bind(this);

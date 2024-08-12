@@ -9,6 +9,7 @@ exports.router = {
     dismissAll: () => router_store_1.store.dismissAll(),
     canDismiss: () => router_store_1.store.canDismiss(),
     replace: (href) => router_store_1.store.replace(href),
+    switch: (href) => router_store_1.store.switch(href),
     back: () => router_store_1.store.goBack(),
     canGoBack: () => router_store_1.store.canGoBack(),
     setParams: (params) => router_store_1.store.setParams(params),

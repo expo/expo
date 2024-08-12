@@ -65,6 +65,7 @@ class RouterStore {
     push = routing_1.push.bind(this);
     dismiss = routing_1.dismiss.bind(this);
     replace = routing_1.replace.bind(this);
+    switch = routing_1.switchLinkTo.bind(this);
     dismissAll = routing_1.dismissAll.bind(this);
     canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);

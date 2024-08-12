@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
+exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.switchLinkTo = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
@@ -52,6 +52,10 @@ function replace(url) {
     return this.linkTo((0, href_1.resolveHref)(url), 'REPLACE');
 }
 exports.replace = replace;
+function switchLinkTo(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'SWITCH');
+}
+exports.switchLinkTo = switchLinkTo;
 function dismissAll() {
     this.navigationRef?.dispatch(native_1.StackActions.popToTop());
 }
@@ -223,8 +227,17 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
             rootPayload.key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
-    if (type === 'REPLACE' && navigationState.type === 'tab') {
+    if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
+    }
+    if (type === 'SWITCH') {
+        if (navigationState.type === 'tab' || navigationState.type === 'drawer') {
+            type = 'JUMP_TO';
+            rootPayload.params = undefined;
+        }
+        else {
+            type = 'NAVIGATE';
+        }
     }
     return {
         type,
