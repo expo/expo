@@ -28,6 +28,20 @@ internal final class FileSystemDirectory: FileSystemPath {
     return false
   }
 
+  // Internal only function
+  func listAsRecords() throws -> [[String: Any]] {
+    var contents: [[String: Any]] = []
+    do {
+      let items = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+        for item in items {
+          contents.append(["isDirectory": item.hasDirectoryPath, "path": item.absoluteString])
+        }
+    } catch {
+        // failed to read directory – bad permissions, perhaps?
+    }
+    return contents
+  }
+
   func validatePath() throws {
     guard url.isFileURL && url.hasDirectoryPath else {
       throw Exception(name: "wrong type", description: "tried to create a directory with a file path")

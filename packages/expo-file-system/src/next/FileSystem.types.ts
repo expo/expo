@@ -52,6 +52,15 @@ export declare class Directory {
    * Moves a directory.
    */
   move(destination: Directory | File);
+  /**
+   * @hidden
+   * Lists the contents of a directory. Should not be used directly, as it retuns a list of paths.
+   */
+  listAsRecords(): { isDirectory: string; path: string }[];
+  /**
+   * Lists the contents of a directory.
+   */
+  list(): (Directory | File)[];
 }
 
 /**

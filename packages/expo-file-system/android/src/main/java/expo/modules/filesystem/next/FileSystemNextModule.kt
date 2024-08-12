@@ -147,6 +147,10 @@ class FileSystemNextModule : Module() {
       Property("uri") { directory ->
         directory.asString()
       }
+
+      Function("listAsRecords") { directory: FileSystemDirectory ->
+        directory.listAsRecords()
+      }
     }
   }
 }

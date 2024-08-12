@@ -23,6 +23,15 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     file.mkdir()
   }
 
+  fun listAsRecords(): List<Map<String, Any>> {
+    validateType()
+    return file.listFiles()?.map {
+        mapOf(
+          "isDirectory" to it.isDirectory,
+          "path" to it.path)
+    } ?: emptyList()
+  }
+
   fun asString(): String {
     val uriString = Uri.fromFile(file).toString()
     return if (uriString.endsWith("/")) uriString else "$uriString/"
