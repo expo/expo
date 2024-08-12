@@ -139,9 +139,9 @@ uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup
 
 In this example, it can be possible that the user might not have the Uber app installed on their device. In this case, your app can open Google Play Store or Apple App Store, or let the user know that they need to install the desired app. We recommend using the library [`react-native-app-link`](https://github.com/FiberJW/react-native-app-link) to handle these scenarios.
 
-### iOS requirements
+### Specify custom schemes for iOS
 
-On iOS, you can use `Linking.canOpenURL()` to query other apps's linking schemes. It requires additional configuration to specify a list of schemes in **InfoPlist**. You can use the `expo.ios.infoPlist` property in your app config to specify a list of schemes your app needs to query. For example:
+On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linkingcanopenurlurl) to query other apps's linking schemes. It requires additional configuration to specify a list of schemes in **InfoPlist**. You can use the `expo.ios.infoPlist` property in your app config to specify a list of schemes your app needs to query. For example:
 
 ```json app.json
 {
