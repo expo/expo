@@ -28,14 +28,14 @@ open class SharedObject: AnySharedObject {
   public init() {}
 
   /**
-    A function that will be called before the object is removed from the registry.
-    */
-   open func sharedObjectWillRelease() {}
+   A function that will be called before the object is removed from the registry.
+   */
+  open func sharedObjectWillRelease() {}
 
-   /**
-    A function that will be called after the object is removed from the registry.
-    */
-   open func sharedObjectDidRelease() {}
+  /**
+   A function that will be called after the object is removed from the registry.
+   */
+  open func sharedObjectDidRelease() {}
 
   /**
    Returns the JavaScript shared object associated with the native shared object.
