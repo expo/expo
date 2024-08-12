@@ -96,13 +96,14 @@ function readFile(targetFile, options) {
         reader.onload = ({ target }) => {
             const uri = target.result;
             const returnRaw = () => resolve({ uri, width: 0, height: 0 });
-            const returnMediaData = (uri, width, height, mimeType, fileName) => {
+            const returnMediaData = (uri, width, height, mimeType, fileName, fileSize) => {
                 resolve({
                     uri,
                     width,
                     height,
                     mimeType,
                     fileName,
+                    fileSize,
                     ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
                 });
             };
@@ -111,7 +112,7 @@ function readFile(targetFile, options) {
                     const image = new Image();
                     image.src = uri;
                     image.onload = () => {
-                        returnMediaData(uri, image.naturalWidth ?? image.width, image.naturalHeight ?? image.height, targetFile.type, targetFile.name);
+                        returnMediaData(uri, image.naturalWidth ?? image.width, image.naturalHeight ?? image.height, targetFile.type, targetFile.name, targetFile.size);
                     };
                     image.onerror = () => returnRaw();
                 }
@@ -119,7 +120,7 @@ function readFile(targetFile, options) {
                     const video = document.createElement('video');
                     video.src = uri;
                     video.onloadeddata = () => {
-                        returnMediaData(uri, video.videoWidth, video.videoHeight, targetFile.type, targetFile.name);
+                        returnMediaData(uri, video.videoWidth, video.videoHeight, targetFile.type, targetFile.name, targetFile.size);
                     };
                     video.onerror = () => returnRaw();
                 }

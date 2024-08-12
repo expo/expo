@@ -128,13 +128,14 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
     reader.onload = ({ target }) => {
       const uri = (target as any).result;
       const returnRaw = () => resolve({ uri, width: 0, height: 0 });
-      const returnMediaData = (uri, width, height, mimeType, fileName) => {
+      const returnMediaData = (uri, width, height, mimeType, fileName, fileSize) => {
         resolve({
           uri,
           width,
           height,
           mimeType,
           fileName,
+          fileSize,
           ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
         });
       };
@@ -149,7 +150,8 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
               image.naturalWidth ?? image.width,
               image.naturalHeight ?? image.height,
               targetFile.type,
-              targetFile.name
+              targetFile.name,
+              targetFile.size
             );
           };
           image.onerror = () => returnRaw();
@@ -162,7 +164,8 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
               video.videoWidth,
               video.videoHeight,
               targetFile.type,
-              targetFile.name
+              targetFile.name,
+              targetFile.size
             );
           };
           video.onerror = () => returnRaw();
