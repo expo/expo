@@ -1,7 +1,11 @@
 import { LinkingOptions, ParamListBase, createNavigatorFactory } from '@react-navigation/native';
 import { RouteNode } from '../Route';
 import { sortRoutesWithInitial } from '../sortRoutes';
-import { getQualifiedRouteComponent } from '../useScreens';
+import {
+  createGetIdForRoute,
+  getQualifiedRouteComponent,
+  screenOptionsFactory,
+} from '../useScreens';
 import { Href } from '../types';
 
 // `@react-navigation/core` does not expose the Screen or Group components directly, so we have to
@@ -16,7 +20,6 @@ export type PolymorphicProps<E extends React.ElementType> = React.PropsWithChild
 
 export type ScreenTrigger<T extends string | object> = {
   href: Href<T>;
-  initialRoute?: boolean | string | string[];
 };
 
 export type ScreenConfig = {
@@ -27,19 +30,16 @@ export function triggersToScreens<T extends string | object>(
   triggers: ScreenTrigger<T>[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
-  currentGroups: string[],
-  initialRouteName = layoutRouteNode.initialRouteName
+  initialRouteName: undefined | string
 ) {
-  const screenConfig = triggers.reduce((acc, { href, initialRoute }) => {
-    debugger;
+  const configs: ScreenConfig[] = [];
+
+  for (const { href } of triggers) {
     let state = linking.getStateFromPath?.(href as any, linking.config)?.routes[0];
 
     if (!state) {
-      return acc;
+      continue;
     }
-
-    let a = linking.getStateFromPath?.(href as any, linking.config);
-    debugger;
 
     if (layoutRouteNode.route) {
       while (state?.state) {
@@ -51,46 +51,28 @@ export function triggersToScreens<T extends string | object>(
 
     let routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
 
-    if (routeNode) {
-      if (isInitialRoute(initialRoute, currentGroups)) {
-        if (process.env.NODE_ENV === 'development') {
-          if (initialRouteName) {
-            console.warn(`Initial route name has been set multiple times`);
-          }
-        }
-        initialRouteName = routeNode.route;
-      }
-
-      acc.push({ routeNode });
+    if (!routeNode) {
+      continue;
     }
 
-    return acc;
-  }, [] as ScreenConfig[]);
+    configs.push({ routeNode });
+  }
 
   const sortFn = sortRoutesWithInitial(initialRouteName);
 
-  const children = screenConfig
+  const children = configs
     .sort((a, b) => sortFn(a.routeNode, b.routeNode))
     .map(({ routeNode }) => (
-      <Screen name={routeNode.route} getComponent={() => getQualifiedRouteComponent(routeNode)} />
+      <Screen
+        key={routeNode.route}
+        name={routeNode.route}
+        getId={createGetIdForRoute(routeNode)}
+        getComponent={() => getQualifiedRouteComponent(routeNode)}
+        options={screenOptionsFactory(routeNode)}
+      />
     ));
 
   return {
     children,
-    initialRouteName,
   };
-}
-
-function isInitialRoute(initialRoute: ScreenTrigger<any>['initialRoute'], groups: string[]) {
-  let match = false;
-
-  if (initialRoute === true) {
-    match = true;
-  } else if (Array.isArray(initialRoute)) {
-    match = initialRoute.some((route) => groups.includes(route));
-  } else if (typeof initialRoute === 'string') {
-    match = groups.includes(initialRoute);
-  }
-
-  return match;
 }

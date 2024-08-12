@@ -213,7 +213,9 @@ export declare function useTabsWithChildren({ children, ...options }: UseTabsWit
             };
         };
     };
-    NavigationContent: (props: any) => import("react").JSX.Element;
+    NavigationContent: ({ children }: {
+        children: ReactNode;
+    }) => JSX.Element;
 };
 export declare function useTabsWithTriggers<T extends string | object>({ triggers, ...options }: UseTabsWithTriggersOptions<T>): {
     state: TabNavigationState<any>;
@@ -418,7 +420,9 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
             };
         };
     };
-    NavigationContent: (props: any) => import("react").JSX.Element;
+    NavigationContent: ({ children }: {
+        children: ReactNode;
+    }) => JSX.Element;
 };
 export type ExpoTabHrefs = Record<string, Omit<ExpoTabsScreenOptions, 'action'>> | Array<Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>]>;
 //# sourceMappingURL=Tabs.hooks.d.ts.map

@@ -3,6 +3,7 @@ import {
   FunctionComponentElement,
   isValidElement,
   useContext,
+  useMemo,
   Children,
   ReactNode,
   useCallback,
@@ -19,14 +20,13 @@ import {
   TabNavigationState,
 } from '@react-navigation/native';
 import { TabsContext, ExpoTabsScreenOptions, TabNavigationEventMap } from './Tabs.common';
-import { useRouteNode } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
 import { resolveHref } from '../link/href';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 import { TabList, TabListProps, TabTrigger, TabTriggerOptions, TabTriggerProps } from './Tabs.list';
 import { TabSlot } from './Tabs.slot';
 import { triggersToScreens } from './common';
-import { useSegments } from '../hooks';
 
 export type UseTabsOptions = Omit<
   DefaultNavigatorOptions<
@@ -56,22 +56,15 @@ export function useTabsWithTriggers<T extends string | object>({
   ...options
 }: UseTabsWithTriggersOptions<T>) {
   const routeNode = useRouteNode();
+  const contextKey = useContextKey();
   const linking = useContext(LinkingContext).options;
-
-  const currentGroups = useSegments().filter((segment) => {
-    return segment.startsWith('(') && segment.endsWith(')');
-  });
 
   if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
-  const { children, initialRouteName } = triggersToScreens(
-    triggers,
-    routeNode,
-    linking,
-    currentGroups
-  );
+  const initialRouteName = routeNode.initialRouteName;
+  const { children } = triggersToScreens(triggers, routeNode, linking, initialRouteName);
 
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     TabNavigationState<any>,
@@ -83,6 +76,7 @@ export function useTabsWithTriggers<T extends string | object>({
     children,
     backBehavior: Platform.OS === 'web' ? 'history' : 'firstRoute',
     ...options,
+    id: contextKey,
     initialRouteName,
   });
 
@@ -121,18 +115,15 @@ export function useTabsWithTriggers<T extends string | object>({
     })
   );
 
-  const newNavigationContent = useCallback(
-    (props) => {
-      return (
-        <TabsContext.Provider value={{ state, descriptors, navigation, NavigationContent }}>
-          <NavigationContent {...props} />
-        </TabsContext.Provider>
-      );
-    },
-    [state, descriptors, navigation, routes, NavigationContent]
-  );
+  // const newNavigationContent = (props) => {
+  //   return (
+  //     <TabsContext.Provider value={{ state, descriptors, navigation, NavigationContent }}>
+  //       <NavigationContent {...props} />
+  //     </TabsContext.Provider>
+  //   );
+  // };
 
-  return { state, descriptors, navigation, routes, NavigationContent: newNavigationContent };
+  return { state, descriptors, navigation, routes, NavigationContent };
 }
 
 export type ExpoTabHrefs =
@@ -180,7 +171,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    let { href, initialRoute } = child.props;
+    let { href } = child.props;
 
     href = resolveHref(href);
 
@@ -188,7 +179,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    screenTriggers.push({ href, initialRoute });
+    screenTriggers.push({ href });
     return;
   });
 

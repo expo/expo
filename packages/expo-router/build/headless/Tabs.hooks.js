@@ -4,32 +4,30 @@ exports.useTabsWithTriggers = exports.useTabsWithChildren = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("@react-navigation/native");
-const Tabs_common_1 = require("./Tabs.common");
 const Route_1 = require("../Route");
 const href_1 = require("../link/href");
 const url_1 = require("../utils/url");
 const Tabs_list_1 = require("./Tabs.list");
 const Tabs_slot_1 = require("./Tabs.slot");
 const common_1 = require("./common");
-const hooks_1 = require("../hooks");
 function useTabsWithChildren({ children, ...options }) {
     return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
 }
 exports.useTabsWithChildren = useTabsWithChildren;
 function useTabsWithTriggers({ triggers, ...options }) {
     const routeNode = (0, Route_1.useRouteNode)();
+    const contextKey = (0, Route_1.useContextKey)();
     const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
-    const currentGroups = (0, hooks_1.useSegments)().filter((segment) => {
-        return segment.startsWith('(') && segment.endsWith(')');
-    });
     if (!routeNode || !linking) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');
     }
-    const { children, initialRouteName } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, currentGroups);
+    const initialRouteName = routeNode.initialRouteName;
+    const { children } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName);
     const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.TabRouter, {
         children,
         backBehavior: react_native_1.Platform.OS === 'web' ? 'history' : 'firstRoute',
         ...options,
+        id: contextKey,
         initialRouteName,
     });
     const routes = Object.fromEntries(state.routes.map((route, index) => {
@@ -62,12 +60,14 @@ function useTabsWithTriggers({ triggers, ...options }) {
             },
         ];
     }));
-    const newNavigationContent = (0, react_1.useCallback)((props) => {
-        return (<Tabs_common_1.TabsContext.Provider value={{ state, descriptors, navigation, NavigationContent }}>
-          <NavigationContent {...props}/>
-        </Tabs_common_1.TabsContext.Provider>);
-    }, [state, descriptors, navigation, routes, NavigationContent]);
-    return { state, descriptors, navigation, routes, NavigationContent: newNavigationContent };
+    // const newNavigationContent = (props) => {
+    //   return (
+    //     <TabsContext.Provider value={{ state, descriptors, navigation, NavigationContent }}>
+    //       <NavigationContent {...props} />
+    //     </TabsContext.Provider>
+    //   );
+    // };
+    return { state, descriptors, navigation, routes, NavigationContent };
 }
 exports.useTabsWithTriggers = useTabsWithTriggers;
 function isTabListOrFragment(child) {
@@ -96,12 +96,12 @@ function parseTriggersFromChildren(children, screenTriggers = []) {
             }
             return;
         }
-        let { href, initialRoute } = child.props;
+        let { href } = child.props;
         href = (0, href_1.resolveHref)(href);
         if ((0, url_1.shouldLinkExternally)(href)) {
             return;
         }
-        screenTriggers.push({ href, initialRoute });
+        screenTriggers.push({ href });
         return;
     });
     return screenTriggers;

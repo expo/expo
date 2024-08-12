@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { StyleSheet, ViewProps, View } from 'react-native';
 import { TabsContext } from './Tabs.common';
 import { UseTabsOptions, useTabsWithChildren } from './Tabs.hooks';
@@ -12,15 +13,21 @@ export type TabsProps = ViewProps & {
 };
 
 export function Tabs({ children, options, ...props }: TabsProps) {
-  const tabs = useTabsWithChildren({ children, ...options });
-  const NavigationContent = tabs.NavigationContent;
+  const { NavigationContent, state, descriptors, navigation } = useTabsWithChildren({
+    children,
+    ...options,
+  });
+
+  const a = useMemo(() => {
+    return { state, descriptors, NavigationContent, navigation };
+  }, [state, descriptors, NavigationContent, navigation]);
 
   return (
-    <TabsContext.Provider value={tabs}>
-      <View style={styles.tabsRoot} {...props}>
+    <View style={styles.tabsRoot} {...props}>
+      <TabsContext.Provider value={a}>
         <NavigationContent>{children}</NavigationContent>
-      </View>
-    </TabsContext.Provider>
+      </TabsContext.Provider>
+    </View>
   );
 }
 

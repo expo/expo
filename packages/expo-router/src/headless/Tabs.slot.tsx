@@ -13,7 +13,6 @@ export type TabsSlotRenderOptions = {
   index: number;
   isFocused: boolean;
   loaded: boolean;
-  detachInactiveScreens: boolean;
 };
 
 export function useTabSlot({
@@ -31,16 +30,15 @@ export function useTabSlot({
   }
 
   return (
-    <>
+    <ScreenContainer enabled={detachInactiveScreens} hasTwoStates>
       {state.routes.map((route, index) => {
-        return renderFn(route, descriptors[route.key], {
+        return renderFn(descriptors[route.key], {
           index,
           isFocused: state.index === index,
           loaded: loaded[route.key],
-          detachInactiveScreens,
         });
       })}
-    </>
+    </ScreenContainer>
   );
 }
 
@@ -58,39 +56,28 @@ export function TabSlot(props: ViewProps) {
 }
 
 export function defaultTabsSlotRender(
-  route: Route,
   descriptor: TabsDescriptor,
-  { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions
+  { isFocused, loaded }: TabsSlotRenderOptions
 ) {
   const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
 
-  if (unmountOnBlur && !isFocused) {
-    return null;
-  }
+  // if (unmountOnBlur && !isFocused) {
+  //   return null;
+  // }
 
-  if (lazy && !loaded && !isFocused) {
-    // Don't render a lazy screen if we've never navigated to it
-    return null;
-  }
+  // if (lazy && !loaded && !isFocused) {
+  //   // Don't render a lazy screen if we've never navigated to it
+  //   return null;
+  // }
 
   return (
-    <ScreenContainer
-      key={route.key}
-      enabled={detachInactiveScreens}
-      hasTwoStates
-      style={isFocused ? styles.focused : styles.unfocused}>
-      <NavigationContext.Provider value={descriptor.navigation}>
-        <NavigationRouteContext.Provider value={route}>
-          <Screen
-            enabled={detachInactiveScreens}
-            activityState={isFocused ? 2 : 0}
-            freezeOnBlur={freezeOnBlur}
-            style={styles.flexBoxGrowOnly}>
-            <View style={styles.flexBoxGrowOnly}>{descriptor.render()}</View>
-          </Screen>
-        </NavigationRouteContext.Provider>
-      </NavigationContext.Provider>
-    </ScreenContainer>
+    <Screen
+      key={descriptor.route.key}
+      activityState={isFocused ? 2 : 0}
+      freezeOnBlur={freezeOnBlur}
+      style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
+      <View style={styles.flexBoxGrowOnly}>{descriptor.render()}</View>
+    </Screen>
   );
 }
 

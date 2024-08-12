@@ -23,7 +23,7 @@ export function TabList({ asChild, ...props }: TabListProps) {
 
 export function TabTrigger<T extends string | object>(props: TabTriggerProps<T>) {
   return (
-    <Link style={styles.tabTrigger} {...props}>
+    <Link style={styles.tabTrigger} {...props} replace>
       {props.children}
     </Link>
   );

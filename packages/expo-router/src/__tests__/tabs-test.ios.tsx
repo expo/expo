@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { TabList, TabSlot, TabTrigger, Tabs } from '../headless';
 import { RenderRouterOptions, act, fireEvent, renderRouter, screen } from '../testing-library';
 import { router } from '../imperative-api';
-import { Stack } from '../layouts/Stack';
+import { Tabs } from '../layouts/Tabs';
+import Stack from '../layouts/Stack';
 
 const render = (options: RenderRouterOptions = {}) =>
   renderRouter(
@@ -12,39 +12,13 @@ const render = (options: RenderRouterOptions = {}) =>
         unstable_settings: {
           initialRouteName: 'orange',
         },
-        default: () => {
-          return (
-            <Tabs>
-              <TabList>
-                <TabTrigger testID="goto-apple" href="/apple">
-                  <Text>Apple</Text>
-                </TabTrigger>
-                <TabTrigger testID="goto-banana" href="/banana/color">
-                  <Text>Banana</Text>
-                </TabTrigger>
-                <TabTrigger testID="goto-orange" href="/orange">
-                  <Text>Orange</Text>
-                </TabTrigger>
-              </TabList>
-              <TabSlot />
-            </Tabs>
-          );
-        },
+        default: () => <Tabs />,
       },
       '(group)/apple': () => <Text testID="apple">Apple</Text>,
-
-      // Banana
-      '(group)/banana/_layout': {
-        unstable_settings: {
-          initialRouteName: 'index',
-        },
-        default: () => <Stack />,
-      },
+      '(group)/banana/_layout': () => <Stack />,
       '(group)/banana/index': () => <Text testID="banana">Banana</Text>,
       '(group)/banana/color': () => <Text testID="banana-color">Banana Color</Text>,
       '(group)/banana/shape': () => <Text testID="banana">Banana Shape</Text>,
-
-      // Orange
       '(group)/orange/_layout': {
         unstable_settings: {
           initialRouteName: 'index',
@@ -62,30 +36,44 @@ it.only('should render the correct screen with nested navigators', () => {
   render({ initialUrl: '/apple' });
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  fireEvent.press(screen.getByTestId('goto-banana'));
-  // expect(screen).toHaveSegments(['(group)', 'banana']);
-  // act(() => router.push('/banana/color'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'color']);
+  fireEvent.press(screen.getByText('banana'));
+  expect(screen).toHaveSegments(['(group)', 'banana']);
+  console.log('-----');
+  act(() => router.push('/banana/color'));
+  expect(screen).toHaveRouterState({});
+  expect(screen).toHaveSegments(['(group)', 'banana', 'color']);
   // act(() => router.push('/banana/shape'));
   // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 
-  // fireEvent.press(screen.getByTestId('goto-orange'));
+  // fireEvent.press(screen.getByText('orange'));
   // expect(screen).toHaveSegments(['(group)', 'orange']);
   // act(() => router.push('/orange/color'));
   // expect(screen).toHaveSegments(['(group)', 'orange', 'color']);
 
-  // Banana should retain its state
-  // fireEvent.press(screen.getByTestId('goto-banana'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
-
-  // act(() => router.replace('/banana/color'));
-
-  expect(screen).toHaveRouterState({});
+  // // Banana should retain its state
+  // fireEvent.press(screen.getByText('banana'));
   // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 });
 
 it('should respect `unstable_settings', () => {
+  const render = (options: RenderRouterOptions = {}) =>
+    renderRouter(
+      {
+        '(group)/_layout': {
+          unstable_settings: {
+            initialRouteName: 'orange',
+          },
+          default: () => <Tabs />,
+        },
+        '(group)/banana': () => <Text testID="banana">Banana</Text>,
+        '(group)/orange': () => <Text testID="orange">Orange</Text>,
+      },
+      options
+    );
+
+  // Orange is the initial route for (two) so we are in (two)
   render({ initialUrl: '/orange' });
+
   expect(screen).toHaveSegments(['(group)', 'orange']);
 
   expect(screen.getByTestId('orange')).toBeVisible();

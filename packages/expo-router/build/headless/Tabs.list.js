@@ -10,7 +10,7 @@ function TabList({ asChild, ...props }) {
 }
 exports.TabList = TabList;
 function TabTrigger(props) {
-    return (<Link_1.Link style={styles.tabTrigger} {...props}>
+    return (<Link_1.Link style={styles.tabTrigger} {...props} replace>
       {props.children}
     </Link_1.Link>);
 }
