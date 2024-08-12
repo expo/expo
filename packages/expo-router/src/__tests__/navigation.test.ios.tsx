@@ -1367,7 +1367,6 @@ describe('stack unwinding', () => {
   });
 });
 
-<<<<<<< HEAD
 it('should always prefer static routes over dynamic ones', async () => {
   renderRouter(
     {
@@ -1418,7 +1417,7 @@ it('should always prefer static routes over dynamic ones', async () => {
   act(() => router.push('/nested/melon'));
   expect(screen).toHavePathname('/nested/melon');
   expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
-})
+});
 
 it('can push relative links that are relative to the directory', () => {
   renderRouter(
