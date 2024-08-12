@@ -167,12 +167,12 @@ const executeCommand = async (
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(
-        trimmedOutput,
-        ({ key, node }) =>
-          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
+      const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
+        return (
+          ['id', 'groups', 'kindString', 'originalName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
-      );
+        );
+      });
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
       await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
