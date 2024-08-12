@@ -126,7 +126,7 @@ Every file and folder in the `app/` folder is either a `_layout` file, or a rout
   ]}
 />
 
-To demonstrate why Expo Router enforces this rule, refer to the example above which is using the [shared routes](/router/advanced/shared-routes) to render the same route with different layouts. This pattern is very common in native navigation making it difficult to keep your non-route files organized within the same directory as a route file.
+The example above demonstrates why, if Expo Router allowed for non-route files, co-location (the technical term for keeping files within the same directory) would lead to an unstructured project. [Shared routes](/router/advanced/shared-routes) (the feature allowing you render the same route with different layouts) is common pattern in native navigation, but requires multiple directories. As you will have multiple route files, but only a single file for components co-location would force you to create arbitrary rules over which directory is the 'correct' one. Expo Router does not allow for co-location preventing this dilemma.
 
 export const ExampleStructure = () => (
   <FileTree
