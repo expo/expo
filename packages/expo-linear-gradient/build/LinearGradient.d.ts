@@ -23,7 +23,9 @@ export type LinearGradientProps = ViewProps & {
      *
      * For TS to know the provided array has 2 or more values, it needs to be provided "inline" or typed `as const`. For example:
      * @example
+     * ```ts
      * const colors = ['red', 'blue', 'green'] as const;
+     * ```
      */
     colors: readonly [string, string, ...string[]];
     /**
