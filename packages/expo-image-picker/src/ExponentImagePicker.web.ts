@@ -128,14 +128,9 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
     reader.onload = ({ target }) => {
       const uri = (target as any).result;
       const returnRaw = () => resolve({ uri, width: 0, height: 0 });
-      const returnMediaData = (uri, width, height, mimeType, fileName, fileSize) => {
+      const returnMediaData = (data: ImagePickerAsset) => {
         resolve({
-          uri,
-          width,
-          height,
-          mimeType,
-          fileName,
-          fileSize,
+          ...data,
           ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
         });
       };
@@ -145,28 +140,32 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
           const image = new Image();
           image.src = uri;
           image.onload = () => {
-            returnMediaData(
+            returnMediaData({
               uri,
-              image.naturalWidth ?? image.width,
-              image.naturalHeight ?? image.height,
-              targetFile.type,
-              targetFile.name,
-              targetFile.size
-            );
+              width: image.naturalWidth ?? image.width,
+              height: image.naturalHeight ?? image.height,
+              type: 'image',
+              mimeType: targetFile.type,
+              fileName: targetFile.name,
+              fileSize: targetFile.size,
+            });
           };
           image.onerror = () => returnRaw();
         } else if (targetFile.type.startsWith('video/')) {
           const video = document.createElement('video');
+          video.preload = 'metadata';
           video.src = uri;
           video.onloadedmetadata = () => {
-            returnMediaData(
+            returnMediaData({
               uri,
-              video.videoWidth,
-              video.videoHeight,
-              targetFile.type,
-              targetFile.name,
-              targetFile.size
-            );
+              width: video.videoWidth,
+              height: video.videoHeight,
+              type: 'video',
+              mimeType: targetFile.type,
+              fileName: targetFile.name,
+              fileSize: targetFile.size,
+              duration: video.duration,
+            });
           };
           video.onerror = () => returnRaw();
         } else {

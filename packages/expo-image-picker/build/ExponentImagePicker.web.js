@@ -96,14 +96,9 @@ function readFile(targetFile, options) {
         reader.onload = ({ target }) => {
             const uri = target.result;
             const returnRaw = () => resolve({ uri, width: 0, height: 0 });
-            const returnMediaData = (uri, width, height, mimeType, fileName, fileSize) => {
+            const returnMediaData = (data) => {
                 resolve({
-                    uri,
-                    width,
-                    height,
-                    mimeType,
-                    fileName,
-                    fileSize,
+                    ...data,
                     ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
                 });
             };
@@ -112,15 +107,33 @@ function readFile(targetFile, options) {
                     const image = new Image();
                     image.src = uri;
                     image.onload = () => {
-                        returnMediaData(uri, image.naturalWidth ?? image.width, image.naturalHeight ?? image.height, targetFile.type, targetFile.name, targetFile.size);
+                        returnMediaData({
+                            uri,
+                            width: image.naturalWidth ?? image.width,
+                            height: image.naturalHeight ?? image.height,
+                            type: 'image',
+                            mimeType: targetFile.type,
+                            fileName: targetFile.name,
+                            fileSize: targetFile.size,
+                        });
                     };
                     image.onerror = () => returnRaw();
                 }
                 else if (targetFile.type.startsWith('video/')) {
                     const video = document.createElement('video');
+                    video.preload = 'metadata';
                     video.src = uri;
                     video.onloadedmetadata = () => {
-                        returnMediaData(uri, video.videoWidth, video.videoHeight, targetFile.type, targetFile.name, targetFile.size);
+                        returnMediaData({
+                            uri,
+                            width: video.videoWidth,
+                            height: video.videoHeight,
+                            type: 'video',
+                            mimeType: targetFile.type,
+                            fileName: targetFile.name,
+                            fileSize: targetFile.size,
+                            duration: video.duration,
+                        });
                     };
                     video.onerror = () => returnRaw();
                 }
