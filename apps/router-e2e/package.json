@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
+    "start:rsc-actions": "E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 EXPO_E2E_RSC=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=rsc-actions EXPO_PUBLIC_USE_RSC=1 expo start",
     "start:rsc": "E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 EXPO_E2E_RSC=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=rsc EXPO_PUBLIC_USE_RSC=1 expo start",
     "start:react-native-canary": "EXPO_E2E_RSC=1 E2E_ROUTER_SRC=react-native-canary expo start",
     "android": "expo run:android",
