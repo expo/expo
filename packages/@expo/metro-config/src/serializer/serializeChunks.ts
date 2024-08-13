@@ -388,7 +388,7 @@ export class Chunk {
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    const outputFile = this.getFilenameForConfig(serializerConfig);
+    let outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
@@ -398,6 +398,9 @@ export class Chunk {
         premodules = plugin({ graph: this.graph, premodules, debugId });
       }
       this.preModules = new Set(premodules);
+
+      // If the premodules have changed, we need to recompute the output file hash.
+      outputFile = this.getFilenameForConfig(serializerConfig);
     }
 
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
