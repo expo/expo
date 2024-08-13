@@ -48,13 +48,21 @@
     "@babel/plugin-transform-parameters": "^7.22.15",
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-preset": "0.75.0-rc.5",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-938cd9a-20240601",
+    "@react-native/babel-preset": "0.75.0-rc.7",
     "babel-plugin-react-native-web": "~0.19.10",
     "react-refresh": "^0.14.2"
   },
+  "peerDependencies": {
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725"
+  },
+  "peerDependenciesMeta": {
+    "babel-plugin-react-compiler": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725",
     "expo-module-scripts": "^3.3.0",
     "jest": "^29.2.1"
   }

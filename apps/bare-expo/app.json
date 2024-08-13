@@ -15,6 +15,7 @@
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
+    "userInterfaceStyle": "automatic",
     "android": {
       "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {

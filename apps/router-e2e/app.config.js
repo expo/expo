@@ -8,6 +8,7 @@ module.exports = {
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
+  userInterfaceStyle: 'automatic',
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'dev.expo.routere2e',
@@ -26,8 +27,9 @@ module.exports = {
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
-    reactCanary: process.env.EXPO_E2E_RSC,
+    reactCanary: process.env.E2E_CANARY_ENABLED,
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
+    reactServerComponents: process.env.E2E_RSC_ENABLED,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',

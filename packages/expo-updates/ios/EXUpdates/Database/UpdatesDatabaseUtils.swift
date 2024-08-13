@@ -8,7 +8,11 @@
 // swiftlint:disable force_unwrapping
 
 import Foundation
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 
 internal struct UpdatesDatabaseUtilsErrorInfo {
   let code: Int

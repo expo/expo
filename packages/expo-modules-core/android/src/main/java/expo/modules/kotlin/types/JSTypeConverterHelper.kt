@@ -60,6 +60,10 @@ fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvi
   return result
 }
 
+fun <T> List<T>.toJSValue(): List<Any?> {
+  return this.map { JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true) }
+}
+
 fun <T> Iterable<T>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
   val result = containerProvider.createArray()
 

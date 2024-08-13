@@ -21,7 +21,7 @@ internal class ImagePickerOptions : Record, Serializable {
 
   @Field
   @FloatRange(from = 0.0, to = 1.0)
-  var quality: Double = 0.2
+  var quality: Double = 1.0
 
   @Field
   @IntRange(from = 0)

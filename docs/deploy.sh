@@ -37,7 +37,7 @@ aws s3 sync \
   --no-progress \
   --exclude "*" \
   --include "static/**" \
-  --cache-control "public, max-age=3600" \
+  --cache-control "public, max-age=3600, immutable" \
   "$target" \
   "s3://${bucket}"
 echo "::endgroup::"

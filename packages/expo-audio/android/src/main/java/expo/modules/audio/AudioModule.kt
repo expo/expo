@@ -173,6 +173,10 @@ class AudioModule : Module() {
         }
       }
 
+      Property("isAudioSamplingSupported") { _ ->
+        true
+      }
+
       Property("loop") { ref ->
         runOnMain {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE
@@ -257,6 +261,10 @@ class AudioModule : Module() {
         appContext.mainQueue.launch {
           ref.player.pause()
         }
+      }
+
+      Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
+        ref.setSamplingEnabled(enabled)
       }
 
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->

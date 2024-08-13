@@ -4,19 +4,19 @@ import { borderRadius, spacing } from '@expo/styleguide-base';
 import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
 import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
-import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
-import {
-  useEffect,
-  useRef,
-  useState,
-  type PropsWithChildren,
-  Children,
-  ReactNode,
-  isValidElement,
-} from 'react';
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
+import {
+  cleanCopyValue,
+  getRootCodeBlockProps,
+  LANGUAGES_REMAP,
+  parseValue,
+  replaceHashCommentsWithAnnotations,
+  replaceSlashCommentsWithAnnotations,
+  replaceXmlCommentsWithAnnotations,
+} from '~/common/code-utilities';
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
@@ -34,159 +34,15 @@ import { TextTheme } from '~/ui/components/Text/types';
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
-// Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
-async function initPrism() {
-  (typeof global !== 'undefined' ? global : window).Prism = Prism;
-  await import('~/ui/components/Snippet/prism-bash' as Language);
-  await import('prismjs/components/prism-diff' as Language);
-  await import('prismjs/components/prism-groovy' as Language);
-  await import('prismjs/components/prism-ini' as Language);
-  await import('prismjs/components/prism-java' as Language);
-  await import('prismjs/components/prism-json' as Language);
-  await import('prismjs/components/prism-objectivec' as Language);
-  await import('prismjs/components/prism-properties' as Language);
-  await import('prismjs/components/prism-ruby' as Language);
-}
-
-await initPrism();
-
 const attributes = {
   'data-text': true,
 };
 
-type Props = {
+type CodeProps = PropsWithChildren<{
   className?: string;
-};
+}>;
 
-export function cleanCopyValue(value: string) {
-  return value
-    .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
-    .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
-    .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
-    .replace(/^ +\r?\n|\n +\r?$/gm, '');
-}
-
-function escapeHtml(text: string) {
-  return text.replace(/"/g, '&quot;');
-}
-
-function replaceXmlCommentsWithAnnotations(value: string) {
-  return value
-    .replace(
-      /<span class="token (comment|plain-text)">&lt;!-- @info (.*?)--><\/span>\s*/g,
-      (match, type, content) => {
-        return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
-              content
-            )}">`
-          : '<span class="code-annotation">';
-      }
-    )
-    .replace(
-      /<span class="token (comment|plain-text)">&lt;!-- @hide (.*?)--><\/span>\s*/g,
-      (match, type, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
-          content
-        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      }
-    )
-    .replace(/\s*<span class="token (comment|plain-text)">&lt;!-- @end --><\/span>/g, '</span>');
-}
-
-function replaceHashCommentsWithAnnotations(value: string) {
-  return value
-    .replace(
-      /<span class="token (comment|plain-text)"># @info (.*?)#<\/span>\s*/g,
-      (match, type, content) => {
-        return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
-              content
-            )}">`
-          : '<span class="code-annotation">';
-      }
-    )
-    .replace(
-      /<span class="token (comment|plain-text)"># @hide (.*?)#<\/span>\s*/g,
-      (match, type, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${escapeHtml(
-          content
-        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      }
-    )
-    .replace(/\s*<span class="token (comment|plain-text)"># @end #<\/span>/g, '</span>');
-}
-
-function replaceSlashCommentsWithAnnotations(value: string) {
-  return value
-    .replace(
-      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @info (.*?)\*\/[\n\r\s]*<\/span>\s*/g,
-      (match, type, beforeWhitespace, content) => {
-        return content
-          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
-              content
-            )}">`
-          : `${beforeWhitespace}<span class="code-annotation">`;
-      }
-    )
-    .replace(
-      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @hide (.*?)\*\/([\n\r\s]*)<\/span>\s*/g,
-      (match, type, beforeWhitespace, content, afterWhitespace) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${escapeHtml(
-          content
-        )}${afterWhitespace}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      }
-    )
-    .replace(
-      /\s*<span class="token (comment|plain-text)">[\n\r\s]*\/\* @end \*\/([\n\r\s]*)<\/span>/g,
-      (match, type, afterWhitespace) => `</span>${afterWhitespace}`
-    );
-}
-
-function parseValue(value: string) {
-  if (value.startsWith('@@@')) {
-    const valueChunks = value.split('@@@');
-    const titleChunks = valueChunks[1].split('|');
-    const [params, title] = partition(
-      titleChunks,
-      chunk => chunk.includes('=') && !chunk.includes(' ')
-    );
-    return {
-      title: title[0],
-      params: Object.assign(
-        {},
-        ...params.map(param => {
-          const [key, value] = param.split('=');
-          return { [key]: value };
-        })
-      ),
-      value: valueChunks[2],
-    };
-  }
-  return {
-    value,
-  };
-}
-
-function getRootCodeBlockProps(children: ReactNode, className?: string) {
-  if (className && className.startsWith('language')) {
-    return { className, children };
-  }
-
-  const firstChild = Children.toArray(children)[0];
-  if (isValidElement(firstChild) && firstChild.props.className) {
-    if (firstChild.props.className.startsWith('language')) {
-      return {
-        className: firstChild.props.className,
-        children: firstChild.props.children,
-        isNested: true,
-      };
-    }
-  }
-
-  return {};
-}
-
-export function Code({ className, children }: PropsWithChildren<Props>) {
+export function Code({ className, children }: CodeProps) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
   const [isExpanded, setExpanded] = useState(true);
@@ -221,12 +77,12 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
 
   // mdx will add the class `language-foo` to codeblocks with the tag `foo`
   // if this class is present, we want to slice out `language-`
-  let lang = rootProps.className && rootProps.className.slice(9).toLowerCase();
+  let lang = rootProps.className && rootProps.className.split('-').at(-1).toLowerCase();
 
   // Allow for code blocks without a language.
   if (lang) {
-    if (lang in remapLanguages) {
-      lang = remapLanguages[lang];
+    if (lang in LANGUAGES_REMAP) {
+      lang = LANGUAGES_REMAP[lang];
     }
 
     const grammar = Prism.languages[lang as keyof typeof Prism.languages];
@@ -244,12 +100,13 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
     }
   }
 
-  const customCollapseStyle =
-    !isExpanded && collapseHeight
-      ? {
-          maxHeight: collapseHeight,
-        }
-      : undefined;
+  const commonClasses = [
+    wordWrap && '!whitespace-pre-wrap !break-words',
+    isExpanded && 'max-h-[unset]',
+    !isExpanded && `!overflow-hidden`,
+    !isExpanded && collapseHeight && `max-h-[${collapseHeight}px]`,
+    !isExpanded && !collapseHeight && EXPAND_SNIPPET_BOUND_CLASSNAME,
+  ];
 
   return codeBlockData?.title ? (
     <Snippet>
@@ -261,14 +118,7 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
         <pre
           ref={contentRef}
           css={STYLES_CODE_CONTAINER}
-          style={customCollapseStyle}
-          className={mergeClasses(
-            'relative',
-            wordWrap && '!whitespace-pre-wrap !break-words',
-            isExpanded && 'max-h-[unset]',
-            !isExpanded && `!overflow-hidden`,
-            !isExpanded && !collapseHeight && EXPAND_SNIPPET_BOUND_CLASSNAME
-          )}
+          className={mergeClasses('relative', ...commonClasses)}
           {...attributes}>
           <code
             css={STYLES_CODE_BLOCK}
@@ -282,14 +132,10 @@ export function Code({ className, children }: PropsWithChildren<Props>) {
     <pre
       ref={contentRef}
       css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]}
-      style={customCollapseStyle}
       className={mergeClasses(
         'relative',
         preferredTheme === Themes.DARK && 'dark-theme',
-        wordWrap && '!whitespace-pre-wrap !break-words',
-        isExpanded && 'max-h-[unset]',
-        !isExpanded && `!overflow-hidden`,
-        !isExpanded && !collapseHeight && EXPAND_SNIPPET_BOUND_CLASSNAME,
+        ...commonClasses,
         'last:mb-0'
       )}
       {...attributes}>
@@ -326,12 +172,6 @@ const STYLES_CODE_CONTAINER = css`
     margin-bottom: 0;
   }
 `;
-
-const remapLanguages: Record<string, string> = {
-  'objective-c': 'objc',
-  sh: 'bash',
-  rb: 'ruby',
-};
 
 const codeBlockContainerStyle = {
   margin: 0,

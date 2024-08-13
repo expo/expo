@@ -1,5 +1,6 @@
 import { HeaderBackButton } from '@react-navigation/elements';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
+import { useTheme } from 'ThemeProvider';
 import Fuse from 'fuse.js';
 import React from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
@@ -10,7 +11,6 @@ import { ScreenItems as ApiScreenItems } from './ExpoApisScreen';
 import { ScreenItems as ComponentScreenItems } from './ExpoComponentsScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import SearchBar from '../components/SearchBar';
-import { Colors } from '../constants';
 
 const fuse = new Fuse(ApiScreenItems.concat(ComponentScreenItems), { keys: ['name'] });
 
@@ -78,29 +78,32 @@ type SearchStack = {
 
 const Stack = createStackNavigator<SearchStack>();
 
-export default () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="search"
-      component={SearchScreen}
-      options={({ navigation, route }) => ({
-        header: () => (
-          <Header
-            navigation={navigation}
-            tintColor={Colors.tintColor}
-            backButton={Platform.OS === 'android'}>
-            <SearchBar
-              initialValue={route?.params?.q ?? ''}
-              onChangeQuery={(q) => navigation.setParams({ q })}
-              underlineColorAndroid="#fff"
-              tintColor={Colors.tintColor}
-            />
-          </Header>
-        ),
-      })}
-    />
-  </Stack.Navigator>
-);
+export default function SearchScreenStack() {
+  const { theme } = useTheme();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="search"
+        component={SearchScreen}
+        options={({ navigation, route }) => ({
+          header: () => (
+            <Header
+              navigation={navigation}
+              tintColor={theme.icon.info}
+              backButton={Platform.OS === 'android'}>
+              <SearchBar
+                initialValue={route?.params?.q ?? ''}
+                onChangeQuery={(q) => navigation.setParams({ q })}
+                underlineColorAndroid="#fff"
+                tintColor={theme.text.info}
+              />
+            </Header>
+          ),
+        })}
+      />
+    </Stack.Navigator>
+  );
+}
 
 const styles = {
   container: {

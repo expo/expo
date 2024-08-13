@@ -62,6 +62,11 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
     /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
     className?: string;
     onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+    /**
+     * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
+     * @see: https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references
+     */
+    relativeToDirectory?: boolean;
 }
 export interface LinkComponent {
     <T extends string | object>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;

@@ -31,15 +31,11 @@ final internal class WebAuthSession {
         ])
       }
     )
-    if #available(iOS 13.0, *) {
-      self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
-    }
+    self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
   }
 
   func open(_ promise: Promise) {
-    if #available(iOS 13.0, *) {
-      authSession?.presentationContextProvider = presentationContextProvider
-    }
+    authSession?.presentationContextProvider = presentationContextProvider
     authSession?.start()
     self.promise = promise
   }

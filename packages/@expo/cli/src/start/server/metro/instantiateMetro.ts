@@ -89,6 +89,13 @@ export async function loadMetroConfigAsync(
   }: { exp: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
+
+  // NOTE: Enable all the experimental Metro flags when RSC is enabled.
+  if (exp.experiments?.reactServerComponents) {
+    process.env.EXPO_USE_METRO_REQUIRE = '1';
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -159,7 +166,9 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    isReactCanaryEnabled:
+      (exp.experiments?.reactServerComponents || exp.experiments?.reactCanary) ?? false,
+    isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     getMetroBundler,
   });
 

@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.assignStylesValue = assignStylesValue;
+exports.getAppThemeGroup = getAppThemeGroup;
 exports.getAppThemeLightNoActionBarGroup = getAppThemeLightNoActionBarGroup;
 exports.getProjectStylesXMLPathAsync = getProjectStylesXMLPathAsync;
 exports.getStyleParent = getStyleParent;
@@ -85,7 +86,11 @@ function setStylesItem({
   xml = ensureDefaultStyleResourceXML(xml);
   let appTheme = getStyleParent(xml, parent);
   if (!appTheme) {
-    appTheme = (0, _Resources().buildResourceGroup)(parent);
+    appTheme = (0, _Resources().buildResourceGroup)({
+      parent: 'Theme.AppCompat.Light.NoActionBar',
+      // Default AppTheme parent
+      ...parent
+    });
     xml.resources.style.push(appTheme);
   }
   if (appTheme.item) {
@@ -123,11 +128,22 @@ function removeStylesItem({
   return xml;
 }
 
-// This is a very common theme so make it reusable.
+/**
+ * @deprecated Use `getAppThemeGroup` instead.
+ * Matching on both style name and parent leads to prebuild issues, as `AppTheme`
+ * style parent might be changed (when edge-to-edge is enabled, for example).
+ */
 function getAppThemeLightNoActionBarGroup() {
   return {
     name: 'AppTheme',
     parent: 'Theme.AppCompat.Light.NoActionBar'
+  };
+}
+
+// This is a very common theme so make it reusable.
+function getAppThemeGroup() {
+  return {
+    name: 'AppTheme'
   };
 }
 function assignStylesValue(xml, {

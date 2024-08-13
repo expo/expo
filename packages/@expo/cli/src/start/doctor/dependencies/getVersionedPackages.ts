@@ -151,14 +151,14 @@ export async function getVersionedPackagesAsync(
       // Unimodule packages from npm registry are modified to use the bundled version.
       // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
       const isExcludedFromValidation = pkg?.expo?.install?.exclude?.includes(name);
-      const hasSpecifiedExactVersion = rawSpec !== '';
+      const hasSpecifiedExactVersion = rawSpec !== '' && rawSpec !== '*';
       if (isExcludedFromValidation || hasSpecifiedExactVersion) {
         othersCount++;
         excludedNativeModules.push({
           name,
           bundledNativeVersion: versionsForSdk[name],
           isExcludedFromValidation,
-          specifiedVersion: rawSpec,
+          specifiedVersion: hasSpecifiedExactVersion ? rawSpec : '',
         });
         return raw;
       }

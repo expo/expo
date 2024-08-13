@@ -359,13 +359,7 @@ class ExpoCameraView(
           PreviewView.ScaleType.FILL_CENTER
         }
 
-        val resolutionSelector = ResolutionSelector.Builder().apply {
-          if (ratio != CameraRatio.ONE_ONE) {
-            setAspectRatioStrategy(ratio.mapToStrategy())
-          }
-          setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-        }.build()
-
+        val resolutionSelector = buildResolutionSelector()
         val preview = Preview.Builder()
           .setResolutionSelector(resolutionSelector)
           .build()
@@ -441,6 +435,19 @@ class ExpoCameraView(
           )
         }
       }
+
+  private fun buildResolutionSelector(): ResolutionSelector = if (ratio == CameraRatio.ONE_ONE) {
+    ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+      return@setResolutionFilter supportedSizes.filter {
+        it.width == it.height
+      }
+    }.setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
+  } else {
+    ResolutionSelector.Builder().apply {
+      setAspectRatioStrategy(ratio.mapToStrategy())
+      setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+    }.build()
+  }
 
   private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()

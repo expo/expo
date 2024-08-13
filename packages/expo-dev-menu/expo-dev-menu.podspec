@@ -24,7 +24,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.4'
+  s.platforms      = {
+    :ios => '15.1'
+  }
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -129,7 +131,9 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.platform = :ios, '13.4'
+    test_spec.platforms = {
+      :ios => '15.1'
+    }
   end
 
   s.test_spec 'UITests' do |test_spec|
@@ -137,7 +141,9 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
-    test_spec.platform = :ios, '13.4'
+    test_spec.platforms = {
+      :ios => '15.1'
+    }
   end
 
   s.default_subspec = ['Main', 'ReactNativeCompatibles']

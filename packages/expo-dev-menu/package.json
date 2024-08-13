@@ -62,8 +62,8 @@
     "fuse.js": "^6.4.6",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-native": "0.75.0-rc.5",
+    "react": "18.3.1",
+    "react-native": "0.75.0-rc.7",
     "url": "^0.11.0",
     "use-subscription": "^1.8.0"
   },

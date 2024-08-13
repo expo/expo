@@ -10,14 +10,16 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platforms       = { :ios => '13.4', :tvos => '13.4'}
+  s.platforms      = {
+    :ios => '15.1',
+    :tvos => '15.1'
+  }
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'SDWebImage', '~> 5.19.1'
-  s.dependency 'SDWebImageWebPCoder', '~> 0.14.6'
   s.dependency 'SDWebImageAVIFCoder', '~> 0.11.0'
   s.dependency 'SDWebImageSVGCoder', '~> 1.7.0'
   s.dependency 'libavif/libdav1d'
