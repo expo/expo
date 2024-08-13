@@ -1,0 +1,75 @@
+{
+  "name": "@expo/metro",
+  "version": "0.0.0",
+  "description": "The Metro bundler integration package for Expo projects",
+  "scripts": {
+    "build": "taskr",
+    "clean": "taskr clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module tsc && taskr",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck",
+    "watch": "taskr watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro"
+  },
+  "keywords": [
+    "expo",
+    "metro"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro#readme",
+  "files": [
+    "types",
+    "metro",
+    "metro-babel-transformer",
+    "metro-cache",
+    "metro-cache-key",
+    "metro-config",
+    "metro-core",
+    "metro-file-map",
+    "metro-resolver",
+    "metro-runtime",
+    "metro-source-map",
+    "metro-transform-plugins",
+    "metro-transform-worker"
+  ],
+  "dependencies": {
+    "metro": "0.80.9",
+    "metro-babel-transformer": "0.80.9",
+    "metro-cache": "0.80.9",
+    "metro-cache-key": "0.80.9",
+    "metro-config": "0.80.9",
+    "metro-core": "0.80.9",
+    "metro-file-map": "0.80.9",
+    "metro-resolver": "0.80.9",
+    "metro-runtime": "0.80.9",
+    "metro-source-map": "0.80.9",
+    "metro-transform-plugins": "0.80.9",
+    "metro-transform-worker": "0.80.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/types": "^7.20.0",
+    "@taskr/clear": "^1.1.0",
+    "@taskr/esnext": "^1.1.0",
+    "expo-module-scripts": "^3.3.0",
+    "taskr": "^1.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-augment.js",
+      "./taskfile-vendor.js"
+    ]
+  }
+}
