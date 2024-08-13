@@ -223,11 +223,6 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
    * @param seconds The time in seconds to stop recording at.
    */
   recordForDuration(seconds: number): void;
-
-  /**
-   * Release the recorder and frees up resources.
-   */
-  release(): void;
 }
 
 export type RecordingEvents = {

@@ -26,13 +26,16 @@ export function useAudioRecorder(options, statusListener) {
     const recorder = useReleasingSharedObject(() => {
         return new AudioModule.AudioRecorder(platformOptions);
     }, [JSON.stringify(platformOptions)]);
-    const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
             statusListener?.(status);
         });
         return () => subscription.remove();
     }, [recorder.id]);
+    return recorder;
+}
+export function useAudioRecorderState(recorder) {
+    const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const interval = setInterval(() => {
             const status = recorder.getStatus();
@@ -40,7 +43,7 @@ export function useAudioRecorder(options, statusListener) {
         }, 1000);
         return () => clearInterval(interval);
     }, [recorder.id]);
-    return [recorder, state];
+    return state;
 }
 export async function setIsAudioActiveAsync(active) {
     return await AudioModule.setIsAudioActiveAsync(active);

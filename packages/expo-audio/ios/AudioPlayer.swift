@@ -1,15 +1,21 @@
 import ExpoModulesCore
+import Combine
 
 private let playbackStatus = "onPlaybackStatusUpdate"
 private let audioSample = "onAudioSampleUpdate"
 
 public class AudioPlayer: SharedRef<AVPlayer> {
-  var id = UUID().uuidString
+  let id = UUID().uuidString
   var isLooping = false
   var shouldCorrectPitch = false
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .varispeed
   var currentRate: Float = 0.0
   let interval: Double
+
+  // MARK: Observers
+  private var timeToken: Any?
+  private var cancellables = Set<AnyCancellable>()
+  private var endObserver: NSObjectProtocol?
 
   private var audioProcessor: AudioTapProcessor?
   private var samplingEnabled = false
@@ -18,6 +24,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   init(_ ref: AVPlayer, interval: Double) {
     self.interval = interval
     super.init(ref)
+    
+    setupPublisher()
   }
 
   var isLoaded: Bool {
@@ -32,21 +40,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     playerIsBuffering()
   }
 
-  private func playerIsBuffering() -> Bool {
-    let isPlaying = ref.timeControlStatus == .playing
-
-    if isPlaying {
-      return false
-    }
-
-    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      return true
-    }
-
-    if let currentItem = ref.currentItem {
-      return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
-    }
-    return true
+  func play(at rate: Float) {
+    addPlaybackEndNotification()
+    registerTimeObserver()
+    ref.playImmediately(atRate: rate)
   }
 
   func setSamplingEnabled(enabled: Bool) {
@@ -56,40 +53,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     } else {
       uninstallTap()
     }
-  }
-
-  func installTap() {
-    if let item = ref.currentItem, !tapInstalled {
-      audioProcessor = AudioTapProcessor(playerItem: item)
-      tapInstalled = audioProcessor?.installTap() ?? false
-      audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
-        guard let self,
-        let audioBuffer = buffer?.pointee,
-        let data = audioBuffer.mData else {
-          return
-        }
-
-        let channelCount = Int(audioBuffer.mNumberChannels)
-        let dataPointer = data.assumingMemoryBound(to: Float.self)
-
-        let channels = (0..<channelCount).map { channelIndex in
-          let channelData = stride(from: channelIndex, to: frameCount, by: channelCount).map { frameIndex in
-            dataPointer[frameIndex]
-          }
-          return ["frames": channelData]
-        }
-
-        self.emit(event: audioSample, arguments: [
-          "channels": channels,
-          "timestamp": timestamp
-        ])
-      }
-    }
-  }
-
-  func uninstallTap() {
-    audioProcessor?.uninstallTap()
-    audioProcessor = nil
   }
 
   func currentStatus() -> [String: Any] {
@@ -119,9 +82,112 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     self.emit(event: playbackStatus, arguments: body)
   }
+  
+  private func setupPublisher() {
+    ref.publisher(for: \.currentItem?.status)
+      .sink { status in
+        guard let status else {
+          return
+        }
+        if status == .readyToPlay {
+          self.updateStatus(with: [
+            "isLoaded": true
+          ])
+        }
+      }
+      .store(in: &cancellables)
+  }
+  
+  private func playerIsBuffering() -> Bool {
+    let isPlaying = ref.timeControlStatus == .playing
 
-  // temporary until we have delegate methods for releasing the SharedObject
-  deinit {
-    uninstallTap()
+    if isPlaying {
+      return false
+    }
+
+    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+      return true
+    }
+
+    if let currentItem = ref.currentItem {
+      return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
+    }
+    return true
+  }
+  
+  private func installTap() {
+    if let item = ref.currentItem, !tapInstalled {
+      audioProcessor = AudioTapProcessor(playerItem: item)
+      tapInstalled = audioProcessor?.installTap() ?? false
+      audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
+        guard let self,
+        let audioBuffer = buffer?.pointee,
+        let data = audioBuffer.mData,
+        samplingEnabled else {
+          return
+        }
+
+        let channelCount = Int(audioBuffer.mNumberChannels)
+        let dataPointer = data.assumingMemoryBound(to: Float.self)
+
+        let channels = (0..<channelCount).map { channelIndex in
+          let channelData = stride(from: channelIndex, to: frameCount, by: channelCount).map { frameIndex in
+            dataPointer[frameIndex]
+          }
+          return ["frames": channelData]
+        }
+
+        self.emit(event: audioSample, arguments: [
+          "channels": channels,
+          "timestamp": timestamp
+        ])
+      }
+    }
+  }
+  
+  private func uninstallTap() {
+    tapInstalled = false
+    audioProcessor?.uninstallTap()
+    audioProcessor?.sampleBufferCallback = nil
+  }
+
+  private func addPlaybackEndNotification() {
+    if let previous = endObserver {
+      NotificationCenter.default.removeObserver(previous)
+    }
+    endObserver = NotificationCenter.default.addObserver(
+      forName: .AVPlayerItemDidPlayToEndTime,
+      object: ref.currentItem,
+      queue: nil
+    ) { _ in
+      if self.isLooping {
+        self.ref.seek(to: CMTime.zero)
+        self.ref.play()
+      } else {
+        self.updateStatus(with: [
+          "isPlaying": false
+        ])
+      }
+    }
+  }
+
+  private func registerTimeObserver() {
+    let updateInterval = interval / 1000
+    let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
+      self.updateStatus(with: [
+        "currentPosition": time.seconds * 1000
+      ])
+    }
+  }
+  
+  public override func sharedObjectWillRelease() {
+    AudioComponentRegistry.shared.remove(self)
+    setSamplingEnabled(enabled: false)
+    if let token = timeToken {
+      ref.removeTimeObserver(token as Any)
+    }
+    NotificationCenter.default.removeObserver(endObserver as Any)
+    ref.pause()
   }
 }

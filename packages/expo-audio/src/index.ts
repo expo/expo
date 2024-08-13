@@ -47,13 +47,11 @@ export function useAudioSampleListener(
 export function useAudioRecorder(
   options: RecordingOptions,
   statusListener?: (status: RecordingStatus) => void
-): [AudioRecorder, RecorderState] {
+): AudioRecorder {
   const platformOptions = createRecordingOptions(options);
   const recorder = useReleasingSharedObject(() => {
     return new AudioModule.AudioRecorder(platformOptions);
   }, [JSON.stringify(platformOptions)]);
-
-  const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
     const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
@@ -61,6 +59,12 @@ export function useAudioRecorder(
     });
     return () => subscription.remove();
   }, [recorder.id]);
+
+  return recorder;
+}
+
+export function useAudioRecorderState(recorder: AudioRecorder) {
+  const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,7 +75,7 @@ export function useAudioRecorder(
     return () => clearInterval(interval);
   }, [recorder.id]);
 
-  return [recorder, state];
+  return state;
 }
 
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
