@@ -113,11 +113,12 @@ These props are sent over an async bridge so they won't be updated synchronously
 You can send type-safe native functions to DOM components by passing async functions as top-level props to the DOM component:
 
 ```ts App.tsx (native)
-import MyWebView from './my-component';
+'use dom';
+import DomComponent from './my-component';
 
 export default function App() {
   return (
-    <MyWebView
+    <DomComponent
       hello={(data: string) => {
         console.log('Hello', data)
       }}
@@ -212,6 +213,8 @@ export default function Route() {
 ```
 
 ```tsx my-component.tsx (web)
+'use dom';
+
 import { useEffect } from 'react';
 
 function useSize(callback: (size: [number, number]) => void) {
