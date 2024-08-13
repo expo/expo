@@ -7,7 +7,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
-import com.facebook.react.devsupport.DisabledDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.runtime.ReactHostImpl
@@ -40,7 +39,15 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
       return
     }
-    if (currentDevSupportManager is DisabledDevSupportManager) {
+
+    var devSupportManagerClass: Class<*>
+    try {
+      // react-native version 0.75.0 renamed DisabledDevSupportManager to ReleaseDevSupportManager
+      devSupportManagerClass = Class.forName("com.facebook.react.devsupport.ReleaseDevSupportManager")
+    } catch (e: ClassNotFoundException) {
+      devSupportManagerClass = Class.forName("com.facebook.react.devsupport.DisabledDevSupportManager")
+    }
+    if (devSupportManagerClass.isInstance(reactInstanceManager.devSupportManager)) {
       Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
       return
     }
@@ -63,7 +70,15 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
       return
     }
-    if (currentDevSupportManager is DisabledDevSupportManager) {
+
+    var devSupportManagerClass: Class<*>
+    try {
+      // react-native version 0.75.0 renamed DisabledDevSupportManager to ReleaseDevSupportManager
+      devSupportManagerClass = Class.forName("com.facebook.react.devsupport.ReleaseDevSupportManager")
+    } catch (e: ClassNotFoundException) {
+      devSupportManagerClass = Class.forName("com.facebook.react.devsupport.DisabledDevSupportManager")
+    }
+    if (devSupportManagerClass.isInstance(currentDevSupportManager)) {
       Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
       return
     }

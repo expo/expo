@@ -9,7 +9,21 @@ object DevMenuDevSettings {
     val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactHost)
     val devSettings = devDelegate.devSettings
 
-    val jsBundleURL = reactHost.devSupportManager?.jsBundleURLForRemoteDebugging ?: ""
+    val jsBundleURL = try {
+      // Attempt to get the field "jsBundleURLForRemoteDebugging"
+      val field = reactHost.devSupportManager?.javaClass?.getDeclaredField("jsBundleURLForRemoteDebugging")
+      field?.isAccessible = true
+      field?.get(reactHost.devSupportManager) as? String
+    } catch (e: NoSuchFieldException) {
+      // If the field is not found, try "jSBundleURLForRemoteDebugging"
+      try {
+        val field = reactHost.devSupportManager?.javaClass?.getDeclaredField("jSBundleURLForRemoteDebugging")
+        field?.isAccessible = true
+        field?.get(reactHost.devSupportManager) as? String
+      } catch (e: NoSuchFieldException) {
+       null
+      }
+    } ?: ""
 
     if (devSettings != null) {
       return Bundle().apply {

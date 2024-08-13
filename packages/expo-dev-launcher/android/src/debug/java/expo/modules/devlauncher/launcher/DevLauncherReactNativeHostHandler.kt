@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.rncompatibility
+package expo.modules.devlauncher.launcher
 
 import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
@@ -9,6 +9,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.rncompatibility.DevLauncherDevSupportManagerFactory
 import java.lang.ref.WeakReference
 
 class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandler {
