@@ -123,13 +123,13 @@ it(`adds dom components proxy for android in production`, () => {
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
-  expect(res.code).toMatch(/www\/[a-zA-Z0-9]+\.html/);
+  expect(res.code).toMatch(/www.bundle\/[a-zA-Z0-9]+\.html/);
 
   expect(res.code).toMatchInlineSnapshot(`
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
     var source = {
-      uri: "file:///android_asset" + "www/98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html"
+      uri: "file:///android_asset/www.bundle/98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html"
     };
     export default React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
@@ -145,7 +145,7 @@ describe('errors', () => {
   it(`throws when there are non-default exports`, () => {
     const sourceCode = `
         "use dom"
-        
+
         export function App() {
         return <div />
         }`;
@@ -153,7 +153,7 @@ describe('errors', () => {
     expect(() => transformClient(sourceCode)).toThrowErrorMatchingInlineSnapshot(`
       "/unknown: Modules with the "use dom" directive only support a single default export.
         2 |         "use dom"
-        3 |         
+        3 |
       > 4 |         export function App() {
           |         ^
         5 |         return <div />
