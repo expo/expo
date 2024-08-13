@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
 // This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
-import { renderRsc } from 'expo-router/build/rsc/rsc-renderer';
+import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
 import path from 'node:path';
 
-import type { RenderRscArgs } from './rsc';
+import { renderRsc } from './rsc-renderer';
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
@@ -47,7 +46,7 @@ function getSSRManifest(
 
 // The import map allows us to use external modules from different bundling contexts.
 type ImportMap = {
-  router: () => Promise<typeof import('expo-router/build/rsc/router/expo-definedRouter')>;
+  router: () => Promise<typeof import('./router/expo-definedRouter')>;
 };
 
 export async function renderRscWithImportsAsync(
