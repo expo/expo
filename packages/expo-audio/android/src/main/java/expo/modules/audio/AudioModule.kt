@@ -280,8 +280,7 @@ class AudioModule : Module() {
       }
 
       Function("remove") { ref: AudioPlayer ->
-        val id = ref.id
-        players.remove(id)
+        players.remove(ref.id)
       }
     }
 

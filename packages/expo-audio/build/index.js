@@ -34,14 +34,13 @@ export function useAudioRecorder(options, statusListener) {
     }, [recorder.id]);
     return recorder;
 }
-export function useAudioRecorderState(recorder) {
+export function useAudioRecorderState(recorder, interval = 1000) {
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
-        const interval = setInterval(() => {
-            const status = recorder.getStatus();
-            setState(status);
-        }, 1000);
-        return () => clearInterval(interval);
+        const int = setInterval(() => {
+            setState(recorder.getStatus());
+        }, interval);
+        return () => clearInterval(int);
     }, [recorder.id]);
     return state;
 }

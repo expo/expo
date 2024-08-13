@@ -10,7 +10,7 @@ export declare function useAudioSampleListener(player: AudioPlayer, listener: (d
     timestamp: number;
 }) => void): void;
 export declare function useAudioRecorder(options: RecordingOptions, statusListener?: (status: RecordingStatus) => void): AudioRecorder;
-export declare function useAudioRecorderState(recorder: AudioRecorder): RecorderState;
+export declare function useAudioRecorderState(recorder: AudioRecorder, interval?: number): RecorderState;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
 export { AudioModule, AudioPlayer, AudioRecorder };

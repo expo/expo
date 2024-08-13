@@ -63,16 +63,15 @@ export function useAudioRecorder(
   return recorder;
 }
 
-export function useAudioRecorderState(recorder: AudioRecorder) {
+export function useAudioRecorderState(recorder: AudioRecorder, interval: number = 1000) {
   const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const status = recorder.getStatus();
-      setState(status);
-    }, 1000);
+    const int = setInterval(() => {
+      setState(recorder.getStatus());
+    }, interval);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(int);
   }, [recorder.id]);
 
   return state;
