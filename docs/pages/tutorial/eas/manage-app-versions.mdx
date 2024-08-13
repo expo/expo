@@ -19,11 +19,32 @@ An app version is composed of two values:
 
 Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of developer and user facing values), we cannot submit another build to the app stores with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
+We can manually manage developer-facing values by adding `android.versionCode` and `ios.buildNumber` in **app.config.js**.
+
+```json app.config.js
+{
+  "ios": {
+    /* @info */
+    "buildNumber": "1"
+    /* @end */
+    /* @hide ... */ /* @end */
+  },
+  "android": {
+    /* @info */
+    "versionCode": "1"
+    /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+After manually adding these values, we need to update them every time before creating a new production build otherwise we will run into a failed submission error. However, to eliminate the chances of running into the error, we can automate this process using EAS Build in the next section
+
+> **Note**: The user-facing version number is not handled by EAS. Instead, we define that in the app store developer portals before submitting our production app for review.
+
 ## Automate app version management with EAS Build
 
-> **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `11.0.0`. If you are using an older version of the CLI, be aware that **`local` will be the default behavior**.
-
-EAS Build can assist us in automating these values by utilizing the [remote version resource](/build-reference/app-versions/#remote-version-source). This feature automatically increments developer-facing values and keeps track of them whenever a new production release is made. This is the default behavior and to enable it we need to set the `cli.appVersionSource` and `build.production.autoIncrement` values.
+EAS Build can assist us in automating these values by utilizing the [remote version resource](/build-reference/app-versions/#remote-version-source). This feature automatically increments developer-facing values and keeps track of them whenever a new production release is made.
 
 In **eas.json**:
 
@@ -67,57 +88,6 @@ If your app is already published in the app stores, the developer-facing app ver
 After these steps, the app versions will be synced to EAS Build remotely. You can set `build.production.autoIncrement` to `true` in **eas.json**. When you create a new production build, the `versionCode` and `buildNumber` will be automatically incremented from now on.
 
 </Collapsible>
-
-## Manually manage app version
-
-> **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `11.0.0`. If you are using an older version of the CLI, you **don't need to specify the version source explicitly to `local`**.
-
-We can also manage the app versions manually. To enable that we need to set the `cli.appVersionSource` to `local`.
-
-In **eas.json**:
-
-- Add `cli.appVersionSource` and set it to `local`
-
-{/* prettier-ignore */}
-```json eas.json
-{
-  "cli": {
-    /* @hide ... */ /* @end */
-    /* @info Add <CODE>appVersionSource</CODE> and set it to <CODE>local</CODE>. */
-    "appVersionSource": "local"
-    /* @end */
-  },
-  "build": {
-    "production": {
-      /* @hide ... */ /* @end */
-    }
-  }
-  /* @hide ... */ /* @end */
-}
-```
-
-We can manually manage developer-facing values by adding `android.versionCode` and `ios.buildNumber` in **app.config.js**.
-
-```json app.config.js
-{
-  "ios": {
-    /* @info */
-    "buildNumber": "1"
-    /* @end */
-    /* @hide ... */ /* @end */
-  },
-  "android": {
-    /* @info */
-    "versionCode": "1"
-    /* @end */
-  }
-  /* @hide ... */ /* @end */
-}
-```
-
-After manually adding these values, we need to update them every time before creating a new production build otherwise we will run into a failed submission error. However, to eliminate the chances of running into the error, we can automate this process using EAS Build in the next section
-
-> **Note**: The user-facing version number is not handled by EAS. Instead, we define that in the app store developer portals before submitting our production app for review.
 
 ## Summary
 
