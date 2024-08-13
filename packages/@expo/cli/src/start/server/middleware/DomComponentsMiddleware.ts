@@ -11,6 +11,8 @@ import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
+
 const warnUnstable = memoize(() =>
   Log.warn('Using experimental DOM Components API. Production exports may not work as expected.')
 );
