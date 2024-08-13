@@ -647,7 +647,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       files
     );
 
-    console.log('Collected evaluated client boundaries:', clientBoundaries);
+    debug('Evaluated client boundaries:', clientBoundaries);
 
     // Run metro bundler and create the JS bundles/source maps.
     const bundle = await this.legacySinglePageExportBundleAsync(
@@ -660,7 +660,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
-    // TODO: Perform this transform in the bundler.
+    // HACK: Maybe this should be done in the serializer.
     const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
       path.relative(serverRoot, boundary)
     );
@@ -687,11 +687,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       });
     } else {
+      // Native apps with bundle splitting disabled.
+      debug('No split bundles');
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
         // @ts-expect-error
         ssrManifest.set(boundary, null);
       });
-      debug('No split bundles');
     }
 
     // Export the static RSC files
