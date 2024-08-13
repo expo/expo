@@ -40,13 +40,11 @@ export function createServerComponentsMiddleware(
     instanceMetroOptions,
     ssrLoadModule,
     ssrLoadModuleArtifacts,
-    getServerUrl,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
-    getServerUrl: () => string;
   }
 ) {
   const rscMiddleware = getRscMiddleware({
@@ -202,12 +200,11 @@ export function createServerComponentsMiddleware(
         inlineSourceMap: false,
       });
 
-      searchParams.set('dev', String(__DEV__));
       searchParams.set('resolver.clientboundary', String(true));
       searchParams.set('modulesOnly', String(true));
       searchParams.set('runModule', String(false));
 
-      const clientReferenceUrl = new URL(getServerUrl());
+      const clientReferenceUrl = new URL('http://a');
 
       // TICKLE: Handshake 1
       searchParams.set('xRSC', '1');

@@ -935,9 +935,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          getServerUrl: () => {
-            return this.getDevServerUrlOrAssert();
-          },
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
@@ -1005,9 +1002,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          getServerUrl: () => {
-            return this.getDevServerUrlOrAssert();
-          },
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
