@@ -1,5 +1,4 @@
 ---
-modificationDate:
 title: Keyboard handling
 sidebar_title: Keyboard handling
 description: A guide to handling common keyboard interactions.
@@ -113,9 +112,9 @@ export default function RootLayout() {
 
 ### Using keyboard controller
 
-Let's explore how we can achieve the `KeyboardAvoidingView` functionality using the `useKeyboardHandler` hook.
+Let's explore how you can achieve the `KeyboardAvoidingView` functionality using the `useKeyboardHandler` hook.
 
-The `useKeyboardHandler` hook takes two parameters: a handler and dependencies. The handler provides information about the current device's keyboard. We'll use the `onMove` handler to get the keyboard height and use it to push our content above the keyboard when an input is active:
+The `useKeyboardHandler` hook takes two parameters: a handler and dependencies. The handler provides information about the current device's keyboard. You'll use the `onMove` handler to get the keyboard height and use it to push our content above the keyboard when an input is active:
 
 ```js
 const useGradualAnimation = () => {
@@ -134,7 +133,7 @@ const useGradualAnimation = () => {
 };
 ```
 
-In this example, we use the `useSharedValue` hook from Reanimated to store the keyboard's height. The value changes from 0 when the keyboard is dismissed to the maximum height when it's active.
+The above example uses the `useSharedValue` hook from Reanimated to store the keyboard's height. The value changes from 0 when the keyboard is dismissed to the maximum height when it's active.
 
 Now, let's use our `useGradualAnimation` hook inside a component:
 
@@ -163,7 +162,7 @@ export default function TabTwoScreen() {
 }
 ```
 
-In this example, we use the keyboard's height to move the screen content above the keyboard. The view after the keyboard has an animated style that modifies its height based on the keyboard's height.
+This example uses the keyboard's height to move the screen content above the keyboard. The view after the keyboard has an animated style that modifies its height based on the keyboard's height.
 
 ### Handling multiple inputs
 
@@ -194,7 +193,7 @@ export default function AdvancedToolbar() {
 }
 ```
 
-In this example, we wrap the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
+The example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
 
 Keyboard Controller provides consistency across Android and iOS with minimal configuration, offering the native feel users expect.
 
