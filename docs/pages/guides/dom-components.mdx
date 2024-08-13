@@ -159,10 +159,10 @@ const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 
 ## Public assets
 
-The contents of the root `/public` directory will be copied to the native app's binary to support using public assets in the DOM components. Consider the following:
+The contents of the root `/public` directory will be copied to the native app's binary to support using public assets in the DOM components. Since the public assets will be served from the local filesystem, you can use the `process.env.DOM_BASE_URL` prefix to reference the correct path. For example:
 
 ```js
-<img src="/img.png" />
+<img src=`${process.env.EXPO_DOM_BASE_URL}/img.png` />
 ```
 
 {/* TODO: This is likely to change. */}

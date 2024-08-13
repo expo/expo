@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Button, View } from 'react-native';
+
 import Actions from '../components/02-actions';
 import LocalAsset from '../components/03-local-asset';
 import Tailwind from '../components/04-tailwind';
-import { useState } from 'react';
+import PublicAsset from '../components/05-public-asset';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
@@ -27,6 +29,7 @@ export default function Page() {
       />
 
       <LocalAsset />
+      <PublicAsset />
 
       <Tailwind />
     </View>

@@ -35,6 +35,7 @@ import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
+import { copyPublicFolderAsync } from '../publicFolder';
 import {
   BundleAssetWithFileHashes,
   ExportAssetMap,
@@ -85,13 +86,21 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // We use the bundleOutput directory to get the assets directory.
   const domComponentProxyOutputDir =
     options.platform === 'android' ? path.dirname(options.bundleOutput) : options.assetsDest;
+  const hasDomComponents = domComponentProxyOutputDir && files.size > 0;
 
   // Persist bundle and source maps.
   await Promise.all([
     output.save(bundle, options, Log.log),
 
     // Write dom components proxy files.
-    domComponentProxyOutputDir ? persistMetroFilesAsync(files, domComponentProxyOutputDir) : null,
+    hasDomComponents ? persistMetroFilesAsync(files, domComponentProxyOutputDir) : null,
+    // Copy public folder for dom components only if
+    hasDomComponents
+      ? copyPublicFolderAsync(
+          path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER),
+          path.join(domComponentProxyOutputDir, DOM_COMPONENTS_BUNDLE_DIR)
+        )
+      : null,
 
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
