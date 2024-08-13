@@ -32,6 +32,12 @@ export type LinearGradientProps = ViewProps & {
   /**
    * A readonly array of colors that represent stops in the gradient. At least two colors are required
    * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
+   *
+   * For TS to know the provided array has 2 or more values, it needs to be provided "inline" or typed `as const`. For example:
+   * @example
+   * ```ts
+   * const colors = ['red', 'blue', 'green'] as const;
+   * ```
    */
   colors: readonly [string, string, ...string[]];
   /**
