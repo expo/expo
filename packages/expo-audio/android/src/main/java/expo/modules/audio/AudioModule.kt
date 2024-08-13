@@ -65,9 +65,7 @@ class AudioModule : Module() {
       audioInterruptionMode = mode.interruptionMode
       staysActiveInBackground = mode.shouldPlayInBackground
       shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
-      if (shouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(true)
-      }
+      updatePlaySoundThroughEarpiece(shouldRouteThroughEarpiece)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
