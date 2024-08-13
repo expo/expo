@@ -48,6 +48,10 @@ test.describe(inputDir, () => {
 
     console.time('Open page');
 
+    const serverResponsePromise = page.waitForResponse((response) => {
+      return new URL(response.url()).pathname.startsWith('/_flight/web/index.txt');
+    });
+
     // Listen for console errors
     const errorLogs: string[] = [];
     page.on('console', (msg) => {
@@ -66,8 +70,12 @@ test.describe(inputDir, () => {
     await page.goto(expo.url);
     console.timeEnd('Open page');
 
+    await serverResponsePromise;
+
+    await page.waitForSelector('[data-testid="main-text"]');
+
     // Ensure the initial state is correct
-    await expect(page.locator('[data-testid="main-text"]')).toHaveText('Hey!');
+    await expect(page.locator('[data-testid="main-text"]')).toHaveText('Hey RSC');
 
     expect(errorLogs).toEqual([]);
     expect(errors).toEqual([]);
