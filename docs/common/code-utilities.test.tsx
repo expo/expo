@@ -1,6 +1,6 @@
-import { cleanCopyValue } from './code';
+import { cleanCopyValue } from './code-utilities';
 
-describe('cleanCopyValue', () => {
+describe(cleanCopyValue, () => {
   it('SlashComments - preserves the fully annotated line', () => {
     expect(
       cleanCopyValue(

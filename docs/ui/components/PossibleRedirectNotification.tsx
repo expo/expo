@@ -1,13 +1,15 @@
-import * as React from 'react';
+import { PropsWithChildren, useState, useEffect } from 'react';
 
 import { A, P } from '~/ui/components/Text';
 
-const PossibleRedirectNotification = ({ newUrl }: React.PropsWithChildren<{ newUrl: string }>) => {
-  const [targetId, setTargetId] = React.useState<string | null>(null);
+type Props = PropsWithChildren<{ newUrl: string }>;
+
+export default function PossibleRedirectNotification({ newUrl }: Props) {
+  const [targetId, setTargetId] = useState<string | null>(null);
 
   // We could add a listener on `window.onhashchange` but
   // I don't think this is actually needed.
-  React.useEffect(() => {
+  useEffect(() => {
     const hash = window.location.hash;
     const id = hash ? hash.replace('#', '') : null;
     if (hash && !document.getElementById(id as string)) {
@@ -27,6 +29,4 @@ const PossibleRedirectNotification = ({ newUrl }: React.PropsWithChildren<{ newU
   } else {
     return null;
   }
-};
-
-export default PossibleRedirectNotification;
+}
