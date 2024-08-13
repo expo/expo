@@ -14,7 +14,10 @@ export function registerWebModule<
   ensureNativeModulesAreInstalled();
 
   const moduleName = moduleImplementation.name;
-  if (!globalThis.expo.modules) {
+  if (!moduleName) {
+    throw new Error('Module implementation must be a class');
+  }
+  if (!globalThis?.expo?.modules) {
     globalThis.expo.modules = {};
   }
   if (globalThis.expo.modules[moduleName]) {
