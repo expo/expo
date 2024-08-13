@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add initial version of DOM Components and expose `expoDomComponentReference` on metadata. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Implement `require.unstable_importMaybeSync` and use it in JSResource. ([#30703](https://github.com/expo/expo/pull/30703) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental support for bundling split native chunks in production. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental support for tree shaking. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
@@ -29,6 +30,7 @@
 - Align source map behavior with community exports. ([#29811](https://github.com/expo/expo/pull/29811) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix source map generation in development. ([#29463](https://github.com/expo/expo/pull/29463) by [@EvanBacon](https://github.com/EvanBacon))
 - Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
+- Fix `TypeError: (0 , sourceMapString_1.default) is not a function` bug due to an incompatibiliy with `metro@0.80.10`'s `sourceMapString` module. ([#30905](https://github.com/expo/expo/pull/30905) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

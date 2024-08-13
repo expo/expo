@@ -121,11 +121,13 @@ public final class SharedObjectRegistry {
   internal func delete(_ id: SharedObjectId) {
     Self.lockQueue.async {
       if let pair = self.pairs[id] {
+        pair.native.sharedObjectWillRelease()
         // Reset an ID on the objects.
         pair.native.sharedObjectId = 0
 
         // Delete the pair from the dictionary.
         self.pairs[id] = nil
+        pair.native.sharedObjectDidRelease()
       }
     }
   }

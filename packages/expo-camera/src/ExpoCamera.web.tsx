@@ -11,13 +11,9 @@ import {
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
+import { CameraNativeProps, CameraCapturedPicture } from './Camera.types';
 import CameraManager from './ExpoCameraManager.web';
-import {
-  CameraCapturedPicture,
-  CameraNativeProps,
-  CameraPictureOptions,
-  CameraType,
-} from './legacy/Camera.types';
+import { CameraPictureOptions, CameraType } from './legacy/Camera.types';
 import { capture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
 import { useWebCameraStream } from './web/useWebCameraStream';
@@ -32,12 +28,12 @@ export interface ExponentCameraRef {
 
 const ExponentCamera = forwardRef(
   (
-    { type, poster, ...props }: PropsWithChildren<CameraNativeProps>,
+    { facing, poster, ...props }: PropsWithChildren<CameraNativeProps>,
     ref: Ref<ExponentCameraRef>
   ) => {
     const video = useRef<HTMLVideoElement | null>(null);
 
-    const native = useWebCameraStream(video, type as CameraType, props, {
+    const native = useWebCameraStream(video, facing as CameraType, props, {
       onCameraReady() {
         if (props.onCameraReady) {
           props.onCameraReady();
@@ -48,17 +44,17 @@ const ExponentCamera = forwardRef(
 
     const isQRScannerEnabled = useMemo<boolean>(() => {
       return Boolean(
-        props.barCodeScannerSettings?.barCodeTypes?.includes('qr') && !!props.onBarCodeScanned
+        props.barcodeScannerSettings?.barcodeTypes?.includes('qr') && !!props.onBarcodeScanned
       );
-    }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
+    }, [props.barcodeScannerSettings?.barcodeTypes, props.onBarcodeScanned]);
 
     useWebQRScanner(video, {
-      interval: props.barCodeScannerSettings?.interval,
+      interval: 300,
       isEnabled: isQRScannerEnabled,
       captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
       onScanned(event) {
-        if (props.onBarCodeScanned) {
-          props.onBarCodeScanned(event);
+        if (props.onBarcodeScanned) {
+          props.onBarcodeScanned(event);
         }
       },
     });

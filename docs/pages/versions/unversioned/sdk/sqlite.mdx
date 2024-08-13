@@ -8,6 +8,7 @@ platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
@@ -15,6 +16,60 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app.json/app.config.js
+
+You can configure `expo-sqlite` for advanced configurations using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "android": {
+            // Override the shared configuration for Android
+            "enableFTS": false,
+            "useSQLCipher": false
+          },
+          "ios": {
+            // You can also override the shared configurations for iOS
+            "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'customBuildFlags',
+      description: 'Custom build flags to be passed to the SQLite build process.',
+    },
+    {
+      name: 'enableFTS',
+      description:
+        'Whether to enable the [FTS3, FTS4](https://www.sqlite.org/fts3.html) and [FTS5](https://www.sqlite.org/fts5.html) extensions.',
+      default: 'true',
+    },
+    {
+      name: 'useSQLCipher',
+      description:
+        'Use the [SQLCipher](https://www.zetetic.net/sqlcipher/) implementations rather than the default SQLite.',
+      default: 'false',
+    },
+  ]}
+/>
 
 ## Usage
 

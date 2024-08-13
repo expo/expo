@@ -485,7 +485,7 @@ export const resolveTypeName = (
       }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
-      if (target) {
+      if (target && operator && ['readonly', 'keyof'].includes(operator)) {
         return (
           <>
             {operator} {resolveTypeName(target, sdkVersion)}

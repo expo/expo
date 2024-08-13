@@ -16,6 +16,7 @@
 - Fix data race in `AppLauncherWithDatabaseMock.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
 - Add missing `react` peer dependencies for isolated modules. ([#30488](https://github.com/expo/expo/pull/30488) by [@byCedric](https://github.com/byCedric))
 - Use relative entry point from `@expo/config/paths` with support for server root. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
+- [iOS] Rollback to system SQLite3 and fix incompatible issue when any third-party library uses iOS system SQLite3. ([#30826](https://github.com/expo/expo/pull/30826) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -28,7 +29,7 @@
 
 ### ⚠️ Notices
 
-- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.25.21 - 2024-07-22
 
