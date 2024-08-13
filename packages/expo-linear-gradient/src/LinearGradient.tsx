@@ -78,7 +78,7 @@ export type LinearGradientProps = ViewProps & {
 export class LinearGradient extends React.Component<LinearGradientProps> {
   render() {
     const { colors, locations, start, end, dither, ...props } = this.props;
-    let resolvedLocations = locations as number[] | undefined;
+    let resolvedLocations: readonly number[] | null | undefined = locations;
     if (locations && colors.length !== locations.length) {
       console.warn('LinearGradient colors and locations props should be arrays of the same length');
       resolvedLocations = locations.slice(0, colors.length);
