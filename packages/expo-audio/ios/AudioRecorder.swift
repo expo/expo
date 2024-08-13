@@ -76,7 +76,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "url": nil
     ])
   }
-  
+
   override func sharedObjectWillRelease() {
     AudioComponentRegistry.shared.remove(self)
     ref.stop()

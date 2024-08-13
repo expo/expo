@@ -24,7 +24,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   init(_ ref: AVPlayer, interval: Double) {
     self.interval = interval
     super.init(ref)
-    
+
     setupPublisher()
   }
 
@@ -82,7 +82,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     self.emit(event: playbackStatus, arguments: body)
   }
-  
+
   private func setupPublisher() {
     ref.publisher(for: \.currentItem?.status)
       .sink { status in
@@ -97,7 +97,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       }
       .store(in: &cancellables)
   }
-  
+
   private func playerIsBuffering() -> Bool {
     let isPlaying = ref.timeControlStatus == .playing
 
@@ -114,7 +114,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     return true
   }
-  
+
   private func installTap() {
     if let item = ref.currentItem, !tapInstalled {
       audioProcessor = AudioTapProcessor(playerItem: item)
@@ -144,7 +144,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       }
     }
   }
-  
+
   private func uninstallTap() {
     tapInstalled = false
     audioProcessor?.uninstallTap()
@@ -180,7 +180,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       ])
     }
   }
-  
+
   public override func sharedObjectWillRelease() {
     AudioComponentRegistry.shared.remove(self)
     setSamplingEnabled(enabled: false)

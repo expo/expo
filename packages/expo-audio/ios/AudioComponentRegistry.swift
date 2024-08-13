@@ -1,11 +1,10 @@
-
 class AudioComponentRegistry {
   static let shared = AudioComponentRegistry()
   var players = [String: AudioPlayer]()
   var recorders = [String: AudioRecorder]()
-  
+
   private init() {}
-  
+
   func add(_ player: AudioPlayer) {
     players[player.id] = player
   }
@@ -21,7 +20,7 @@ class AudioComponentRegistry {
   func remove(_ recorder: AudioRecorder) {
     recorders.removeValue(forKey: recorder.id)
   }
-  
+
   func removeAll() {
     players.removeAll()
     recorders.removeAll()
