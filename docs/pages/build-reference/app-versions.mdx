@@ -112,7 +112,9 @@ To build your project locally in Android Studio or Xcode using the same version 
 
 > **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `11.0.0`. If you are using an older version of the CLI, you **don't need to specify the version source explicitly to `local`**.
 
-You can also configure your project so that the source of truth for project versions is the local project source code itself. Add `{ "cli": { "appVersionSource": "local" } }` in your **eas.json**. In this case, EAS does not write to the project. It reads the app version values and builds projects as they are. You can opt in to auto incrementing versions locally by setting the `autoIncrement` option on a build profile.
+You can configure your project so that the source of truth for project versions is the local project source code itself. To do this, set `cli.appVersionSource` to `local` in your **eas.json**.
+
+With this setup, EAS reads app version values and builds projects as they are. It doesn't write to the project. You can also enable auto incrementing versions locally by setting the `autoIncrement` option on a build profile.
 
 ```json eas.json
 {
