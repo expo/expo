@@ -35,7 +35,7 @@
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
     "@expo/config-plugins": "~8.0.0",
-    "@expo/config-types": "^51.0.0-unreleased",
+    "@expo/config-types": "^51.0.0",
     "@expo/json-file": "^8.3.0",
     "find-yarn-workspace-root": "^2.0.0",
     "getenv": "^1.0.0",

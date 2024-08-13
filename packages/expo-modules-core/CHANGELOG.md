@@ -17,6 +17,8 @@
 - [Android] Added support for primitive arrays in functions. ([#30657](https://github.com/expo/expo/pull/30657) by [@lukmccall](https://github.com/lukmccall))
 - Implemented `toJSON` function on shared objects that includes dynamic properties defined in their prototype chain. ([#30813](https://github.com/expo/expo/pull/30813) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added experimental support for rendering SwiftUI views. ([#19888](https://github.com/expo/expo/pull/19888) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Introduced experimental converter to support a broader range of types that can be passed to the JS. ([#30944](https://github.com/expo/expo/pull/30944) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Add functions that are called before and after a shared object is removed from the registry. ([#30949](https://github.com/expo/expo/pull/30949) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -37,6 +39,7 @@
 - [Android] Fixed not throwing when setting read-only properties. ([#30428](https://github.com/expo/expo/pull/30428) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed `expo.modules.kotlin.jni.tests.RuntimeHolder` class not found crash when R8 is enabled. ([#30572](https://github.com/expo/expo/pull/30572) by [@kudo](https://github.com/kudo))
 - [Android] Fixed `Class declares 0 type parameters, but X were provided` on Android when R8 is enabled. ([#30659](https://github.com/expo/expo/pull/30659) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed SharedObject class names are obfuscated when R8 is enabled. ([#30948](https://github.com/expo/expo/pull/30948) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

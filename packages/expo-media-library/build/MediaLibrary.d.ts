@@ -322,7 +322,7 @@ export declare const usePermissions: (options?: PermissionHookOptions<{
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
  *
  * @platform android 14+
- * @platform ios 14+
+ * @platform ios
  */
 export declare function presentPermissionsPickerAsync(mediaTypes?: MediaTypeFilter[]): Promise<void>;
 /**

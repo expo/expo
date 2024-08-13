@@ -31,6 +31,7 @@ export type JsOutput = {
 
     readonly reconcile?: ReconcileTransformSettings;
     readonly reactClientReference?: string;
+    readonly expoDomComponentReference?: string;
   };
   type: JSFileType;
 };

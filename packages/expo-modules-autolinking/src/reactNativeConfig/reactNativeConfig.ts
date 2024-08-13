@@ -1,12 +1,17 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-import { resolveDependencyConfigImplAndroidAsync } from './androidResolver';
+import {
+  findGradleAndManifestAsync,
+  parsePackageNameAsync,
+  resolveDependencyConfigImplAndroidAsync,
+} from './androidResolver';
 import { loadConfigAsync } from './config';
 import { resolveDependencyConfigImplIosAsync } from './iosResolver';
 import type {
   RNConfigCommandOptions,
   RNConfigDependency,
+  RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
@@ -38,8 +43,7 @@ export async function createReactNativeConfigAsync({
       [string, RNConfigDependency]
     >
   );
-  const projectData =
-    platform === 'ios' ? { ios: { sourceDir: path.join(projectRoot, 'ios') } } : {};
+  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform);
   return {
     root: projectRoot,
     reactNativePath,
@@ -125,4 +129,35 @@ export async function resolveDependencyConfigAsync(
       [platform]: platformData,
     },
   };
+}
+
+export async function resolveAppProjectConfigAsync(
+  projectRoot: string,
+  platform: SupportedPlatform
+): Promise<RNConfigReactNativeAppProjectConfig> {
+  if (platform === 'android') {
+    const androidDir = path.join(projectRoot, 'android');
+    const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });
+    const packageName = await parsePackageNameAsync(
+      path.join(androidDir, manifest),
+      path.join(androidDir, gradle)
+    );
+
+    return {
+      android: {
+        packageName: packageName ?? '',
+        sourceDir: path.join(projectRoot, 'android'),
+      },
+    };
+  }
+
+  if (platform === 'ios') {
+    return {
+      ios: {
+        sourceDir: path.join(projectRoot, 'ios'),
+      },
+    };
+  }
+
+  return {};
 }

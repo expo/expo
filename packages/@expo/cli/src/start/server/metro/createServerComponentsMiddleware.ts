@@ -393,7 +393,7 @@ const getFullUrl = (url: string) => {
   }
 };
 
-const fileURLToFilePath = (fileURL: string) => {
+export const fileURLToFilePath = (fileURL: string) => {
   if (!fileURL.startsWith('file://')) {
     throw new Error('Not a file URL');
   }

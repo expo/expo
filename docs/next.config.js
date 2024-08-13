@@ -128,8 +128,4 @@ export default {
 
     return pathMap;
   },
-  async headers() {
-    const cacheHeaders = [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }];
-    return [{ source: '/_next/static/:static*', headers: cacheHeaders }];
-  },
 };

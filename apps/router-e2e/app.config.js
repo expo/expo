@@ -8,6 +8,7 @@ module.exports = {
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
+  userInterfaceStyle: 'automatic',
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'dev.expo.routere2e',

@@ -24,6 +24,7 @@
     "expo-module.config.json",
     "metro-config.js",
     "metro-config.d.ts",
+    "dom",
     "config.js",
     "config.d.ts",
     "config-plugins.js",
@@ -84,12 +85,22 @@
     "@types/react": "~18.2.79",
     "@types/react-test-renderer": "^18.0.0",
     "expo-module-scripts": "^3.5.1",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-dom": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-native": "0.75.0-rc.5"
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.75.0-rc.7"
   },
   "peerDependencies": {
+    "@expo/metro-runtime": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/metro-runtime": {
+      "optional": true
+    },
+    "react-native-webview": {
+      "optional": true
+    }
   }
 }

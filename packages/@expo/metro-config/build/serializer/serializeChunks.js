@@ -29,6 +29,9 @@ function pathToRegex(path) {
     // Create a RegExp object with the modified string
     return new RegExp('^' + regexSafePath + '$');
 }
+const sourceMapString = typeof sourceMapString_1.default !== 'function'
+    ? sourceMapString_1.default.sourceMapString
+    : sourceMapString_1.default;
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
@@ -300,6 +303,19 @@ class Chunk {
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),
                 paths: jsCode.paths,
+                expoDomComponentReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('expoDomComponentReference' in output.data &&
+                                typeof output.data.expoDomComponentReference === 'string') {
+                                return output.data.expoDomComponentReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
                 reactClientReferences: [
                     ...new Set([...this.deps]
                         .map((module) => {
@@ -352,7 +368,7 @@ class Chunk {
                 return module;
             });
             // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-            const sourceMap = mutateSourceMapWithDebugId((0, sourceMapString_1.default)(modules, {
+            const sourceMap = mutateSourceMapWithDebugId(sourceMapString(modules, {
                 excludeSource: false,
                 ...this.options,
             }));

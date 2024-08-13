@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add initial version of DOM Components and `expo/dom` module. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Support `URL.canParse`. ([#30697](https://github.com/expo/expo/pull/30697) by [@EvanBacon](https://github.com/EvanBacon))
 - Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
 - Introduced `useEvent` hook for EventEmitter objects (e.g. native modules and shared objects). ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
@@ -35,7 +36,7 @@
 
 ### ⚠️ Notices
 
-- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 51.0.24 - 2024-07-30
 

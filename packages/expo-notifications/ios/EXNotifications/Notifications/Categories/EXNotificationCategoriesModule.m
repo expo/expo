@@ -79,27 +79,12 @@ EX_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
     [actionsArray addObject:[self parseNotificationActionFromParams:actionParams]];
   }
   UNNotificationCategoryOptions categoryOptions = [self parseNotificationCategoryOptionsFromParams: options];
-  UNNotificationCategory *newCategory;
-  if (@available(iOS 12, *)) {
-    newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
-                                                         actions:actionsArray
-                                               intentIdentifiers:intentIdentifiers
-                                   hiddenPreviewsBodyPlaceholder:previewPlaceholder
-                                           categorySummaryFormat:categorySummaryFormat
-                                                         options:categoryOptions];
-  } else if (@available(iOS 11, *)) {
-    newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
-                                                         actions:actionsArray
-                                               intentIdentifiers:intentIdentifiers
-                                   hiddenPreviewsBodyPlaceholder:previewPlaceholder
-                                                         options:categoryOptions];
-  } else {
-    newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
-                                                         actions:actionsArray
-                                               intentIdentifiers:intentIdentifiers
-                                                         options:categoryOptions];
-  }
-  return newCategory;
+  return [UNNotificationCategory categoryWithIdentifier:categoryId
+                                                actions:actionsArray
+                                      intentIdentifiers:intentIdentifiers
+                          hiddenPreviewsBodyPlaceholder:previewPlaceholder
+                                  categorySummaryFormat:categorySummaryFormat
+                                                options:categoryOptions];
 }
 
 + (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
@@ -138,18 +123,11 @@ EX_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   if ([params[@"allowInCarPlay"] boolValue]) {
     options += UNNotificationCategoryOptionAllowInCarPlay;
   }
-  if (@available(iOS 11, *)) {
-    if ([params[@"showTitle"] boolValue]) {
-      options += UNNotificationCategoryOptionHiddenPreviewsShowTitle;
-    }
-    if ([params[@"showSubtitle"] boolValue]) {
-      options += UNNotificationCategoryOptionHiddenPreviewsShowSubtitle;
-    }
+  if ([params[@"showTitle"] boolValue]) {
+    options += UNNotificationCategoryOptionHiddenPreviewsShowTitle;
   }
-  if (@available(iOS 13, *)) {
-    if ([params[@"allowAnnouncement"] boolValue]) {
-      options += UNNotificationCategoryOptionAllowAnnouncement;
-    }
+  if ([params[@"showSubtitle"] boolValue]) {
+    options += UNNotificationCategoryOptionHiddenPreviewsShowSubtitle;
   }
 
   return options;
@@ -170,17 +148,11 @@ EX_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   serializedOptions[@"intentIdentifiers"] = category.intentIdentifiers;
   serializedOptions[@"customDismissAction"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionCustomDismissAction) != 0)];
   serializedOptions[@"allowInCarPlay"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionAllowInCarPlay) != 0)];
-  if (@available(iOS 11, *)) {
-    serializedOptions[@"previewPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
-    serializedOptions[@"showTitle"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowTitle) != 0)];
-    serializedOptions[@"showSubtitle"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowSubtitle) != 0)];
-  }
-  if (@available(iOS 12, *)) {
-    serializedOptions[@"categorySummaryFormat"] = category.categorySummaryFormat;
-  }
-  if (@available(iOS 13, *)) {
-    serializedOptions[@"allowAnnouncement"] = [NSNumber numberWithBool:((category.options & UNNotificationActionOptionAuthenticationRequired) != 0)];
-  }
+  serializedOptions[@"previewPlaceholder"] = category.hiddenPreviewsBodyPlaceholder;
+  serializedOptions[@"showTitle"] =  [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowTitle) != 0)];
+  serializedOptions[@"showSubtitle"] = [NSNumber numberWithBool:((category.options & UNNotificationCategoryOptionHiddenPreviewsShowSubtitle) != 0)];
+  serializedOptions[@"categorySummaryFormat"] = category.categorySummaryFormat;
+  serializedOptions[@"allowAnnouncement"] = [NSNumber numberWithBool:((category.options & UNNotificationActionOptionAuthenticationRequired) != 0)];
   return serializedOptions;
 }
 

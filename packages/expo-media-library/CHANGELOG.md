@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30863](https://github.com/expo/expo/pull/30863) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 

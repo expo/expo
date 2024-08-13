@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add initial version of DOM Components and support for iOS production exports. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow developers to indicate some range of a package that they do not care about validating against with `expo.install.exclude: ["package@version]` ([#30611](https://github.com/expo/expo/pull/30611) by [@brentvatne](https://github.com/brentvatne))
 - Added experimental server renderer in development. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental server renderer in development. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
@@ -35,6 +36,7 @@
 
 ### 💡 Others
 
+- Enable experimental features for RSC when `experiments.reactServerComponents` is enabled. ([#30967](https://github.com/expo/expo/pull/30967) by [@EvanBacon](https://github.com/EvanBacon))
 - Only enable RSC when `experiments.reactServerComponents` is true. ([#30875](https://github.com/expo/expo/pull/30875) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
