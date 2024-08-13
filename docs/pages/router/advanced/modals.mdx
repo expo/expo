@@ -106,7 +106,7 @@ A modal loses its previous context when it is the current screen in the navigato
 - On web, the modal is presented as a separate route, and the dismiss behavior has to be provided manually using [`router.canGoBack()`](/router/navigating-pages/#imperative-navigation). Here's an example of how to dismiss the modal:
 
 {/* prettier-ignore */}
-```tsx modal.tsx
+```tsx app/modal.tsx
 import { Link, /* @info Import the <CODE>router</CODE> object which is used to navigate imperatively. */ router /* @end */} from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -168,12 +168,12 @@ const styles = StyleSheet.create({
 
 There are different options to present a modal screen using the `presentation` option on Android and iOS.
 
-| Option                      | Description                                                                                                                                                                      |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `card`                      | The new screen will be pushed onto a stack. The default animation on Android will vary depending on the OS version and theme. On iOS, it will slide from the side.               |
-| `modal`                     | The new screen will be presented modally, allowing for a nested stack to be rendered inside the screen.                                                                          |
-| `transparentModal`          | The new screen will be presented modally, with the previous screen remaining visible. This allows the content below to still be seen if the screen has a translucent background. |
-| `containedModal`            | On Android, fallbacks to `modal`. On iOS, uses `UIModalPresentationCurrentContext` modal style.                                                                                  |
-| `containedTransparentModal` | On Android, fallbacks to `transparentModal`. On iOS, uses `UIModalPresentationOverCurrentContext` modal style.                                                                   |
-| `fullScreenModal`           | On Android, fallbacks to `modal`. On iOS, uses `UIModalPresentationFullScreen` modal style.                                                                                      |
-| `formSheet`                 | On Android, fallbacks to `modal`. On iOS, uses `UIModalPresentationFormSheet` modal style.                                                                                       |
+| Option                      | Description                                                                                                                                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `card`                      | The new screen will be pushed onto a stack. The default animation on Android will vary depending on the OS version and theme. On iOS, it will slide from the side.                                                               |
+| `modal`                     | The new screen will be presented modally, allowing for a nested stack to be rendered inside the screen.                                                                                                                          |
+| `transparentModal`          | The new screen will be presented modally, with the previous screen remaining visible. This allows the content below to still be seen if the screen has a translucent background.                                                 |
+| `containedModal`            | On Android, fallbacks to `modal`. On iOS, uses [`UIModalPresentationCurrentContext`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationcurrentcontext) modal style.                    |
+| `containedTransparentModal` | On Android, fallbacks to `transparentModal`. On iOS, uses [`UIModalPresentationOverCurrentContext`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationovercurrentcontext) modal style. |
+| `fullScreenModal`           | On Android, fallbacks to `modal`. On iOS, uses [`UIModalPresentationFullScreen`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationfullscreen) modal style.                            |
+| `formSheet`                 | On Android, fallbacks to `modal`. On iOS, uses [`UIModalPresentationFormSheet`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationformsheet) modal style.                              |
