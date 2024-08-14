@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 11.0.14 — 2024-08-14
+
+### 🐛 Bug fixes
+
+- Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.0.13 — 2024-08-07
 

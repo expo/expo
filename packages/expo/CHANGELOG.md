@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 51.0.27 — 2024-08-14
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30902](https://github.com/expo/expo/pull/30902) by [@gabrieldonadel](https://github.com/gabrieldonadel))
