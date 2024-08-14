@@ -28,8 +28,6 @@ const realpathFS =
     ? fs.realpathSync.native
     : fs.realpathSync;
 
-// console.log('hello');
-
 function realpathSync(x: string) {
   try {
     return realpathFS(x);
