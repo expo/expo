@@ -1,6 +1,8 @@
 import { EventEmitter } from 'fbemitter';
+import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
+import { blobToArrayBufferAsync } from './blobUtils';
 import * as logger from './logger';
 // This version should be synced with the one in the **createMessageSocketEndpoint.ts** in @react-native-community/cli-server-api
 export const MESSAGE_PROTOCOL_VERSION = 2;
@@ -17,10 +19,14 @@ export class DevToolsPluginClient {
     wsStore = DevToolsPluginClient.defaultWSStore;
     isClosed = false;
     retries = 0;
+    useTransportationNext;
+    messageFramePacker;
     constructor(connectionInfo, options) {
         this.connectionInfo = connectionInfo;
         this.options = options;
         this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
+        this.useTransportationNext = options?.useTransportationNext ?? false;
+        this.messageFramePacker = this.useTransportationNext ? new MessageFramePacker() : null;
     }
     /**
      * Initialize the connection.
@@ -56,6 +62,14 @@ export class DevToolsPluginClient {
             logger.warn('Unable to send message in a disconnected state.');
             return;
         }
+        if (this.useTransportationNext) {
+            this.sendMessageImplTransportationNext(method, params);
+        }
+        else {
+            this.sendMessageImplLegacy(method, params);
+        }
+    }
+    sendMessageImplLegacy(method, params) {
         const payload = {
             version: MESSAGE_PROTOCOL_VERSION,
             pluginName: this.connectionInfo.pluginName,
@@ -66,6 +80,18 @@ export class DevToolsPluginClient {
             },
         };
         this.wsStore.ws?.send(JSON.stringify(payload));
+    }
+    async sendMessageImplTransportationNext(method, params) {
+        if (this.messageFramePacker == null) {
+            logger.warn('MessageFramePacker is not initialized');
+            return;
+        }
+        const messageKey = {
+            pluginName: this.connectionInfo.pluginName,
+            method,
+        };
+        const packedData = await this.messageFramePacker.pack({ messageKey, payload: params });
+        this.wsStore.ws?.send(packedData);
     }
     /**
      * Subscribe to a message from the other end of DevTools.
@@ -94,7 +120,8 @@ export class DevToolsPluginClient {
      */
     connectAsync() {
         return new Promise((resolve, reject) => {
-            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+            const endpoint = this.useTransportationNext ? 'expo-dev-plugins/broadcast' : 'message';
+            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
                 binaryType: this.options?.websocketBinaryType,
                 onError: (e) => {
                     if (e instanceof Error) {
@@ -117,6 +144,14 @@ export class DevToolsPluginClient {
         });
     }
     handleMessage = (event) => {
+        if (this.useTransportationNext) {
+            this.handleMessageImplTransportationNext(event);
+        }
+        else {
+            this.handleMessageImplLegacy(event);
+        }
+    };
+    handleMessageImplLegacy = (event) => {
         let payload;
         try {
             payload = JSON.parse(event.data);
@@ -132,6 +167,28 @@ export class DevToolsPluginClient {
             return;
         }
         this.eventEmitter.emit(payload.params.method, payload.params.params);
+    };
+    handleMessageImplTransportationNext = async (event) => {
+        if (this.messageFramePacker == null) {
+            logger.warn('MessageFramePacker is not initialized');
+            return;
+        }
+        let buffer;
+        if (event.data instanceof ArrayBuffer) {
+            buffer = event.data;
+        }
+        else if (event.data instanceof Blob) {
+            buffer = await blobToArrayBufferAsync(event.data);
+        }
+        else {
+            logger.warn('Unsupported received data type in handleMessageImplTransportationNext');
+            return;
+        }
+        const { messageKey, payload } = await this.messageFramePacker.unpack(buffer);
+        if (messageKey.pluginName && messageKey.pluginName !== this.connectionInfo.pluginName) {
+            return;
+        }
+        this.eventEmitter.emit(messageKey.method, payload);
     };
     /**
      * Get the WebSocket backing store. Exposed for testing.
