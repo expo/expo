@@ -20,7 +20,7 @@ First, install `react-native-webview` in your project:
 
 To render a React component to the DOM, simply add the `'use dom'` directive to the top of a file:
 
-```js my-component.js (web)
+```jsx my-component.js (web)
 'use dom';
 
 export default function MyComponent({ name }) {
@@ -32,7 +32,7 @@ export default function MyComponent({ name }) {
 }
 ```
 
-```js App.js (native)
+```jsx App.js (native)
 import MyComponent from './my-component.js';
 
 export default function App() {
@@ -112,15 +112,16 @@ These props are sent over an async bridge so they won't be updated synchronously
 
 You can send type-safe native functions to DOM components by passing async functions as top-level props to the DOM component:
 
-```ts App.tsx (native)
+```tsx App.tsx (native)
 'use dom';
+
 import DomComponent from './my-component';
 
 export default function App() {
   return (
     <DomComponent
       hello={(data: string) => {
-        console.log('Hello', data)
+        console.log('Hello', data);
       }}
     />
   );
@@ -159,10 +160,10 @@ const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 
 ## Public assets
 
-The contents of the root `/public` directory will be copied to the native app's binary to support using public assets in the DOM components. Since the public assets will be served from the local filesystem, you can use the `process.env.DOM_BASE_URL` prefix to reference the correct path. For example:
+The contents of the root `/public` directory will be copied to the native app's binary to support using public assets in the DOM components. Since the public assets will be served from the local filesystem, you can use the `process.env.EXPO_DOM_BASE_URL` prefix to reference the correct path. For example:
 
-```js
-<img src=`${process.env.EXPO_DOM_BASE_URL}/img.png` />
+```jsx
+<img src={`${process.env.EXPO_DOM_BASE_URL}/img.png`} />
 ```
 
 {/* TODO: This is likely to change. */}
@@ -177,7 +178,7 @@ Expo also enables WebView inspection and debugging when bundling in development 
 
 You can still create a manual WebView using the `WebView` component from `react-native-webview`:
 
-```js App.js (native)
+```jsx App.js (native)
 import { WebView } from 'react-native-webview';
 
 export default function App() {
