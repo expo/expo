@@ -94,20 +94,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     hasToSetupAudioContext.current = false;
   }
 
-  function maybeSetupFullscreenListener(element: HTMLVideoElement) {
-    if (!props.allowsFullscreen) {
-      return;
-    }
-
-    element.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement === element) {
-        props.onFullscreenEnter?.();
-      } else {
-        props.onFullscreenExit?.();
-      }
-    });
-  }
-
   useEffect(() => {
     if (videoRef.current) {
       props.player?.mountVideoView(videoRef.current);
@@ -146,8 +132,13 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
           hasToSetupAudioContext.current = true;
           maybeSetupAudioContext();
 
-          // Register the fullscreen listener and make sure it is removed when the video is unmounted.
-          maybeSetupFullscreenListener(newRef);
+          newRef.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement === newRef) {
+              props.onFullscreenEnter?.();
+            } else {
+              props.onFullscreenExit?.();
+            }
+          });
         }
       }}
       src={getSourceUri(props.player?.src) ?? ''}
