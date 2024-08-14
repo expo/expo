@@ -11,6 +11,7 @@ import util from 'node:util';
 import semver from 'semver';
 import { URL } from 'url';
 
+import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
@@ -250,6 +251,7 @@ export async function instantiateMetroAsync(
       websocketEndpoints: {
         ...websocketEndpoints,
         ...debugWebsocketEndpoints,
+        ...createDevToolsPluginWebsocketEndpoint(),
       },
       watch: !isExporting && isWatchEnabled(),
     },
