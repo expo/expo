@@ -65,7 +65,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     return () => {
       videoRef.current?.removeEventListener('fullscreenchange', fullscreenChange);
     };
-  }, [videoRef, props.onFullscreenEnter, props.onFullscreenExit]);
+  }, [props.onFullscreenEnter, props.onFullscreenExit]);
 
   // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
   // player only one will emit audio).
