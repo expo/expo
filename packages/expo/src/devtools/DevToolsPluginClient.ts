@@ -140,7 +140,7 @@ export abstract class DevToolsPluginClient {
    */
   protected connectAsync(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-      const endpoint = this.useTransportationNext ? 'dev-plugins-broadcast' : 'message';
+      const endpoint = this.useTransportationNext ? 'expo-dev-plugins/broadcast' : 'message';
       const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
         binaryType: this.options?.websocketBinaryType,
         onError: (e: unknown) => {
