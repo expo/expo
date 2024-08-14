@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.18.29 — 2024-08-14
+
+### 💡 Others
+
 - Added `/expo-dev-plugins/broadcast` WebSocket endpoint in dev server to support devtools plugins. ([#30934](https://github.com/expo/expo/pull/30934) by [@kudo](https://github.com/kudo))
 
 ## 0.18.28 — 2024-08-08

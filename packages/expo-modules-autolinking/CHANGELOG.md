@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.11.2 — 2024-08-14
+
+### 🎉 New features
+
 - Added `react-native-config` command to support core autolinking for react-native. ([#29818](https://github.com/expo/expo/pull/29818) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Added missing `project.android.packageName` in react-native-config for Android core autolinking. ([#30913](https://github.com/expo/expo/pull/30913) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 1.11.1 — 2024-04-23
 

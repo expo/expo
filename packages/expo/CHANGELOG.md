@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added `useTransportationNext` option for `DevToolsPluginClient` to support binary payload. ([#30935](https://github.com/expo/expo/pull/30935) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 51.0.28 — 2024-08-14
+
+### 🎉 New features
+
+- Added `useTransportationNext` option for `DevToolsPluginClient` to support binary payload. ([#30935](https://github.com/expo/expo/pull/30935) by [@kudo](https://github.com/kudo))
 
 ## 51.0.27 — 2024-08-14
 
