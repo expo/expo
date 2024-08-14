@@ -178,14 +178,12 @@ describe('<HomeScreen />', () => {
   test('Text renders correctly on HomeScreen', () => {
     const { getByText } = render(<HomeScreen />);
 
-    const textLabel = getByText('Welcome!');
-
-    expect(textLabel).toBeTruthy();
+    getByText('Welcome!');
   });
 });
 ```
 
-In the above example, the `getByText` query helps your tests find relevant elements in your app's user interface. The React Native Testing Library provides this query. For more information, see [querying with React Native Testing Library](https://callstack.github.io/react-native-testing-library/docs/api/queries).
+In the above example, the `getByText` query helps your tests find relevant element in your app's user interface and make assertion whether or not the certain element exists. The React Native Testing Library provides this query. For more information, see [querying with React Native Testing Library](https://callstack.github.io/react-native-testing-library/docs/api/queries).
 
 This example also uses `expect,` a conditional matcher provided by Jest that helps you verify that the element you are querying matches the expected value. For more information, see [`expect` and conditional matchers](https://jestjs.io/docs/en/expect).
 
