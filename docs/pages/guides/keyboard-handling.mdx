@@ -1,22 +1,24 @@
 ---
 title: Keyboard handling
-sidebar_title: Keyboard handling
-description: A guide to handling common keyboard interactions.
+description: A guide for handling common keyboard interactions.
 ---
+
+import { Terminal } from '~/ui/components/Snippet';
 
 Keyboard handling is crucial for creating an excellent user experience in your Expo app. This guide covers common keyboard interactions and how to manage them effectively.
 
-React Native provides several keyboard-related APIs, with [Keyboard](https://reactnative.dev/docs/keyboard) and [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview) being the most frequently used. For more complex or custom keyboard interactions, you might consider using [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), a library that offers advanced keyboard handling capabilities.
+React Native provides several keyboard-related APIs, with [`Keyboard`](https://reactnative.dev/docs/keyboard) and [`KeyboardAvoidingView`](https://reactnative.dev/docs/keyboardavoidingview) being the most frequently used. For more complex or custom keyboard interactions, you might consider using [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), which is a library that offers advanced keyboard handling capabilities.
 
 ## The basics
 
 ### Keyboard events
 
-The Keyboard module allows you to listen for native events, react to them, and make changes to the keyboard, such as dismissing it.
+The `Keyboard` module from React Native allows you to listen for native events, react to them, and make changes to the keyboard, such as dismissing it.
 
-To listen for keyboard events, use the `Keyboard.addListener` method. This method takes an event name and a callback function as arguments. The callback function will be called with the event data when the keyboard is shown or hidden.
+To listen for keyboard events, use the `Keyboard.addListener` method. This method accepts an event name and a callback function as arguments. The callback function is called with the event data when the keyboard is shown or hidden.
 
 ```js
+import {useEffect } from 'react';
 import { Keyboard } from 'react-native';
 
 export default function App() {
@@ -58,11 +60,11 @@ export default function App() {
 }
 ```
 
-This example will automatically adjust the height of the `KeyboardAvoidingView` based on the keyboard height, so that the input is always visible.
+In the above example, the height of the `KeyboardAvoidingView` automatically adjusts based on the device's keyboard height, which ensures that the input is always visible.
 
-> **info** When using BottomTabs for navigation in Android, you might notice that focusing on an input field causes the bottom tabs to be pushed above the keyboard. To address this issue add the `softwareKeyboardLayoutMode` property to your Android configuration in `app.json` and set it to `pan`.
+When using a Bottom Tab navigator on Android, you might notice that focusing on an input field causes the bottom tabs to be pushed above the keyboard. To address this issue, add the `softwareKeyboardLayoutMode` property to your Android configuration in [app confg](/workflow/configuration/) and set it to `pan`.
 
-```js app.json
+```json app.json
 "expo" {
   "android": {
     "softwareKeyboardLayoutMode": "pan"
@@ -76,23 +78,22 @@ After adding this property, restart your app so that the changes take effect.
 
 For more complex keyboard interactions, consider using the [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller) library. It offers additional functionality beyond the built-in React Native keyboard APIs.
 
-### Installing keyboard controller
+### Install keyboard controller
 
 To get started with [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), install it in your Expo project:
 
-import { Terminal } from '~/ui/components/Snippet';
 
 <Terminal cmd={['$ npx expo install react-native-keyboard-controller']} />
 
 Keyboard Controller uses native code, so you need to prebuild your app:
 
-<Terminal cmd={['$ expo prebuild --clean']} />
+<Terminal cmd={['$ npx expo prebuild --clean']} />
 
-Keyboard controller also requires [`react-native-reanimated`](/versions/latest/sdk/reanimated) to work properly. Follow the [installation instructions](/versions/latest/sdk/reanimated/) to install it.
+Keyboard Controller library also requires `react-native-reanimated` to work properly. Follow the [installation instructions](/versions/latest/sdk/reanimated/#installation) to install it.
 
-### Setting up keyboard controller provider
+### Set up Keyboard Controller provider
 
-To finalize the setup, add the `KeyboardControllerProvider` to your app.
+To finalize the setup, add the `KeyboardProvider` to your app.
 
 ```js
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -110,11 +111,11 @@ export default function RootLayout() {
 }
 ```
 
-### Using keyboard controller
+### Usage
 
-Let's explore how you can achieve the `KeyboardAvoidingView` functionality using the `useKeyboardHandler` hook.
+Let's explore how to use the `useKeyboardHandler` hook to achieve the same functionality that `KeyboardAvoidingView` provides.
 
-The `useKeyboardHandler` hook takes two parameters: a handler and dependencies. The handler provides information about the current device's keyboard. You'll use the `onMove` handler to get the keyboard height and use it to push our content above the keyboard when an input is active:
+The `useKeyboardHandler` hook takes two parameters: a handler and dependencies. The handler provides information about the current device's keyboard. You'll use the `onMove` handler to get the keyboard height and use it to push the screen's content above the keyboard when an input is active:
 
 ```js
 const useGradualAnimation = () => {
@@ -135,7 +136,7 @@ const useGradualAnimation = () => {
 
 The above example uses the `useSharedValue` hook from Reanimated to store the keyboard's height. The value changes from 0 when the keyboard is dismissed to the maximum height when it's active.
 
-Now, let's use our `useGradualAnimation` hook inside a component:
+Now, let's use the `useGradualAnimation` hook inside a screen component:
 
 ```js
 export default function TabTwoScreen() {
@@ -162,11 +163,11 @@ export default function TabTwoScreen() {
 }
 ```
 
-This example uses the keyboard's height to move the screen content above the keyboard. The view after the keyboard has an animated style that modifies its height based on the keyboard's height.
+The above uses the keyboard's height to move the screen content above the keyboard. The view after the keyboard has an animated style that modifies its height based on the keyboard's height.
 
 ### Handling multiple inputs
 
-For screens with multiple inputs, Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These handle input navigation and prevent the keyboard from covering the screen without custom configuration:
+For screens with multiple inputs, the Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
 
 ```js
 import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
@@ -193,11 +194,11 @@ export default function AdvancedToolbar() {
 }
 ```
 
-The example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
+The above example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
 
 Keyboard Controller provides consistency across Android and iOS with minimal configuration, offering the native feel users expect.
 
 ## Additional resources
 
-- [Keyboard Guide Source Code](https://github.com/betomoedano/keyboard-guide.git)
-- [Keyboard Controller Docs](https://kirillzyusko.github.io/react-native-keyboard-controller)
+- [Keyboard guide source code](https://github.com/betomoedano/keyboard-guide)
+- [Keyboard Controller documentation](https://kirillzyusko.github.io/react-native-keyboard-controller)
