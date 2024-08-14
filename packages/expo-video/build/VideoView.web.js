@@ -40,21 +40,6 @@ export const VideoView = forwardRef((props, ref) => {
             document.exitFullscreen();
         },
     }));
-    useEffect(() => {
-        const fullscreenChange = () => {
-            // Emit enter if we entered fullscreen otherwise exit
-            if (document.fullscreenElement === videoRef.current) {
-                props.onFullscreenEnter?.();
-            }
-            else {
-                props.onFullscreenExit?.();
-            }
-        };
-        videoRef.current?.addEventListener('fullscreenchange', fullscreenChange);
-        return () => {
-            videoRef.current?.removeEventListener('fullscreenchange', fullscreenChange);
-        };
-    }, [videoRef, props.onFullscreenEnter, props.onFullscreenExit]);
     // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
     // player only one will emit audio).
     function attachAudioNodes() {
@@ -91,6 +76,19 @@ export const VideoView = forwardRef((props, ref) => {
         attachAudioNodes();
         hasToSetupAudioContext.current = false;
     }
+    function maybeSetupFullscreenListener(element) {
+        if (!props.allowsFullscreen) {
+            return;
+        }
+        element.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement === element) {
+                props.onFullscreenEnter?.();
+            }
+            else {
+                props.onFullscreenExit?.();
+            }
+        });
+    }
     useEffect(() => {
         if (videoRef.current) {
             props.player?.mountVideoView(videoRef.current);
@@ -119,6 +117,8 @@ export const VideoView = forwardRef((props, ref) => {
                 videoRef.current = newRef;
                 hasToSetupAudioContext.current = true;
                 maybeSetupAudioContext();
+                // Register the fullscreen listener and make sure it is removed when the video is unmounted.
+                maybeSetupFullscreenListener(newRef);
             }
         }} src={getSourceUri(props.player?.src) ?? ''}/>);
 });
