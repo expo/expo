@@ -147,6 +147,7 @@ export class MessageFramePacker<T extends MessageKeyTypeBase> {
         return payloadBinary;
       }
       case PayloadTypeIndicator.Blob: {
+        // @ts-ignore: We only test ArrayBuffer -> Blob on Node.js runtime
         return new Blob([payloadBinary]);
       }
       default:

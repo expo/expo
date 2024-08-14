@@ -90,6 +90,7 @@ describe(MessageFramePacker, () => {
   });
 
   it('should pack and unpack a message with a Blob payload', async () => {
+    // @ts-ignore: React Native's Blob requires an non-standard `lastModified` property
     const blob = new Blob(['testBlob'], { type: 'text/plain' });
 
     const messageFrame = {
