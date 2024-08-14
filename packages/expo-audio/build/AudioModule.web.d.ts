@@ -30,7 +30,6 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     play(): void;
     pause(): void;
     seekTo(seconds: number): Promise<void>;
-    setVolume(volume: number): void;
     setAudioSamplingEnabled(enabled: boolean): void;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;

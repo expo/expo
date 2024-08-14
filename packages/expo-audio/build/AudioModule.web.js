@@ -138,9 +138,6 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     async seekTo(seconds) {
         this._media.currentTime = seconds / 1000;
     }
-    setVolume(volume) {
-        this._media.volume = volume;
-    }
     setAudioSamplingEnabled(enabled) {
         this.isAudioSamplingSupported = false;
     }

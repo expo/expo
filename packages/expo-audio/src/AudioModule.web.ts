@@ -184,10 +184,6 @@ export class AudioPlayerWeb
     this._media.currentTime = seconds / 1000;
   }
 
-  setVolume(volume: number): void {
-    this._media.volume = volume;
-  }
-
   setAudioSamplingEnabled(enabled: boolean): void {
     this.isAudioSamplingSupported = false;
   }
