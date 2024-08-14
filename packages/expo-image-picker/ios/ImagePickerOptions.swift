@@ -14,9 +14,6 @@ internal struct ImagePickerOptions: Record {
   var allowsEditing: Bool = false
 
   @Field
-  var useLivePhotos: Bool = false
-
-  @Field
   var aspect: [Double]
 
   @Field

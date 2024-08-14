@@ -6,8 +6,6 @@ import Photos
 import PhotosUI
 
 internal struct MediaHandler {
-  // For some reason UTType.livePhoto returns "com.apple.live-photo", but the picked photos have type "com.apple.live-photo-bundle"
-  private static let livePhotoTypeIdentifier = "com.apple.live-photo-bundle"
   internal weak var fileSystem: EXFileSystemInterface?
   internal let options: ImagePickerOptions
 

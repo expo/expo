@@ -27,7 +27,6 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         ],
       },
       { name: 'allowsEditing', type: 'boolean', initial: false },
-      { name: 'useLivePhotos', type: 'boolean', platforms: ['ios'], initial: false },
       {
         name: 'aspect',
         type: 'enum',
