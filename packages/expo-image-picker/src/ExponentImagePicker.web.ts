@@ -1,5 +1,6 @@
 import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 
+import { parseMediaTypes } from './ImagePicker';
 import {
   ImagePickerAsset,
   ImagePickerResult,
