@@ -44,6 +44,7 @@ export type RecorderState = {
     durationMillis: number;
     mediaServicesDidReset: boolean;
     metering?: number;
+    url: string | null;
 };
 export type AndroidOutputFormat = 'default' | '3gp' | 'mpeg4' | 'amrnb' | 'amrwb' | 'aac_adts' | 'mpeg2ts' | 'webm';
 export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';

@@ -172,8 +172,12 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     constructor(options) {
         super();
         this._options = options;
+        this.setup();
     }
-    id = 0;
+    async setup() {
+        this._mediaRecorder = await this._createMediaRecorder(this._options);
+    }
+    id = nextId();
     _options;
     _mediaRecorder;
     _mediaRecorderUptimeOfLastStartResume = 0;
@@ -186,11 +190,11 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         if (this._mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        if (this._mediaRecorder.state === 'paused') {
+        if (this._mediaRecorder?.state === 'paused') {
             this._mediaRecorder.resume();
         }
         else {
-            this._mediaRecorder.start();
+            this._mediaRecorder?.start();
         }
     }
     getAvailableInputs() {
@@ -209,13 +213,14 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             isRecording: this._mediaRecorder?.state === 'recording',
             durationMillis: this._getAudioRecorderDurationMillis(),
             mediaServicesDidReset: false,
+            url: this.uri,
         };
     }
     pause() {
         if (this._mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        this._mediaRecorder.pause();
+        this._mediaRecorder?.pause();
     }
     recordForDuration(seconds) { }
     setInput(input) { }
@@ -224,10 +229,11 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         if (this._mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        const dataPromise = new Promise((resolve) => this._mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data)));
-        this._mediaRecorder.stop();
+        const dataPromise = new Promise((resolve) => this._mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data)));
+        this._mediaRecorder?.stop();
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
+        this.uri = url;
         this.emit('onRecordingStatusUpdate', {
             id: this.id,
             isFinished: true,
@@ -243,26 +249,27 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this._mediaRecorderUptimeOfLastStartResume = 0;
         this._mediaRecorderDurationAlreadyRecorded = 0;
         const stream = await getUserMedia({ audio: true });
-        this._mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingOptionsPresets.HIGH_QUALITY.web);
-        this._mediaRecorder.addEventListener('pause', () => {
+        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingOptionsPresets.HIGH_QUALITY.web);
+        mediaRecorder.addEventListener('pause', () => {
             this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
             this._mediaRecorderIsRecording = false;
         });
-        this._mediaRecorder.addEventListener('resume', () => {
+        mediaRecorder.addEventListener('resume', () => {
             this._mediaRecorderUptimeOfLastStartResume = Date.now();
             this._mediaRecorderIsRecording = true;
         });
-        this._mediaRecorder.addEventListener('start', () => {
+        mediaRecorder.addEventListener('start', () => {
             this._mediaRecorderUptimeOfLastStartResume = Date.now();
             this._mediaRecorderDurationAlreadyRecorded = 0;
             this._mediaRecorderIsRecording = true;
         });
-        this._mediaRecorder.addEventListener('stop', () => {
+        mediaRecorder?.addEventListener('stop', () => {
             this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
             this._mediaRecorderIsRecording = false;
             // Clears recording icon in Chrome tab
             stream.getTracks().forEach((track) => track.stop());
         });
+        return mediaRecorder;
     }
     _getAudioRecorderDurationMillis() {
         let duration = this._mediaRecorderDurationAlreadyRecorded;

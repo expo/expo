@@ -52,6 +52,7 @@ export type RecorderState = {
   durationMillis: number;
   mediaServicesDidReset: boolean;
   metering?: number;
+  url: string | null;
 };
 
 export type AndroidOutputFormat =

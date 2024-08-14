@@ -37,9 +37,10 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
 }
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
     constructor(options: Partial<RecordingOptions>);
+    setup(): Promise<void>;
     id: number;
     _options: Partial<RecordingOptions>;
-    _mediaRecorder: any;
+    _mediaRecorder?: MediaRecorder;
     _mediaRecorderUptimeOfLastStartResume: number;
     _mediaRecorderDurationAlreadyRecorded: number;
     _mediaRecorderIsRecording: boolean;
@@ -55,7 +56,7 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     setInput(input: string): void;
     startRecordingAtTime(seconds: number): void;
     stop(): Promise<void>;
-    _createMediaRecorder(options: Partial<RecordingOptions>): Promise<void>;
+    _createMediaRecorder(options: Partial<RecordingOptions>): Promise<MediaRecorder>;
     _getAudioRecorderDurationMillis(): number;
 }
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;

@@ -228,11 +228,16 @@ export class AudioRecorderWeb
   constructor(options: Partial<RecordingOptions>) {
     super();
     this._options = options;
+    this.setup();
   }
 
-  id = 0;
+  async setup() {
+    this._mediaRecorder = await this._createMediaRecorder(this._options);
+  }
+
+  id = nextId();
   _options: Partial<RecordingOptions>;
-  _mediaRecorder: any;
+  _mediaRecorder?: MediaRecorder;
   _mediaRecorderUptimeOfLastStartResume = 0;
   _mediaRecorderDurationAlreadyRecorded = 0;
   _mediaRecorderIsRecording = false;
@@ -247,10 +252,10 @@ export class AudioRecorderWeb
       );
     }
 
-    if (this._mediaRecorder.state === 'paused') {
+    if (this._mediaRecorder?.state === 'paused') {
       this._mediaRecorder.resume();
     } else {
-      this._mediaRecorder.start();
+      this._mediaRecorder?.start();
     }
   }
 
@@ -273,6 +278,7 @@ export class AudioRecorderWeb
       isRecording: this._mediaRecorder?.state === 'recording',
       durationMillis: this._getAudioRecorderDurationMillis(),
       mediaServicesDidReset: false,
+      url: this.uri,
     };
   }
 
@@ -283,7 +289,7 @@ export class AudioRecorderWeb
       );
     }
 
-    this._mediaRecorder.pause();
+    this._mediaRecorder?.pause();
   }
 
   recordForDuration(seconds: number): void {}
@@ -300,13 +306,15 @@ export class AudioRecorderWeb
     }
 
     const dataPromise = new Promise<Blob>((resolve) =>
-      this._mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
+      this._mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data))
     );
 
-    this._mediaRecorder.stop();
+    this._mediaRecorder?.stop();
 
     const data = await dataPromise;
     const url = URL.createObjectURL(data);
+
+    this.uri = url;
 
     this.emit('onRecordingStatusUpdate', {
       id: this.id,
@@ -317,7 +325,7 @@ export class AudioRecorderWeb
     });
   }
 
-  async _createMediaRecorder(options: Partial<RecordingOptions>): Promise<void> {
+  async _createMediaRecorder(options: Partial<RecordingOptions>): Promise<MediaRecorder> {
     if (typeof navigator !== 'undefined' && !navigator.mediaDevices) {
       throw new Error('No media devices available');
     }
@@ -327,34 +335,36 @@ export class AudioRecorderWeb
 
     const stream = await getUserMedia({ audio: true });
 
-    this._mediaRecorder = new (window as any).MediaRecorder(
+    const mediaRecorder = new (window as any).MediaRecorder(
       stream,
       options?.web || RecordingOptionsPresets.HIGH_QUALITY.web
     );
 
-    this._mediaRecorder.addEventListener('pause', () => {
+    mediaRecorder.addEventListener('pause', () => {
       this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
       this._mediaRecorderIsRecording = false;
     });
 
-    this._mediaRecorder.addEventListener('resume', () => {
+    mediaRecorder.addEventListener('resume', () => {
       this._mediaRecorderUptimeOfLastStartResume = Date.now();
       this._mediaRecorderIsRecording = true;
     });
 
-    this._mediaRecorder.addEventListener('start', () => {
+    mediaRecorder.addEventListener('start', () => {
       this._mediaRecorderUptimeOfLastStartResume = Date.now();
       this._mediaRecorderDurationAlreadyRecorded = 0;
       this._mediaRecorderIsRecording = true;
     });
 
-    this._mediaRecorder.addEventListener('stop', () => {
+    mediaRecorder?.addEventListener('stop', () => {
       this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
       this._mediaRecorderIsRecording = false;
 
       // Clears recording icon in Chrome tab
       stream.getTracks().forEach((track) => track.stop());
     });
+
+    return mediaRecorder;
   }
 
   _getAudioRecorderDurationMillis() {
