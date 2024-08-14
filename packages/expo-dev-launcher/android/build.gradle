@@ -35,14 +35,19 @@ android {
     def rnVersion = getRNVersion()
     main {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
+        if (rnVersion >= versionToNumber(0, 75, 0)) {
+          srcDirs += "src/react-native-75/main"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
           srcDirs += "src/react-native-74/main"
         }
+
       }
     }
     debug {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
+        if (rnVersion >= versionToNumber(0, 75, 0)) {
+          srcDirs += "src/react-native-75/debug"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
           srcDirs += "src/react-native-74/debug"
         }
       }
@@ -56,6 +61,26 @@ android {
     buildConfig true
     viewBinding true
   }
+}
+
+task copyAssets(type: Copy) {
+  from('../assets') {
+    exclude "*.ios.*"
+    exclude "react-native-*/**"
+  }
+
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+  def rnVersion = getRNVersion()
+  if (rnVersion >= versionToNumber(0, 75, 0)) {
+    from('../assets/react-native-75')
+  }
+
+  into 'src/debug/assets'
+}
+
+project.afterEvaluate {
+  packageDebugAssets.dependsOn copyAssets
+  packageReleaseWithDevLauncherAssets.dependsOn copyAssets
 }
 
 repositories {

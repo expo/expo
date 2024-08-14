@@ -34,7 +34,9 @@ android {
     def rnVersion = getRNVersion()
     main {
       java {
-        if (rnVersion >= versionToNumber(0, 74, 0)) {
+        if (rnVersion >= versionToNumber(0, 75, 0)) {
+          srcDirs += "src/react-native-75/main"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
           srcDirs += "src/react-native-74/main"
         }
       }
@@ -43,7 +45,11 @@ android {
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
-
+        if (rnVersion >= versionToNumber(0, 75, 0)) {
+          srcDirs += "src/react-native-75/debug"
+        } else if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74/debug"
+        }
       }
     }
 
@@ -68,7 +74,15 @@ task copyAssets(type: Copy) {
 
   from('../assets') {
     exclude "*.ios.*"
+    exclude "react-native-*/**"
   }
+
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  def rnVersion = getRNVersion()
+  if (rnVersion >= versionToNumber(0, 75, 0)) {
+    from('../assets/react-native-75')
+  }
+
   into 'src/debug/assets'
 }
 
