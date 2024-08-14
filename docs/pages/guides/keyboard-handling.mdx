@@ -17,11 +17,11 @@ The `Keyboard` module from React Native allows you to listen for native events, 
 
 To listen for keyboard events, use the `Keyboard.addListener` method. This method accepts an event name and a callback function as arguments. The callback function is called with the event data when the keyboard is shown or hidden.
 
-```js
-import {useEffect } from 'react';
+```tsx HomeScreen.tsx
+import { useEffect } from 'react';
 import { Keyboard } from 'react-native';
 
-export default function App() {
+export default function HomeScreen() {
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
 
@@ -38,20 +38,22 @@ export default function App() {
 
 To dismiss the keyboard, use the `dismiss` method.
 
-```js
-import { Keyboard } from 'react-native';
+```tsx DismissKeyboardButton.tsx
+import { Keyboard, Button } from 'react-native';
 
-Keyboard.dismiss();
+export default function DismissKeyboardButton() {
+  return <Button title="Dismiss keyboard" onPress={Keyboard.dismiss} />;
+}
 ```
 
 ### Keyboard avoiding view
 
 The `KeyboardAvoidingView` is a component that automatically adjusts its height, position, or bottom padding based on the keyboard height to remain visible while the keyboard is displayed.
 
-```js
-import { KeyboardAvoidingView } from 'react-native';
+```tsx HomeScreen.tsx
+import { KeyboardAvoidingView, TextInput } from 'react-native';
 
-export default function App() {
+export default function HomeScreen() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <TextInput placeholder="Type here..." />
@@ -76,12 +78,11 @@ After adding this property, restart your app so that the changes take effect.
 
 ## Advanced keyboard handling
 
-For more complex keyboard interactions, consider using the [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller) library. It offers additional functionality beyond the built-in React Native keyboard APIs.
+For more complex keyboard interactions, consider using the [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller) library. It offers additional functionality beyond the built-in React Native keyboard APIs, providing consistency across Android and iOS with minimal configuration and offering the native feel users expect.
 
 ### Install keyboard controller
 
 To get started with [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), install it in your Expo project:
-
 
 <Terminal cmd={['$ npx expo install react-native-keyboard-controller']} />
 
@@ -95,7 +96,8 @@ Keyboard Controller library also requires `react-native-reanimated` to work prop
 
 To finalize the setup, add the `KeyboardProvider` to your app.
 
-```js
+```tsx _layout.tsx
+import { Stack } from 'expo-router';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 export default function RootLayout() {
@@ -117,7 +119,10 @@ Let's explore how to use the `useKeyboardHandler` hook to achieve the same funct
 
 The `useKeyboardHandler` hook takes two parameters: a handler and dependencies. The handler provides information about the current device's keyboard. You'll use the `onMove` handler to get the keyboard height and use it to push the screen's content above the keyboard when an input is active:
 
-```js
+```tsx ChatScreen.tsx
+import { useKeyboardHandler } from 'react-native-keyboard-controller';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
 const useGradualAnimation = () => {
   const height = useSharedValue(0);
 
@@ -138,8 +143,17 @@ The above example uses the `useSharedValue` hook from Reanimated to store the ke
 
 Now, let's use the `useGradualAnimation` hook inside a screen component:
 
-```js
-export default function TabTwoScreen() {
+```tsx ChatScreen.tsx
+import { StyleSheet, Platform, FlatList, View, StatusBar, TextInput } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import { useKeyboardHandler } from "react-native-keyboard-controller";
+
+import MessageItem from "@/components/MessageItem";
+import { messages } from "@/messages";
+
+const useGradualAnimation = () => {...};
+
+export default function ChatScreen() {
   const { height } = useGradualAnimation();
 
   const fakeView = useAnimatedStyle(() => {
@@ -161,6 +175,28 @@ export default function TabTwoScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  listStyle: {
+    padding: 16,
+    gap: 16,
+  },
+  textInput: {
+    width: "95%",
+    height: 45,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "#d8d8d8",
+    backgroundColor: "#fff",
+    padding: 8,
+    alignSelf: "center",
+    marginBottom: 8,
+  },
+});
 ```
 
 The above uses the keyboard's height to move the screen content above the keyboard. The view after the keyboard has an animated style that modifies its height based on the keyboard's height.
@@ -169,10 +205,11 @@ The above uses the keyboard's height to move the screen content above the keyboa
 
 For screens with multiple inputs, the Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
 
-```js
+```tsx FormScreen.tsx
+import { TextInput, View, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
 
-export default function AdvancedToolbar() {
+export default function FormScreen() {
   return (
     <>
       <KeyboardAwareScrollView bottomOffset={62} contentContainerStyle={styles.container}>
@@ -192,11 +229,32 @@ export default function AdvancedToolbar() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 16,
+    padding: 16,
+  },
+  listStyle: {
+    padding: 16,
+    gap: 16,
+  },
+  textInput: {
+    width: 'auto',
+    flexGrow: 1,
+    flexShrink: 1,
+    height: 45,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#d8d8d8',
+    backgroundColor: '#fff',
+    padding: 8,
+    marginBottom: 8,
+  },
+});
 ```
 
 The above example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
-
-Keyboard Controller provides consistency across Android and iOS with minimal configuration, offering the native feel users expect.
 
 ## Additional resources
 
