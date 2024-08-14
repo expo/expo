@@ -1,11 +1,10 @@
 import ExpoModulesCore
-import Foundation
 
 private let recordingStatus = "onRecordingStatusUpdate"
 
 class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
-  var id = UUID().uuidString
-  private lazy var delegate = {
+  let id = UUID().uuidString
+  private lazy var recordingDelegate = {
     RecordingDelegate(resultHandler: self)
   }()
   var startTimestamp = 0
@@ -13,7 +12,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
   override init(_ pointer: AVAudioRecorder) {
     super.init(pointer)
-    pointer.delegate = delegate
+    pointer.delegate = recordingDelegate
 
     do {
       try AVAudioSession.sharedInstance().setCategory(.playAndRecord)
@@ -76,5 +75,10 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "error": error?.localizedDescription,
       "url": nil
     ])
+  }
+
+  override func sharedObjectWillRelease() {
+    AudioComponentRegistry.shared.remove(self)
+    ref.stop()
   }
 }

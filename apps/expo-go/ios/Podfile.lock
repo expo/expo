@@ -216,10 +216,6 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (14.0.3):
     - ExpoModulesCore
-    - "sqlite3 (~> 3.45.3+1)"
-    - "sqlite3/bytecodevtab (~> 3.45.3+1)"
-    - "sqlite3/fts (~> 3.45.3+1)"
-    - "sqlite3/fts5 (~> 3.45.3+1)"
   - ExpoStoreReview (7.0.2):
     - ExpoModulesCore
   - ExpoSymbols (0.1.4):
@@ -287,7 +283,6 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdates/Tests (0.25.14):
     - DoubleConversion
@@ -316,7 +311,6 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
@@ -1800,15 +1794,6 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - "sqlite3 (3.45.3+1)":
-    - "sqlite3/common (= 3.45.3+1)"
-  - "sqlite3/bytecodevtab (3.45.3+1)":
-    - sqlite3/common
-  - "sqlite3/common (3.45.3+1)"
-  - "sqlite3/fts (3.45.3+1)":
-    - sqlite3/common
-  - "sqlite3/fts5 (3.45.3+1)":
-    - sqlite3/common
   - Stripe (23.26.0):
     - StripeApplePay (= 23.26.0)
     - StripeCore (= 23.26.0)
@@ -2039,7 +2024,6 @@ SPEC REPOS:
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
     - SocketRocket
-    - sqlite3
     - Stripe
     - StripeApplePay
     - StripeCore
@@ -2358,7 +2342,7 @@ SPEC CHECKSUMS:
   Expo: 453d4891e9559869c2f35ca0e31001db2d6a65a8
   ExpoAppleAuthentication: c8b5a198d4145db193b23ae2bbe3fcae94c63f5d
   ExpoAsset: a8c3b2e67b6aa9d647e46e1dd448e924adb0d096
-  ExpoAudio: b5d753a96c7d38a694394c4c3908183e72890423
+  ExpoAudio: 4d379bf679869faa88b31d334fcb55a2593f1419
   ExpoBackgroundFetch: 7d489b6f20a8c40af1a174160bdc731f23c9031c
   ExpoBattery: aeba4b3b68c9299352bd53341cf00434379a7926
   ExpoBlur: 79b0717d6add6b3cad2f19a0edc43d8af4035c95
@@ -2398,7 +2382,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
   ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
   ExpoSpeech: bd49d99ccf7ec89e89cd2f677f88795870e30f54
-  ExpoSQLite: ff4c3d91d5b25e6830bbf6027b6727e8105b068a
+  ExpoSQLite: 12e09c65608b7d8db6b9e7d281bbb598370c6128
   ExpoStoreReview: 92cbbce52bbb5c7c45d00956356eea404bcb8f98
   ExpoSymbols: bd22f3ef7bb28605084b355a407552e96915d493
   ExpoSystemUI: ab9245591d740dd89acb4648dee2ae1714bd2262
@@ -2409,7 +2393,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 1c5a9b07bec975d72967e1625d7dc2c139188499
   EXStructuredHeaders: 404356f2621ca76fd54e8c5c686091d0fa00cbc7
   EXTaskManager: 080da17150fba107155b6800be1370dd1a252c39
-  EXUpdates: 37e915191d7786eb352a30984ad3393529779f3c
+  EXUpdates: db2582fb4d574f9f1e195df6e20b522beb9c4127
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
@@ -2421,7 +2405,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: ffb2444593be9e81d4a163b3048369f410195cdb
+  hermes-engine: 4d4b2f42a4a8abea391b4dcc4d065351cbe93fb5
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -2504,7 +2488,6 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
   stripe-react-native: f1af0235d838495e0c209da6da321eb6f74b70b8
   StripeApplePay: d6ef43f2bf834463e1dcaaf4a61c681aec04990e

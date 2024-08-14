@@ -18,10 +18,7 @@ export function useAudioSampleListener(player, listener) {
     player.setAudioSamplingEnabled(true);
     useEffect(() => {
         const subscription = player.addListener('onAudioSampleUpdate', listener);
-        return () => {
-            player.setAudioSamplingEnabled(false);
-            subscription.remove();
-        };
+        return () => subscription.remove();
     }, [player.id]);
 }
 export function useAudioRecorder(options, statusListener) {
@@ -29,21 +26,23 @@ export function useAudioRecorder(options, statusListener) {
     const recorder = useReleasingSharedObject(() => {
         return new AudioModule.AudioRecorder(platformOptions);
     }, [JSON.stringify(platformOptions)]);
-    const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
             statusListener?.(status);
         });
         return () => subscription.remove();
     }, [recorder.id]);
+    return recorder;
+}
+export function useAudioRecorderState(recorder, interval = 1000) {
+    const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
-        const interval = setInterval(() => {
-            const status = recorder.getStatus();
-            setState(status);
-        }, 1000);
-        return () => clearInterval(interval);
+        const int = setInterval(() => {
+            setState(recorder.getStatus());
+        }, interval);
+        return () => clearInterval(int);
     }, [recorder.id]);
-    return [recorder, state];
+    return state;
 }
 export async function setIsAudioActiveAsync(active) {
     return await AudioModule.setIsAudioActiveAsync(active);
