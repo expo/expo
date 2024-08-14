@@ -149,7 +149,7 @@ export type RecordingOptions = {
   /**
    * Recording options for the Web platform.
    */
-  web: RecordingOptionsWeb;
+  web?: RecordingOptionsWeb;
 };
 
 export type RecordingOptionsWeb = {
