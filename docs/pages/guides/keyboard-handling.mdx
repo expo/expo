@@ -6,13 +6,13 @@ description: A guide to handling common keyboard interactions.
 
 Keyboard handling is crucial for creating an excellent user experience in your Expo app. This guide covers common keyboard interactions and how to manage them effectively.
 
-React Native provides several keyboard-related APIs, with [Keybaord](https://reactnative.dev/docs/keyboard) and [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview) being the most frequently used. For more complex or custom keyboard interactions, you might consider using [Keybaord Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), a library that offers advanced keyboard handling capabilities.
+React Native provides several keyboard-related APIs, with [Keyboard](https://reactnative.dev/docs/keyboard) and [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview) being the most frequently used. For more complex or custom keyboard interactions, you might consider using [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), a library that offers advanced keyboard handling capabilities.
 
 ## The basics
 
-### Keybaord events
+### Keyboard events
 
-The Keybaord module allows you to listen for native events, react to them, and make changes to the keyboard, such as dismissing it.
+The Keyboard module allows you to listen for native events, react to them, and make changes to the keyboard, such as dismissing it.
 
 To listen for keyboard events, use the `Keyboard.addListener` method. This method takes an event name and a callback function as arguments. The callback function will be called with the event data when the keyboard is shown or hidden.
 
@@ -76,7 +76,7 @@ After adding this property, restart your app so that the changes take effect.
 
 For more complex keyboard interactions, consider using the [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller) library. It offers additional functionality beyond the built-in React Native keyboard APIs.
 
-### Installing keybaord controller
+### Installing keyboard controller
 
 To get started with [Keyboard Controller](https://kirillzyusko.github.io/react-native-keyboard-controller), install it in your Expo project:
 
@@ -200,4 +200,4 @@ Keyboard Controller provides consistency across Android and iOS with minimal con
 ## Additional resources
 
 - [Keyboard Guide Source Code](https://github.com/betomoedano/keyboard-guide.git)
-- [Keybaord Controller Docs](https://kirillzyusko.github.io/react-native-keyboard-controller)
+- [Keyboard Controller Docs](https://kirillzyusko.github.io/react-native-keyboard-controller)
