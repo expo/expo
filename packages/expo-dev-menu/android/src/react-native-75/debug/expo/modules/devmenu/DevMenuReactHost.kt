@@ -19,7 +19,7 @@ import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
-import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
+//import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devmenu.modules.DevMenuInternalModule
@@ -79,7 +79,7 @@ object DevMenuReactHost {
             listOf(
               DevMenuInternalModule::class.java,
               DevMenuPreferences::class.java,
-              SafeAreaProviderManager::class.java
+//              SafeAreaProviderManager::class.java
             )
         }
       ),

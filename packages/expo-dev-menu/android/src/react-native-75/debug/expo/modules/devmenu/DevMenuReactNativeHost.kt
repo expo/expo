@@ -9,7 +9,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.devsupport.DevMenuReactSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
-import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
+//import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devmenu.modules.DevMenuInternalModule
@@ -36,7 +36,7 @@ class DevMenuReactNativeHost(application: Application, private val useDeveloperS
             listOf(
               DevMenuInternalModule::class.java,
               DevMenuPreferences::class.java,
-              SafeAreaProviderManager::class.java
+//              SafeAreaProviderManager::class.java
             )
         }
       ),
