@@ -6,7 +6,10 @@ try {
 }
 catch {
     // In react-native 0.75.0 LoadingView was renamed to DevLoadingView
-    LoadingView = require('react-native/Libraries/Utilities/DevLoadingView');
+    try {
+        LoadingView = require('react-native/Libraries/Utilities/DevLoadingView');
+    }
+    catch { }
 }
 exports.default = LoadingView;
 //# sourceMappingURL=LoadingView.native.js.map
