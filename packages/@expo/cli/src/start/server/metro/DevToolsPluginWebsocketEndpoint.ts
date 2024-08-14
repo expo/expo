@@ -14,5 +14,5 @@ export function createDevToolsPluginWebsocketEndpoint(): Record<string, WebSocke
     });
   });
 
-  return { '/dev-plugins-broadcast': wss };
+  return { '/expo-dev-plugins/broadcast': wss };
 }
