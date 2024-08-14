@@ -77,7 +77,7 @@ task copyAssets(type: Copy) {
     exclude "react-native-*/**"
   }
 
-  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   def rnVersion = getRNVersion()
   if (rnVersion >= versionToNumber(0, 75, 0)) {
     from('../assets/react-native-75')
