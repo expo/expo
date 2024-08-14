@@ -1,8 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const LoadingView_1 = __importDefault(require("react-native/Libraries/Utilities/LoadingView"));
-exports.default = LoadingView_1.default;
+let LoadingView;
+try {
+    LoadingView = require('react-native/Libraries/Utilities/LoadingView').default;
+}
+catch {
+    // In react-native 0.75.0 LoadingView was renamed to DevLoadingView
+    LoadingView = require('react-native/Libraries/Utilities/DevLoadingView').default;
+}
+exports.default = LoadingView;
 //# sourceMappingURL=LoadingView.native.js.map
