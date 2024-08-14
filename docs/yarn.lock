@@ -505,27 +505,27 @@
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
-"@expo/styleguide-icons@2.0.0-alpha.7", "@expo/styleguide-icons@^2.0.0-alpha.7":
-  version "2.0.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-2.0.0-alpha.7.tgz#29de343f219916571f1abade3fc8f82cd6373a67"
-  integrity sha512-bGRT2YPY7A1Sod2ipOUU/PC76NL1e/wjkcci7EHZKE846yD06vQql2EqVn/yJ1B5V49XLgY77vPxyuAYY0dAiQ==
+"@expo/styleguide-icons@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-2.0.0.tgz#0086e4f92637ddc0dab189c12546c9f442e8327e"
+  integrity sha512-YvFCdL5rZvSx/gw0O0EnE0rV7mSqjMtkYQatSJgleFXCzmSvPnTfKS1cgZ8BPMIGLFwzHMX+ow3fmO/mHFOq/g==
   dependencies:
     tailwind-merge "^2.3.0"
 
-"@expo/styleguide-search-ui@2.0.0-alpha.7":
-  version "2.0.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-2.0.0-alpha.7.tgz#da839bce82dc034d0db910c0347af49d2aaa65ac"
-  integrity sha512-Sq46grF+gWd1B0KKHLZlxf1hWo0Ch6kUPyoN0MvZHzeShIH1B68+YeHGDJ4E0NNiUr1trDPF6AopO8rcjHDs1Q==
+"@expo/styleguide-search-ui@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-2.0.1.tgz#564da3cc4ed831f93427cd7dc093d54226d0264b"
+  integrity sha512-Hs5ihEdQUmA0vvfQaR1oYcg9H+jiirW1xzG3mJetGgRjenegsBxccgTfbjb+0AbfxGjBz4KwlH7CROS5zlkAeQ==
   dependencies:
-    "@expo/styleguide" "^8.2.3"
-    "@expo/styleguide-icons" "^2.0.0-alpha.7"
+    "@expo/styleguide" "^8.2.5"
+    "@expo/styleguide-icons" "^2.0.0"
     cmdk "^0.2.0"
     lodash.groupby "^4.6.0"
 
-"@expo/styleguide@^8.2.3":
-  version "8.2.3"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.2.3.tgz#e671110ccb78de128cd6c038cd771934b00f9983"
-  integrity sha512-sKDopCgUXwJDEAksULApmxT+muoZLhXaBj8VACDxL+bWUQJHQiXbe7+H3tL+kNy2O/eYxjKb/3eeGBKhwrhUwA==
+"@expo/styleguide@^8.2.5":
+  version "8.2.5"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.2.5.tgz#970ea5d8402fbbd42444b74ce2f87849731d95d9"
+  integrity sha512-z2/7bXei5Ub85yjt0/hNO9yZHuZGImmGBtCxE+1v+fBkk5rPRC8wFELRcvr8PDNJalgIgwKi8ht9U3pD1/BYmg==
   dependencies:
     "@expo/styleguide-base" "^1.0.1"
     tailwind-merge "^2.3.0"

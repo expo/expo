@@ -29,10 +29,10 @@
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
-    "@expo/styleguide": "^8.2.3",
+    "@expo/styleguide": "^8.2.5",
     "@expo/styleguide-base": "^1.0.1",
-    "@expo/styleguide-icons": "2.0.0-alpha.7",
-    "@expo/styleguide-search-ui": "2.0.0-alpha.7",
+    "@expo/styleguide-icons": "^2.0.0",
+    "@expo/styleguide-search-ui": "^2.0.1",
     "@mdx-js/loader": "^2.2.1",
     "@mdx-js/mdx": "^2.2.1",
     "@mdx-js/react": "^2.2.1",
