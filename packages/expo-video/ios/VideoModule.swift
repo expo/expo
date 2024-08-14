@@ -137,7 +137,8 @@ public final class VideoModule: Module {
       }
 
       Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
+        let currentTime = player.pointer.currentTime().seconds
+        return currentTime.isNaN ? 0 : currentTime
       }
 
       Property("staysActiveInBackground") { player -> Bool in
@@ -155,7 +156,8 @@ public final class VideoModule: Module {
       }
 
       Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
+        let currentTime = player.pointer.currentTime().seconds
+        return currentTime.isNaN ? 0 : currentTime
       }
       .set { (player, time: Double) in
         // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
