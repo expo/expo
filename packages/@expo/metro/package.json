@@ -2,11 +2,12 @@
   "name": "@expo/metro",
   "version": "0.0.0",
   "description": "The Metro bundler integration package for Expo projects",
+  "types": "./types/index.d.ts",
   "scripts": {
     "build": "taskr",
     "clean": "taskr clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module tsc && taskr",
+    "prepare": "taskr",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
@@ -68,8 +69,10 @@
   },
   "taskr": {
     "requires": [
-      "./taskfile-augment.js",
-      "./taskfile-vendor.js"
+      "@taskr/clear",
+      "@taskr/esnext",
+      "./utils/taskfile-augment.js",
+      "./utils/taskfile-vendor.js"
     ]
   }
 }
