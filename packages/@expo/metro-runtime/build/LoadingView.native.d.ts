@@ -1,3 +1,3 @@
-declare let LoadingView: typeof import('react-native/Libraries/Utilities/LoadingView').default;
+import LoadingView from 'react-native/Libraries/Utilities/LoadingView';
 export default LoadingView;
 //# sourceMappingURL=LoadingView.native.d.ts.map
