@@ -52,15 +52,12 @@ export function useAudioSampleListener(
 
 export function useAudioRecorder(
   options: RecordingOptions,
-  statusListener?: (status: RecordingStatus) => void,
-  updateInterval: number = 500
-): [AudioModule.AudioRecorderWeb, RecorderState] {
+  statusListener?: (status: RecordingStatus) => void
+): AudioModule.AudioRecorderWeb {
   const platformOptions = createRecordingOptions(options);
   const recorder = useMemo(() => {
     return new AudioModule.AudioRecorderWeb(platformOptions);
   }, [JSON.stringify(platformOptions)]);
-
-  const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
     const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
@@ -69,16 +66,21 @@ export function useAudioRecorder(
     return () => subscription.remove();
   }, [recorder.id]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const status = recorder.getStatus();
-      setState(status);
-    }, updateInterval);
+  return recorder;
+}
 
-    return () => clearInterval(interval);
+export function useAudioRecorderState(recorder: AudioRecorder, interval: number = 500) {
+  const [state, setState] = useState<RecorderState>(recorder.getStatus());
+
+  useEffect(() => {
+    const int = setInterval(() => {
+      setState(recorder.getStatus());
+    }, interval);
+
+    return () => clearInterval(int);
   }, [recorder.id]);
 
-  return [recorder, state];
+  return state;
 }
 
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
