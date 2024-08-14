@@ -92,7 +92,7 @@
     "tsd": "^0.28.1"
   },
   "dependencies": {
-    "@expo/metro-runtime": "3.2.2",
+    "@expo/metro-runtime": "3.2.3",
     "@expo/server": "^0.4.0",
     "@radix-ui/react-slot": "1.0.1",
     "@react-navigation/bottom-tabs": "~6.5.7",
