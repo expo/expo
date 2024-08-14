@@ -14,16 +14,13 @@ internal struct ImagePickerOptions: Record {
   var allowsEditing: Bool = false
 
   @Field
-  var useLivePhotos: Bool = false
-
-  @Field
   var aspect: [Double]
 
   @Field
   var quality: Double = 1.0
 
   @Field
-  var mediaTypes: MediaType = .images
+  var mediaTypes: [MediaType] = [.images]
 
   @Field
   var exif: Bool
@@ -57,6 +54,38 @@ internal struct ImagePickerOptions: Record {
 
   @Field
   var orderedSelection: Bool = false
+
+  func toMediaTypesArray() -> [String] {
+    var mediaTypesArray = mediaTypes.map { mediaType in
+      mediaType.toUTTypeString()
+    }
+
+    // For legacy picker selecting only livePhotos is not allowed
+    if mediaTypes.contains(.livePhotos) && !mediaTypes.contains(.images) {
+      mediaTypesArray.append(kUTTypeImage as String)
+    }
+
+    if mediaTypesArray.isEmpty {
+      return [kUTTypeImage as String]
+    }
+    return mediaTypesArray
+  }
+
+  func toPickerFilter() -> PHPickerFilter {
+    let allowedArray = mediaTypes.map { mediaType in
+      mediaType.toPickerFilter()
+    }
+    if allowedArray.isEmpty {
+      return .images
+    }
+    return .any(of: allowedArray)
+  }
+
+  func requiresMicrophonePermission() -> Bool {
+    return mediaTypes.contains { mediaType in
+      mediaType.requiresMicrophonePermission()
+    }
+  }
 }
 
 internal enum PresentationStyle: String, Enumerable {
@@ -142,18 +171,18 @@ internal enum VideoQuality: Int, Enumerable {
 }
 
 internal enum MediaType: String, Enumerable {
-  case all = "All"
-  case videos = "Videos"
-  case images = "Images"
+  case videos
+  case images
+  case livePhotos
 
-  func toArray() -> [String] {
+  func toUTTypeString() -> String {
     switch self {
     case .images:
-      return [kUTTypeImage as String]
+      return kUTTypeImage as String
     case .videos:
-      return [kUTTypeMovie as String]
-    case .all:
-      return [kUTTypeImage as String, kUTTypeMovie as String]
+      return kUTTypeMovie as String
+    case .livePhotos:
+      return kUTTypeLivePhoto as String
     }
   }
 
@@ -163,20 +192,19 @@ internal enum MediaType: String, Enumerable {
       return false
     case .videos:
       return true
-    case .all:
-      return true
+    case .livePhotos:
+      return false
     }
   }
 
   func toPickerFilter() -> PHPickerFilter {
-    // TODO: (barthap) Maybe add support for live photos
     switch self {
     case .images:
       return .images
     case .videos:
       return .videos
-    case .all:
-      return .any(of: [.images, .videos])
+    case .livePhotos:
+      return .livePhotos
     }
   }
 }

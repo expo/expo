@@ -6,8 +6,6 @@ import Photos
 import PhotosUI
 
 internal struct MediaHandler {
-  // For some reason UTType.livePhoto returns "com.apple.live-photo", but the picked photos have type "com.apple.live-photo-bundle"
-  private static let livePhotoTypeIdentifier = "com.apple.live-photo-bundle"
   internal weak var fileSystem: EXFileSystemInterface?
   internal let options: ImagePickerOptions
 
@@ -28,7 +26,7 @@ internal struct MediaHandler {
     return try await concurrentMap(selection) { selectedItem in
       let itemProvider = selectedItem.itemProvider
 
-      if itemProvider.hasItemConformingToTypeIdentifier(Self.livePhotoTypeIdentifier) && options.useLivePhotos {
+      if itemProvider.canLoadObject(ofClass: PHLivePhoto.self) && options.mediaTypes.contains(.livePhotos) {
         return try await handleLivePhoto(from: selectedItem)
       }
       if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
@@ -59,7 +57,7 @@ internal struct MediaHandler {
       let mimeType = getMimeType(from: targetUrl.pathExtension)
 
       // no modification requested
-      let imageModified = options.allowsEditing || options.quality != nil
+      let imageModified = options.allowsEditing || options.quality < 1
       let fileWasCopied = !imageModified && ImageUtils.tryCopyingOriginalImageFrom(mediaInfo: mediaInfo, to: targetUrl)
       if !fileWasCopied {
         try ImageUtils.write(imageData: imageData, to: targetUrl)
@@ -99,7 +97,7 @@ internal struct MediaHandler {
 
   private func handleImage(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
-    let rawData = try await ImageUtils.loadImageDataRepresentation(provider: itemProvider)
+    let rawData = try await itemProvider.loadImageDataRepresentation()
 
     guard let image = UIImage(data: rawData) else {
       throw Exception(name: "FailedCreatingUIImage", description: "")
@@ -135,11 +133,9 @@ internal struct MediaHandler {
     )
   }
 
-  /**
-   * Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
-   * otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
-   * As a result a live photo photo cannot be compressed or edited.
-   */
+  // Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
+  // otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
+  // As a result a live photo photo cannot be compressed or edited.
   private func handleLivePhoto(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
     let livePhotoObject = try await itemProvider.loadObject(ofClass: PHLivePhoto.self)
@@ -349,20 +345,6 @@ internal struct MediaHandler {
 
   private func getFileExtension(from fileName: String) -> String {
     return ".\(URL(fileURLWithPath: fileName).pathExtension)"
-  }
-}
-
-fileprivate extension NSItemProvider {
-  func loadObject(ofClass objectClass: any NSItemProviderReading.Type) async throws -> NSItemProviderReading? {
-    return try await withCheckedThrowingContinuation { continuation in
-      self.loadObject(ofClass: objectClass) { result, error in
-        if let error {
-          continuation.resume(throwing: error)
-          return
-        }
-        continuation.resume(returning: result)
-      }
-    }
   }
 }
 

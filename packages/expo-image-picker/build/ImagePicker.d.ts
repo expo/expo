@@ -1,5 +1,5 @@
-import { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
-import { CameraPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerErrorResult, ImagePickerOptions } from './ImagePicker.types';
+import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { CameraPermissionResponse, ImagePickerErrorResult, ImagePickerOptions, ImagePickerResult, MediaLibraryPermissionResponse, MediaType, MediaTypeOptions } from './ImagePicker.types';
 /**
  * Checks user's permissions for accessing camera.
  * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).
@@ -94,6 +94,7 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export declare function launchImageLibraryAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
+export declare function parseMediaTypes(mediaTypes: MediaTypeOptions | MediaType | MediaType[]): MediaType[];
 export * from './ImagePicker.types';
 export type { PermissionExpiration, PermissionHookOptions, PermissionResponse };
 export { PermissionStatus };

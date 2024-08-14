@@ -15,6 +15,9 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
+/**
+ * @deprecated To set media types available in the image picker use an array of [`MediaType`](#mediatype) instead.
+ */
 export declare enum MediaTypeOptions {
     /**
      * Images and videos.
@@ -29,6 +32,14 @@ export declare enum MediaTypeOptions {
      */
     Images = "Images"
 }
+/**
+ * Media types that can be picked by the image picker.
+ * - `'images'` - for images.
+ * - `'videos'` - for videos.
+ * - `'livePhotos'` - for live photos (iOS only).
+ * > When on Android or Web `livePhotos` type passed as a media type will be ignored.
+ */
+export type MediaType = 'images' | 'videos' | 'livePhotos';
 export declare enum VideoExportPreset {
     /**
      * Resolution: __Unchanged__ •
@@ -231,8 +242,8 @@ export type ImagePickerAsset = {
      * The type of the asset.
      * - `'image'` - for images.
      * - `'video'` - for videos.
-     * - `'livePhoto'` - for live photos. (ios only)
-     * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (ios only)
+     * - `'livePhoto'` - for live photos. (iOS only)
+     * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (iOS only)
      */
     type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
     /**
@@ -273,7 +284,7 @@ export type ImagePickerAsset = {
      */
     mimeType?: string;
     /**
-     * Contains information about the video paired with the image file. This property is only set when `useLivePhotos` is set to true and a live photo has been selected.
+     * Contains information about the video paired with the image file. This property is only set when `livePhotos` media type was present in the `mediaTypes` array when launching the picker and a live photo was selected.
      *
      * @platform ios
      */
@@ -378,9 +389,9 @@ export type ImagePickerOptions = {
     quality?: number;
     /**
      * Choose what type of media to pick.
-     * @default ImagePicker.MediaTypeOptions.Images
+     * @default 'images'
      */
-    mediaTypes?: MediaTypeOptions;
+    mediaTypes?: MediaType | MediaType[] | MediaTypeOptions;
     /**
      * Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS
      * tags in the camera case.
@@ -478,9 +489,9 @@ export type ImagePickerOptions = {
 export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
-     * @default ImagePicker.MediaTypeOptions.Images
+     * @default ['images']
      */
-    mediaTypes: MediaTypeOptions;
+    mediaTypes: MediaTypeOptions | MediaType[] | MediaType;
     capture?: boolean;
     /**
      * Whether or not to allow selecting multiple media files at once.
