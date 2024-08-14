@@ -110,10 +110,10 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
       return []
     }
     var filePermissions: EXFileSystemPermissionFlags = []
-    if FileManager.default.isReadableFile(atPath: url.absoluteString) {
+    if FileManager.default.isReadableFile(atPath: url.path) {
       filePermissions.insert(.read)
     }
-    if FileManager.default.isWritableFile(atPath: url.absoluteString) {
+    if FileManager.default.isWritableFile(atPath: url.path) {
       filePermissions.insert(.write)
     }
     return filePermissions
