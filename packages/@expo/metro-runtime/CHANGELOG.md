@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+Update native LoadingView to support react-native 0.75.0. ([#31001](https://github.com/expo/expo/pull/31001) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
