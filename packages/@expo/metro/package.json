@@ -71,8 +71,7 @@
     "requires": [
       "@taskr/clear",
       "@taskr/esnext",
-      "./utils/taskfile-augment.js",
-      "./utils/taskfile-vendor.js"
+      "./taskfile-vendor.js"
     ]
   }
 }

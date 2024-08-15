@@ -1,4 +1,5 @@
 /* eslint-env node */
+const { relativePackagePath } = require('./utils/vendor');
 
 /**
  * @typedef {Object} TaskrFile
@@ -11,9 +12,6 @@
 module.exports = function vendorPlugin(task) {
   /** @param {TaskrFile} file */
   task.plugin('vendor', { every: false }, function* (files, { packageName } = {}) {
-    // Keep track of all JS files
-    // Parse or generate typescript definition files, with each indiviudal module split out as declaration
-
     for (const file of files) {
       const fileData = createVendorFile(packageName, file);
       if (fileData !== undefined) {
@@ -42,14 +40,14 @@ function createVendorFile(packageName, file) {
   }
 
   // Find the relative path from the start of the package name
-  const relativePath = `${file.dir}/${file.base}`.split(packageName).pop();
+  const relativeFilePath = relativePackagePath(file, { packageName });
 
   if (file.base.endsWith('.js')) {
-    return `module.exports = require('${packageName}${relativePath.replace('.js', '')}');\n`;
+    return `module.exports = require('${relativeFilePath.replace('.js', '')}');\n`;
   }
 
   if (file.base.endsWith('.d.ts')) {
-    return `export * from '${packageName}${relativePath.replace('.d.ts', '')}';\n`;
+    return `export * from '${relativeFilePath.replace('.d.ts', '')}';\n`;
   }
 
   throw new Error(`Unknown file "${file.base}" received, can't vendor file.`);
