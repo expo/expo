@@ -136,11 +136,6 @@ public final class VideoModule: Module {
         player.pointer.allowsExternalPlayback = allowsExternalPlayback
       }
 
-      Property("currentTime") { player -> Double in
-        let currentTime = player.pointer.currentTime().seconds
-        return currentTime.isNaN ? 0 : currentTime
-      }
-
       Property("staysActiveInBackground") { player -> Bool in
         return player.staysActiveInBackground
       }
