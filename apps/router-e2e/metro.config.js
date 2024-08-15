@@ -25,6 +25,8 @@ config.resolver.blockList = [
 // Copied from expo-yarn-workspaces
 config.transformer.enableBabelRCLookup = false;
 
+config.resolver.unstable_enablePackageExports = true;
+
 config.transformer.getTransformOptions = () => ({
   transform: {
     experimentalImportSupport: require('getenv').boolish('EXPO_USE_METRO_REQUIRE', false),

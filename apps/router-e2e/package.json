@@ -14,6 +14,8 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "ai": "^3.3.6",
+    "@ai-sdk/openai": "^0.0.45",
     "expo": "~51.0.0",
     "expo-linking": "~6.3.0",
     "expo-router": "^3.0.0",
