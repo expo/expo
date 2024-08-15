@@ -8,6 +8,16 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 
+declare let __METRO_GLOBAL_PREFIX__: string;
+
+global.__webpack_chunk_load__ = (url) => {
+  return Promise.resolve();
+};
+
+global.__webpack_require__ = (id) => {
+  return global._knownServerReferences.get(process.env.EXPO_OS!)?.get(id);
+};
+
 import type { ReactNode } from 'react';
 import {
   renderToReadableStream,
@@ -15,6 +25,7 @@ import {
   registerServerReference,
 } from 'react-server-dom-webpack/server';
 
+import { filePathToFileURL } from './path';
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 import { getServerReference, getDebugDescription } from '../server-actions';
 
@@ -80,7 +91,8 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
         // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
         if (encodedId.match(/[0-9a-z]{40}#/i)) {
-          return { id: encodedId, chunks: [encodedId], name, async: true };
+          // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+          return { id: encodedId, chunks: [encodedId], name: '*', async: true };
         }
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;

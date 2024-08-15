@@ -10,6 +10,12 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRsc = void 0;
+global.__webpack_chunk_load__ = (url) => {
+    return Promise.resolve();
+};
+global.__webpack_require__ = (id) => {
+    return global._knownServerReferences.get(process.env.EXPO_OS)?.get(id);
+};
 const server_1 = require("react-server-dom-webpack/server");
 const server_2 = require("./server");
 const server_actions_1 = require("../server-actions");
@@ -32,7 +38,8 @@ async function renderRsc(args, opts) {
             name = '',] = encodedId.split('#');
             // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
             if (encodedId.match(/[0-9a-z]{40}#/i)) {
-                return { id: encodedId, chunks: [encodedId], name, async: true };
+                // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+                return { id: encodedId, chunks: [encodedId], name: '*', async: true };
             }
             const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
             args.moduleIdCallback?.({

@@ -93,7 +93,13 @@ function reactServerActionsPlugin(api) {
                 t.stringLiteral(exportedName),
             ]);
         };
-        const extractedFunctionExpr = wrapInRegister(t.arrowFunctionExpression(extractedFunctionParams, t.blockStatement(extractedFunctionBody), true /* async */), extractedIdentifier.name);
+        const isArrowFn = path.isArrowFunctionExpression();
+        const extractedFunctionExpr = wrapWithBindNull(wrapInRegister(isArrowFn
+            ? t.arrowFunctionExpression(extractedFunctionParams, t.blockStatement(extractedFunctionBody), true)
+            : t.functionExpression(path.node.id, extractedFunctionParams, t.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name));
+        function wrapWithBindNull(expr) {
+            return t.callExpression(t.memberExpression(expr, t.identifier('bind')), [t.nullLiteral()]);
+        }
         // Create a top-level declaration for the extracted function.
         const bindingKind = 'const';
         const functionDeclaration = t.variableDeclaration(bindingKind, [

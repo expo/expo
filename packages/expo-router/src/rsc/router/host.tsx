@@ -146,34 +146,16 @@ export const fetchRSC = (
   }
   const options = {
     async callServer(actionId: string, args: unknown[]) {
-      console.log('[Router] Server Action invoked:', actionId);
+      // console.log('[Router] Server Action invoked:', actionId, args);
       const reqPath = getAdjustedRemoteFilePath(
         BASE_PATH + encodeInput(encodeURIComponent(actionId))
       );
 
-      let requestOpts: Pick<RequestInit, 'headers' | 'body'>;
-      if (!Array.isArray(args) || args.some((a) => a instanceof FormData)) {
-        requestOpts = {
-          headers: { accept: RSC_CONTENT_TYPE },
-          body: await encodeReply(args),
-        };
-      } else {
-        requestOpts = {
-          headers: {
-            accept: RSC_CONTENT_TYPE,
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(args),
-        };
-      }
-
       const response = fetch(reqPath, {
         method: 'POST',
-        // @ts-expect-error: non-standard feature for streaming.
-        duplex: 'half',
-        ...requestOpts,
+        body: await encodeReply(args),
         headers: {
-          ...requestOpts.headers,
+          accept: RSC_CONTENT_TYPE,
           'expo-platform': process.env.EXPO_OS!,
         },
       });
@@ -185,7 +167,7 @@ export const fetchRSC = (
       });
 
       const fullRes = await data;
-      console.log('[Router] Server Action resolved:', fullRes._value);
+      // console.log('[Router] Server Action resolved:', fullRes._value);
 
       return fullRes._value;
     },
