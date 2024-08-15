@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.BuildProperties = exports.AllowBackup = void 0;
+exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Settings = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.BuildProperties = exports.AllowBackup = void 0;
 function AllowBackup() {
   const data = _interopRequireWildcard(require("./AllowBackup"));
   AllowBackup = function () {
@@ -223,6 +223,19 @@ Object.defineProperty(exports, "Scheme", {
   enumerable: true,
   get: function () {
     return Scheme();
+  }
+});
+function Settings() {
+  const data = _interopRequireWildcard(require("./Settings"));
+  Settings = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "Settings", {
+  enumerable: true,
+  get: function () {
+    return Settings();
   }
 });
 function StatusBar() {

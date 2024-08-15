@@ -152,7 +152,7 @@ const withAndroidExpoPlugins = (config, props) => {
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
   // gradle.properties
-  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps,
+  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps, _configPlugins().AndroidConfig.Settings.withGradlePlugins,
   // settings.gradle
   _configPlugins().AndroidConfig.Name.withNameSettingsGradle,
   // project build.gradle

@@ -15,6 +15,7 @@ import * as PrimaryColor from './PrimaryColor';
 import * as Properties from './Properties';
 import * as Resources from './Resources';
 import * as Scheme from './Scheme';
+import * as Settings from './Settings';
 import * as StatusBar from './StatusBar';
 import * as Strings from './Strings';
 import * as Styles from './Styles';
@@ -22,7 +23,18 @@ import * as Updates from './Updates';
 import * as Version from './Version';
 import * as WindowSoftInputMode from './WindowSoftInputMode';
 
-export { Manifest, Colors, Paths, Permissions, Properties, Resources, Scheme, Strings, Styles };
+export {
+  Manifest,
+  Colors,
+  Paths,
+  Permissions,
+  Properties,
+  Resources,
+  Scheme,
+  Settings,
+  Strings,
+  Styles,
+};
 
 export {
   AllowBackup,
