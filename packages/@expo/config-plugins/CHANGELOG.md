@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add a config plugin to include the `com.facebook.react.settings` gradle plugin in `settings.gradle` on RN 0.75+
+- Add a config plugin to include the `com.facebook.react.settings` gradle plugin in `settings.gradle` on RN 0.75+ ([#31020](https://github.com/expo/expo/pull/31020) by [@leonhh](https://github.com/leonhh))
 
 ### 🐛 Bug fixes
 
