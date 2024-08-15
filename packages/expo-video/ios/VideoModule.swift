@@ -162,7 +162,8 @@ public final class VideoModule: Module {
       }
 
       Property("duration") { player -> Double in
-        return player.pointer.currentItem?.duration.seconds ?? 0
+        let duration = player.pointer.currentItem?.duration.seconds ?? 0
+        return duration.isNaN ? 0 : duration
       }
 
       Property("playbackRate") { player -> Float in
