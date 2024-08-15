@@ -129,31 +129,13 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
     }
     const options = {
         async callServer(actionId, args) {
-            console.log('[Router] Server Action invoked:', actionId);
+            // console.log('[Router] Server Action invoked:', actionId, args);
             const reqPath = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeURIComponent(actionId)));
-            let requestOpts;
-            if (!Array.isArray(args) || args.some((a) => a instanceof FormData)) {
-                requestOpts = {
-                    headers: { accept: RSC_CONTENT_TYPE },
-                    body: await encodeReply(args),
-                };
-            }
-            else {
-                requestOpts = {
-                    headers: {
-                        accept: RSC_CONTENT_TYPE,
-                        'content-type': 'application/json',
-                    },
-                    body: JSON.stringify(args),
-                };
-            }
             const response = (0, fetch_1.fetch)(reqPath, {
                 method: 'POST',
-                // @ts-expect-error: non-standard feature for streaming.
-                duplex: 'half',
-                ...requestOpts,
+                body: await encodeReply(args),
                 headers: {
-                    ...requestOpts.headers,
+                    accept: RSC_CONTENT_TYPE,
                     'expo-platform': process.env.EXPO_OS,
                 },
             });
@@ -164,7 +146,7 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
                 setElements((prev) => mergeElements(prev, data));
             });
             const fullRes = await data;
-            console.log('[Router] Server Action resolved:', fullRes._value);
+            // console.log('[Router] Server Action resolved:', fullRes._value);
             return fullRes._value;
         },
     };

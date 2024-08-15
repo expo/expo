@@ -20,6 +20,14 @@ import {
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 import { getServerReference, getDebugDescription } from '../server-actions';
 
+global.__webpack_chunk_load__ = (url) => {
+  return Promise.resolve();
+};
+
+global.__webpack_require__ = (id) => {
+  return global._knownServerReferences.get(process.env.EXPO_OS!)?.get(id);
+};
+
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = registerServerReference;
@@ -82,7 +90,8 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
         // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
         if (encodedId.match(/[0-9a-z]{40}#/i)) {
-          return { id: encodedId, chunks: [encodedId], name, async: true };
+          // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+          return { id: encodedId, chunks: [encodedId], name: '*', async: true };
         }
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
