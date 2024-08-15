@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a config plugin to include the `com.facebook.react.settings` gradle plugin in `settings.gradle` on RN 0.75+
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
