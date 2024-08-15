@@ -6,7 +6,7 @@ import org.junit.Test
 class ExperimentalConverterTest {
 
   @Test
-  fun primitive_arguments_should_be_convertible() = withSingleModule({
+  fun list_should_be_convertible() = withSingleModule({
     Function("simpleList") { listOf(1, 2, 3, 4, 5, 6) }
       .UseExperimentalConverter()
     Function("listWithMixedData") { listOf(1, 2, 3, "string", "expo" to "modules") }
@@ -40,5 +40,31 @@ class ExperimentalConverterTest {
 
     val nested = inner3[0].getArray().map { it.getInt() }
     Truth.assertThat(nested).containsExactly(1, 2, 3)
+  }
+
+  @Test
+  fun maps_should_be_convertible() = withSingleModule({
+    Function("simpleMap") { mapOf("expo" to "modules", "foo" to "bar") }
+      .UseExperimentalConverter()
+    Function("nestedMap") { mapOf("inner" to mapOf("foo" to "bar"), "expo" to "modules") }
+      .UseExperimentalConverter()
+    Function("mapWithList") { mapOf("list" to listOf(1, 2, 3)) }
+      .UseExperimentalConverter()
+  }) {
+    val simpleMap = call("simpleMap").getObject()
+    val nestedMap = call("nestedMap").getObject()
+    val innerMap = nestedMap["inner"]?.getObject()
+    val mapWithList = call("mapWithList").getObject()
+    val list = mapWithList["list"]?.getArray()?.map { it.getInt() }
+
+    Truth.assertThat(simpleMap["expo"]?.getString()).isEqualTo("modules")
+    Truth.assertThat(simpleMap["foo"]?.getString()).isEqualTo("bar")
+
+    Truth.assertThat(innerMap).isNotNull()
+    Truth.assertThat(innerMap!!["foo"]?.getString()).isEqualTo("bar")
+    Truth.assertThat(nestedMap["expo"]?.getString()).isEqualTo("modules")
+
+    Truth.assertThat(list).isNotNull()
+    Truth.assertThat(list).containsExactly(1, 2, 3)
   }
 }

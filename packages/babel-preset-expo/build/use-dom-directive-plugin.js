@@ -58,14 +58,12 @@ import { WebView } from 'expo/dom/internal';`,
                 if (isProduction) {
                     // MUST MATCH THE EXPORT COMMAND!
                     const hash = crypto_1.default.createHash('sha1').update(outputKey).digest('hex');
+                    const outputName = `www.bundle/${hash}.html`;
                     if (platform === 'ios') {
-                        const outputName = `www.bundle/${hash}.html`;
-                        proxyModule.push(`const source = { uri: ${JSON.stringify(outputName)} };`);
+                        proxyModule.push(`const source = { uri: "${outputName}" };`);
                     }
                     else if (platform === 'android') {
-                        // TODO: This is a guess.
-                        const outputName = `www/${hash}.html`;
-                        proxyModule.push(`const source = { uri: "file:///android_asset" + ${JSON.stringify(outputName)} };`);
+                        proxyModule.push(`const source = { uri: "file:///android_asset/${outputName}" };`);
                     }
                     else {
                         throw new Error('production "use dom" directive is not supported yet for platform: ' + platform);

@@ -2262,7 +2262,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.31.1):
+  - RNScreens (3.34.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2879,7 +2879,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 3d0293c6a9330f01d4601c347c7a695f8947cd30
   ExpoAppleAuthentication: c8b5a198d4145db193b23ae2bbe3fcae94c63f5d
   ExpoAsset: a8c3b2e67b6aa9d647e46e1dd448e924adb0d096
-  ExpoAudio: b5d753a96c7d38a694394c4c3908183e72890423
+  ExpoAudio: 4d379bf679869faa88b31d334fcb55a2593f1419
   ExpoBackgroundFetch: 7d489b6f20a8c40af1a174160bdc731f23c9031c
   ExpoBattery: aeba4b3b68c9299352bd53341cf00434379a7926
   ExpoBlur: 79b0717d6add6b3cad2f19a0edc43d8af4035c95
@@ -3015,7 +3015,7 @@ SPEC CHECKSUMS:
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: c94e5dfff583f0590f116739264a62e192bdc181
   RNReanimated: 45695b9819594a8777d27cf8468f0e12b58fd3e3
-  RNScreens: a95afe7f9c615d654878777aeb240055e6cf66dd
+  RNScreens: 19719a9c326e925498ac3b2d35c4e50fe87afc06
   RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90

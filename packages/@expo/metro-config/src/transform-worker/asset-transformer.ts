@@ -74,7 +74,7 @@ export async function transform(
     options.platform,
     isDomComponent && isExport
       ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
-        // relative to the www.bundle on ios.
+        // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
         `/assets?export_path=assets`
       : options.publicPath
   );

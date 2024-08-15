@@ -11,6 +11,8 @@ import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
+
 const warnUnstable = memoize(() =>
   Log.warn('Using experimental DOM Components API. Production exports may not work as expected.')
 );
@@ -72,6 +74,7 @@ export function createDomComponentsMiddleware(
     const generatedEntry = await getDomComponentVirtualEntryModuleAsync(file);
 
     // Create the script URL
+    const requestUrlBase = `http://${req.headers.host}`;
     const metroUrl = new URL(
       createBundleUrlPath({
         ...instanceMetroOptions,
@@ -84,8 +87,7 @@ export function createDomComponentsMiddleware(
         // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
         lazy: true,
       }),
-      // TODO: This doesn't work on all public wifi configurations.
-      getDevServerUrl()
+      requestUrlBase
     ).toString();
 
     res.statusCode = 200;

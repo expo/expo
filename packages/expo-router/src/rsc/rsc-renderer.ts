@@ -8,15 +8,7 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 
-declare let __METRO_GLOBAL_PREFIX__: string;
-
-global.__webpack_chunk_load__ = (url) => {
-  return Promise.resolve();
-};
-
-global.__webpack_require__ = (id) => {
-  return global._knownServerReferences.get(process.env.EXPO_OS!)?.get(id);
-};
+// This file must remain platform agnostic for production exports.
 
 import type { ReactNode } from 'react';
 import {
@@ -25,9 +17,16 @@ import {
   registerServerReference,
 } from 'react-server-dom-webpack/server';
 
-import { filePathToFileURL } from './path';
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 import { getServerReference, getDebugDescription } from '../server-actions';
+
+global.__webpack_chunk_load__ = (url) => {
+  return Promise.resolve();
+};
+
+global.__webpack_require__ = (id) => {
+  return global._knownServerReferences.get(process.env.EXPO_OS!)?.get(id);
+};
 
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions

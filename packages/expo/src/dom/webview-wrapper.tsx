@@ -2,7 +2,12 @@
 import React from 'react';
 import { WebView } from 'react-native-webview';
 
-import { getInjectEventScript, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
+import {
+  getInjectEventScript,
+  getInjectEnvsScript,
+  NATIVE_ACTION,
+  NATIVE_ACTION_RESULT,
+} from './injection';
 import type { BridgeMessage } from './www-types';
 
 function mergeRefs(...props) {
@@ -66,6 +71,7 @@ const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref)
       allowsFullscreenVideo
       {...dom}
       injectedJavaScriptBeforeContentLoaded={[
+        getInjectEnvsScript(),
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
         dom?.injectedJavaScriptBeforeContentLoaded,

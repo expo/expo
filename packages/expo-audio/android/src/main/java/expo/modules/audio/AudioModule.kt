@@ -65,9 +65,7 @@ class AudioModule : Module() {
       audioInterruptionMode = mode.interruptionMode
       staysActiveInBackground = mode.shouldPlayInBackground
       shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
-      if (shouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(true)
-      }
+      updatePlaySoundThroughEarpiece(shouldRouteThroughEarpiece)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -280,8 +278,7 @@ class AudioModule : Module() {
       }
 
       Function("remove") { ref: AudioPlayer ->
-        val id = ref.id
-        players.remove(id)
+        players.remove(ref.id)
       }
     }
 

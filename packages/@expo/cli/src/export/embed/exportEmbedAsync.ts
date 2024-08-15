@@ -24,7 +24,10 @@ import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevS
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { serializeHtmlWithAssets } from '../../start/server/metro/serializeHtml';
-import { getDomComponentHtml } from '../../start/server/middleware/DomComponentsMiddleware';
+import {
+  getDomComponentHtml,
+  DOM_COMPONENTS_BUNDLE_DIR,
+} from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
@@ -32,6 +35,7 @@ import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
+import { copyPublicFolderAsync } from '../publicFolder';
 import {
   BundleAssetWithFileHashes,
   ExportAssetMap,
@@ -78,12 +82,26 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
 
   fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
 
+  // On Android, dom components proxy files should write to the assets directory instead of the res directory.
+  // We use the bundleOutput directory to get the assets directory.
+  const domComponentProxyOutputDir =
+    options.platform === 'android' ? path.dirname(options.bundleOutput) : options.assetsDest;
+  const hasDomComponents = domComponentProxyOutputDir && files.size > 0;
+
   // Persist bundle and source maps.
   await Promise.all([
     output.save(bundle, options, Log.log),
 
-    // Write webview proxy files.
-    options.assetsDest ? persistMetroFilesAsync(files, options.assetsDest) : null,
+    // Write dom components proxy files.
+    hasDomComponents ? persistMetroFilesAsync(files, domComponentProxyOutputDir) : null,
+    // Copy public folder for dom components only if
+    hasDomComponents
+      ? copyPublicFolderAsync(
+          path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER),
+          path.join(domComponentProxyOutputDir, DOM_COMPONENTS_BUNDLE_DIR)
+        )
+      : null,
+
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
     options.assetsDest
@@ -207,16 +225,14 @@ async function exportDomComponentsAsync(
   exp: ExpoConfig,
   files: ExportAssetMap
 ) {
-  const rootDir = options.platform === 'android' ? `www` : `www.bundle`;
-
   await Promise.all(
     expoDomComponentReferences.map(async (filePath) => {
       debug('Bundle DOM Component:', filePath);
       // MUST MATCH THE BABEL PLUGIN!
       const hash = crypto.createHash('sha1').update(filePath).digest('hex');
-      const outputName = `${rootDir}/${hash}.html`;
+      const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
       const generatedEntryPath = await devServer.getDomComponentVirtualEntryModuleAsync(filePath);
-      const baseUrl = `/${rootDir}`;
+      const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
       // Run metro bundler and create the JS bundles/source maps.
       const bundle = await devServer.legacySinglePageExportBundleAsync({
         platform: 'web',
@@ -263,7 +279,7 @@ async function exportDomComponentsAsync(
           projectRoot,
           bundle.assets.map((asset) => ({
             ...asset,
-            httpServerLocation: path.join(rootDir, asset.httpServerLocation),
+            httpServerLocation: path.join(DOM_COMPONENTS_BUNDLE_DIR, asset.httpServerLocation),
           })),
           {
             files,
