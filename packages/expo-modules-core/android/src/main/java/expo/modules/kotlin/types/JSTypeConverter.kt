@@ -49,7 +49,7 @@ object JSTypeConverter {
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
       is RawTypedArrayHolder -> value.rawArray
-      is Iterable<*> -> value.toJSValue(containerProvider)
+      is Collection<*> -> value.toJSValue(containerProvider)
       else -> value
     }
   }
@@ -65,7 +65,11 @@ object JSTypeConverter {
       is Array<*> -> value.toJSValue(containerProvider)
       is IntArray, is FloatArray, is DoubleArray, is BooleanArray, is LongArray -> value
       is ByteArray -> FollyDynamicExtensionConverter.put(value)
-      is Map<*, *> -> value.toJSValue(containerProvider)
+      is Map<*, *> -> if (useExperimentalConverter) {
+        value.toJSValueExperimental()
+      } else {
+        value.toJSValue(containerProvider)
+      }
       is Enum<*> -> value.toJSValue()
       is Record -> value.toJSValue(containerProvider)
       is URI -> value.toJSValue()
@@ -75,12 +79,11 @@ object JSTypeConverter {
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
       is RawTypedArrayHolder -> value.rawArray
-      is List<*> -> if (useExperimentalConverter) {
-        value.toJSValue()
+      is Collection<*> -> if (useExperimentalConverter) {
+        value.toJSValueExperimental()
       } else {
         value.toJSValue(containerProvider)
       }
-      is Iterable<*> -> value.toJSValue(containerProvider)
       else -> value
     }
   }

@@ -144,7 +144,11 @@ class JNIToJSIConverter<T, is_trivially_convertible<T>> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, T value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    T value
+  ) {
     return {value};
   }
 };
@@ -160,7 +164,11 @@ class JNIToJSIConverter<T, is_convertible_using_runtime<T>> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, T value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    T value
+  ) {
     return {rt, value};
   }
 };
@@ -170,7 +178,11 @@ class JNIToJSIConverter<T, std::enable_if_t<std::is_same_v<T, std::nullptr_t>>> 
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, T value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    T value
+  ) {
     return jsi::Value::null();
   }
 };
@@ -180,7 +192,11 @@ class JNIToJSIConverter<long> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, long value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    long value
+  ) {
     return {static_cast<double>(value)};
   }
 };
@@ -190,7 +206,11 @@ class JNIToJSIConverter<long long> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, long long value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    long long value
+  ) {
     return {static_cast<double>(value)};
   }
 };
@@ -201,7 +221,9 @@ public:
   typedef RefConverter converterType;
 
   static inline jsi::Value convert(
-    jsi::Runtime &rt, JavaScriptModuleObject *value,
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    JavaScriptModuleObject *value,
     const jni::local_ref<JavaScriptModuleObject::javaobject> &ref
   ) {
     auto jsiObject = value->getJSIObject(rt);
@@ -225,8 +247,11 @@ class JNIToJSIConverter<jni::local_ref<JSharedObject::javaobject>> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value
-  convert(jsi::Runtime &rt, const jni::local_ref<JSharedObject::javaobject> &value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jni::local_ref<JSharedObject::javaobject> &value
+  ) {
     JSIContext *jsiContext = getJSIContext(rt);
     return convertSharedObject(value, rt, jsiContext);
   }
@@ -237,8 +262,11 @@ class JNIToJSIConverter<jni::global_ref<JSharedObject::javaobject>> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value
-  convert(jsi::Runtime &rt, const jni::global_ref<JSharedObject::javaobject> &value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jni::global_ref<JSharedObject::javaobject> &value
+  ) {
     JSIContext *jsiContext = getJSIContext(rt);
     return convertSharedObject(jni::make_local(value), rt, jsiContext);
   }
@@ -249,8 +277,11 @@ class JNIToJSIConverter<jni::alias_ref<JSharedObject::javaobject>> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value
-  convert(jsi::Runtime &rt, const jni::alias_ref<JSharedObject::javaobject> &value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jni::alias_ref<JSharedObject::javaobject> &value
+  ) {
     JSIContext *jsiContext = getJSIContext(rt);
     return convertSharedObject(jni::make_local(value), rt, jsiContext);
   }
@@ -261,7 +292,11 @@ class JNIToJSIConverter<JavaScriptTypedArray *> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, JavaScriptTypedArray *value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    JavaScriptTypedArray *value
+  ) {
     auto jsTypedArray = value->get();
     return {rt, *jsTypedArray};
   }
@@ -272,7 +307,11 @@ class JNIToJSIConverter<react::WritableNativeArray *> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, react::WritableNativeArray *value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    react::WritableNativeArray *value
+  ) {
     auto dynamic = value->consume();
     auto arg = jsi::valueFromDynamic(rt, dynamic);
     auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
@@ -288,7 +327,11 @@ class JNIToJSIConverter<react::WritableNativeMap *> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, react::WritableNativeMap *value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    react::WritableNativeMap *value
+  ) {
     auto dynamic = value->consume();
     auto arg = jsi::valueFromDynamic(rt, dynamic);
     auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
@@ -304,7 +347,11 @@ class JNIToJSIConverter<std::string> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, const std::string &value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const std::string &value
+  ) {
     auto enhancedValue = convertStringToFollyDynamicIfNeeded(rt, value);
     return enhancedValue ? std::move(*enhancedValue) : jsi::String::createFromUtf8(rt, value);
   }
@@ -315,7 +362,11 @@ class JNIToJSIConverter<folly::dynamic> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, const folly::dynamic &value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const folly::dynamic &value
+  ) {
     auto arg = jsi::valueFromDynamic(rt, value);
     auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
     if (enhancedArg) {
@@ -330,23 +381,28 @@ class JNIToJSIConverter<RawArray<T>> {
 public:
   typedef SimpleConverter converterType;
 
-  static inline jsi::Value convert(jsi::Runtime &rt, const RawArray<T> &value) {
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const RawArray<T> &value
+  ) {
     auto jsArray = jsi::Array(rt, value.size);
     for (size_t i = 0; i < value.size; i++) {
-      jsArray.setValueAtIndex(rt, i, JNIToJSIConverter<T>::convert(rt, value.data[i]));
+      jsArray.setValueAtIndex(rt, i, JNIToJSIConverter<T>::convert(env, rt, value.data[i]));
     }
     return jsArray;
   }
 };
 
 template<>
-class JNIToJSIConverter<jni::local_ref<jni::JList<jobject>>> {
+class JNIToJSIConverter<jni::local_ref<jni::JCollection<jobject>>> {
 public:
   typedef SimpleConverter converterType;
 
   static inline jsi::Value convert(
+    JNIEnv *env,
     jsi::Runtime &rt,
-    const jni::local_ref<jni::JList<jobject>> &list
+    const jni::local_ref<jni::JCollection<jobject>> &list
   ) {
     size_t size = list->size();
     auto jsArray = jsi::Array(rt, size);
@@ -356,25 +412,51 @@ public:
       jsArray.setValueAtIndex(
         rt,
         index++,
-        ::expo::convert(jni::Environment::current(), rt, item)
+        ::expo::convert(env, rt, item)
       );
     }
     return jsArray;
   }
 };
 
+template<>
+class JNIToJSIConverter<jni::local_ref<jni::JMap<jstring, jobject>>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jni::local_ref<jni::JMap<jstring, jobject>> &map
+  ) {
+    jsi::Object jsObject(rt);
+
+    for (const auto &entry: *map) {
+      auto key = entry.first->toStdString();
+      auto value = entry.second;
+      jsObject.setProperty(
+        rt,
+        key.c_str(),
+        ::expo::convert(env, rt, value)
+      );
+    }
+
+    return jsObject;
+  }
+};
+
 template<typename T>
-inline jsi::Value convertToJS(jsi::Runtime &rt, T &&value) {
+inline jsi::Value convertToJS(JNIEnv *env, jsi::Runtime &rt, T &&value) {
   if constexpr (std::is_same_v<SimpleConverter, typename JNIToJSIConverter<
     decltype(unwrapJNIRef(std::declval<T>()))
   >::converterType>) {
     return JNIToJSIConverter<
       decltype(unwrapJNIRef(std::declval<T>()))
-    >::convert(rt, unwrapJNIRef(std::forward<T>(value)));
+    >::convert(env, rt, unwrapJNIRef(std::forward<T>(value)));
   } else {
     return JNIToJSIConverter<
       decltype(unwrapJNIRef(std::declval<T>()))
-    >::convert(rt, unwrapJNIRef(value), value);
+    >::convert(env, rt, unwrapJNIRef(value), value);
   }
 }
 } // namespace expo
