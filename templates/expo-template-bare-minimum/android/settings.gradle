@@ -1,9 +1,16 @@
 pluginManagement {
+  def version = providers.exec {
+    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
+  }.standardOutput.asText.get().trim()
+  def (_, reactNativeMinor, reactNativePatch) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
+
   includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
+  if(reactNativeMinor == 74 && reactNativePatch <= 3){
+    includeBuild("react-settings-plugin")
+  }
 }
 
-// Uncomment this to use React Native 0.75
-// plugins { id("com.facebook.react.settings") }
+plugins { id("com.facebook.react.settings") }
 
 def getRNMinorVersion() {
   def version = providers.exec {
