@@ -1,6 +1,7 @@
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
+const { boolish } = require('getenv');
 
 // Find the project and workspace directories
 const projectRoot = __dirname;
@@ -62,12 +63,12 @@ config.transformer.enableBabelRCLookup = false;
 
 config.transformer.getTransformOptions = () => ({
   transform: {
-    experimentalImportSupport: require('getenv').boolish('EXPO_USE_METRO_REQUIRE', false),
+    experimentalImportSupport: boolish('EXPO_USE_METRO_REQUIRE', false),
     inlineRequires: false,
   },
 });
 
-const isRSC = require('getenv').boolish('E2E_RSC_ENABLED', false);
+const isRSC = boolish('E2E_RSC_ENABLED', false);
 
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (isRSC && moduleName === 'expo-router/entry') {
