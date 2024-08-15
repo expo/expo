@@ -16,16 +16,22 @@ export const withGradlePlugins: ConfigPlugin = (config) => {
   });
 };
 
-const getReactNativeMinorVersion = () => {
-  return Number(require('react-native/package.json').version.split('.')[1]);
+const getReactNativeVersionFromPackageJson = () => {
+  return require('react-native/package.json').version;
+};
+
+export const getReactNativeMinorVersion = (version: string) => {
+  const coreVersion = version.split('-')[0];
+
+  return Number(coreVersion.split('.')[1]);
 };
 
 export function setReactNativeSettingsPlugin(buildSettings: string) {
   const pattern = new RegExp(`plugins { }`);
 
-  console.log({ getReactNativeMinorVersion: getReactNativeMinorVersion() });
+  const version = getReactNativeVersionFromPackageJson();
 
-  if (getReactNativeMinorVersion() >= 75) {
+  if (getReactNativeMinorVersion(version) >= 75) {
     return buildSettings.replace(pattern, `plugins { id("com.facebook.react.settings") }`);
   }
 

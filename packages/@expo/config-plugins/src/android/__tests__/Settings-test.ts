@@ -1,4 +1,4 @@
-import { setReactNativeSettingsPlugin } from '../Settings';
+import { setReactNativeSettingsPlugin, getReactNativeMinorVersion } from '../Settings';
 
 const mockSettingsGradle = `pluginManagement {
   includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
@@ -18,6 +18,15 @@ const mockPackageJson075 = {
 };
 
 const mock = jest.mock('react-native/package.json', () => mockPackageJson074);
+
+describe(getReactNativeMinorVersion, () => {
+  it('Tests with RN 0.74', () => {
+    expect(getReactNativeMinorVersion('0.74')).toBe(74);
+  });
+  it('Tests with RN 0.75-rc.7', () => {
+    expect(getReactNativeMinorVersion('0.75-rc.7')).toBe(75);
+  });
+});
 
 describe(setReactNativeSettingsPlugin, () => {
   afterEach(() => {
