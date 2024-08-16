@@ -408,35 +408,34 @@ import { StyleSheet, View, Pressable, Text } from 'react-native';
 
 export default function Button({ label, /* @info The prop theme to detect the button variant. */theme/* @end */ }) {
   /* @info Conditionally render the primary themed button. */
-  if (theme === "primary") {
+    const primaryButtonStyle = theme === "primary"
+    ? { backgroundColor: "#fff", borderRadius: 18 }
+    : {};
+
+    const primaryTextStyle = theme === "primary"
+    ? { color: "#25292e" } 
+    : {};
+
+    const iconVisible = theme === "primary";
+
   /* @end */
     return (
-      <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}>
-        <Pressable
-          style={[styles.button, { backgroundColor: "#fff" }]}
-          onPress={() => alert('You pressed a button.')}
-        >
+       <View style={styles.buttonContainer}>
+      <View style={[styles.button, primaryButtonStyle]}>
+        {iconVisible && (
           <FontAwesome
             name="picture-o"
             size={18}
             color="#25292e"
             style={styles.buttonIcon}
           />
-          <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
-        </Pressable>
+        )}
+        <Text style={[styles.buttonLabel, primaryTextStyle]}>{label}</Text>
       </View>
+    </View>
     );
   /* @info */
-  }
   /* @end */
-
-  return (
-    <View style={styles.buttonContainer}>
-        <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
-          <Text style={styles.buttonLabel}>{label}</Text>
-        </Pressable>
-      </View>
-  );
 }
 
 const styles = StyleSheet.create({
