@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.9.1 — 2024-08-16
+
+### 💡 Others
+
 - Add check for native folders and configuration fields in app.json. This warns that EAS Build will not sync the fields if the native folders are present. ([#30817](https://github.com/expo/expo/pull/30817) by [@betomoedano](https://github.com/betomoedano))
 
 ## 1.9.0 — 2024-07-26
