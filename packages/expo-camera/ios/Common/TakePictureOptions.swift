@@ -21,7 +21,7 @@ struct TakePictureOptions: Record {
 
   @Field
   var additionalExif: [String: Any]?
-    
+
   @Field
   var shutterSound: Bool? = true
 }
