@@ -1,4 +1,11 @@
-import { LinkingOptions, ParamListBase, createNavigatorFactory } from '@react-navigation/native';
+import {
+  LinkingOptions,
+  NavigationAction,
+  ParamListBase,
+  PartialRoute,
+  Route,
+  createNavigatorFactory,
+} from '@react-navigation/native';
 
 import { RouteNode } from '../Route';
 import { sortRoutesWithInitial } from '../sortRoutes';
@@ -13,34 +20,45 @@ import {
 // do this hack.
 const { Screen } = createNavigatorFactory({} as any)();
 
-export type PolymorphicProps<E extends React.ElementType> = React.PropsWithChildren<
-  React.ComponentPropsWithoutRef<E> & {
-    as?: E;
+export type ScreenTrigger<T extends string | object> = {
+  href: Href<T>;
+  name: string;
+};
+
+export type ResolvedScreenTrigger = {
+  href: string;
+  name: string;
+};
+
+export type TriggerMap = Map<
+  string,
+  {
+    navigate: any;
+    switch: any;
   }
 >;
 
-export type ScreenTrigger<T extends string | object> = {
-  href: Href<T>;
-};
-
-export type ScreenConfig = {
-  routeNode: RouteNode;
-};
-
-export function triggersToScreens<T extends string | object>(
-  triggers: ScreenTrigger<T>[],
+export function triggersToScreens(
+  triggers: ScreenTrigger<any>[] | ResolvedScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   initialRouteName: undefined | string
 ) {
-  const configs: ScreenConfig[] = [];
+  const configs: { routeNode: RouteNode }[] = [];
 
-  for (const { href } of triggers) {
-    let state = linking.getStateFromPath?.(href as any, linking.config)?.routes[0];
+  const triggerMap: TriggerMap = new Map();
+
+  for (const trigger of triggers) {
+    let state = linking.getStateFromPath?.(trigger.href as any, linking.config)?.routes[0];
 
     if (!state) {
       continue;
     }
+
+    triggerMap.set(trigger.name, {
+      navigate: stateToActionPayload(state, layoutRouteNode.route),
+      switch: stateToActionPayload(state, layoutRouteNode.route, { depth: 1 }),
+    });
 
     if (layoutRouteNode.route) {
       while (state?.state) {
@@ -75,5 +93,48 @@ export function triggersToScreens<T extends string | object>(
 
   return {
     children,
+    triggerMap,
+  };
+}
+
+function stateToActionPayload(
+  state: PartialRoute<Route<string, object | undefined>> | undefined,
+  startAtRoute: string,
+  { depth = Infinity } = {}
+): NavigationAction['payload'] {
+  const rootPayload: any = {};
+  let payload = rootPayload;
+
+  let foundStartingPoint = false;
+
+  while (state) {
+    if (foundStartingPoint) {
+      if (depth === 0) break;
+      depth--;
+
+      if (payload === rootPayload) {
+        payload.name = state.name;
+      } else {
+        payload.screen = state.name;
+      }
+      payload.params = state.params ? { ...state.params } : {};
+
+      state = state.state?.routes[state.state?.routes.length - 1];
+
+      if (state) {
+        payload.params ??= {};
+        payload = payload.params;
+      }
+    } else {
+      if (state.name === startAtRoute) {
+        foundStartingPoint = true;
+      }
+
+      state = state.state?.routes[state.state?.routes.length - 1];
+    }
+  }
+
+  return {
+    payload: rootPayload,
   };
 }

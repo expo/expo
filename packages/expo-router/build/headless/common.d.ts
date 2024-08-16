@@ -2,9 +2,6 @@
 import { LinkingOptions, ParamListBase } from '@react-navigation/native';
 import { RouteNode } from '../Route';
 import { Href } from '../types';
-export type PolymorphicProps<E extends React.ElementType> = React.PropsWithChildren<React.ComponentPropsWithoutRef<E> & {
-    as?: E;
-}>;
 export type ScreenTrigger<T extends string | object> = {
     href: Href<T>;
 };

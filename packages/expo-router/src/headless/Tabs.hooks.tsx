@@ -3,8 +3,6 @@ import {
   LinkingContext,
   ParamListBase,
   TabActionHelpers,
-  TabRouterOptions,
-  TabRouter,
   useNavigationBuilder,
   TabNavigationState,
 } from '@react-navigation/native';
@@ -24,9 +22,11 @@ import {
   TabsDescriptorsContext,
   TabsStateContext,
 } from './Tabs.common';
-import { TabList, TabListProps, TabTrigger, TabTriggerOptions, TabTriggerProps } from './Tabs.list';
+import { TabList, TabListProps, TabTrigger, TabTriggerProps } from './Tabs.list';
 import { TabSlot } from './Tabs.slot';
-import { triggersToScreens } from './common';
+import { TabRouter, TabRouterOptions } from './TabsRouter';
+import { ScreenTrigger, triggersToScreens } from './common';
+import { useComponent } from './useComponent';
 import { useContextKey, useRouteNode } from '../Route';
 import { resolveHref } from '../link/href';
 import { Href } from '../types';
@@ -41,14 +41,14 @@ export type UseTabsOptions = Omit<
   >,
   'children'
 > &
-  Omit<TabRouterOptions, 'initialRouteName'>;
+  Omit<TabRouterOptions, 'initialRouteName' | 'triggerMap'>;
 
 export type UseTabsWithChildrenOptions = UseTabsOptions & {
   children: ReactNode;
 };
 
 export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptions & {
-  triggers: TabTriggerOptions<T>[];
+  triggers: ScreenTrigger<T>[];
 };
 
 export function useTabsWithChildren({ children, ...options }: UseTabsWithChildrenOptions) {
@@ -68,9 +68,19 @@ export function useTabsWithTriggers<T extends string | object>({
   }
 
   const initialRouteName = routeNode.initialRouteName;
-  const { children } = triggersToScreens(triggers, routeNode, linking, initialRouteName);
+  const { children, triggerMap } = triggersToScreens(
+    triggers,
+    routeNode,
+    linking,
+    initialRouteName
+  );
 
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const {
+    state,
+    descriptors,
+    navigation,
+    NavigationContent: RNNavigationContent,
+  } = useNavigationBuilder<
     TabNavigationState<any>,
     TabRouterOptions,
     TabActionHelpers<ParamListBase>,
@@ -80,6 +90,7 @@ export function useTabsWithTriggers<T extends string | object>({
     children,
     backBehavior: Platform.OS === 'web' ? 'history' : 'firstRoute',
     ...options,
+    triggerMap,
     id: contextKey,
     initialRouteName,
   });
@@ -119,17 +130,17 @@ export function useTabsWithTriggers<T extends string | object>({
     })
   );
 
-  const navigationContent = (props) => {
-    return (
-      <TabsDescriptorsContext.Provider value={descriptors}>
-        <TabsStateContext.Provider value={state}>
-          <NavigationContent {...props} />
-        </TabsStateContext.Provider>
-      </TabsDescriptorsContext.Provider>
-    );
-  };
+  console.log(JSON.stringify(state, null, 2));
 
-  return { state, descriptors, navigation, routes, NavigationContent: navigationContent };
+  const NavigationContent = useComponent((children: React.ReactNode) => (
+    <TabsDescriptorsContext.Provider value={descriptors}>
+      <TabsStateContext.Provider value={state}>
+        <RNNavigationContent>{children}</RNNavigationContent>
+      </TabsStateContext.Provider>
+    </TabsDescriptorsContext.Provider>
+  ));
+
+  return { state, descriptors, navigation, routes, NavigationContent };
 }
 
 export type ExpoTabHrefs =
@@ -150,12 +161,9 @@ function isTabSlot(child: ReactNode): child is FunctionComponentElement<TabListP
   return isValidElement(child) && child.type === TabSlot;
 }
 
-function parseTriggersFromChildren(
-  children: ReactNode,
-  screenTriggers: TabTriggerOptions<any>[] = []
-) {
+function parseTriggersFromChildren(children: ReactNode, screenTriggers: ScreenTrigger<any>[] = []) {
   Children.forEach(children, (child) => {
-    if (isTabListOrFragment(child)) {
+    if (isTabListOrFragment(child) && typeof child.props.children !== 'function') {
       return parseTriggersFromChildren(child.props.children, screenTriggers);
     }
 
@@ -177,15 +185,31 @@ function parseTriggersFromChildren(
       return;
     }
 
-    let { href } = child.props;
+    const { href, name } = child.props;
 
-    href = resolveHref(href);
-
-    if (shouldLinkExternally(href)) {
+    if (shouldLinkExternally(resolveHref(href))) {
       return;
     }
 
-    return screenTriggers.push({ href });
+    if (!href) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `<TabTrigger name={${name}}> does not have a 'href' prop. TabTriggers within a <TabList /> are required to have a href.`
+        );
+      }
+      return;
+    }
+
+    if (!name) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `<TabTrigger> does not have a 'name' prop. TabTriggers within a <TabList /> are required to have a name.`
+        );
+      }
+      return;
+    }
+
+    return screenTriggers.push({ href, name });
   });
 
   return screenTriggers;
