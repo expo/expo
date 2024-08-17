@@ -398,10 +398,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
-
-      if photoCaptureOptions?.shutterSound == false {
-          AudioServicesDisposeSystemSoundID(1108)
-      }
+    if photoCaptureOptions?.shutterSound == false {
+      AudioServicesDisposeSystemSoundID(1108)
+    }
 
     guard animateShutter else {
       return
