@@ -2909,7 +2909,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 3265925aea36fe7165a889565644f84e7f89eaf7
   ExpoMaps: 39a72d3e9b1d04df9f86210b19fb50d38cc3fbbc
   ExpoMediaLibrary: ff80f9210432e0e77428c24ed9ea9eb61e8f5d52
-  ExpoModulesCore: 91a839f26cac0bc9d4f90492eeceb802830dbf35
+  ExpoModulesCore: c16adda1e469286055dce68ec1e4e9a42edc7ab7
   ExpoModulesTestCore: 0ac6cceba4dce3798d9c2c9ab755ce307ca34545
   ExpoNetwork: 19af2b57d6c88c15b56c1084cc21c352e67aeab9
   ExpoPrint: ab75a41dd1f48c14a6f8de320e75cd6d57c53153
