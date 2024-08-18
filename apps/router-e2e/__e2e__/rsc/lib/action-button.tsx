@@ -1,5 +1,6 @@
 'use client';
 
+import './form-data-polyfill';
 import { Button, ScrollView, Text, View } from 'react-native';
 
 import { useActions, useAIState, useUIState } from 'ai/rsc';
@@ -22,7 +23,7 @@ export function ActionButton(props) {
       <Button
         {...props}
         onPress={() => {
-          const message = 'Tell me a story about Evan Bacon';
+          const message = 'What is the weather in San Francisco?';
           setMessages((currentMessages) => [
             ...currentMessages,
             {

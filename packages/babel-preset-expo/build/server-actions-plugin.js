@@ -31,16 +31,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = void 0;
 const core_1 = require("@babel/core");
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const t = __importStar(require("@babel/types"));
-const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_path_1 = require("node:path");
 const node_url_1 = require("node:url");
 const common_1 = require("./common");
@@ -61,8 +57,7 @@ const buildLazyWrapperHelper = () => {
 };
 function reactServerActionsPlugin(api) {
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
-    const platform = api.caller((caller) => caller?.platform);
-    let addExpoCliImport;
+    let addReactImport;
     let wrapBoundArgs;
     let getActionModuleId;
     const extractInlineActionToTopLevel = (path, _state, { body, freeVariables, }) => {
@@ -86,7 +81,7 @@ function reactServerActionsPlugin(api) {
             ];
         }
         const wrapInRegister = (expr, exportedName) => {
-            const expoRegisterServerReferenceId = addExpoCliImport();
+            const expoRegisterServerReferenceId = addReactImport();
             return t.callExpression(expoRegisterServerReferenceId, [
                 expr,
                 t.stringLiteral(actionModuleId),
@@ -94,17 +89,14 @@ function reactServerActionsPlugin(api) {
             ]);
         };
         const isArrowFn = path.isArrowFunctionExpression();
-        const extractedFunctionExpr = wrapWithBindNull(wrapInRegister(isArrowFn
+        const extractedFunctionExpr = wrapInRegister(isArrowFn
             ? t.arrowFunctionExpression(extractedFunctionParams, t.blockStatement(extractedFunctionBody), true)
-            : t.functionExpression(path.node.id, extractedFunctionParams, t.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name));
-        function wrapWithBindNull(expr) {
-            return t.callExpression(t.memberExpression(expr, t.identifier('bind')), [t.nullLiteral()]);
-        }
+            : t.functionExpression(path.node.id, extractedFunctionParams, t.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name);
         // Create a top-level declaration for the extracted function.
         const bindingKind = 'const';
-        const functionDeclaration = t.variableDeclaration(bindingKind, [
+        const functionDeclaration = t.exportNamedDeclaration(t.variableDeclaration(bindingKind, [
             t.variableDeclarator(extractedIdentifier, extractedFunctionExpr),
-        ]);
+        ]));
         // TODO: this is cacheable, no need to recompute
         const programBody = moduleScope.path.get('body');
         const lastImportPath = findLast(Array.isArray(programBody) ? programBody : [programBody], (stmt) => stmt.isImportDeclaration());
@@ -143,14 +135,15 @@ function reactServerActionsPlugin(api) {
             file.metadata.extractedActions = [];
             file.metadata.isModuleMarkedWithUseServerDirective = false;
             const addNamedImportOnce = createAddNamedImportOnce(t);
-            addExpoCliImport = () => {
-                return addNamedImportOnce(file.path, 'registerServerReferenceDEV', 'expo-router/build/server-actions');
+            addReactImport = () => {
+                return addNamedImportOnce(file.path, 'registerServerReference', 'react-server-dom-webpack/server');
             };
             getActionModuleId = once(() => {
                 // Create relative file path hash.
-                const hash = getHash((0, node_url_1.pathToFileURL)((0, node_path_1.relative)(projectRoot, file.opts.filename)).href);
+                // const hash = getHash(pathToFileURL(getRelativePath(projectRoot, file.opts.filename!)).href);
+                const hash = (0, node_url_1.pathToFileURL)((0, node_path_1.relative)(projectRoot, file.opts.filename)).href;
                 // Add platform to ID to prevent collisions between different platforms when running simultaneously.
-                return `${platform}_${hash}`;
+                return hash; //`${platform}_${hash}`;
             });
             const defineBoundArgsWrapperHelper = once(() => {
                 const id = this.file.path.scope.generateUidIdentifier('wrapBoundArgs');
@@ -277,11 +270,11 @@ function reactServerActionsPlugin(api) {
                 if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
                     return;
                 }
-                const expoRegisterServerReferenceId = addExpoCliImport();
+                const registerServerReferenceId = addReactImport();
                 const actionModuleId = getActionModuleId();
                 const createRegisterCall = (identifier, exported = identifier) => {
                     const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-                    const call = t.callExpression(expoRegisterServerReferenceId, [
+                    const call = t.callExpression(registerServerReferenceId, [
                         identifier,
                         t.stringLiteral(actionModuleId),
                         t.stringLiteral(exportedName),
@@ -487,7 +480,6 @@ const once = (fn) => {
         return cache.value;
     };
 };
-const getHash = (s) => node_crypto_1.default.createHash('sha1').update(s).digest().toString('hex');
 function assertExpoMetadata(metadata) {
     if (!metadata || typeof metadata !== 'object') {
         throw new Error('Expected Babel state.file.metadata to be an object');

@@ -11,26 +11,9 @@
 // This file must remain platform agnostic for production exports.
 
 import type { ReactNode } from 'react';
-import {
-  renderToReadableStream,
-  decodeReply,
-  registerServerReference,
-} from 'react-server-dom-webpack/server';
+import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
 
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
-import { getServerReference, getDebugDescription } from '../server-actions';
-
-global.__webpack_chunk_load__ = (url) => {
-  return Promise.resolve();
-};
-
-global.__webpack_require__ = (id) => {
-  return global._knownServerReferences.get(process.env.EXPO_OS!)?.get(id);
-};
-
-// Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
-// @ts-ignore: HACK type for server actions
-globalThis._REACT_registerServerReference = registerServerReference;
 
 export interface RenderContext<T = unknown> {
   rerender: (input: string, searchParams?: URLSearchParams) => void;
@@ -58,12 +41,13 @@ export type RenderRscArgs = {
   }) => void;
 };
 
-type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
+type ResolveClientEntry = (id: string, server: boolean) => { id: string; chunks: string[] };
 
 type RenderRscOpts = {
   isExporting: boolean;
   entries: EntriesDev;
   resolveClientEntry: ResolveClientEntry;
+  loadServerModuleRsc: (id: string) => any;
 };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
@@ -76,43 +60,66 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     buildConfig,
   } = entries as (EntriesDev & { loadModule: never; buildConfig: never }) | EntriesPrd;
 
+  function resolveRequest(isServer: boolean, encodedId: string) {
+    const [
+      // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
+      file,
+      // The name of the import (e.g. "default" or "")
+      // This will be empty when using `module.exports = ` and `require('...')`.
+      name = '',
+    ] = encodedId.split('#') as [string, string];
+
+    // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
+    if (encodedId.match(/[0-9a-z]{40}#/i)) {
+      // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+      return { id: encodedId, chunks: [encodedId], name: '*', async: true };
+    }
+
+    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
+    args.moduleIdCallback?.({
+      id: filePath,
+      chunks: [
+        // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+        // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
+        'chunk:' + filePath,
+      ],
+      name,
+      async: true,
+    });
+    // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
+    // This is similar to how we handle lazy bundling.
+    const resolved = resolveClientEntry(filePath, isServer);
+    return { id: resolved.id, chunks: resolved.chunks, name, async: true };
+  }
+
   const bundlerConfig = new Proxy(
     {},
     {
       get(_target, encodedId: string) {
-        const [
-          // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
-          file,
-          // The name of the import (e.g. "default" or "")
-          // This will be empty when using `module.exports = ` and `require('...')`.
-          name = '',
-        ] = encodedId.split('#') as [string, string];
-
-        // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
-        if (encodedId.match(/[0-9a-z]{40}#/i)) {
-          // TODO: Rework server actions to use some ES Modules like system instead of the globals.
-          return { id: encodedId, chunks: [encodedId], name: '*', async: true };
-        }
-
-        const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-
-        args.moduleIdCallback?.({
-          id: filePath,
-          chunks: [
-            // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-            // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
-            'chunk:' + filePath,
-          ],
-          name,
-          async: true,
-        });
-        // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
-        // This is similar to how we handle lazy bundling.
-        const resolved = resolveClientEntry(filePath);
-        return { id: resolved.id, chunks: resolved.chunks, name, async: true };
+        return resolveRequest(false, encodedId);
       },
     }
   );
+
+  const serverConfig = new Proxy(
+    {},
+    {
+      get(_target, encodedId: string) {
+        return resolveRequest(true, encodedId);
+      },
+    }
+  );
+
+  global.__webpack_chunk_load__ = async (url) => {
+    console.log('__webpack_chunk_load__ (RSC)', url);
+    return await opts.loadServerModuleRsc(url);
+  };
+
+  global.__webpack_require__ = (id) => {
+    console.log('__webpack_require__ (RSC)', id);
+    return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+  };
 
   const renderWithContext = async (
     context: Record<string, unknown> | undefined,
@@ -167,7 +174,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     };
     return runWithRenderStore(renderStore, async () => {
       const actionValue = await actionFn(...actionArgs);
+      console.log('actionValue', actionValue);
       const elements = await elementsPromise;
+      console.log('elements', elements);
       rendered = true;
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
@@ -185,20 +194,25 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       bodyStr = await streamToString(body);
     }
     if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
+      console.log('======.-1');
+      console.log(body);
+      console.log('======.0');
+      console.log(bodyStr);
+      console.log('======.1');
+      console.log(contentType);
+      console.log('======.2');
       // XXX This doesn't support streaming unlike busboy
       const formData = parseFormData(bodyStr, contentType);
-      args = await decodeReply(formData, bundlerConfig);
+      args = await decodeReply(formData, serverConfig);
     } else if (bodyStr) {
-      args = await decodeReply(bodyStr, bundlerConfig);
+      args = await decodeReply(bodyStr, serverConfig);
     }
-    const [, name] = rsfId.split('#') as [string, string];
-    // xxxx#greet
-    if (!getServerReference(rsfId)) {
-      throw new Error(`Server action not found: "${rsfId}". ${getDebugDescription()}`);
-    }
-    const mod: any = getServerReference(rsfId);
 
-    const fn = name ? mod[name] || mod : mod;
+    const [, name] = rsfId.split('#') as [string, string];
+    // TODO: Add production version of this codepath.
+    const mod: any = await opts.loadServerModuleRsc(serverConfig[rsfId].chunks[0]);
+
+    const fn = name ? (name === '*' ? mod : mod[name] || mod) : mod;
     return renderWithContextWithAction(context, fn, args);
   }
 

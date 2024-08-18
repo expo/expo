@@ -11,6 +11,7 @@ export const useStreamableText = (content: string | StreamableValue<string>) => 
     (async () => {
       if (typeof content === 'object') {
         let value = '';
+
         for await (const delta of readStreamableValue(content)) {
           if (typeof delta === 'string') {
             setRawContent((value = value + delta));

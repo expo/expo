@@ -1,0 +1,41 @@
+diff --git a/node_modules/ai/rsc/dist/rsc-server.mjs b/node_modules/ai/rsc/dist/rsc-server.mjs
+index 4254f2a..c886d23 100644
+--- a/node_modules/ai/rsc/dist/rsc-server.mjs
++++ b/node_modules/ai/rsc/dist/rsc-server.mjs
+@@ -21,8 +21,9 @@ function createResolvablePromise() {
+ var isFunction = (value) => typeof value === "function";
+ 
+ // rsc/ai-state.tsx
+-var asyncAIStateStorage = new AsyncLocalStorage();
++globalThis.asyncAIStateStorage ??= new AsyncLocalStorage();
+ function getAIStateStoreOrThrow(message) {
++  console.log('getAIStateStoreOrThrow')
+   const store = asyncAIStateStorage.getStore();
+   if (!store) {
+     throw new Error(message);
+@@ -30,6 +31,7 @@ function getAIStateStoreOrThrow(message) {
+   return store;
+ }
+ function withAIState({ state, options }, fn) {
++  console.log('withAIState')
+   return asyncAIStateStorage.run(
+     {
+       currentState: state,
+@@ -2020,6 +2022,7 @@ async function innerAction({
+   options
+ }, state, ...args) {
+   "use server";
++  console.log('wrapAction.2', arguments);
+   return await withAIState(
+     {
+       state,
+@@ -2033,7 +2036,8 @@ async function innerAction({
+   );
+ }
+ function wrapAction(action, options) {
+-  return innerAction.bind(null, { action, options });
++  console.log('wrapAction', innerAction,  { action, options});
++  return innerAction.bind(null, { action, funky: true, options });
+ }
+ function createAI({
+   actions,

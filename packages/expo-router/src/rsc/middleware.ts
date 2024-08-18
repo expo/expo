@@ -88,6 +88,13 @@ export async function renderRscWithImportsAsync(
           chunks: chunk ? [chunk] : [],
         };
       },
+      loadServerModuleRsc(file) {
+        const [id, chunk] = ssrManifest[file];
+        return {
+          id,
+          chunks: chunk ? [chunk] : [],
+        };
+      },
 
       entries: entries!,
     }

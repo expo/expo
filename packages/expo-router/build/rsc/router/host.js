@@ -131,9 +131,12 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
         async callServer(actionId, args) {
             // console.log('[Router] Server Action invoked:', actionId, args);
             const reqPath = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeURIComponent(actionId)));
+            console.log('CALL:', { actionId, args });
+            const bod = await encodeReply(args);
+            console.log('CALL.2:', bod);
             const response = (0, fetch_1.fetch)(reqPath, {
                 method: 'POST',
-                body: await encodeReply(args),
+                body: bod,
                 headers: {
                     accept: RSC_CONTENT_TYPE,
                     'expo-platform': process.env.EXPO_OS,
@@ -146,7 +149,7 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
                 setElements((prev) => mergeElements(prev, data));
             });
             const fullRes = await data;
-            // console.log('[Router] Server Action resolved:', fullRes._value);
+            console.log('[Router] Server Action resolved:', fullRes._value);
             return fullRes._value;
         },
     };

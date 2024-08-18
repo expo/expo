@@ -83,8 +83,8 @@ describe('scope', () => {
       // @ts-expect-error: not in types
     })!.metadata!.reactServerActions.id;
 
-    expect(aRes).toBe('ios_a8d85ffa48603c96866549ff4b0ef08b1216393d');
-    expect(bRes).toBe('ios_38483aa07da5dc73a6e80b4465719f53b1ccf9e0');
+    expect(aRes).toBe('file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/a');
+    expect(bRes).toBe('file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/b');
     expect(aRes).not.toMatch(bRes);
   });
 });
@@ -98,12 +98,12 @@ describe('syntax', () => {
       return 'bar';
   }`).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       // hoisted action: foo
-      const _$$INLINE_ACTION = _registerServerReferenceDEV(async function foo() {
+      export const _$$INLINE_ACTION = _registerServerReference(async function foo() {
         return 'bar';
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
       var foo = _$$INLINE_ACTION;"
     `);
   });
@@ -116,12 +116,12 @@ describe('syntax', () => {
       return 'bar';
   }`).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       // hoisted action: <anonymous>
-      const _$$INLINE_ACTION = _registerServerReferenceDEV(async bar => {
+      export const _$$INLINE_ACTION = _registerServerReference(async bar => {
         return 'bar';
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
       const foo = _$$INLINE_ACTION;"
     `);
   });
@@ -153,20 +153,20 @@ export { test2a };
 
 `).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2","_$$INLINE_ACTION3"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2","_$$INLINE_ACTION3"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       // hoisted action: test2a
-      const _$$INLINE_ACTION3 = _registerServerReferenceDEV(async function test2a(x) {
+      export const _$$INLINE_ACTION3 = _registerServerReference(async function test2a(x) {
         return external([x, SOME_CONSTANT]);
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION3").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION3");
       // hoisted action: test2
-      const _$$INLINE_ACTION2 = _registerServerReferenceDEV(async function test2(x) {
+      export const _$$INLINE_ACTION2 = _registerServerReference(async function test2(x) {
         return external([x, SOME_CONSTANT]);
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION2").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2");
       // hoisted action: <anonymous>
-      const _$$INLINE_ACTION = _registerServerReferenceDEV(async x => {
+      export const _$$INLINE_ACTION = _registerServerReference(async x => {
         return external([x, SOME_CONSTANT]);
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
       const external = () => {};
       const SOME_CONSTANT = "beep";
       export const test1 = _$$INLINE_ACTION;
@@ -196,8 +196,8 @@ export const test3 = withAuth(async (x) => {
 });
 `).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       var _wrapBoundArgs = thunk => {
         let cache;
         return {
@@ -207,14 +207,14 @@ export const test3 = withAuth(async (x) => {
         };
       };
       // hoisted action: <anonymous>
-      const _$$INLINE_ACTION2 = _registerServerReferenceDEV(async x => {
+      export const _$$INLINE_ACTION2 = _registerServerReference(async x => {
         return external([x, SOME_CONSTANT]);
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION2").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2");
       // hoisted action: <anonymous>
-      const _$$INLINE_ACTION = _registerServerReferenceDEV(async (_$$CLOSURE, ...args) => {
+      export const _$$INLINE_ACTION = _registerServerReference(async (_$$CLOSURE, ...args) => {
         var [fn] = _$$CLOSURE.value;
         return fn(...args);
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
       const external = () => {};
       const SOME_CONSTANT = "beep";
       const withAuth = fn => _$$INLINE_ACTION.bind(null, _wrapBoundArgs(() => [fn]));
@@ -232,10 +232,10 @@ export async function foo() {
 }
     `).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["foo"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["foo"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       export async function foo() {}
-      (() => _registerServerReferenceDEV(foo, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "foo"))();"
+      (() => _registerServerReference(foo, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "foo"))();"
     `);
   });
 
@@ -260,8 +260,8 @@ export async function foo() {
     }
   };`).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       var _wrapBoundArgs = thunk => {
         let cache;
         return {
@@ -273,7 +273,7 @@ export async function foo() {
       import { jsx as _jsx } from "react/jsx-runtime";
       import { jsxs as _jsxs } from "react/jsx-runtime";
       // hoisted action: doStuff
-      const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+      export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
         var [foo2] = _$$CLOSURE.value;
         const test = data.get("test");
         await external({
@@ -283,7 +283,7 @@ export async function foo() {
         return {
           success: true
         };
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
       const external = () => {};
       export const Test = ({
         foo
@@ -328,8 +328,8 @@ export const Test2 = ({ foo }) => {
   }
 };`).code
     ).toMatchInlineSnapshot(`
-      "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-      import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+      "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+      import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
       var _wrapBoundArgs = thunk => {
         let cache;
         return {
@@ -341,7 +341,7 @@ export const Test2 = ({ foo }) => {
       import { jsx as _jsx } from "react/jsx-runtime";
       import { jsxs as _jsxs } from "react/jsx-runtime";
       // hoisted action: doStuff
-      const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+      export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
         var [foo2] = _$$CLOSURE.value;
         const test = data.get("test");
         await doSomethingOnTheServer({
@@ -351,7 +351,7 @@ export const Test2 = ({ foo }) => {
         return {
           success: true
         };
-      }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+      }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
       const external = () => {};
       export const Test2 = ({
         foo
@@ -474,8 +474,8 @@ function Something({ shared }) {
 
     `).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -485,10 +485,10 @@ function Something({ shared }) {
       };
     };
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async _$$CLOSURE => {
+    export const _$$INLINE_ACTION = _registerServerReference(async _$$CLOSURE => {
       var [shared] = _$$CLOSURE.value;
       return shared;
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     function Something({
       shared
     }) {
@@ -523,23 +523,23 @@ async function test2a(formData) {
 export { test2a };
 `).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["test1","test2","default","test3","test2a"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["test1","test2","default","test3","test2a"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     import { doSomethingOnTheServer } from "../server-stuff";
     const SOME_CONSTANT = "beep";
     export const test1 = async formData => {
       return doSomethingOnTheServer([formData, SOME_CONSTANT]);
     };
-    (() => _registerServerReferenceDEV(test1, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "test1"))();
+    (() => _registerServerReference(test1, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "test1"))();
     export async function test2() {
       return doSomethingOnTheServer([SOME_CONSTANT]);
     }
-    (() => _registerServerReferenceDEV(test2, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "test2"))();
+    (() => _registerServerReference(test2, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "test2"))();
     export { test2 as default, test2 as test3 };
     async function test2a(formData) {
       return doSomethingOnTheServer([formData, SOME_CONSTANT]);
     }
-    (() => _registerServerReferenceDEV(test2a, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "test2a"))();
+    (() => _registerServerReference(test2a, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "test2a"))();
     export { test2a };"
   `);
 });
@@ -570,8 +570,8 @@ export const test4 = withAuth(async (x) => {
 });
 `).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["test1","_$$INLINE_ACTION","test4","_$$INLINE_ACTION2"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["test1","_$$INLINE_ACTION","test4","_$$INLINE_ACTION2","_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -582,23 +582,25 @@ export const test4 = withAuth(async (x) => {
     };
     import { doSomethingOnTheServer } from "../server-stuff";
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION2 = _registerServerReferenceDEV(async x => {
+    export const _$$INLINE_ACTION2 = _registerServerReference(async x => {
       return doSomethingOnTheServer(["inline-wrapped", x, SOME_CONSTANT]);
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION2").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2");
+    (() => _registerServerReference(_$$INLINE_ACTION2, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2"))();
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async (_$$CLOSURE, ...args) => {
+    export const _$$INLINE_ACTION = _registerServerReference(async (_$$CLOSURE, ...args) => {
       var [fn] = _$$CLOSURE.value;
       console.log("checking auth");
       return fn(...args);
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
+    (() => _registerServerReference(_$$INLINE_ACTION, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION"))();
     const SOME_CONSTANT = "beep";
     export const test1 = async formData => {
       return doSomethingOnTheServer(["top-level", formData, SOME_CONSTANT]);
     };
-    (() => _registerServerReferenceDEV(test1, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "test1"))();
+    (() => _registerServerReference(test1, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "test1"))();
     const withAuth = fn => _$$INLINE_ACTION.bind(null, _wrapBoundArgs(() => [fn]));
     export const test4 = withAuth(_$$INLINE_ACTION2);
-    (() => _registerServerReferenceDEV(test4, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "test4"))();"
+    (() => _registerServerReference(test4, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "test4"))();"
   `);
 });
 
@@ -634,8 +636,8 @@ export const Test = ({ foo, bar }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -648,7 +650,7 @@ export const Test = ({ foo, bar }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION2 = _registerServerReferenceDEV(async (_$$CLOSURE2, data) => {
+    export const _$$INLINE_ACTION2 = _registerServerReference(async (_$$CLOSURE2, data) => {
       var [bar, foo] = _$$CLOSURE2.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -659,9 +661,9 @@ export const Test = ({ foo, bar }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION2").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2");
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async (_$$CLOSURE, data) => {
+    export const _$$INLINE_ACTION = _registerServerReference(async (_$$CLOSURE, data) => {
       var [foo] = _$$CLOSURE.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -671,7 +673,7 @@ export const Test = ({ foo, bar }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo,
       bar
@@ -714,8 +716,8 @@ export const Test = ({ foo }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -728,7 +730,7 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async (_$$CLOSURE, data) => {
+    export const _$$INLINE_ACTION = _registerServerReference(async (_$$CLOSURE, data) => {
       var [foo] = _$$CLOSURE.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -738,7 +740,7 @@ export const Test = ({ foo }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {
@@ -787,8 +789,8 @@ export const Test = ({ foo }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -803,12 +805,12 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: <anonymous>
-    const _$$INLINE_ACTION2 = _registerServerReferenceDEV(async _$$CLOSURE2 => {
+    export const _$$INLINE_ACTION2 = _registerServerReference(async _$$CLOSURE2 => {
       var [foo1] = _$$CLOSURE2.value;
       console.log("hi from nested!", foo1);
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION2").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2");
     // hoisted action: doStuff
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+    export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo1] = _$$CLOSURE.value;
       const nested = _$$INLINE_ACTION2.bind(null, _wrapBoundArgs(() => [foo1]));
       await nested();
@@ -817,7 +819,7 @@ export const Test = ({ foo }) => {
         test,
         foo: foo1
       });
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {
@@ -857,8 +859,8 @@ export const Test = ({ foo }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -871,7 +873,7 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+    export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo] = _$$CLOSURE.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -881,7 +883,7 @@ export const Test = ({ foo }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {
@@ -921,8 +923,8 @@ export const Test = ({ foo }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -935,7 +937,7 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+    export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo] = _$$CLOSURE.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -945,7 +947,7 @@ export const Test = ({ foo }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {
@@ -985,8 +987,8 @@ export const Test = ({ foo }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -999,7 +1001,7 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+    export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo2, x] = _$$CLOSURE.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -1010,7 +1012,7 @@ export const Test = ({ foo }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {
@@ -1058,8 +1060,8 @@ export const Test = ({ foo }) => {
   );
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION","_$$INLINE_ACTION2"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -1072,12 +1074,12 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuffWrapped
-    const _$$INLINE_ACTION2 = _registerServerReferenceDEV(async function doStuffWrapped(_$$CLOSURE2, data) {
+    export const _$$INLINE_ACTION2 = _registerServerReference(async function doStuffWrapped(_$$CLOSURE2, data) {
       var [doStuff] = _$$CLOSURE2.value;
       return doStuff(data);
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION2").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION2");
     // hoisted action: doStuff
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+    export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo2] = _$$CLOSURE.value;
       const test = data.get("test");
       await doSomethingOnTheServer({
@@ -1087,7 +1089,7 @@ export const Test = ({ foo }) => {
       return {
         success: true
       };
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {
@@ -1147,8 +1149,8 @@ export const Test = ({ foo }) => {
   return null;
 };`).code
   ).toMatchInlineSnapshot(`
-    "/*rsc/actions: {"id":"ios_ba9360832f8fbf734058d71aa3de3ee1874c1657","names":["_$$INLINE_ACTION"]}*/
-    import { registerServerReferenceDEV as _registerServerReferenceDEV } from "expo-router/build/server-actions";
+    "/*rsc/actions: {"id":"file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown","names":["_$$INLINE_ACTION"]}*/
+    import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
     var _wrapBoundArgs = thunk => {
       let cache;
       return {
@@ -1163,7 +1165,7 @@ export const Test = ({ foo }) => {
     import { jsx as _jsx } from "react/jsx-runtime";
     import { jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
-    const _$$INLINE_ACTION = _registerServerReferenceDEV(async function doStuff(_$$CLOSURE, data) {
+    export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo2] = _$$CLOSURE.value;
       const test = data.get("test");
       if (Math.random() > 0.5) {
@@ -1180,7 +1182,7 @@ export const Test = ({ foo }) => {
           foo: foo2
         });
       }
-    }, "ios_ba9360832f8fbf734058d71aa3de3ee1874c1657", "_$$INLINE_ACTION").bind(null);
+    }, "file:///Users/evanbacon/Documents/GitHub/expo/packages/babel-preset-expo/unknown", "_$$INLINE_ACTION");
     export const Test = ({
       foo
     }) => {

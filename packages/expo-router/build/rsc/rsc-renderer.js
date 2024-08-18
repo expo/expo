@@ -10,54 +10,60 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRsc = void 0;
-global.__webpack_chunk_load__ = (url) => {
-    return Promise.resolve();
-};
-global.__webpack_require__ = (id) => {
-    return global._knownServerReferences.get(process.env.EXPO_OS)?.get(id);
-};
 const server_1 = require("react-server-dom-webpack/server");
 const server_2 = require("./server");
-const server_actions_1 = require("../server-actions");
-// Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
-// @ts-ignore: HACK type for server actions
-globalThis._REACT_registerServerReference = server_1.registerServerReference;
 async function renderRsc(args, opts) {
     const { searchParams, method, input, body, contentType, context } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
     // @ts-expect-error
     buildConfig, } = entries;
+    function resolveRequest(isServer, encodedId) {
+        const [
+        // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
+        file, 
+        // The name of the import (e.g. "default" or "")
+        // This will be empty when using `module.exports = ` and `require('...')`.
+        name = '',] = encodedId.split('#');
+        // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
+        if (encodedId.match(/[0-9a-z]{40}#/i)) {
+            // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+            return { id: encodedId, chunks: [encodedId], name: '*', async: true };
+        }
+        const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+        args.moduleIdCallback?.({
+            id: filePath,
+            chunks: [
+                // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+                // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
+                'chunk:' + filePath,
+            ],
+            name,
+            async: true,
+        });
+        // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
+        // This is similar to how we handle lazy bundling.
+        const resolved = resolveClientEntry(filePath, isServer);
+        return { id: resolved.id, chunks: resolved.chunks, name, async: true };
+    }
     const bundlerConfig = new Proxy({}, {
         get(_target, encodedId) {
-            const [
-            // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
-            file, 
-            // The name of the import (e.g. "default" or "")
-            // This will be empty when using `module.exports = ` and `require('...')`.
-            name = '',] = encodedId.split('#');
-            // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
-            if (encodedId.match(/[0-9a-z]{40}#/i)) {
-                // TODO: Rework server actions to use some ES Modules like system instead of the globals.
-                return { id: encodedId, chunks: [encodedId], name: '*', async: true };
-            }
-            const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-            args.moduleIdCallback?.({
-                id: filePath,
-                chunks: [
-                    // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-                    // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
-                    'chunk:' + filePath,
-                ],
-                name,
-                async: true,
-            });
-            // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
-            // This is similar to how we handle lazy bundling.
-            const resolved = resolveClientEntry(filePath);
-            return { id: resolved.id, chunks: resolved.chunks, name, async: true };
+            return resolveRequest(false, encodedId);
         },
     });
+    const serverConfig = new Proxy({}, {
+        get(_target, encodedId) {
+            return resolveRequest(true, encodedId);
+        },
+    });
+    global.__webpack_chunk_load__ = async (url) => {
+        console.log('__webpack_chunk_load__ (RSC)', url);
+        return await opts.loadServerModuleRsc(url);
+    };
+    global.__webpack_require__ = (id) => {
+        console.log('__webpack_require__ (RSC)', id);
+        return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+    };
     const renderWithContext = async (context, input, searchParams) => {
         const renderStore = {
             context: context || {},
@@ -102,7 +108,9 @@ async function renderRsc(args, opts) {
         };
         return (0, server_2.runWithRenderStore)(renderStore, async () => {
             const actionValue = await actionFn(...actionArgs);
+            console.log('actionValue', actionValue);
             const elements = await elementsPromise;
+            console.log('elements', elements);
             rendered = true;
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
@@ -119,20 +127,24 @@ async function renderRsc(args, opts) {
             bodyStr = await streamToString(body);
         }
         if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
+            console.log('======.-1');
+            console.log(body);
+            console.log('======.0');
+            console.log(bodyStr);
+            console.log('======.1');
+            console.log(contentType);
+            console.log('======.2');
             // XXX This doesn't support streaming unlike busboy
             const formData = parseFormData(bodyStr, contentType);
-            args = await (0, server_1.decodeReply)(formData, bundlerConfig);
+            args = await (0, server_1.decodeReply)(formData, serverConfig);
         }
         else if (bodyStr) {
-            args = await (0, server_1.decodeReply)(bodyStr, bundlerConfig);
+            args = await (0, server_1.decodeReply)(bodyStr, serverConfig);
         }
         const [, name] = rsfId.split('#');
-        // xxxx#greet
-        if (!(0, server_actions_1.getServerReference)(rsfId)) {
-            throw new Error(`Server action not found: "${rsfId}". ${(0, server_actions_1.getDebugDescription)()}`);
-        }
-        const mod = (0, server_actions_1.getServerReference)(rsfId);
-        const fn = name ? mod[name] || mod : mod;
+        // TODO: Add production version of this codepath.
+        const mod = await opts.loadServerModuleRsc(serverConfig[rsfId].chunks[0]);
+        const fn = name ? (name === '*' ? mod : mod[name] || mod) : mod;
         return renderWithContextWithAction(context, fn, args);
     }
     // method === 'GET'

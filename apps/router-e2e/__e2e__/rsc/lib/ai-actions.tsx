@@ -33,13 +33,10 @@ async function submitUserMessage(content: string) {
   // The `render()` creates a generated, streamable UI.
   const result = await streamUI({
     model: openai('gpt-3.5-turbo'),
-    // model: 'gpt-3.5-turbo',
     // Lock temperature to 0 to reduce randomness in the responses, this is better for demo purposes.
     temperature: 0,
     // model: 'gpt-4-0125-preview',
     messages: [
-      // TODO: Add more structure https://github.com/vercel/ai/blob/b31818b79a8d1b950cf4ee68b69d7b5a62168f06/examples/next-ai-rsc/app/action.tsx#L121-L136
-      // Add the america part so cities and locations default to the US versions, e.g. "venice" -> "Venice beach, Los Angeles, California, USA"
       {
         role: 'system',
         content: `\
@@ -95,7 +92,6 @@ async function submitUserMessage(content: string) {
         parameters: z
           .object({
             city: z.string().describe('the city to get the weather for'),
-            // TODO: Convert to celcius
           })
           .required(),
         generate: async function* ({ city }) {

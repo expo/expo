@@ -28,7 +28,7 @@ export type RenderRscArgs = {
         async: boolean;
     }) => void;
 };
-type ResolveClientEntry = (id: string) => {
+type ResolveClientEntry = (id: string, server: boolean) => {
     id: string;
     chunks: string[];
 };
@@ -36,6 +36,7 @@ type RenderRscOpts = {
     isExporting: boolean;
     entries: EntriesDev;
     resolveClientEntry: ResolveClientEntry;
+    loadServerModuleRsc: (id: string) => any;
 };
 export declare function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream>;
 export {};

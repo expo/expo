@@ -164,7 +164,7 @@ export function createServerComponentsMiddleware(
       `The server must be started. (isExporting: ${isExporting}, baseUrl: ${baseUrl}, mode: ${mode}, routerRoot: ${routerRoot}, asyncRoutes: ${asyncRoutes})`
     );
 
-    return (file: string) => {
+    return (file: string, isServer: boolean) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
         const relativeFilePath = path.relative(serverRoot, file);
@@ -198,6 +198,7 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
+        environment: isServer ? 'react-server' : 'client',
       });
 
       searchParams.set('resolver.clientboundary', String(true));
@@ -310,6 +311,52 @@ export function createServerComponentsMiddleware(
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
+        async loadServerModuleRsc(chunk) {
+          // id = metro URL
+
+          const serverRoot = getMetroServerRootMemo(projectRoot);
+
+          console.log('[SSR]__metro_node_chunk_load__:', chunk);
+
+          const url = new URL(chunk, 'http://localhost:0');
+          const getStringParam = (key: string) => {
+            const param = url.searchParams.get(key);
+            if (Array.isArray(param)) {
+              throw new Error(`Expected single value for ${key}`);
+            }
+            return param;
+          };
+
+          let pathname = url.pathname;
+          if (pathname.endsWith('.bundle')) {
+            pathname = pathname.slice(0, -'.bundle'.length);
+          }
+
+          const options = {
+            mode: (getStringParam('dev') ?? 'true') === 'true' ? 'development' : 'production',
+            minify: (getStringParam('minify') ?? 'false') === 'true',
+            lazy: (getStringParam('lazy') ?? 'false') === 'true',
+            routerRoot: getStringParam('transform.routerRoot') ?? 'app',
+            /** Enable React compiler support in Babel. */
+            // reactCompiler: boolean;
+            // baseUrl?: string;
+            isExporting: (getStringParam('resolver.exporting') ?? 'false') === 'true',
+            /** Is bundling a DOM Component ("use dom"). */
+            // inlineSourceMap?: boolean;
+            // clientBoundaries?: string[];
+            // splitChunks?: boolean;
+            // usedExports?: boolean;
+            /** Enable optimized bundling (required for tree shaking). */
+            // optimize?: boolean;
+
+            environment: getStringParam('transform.environment') ?? 'node',
+            platform: url.searchParams.get('platform') ?? 'web',
+          };
+
+          // console.log('[SSR] load:', options);
+
+          return await ssrLoadModule(path.join(serverRoot, pathname), options);
+        },
       }
     );
   }

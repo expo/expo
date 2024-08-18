@@ -26,3 +26,9 @@ install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+
+// Polyfill async iterator symbol for Hermes.
+if (!Symbol.asyncIterator) {
+  // @ts-expect-error: readonly property only applies when the engine supports it
+  Symbol.asyncIterator = Symbol.for('Symbol.asyncIterator');
+}

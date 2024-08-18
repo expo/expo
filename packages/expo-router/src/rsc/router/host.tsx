@@ -146,7 +146,6 @@ export const fetchRSC = (
   }
   const options = {
     async callServer(actionId: string, args: unknown[]) {
-      // console.log('[Router] Server Action invoked:', actionId, args);
       const reqPath = getAdjustedRemoteFilePath(
         BASE_PATH + encodeInput(encodeURIComponent(actionId))
       );
@@ -166,10 +165,7 @@ export const fetchRSC = (
         setElements((prev) => mergeElements(prev, data));
       });
 
-      const fullRes = await data;
-      // console.log('[Router] Server Action resolved:', fullRes._value);
-
-      return fullRes._value;
+      return (await data)._value;
     },
   };
   // eslint-disable-next-line no-multi-assign
