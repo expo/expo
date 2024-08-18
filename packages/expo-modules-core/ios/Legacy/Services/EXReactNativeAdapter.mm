@@ -10,7 +10,7 @@
 
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTMountingManager.h>
