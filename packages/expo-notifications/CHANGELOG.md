@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix content.data in scheduled notifications surfaced to JS. ([#31048](https://github.com/expo/expo/pull/31048) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.28.15 — 2024-08-05
