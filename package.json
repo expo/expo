@@ -21,12 +21,12 @@
   "resolutions": {
     "react-native": "0.76.0-rc.4",
     "react": "18.3.1",
-    "@react-navigation/bottom-tabs": "7.0.0-rc.13",
+    "@react-navigation/bottom-tabs": "7.0.0-rc.31",
     "@react-navigation/core": "7.0.0-rc.15",
-    "@react-navigation/drawer": "7.0.0-rc.11",
+    "@react-navigation/drawer": "7.0.0-rc.29",
     "@react-navigation/native": "7.0.0-rc.20",
-    "@react-navigation/native-stack": "7.0.0-rc.8",
-    "@react-navigation/routers": "7.0.0-rc.3",
+    "@react-navigation/native-stack": "7.0.0-rc.26",
+    "@react-navigation/routers": "7.0.0-rc.8",
     "**/util": "~0.12.4"
   },
   "dependencies": {

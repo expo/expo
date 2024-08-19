@@ -5,7 +5,7 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '@react-navigation/core';
-import type { LinkingOptions } from '@react-navigation/native';
+import { LinkingOptions } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
 
@@ -120,15 +120,19 @@ export function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback((url: string | null | undefined) => {
-    if (!url || (filterRef.current && !filterRef.current(url))) {
-      return undefined;
-    }
+  const getStateFromURL = React.useCallback(
+    (url: string | null | undefined) => {
+      if (!url || (filterRef.current && !filterRef.current(url))) {
+        return undefined;
+      }
 
-    const path = extractExpoPathFromURL(url);
+      const path = extractExpoPathFromURL(prefixesRef.current, url);
 
-    return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
-  }, []);
+      return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
+    },
+
+    []
+  );
 
   const getInitialState = React.useCallback(() => {
     let state: ResultState | undefined;
@@ -141,15 +145,15 @@ export function useLinking(
           return url.then((url) => {
             const state = getStateFromURL(url);
 
-            if (typeof url == 'string') {
+            if (typeof url === 'string') {
               // If the link were handled, it gets cleared in NavigationContainer
-              onUnhandledLinking(extractExpoPathFromURL(url));
+              onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
             }
 
             return state;
           });
         } else {
-          onUnhandledLinking(extractExpoPathFromURL(url));
+          onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
         }
       }
 
@@ -179,7 +183,7 @@ export function useLinking(
 
       if (navigation && state) {
         // If the link were handled, it gets cleared in NavigationContainer
-        onUnhandledLinking(extractExpoPathFromURL(url));
+        onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
         const rootState = navigation.getRootState();
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           return;

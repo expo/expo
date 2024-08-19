@@ -803,7 +803,8 @@ it('can replace across groups', async () => {
     'two/screen': () => <Text testID="two/screen" />,
   });
 
-  expect(screen).toHavePathname('/');
+  // THere is no index route
+  expect(screen).toHavePathname('/+not-found');
 
   // Go to one
   act(() => router.push('/one/screen'));
@@ -1042,7 +1043,7 @@ describe('shared routes with tabs', () => {
   }
 
   describe('tab one (default)', () => {
-    it.only('pushes post in tab one using absolute /post', async () => {
+    it('pushes post in tab one using absolute /post', async () => {
       renderSharedTabs();
       act(() => router.push('/post'));
       expect(screen).toHavePathname('/post');
@@ -1139,7 +1140,7 @@ describe('consistent url encoding', () => {
     );
 
     const component = screen.getByTestId('id');
-    expect(screen).toHavePathname('/start%26end');
+    expect(screen).toHavePathname('/start&end');
     expect(screen).toHaveSearchParams({ param: 'start&end' });
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start&end' }, global: { param: 'start&end' } })
@@ -1161,7 +1162,7 @@ describe('consistent url encoding', () => {
     );
 
     const component = screen.getByTestId('id');
-    expect(screen).toHavePathname('/start%25end');
+    expect(screen).toHavePathname('/start%end');
     expect(screen).toHaveSearchParams({ param: 'start%end' });
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
@@ -1282,21 +1283,21 @@ describe('consistent url encoding', () => {
 
     act(() => router.push('/start%20end'));
 
-    expect(screen).toHavePathname('/start%20end');
+    expect(screen).toHavePathname('/start end');
     expect(screen).toHaveSearchParams({
       param: 'start end',
     });
 
     act(() => router.push('/start%21end'));
 
-    expect(screen).toHavePathname('/start%21end');
+    expect(screen).toHavePathname('/start!end');
     expect(screen).toHaveSearchParams({
       param: 'start!end',
     });
 
     act(() => router.back());
 
-    expect(screen).toHavePathname('/start%20end');
+    expect(screen).toHavePathname('/start end');
     expect(screen).toHaveSearchParams({
       param: 'start end',
     });
@@ -1503,11 +1504,11 @@ it('respects nested unstable settings', async () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  fireEvent.press(screen.getByText('Search'));
+  fireEvent.press(screen.getByText('Search'), {});
   expect(screen.getByTestId('search')).toBeVisible();
-  fireEvent.press(screen.getByText('Profile'));
+  fireEvent.press(screen.getByText('Profile'), {});
   expect(screen.getByTestId('profile')).toBeVisible();
-  fireEvent.press(screen.getByText('Home'));
+  fireEvent.press(screen.getByText('Home'), {});
   expect(screen.getByTestId('index')).toBeVisible();
 });
 

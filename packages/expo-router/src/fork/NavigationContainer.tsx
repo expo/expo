@@ -1,31 +1,31 @@
 import {
   BaseNavigationContainer,
+  DefaultTheme,
+  DocumentTitleOptions,
   getActionFromState,
   getPathFromState,
   getStateFromPath,
-  type NavigationContainerProps,
-  type NavigationContainerRef,
-  type NavigationState,
-  type ParamListBase,
+  LinkingContext,
+  LinkingOptions,
+  LocaleDirection,
+  NavigationContainerProps,
+  NavigationContainerRef,
+  NavigationState,
+  ParamListBase,
+  ThemeProvider,
   validatePathConfig,
-} from '@react-navigation/core';
-import * as React from 'react';
+} from '@react-navigation/native';
+import React from 'react';
 import { I18nManager } from 'react-native';
 import useLatestCallback from 'use-latest-callback';
 
-import { LinkingContext } from '@react-navigation/native/src/LinkingContext';
-import { LocaleDirContext } from '@react-navigation/native/src/LocaleDirContext';
-import { UnhandledLinkingContext } from '@react-navigation/native/src/UnhandledLinkingContext';
-import { useBackButton } from '@react-navigation/native/src/useBackButton';
-import { useDocumentTitle } from '@react-navigation/native/src/useDocumentTitle';
 import { useLinking } from './useLinking';
-import { useThenable } from '@react-navigation/native/src/useThenable';
-import {
-  DefaultTheme,
-  DocumentTitleOptions,
-  LinkingOptions,
-  LocaleDirection,
-} from '@react-navigation/native';
+
+const { LocaleDirContext } = require('@react-navigation/native/src/LocaleDirContext');
+const { UnhandledLinkingContext } = require('@react-navigation/native/src/UnhandledLinkingContext');
+const { useBackButton } = require('@react-navigation/native/src/useBackButton');
+const { useDocumentTitle } = require('@react-navigation/native/src/useDocumentTitle');
+const { useThenable } = require('@react-navigation/native/src/useThenable');
 
 declare global {
   // eslint-disable-next-line no-var
@@ -37,7 +37,7 @@ declare global {
 
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
-type Props<ParamList extends {}> = NavigationContainerProps & {
+type Props<ParamList extends object> = NavigationContainerProps & {
   direction?: LocaleDirection;
   linking?: LinkingOptions<ParamList>;
   fallback?: React.ReactNode;
@@ -156,7 +156,7 @@ function NavigationContainerInner(
   if (!isLinkingReady) {
     // This is temporary until we have Suspense for data-fetching
     // Then the fallback will be handled by a parent `Suspense` component
-    return fallback as React.ReactElement;
+    return <ThemeProvider value={theme}>{fallback}</ThemeProvider>;
   }
 
   return (
@@ -178,7 +178,7 @@ function NavigationContainerInner(
 }
 
 export const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
-  RootParamList extends {} = ReactNavigation.RootParamList,
+  RootParamList extends object = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;

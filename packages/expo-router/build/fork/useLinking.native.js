@@ -106,7 +106,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
         if (!url || (filterRef.current && !filterRef.current(url))) {
             return undefined;
         }
-        const path = (0, extractPathFromURL_1.extractExpoPathFromURL)(url);
+        const path = (0, extractPathFromURL_1.extractExpoPathFromURL)(prefixesRef.current, url);
         return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
     }, []);
     const getInitialState = React.useCallback(() => {
@@ -117,15 +117,15 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
                 if (typeof url !== 'string') {
                     return url.then((url) => {
                         const state = getStateFromURL(url);
-                        if (typeof url == 'string') {
+                        if (typeof url === 'string') {
                             // If the link were handled, it gets cleared in NavigationContainer
-                            onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(url));
+                            onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(prefixes, url));
                         }
                         return state;
                     });
                 }
                 else {
-                    onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(url));
+                    onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(prefixes, url));
                 }
             }
             state = getStateFromURL(url);
@@ -149,7 +149,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
             const state = navigation ? getStateFromURL(url) : undefined;
             if (navigation && state) {
                 // If the link were handled, it gets cleared in NavigationContainer
-                onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(url));
+                onUnhandledLinking((0, extractPathFromURL_1.extractExpoPathFromURL)(prefixes, url));
                 const rootState = navigation.getRootState();
                 if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
                     return;

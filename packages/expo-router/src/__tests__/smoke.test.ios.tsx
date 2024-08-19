@@ -7,14 +7,17 @@ import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
 import { act, renderRouter, screen } from '../testing-library';
 
-it('404', async () => {
-  const Index = jest.fn(() => <Redirect href="/404" />);
+it('404', () => {
+  renderRouter(
+    {
+      index: () => null,
+    },
+    {
+      initialUrl: '/404',
+    }
+  );
 
-  renderRouter({
-    index: Index,
-  });
-
-  expect(await screen.findByText('Unmatched Route')).toBeOnTheScreen();
+  expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
   expect(screen).toHavePathname('/404');
   expect(screen).toHaveSegments(['+not-found']);
   expect(screen).toHaveSearchParams({ 'not-found': ['404'] });

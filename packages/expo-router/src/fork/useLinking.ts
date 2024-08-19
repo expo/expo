@@ -8,16 +8,12 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '@react-navigation/core';
-import type { LinkingOptions } from '@react-navigation/native';
+import { LinkingOptions } from '@react-navigation/native';
 import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 
-/* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
-// createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
-import createMemoryHistory from './createMemoryHistory';
+import { createMemoryHistory } from './createMemoryHistory';
 import { ServerContext } from '../global-state/serverLocationContext';
-
-/* End of fork */
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -155,14 +151,14 @@ export function useLinking(
     [ref]
   );
 
-  const serverLocation = React.useContext(ServerContext);
+  const server = React.useContext(ServerContext);
 
   const getInitialState = React.useCallback(() => {
     let value: ResultState | undefined;
 
     if (enabledRef.current) {
       const location =
-        serverLocation?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
+        server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
 
       const path = location ? location.pathname + location.search : undefined;
 
@@ -284,9 +280,7 @@ export function useLinking(
           if (
             focusedRoute &&
             focusedRoute.name === route.name &&
-            /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L2278  */
             isEqual({ ...focusedRoute.params }, { ...route.params })
-            /* End of fork */
           ) {
             path = route.path;
           }
@@ -401,8 +395,7 @@ export function useLinking(
 
             // Store the updated state as well as fix the path if incorrect
             history.replace({ path, state });
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch (e) {
+          } catch {
             // The navigation was interrupted
           }
         } else {

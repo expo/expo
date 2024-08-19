@@ -1,44 +1,19 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
-const core_1 = require("@react-navigation/core");
-const React = __importStar(require("react"));
+const native_1 = require("@react-navigation/native");
+const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
-const LinkingContext_1 = require("@react-navigation/native/src/LinkingContext");
-const LocaleDirContext_1 = require("@react-navigation/native/src/LocaleDirContext");
-const UnhandledLinkingContext_1 = require("@react-navigation/native/src/UnhandledLinkingContext");
-const useBackButton_1 = require("@react-navigation/native/src/useBackButton");
-const useDocumentTitle_1 = require("@react-navigation/native/src/useDocumentTitle");
 const useLinking_1 = require("./useLinking");
-const useThenable_1 = require("@react-navigation/native/src/useThenable");
-const native_1 = require("@react-navigation/native");
+const { LocaleDirContext } = require('@react-navigation/native/src/LocaleDirContext');
+const { UnhandledLinkingContext } = require('@react-navigation/native/src/UnhandledLinkingContext');
+const { useBackButton } = require('@react-navigation/native/src/useBackButton');
+const { useDocumentTitle } = require('@react-navigation/native/src/useDocumentTitle');
+const { useThenable } = require('@react-navigation/native/src/useThenable');
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 /**
  * Container component which holds the navigation state designed for React Native apps.
@@ -59,19 +34,19 @@ globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 function NavigationContainerInner({ direction = react_native_1.I18nManager.getConstants().isRTL ? 'rtl' : 'ltr', theme = native_1.DefaultTheme, linking, fallback = null, documentTitle, onReady, onStateChange, ...rest }, ref) {
     const isLinkingEnabled = linking ? linking.enabled !== false : false;
     if (linking?.config) {
-        (0, core_1.validatePathConfig)(linking.config);
+        (0, native_1.validatePathConfig)(linking.config);
     }
-    const refContainer = React.useRef(null);
-    (0, useBackButton_1.useBackButton)(refContainer);
-    (0, useDocumentTitle_1.useDocumentTitle)(refContainer, documentTitle);
-    const [lastUnhandledLink, setLastUnhandledLink] = React.useState();
+    const refContainer = react_1.default.useRef(null);
+    useBackButton(refContainer);
+    useDocumentTitle(refContainer, documentTitle);
+    const [lastUnhandledLink, setLastUnhandledLink] = react_1.default.useState();
     const { getInitialState } = (0, useLinking_1.useLinking)(refContainer, {
         enabled: isLinkingEnabled,
         prefixes: [],
         ...linking,
     }, setLastUnhandledLink);
-    const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
-    const unhandledLinkingContext = React.useMemo(() => ({ lastUnhandledLink, setLastUnhandledLink }), [lastUnhandledLink, setLastUnhandledLink]);
+    const linkingContext = react_1.default.useMemo(() => ({ options: linking }), [linking]);
+    const unhandledLinkingContext = react_1.default.useMemo(() => ({ lastUnhandledLink, setLastUnhandledLink }), [lastUnhandledLink, setLastUnhandledLink]);
     const onReadyForLinkingHandling = (0, use_latest_callback_1.default)(() => {
         // If the screen path matches lastUnhandledLink, we do not track it
         const path = refContainer.current?.getCurrentRoute()?.path;
@@ -96,7 +71,7 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     });
     // Add additional linking related info to the ref
     // This will be used by the devtools
-    React.useEffect(() => {
+    react_1.default.useEffect(() => {
         if (refContainer.current) {
             REACT_NAVIGATION_DEVTOOLS.set(refContainer.current, {
                 get linking() {
@@ -104,29 +79,29 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
                         ...linking,
                         enabled: isLinkingEnabled,
                         prefixes: linking?.prefixes ?? [],
-                        getStateFromPath: linking?.getStateFromPath ?? core_1.getStateFromPath,
-                        getPathFromState: linking?.getPathFromState ?? core_1.getPathFromState,
-                        getActionFromState: linking?.getActionFromState ?? core_1.getActionFromState,
+                        getStateFromPath: linking?.getStateFromPath ?? native_1.getStateFromPath,
+                        getPathFromState: linking?.getPathFromState ?? native_1.getPathFromState,
+                        getActionFromState: linking?.getActionFromState ?? native_1.getActionFromState,
                     };
                 },
             });
         }
     });
-    const [isResolved, initialState] = (0, useThenable_1.useThenable)(getInitialState);
-    React.useImperativeHandle(ref, () => refContainer.current);
+    const [isResolved, initialState] = useThenable(getInitialState);
+    react_1.default.useImperativeHandle(ref, () => refContainer.current);
     const isLinkingReady = rest.initialState != null || !isLinkingEnabled || isResolved;
     if (!isLinkingReady) {
         // This is temporary until we have Suspense for data-fetching
         // Then the fallback will be handled by a parent `Suspense` component
-        return fallback;
+        return <native_1.ThemeProvider value={theme}>{fallback}</native_1.ThemeProvider>;
     }
-    return (<LocaleDirContext_1.LocaleDirContext.Provider value={direction}>
-      <UnhandledLinkingContext_1.UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
-        <LinkingContext_1.LinkingContext.Provider value={linkingContext}>
-          <core_1.BaseNavigationContainer {...rest} theme={theme} onReady={onReadyForLinkingHandling} onStateChange={onStateChangeForLinkingHandling} initialState={rest.initialState == null ? initialState : rest.initialState} ref={refContainer}/>
-        </LinkingContext_1.LinkingContext.Provider>
-      </UnhandledLinkingContext_1.UnhandledLinkingContext.Provider>
-    </LocaleDirContext_1.LocaleDirContext.Provider>);
+    return (<LocaleDirContext.Provider value={direction}>
+      <UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
+        <native_1.LinkingContext.Provider value={linkingContext}>
+          <native_1.BaseNavigationContainer {...rest} theme={theme} onReady={onReadyForLinkingHandling} onStateChange={onStateChangeForLinkingHandling} initialState={rest.initialState == null ? initialState : rest.initialState} ref={refContainer}/>
+        </native_1.LinkingContext.Provider>
+      </UnhandledLinkingContext.Provider>
+    </LocaleDirContext.Provider>);
 }
-exports.NavigationContainer = React.forwardRef(NavigationContainerInner);
+exports.NavigationContainer = react_1.default.forwardRef(NavigationContainerInner);
 //# sourceMappingURL=NavigationContainer.js.map

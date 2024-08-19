@@ -109,8 +109,8 @@ it('stacks should always push a new route', () => {
               path: undefined,
               state: {
                 index: 1,
-                preloadedRoutes: [],
                 key: expect.any(String),
+                preloadedRoutes: [],
                 routeNames: ['index'],
                 routes: [
                   {

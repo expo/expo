@@ -30,9 +30,7 @@ exports.useLinking = exports.series = void 0;
 const core_1 = require("@react-navigation/core");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
-/* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L13  */
-// createMemoryHistory is a self-contained module with no side effects any only depends on `nanoid` and `tiny-warning`
-const createMemoryHistory_1 = __importDefault(require("./createMemoryHistory"));
+const createMemoryHistory_1 = require("./createMemoryHistory");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
 /**
  * Find the matching navigation state that changed between 2 navigation states
@@ -104,7 +102,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
             }
         };
     }, [enabled, independent]);
-    const [history] = React.useState(createMemoryHistory_1.default);
+    const [history] = React.useState(createMemoryHistory_1.createMemoryHistory);
     // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
     // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
     // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
@@ -127,11 +125,11 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
         // Otherwise there's an error in the linking configuration
         return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
     }, [ref]);
-    const serverLocation = React.useContext(serverLocationContext_1.ServerContext);
+    const server = React.useContext(serverLocationContext_1.ServerContext);
     const getInitialState = React.useCallback(() => {
         let value;
         if (enabledRef.current) {
-            const location = serverLocation?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
+            const location = server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
             const path = location ? location.pathname + location.search : undefined;
             if (path) {
                 value = getStateFromPathRef.current(path, configRef.current);
@@ -225,10 +223,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
                     const focusedRoute = (0, core_1.findFocusedRoute)(stateForPath);
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
-                        /* Start of fork. Source: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/native/src/useLinking.tsx#L2278  */
-                        (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })
-                    /* End of fork */
-                    ) {
+                        (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })) {
                         path = route.path;
                     }
                 }
@@ -317,9 +312,8 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
                         }
                         // Store the updated state as well as fix the path if incorrect
                         history.replace({ path, state });
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     }
-                    catch (e) {
+                    catch {
                         // The navigation was interrupted
                     }
                 }
