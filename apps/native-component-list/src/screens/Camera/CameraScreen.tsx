@@ -208,7 +208,10 @@ export default class CameraScreen extends React.Component<object, State> {
   };
 
   takePicture = async () => {
-    await this.camera?.current?.takePictureAsync({ onPictureSaved: this.onPictureSaved, shutterSound: !this.state.mute });
+    await this.camera?.current?.takePictureAsync({
+      onPictureSaved: this.onPictureSaved,
+      shutterSound: !this.state.mute,
+    });
   };
 
   recordVideo = async () => {
