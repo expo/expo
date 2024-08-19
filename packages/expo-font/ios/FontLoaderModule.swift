@@ -40,9 +40,10 @@ public final class FontLoaderModule: Module {
 
       if let postScriptName = font.postScriptName as? String {
         FontFamilyAliasManager.setAlias(fontFamilyAlias, forFont: postScriptName)
+        registeredFonts = Array(Set(registeredFonts).union([postScriptName, fontFamilyAlias]))
+      } else {
+        throw FontNoPostScriptException(fontFamilyAlias)
       }
-
-      registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))
     }
   }
 }
