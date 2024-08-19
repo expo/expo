@@ -84,11 +84,11 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const handleKeyboardShow = (event) => {
+  const handleKeyboardShow = event => {
     setIsKeyboardVisible(true);
   };
 
-  const handleKeyboardHide = (event) => {
+  const handleKeyboardHide = event => {
     setIsKeyboardVisible(false);
   };
 
@@ -152,7 +152,7 @@ const useGradualAnimation = () => {
 
   useKeyboardHandler(
     {
-      onMove: (event) => {
+      onMove: event => {
         'worklet';
         height.value = Math.max(event.height, 0);
       },
