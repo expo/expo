@@ -211,7 +211,7 @@ class ExpoImageView(
     super.onDraw(canvas)
     // Draw borders on top of the background and image
     if (borderDrawableLazyHolder.isInitialized()) {
-      val newLayoutDirection = if  (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
