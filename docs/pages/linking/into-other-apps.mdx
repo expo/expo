@@ -4,6 +4,7 @@ sidebar_title: Into other apps
 description: Learn how to handle and open a URL based on the URL scheme of another app from your app.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { SnackInline } from '~/ui/components/Snippet';
 
 Linking to other apps from your app is achieved using a URL based on the target app's URL scheme. This **URL scheme** allows you to reference resources within a native app. Your app can implement any URL scheme, including `https` and `http` (commonly used by web browsers like Chrome, Safari, and so on), and use JavaScript to handle the URL that launches the corresponding native app.
@@ -158,6 +159,34 @@ On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linki
 If your don't specify this list, `Linking.canOpenURL()` may return `false` regardless of whether the device has the app installed.
 
 > **info** **Tip**: To test the configuration described above, [use a development build](/develop/development-builds/introduction/). It cannot be tested with Expo Go.
+
+## Create URLs
+
+You can use [`Linking.createURL()`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. It resolves to the following:
+
+- **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/) defined in the app config
+- **Development in Expo Go**: `exp://127.0.0.1:8081`
+
+Using `Linking.createURL()` helps you avoid hardcoding URLs. You can modify the returned URL by passing optional parameters to this method.
+
+To pass data to your app, you can append it as a path or query string to the URL. `Linking.createURL()` will construct a working URL automatically. For example:
+
+```tsx Example
+const redirectUrl = Linking.createURL('path/into/app', {
+  queryParams: { hello: 'world' },
+});
+```
+
+This will resolve into the following, depending on the environment:
+
+- **Production and development builds**: `myapp://path/into/app?hello=world`
+- **Development in Expo Go**: `exp://127.0.0.1:8081/--/path/into/app?hello=world`
+
+<Collapsible summary="Using Expo Go for testing?">
+
+For apps that require a stable URL (for example, authorization provider redirects), use a development build with a custom scheme instead of using Expo Go. For more details on how to create and test a custom scheme, see [Linking into your app](/linking/into-your-app/).
+
+</Collapsible>
 
 ## In-app browsers
 
