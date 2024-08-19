@@ -1,10 +1,10 @@
-import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
+import { existsAndIsNotIgnoredAsync } from '../utils/files';
 
 export class StoreCompatibilityCheck implements DoctorCheck {
   description = 'Check if the project meets version requirements for submission to app stores';
@@ -63,23 +63,4 @@ export class StoreCompatibilityCheck implements DoctorCheck {
         : undefined,
     };
   }
-}
-
-async function existsAndIsNotIgnoredAsync(filePath: string): Promise<boolean> {
-  return fs.existsSync(filePath) && !(await isFileIgnoredAsync(filePath));
-}
-
-async function isFileIgnoredAsync(filePath: string): Promise<boolean> {
-  try {
-    await spawnAsync('git', ['check-ignore', '-q', filePath], {
-      cwd: path.normalize(await getRootPathAsync()),
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function getRootPathAsync(): Promise<string> {
-  return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
 }

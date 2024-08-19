@@ -1,10 +1,10 @@
-import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
-import { mockSpawnPromise } from '../../__tests__/spawn-utils';
+import { existsAndIsNotIgnoredAsync } from '../../utils/files';
 import { StoreCompatibilityCheck } from '../StoreCompatibilityCheck';
 
 jest.mock('fs');
+jest.mock('../../utils/files');
 
 const projectRoot = '/tmp/project';
 
@@ -21,40 +21,13 @@ const additionalProjectProps = {
   dynamicConfigPath: null,
 };
 
-/**
- * Helper to mock the results of git rev-parse and git check-ignore based on whether the file should be ignored or not.
- * Only works when checking a single file.
- */
-function mockIsGitIgnoredResult(isFileIgnored: boolean) {
-  jest
-    .mocked(spawnAsync)
-    .mockImplementationOnce(() =>
-      mockSpawnPromise(
-        Promise.resolve({
-          status: 0,
-          stdout: '',
-        })
-      )
-    )
-    .mockImplementationOnce(() => {
-      if (isFileIgnored) {
-        return mockSpawnPromise(Promise.resolve({ status: 0, stdout: '' }));
-      }
-      const error: any = new Error();
-      error.status = -1; // git check-ignore errors if file is not ignored
-      return mockSpawnPromise(Promise.reject(error));
-    });
-}
-
 describe('runAsync', () => {
-  beforeEach(() => {
-    mockIsGitIgnoredResult(false);
-  });
   afterEach(() => {
     vol.reset();
     jest.resetAllMocks();
   });
   it('returns result with isSuccessful = true if SDK 50+ with default Android target API level', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
     const check = new StoreCompatibilityCheck();
     const result = await check.runAsync({
       pkg: { name: 'expo', version: '1.0.0' },
@@ -65,6 +38,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = true if ios/android folders but build.gradle indicates API level 34+', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/android/build.gradle']:
         `targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')`,
@@ -79,6 +53,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = true if ios/android folders but build.gradle indicates API level 34+ (direct assignment)', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/android/build.gradle']: `targetSdkVersion = '34'`,
     });
@@ -92,6 +67,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if ios/android folders but build.gradle indicates API level <34', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/android/build.gradle']:
         `targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')`,
@@ -106,6 +82,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if expo-build-properties is set to target API level <34', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
     const check = new StoreCompatibilityCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
@@ -120,6 +97,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = true if expo-build-properties plugin added but does not include any props', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
     const check = new StoreCompatibilityCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
@@ -134,6 +112,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if SDK <50', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
     const check = new StoreCompatibilityCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
