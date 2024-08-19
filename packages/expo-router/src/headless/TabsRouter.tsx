@@ -34,7 +34,6 @@ export function TabRouter({ triggerMap, ...options }: TabRouterOptions) {
   > = {
     ...rnTabRouter,
     getStateForAction(state, action, options) {
-      // console.log(action);
       if (action.type === 'SWITCH_TABS') {
         const name = action.payload.name;
         const payload = triggerMap.get(name);
@@ -50,8 +49,6 @@ export function TabRouter({ triggerMap, ...options }: TabRouterOptions) {
           type: 'JUMP_TO',
           ...payload.navigate,
         };
-
-        console.log(action);
 
         return rnTabRouter.getStateForAction(state, action as any, options);
       } else {

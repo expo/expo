@@ -1,23 +1,21 @@
-import { Slot } from '@radix-ui/react-slot';
-import { ComponentType, useCallback } from 'react';
+import { useCallback } from 'react';
 import { View, StyleSheet, ViewProps, Pressable, PressableProps } from 'react-native';
 
-import { TabActionType } from './TabsRouter';
+import { useTabTrigger } from './Tabs.hooks';
+import { ViewSlot, PressableSlot } from './common';
 import { Href } from '../types';
-import { useNavigation } from '../useNavigation';
-import { Link } from '../link/Link';
 
 export type TabTriggerOptions<T extends string | object> = {
   name: string;
   href: Href<T>;
 };
 
-export type TabTriggerProps<T extends string | object> = PressableProps &
-  TabTriggerOptions<T> & {
-    name: string;
-    /** Forward props to child component. Useful for custom wrappers. */
-    asChild?: boolean;
-  };
+export type TabTriggerProps<T extends string | object> = PressableProps & {
+  name: string;
+  href?: Href<T>;
+  /** Forward props to child component. Useful for custom wrappers. */
+  asChild?: boolean;
+};
 
 export type TabListProps = ViewProps & {
   /** Forward props to child component and removes the extra <View />. Useful for custom wrappers. */
@@ -25,23 +23,8 @@ export type TabListProps = ViewProps & {
 };
 
 export function TabList({ asChild, ...props }: TabListProps) {
-  const Element: ComponentType<any> = asChild ? Slot : View;
-  return <Element style={styles.tabList} {...props} />;
-}
-
-export function TabTrigger2<T extends string | object>({
-  asChild,
-  name,
-  href,
-  ...props
-}: TabTriggerProps<T>) {
-  const Element: ComponentType<any> = asChild ? Slot : Link;
-
-  return (
-    <Element style={styles.tabTrigger} {...props} href={href}>
-      {props.children}
-    </Element>
-  );
+  const Comp = asChild ? ViewSlot : View;
+  return <Comp style={styles.tabList} {...props} />;
 }
 
 export function TabTrigger<T extends string | object>({
@@ -50,37 +33,41 @@ export function TabTrigger<T extends string | object>({
   href,
   ...props
 }: TabTriggerProps<T>) {
-  const Element: ComponentType<any> = asChild ? Slot : Pressable;
-  const navigation = useNavigation();
+  const Comp = asChild ? PressableSlot : Pressable;
+  const { switchTab } = useTabTrigger();
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
       props.onPress?.(event);
-      if (!event?.isDefaultPrevented()) {
-        navigation.dispatch(TabTrigger.actions.switch(name, href));
+      if (event?.isDefaultPrevented()) {
+        return;
       }
+      switchTab(name, href);
+    },
+    [props.onPress]
+  );
+
+  const handleOnLongPress = useCallback<NonNullable<PressableProps['onPress']>>(
+    (event) => {
+      props.onLongPress?.(event);
+      if (event?.isDefaultPrevented()) {
+        return;
+      }
+      switchTab(name, href);
     },
     [props.onPress]
   );
 
   return (
-    <Element style={styles.tabTrigger} {...props} onPress={handleOnPress}>
+    <Comp
+      style={styles.tabTrigger}
+      {...props}
+      onPress={handleOnPress}
+      onLongPress={handleOnLongPress}>
       {props.children}
-    </Element>
+    </Comp>
   );
 }
-
-TabTrigger.actions = {
-  switch<T extends string | object>(name: string, href?: Href<T>): TabActionType<T> {
-    return {
-      type: 'SWITCH_TABS',
-      payload: {
-        name,
-        href,
-      },
-    };
-  },
-};
 
 const styles = StyleSheet.create({
   tabList: {

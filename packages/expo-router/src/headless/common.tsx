@@ -1,3 +1,4 @@
+import { Slot } from '@radix-ui/react-slot';
 import {
   LinkingOptions,
   NavigationAction,
@@ -6,8 +7,10 @@ import {
   Route,
   createNavigatorFactory,
 } from '@react-navigation/native';
+import { Pressable, PressableProps, ViewProps, View } from 'react-native';
 
 import { RouteNode } from '../Route';
+import { resolveHref } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
 import {
@@ -19,6 +22,14 @@ import {
 // `@react-navigation/core` does not expose the Screen or Group components directly, so we have to
 // do this hack.
 const { Screen } = createNavigatorFactory({} as any)();
+
+// Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
+export const ViewSlot = Slot as React.ForwardRefExoticComponent<
+  ViewProps & React.RefAttributes<View>
+>;
+export const PressableSlot = Slot as React.ForwardRefExoticComponent<
+  PressableProps & React.RefAttributes<typeof Pressable>
+>;
 
 export type ScreenTrigger<T extends string | object> = {
   href: Href<T>;
@@ -49,7 +60,7 @@ export function triggersToScreens(
   const triggerMap: TriggerMap = new Map();
 
   for (const trigger of triggers) {
-    let state = linking.getStateFromPath?.(trigger.href as any, linking.config)?.routes[0];
+    let state = linking.getStateFromPath?.(resolveHref(trigger.href), linking.config)?.routes[0];
 
     if (!state) {
       continue;
@@ -71,6 +82,15 @@ export function triggersToScreens(
     const routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
 
     if (!routeNode) {
+      continue;
+    }
+
+    if (routeNode.generated && routeNode.internal && routeNode.route.includes('+not-found')) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `Tab trigger '${trigger.name}' has the href '${trigger.href}' which points to a +not-found route.`
+        );
+      }
       continue;
     }
 
@@ -126,11 +146,14 @@ function stateToActionPayload(
         payload = payload.params;
       }
     } else {
-      if (state.name === startAtRoute) {
+      if (state.name === startAtRoute || !startAtRoute) {
         foundStartingPoint = true;
       }
 
-      state = state.state?.routes[state.state?.routes.length - 1];
+      const nextState = state.state?.routes[state.state?.routes.length - 1];
+      if (nextState) {
+        state = nextState;
+      }
     }
   }
 

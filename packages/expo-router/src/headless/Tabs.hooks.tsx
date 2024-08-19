@@ -7,10 +7,12 @@ import {
   TabNavigationState,
 } from '@react-navigation/native';
 import {
+  ReactElement,
+  ComponentProps,
   Fragment,
-  FunctionComponentElement,
   isValidElement,
   useContext,
+  useCallback,
   Children,
   ReactNode,
 } from 'react';
@@ -28,9 +30,11 @@ import { TabRouter, TabRouterOptions } from './TabsRouter';
 import { ScreenTrigger, triggersToScreens } from './common';
 import { useComponent } from './useComponent';
 import { useContextKey, useRouteNode } from '../Route';
+import { useExpoRouter } from '../global-state/router-store';
 import { resolveHref } from '../link/href';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
+import { useNavigation } from '../useNavigation';
 
 export type UseTabsOptions = Omit<
   DefaultNavigatorOptions<
@@ -130,8 +134,6 @@ export function useTabsWithTriggers<T extends string | object>({
     })
   );
 
-  console.log(JSON.stringify(state, null, 2));
-
   const NavigationContent = useComponent((children: React.ReactNode) => (
     <TabsDescriptorsContext.Provider value={descriptors}>
       <TabsStateContext.Provider value={state}>
@@ -143,53 +145,88 @@ export function useTabsWithTriggers<T extends string | object>({
   return { state, descriptors, navigation, routes, NavigationContent };
 }
 
-export type ExpoTabHrefs =
+export function useTabTrigger() {
+  const navigation = useNavigation();
+
+  const switchTab = useCallback(
+    <T extends string | object>(name: string, href?: Href<T>) => {
+      return navigation.dispatch({
+        type: 'SWITCH_TABS',
+        payload: {
+          name,
+          href,
+        },
+      });
+    },
+    [navigation]
+  );
+
+  return {
+    switchTab,
+  };
+}
+
+export type ExpoTabHref =
   | Record<string, Omit<ExpoTabsScreenOptions, 'action'>>
   | (Href | [Href, Omit<ExpoTabsScreenOptions, 'action'>])[];
 
-function isTabListOrFragment(
-  child: ReactNode
-): child is FunctionComponentElement<TabTriggerProps<any>> {
-  return isValidElement(child) && (child.type === TabList || child.type === Fragment);
+function isFragment(
+  child: ReactElement<any>
+): child is ReactElement<ComponentProps<typeof Fragment>> {
+  return child.type === Fragment;
 }
 
-function isTabTrigger(child: ReactNode): child is FunctionComponentElement<TabTriggerProps<any>> {
-  return isValidElement(child) && child.type === TabTrigger;
+function isTabList(
+  child: ReactElement<any>
+): child is ReactElement<ComponentProps<typeof TabList>> {
+  return child.type === TabList;
 }
 
-function isTabSlot(child: ReactNode): child is FunctionComponentElement<TabListProps> {
-  return isValidElement(child) && child.type === TabSlot;
+function isTabTrigger(
+  child: ReactElement<any>
+): child is ReactElement<ComponentProps<typeof TabTrigger>> {
+  return child.type === TabTrigger;
 }
 
-function parseTriggersFromChildren(children: ReactNode, screenTriggers: ScreenTrigger<any>[] = []) {
+function isTabSlot(child: ReactElement<any>): child is ReactElement<TabListProps> {
+  return child.type === TabSlot;
+}
+
+function parseTriggersFromChildren(
+  children: ReactNode,
+  screenTriggers: ScreenTrigger<any>[] = [],
+  isInTabList = false
+) {
   Children.forEach(children, (child) => {
-    if (isTabListOrFragment(child) && typeof child.props.children !== 'function') {
-      return parseTriggersFromChildren(child.props.children, screenTriggers);
-    }
-
-    if (!child || isTabSlot(child)) {
+    if (!child || !isValidElement(child) || isTabSlot(child)) {
       return;
     }
 
-    if (!isTabTrigger(child)) {
-      if (!isValidElement(child)) {
-        console.warn(
-          `<Tabs /> only accepts <TabSlot /> and <TabTrigger /> as children. Found unknown component`
-        );
-      } else {
-        console.warn(
-          `<Tabs /> only accepts <TabSlot /> and <TabTrigger /> as children. Found component ${typeof child.type === 'string' ? child.type : child.type.name}`
-        );
+    if (isFragment(child) && typeof child.props.children !== 'function') {
+      return parseTriggersFromChildren(
+        child.props.children,
+        screenTriggers,
+        isInTabList || isTabList(child)
+      );
+    }
+
+    if (isTabList(child) && typeof child.props.children !== 'function') {
+      let children = child.props.children;
+
+      // <TabList asChild /> adds an extra layer. We need to parse the child's children
+      if (child.props.asChild && isValidElement(children)) {
+        children = children.props.children;
       }
 
+      return parseTriggersFromChildren(children, screenTriggers, isInTabList || isTabList(child));
+    }
+
+    // We should only process TabTriggers within the TabList. All other components will be ignored
+    if (!isInTabList || !isTabTrigger(child)) {
       return;
     }
 
     const { href, name } = child.props;
-
-    if (shouldLinkExternally(resolveHref(href))) {
-      return;
-    }
 
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
@@ -197,6 +234,10 @@ function parseTriggersFromChildren(children: ReactNode, screenTriggers: ScreenTr
           `<TabTrigger name={${name}}> does not have a 'href' prop. TabTriggers within a <TabList /> are required to have a href.`
         );
       }
+      return;
+    }
+
+    if (shouldLinkExternally(resolveHref(href))) {
       return;
     }
 
