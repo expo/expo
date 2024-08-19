@@ -95,10 +95,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   }
 
   function maybeSetupFullscreenListener(element: HTMLVideoElement) {
-    if (!props.allowsFullscreen) {
-      return;
-    }
-
     element.addEventListener('fullscreenchange', () => {
       if (document.fullscreenElement === element) {
         props.onFullscreenEnter?.();
