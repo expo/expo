@@ -1,0 +1,109 @@
+---
+title: Linking into your app
+sidebar_title: Into your app
+description: Learn how to open and handle a URL based on the scheme for your app from other apps.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+Linking into your app allows other apps to open a screen directly using a URL registered with your app's custom scheme. Using this URL, other apps can open a specific screen or the home screen of your app.
+
+## Add a scheme
+
+Linking to your app requires adding a custom scheme string to the [`scheme`](/versions/latest/config/app/#scheme) property in the [app config](/workflow/configuration/).
+
+```json app.json
+{
+  "expo": {
+    /* @info <CODE>scheme</CODE> property allows you to add a custom scheme to your app. */
+    "scheme": "myapp"
+    /* @end */
+  }
+}
+```
+
+> **info** **Tip**: After adding a custom scheme to your app, you need to create a new build.
+
+Once the app is installed on a device, you can open links within your app using `myapp://`.
+
+> **Note**: If a custom scheme is not defined, the app will use `android.package` and `ios.bundleIdentifier` as the default schemes in both development and production builds. This is because [Expo Prebuild](/workflow/prebuild/) automatically adds these properties as custom schemes for Android and iOS.
+
+## Test a link
+
+You can test a link that opens your app using [`npx uri-scheme`](https://github.com/expo/expo/tree/main/packages/uri-scheme#readme), which is a command-line utility for interacting with and testing URI schemes.
+
+For example, if your app has a `/details` screen that you want to open when a user taps on a link (either through another app or a web browser), you can test this behavior by running the following command:
+
+<Terminal
+  cmd={[
+    '# If you have a `scheme` defined in your app.json',
+    '$ npx uri-scheme open myapp://somepath/into/app?hello=world --ios',
+    '',
+    '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+    '$ npx uri-scheme open com.example.app://somepath/into/app?hello=world --android',
+  ]}
+/>
+
+Running the above command opens your app's `/details` screen. Using the `--android or `--ios` options to specify that the link should be opened on Android or iOS.
+
+Alternatively, you can open the link by searching for it in the device's native browser. For example, open Safari on iOS and type `myapp://` in the address bar to prompt the device to open your app.
+
+<Collapsible summary="Test a link using Expo Go">
+
+By default, [Expo Go](https://expo.dev/go) uses the `exp://` scheme. If you link to `exp://` without specifying a URL address afterward, it will open the app to the home screen. In development, your app's complete URL looks like `exp://127.0.0.1:8081`.
+
+To open the `/details` screen while testing on Expo Go, you can use `npx uri-scheme`:
+
+<Terminal
+  cmd={['$ npx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios']}
+/>
+
+In Expo Go, `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path and is not part of the path to the app itself.
+
+By default, `exp://` is replaced with `http://` when opening a URL in Expo Go. You can also use `exps://` to open `https://` URLs. However, `exps://` does not currently support loading sites with insecure TLS certificates.
+
+</Collapsible>
+
+## Handle links
+
+You can observe links that launch your app using the [`Linking.useURL()`](/versions/latest/sdk/linking/#useurl) hook from [`expo-linking`](/versions/latest/sdk/linking/).
+
+```tsx index.tsx
+import * as Linking from 'expo-linking';
+
+export default function Home() {
+  const url = Linking.useURL();
+
+  return <Text>URL: {url}</Text>;
+}
+```
+
+The `Linking.useURL()` hook works behind the scenes by following these imperative methods:
+
+- The link that launched the app is initially returned using [`Linking.getInitialURL()`](/versions/latest/sdk/linking/#linkinggetinitialurl)
+- Any new links triggered while the app is already open are observed with [`Linking.addEventListener('url', callback)`](/versions/latest/sdk/linking/#linkingaddeventlistenertype-handler)
+
+## Parse URLs
+
+You can use the [`Linking.parse()`](/versions/latest/sdk/linking/#linkingparseurl) method to parse the **path**, **hostname**, and **query parameters** from a URL. This method extracts deep linking information and considers nonstandard implementations.
+
+```tsx index.tsx
+import * as Linking from 'expo-linking';
+
+export default function Home() {
+  const url = Linking.useURL();
+
+  if (url) {
+    const { hostname, path, queryParams } = Linking.parse(url);
+
+    console.log(
+      `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+        queryParams
+      )}`
+    );
+  }
+
+  return null;
+}
+```
