@@ -174,7 +174,7 @@ export type CameraPictureOptions = {
    */
   maxDownsampling?: number;
   /**
-   * To programatically disable the camera shutter sound
+   * To programmatically disable the camera shutter sound
    * @default true
    */
   shutterSound?: boolean;
