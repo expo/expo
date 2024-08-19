@@ -174,7 +174,8 @@ class AppContext(
             val runtimeExecutorField = catalystInstance.javaClass.getDeclaredField("runtimeExecutor")
             runtimeExecutorField.get(catalystInstance) as RuntimeExecutor
           } catch (e: NoSuchFieldException) {
-            reactContext.runtimeExecutor as RuntimeExecutor
+            val method = reactContext.javaClass.getMethod("getRuntimeExecutor")
+            method.invoke(reactContext) as RuntimeExecutor
           }
 
           jsiInterop.installJSIForBridgeless(

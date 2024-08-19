@@ -15,7 +15,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix getExternalPathPermissions returns no read/write permissions. ([#30540](https://github.com/expo/expo/pull/30540) by [@dispelpowerone](https://github.com/dispelpowerone))
-- [android] Fix accessing the `runtimeExecutor` from kotlin when the new arch is enabled. ([#31042](https://github.com/expo/expo/pull/31042) by [@alanjhughes](https://github.com/alanjhughes))
+- [android] Fix accessing the `runtimeExecutor` from kotlin when the new arch is enabled. ([#31058](https://github.com/expo/expo/pull/31058) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### ⚠️ Notices
 
