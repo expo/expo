@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `resolvedLayoutDirection` building issues when using react-native 0.75.X. ([#31064](https://github.com/expo/expo/pull/31064) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 1.2.4 — 2024-07-30
