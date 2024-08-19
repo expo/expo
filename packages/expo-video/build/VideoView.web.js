@@ -21,6 +21,7 @@ export const VideoView = forwardRef((props, ref) => {
     const videoRef = useRef(null);
     const mediaNodeRef = useRef(null);
     const hasToSetupAudioContext = useRef(false);
+    const fullscreenChangeListener = useRef(null);
     /**
      * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
      * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -76,25 +77,34 @@ export const VideoView = forwardRef((props, ref) => {
         attachAudioNodes();
         hasToSetupAudioContext.current = false;
     }
-    function setupFullscreenListener(element) {
-        element.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement === element) {
-                props.onFullscreenEnter?.();
-            }
-            else {
-                props.onFullscreenExit?.();
-            }
-        });
+    function fullscreenListener() {
+        if (document.fullscreenElement === videoRef.current) {
+            props.onFullscreenEnter?.();
+        }
+        else {
+            props.onFullscreenExit?.();
+        }
+    }
+    function setupFullscreenListener() {
+        fullscreenChangeListener.current = fullscreenListener;
+        videoRef.current?.addEventListener('fullscreenchange', fullscreenChangeListener.current);
+    }
+    function cleanupFullscreenListener() {
+        if (fullscreenChangeListener.current) {
+            videoRef.current?.removeEventListener('fullscreenchange', fullscreenChangeListener.current);
+        }
     }
     useEffect(() => {
         if (videoRef.current) {
             props.player?.mountVideoView(videoRef.current);
         }
+        setupFullscreenListener();
         attachAudioNodes();
         return () => {
             if (videoRef.current) {
                 props.player?.unmountVideoView(videoRef.current);
             }
+            cleanupFullscreenListener();
             detachAudioNodes();
         };
     }, [props.player]);
@@ -114,7 +124,6 @@ export const VideoView = forwardRef((props, ref) => {
                 videoRef.current = newRef;
                 hasToSetupAudioContext.current = true;
                 maybeSetupAudioContext();
-                setupFullscreenListener(newRef);
             }
         }} src={getSourceUri(props.player?.src) ?? ''}/>);
 });
