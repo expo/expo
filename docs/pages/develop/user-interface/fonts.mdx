@@ -94,13 +94,22 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
 
-You can use that font on `<Text>` by using `fontFamily` style prop. For example, the `<Text>` uses the `Inter-Black` as the font family:
+You can use the font with `<Text>` by specifying the `fontFamily` style prop. See the [next section](#how-to-determine-which-font-family-name-to-use) on how to determine the font family name.
+
+In the example below, the `<Text>` uses the `Inter-Black` as the font family name:
 
 ```tsx
 <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black.</Text>
 ```
 
 </Step>
+
+<ConfigReactNative title="Using this method in a bare React Native project?">
+
+- **Android:** Copy font files to **android/app/src/main/assets/fonts**.
+- **iOS:** See [Adding a Custom Font to Your App](https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app) in the Apple Developer documentation.
+
+</ConfigReactNative>
 
 #### How to determine which font family name to use
 
@@ -117,13 +126,6 @@ For example, Inter Black font file's PostScript name is `Inter-Black`.
 <ContentSpotlight src="/static/images/postscript-name.png" />
 
 </Collapsible>
-
-<ConfigReactNative title="Using this method in a bare React Native project?">
-
-- **Android:** Copy font files to **android/app/src/main/assets/fonts**.
-- **iOS:** See [Adding a Custom Font to Your App](https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app) in the Apple Developer documentation.
-
-</ConfigReactNative>
 
 ### With `useFonts` hook
 

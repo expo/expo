@@ -50,7 +50,7 @@ You can configure `expo-font` using its built-in [config plugin](/config-plugins
     {
       name: 'fonts',
       description:
-        'An array of font files to link to the native project. The paths should be relative to the project root, and the file names will become the font family names.',
+        'An array of font files to link to the native project. The paths should be relative to the project root. The file names will become the font family names on Android. On iOS, the font family name may not be the same as the file name &mdash; use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
       default: '[]',
     },
   ]}
