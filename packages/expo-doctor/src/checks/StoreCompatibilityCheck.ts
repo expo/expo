@@ -22,7 +22,7 @@ export class StoreCompatibilityCheck implements DoctorCheck {
       );
       // checks for exact string from SDK 49 bare template, will not work if it was changed
       const targetSdkVersionRegex =
-        /^targetSdkVersion\s*=\s*(?:Integer\.parseInt\(findProperty\('android\.targetSdkVersion'\)\s*\?:\s*'(\d+)'\)|'(\d+)')/m;
+        /^\s*targetSdkVersion\s*=\s*(?:Integer\.parseInt\(findProperty\('android\.targetSdkVersion'\)\s*\?:\s*'(\d+)'\)|'(\d+)')/m;
       const match = buildGradle.match(targetSdkVersionRegex);
       const targetSdkVersion = match ? parseInt(match[1], 10) : undefined;
       if (targetSdkVersion && targetSdkVersion < 34) {
@@ -41,7 +41,7 @@ export class StoreCompatibilityCheck implements DoctorCheck {
         buildPropertiesConfig[1].android.targetSdkVersion < 34
       ) {
         issue =
-          'This project is using expo-build-properties to targe Android API level 33 or lower. ';
+          'This project is using expo-build-properties to target Android API level 33 or lower. ';
       } else if (!semver.satisfies(exp.sdkVersion!, '>=50.0.0')) {
         issue =
           'This project is using an SDK version that by default targets Android API level 33 or lower. ';
@@ -58,7 +58,7 @@ export class StoreCompatibilityCheck implements DoctorCheck {
       issues: issue ? [issue] : [],
       advice: issue
         ? `Upgrade to Expo SDK 50 or later, which by default supports Android API level 34 ${learnMore(
-            'https://docs.expo.dev/workflow/configuration'
+            'https://support.google.com/googleplay/android-developer/answer/11926878?hl=en'
           )}`
         : undefined,
     };

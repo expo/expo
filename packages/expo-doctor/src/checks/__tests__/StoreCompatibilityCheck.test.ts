@@ -41,7 +41,7 @@ describe('runAsync', () => {
     jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/android/build.gradle']:
-        `targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')`,
+        `  targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')`,
     });
     const check = new StoreCompatibilityCheck();
     const result = await check.runAsync({
@@ -70,7 +70,7 @@ describe('runAsync', () => {
     jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/android/build.gradle']:
-        `targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')`,
+        `  targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')`,
     });
     const check = new StoreCompatibilityCheck();
     const result = await check.runAsync({
