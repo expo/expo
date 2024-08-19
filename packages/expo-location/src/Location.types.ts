@@ -14,7 +14,7 @@ export enum LocationAccuracy {
    */
   Low = 2,
   /**
-   * Accurate to within one hundred meters.
+   * Accurate to within one hundred meters. (Default)
    */
   Balanced = 3,
   /**
@@ -105,7 +105,8 @@ export type LocationOptions = {
   /**
    * Location manager accuracy. Pass one of `Accuracy` enum values.
    * For low-accuracies the implementation can avoid geolocation providers
-   * that consume a significant amount of power (such as GPS).
+   * that consume a significant amount of power (such as GPS). Default is
+   * LocationAccuracy.Balanced
    */
   accuracy?: LocationAccuracy;
   /**
