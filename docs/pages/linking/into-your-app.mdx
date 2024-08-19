@@ -29,7 +29,7 @@ Once the app is installed on a device, you can open links within your app using 
 
 > **Note**: If a custom scheme is not defined, the app will use `android.package` and `ios.bundleIdentifier` as the default schemes in both development and production builds. This is because [Expo Prebuild](/workflow/prebuild/) automatically adds these properties as custom schemes for Android and iOS.
 
-## Test a link in development
+## Test a URL in development
 
 You can test a link that opens your app using [`npx uri-scheme`](https://github.com/expo/expo/tree/main/packages/uri-scheme#readme), which is a command-line utility for interacting with and testing URI schemes.
 
@@ -65,7 +65,7 @@ By default, `exp://` is replaced with `http://` when opening a URL in Expo Go. Y
 
 </Collapsible>
 
-## Handle links
+## Handle URLs
 
 You can observe links that launch your app using the [`Linking.useURL()`](/versions/latest/sdk/linking/#useurl) hook from [`expo-linking`](/versions/latest/sdk/linking/).
 
