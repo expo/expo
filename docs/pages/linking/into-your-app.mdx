@@ -9,7 +9,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Linking into your app allows other apps to open a screen directly using a URL registered with your app's custom scheme. Using this URL, other apps can open a specific screen or the home screen of your app.
 
-## Add a scheme
+## Add a scheme in app config
 
 Linking to your app requires adding a custom scheme string to the [`scheme`](/versions/latest/config/app/#scheme) property in the [app config](/workflow/configuration/).
 
@@ -29,7 +29,7 @@ Once the app is installed on a device, you can open links within your app using 
 
 > **Note**: If a custom scheme is not defined, the app will use `android.package` and `ios.bundleIdentifier` as the default schemes in both development and production builds. This is because [Expo Prebuild](/workflow/prebuild/) automatically adds these properties as custom schemes for Android and iOS.
 
-## Test a link
+## Test a link in development
 
 You can test a link that opens your app using [`npx uri-scheme`](https://github.com/expo/expo/tree/main/packages/uri-scheme#readme), which is a command-line utility for interacting with and testing URI schemes.
 
@@ -88,7 +88,7 @@ The `Linking.useURL()` hook works behind the scenes by following these imperativ
 
 You can use the [`Linking.parse()`](/versions/latest/sdk/linking/#linkingparseurl) method to parse the **path**, **hostname**, and **query parameters** from a URL. This method extracts deep linking information and considers nonstandard implementations.
 
-```tsx index.tsx
+```tsx index.tsx|collapseHeight=440
 import * as Linking from 'expo-linking';
 
 export default function Home() {
@@ -104,6 +104,8 @@ export default function Home() {
     );
   }
 
-  return null;
+  return (
+    /* @hide Your React component here. */ /* @end */
+  )
 }
 ```
