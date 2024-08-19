@@ -84,11 +84,11 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const handleKeyboardShow = event => {
+  const handleKeyboardShow = (event) => {
     setIsKeyboardVisible(true);
   };
 
-  const handleKeyboardHide = event => {
+  const handleKeyboardHide = (event) => {
     setIsKeyboardVisible(false);
   };
 
@@ -101,7 +101,7 @@ export default function HomeScreen() {
 }
 ```
 
-## Advanced keyboard handling
+## Advanced keyboard handling with Keyboard Controller
 
 For more complex keyboard interactions, such as larger scrollable entry forms with several text input fields, consider using the [`react-native-keyboard-controller` (Keyboard Controller)](https://kirillzyusko.github.io/react-native-keyboard-controller) library. It offers additional functionality beyond the built-in React Native keyboard APIs, providing consistency across Android and iOS with minimal configuration and offering the native feel users expect.
 
@@ -117,8 +117,7 @@ Start by installing the Keyboard Controller library in your Expo project:
 
 <Terminal cmd={['$ npx expo install react-native-keyboard-controller']} />
 
-
-### Set up Keyboard Controller provider
+### Set up provider
 
 To finalize the setup, add the `KeyboardProvider` to your app.
 
@@ -165,7 +164,6 @@ const useGradualAnimation = () => {
 ```
 
 You can use the `useGradualAnimation` hook to animate a view and give it a smooth animation when the keyboard is active or dismissed, for example, in a chat screen component (shown in the example below). This component gets the keyboard height from the hook. It then creates an animated style called `fakeView` using the `useAnimatedStyle` hook from reanimated. This style only contains one property: `height`, which is set to the keyboard's height.
-
 
 The `fakeView` animated style is used in an animated view after the `TextInput`. This view's height will animate based on the keyboard's height at each frame, which effectively pushes the content above the keyboard with a smooth animation. It also decreases its height to zero when the keyboard is dismissed.
 
