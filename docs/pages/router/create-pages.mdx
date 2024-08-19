@@ -126,22 +126,24 @@ Every file and sub-directory inside the **app** directory is either a `_layout` 
   ]}
 />
 
-The example above demonstrates why, if Expo Router allowed for non-route files, co-location (the technical term for keeping files within the same directory) would lead to an unstructured project. [Shared routes](/router/advanced/shared-routes) (the feature allowing you render the same route with different layouts) is common pattern in native navigation, but requires multiple directories. As you will have multiple route files, but only a single file for components co-location would force you to create arbitrary rules over which directory is the 'correct' one. Expo Router does not allow for co-location preventing this dilemma.
+The example above demonstrates "why", if Expo Router allowed for non-route files, co-location (the technical term for keeping files within the same directory) would lead to an unstructured project. The example is using [shared routes](/router/advanced/shared-routes), and as such there are multiple route files for the `/profile` route. If you have non-route file `ProfileImage.tsx`, you cannot co-locate this file, as you only have one non-route file but two different route directories. To prevent this dilemma Expo Router simply does not allow for non-route file co-location.
 
-export const ExampleStructure = () => (
-  <FileTree
-    files={[
-      'app/sign-in',
-      'app/sign-out',
-      'app/profile',
-      'app/tasks',
-      'components/authentication',
-      'components/tasks/overview',
-      'components/profile/[user]',
-    ]}
-  />
-);
+### Recommended structure
 
-> **info** **Tip**: Expo recommends sorting components and hooks by "feature" and routes by "navigation pattern". While the two concepts can overlap, there are enough differences to structure them differently. Additionally, routes will inevitably change. However, components generally stay within the same feature set. Keeping routes separate will greatly simplify your refactors.<br /><br /> <ExampleStructure />
-> In the example above, both `/sign-in` and `/sign-out` are authentication routes and share components from the **components/authentication** file. However, `/profile/[user]` is complex and renders components that belong to the authentication, profile, and task features. If you place your components within the **app** directory, it's not obvious where these components belong. By separating components from routes, you are creating an organized hierarchy with the philosophy that a route is a collection of reusable components, yet a component does not belong to an individual route. <br /><br />
-> Another project optimization is to utilize [path aliases](/guides/typescript/#path-aliases-optional). Path aliases keep your routes project structure agnostic, as imports within your routes are no longer dependent on the **app** directory structure. This avoids large `import` statement changes when adding new directories (such as new groups) and prevents lengthy `import` paths.
+Expo recommends sorting components and hooks by "feature" and routes by "navigation pattern". While the two concepts can overlap, there are enough differences to structure them differently. Additionally, routes will inevitably change. However, components generally stay within the same feature set. Keeping routes separate will greatly simplify your refactors.
+
+<FileTree
+  files={[
+    'app/sign-in',
+    'app/sign-out',
+    'app/profile',
+    'app/tasks',
+    'components/authentication',
+    'components/tasks/overview',
+    'components/profile/[user]',
+  ]}
+/>
+
+In the example above, both `/sign-in` and `/sign-out` are authentication routes and share components from the **components/authentication** file. However, `/profile/[user]` is complex and renders components that belong to the authentication, profile, and task features. If you place your components within the **app** directory, it's not obvious where these components belong. By separating components from routes, you are creating an organized hierarchy with the philosophy that a route is a collection of reusable components, yet a component does not belong to an individual route.
+
+Another project optimization is to utilize [path aliases](/guides/typescript/#path-aliases-optional). Path aliases keep your routes project structure agnostic, as imports within your routes are no longer dependent on the **app** directory structure. This avoids large `import` statement changes when adding new directories (such as new groups) and prevents lengthy `import` paths.
