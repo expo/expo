@@ -14,7 +14,7 @@ export enum LocationAccuracy {
    */
   Low = 2,
   /**
-   * Accurate to within one hundred meters. (Default)
+   * Accurate to within one hundred meters.
    */
   Balanced = 3,
   /**
