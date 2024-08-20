@@ -2,3 +2,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* These styles make the body full-height */
+html,
+body {
+height: unset;
+}
+/* These styles disable body scrolling if you are using <ScrollView> */
+body {
+overflow: unset;
+}
+/* These styles make the root element full-height */
+#root {
+display: flex;
+height: 100%;
+flex: 1;
+}
+    
