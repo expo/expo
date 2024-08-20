@@ -111,6 +111,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   function cleanupFullscreenListener() {
     if (fullscreenChangeListener.current) {
       videoRef.current?.removeEventListener('fullscreenchange', fullscreenChangeListener.current);
+      fullscreenChangeListener.current = null;
     }
   }
 
