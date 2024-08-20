@@ -126,10 +126,10 @@ class ExpoImageModule : Module() {
         if (image.ref is GifDrawable) {
           return@Property true
         }
-        if(image.ref is APNGDrawable) {
+        if (image.ref is APNGDrawable) {
           return@Property true
         }
-        if(image.ref is WebPDrawable){
+        if (image.ref is WebPDrawable) {
           return@Property true
         }
         false
