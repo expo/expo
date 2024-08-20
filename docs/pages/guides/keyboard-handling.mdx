@@ -142,9 +142,66 @@ export default function RootLayout() {
 }
 ```
 
+### Handling multiple inputs
+
+For screens with multiple inputs, the Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
+
+```tsx FormScreen.tsx
+import { TextInput, View, StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
+
+export default function FormScreen() {
+  return (
+    <>
+      <KeyboardAwareScrollView bottomOffset={62} contentContainerStyle={styles.container}>
+        <View>
+          <TextInput placeholder="Type a message..." style={styles.textInput} />
+          <TextInput placeholder="Type a message..." style={styles.textInput} />
+        </View>
+        <TextInput placeholder="Type a message..." style={styles.textInput} />
+        <View>
+          <TextInput placeholder="Type a message..." style={styles.textInput} />
+          <TextInput placeholder="Type a message..." style={styles.textInput} />
+          <TextInput placeholder="Type a message..." style={styles.textInput} />
+        </View>
+        <TextInput placeholder="Type a message..." style={styles.textInput} />
+      </KeyboardAwareScrollView>
+      <KeyboardToolbar />
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 16,
+    padding: 16,
+  },
+  listStyle: {
+    padding: 16,
+    gap: 16,
+  },
+  textInput: {
+    width: 'auto',
+    flexGrow: 1,
+    flexShrink: 1,
+    height: 45,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#d8d8d8',
+    backgroundColor: '#fff',
+    padding: 8,
+    marginBottom: 8,
+  },
+});
+```
+
+The above example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
+
 ### Animating views in sync with keyboard height
 
-The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping but requires platform-specific configuration and is not very customizable. To achieve the same functionality, you can use [`useKeyboardHandler`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/hooks/keyboard/use-keyboard-handler) from Keyboard Controller. It provides access to keyboard lifecycle events and allows us to determine when the keyboard starts animating and its position in every frame of the animation.
+The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping but requires platform-specific configuration and is not very customizable. To achieve the same functionality, you can use [`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view), which automatically scrolls to focused `TextInput` and provides a native-like performance, we recommend using `KeyboardAwareScrollView` for simple screens with not many elements.
+
+For a more advanced and customizable approach, you can use [`useKeyboardHandler`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/hooks/keyboard/use-keyboard-handler). It provides access to keyboard lifecycle events. It allows us to determine when the keyboard starts animating and its position in every frame of the animation.
 
 Using the `useKeyboardHandler` hook, you can create a custom hook to access the height of the keyboard at each frame. It uses `useSharedValue` from reanimated to return the height, as shown below.
 
@@ -230,61 +287,6 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
-### Handling multiple inputs
-
-For screens with multiple inputs, the Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
-
-```tsx FormScreen.tsx
-import { TextInput, View, StyleSheet } from 'react-native';
-import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
-
-export default function FormScreen() {
-  return (
-    <>
-      <KeyboardAwareScrollView bottomOffset={62} contentContainerStyle={styles.container}>
-        <View>
-          <TextInput placeholder="Type a message..." style={styles.textInput} />
-          <TextInput placeholder="Type a message..." style={styles.textInput} />
-        </View>
-        <TextInput placeholder="Type a message..." style={styles.textInput} />
-        <View>
-          <TextInput placeholder="Type a message..." style={styles.textInput} />
-          <TextInput placeholder="Type a message..." style={styles.textInput} />
-          <TextInput placeholder="Type a message..." style={styles.textInput} />
-        </View>
-        <TextInput placeholder="Type a message..." style={styles.textInput} />
-      </KeyboardAwareScrollView>
-      <KeyboardToolbar />
-    </>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 16,
-    padding: 16,
-  },
-  listStyle: {
-    padding: 16,
-    gap: 16,
-  },
-  textInput: {
-    width: 'auto',
-    flexGrow: 1,
-    flexShrink: 1,
-    height: 45,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: '#d8d8d8',
-    backgroundColor: '#fff',
-    padding: 8,
-    marginBottom: 8,
-  },
-});
-```
-
-The above example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
 
 ## Additional resources
 
