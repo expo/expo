@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export declare function transformCssModuleWeb(props: {
     filename: string;
     src: string;
@@ -7,6 +6,7 @@ export declare function transformCssModuleWeb(props: {
         minify: boolean;
         dev: boolean;
         sourceMap: boolean;
+        reactServer: boolean;
     };
 }): Promise<{
     output: string;
