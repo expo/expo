@@ -18,8 +18,11 @@ exports.default = (0, create_pages_1.createPages)(async ({ createPage, createLay
         unstable_setBuildData(path, files);
         if (pathItems.at(-1) === '_layout') {
             console.log('layout:', path, file);
+            // TODO: Support static paths
+            // const staticPaths = await mod.generateStaticParams()
             createLayout({
                 path,
+                // staticPaths
                 // NOTE(EvanBacon): Support routes with top-level "use client"
                 component: 'default' in mod ? mod.default : mod,
                 render: 'static',

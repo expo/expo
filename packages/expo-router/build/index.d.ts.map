@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../src/index.tsx"],"names":[],"mappings":"AAIA,OAAO,EAAE,IAAI,EAAE,MAAM,qBAAqB,CAAC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../src/index.tsx"],"names":[],"mappings":"AAMA,OAAO,EAAE,IAAI,EAAE,MAAM,qBAAqB,CAAC;AAE3C,wBAAgB,WAAW,WAG1B;AAED,wBAAgB,oBAAoB;;EAGnC"}

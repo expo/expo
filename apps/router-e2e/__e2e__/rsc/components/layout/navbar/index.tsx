@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import { getMenu } from '../../../lib/shopify';
 import { Menu } from '../../../lib/shopify/types';
 import { Suspense, useEffect, useState } from 'react';
-// import MobileMenu from './mobile-menu';
+import MobileMenu from './mobile-menu';
 // import Search, { SearchSkeleton } from './search';
 
 const { SITE_NAME } = process.env;
@@ -15,7 +15,9 @@ export async function Navbar() {
   return (
     <nav className="relative flex items-center justify-between p-4 lg:px-6">
       <div className="block flex-none md:hidden">
-        <Suspense fallback={null}>{/* <MobileMenu menu={menu} /> */}</Suspense>
+        <Suspense fallback={null}>
+          <MobileMenu menu={menu} />
+        </Suspense>
       </div>
       <div className="flex w-full items-center">
         <div className="flex w-full md:w-1/3">

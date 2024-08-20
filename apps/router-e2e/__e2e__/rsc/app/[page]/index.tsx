@@ -1,3 +1,4 @@
+import Footer from '../../components/layout/footer';
 import Prose from '../../components/prose';
 // import { useLocalSearchParams } from 'expo-router';
 import { notFound } from '../../lib/expo-shim';
@@ -24,16 +25,21 @@ export default async function Page(props) {
 
   return (
     <>
-      {meta}
-      <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
-      <Prose className="mb-8" html={page.body as string} />
-      <p className="text-sm italic">
-        {`This document was last updated on ${new Intl.DateTimeFormat(undefined, {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        }).format(new Date(page.updatedAt))}.`}
-      </p>
+      <div className="w-full">
+        <div className="mx-8 max-w-2xl py-20 sm:mx-auto">
+          {meta}
+          <h1 className="mb-8 text-5xl font-bold">{page.title}</h1>
+          <Prose className="mb-8" html={page.body as string} />
+          <p className="text-sm italic">
+            {`This document was last updated on ${new Intl.DateTimeFormat(undefined, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }).format(new Date(page.updatedAt))}.`}
+          </p>
+        </div>
+      </div>
+      <Footer />
     </>
   );
 }
