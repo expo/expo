@@ -1,5 +1,5 @@
 import Prose from '../../components/prose';
-import { useLocalSearchParams } from 'expo-router';
+// import { useLocalSearchParams } from 'expo-router';
 import { notFound } from '../../lib/expo-shim';
 import { getPage } from '../../lib/shopify';
 

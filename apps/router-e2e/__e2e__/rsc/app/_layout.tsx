@@ -1,7 +1,7 @@
 // import { CartProvider } from '../components/cart/cart-context';
 import { Navbar } from '../components/layout/navbar';
 // import { WelcomeToast } from '../components/welcome-toast';
-import { Slot } from 'expo-router';
+// import { Slot } from 'expo-router';
 // import { GeistSans } from 'geist/font/sans';
 import { cookies } from '../lib/expo-shim';
 import { ensureStartsWith } from '../lib/utils';
