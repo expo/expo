@@ -114,11 +114,16 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
             return null;
         }
         if (pathStatus[0] === 'NOT_FOUND') {
-            return null;
+            if (pathStatus[1] === 'HAS_404') {
+                pathname = '/404';
+            }
+            else {
+                return null;
+            }
         }
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const input = (0, common_1.getInputString)(pathname);
-        const body = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, searchParams } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
+        const body = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, query: searchParams.toString(), hash: '' } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
         return { input, body };
     };
     return { renderEntries, getBuildConfig, getSsrConfig };

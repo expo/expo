@@ -131,10 +131,12 @@ export function unstable_defineRouter(
   const getBuildConfig: GetBuildConfig = async (unstable_collectClientModules) => {
     const pathConfig = await getMyPathConfig();
     const path2moduleIds: Record<string, string[]> = {};
+
     for (const { pathname: pathSpec } of pathConfig) {
       if (pathSpec.some(({ type }) => type !== 'literal')) {
         continue;
       }
+
       const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
       const input = getInputString(pathname);
       const moduleIds = await unstable_collectClientModules(input);
@@ -172,13 +174,17 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
       return null;
     }
     if (pathStatus[0] === 'NOT_FOUND') {
-      return null;
+      if (pathStatus[1] === 'HAS_404') {
+        pathname = '/404';
+      } else {
+        return null;
+      }
     }
     const componentIds = getComponentIds(pathname);
     const input = getInputString(pathname);
     const body = createElement(
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
-      { route: { path: pathname, searchParams } },
+      { route: { path: pathname, query: searchParams.toString(), hash: '' } },
       componentIds.reduceRight(
         (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
         null

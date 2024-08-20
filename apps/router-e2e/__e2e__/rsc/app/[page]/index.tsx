@@ -4,7 +4,7 @@ import { notFound } from '../../lib/expo-shim';
 import { getPage } from '../../lib/shopify';
 
 export default async function Page(props) {
-  console.log('props', props, props.searchParams.get('page'));
+  //   console.log('props', props, props.searchParams.get('page'));
   //   const params = useLocalSearchParams();
   // TODO: Add support to router and the RSC router for searchParams
   const pageId = props.searchParams.get('page') ?? props.page;

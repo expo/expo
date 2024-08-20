@@ -77,6 +77,16 @@ type ChangeRoute = (
 
 type PrefetchRoute = (route: RouteProps) => void;
 
+const equalRouteProps = (a: RouteProps, b: RouteProps) => {
+  if (a.path !== b.path) {
+    return false;
+  }
+  if (a.query !== b.query) {
+    return false;
+  }
+  return true;
+};
+
 const RouterContext = createContext<{
   route: RouteProps;
   changeRoute: ChangeRoute;

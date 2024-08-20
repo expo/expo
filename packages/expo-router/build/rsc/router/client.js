@@ -40,6 +40,15 @@ const getHref = () => process.env.EXPO_OS === 'web'
     ? window.location.href
     : // TODO: This is hardcoded on native to simplify the initial PR.
         'http://localhost:8081/';
+const equalRouteProps = (a, b) => {
+    if (a.path !== b.path) {
+        return false;
+    }
+    if (a.query !== b.query) {
+        return false;
+    }
+    return true;
+};
 const RouterContext = (0, react_1.createContext)(null);
 const InnerRouter = ({ routerData }) => {
     const refetch = (0, host_js_1.useRefetch)();
