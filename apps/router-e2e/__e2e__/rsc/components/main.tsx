@@ -14,7 +14,12 @@ import { Text } from '../lib/react-native';
 //   }
 // };
 
-export default function HomePage({ products }) {
+export default function HomePage({
+  products,
+}: {
+  dom?: import('expo/dom').DOMProps;
+  products: any;
+}) {
   return (
     <>
       <Meta
@@ -23,8 +28,8 @@ export default function HomePage({ products }) {
       />
       <Meta property="og:type" content="website" />
       <ThreeItemGrid products={products} />
-      {/* <Carousel />
-      <Footer /> */}
+      {/* <Carousel /> */}
+      {/* <Footer />  */}
     </>
   );
 }

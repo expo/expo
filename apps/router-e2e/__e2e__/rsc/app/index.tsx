@@ -44,9 +44,10 @@ export default async function HomePage() {
       dom={{
         style: {
           minHeight: '100%',
-          height: 720,
+          height: 730,
           flex: 1,
         },
+        scrollEnabled: false,
       }}
     />
   );
