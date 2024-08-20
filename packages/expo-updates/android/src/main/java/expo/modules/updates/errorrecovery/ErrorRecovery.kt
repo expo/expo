@@ -9,7 +9,6 @@ import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.devsupport.DisabledDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
@@ -112,17 +111,23 @@ class ErrorRecovery(
   }
 
   private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
-    if (devSupportManager !is DisabledDevSupportManager) {
+    val devSupportManagerClass = try {
+      // react-native version 0.75.0 renamed DisabledDevSupportManager to ReleaseDevSupportManager
+      Class.forName("com.facebook.react.devsupport.ReleaseDevSupportManager")
+    } catch (e: ClassNotFoundException) {
+      Class.forName("com.facebook.react.devsupport.DisabledDevSupportManager")
+    }
+    if (!devSupportManagerClass.isInstance(devSupportManager)) {
       Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
     }
 
     val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
-      override fun handleException(e: Exception?) {
+      override fun handleException(e: Exception) {
         this@ErrorRecovery.handleException(e!!)
       }
     }
-    val devSupportManagerClass = devSupportManager.javaClass
+
     previousExceptionHandler = devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
       field.isAccessible = true
       val previousValue = field[devSupportManager]
@@ -146,7 +151,14 @@ class ErrorRecovery(
 
   private fun unregisterErrorHandlerImplBridge() {
     weakDevSupportManager?.get()?.let { devSupportManager ->
-      if (devSupportManager !is DisabledDevSupportManager) {
+
+      val devSupportManagerClass = try {
+        // react-native version 0.75.0 renamed DisabledDevSupportManager to ReleaseDevSupportManager
+        Class.forName("com.facebook.react.devsupport.ReleaseDevSupportManager")
+      } catch (e: ClassNotFoundException) {
+        Class.forName("com.facebook.react.devsupport.DisabledDevSupportManager")
+      }
+      if (!devSupportManagerClass.isInstance(devSupportManager)) {
         Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
       }
@@ -154,7 +166,6 @@ class ErrorRecovery(
         return
       }
 
-      val devSupportManagerClass = devSupportManager.javaClass
       devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
