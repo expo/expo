@@ -6,17 +6,16 @@ import { defaultSort, sorting } from '../../../lib/constants';
 import { notFound } from '../../../lib/expo-shim';
 
 export default async function CategoryPage({
-  params,
   searchParams,
+  ...props
 }: {
-  params: { collection: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: URLSearchParams;
 }) {
-  const { sort } = searchParams as { [key: string]: string };
+  const sort = searchParams.get('sort');
   const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
-  const products = await getCollectionProducts({ collection: params.collection, sortKey, reverse });
+  const products = await getCollectionProducts({ collection: props.collection, sortKey, reverse });
 
-  const collection = await getCollection(params.collection);
+  const collection = await getCollection(props.collection);
   if (!collection) return notFound();
 
   return (

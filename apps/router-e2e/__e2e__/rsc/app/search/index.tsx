@@ -1,17 +1,11 @@
 import Grid from '../../components/grid';
 import ProductGridItems from '../../components/layout/product-grid-items';
-import { useLocalSearchParams } from 'expo-router';
 import { defaultSort, sorting } from '../../lib/constants';
 import { getProducts } from '../../lib/shopify';
 
-export default async function SearchPage() {
-  //   {
-  //   searchParams
-  // }: {
-  //   searchParams?: { [key: string]: string | string[] | undefined };
-  // }
-  const searchParams = useLocalSearchParams();
-  const { sort, q: searchValue } = searchParams as { [key: string]: string };
+export default async function SearchPage({ searchParams }) {
+  const sort = searchParams.get('sort');
+  const searchValue = searchParams.get('q');
   const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
 
   const products = await getProducts({ sortKey, reverse, query: searchValue });
