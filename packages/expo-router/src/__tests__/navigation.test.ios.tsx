@@ -16,15 +16,13 @@ import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
 
-it.only('should respect `unstable_settings', () => {
+it('should respect `unstable_settings', () => {
   const render = (options: any = {}) =>
     renderRouter(
       {
         '(one,two)/_layout': {
           unstable_settings: {
-            one: {
-              initialRouteName: 'apple',
-            },
+            initialRouteName: 'apple',
             two: {
               initialRouteName: 'orange',
             },
@@ -38,20 +36,19 @@ it.only('should respect `unstable_settings', () => {
       options
     );
 
-  // Orange is the initial route for (two) so we are in (two)
-  // render({ initialUrl: '/orange' });
-  // expect(screen).toHaveSegments(['(two)', 'orange']);
+  render({ initialUrl: '/orange' });
+  expect(screen).toHaveSegments(['(two)', 'orange']);
 
-  // expect(screen.getByTestId('orange')).toBeVisible();
-  // act(() => router.back());
-  // expect(screen.getByTestId('apple')).toBeVisible();
+  expect(screen.getByTestId('orange')).toBeVisible();
+  // Orange is the initial route so you can't go back
+  expect(router.canGoBack()).toBeFalsy();
 
   // Reset the app, but start at /banana
-  // screen.unmount();
-  render({ initialUrl: '/(two)/banana' });
+  screen.unmount();
+  render({ initialUrl: '/banana' });
 
-  // Orange should be the initialRouteName, because we are now in (two)
   expect(screen.getByTestId('banana')).toBeVisible();
+  // Orange should be the initialRouteName, because we are in (two)
   act(() => router.back());
   expect(screen.getByTestId('orange')).toBeVisible();
 });
