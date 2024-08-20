@@ -150,22 +150,24 @@ const InnerRouter = ({ routerData }) => {
     }, [routerData]);
     (0, react_1.useEffect)(() => {
         const callback = () => {
-            const route = parseRoute(new URL(window.location.href));
+            const route = parseRoute(new URL(getHref()));
             changeRoute(route, { checkCache: true });
         };
-        window.addEventListener('popstate', callback);
-        return () => {
-            window.removeEventListener('popstate', callback);
-        };
+        if (window.addEventListener) {
+            window.addEventListener('popstate', callback);
+            return () => {
+                window.removeEventListener('popstate', callback);
+            };
+        }
     }, [changeRoute]);
     (0, react_1.useEffect)(() => {
         const callback = (pathname, searchParamsString) => {
-            const url = new URL(window.location.href);
+            const url = new URL(getHref());
             url.pathname = pathname;
             url.search = searchParamsString;
             url.hash = '';
-            window.history.pushState({
-                ...window.history.state,
+            getHistory().pushState({
+                ...getHistory().state,
                 waku_new_path: url.pathname !== window.location.pathname,
             }, '', url);
             changeRoute(parseRoute(url), { skipRefetch: true });
@@ -178,17 +180,36 @@ const InnerRouter = ({ routerData }) => {
     }, [changeRoute, routerData]);
     (0, react_1.useEffect)(() => {
         const { hash } = window.location;
-        const { state } = window.history;
+        const { state } = getHistory();
         const element = hash && document.getElementById(hash.slice(1));
-        window.scrollTo({
-            left: 0,
-            top: element ? element.getBoundingClientRect().top + window.scrollY : 0,
-            behavior: state?.waku_new_path ? 'instant' : 'auto',
-        });
+        if (window.scrollTo) {
+            window.scrollTo({
+                left: 0,
+                top: element ? element.getBoundingClientRect().top + window.scrollY : 0,
+                behavior: state?.waku_new_path ? 'instant' : 'auto',
+            });
+        }
+        else {
+            // TODO: Native
+            console.log('window.scrollTo is not available');
+        }
     });
     const children = componentIds.reduceRight((acc, id) => (0, react_1.createElement)(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);
     return (0, react_1.createElement)(RouterContext.Provider, { value: { route, changeRoute, prefetchRoute } }, children);
 };
+function getHistory() {
+    if (process.env.EXPO_OS === 'web') {
+        return window.history;
+    }
+    // Native shim
+    return {
+        pushState: () => { },
+        replaceState: () => { },
+        back: () => { },
+        forward: () => { },
+        state: {},
+    };
+}
 function useRouter_UNSTABLE() {
     const router = (0, react_1.useContext)(RouterContext);
     if (!router) {
@@ -196,32 +217,32 @@ function useRouter_UNSTABLE() {
     }
     const { route, changeRoute, prefetchRoute } = router;
     const push = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, window.location.href);
-        window.history.pushState({
-            ...window.history.state,
+        const url = new URL(to, getHref());
+        getHistory().pushState({
+            ...getHistory().state,
             waku_new_path: url.pathname !== window.location.pathname,
         }, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
     const replace = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, window.location.href);
-        window.history.replaceState(window.history.state, '', url);
+        const url = new URL(to, getHref());
+        getHistory().replaceState(getHistory().state, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
     const reload = (0, react_1.useCallback)(() => {
-        const url = new URL(window.location.href);
+        const url = new URL(getHref());
         changeRoute(parseRoute(url));
     }, [changeRoute]);
     const back = (0, react_1.useCallback)(() => {
         // FIXME is this correct?
-        window.history.back();
+        getHistory().back();
     }, []);
     const forward = (0, react_1.useCallback)(() => {
         // FIXME is this correct?
-        window.history.forward();
+        getHistory().forward();
     }, []);
     const prefetch = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, window.location.href);
+        const url = new URL(to, getHref());
         prefetchRoute(parseRoute(url));
     }, [prefetchRoute]);
     return {
@@ -308,8 +329,8 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        const url = new URL(to, window.location.href);
-                        if (router && url.href !== window.location.href) {
+                        const url = new URL(to, getHref());
+                        if (router && url.href !== getHref()) {
                             const route = parseRoute(url);
                             router.prefetchRoute(route);
                         }
@@ -324,13 +345,13 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
     }, [unstable_prefetchOnView, router, to]);
     const onClick = (event) => {
         event.preventDefault();
-        const url = new URL(to, window.location.href);
-        if (url.href !== window.location.href) {
+        const url = new URL(to, getHref());
+        if (url.href !== getHref()) {
             const route = parseRoute(url);
             prefetchRoute(route);
             startTransition(() => {
-                window.history.pushState({
-                    ...window.history.state,
+                getHistory().pushState({
+                    ...getHistory().state,
                     waku_new_path: url.pathname !== window.location.pathname,
                 }, '', url);
                 changeRoute(route);
@@ -340,15 +361,15 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
     };
     const onMouseEnter = unstable_prefetchOnEnter
         ? (event) => {
-            const url = new URL(to, window.location.href);
-            if (url.href !== window.location.href) {
+            const url = new URL(to, getHref());
+            if (url.href !== getHref()) {
                 const route = parseRoute(url);
                 prefetchRoute(route);
             }
             props.onMouseEnter?.(event);
         }
         : props.onMouseEnter;
-    const ele = (0, react_1.createElement)('a', { ...props, href: to, onClick, onMouseEnter, ref }, children);
+    const ele = (0, react_1.createElement)(react_native_1.Text, { ...props, href: to, onPress: onClick, onMouseEnter, ref }, children);
     if (isPending && pending !== undefined) {
         return (0, react_1.createElement)(react_1.Fragment, null, ele, pending);
     }
@@ -358,4 +379,5 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
     return ele;
 }
 exports.Link = Link;
+const react_native_1 = require("./react-native");
 //# sourceMappingURL=client.js.map

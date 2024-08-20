@@ -5,4 +5,6 @@ export declare const Head: React.FC<{
 }> & {
     Provider: typeof HelmetProvider;
 };
+export declare const Meta = "meta";
+export declare const Title = "title";
 //# sourceMappingURL=ExpoHead.d.ts.map

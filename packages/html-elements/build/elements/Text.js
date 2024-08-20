@@ -1,3 +1,4 @@
+'use client';
 import React, { forwardRef } from 'react';
 import { StyleSheet, Platform } from 'react-native';
 import { em } from '../css/units';

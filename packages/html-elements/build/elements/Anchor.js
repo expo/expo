@@ -1,3 +1,4 @@
+'use client';
 import React, { forwardRef } from 'react';
 import { Linking, Platform } from 'react-native';
 import Text from '../primitives/Text';

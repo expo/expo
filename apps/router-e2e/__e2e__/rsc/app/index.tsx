@@ -3,7 +3,8 @@ import { Carousel } from '../components/carousel';
 
 import '../globals.css';
 import Footer from '../components/layout/footer';
-
+import { Meta } from 'expo-router/head';
+import { Text } from '../lib/react-native';
 // export const metadata = {
 //   description: 'High-performance ecommerce store built with Next.js, Vercel, and Shopify.',
 //   openGraph: {
@@ -14,14 +15,14 @@ import Footer from '../components/layout/footer';
 export default function HomePage() {
   return (
     <>
-      <meta
+      <Meta
         name="description"
         content="High-performance ecommerce store built with Next.js, Vercel, and Shopify."
       />
-      <meta property="og:type" content="website" />
+      <Meta property="og:type" content="website" />
       <ThreeItemGrid />
-      <Carousel />
-      <Footer />
+      {/* <Carousel />
+      <Footer /> */}
     </>
   );
 }

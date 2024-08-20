@@ -1,3 +1,4 @@
+'use client';
 import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import View from '../primitives/View';

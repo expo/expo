@@ -217,24 +217,26 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
 
   useEffect(() => {
     const callback = () => {
-      const route = parseRoute(new URL(window.location.href));
+      const route = parseRoute(new URL(getHref()));
       changeRoute(route, { checkCache: true });
     };
-    window.addEventListener('popstate', callback);
-    return () => {
-      window.removeEventListener('popstate', callback);
-    };
+    if (window.addEventListener) {
+      window.addEventListener('popstate', callback);
+      return () => {
+        window.removeEventListener('popstate', callback);
+      };
+    }
   }, [changeRoute]);
 
   useEffect(() => {
     const callback = (pathname: string, searchParamsString: string) => {
-      const url = new URL(window.location.href);
+      const url = new URL(getHref());
       url.pathname = pathname;
       url.search = searchParamsString;
       url.hash = '';
-      window.history.pushState(
+      getHistory().pushState(
         {
-          ...window.history.state,
+          ...getHistory().state,
           waku_new_path: url.pathname !== window.location.pathname,
         },
         '',
@@ -251,13 +253,18 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
 
   useEffect(() => {
     const { hash } = window.location;
-    const { state } = window.history;
+    const { state } = getHistory();
     const element = hash && document.getElementById(hash.slice(1));
-    window.scrollTo({
-      left: 0,
-      top: element ? element.getBoundingClientRect().top + window.scrollY : 0,
-      behavior: state?.waku_new_path ? 'instant' : 'auto',
-    });
+    if (window.scrollTo) {
+      window.scrollTo({
+        left: 0,
+        top: element ? element.getBoundingClientRect().top + window.scrollY : 0,
+        behavior: state?.waku_new_path ? 'instant' : 'auto',
+      });
+    } else {
+      // TODO: Native
+      console.log('window.scrollTo is not available');
+    }
   });
 
   const children = componentIds.reduceRight(
@@ -273,6 +280,20 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
   );
 };
 
+function getHistory() {
+  if (process.env.EXPO_OS === 'web') {
+    return window.history;
+  }
+  // Native shim
+  return {
+    pushState: () => {},
+    replaceState: () => {},
+    back: () => {},
+    forward: () => {},
+    state: {},
+  };
+}
+
 export function useRouter_UNSTABLE() {
   const router = useContext(RouterContext);
   if (!router) {
@@ -281,10 +302,10 @@ export function useRouter_UNSTABLE() {
   const { route, changeRoute, prefetchRoute } = router;
   const push = useCallback(
     (to: string) => {
-      const url = new URL(to, window.location.href);
-      window.history.pushState(
+      const url = new URL(to, getHref());
+      getHistory().pushState(
         {
-          ...window.history.state,
+          ...getHistory().state,
           waku_new_path: url.pathname !== window.location.pathname,
         },
         '',
@@ -296,27 +317,27 @@ export function useRouter_UNSTABLE() {
   );
   const replace = useCallback(
     (to: string) => {
-      const url = new URL(to, window.location.href);
-      window.history.replaceState(window.history.state, '', url);
+      const url = new URL(to, getHref());
+      getHistory().replaceState(getHistory().state, '', url);
       changeRoute(parseRoute(url));
     },
     [changeRoute]
   );
   const reload = useCallback(() => {
-    const url = new URL(window.location.href);
+    const url = new URL(getHref());
     changeRoute(parseRoute(url));
   }, [changeRoute]);
   const back = useCallback(() => {
     // FIXME is this correct?
-    window.history.back();
+    getHistory().back();
   }, []);
   const forward = useCallback(() => {
     // FIXME is this correct?
-    window.history.forward();
+    getHistory().forward();
   }, []);
   const prefetch = useCallback(
     (to: string) => {
-      const url = new URL(to, window.location.href);
+      const url = new URL(to, getHref());
       prefetchRoute(parseRoute(url));
     },
     [prefetchRoute]
@@ -473,8 +494,8 @@ export function Link({
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              const url = new URL(to, window.location.href);
-              if (router && url.href !== window.location.href) {
+              const url = new URL(to, getHref());
+              if (router && url.href !== getHref()) {
                 const route = parseRoute(url);
                 router.prefetchRoute(route);
               }
@@ -493,14 +514,14 @@ export function Link({
   }, [unstable_prefetchOnView, router, to]);
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    const url = new URL(to, window.location.href);
-    if (url.href !== window.location.href) {
+    const url = new URL(to, getHref());
+    if (url.href !== getHref()) {
       const route = parseRoute(url);
       prefetchRoute(route);
       startTransition(() => {
-        window.history.pushState(
+        getHistory().pushState(
           {
-            ...window.history.state,
+            ...getHistory().state,
             waku_new_path: url.pathname !== window.location.pathname,
           },
           '',
@@ -513,15 +534,20 @@ export function Link({
   };
   const onMouseEnter = unstable_prefetchOnEnter
     ? (event: MouseEvent<HTMLAnchorElement>) => {
-        const url = new URL(to, window.location.href);
-        if (url.href !== window.location.href) {
+        const url = new URL(to, getHref());
+        if (url.href !== getHref()) {
           const route = parseRoute(url);
           prefetchRoute(route);
         }
         props.onMouseEnter?.(event);
       }
     : props.onMouseEnter;
-  const ele = createElement('a', { ...props, href: to, onClick, onMouseEnter, ref }, children);
+
+  const ele = createElement(
+    Text,
+    { ...props, href: to, onPress: onClick, onMouseEnter, ref },
+    children
+  );
   if (isPending && pending !== undefined) {
     return createElement(Fragment, null, ele, pending);
   }
@@ -530,3 +556,5 @@ export function Link({
   }
   return ele;
 }
+
+import { Text } from './react-native';

@@ -5,4 +5,6 @@ export declare namespace Head {
         children?: React.ReactNode;
     }>;
 }
+export declare const Meta: () => null;
+export declare const Title: () => null;
 //# sourceMappingURL=ExpoHead.android.d.ts.map

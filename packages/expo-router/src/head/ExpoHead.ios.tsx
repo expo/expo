@@ -1,3 +1,5 @@
+'use client';
+
 import { useIsFocused } from '@react-navigation/core';
 import React from 'react';
 
@@ -299,3 +301,7 @@ HeadShim.Provider = React.Fragment;
 export const Head: ((props: React.PropsWithChildren) => React.ReactNode) & {
   Provider: React.ComponentType;
 } = ExpoHead ? HeadNative : HeadShim;
+
+// TODO: Support React Float on native
+export const Meta = () => null;
+export const Title = () => null;

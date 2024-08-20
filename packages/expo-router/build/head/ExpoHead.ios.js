@@ -1,9 +1,10 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Head = void 0;
+exports.Title = exports.Meta = exports.Head = void 0;
 const core_1 = require("@react-navigation/core");
 const react_1 = __importDefault(require("react"));
 const ExpoHeadModule_1 = require("./ExpoHeadModule");
@@ -243,4 +244,9 @@ function HeadShim(props) {
 HeadShim.Provider = react_1.default.Fragment;
 // Native Head is only enabled in bare iOS apps.
 exports.Head = ExpoHeadModule_1.ExpoHead ? HeadNative : HeadShim;
+// TODO: Support React Float on native
+const Meta = () => null;
+exports.Meta = Meta;
+const Title = () => null;
+exports.Title = Title;
 //# sourceMappingURL=ExpoHead.ios.js.map

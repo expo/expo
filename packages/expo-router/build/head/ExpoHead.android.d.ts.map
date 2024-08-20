@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoHead.android.d.ts","sourceRoot":"","sources":["../../src/head/ExpoHead.android.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,EAAE,KAAK,iBAAiB,EAAE,MAAM,OAAO,CAAC;AAEtD,wBAAgB,IAAI,CAAC,KAAK,EAAE,iBAAiB,QAE5C;yBAFe,IAAI"}
+{"version":3,"file":"ExpoHead.android.d.ts","sourceRoot":"","sources":["../../src/head/ExpoHead.android.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,EAAE,KAAK,iBAAiB,EAAE,MAAM,OAAO,CAAC;AAEtD,wBAAgB,IAAI,CAAC,KAAK,EAAE,iBAAiB,QAE5C;yBAFe,IAAI;;;;;AAOpB,eAAO,MAAM,IAAI,YAAa,CAAC;AAC/B,eAAO,MAAM,KAAK,YAAa,CAAC"}

@@ -13,7 +13,7 @@ function ThreeItemGridItem({
   priority?: boolean;
 }) {
   return (
-    <div
+    <Div
       className={size === 'full' ? 'md:col-span-4 md:row-span-2' : 'md:col-span-2 md:row-span-1'}>
       <Link className="relative block aspect-square h-full w-full" href={`/product/${item.handle}`}>
         <GridTileImage
@@ -30,9 +30,11 @@ function ThreeItemGridItem({
           }}
         />
       </Link>
-    </div>
+    </Div>
   );
 }
+
+import { Div, Section } from '@expo/html-elements';
 
 export async function ThreeItemGrid() {
   // Collections that start with `hidden-*` are hidden from the search page.
@@ -45,10 +47,10 @@ export async function ThreeItemGrid() {
   const [firstProduct, secondProduct, thirdProduct] = homepageItems;
 
   return (
-    <section className="mx-auto grid max-w-screen-2xl gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
+    <Section className="mx-auto grid max-w-screen-2xl gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
       <ThreeItemGridItem size="full" item={firstProduct} />
       <ThreeItemGridItem size="half" item={secondProduct} />
       <ThreeItemGridItem size="half" item={thirdProduct} />
-    </section>
+    </Section>
   );
 }

@@ -1,3 +1,4 @@
+'use client';
 import React, { ComponentType, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 

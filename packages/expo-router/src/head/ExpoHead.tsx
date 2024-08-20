@@ -8,3 +8,6 @@ export const Head: React.FC<{ children?: React.ReactNode }> & {
 };
 
 Head.Provider = HelmetProvider;
+
+export const Meta = 'meta';
+export const Title = 'title';

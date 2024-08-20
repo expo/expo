@@ -1,10 +1,13 @@
 import clsx from 'clsx';
 import Label from '../label';
+import { Div } from '@expo/html-elements';
+import { Image } from '../../lib/react-native';
 
 export function GridTileImage({
   isInteractive = true,
   active,
   label,
+  src,
   ...props
 }: {
   isInteractive?: boolean;
@@ -17,7 +20,7 @@ export function GridTileImage({
   };
 }) {
   return (
-    <div
+    <Div
       className={clsx(
         'group flex h-full w-full items-center justify-center overflow-hidden rounded-lg border bg-white hover:border-blue-600 dark:bg-black',
         {
@@ -26,11 +29,12 @@ export function GridTileImage({
           'border-neutral-200 dark:border-neutral-800': !active,
         }
       )}>
-      {props.src ? (
-        <img
+      {src ? (
+        <Image
           className={clsx('relative h-full w-full object-contain', {
             'transition duration-300 ease-in-out group-hover:scale-105': isInteractive,
           })}
+          source={{ uri: src }}
           {...props}
         />
       ) : null}
@@ -42,6 +46,6 @@ export function GridTileImage({
           position={label.position}
         />
       ) : null}
-    </div>
+    </Div>
   );
 }

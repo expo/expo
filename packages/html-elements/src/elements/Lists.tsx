@@ -1,3 +1,4 @@
+'use client';
 import React, { ComponentType, forwardRef, PropsWithChildren } from 'react';
 import { Platform } from 'react-native';
 
