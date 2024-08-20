@@ -14,23 +14,21 @@ import kotlinx.coroutines.withContext
 open class ImageLoadTask(private val appContext: AppContext, private val source: SourceMap) {
   private var task: Job? = null
 
-  suspend fun load(promise: Promise?): Drawable? {
+  suspend fun load(promise: Promise?) {
     return coroutineScope {
       val deferred = async {
-        val context = this@ImageLoadTask.appContext.reactContext ?: return@async null
-        try {
-          withContext(Dispatchers.IO) {
-            Glide.with(context).asDrawable().load(source.uri).submit().get()
-          }
-        } catch (e: Exception) {
-          promise?.reject(ImageLoadFailed(e))
-          return@async null
+        val context = this@ImageLoadTask.appContext.reactContext ?: throw Exception("React context is not available")
+        withContext(Dispatchers.IO) {
+          Glide.with(context).asDrawable().load(source.uri).submit().get()
         }
       }
       task = deferred
-      val bitmap: Drawable? = deferred.await()
-      promise?.resolve(Image(bitmap))
-      return@coroutineScope bitmap
+      try {
+        val bitmap: Drawable = deferred.await()
+        promise?.resolve(Image(bitmap))
+      } catch (e: Exception) {
+        promise?.reject(ImageLoadFailed(e))
+      }
     }
   }
 }

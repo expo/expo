@@ -111,16 +111,16 @@ class ExpoImageModule : Module() {
 
     Class(Image::class) {
       Property("width") { image: Image ->
-        image.ref?.intrinsicWidth
+        image.ref.intrinsicWidth
       }
       Property("height") { image: Image ->
-        image.ref?.intrinsicHeight
+        image.ref.intrinsicHeight
       }
       Property("scale") { image: Image ->
         // Not relying on `2x` in the filename, but want to make the following true:
         //  If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
         val screenDensity = appContext.reactContext?.resources?.displayMetrics?.density ?: 1f
-        (image.ref?.toBitmapOrNull()?.density ?: 1) / (screenDensity * 160.0f)
+        (image.ref.toBitmapOrNull()?.density ?: 1) / (screenDensity * 160.0f)
       }
       Property("isAnimated") { image: Image ->
         if (image.ref is GifDrawable) {
