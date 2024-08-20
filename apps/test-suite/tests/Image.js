@@ -10,9 +10,6 @@ export const name = 'Image';
 
 const REMOTE_SOURCE = {
   uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
-};
-const REMOTE_KNOWN_SOURCE = {
-  uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
   blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
 };
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
@@ -211,11 +208,11 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     t.describe('prefetch', async () => {
       t.it('prefetches an image and resolves promise to true', async () => {
         await Image.clearDiskCache();
-        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri);
+        const result = await Image.prefetch(REMOTE_SOURCE.uri);
         t.expect(result).toBe(true);
 
         if (Platform.OS === 'android' || Platform.OS === 'ios') {
-          const path = await Image.getCachePathAsync(REMOTE_KNOWN_SOURCE.uri);
+          const path = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
           t.expect(typeof path).toBe('string');
         }
       });
@@ -233,7 +230,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
       t.it('prefetches an image with headers and resolves promise to true', async () => {
         await Image.clearDiskCache();
-        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri, {
+        const result = await Image.prefetch(REMOTE_SOURCE.uri, {
           headers: {
             Referer: 'https://expo.dev',
           },
@@ -250,8 +247,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     if (Platform.OS === 'ios') {
       t.describe('generateBlurhashAsync', async () => {
         t.it('returns a correct blurhash for url', async () => {
-          const result = await Image.generateBlurhashAsync(REMOTE_KNOWN_SOURCE.uri, [4, 3]);
-          t.expect(result).toBe(REMOTE_KNOWN_SOURCE.blurhash);
+          const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
+          t.expect(result).toBe(REMOTE_SOURCE.blurhash);
         });
         t.it('rejects on a missing url', async () => {
           await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
