@@ -42,10 +42,10 @@ export function useAudioRecorder(options, statusListener) {
 export function useAudioRecorderState(recorder, interval = 500) {
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
-        const int = setInterval(() => {
+        const id = setInterval(() => {
             setState(recorder.getStatus());
         }, interval);
-        return () => clearInterval(int);
+        return () => clearInterval(id);
     }, [recorder.id]);
     return state;
 }
@@ -57,4 +57,5 @@ export async function setAudioModeAsync(mode) {
 }
 export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';
+export * from './RecordingConstants';
 //# sourceMappingURL=ExpoAudio.web.js.map

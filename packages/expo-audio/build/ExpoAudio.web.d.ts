@@ -15,4 +15,5 @@ export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
 export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';
+export * from './RecordingConstants';
 //# sourceMappingURL=ExpoAudio.web.d.ts.map

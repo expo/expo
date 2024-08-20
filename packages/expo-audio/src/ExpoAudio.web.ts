@@ -73,11 +73,11 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
   const [state, setState] = useState<RecorderState>(recorder.getStatus());
 
   useEffect(() => {
-    const int = setInterval(() => {
+    const id = setInterval(() => {
       setState(recorder.getStatus());
     }, interval);
 
-    return () => clearInterval(int);
+    return () => clearInterval(id);
   }, [recorder.id]);
 
   return state;
@@ -93,3 +93,4 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
 
 export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';
+export * from './RecordingConstants';

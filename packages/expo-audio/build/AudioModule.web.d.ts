@@ -50,6 +50,7 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     record(): void;
     getAvailableInputs(): RecordingInput[];
     getCurrentInput(): RecordingInput;
+    prepareToRecordAsync(): Promise<void>;
     getStatus(): RecorderState;
     pause(): void;
     recordForDuration(seconds: number): void;

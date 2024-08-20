@@ -1,5 +1,5 @@
 import { PermissionStatus } from 'expo-modules-core';
-import { RecordingOptionsPresets } from './RecordingConstants';
+import { RecordingPresets } from './RecordingConstants';
 const nextId = (() => {
     let id = 0;
     return () => id++;
@@ -172,7 +172,6 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     constructor(options) {
         super();
         this._options = options;
-        this.setup();
     }
     async setup() {
         this._mediaRecorder = await this._createMediaRecorder(this._options);
@@ -206,6 +205,9 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             name: 'Default',
             uid: 'Default',
         };
+    }
+    async prepareToRecordAsync() {
+        return this.setup();
     }
     getStatus() {
         return {
@@ -249,7 +251,7 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this._mediaRecorderUptimeOfLastStartResume = 0;
         this._mediaRecorderDurationAlreadyRecorded = 0;
         const stream = await getUserMedia({ audio: true });
-        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingOptionsPresets.HIGH_QUALITY.web);
+        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingPresets.HIGH_QUALITY.web);
         mediaRecorder.addEventListener('pause', () => {
             this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
             this._mediaRecorderIsRecording = false;

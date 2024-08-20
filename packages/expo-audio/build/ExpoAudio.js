@@ -58,4 +58,5 @@ export async function setAudioModeAsync(mode) {
 }
 export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';
+export * from './RecordingConstants';
 //# sourceMappingURL=ExpoAudio.js.map

@@ -219,6 +219,11 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   startRecordingAtTime(seconds: number): void;
 
   /**
+   * Prepares the recording for recording.
+   */
+  prepareToRecordAsync(): Promise<void>;
+
+  /**
    * Stops the recording once the specified time has elapsed.
    * @param seconds The time in seconds to stop recording at.
    */

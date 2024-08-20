@@ -10,7 +10,7 @@ import {
   RecordingOptions,
 } from './Audio.types';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
-import { RecordingOptionsPresets } from './RecordingConstants';
+import { RecordingPresets } from './RecordingConstants';
 
 const nextId = (() => {
   let id = 0;
@@ -228,7 +228,6 @@ export class AudioRecorderWeb
   constructor(options: Partial<RecordingOptions>) {
     super();
     this._options = options;
-    this.setup();
   }
 
   async setup() {
@@ -269,6 +268,10 @@ export class AudioRecorderWeb
       name: 'Default',
       uid: 'Default',
     };
+  }
+
+  async prepareToRecordAsync(): Promise<void> {
+    return this.setup();
   }
 
   getStatus(): RecorderState {
@@ -337,7 +340,7 @@ export class AudioRecorderWeb
 
     const mediaRecorder = new (window as any).MediaRecorder(
       stream,
-      options?.web || RecordingOptionsPresets.HIGH_QUALITY.web
+      options?.web || RecordingPresets.HIGH_QUALITY.web
     );
 
     mediaRecorder.addEventListener('pause', () => {
