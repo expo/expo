@@ -10,7 +10,7 @@
 'use client';
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = exports.ServerRouter = exports.Router = void 0;
+exports.Link = exports.ServerRouter = exports.Router = exports.useRouter_UNSTABLE = void 0;
 const react_1 = require("react");
 const common_js_1 = require("./common.js");
 const host_js_1 = require("./host.js");
@@ -180,6 +180,52 @@ const InnerRouter = ({ routerData }) => {
     const children = componentIds.reduceRight((acc, id) => (0, react_1.createElement)(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);
     return (0, react_1.createElement)(RouterContext.Provider, { value: { route, changeRoute, prefetchRoute } }, children);
 };
+function useRouter_UNSTABLE() {
+    const router = (0, react_1.useContext)(RouterContext);
+    if (!router) {
+        throw new Error('Missing Router');
+    }
+    const { route, changeRoute, prefetchRoute } = router;
+    const push = (0, react_1.useCallback)((to) => {
+        const url = new URL(to, window.location.href);
+        window.history.pushState({
+            ...window.history.state,
+            waku_new_path: url.pathname !== window.location.pathname,
+        }, '', url);
+        changeRoute(parseRoute(url));
+    }, [changeRoute]);
+    const replace = (0, react_1.useCallback)((to) => {
+        const url = new URL(to, window.location.href);
+        window.history.replaceState(window.history.state, '', url);
+        changeRoute(parseRoute(url));
+    }, [changeRoute]);
+    const reload = (0, react_1.useCallback)(() => {
+        const url = new URL(window.location.href);
+        changeRoute(parseRoute(url));
+    }, [changeRoute]);
+    const back = (0, react_1.useCallback)(() => {
+        // FIXME is this correct?
+        window.history.back();
+    }, []);
+    const forward = (0, react_1.useCallback)(() => {
+        // FIXME is this correct?
+        window.history.forward();
+    }, []);
+    const prefetch = (0, react_1.useCallback)((to) => {
+        const url = new URL(to, window.location.href);
+        prefetchRoute(parseRoute(url));
+    }, [prefetchRoute]);
+    return {
+        ...route,
+        push,
+        replace,
+        reload,
+        back,
+        forward,
+        prefetch,
+    };
+}
+exports.useRouter_UNSTABLE = useRouter_UNSTABLE;
 const RouterSlot = ({ route, routerData, cachedRef, id, fallback, children, }) => {
     const unstable_shouldRenderPrev = (_err) => {
         const shouldSkip = routerData[0];

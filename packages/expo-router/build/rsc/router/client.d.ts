@@ -9,6 +9,17 @@
  */
 import type { ReactNode, AnchorHTMLAttributes, ReactElement } from 'react';
 import type { RouteProps } from './common.js';
+export declare function useRouter_UNSTABLE(): {
+    push: (to: string) => void;
+    replace: (to: string) => void;
+    reload: () => void;
+    back: () => void;
+    forward: () => void;
+    prefetch: (to: string) => void;
+    path: string;
+    query: string;
+    hash: string;
+};
 type ShouldSkip = (readonly [
     componentId: string,
     readonly [

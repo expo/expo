@@ -1,13 +1,13 @@
 'use client';
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'expo-router';
-import { useSearchParams } from 'lib/expo-shim';
-import { createUrl } from 'lib/utils';
+import { useRouter_UNSTABLE } from 'expo-router/build/rsc/router/client';
+import { useSearchParams } from '../../../lib/expo-shim';
+import { createUrl } from '../../../lib/utils';
 // import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Search() {
-  const router = useRouter();
+  const router = useRouter_UNSTABLE();
   const searchParams = useSearchParams();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {

@@ -263,6 +263,65 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
   );
 };
 
+export function useRouter_UNSTABLE() {
+  const router = useContext(RouterContext);
+  if (!router) {
+    throw new Error('Missing Router');
+  }
+  const { route, changeRoute, prefetchRoute } = router;
+  const push = useCallback(
+    (to: string) => {
+      const url = new URL(to, window.location.href);
+      window.history.pushState(
+        {
+          ...window.history.state,
+          waku_new_path: url.pathname !== window.location.pathname,
+        },
+        '',
+        url
+      );
+      changeRoute(parseRoute(url));
+    },
+    [changeRoute]
+  );
+  const replace = useCallback(
+    (to: string) => {
+      const url = new URL(to, window.location.href);
+      window.history.replaceState(window.history.state, '', url);
+      changeRoute(parseRoute(url));
+    },
+    [changeRoute]
+  );
+  const reload = useCallback(() => {
+    const url = new URL(window.location.href);
+    changeRoute(parseRoute(url));
+  }, [changeRoute]);
+  const back = useCallback(() => {
+    // FIXME is this correct?
+    window.history.back();
+  }, []);
+  const forward = useCallback(() => {
+    // FIXME is this correct?
+    window.history.forward();
+  }, []);
+  const prefetch = useCallback(
+    (to: string) => {
+      const url = new URL(to, window.location.href);
+      prefetchRoute(parseRoute(url));
+    },
+    [prefetchRoute]
+  );
+  return {
+    ...route,
+    push,
+    replace,
+    reload,
+    back,
+    forward,
+    prefetch,
+  };
+}
+
 const RouterSlot = ({
   route,
   routerData,

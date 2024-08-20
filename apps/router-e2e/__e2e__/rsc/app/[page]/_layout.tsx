@@ -2,6 +2,7 @@ import Footer from '../../components/layout/footer';
 // import { Slot } from 'expo-router';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  console.log('USED');
   return (
     <>
       <div className="w-full">
