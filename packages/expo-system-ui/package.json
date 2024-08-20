@@ -33,7 +33,8 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/system-ui",
   "dependencies": {
     "@react-native/normalize-colors": "0.74.85",
-    "debug": "^4.3.2"
+    "debug": "^4.3.2",
+    "expo-constants": "~16.0.0"
   },
   "jest": {
     "preset": "expo-module-scripts"

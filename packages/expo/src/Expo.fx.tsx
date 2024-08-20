@@ -1,6 +1,7 @@
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import './winter';
 import 'expo-asset';
+import 'expo-system-ui';
 
 import * as Font from 'expo-font';
 import { StyleSheet } from 'react-native';

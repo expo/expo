@@ -1,6 +1,19 @@
+import Constants from 'expo-constants';
 import { ColorValue, Platform, processColor } from 'react-native';
 
 import ExpoSystemUI from './ExpoSystemUI';
+
+declare global {
+  /**
+   * This variable is set to true when edge to edge mode is enabled
+   * @example
+   * if (__EDGE_TO_EDGE__) console.log('Edge to edge mode is enabled')
+   */
+  const __EDGE_TO_EDGE__: boolean;
+}
+
+// @ts-ignore
+global.__EDGE_TO_EDGE__ = Constants.expoConfig?.experiments?.edgeToEdge ?? false;
 
 /**
  * Changes the root view background color.
