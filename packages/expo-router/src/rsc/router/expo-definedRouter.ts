@@ -5,7 +5,7 @@ import { createPages } from './create-pages';
 export default createPages(async ({ createPage, createLayout, unstable_setBuildData }) => {
   const files = ctx.keys();
 
-  for (const file of files) {
+  for (const file of files.reverse()) {
     const mod = await ctx(file);
 
     // NOTE(EvanBacon): Support `getConfig` in routes with top-level "use client"
