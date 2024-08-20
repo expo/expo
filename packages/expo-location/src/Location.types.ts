@@ -105,8 +105,9 @@ export type LocationOptions = {
   /**
    * Location manager accuracy. Pass one of `Accuracy` enum values.
    * For low-accuracies the implementation can avoid geolocation providers
-   * that consume a significant amount of power (such as GPS). Default is
-   * LocationAccuracy.Balanced
+   * that consume a significant amount of power (such as GPS).
+   *
+   * @default LocationAccuracy.Balanced
    */
   accuracy?: LocationAccuracy;
   /**
