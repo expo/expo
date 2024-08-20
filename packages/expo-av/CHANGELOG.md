@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error with React Native 0.75 on iOS. ([#31072](https://github.com/expo/expo/pull/31072) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 14.0.6 — 2024-06-27
