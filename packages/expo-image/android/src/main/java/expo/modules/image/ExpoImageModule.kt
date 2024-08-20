@@ -17,6 +17,8 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
+import com.github.penfeizhou.animation.apng.APNGDrawable
+import com.github.penfeizhou.animation.webp.WebPDrawable
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
@@ -122,6 +124,12 @@ class ExpoImageModule : Module() {
       }
       Property("isAnimated") { image: Image ->
         if (image.ref is GifDrawable) {
+          return@Property true
+        }
+        if(image.ref is APNGDrawable) {
+          return@Property true
+        }
+        if(image.ref is WebPDrawable){
           return@Property true
         }
         false
