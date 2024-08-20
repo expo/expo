@@ -530,9 +530,9 @@ export declare class ImageRef extends SharedRef {
    */
   readonly scale: number;
   /**
-   * @platform ios
    * Media type (also known as MIME type) of the image, based on its format.
    * Returns `null` when the format is unknown or not supported.
+   * @platform ios
    */
   readonly mediaType: string | null;
   /**
