@@ -187,6 +187,9 @@ export default function VideoScreen() {
           setIsInPictureInPicture(false);
           console.log('Exited Picture in Picture mode');
         }}
+        onFullscreenChange={({ nativeEvent: { isFullscreen } }) => {
+          console.log('Fullscreen changed to ' + isFullscreen);
+        }}
       />
       <ScrollView style={styles.controlsContainer}>
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>

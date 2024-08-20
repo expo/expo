@@ -10,6 +10,12 @@ import type { VideoPlayer } from './VideoPlayer.types';
  */
 export type VideoContentFit = 'contain' | 'cover' | 'fill';
 
+export type FullscreenChangeEvent = {
+  nativeEvent: {
+    isFullscreen: boolean;
+  };
+};
+
 export interface VideoViewProps extends ViewProps {
   /**
    * A player instance – use `useVideoPlayer()` to create one.
@@ -70,6 +76,13 @@ export interface VideoViewProps extends ViewProps {
    * @platform ios 14+
    */
   onPictureInPictureStop?: () => void;
+
+  /**
+   * A callback to call when the video player enters or exits full screen mode.
+   * @param isFullScreen
+   * @returns
+   */
+  onFullscreenChange?: (e: FullscreenChangeEvent) => void;
 
   /**
    * Determines whether the player allows Picture in Picture (PiP) mode.

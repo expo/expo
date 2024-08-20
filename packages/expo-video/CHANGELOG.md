@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `onFullscreenChange` callback on all platforms ([#31083](https://github.com/expo/expo/pull/31083) by [@lucasrose](https://github.com/lucasrose))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `resolvedLayoutDirection` building issues when using react-native 0.75.X. ([#31064](https://github.com/expo/expo/pull/31064) by [@gabrieldonadel](https://github.com/gabrieldonadel))

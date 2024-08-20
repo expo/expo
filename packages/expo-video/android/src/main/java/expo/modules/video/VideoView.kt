@@ -36,7 +36,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val playerView: PlayerView = PlayerView(context.applicationContext)
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
-
+  val onFullscreenChange by EventDispatcher<Map<String, Boolean>>()
   var willEnterPiP: Boolean = false
   var isInFullscreen: Boolean = false
     private set

@@ -27,6 +27,7 @@ class FullscreenPlayerActivity : Activity() {
 
     videoView = VideoManager.getVideoView(videoViewId)
     videoView.videoPlayer?.changePlayerView(playerView)
+    videoView.onFullscreenChange(mapOf("isFullscreen" to true))
   }
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -44,7 +45,7 @@ class FullscreenPlayerActivity : Activity() {
   override fun finish() {
     super.finish()
     VideoManager.getVideoView(videoViewId).exitFullscreen()
-
+    videoView.onFullscreenChange(mapOf("isFullscreen" to false))
     // Disable the exit transition
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)

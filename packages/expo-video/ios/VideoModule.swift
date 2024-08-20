@@ -16,7 +16,8 @@ public final class VideoModule: Module {
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenChange"
       )
 
       Prop("player") { (view, player: VideoPlayer?) in

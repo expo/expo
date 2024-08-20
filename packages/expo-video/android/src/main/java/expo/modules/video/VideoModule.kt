@@ -43,7 +43,8 @@ class VideoModule : Module() {
     View(VideoView::class) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenChange"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
