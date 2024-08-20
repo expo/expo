@@ -1,4 +1,5 @@
-import { StatusBarProps } from './StatusBar.types';
+import React from 'react';
+import type { StatusBarProps } from './StatusBar.types';
 /**
  * A component that allows you to configure your status bar without directly calling imperative
  * methods like `setBarStyle`.
@@ -9,5 +10,5 @@ import { StatusBarProps } from './StatusBar.types';
  * This component is built on top of the [StatusBar](https://reactnative.dev/docs/statusbar)
  * component exported from React Native, and it provides defaults that work better for Expo users.
  */
-export default function ExpoStatusBar(props: StatusBarProps): null;
+export default function ExpoStatusBar({ style, animated, hidden, hideTransitionAnimation, networkActivityIndicatorVisible, }: StatusBarProps): React.JSX.Element;
 //# sourceMappingURL=ExpoStatusBar.d.ts.map

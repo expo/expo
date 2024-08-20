@@ -1,13 +1,12 @@
 import { Appearance, ColorSchemeName } from 'react-native';
 
-import { StatusBarStyle } from './StatusBar.types';
+import type { StatusBarStyle } from './StatusBar.types';
 
 function getColorScheme() {
   if (Appearance) {
     return Appearance.getColorScheme();
-  } else {
-    return 'light';
   }
+  return 'light';
 }
 
 export default function styleToBarStyle(
