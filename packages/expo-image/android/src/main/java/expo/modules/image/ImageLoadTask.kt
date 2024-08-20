@@ -5,6 +5,7 @@ import com.bumptech.glide.Glide
 import expo.modules.kotlin.Promise
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
