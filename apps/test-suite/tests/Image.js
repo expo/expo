@@ -238,7 +238,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result).toBe(true);
 
         if (Platform.OS === 'android' || Platform.OS === 'ios') {
-          const path = await Image.getCachePathAsync(REMOTE_KNOWN_SOURCE.uri);
+          const path = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
           t.expect(typeof path).toBe('string');
         }
       });
