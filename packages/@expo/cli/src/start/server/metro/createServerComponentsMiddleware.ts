@@ -94,7 +94,7 @@ export function createServerComponentsMiddleware(
   async function getExpoRouterClientReferencesAsync(
     { platform }: { platform: string },
     files: ExportAssetMap
-  ) {
+  ): Promise<{ reactClientReferences: string[]; cssModules: SerialAsset[] }> {
     const contents = await ssrLoadModuleArtifacts(
       'expo-router/build/rsc/router/expo-definedRouter',
       {
@@ -102,6 +102,10 @@ export function createServerComponentsMiddleware(
         platform,
       }
     );
+
+    // Extract the global CSS modules that are imported from the router.
+    // These will be injected in the head of the HTML document for the website.
+    const cssModules = contents.artifacts.filter((a) => a.type === 'css');
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
@@ -120,7 +124,7 @@ export function createServerComponentsMiddleware(
       contents: wrapBundle(contents.src),
     });
 
-    return reactClientReferences;
+    return { reactClientReferences, cssModules };
   }
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {

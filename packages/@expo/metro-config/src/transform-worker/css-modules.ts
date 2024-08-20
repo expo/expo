@@ -5,7 +5,13 @@ const RNW_CSS_CLASS_ID = '_';
 export async function transformCssModuleWeb(props: {
   filename: string;
   src: string;
-  options: { projectRoot: string; minify: boolean; dev: boolean; sourceMap: boolean };
+  options: {
+    projectRoot: string;
+    minify: boolean;
+    dev: boolean;
+    sourceMap: boolean;
+    reactServer: boolean;
+  };
 }) {
   const { transform } = require('lightningcss') as typeof import('lightningcss');
 
@@ -37,7 +43,8 @@ export async function transformCssModuleWeb(props: {
 
   if (props.options.dev) {
     const runtimeCss = wrapDevelopmentCSS({
-      ...props,
+      reactServer: props.options.reactServer,
+      filename: props.filename,
       src: codeAsString,
     });
 
