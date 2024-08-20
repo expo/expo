@@ -300,8 +300,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
       borderDrawable.apply {
         val setLayoutDirectionMethod = try {
+          // React Native 0.74.0 and below
           ReactViewBackgroundDrawable::class.java.getDeclaredMethod("setResolvedLayoutDirection", Int::class.java)
         } catch (e: NoSuchMethodException) {
+          // React Native 0.75.0 and above
           ReactViewBackgroundDrawable::class.java.getMethod("setLayoutDirectionOverride", Int::class.java)
         }
         setLayoutDirectionMethod.invoke(this, newLayoutDirection)
