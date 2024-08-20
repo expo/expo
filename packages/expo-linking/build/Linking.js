@@ -113,16 +113,16 @@ export async function canOpenURL(url) {
  * @return Returns the initial URL or `null`.
  */
 export function useURL() {
-    const [url, setLink] = useState(null);
-    function onChange(event) {
-        setLink(event.url);
-    }
-    useEffect(() => {
-        getInitialURL().then((url) => setLink(url));
-        const subscription = addEventListener('url', onChange);
-        return () => subscription.remove();
-    }, []);
-    return url;
+    // const [url, setLink] = useState(null);
+    // function onChange(event) {
+    //     setLink(event.url);
+    // }
+    // useEffect(() => {
+    //     getInitialURL().then((url) => setLink(url));
+    //     const subscription = addEventListener('url', onChange);
+    //     return () => subscription.remove();
+    // }, []);
+    // return url;
 }
 /**
  * Returns the linking URL followed by any subsequent changes to the URL.
@@ -130,15 +130,15 @@ export function useURL() {
  * @return Returns the initial URL or `null`.
  */
 export function useLinkingURL() {
-    const [url, setLink] = useState(ExpoLinking.getLinkingURL);
-    function onChange(event) {
-        setLink(event.url);
-    }
-    useEffect(() => {
-        const subscription = ExpoLinking.addListener('onURLReceived', onChange);
-        return () => subscription.remove();
-    }, []);
-    return url ?? null;
+    // const [url, setLink] = useState(ExpoLinking.getLinkingURL);
+    // function onChange(event) {
+    //     setLink(event.url);
+    // }
+    // useEffect(() => {
+    //     const subscription = ExpoLinking.addListener('onURLReceived', onChange);
+    //     return () => subscription.remove();
+    // }, []);
+    // return url ?? null;
 }
 export * from './Linking.types';
 export * from './Schemes';

@@ -1,18 +1,26 @@
-import 'server-only';
-import { View, Image, Text, Button } from '../lib/react-native';
+import { ThreeItemGrid } from '../components/grid/three-items';
+import { Carousel } from '../components/carousel';
 
-export default function Page() {
+import '../globals.css';
+
+// export const metadata = {
+//   description: 'High-performance ecommerce store built with Next.js, Vercel, and Shopify.',
+//   openGraph: {
+//     type: 'website'
+//   }
+// };
+
+export default function HomePage() {
   return (
-    <View style={{ flex: 1, gap: 8, alignItems: 'center', justifyContent: 'center' }}>
-      <Text testID="main-text">Hey RSC</Text>
-      {/* local Metro asset */}
-      <Image
-        testID="main-image"
-        source={require('../../../assets/icon.png')}
-        style={{ width: 100, height: 100 }}
+    <>
+      <meta
+        name="description"
+        content="High-performance ecommerce store built with Next.js, Vercel, and Shopify."
       />
-
-      <Button title="Button" />
-    </View>
+      <meta property="og:type" content="website" />
+      <ThreeItemGrid />
+      <Carousel />
+      {/* <Footer /> */}
+    </>
   );
 }
