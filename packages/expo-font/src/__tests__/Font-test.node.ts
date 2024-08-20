@@ -25,3 +25,7 @@ it(`returns sync results`, () => {
 
   expect(Server.getServerResources()).toEqual([]);
 });
+
+it('getLoadedFonts is available', () => {
+  expect(Font.getLoadedFonts()).toHaveLength(0);
+});

@@ -8,10 +8,12 @@
 
 ### 🎉 New features
 
+- Added production exports for experimental server renderer. ([#30850](https://github.com/expo/expo/pull/30850) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental server renderer. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Add virtual client boundary. ([#30534](https://github.com/expo/expo/pull/30534) by [@EvanBacon](https://github.com/EvanBacon))
 - Add better errors and warnings for malformed route exports. ([#30332](https://github.com/expo/expo/pull/30332) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `client-only` and `server-only` dependencies. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `relativeToDirectory` option to `<Link />` and imperative navigation. ([#30675](https://github.com/expo/expo/pull/30675) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
@@ -21,6 +23,7 @@
 - Fix Typed Routes with hoisted routes and groups. ([#30810](https://github.com/expo/expo/pull/30810) by [@marklawlor](https://github.com/marklawlor))
 - Fix Fash Refresh on \_layout files that export unstable_settings ([#29977](https://github.com/expo/expo/pull/29977) by [@marklawlor](https://github.com/marklawlor))
 - Fix creating/parsing URLs with array search params. ([#30268](https://github.com/expo/expo/pull/30268) by [@marklawlor](https://github.com/marklawlor))
+- Fix incorrect routing sorting for static paths ([#30909](https://github.com/expo/expo/pull/30909) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

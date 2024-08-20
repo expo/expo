@@ -242,12 +242,13 @@ class ExpoCameraView(
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
     val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+    val hasShutterSound = options.shutterSound
 
     imageCaptureUseCase?.takePicture(
       ContextCompat.getMainExecutor(context),
       object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureStarted() {
-          if (volume != 0) {
+          if (hasShutterSound && volume != 0) {
             MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
           }
           if (!animateShutter) {

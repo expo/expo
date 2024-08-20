@@ -334,6 +334,7 @@ export const resolveTypeName = (
     operator,
     objectType,
     indexType,
+    target,
   } = typeDefinition;
 
   try {
@@ -484,9 +485,18 @@ export const resolveTypeName = (
       }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
+      if (target && operator && ['readonly', 'keyof'].includes(operator)) {
+        return (
+          <>
+            {operator} {resolveTypeName(target, sdkVersion)}
+          </>
+        );
+      }
       return operator || 'undefined';
     } else if (type === 'intrinsic') {
       return name || 'undefined';
+    } else if (type === 'rest' && elementType) {
+      return `...${resolveTypeName(elementType, sdkVersion)}`;
     } else if (value === null) {
       return 'null';
     }

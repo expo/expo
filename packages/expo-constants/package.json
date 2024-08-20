@@ -42,6 +42,6 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "react-native":" *"
+    "react-native": "*"
   }
 }

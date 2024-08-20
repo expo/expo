@@ -388,7 +388,7 @@ export class Chunk {
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    const outputFile = this.getFilenameForConfig(serializerConfig);
+    let outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
@@ -398,6 +398,9 @@ export class Chunk {
         premodules = plugin({ graph: this.graph, premodules, debugId });
       }
       this.preModules = new Set(premodules);
+
+      // If the premodules have changed, we need to recompute the output file hash.
+      outputFile = this.getFilenameForConfig(serializerConfig);
     }
 
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
@@ -417,6 +420,23 @@ export class Chunk {
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
         paths: jsCode.paths,
+        expoDomComponentReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'expoDomComponentReference' in output.data &&
+                    typeof output.data.expoDomComponentReference === 'string'
+                  ) {
+                    return output.data.expoDomComponentReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
         reactClientReferences: [
           ...new Set(
             [...this.deps]

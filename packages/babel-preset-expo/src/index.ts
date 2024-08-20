@@ -20,6 +20,7 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
+import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -183,6 +184,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // Give users the ability to opt-out of the feature, per-platform.
     platformOptions['react-compiler'] !== false
   ) {
+    if (!hasModule('babel-plugin-react-compiler')) {
+      throw new Error(
+        'The `babel-plugin-react-compiler` must be installed before you can use React Compiler.'
+      );
+    }
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -243,6 +249,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   }
 
   extraPlugins.push([require('./define-plugin'), inlines]);
+
+  extraPlugins.push(expoUseDomDirectivePlugin);
 
   if (isProduction) {
     // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
