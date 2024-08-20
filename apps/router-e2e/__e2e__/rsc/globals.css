@@ -3,39 +3,36 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* These styles make the body full-height */
 html,
 body {
-height: unset;
+  height: unset;
 }
 /* These styles disable body scrolling if you are using <ScrollView> */
 body {
-overflow: unset;
+  overflow: unset;
 }
 /* These styles make the root element full-height */
 #root {
-display: flex;
-height: 100%;
-flex: 1;
+  display: flex;
+  height: 100%;
+  flex: 1;
 }
-    
 
 @media (prefers-color-scheme: dark) {
-    html {
-      color-scheme: dark;
-    }
+  html {
+    color-scheme: dark;
   }
-  
-  @supports (font: -apple-system-body) and (-webkit-appearance: none) {
-    img[loading='lazy'] {
-      clip-path: inset(0.6px);
-    }
+}
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  img[loading='lazy'] {
+    clip-path: inset(0.6px);
   }
-  
-  a,
-  input,
-  button {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-neutral-600 dark:focus-visible:ring-offset-neutral-900;
-  }
-  
+}
+
+a,
+input,
+button {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-neutral-600 dark:focus-visible:ring-offset-neutral-900;
+}
