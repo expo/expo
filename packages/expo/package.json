@@ -71,7 +71,7 @@
     "expo-font": "~12.0.9",
     "expo-keep-awake": "~13.0.2",
     "expo-modules-autolinking": "1.11.2",
-    "expo-modules-core": "1.12.21",
+    "expo-modules-core": "1.12.22",
     "fbemitter": "^3.0.0",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
