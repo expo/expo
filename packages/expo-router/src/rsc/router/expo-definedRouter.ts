@@ -25,6 +25,8 @@ export default createPages(async ({ createPage, createLayout, unstable_setBuildD
     unstable_setBuildData(path, files);
 
     if (pathItems.at(-1) === '_layout') {
+      console.log('layout:', path, file);
+
       createLayout({
         path,
         // NOTE(EvanBacon): Support routes with top-level "use client"
@@ -33,6 +35,7 @@ export default createPages(async ({ createPage, createLayout, unstable_setBuildD
         ...config,
       });
     } else {
+      console.log('page:', path, file);
       createPage({
         path,
         // NOTE(EvanBacon): Support routes with top-level "use client"

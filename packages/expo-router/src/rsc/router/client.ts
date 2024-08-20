@@ -101,7 +101,7 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
     const refetchRoute = () => {
       const loc = parseRoute(new URL(getHref()));
       const input = getInputString(loc.path);
-      refetch(input, loc.searchParams);
+      refetch(input, new URLSearchParams(loc.query));
     };
     globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
     const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(
