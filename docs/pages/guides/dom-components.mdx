@@ -280,6 +280,10 @@ DOM Components and websites in general are less optimal than native views but th
 
 Many large apps also use some web content for auxiliary routes such as blog posts, rich-text (for example, long-form posts on X), settings pages, help pages, and other less frequently visited parts of the app.
 
+## Server Components
+
+DOM Components currently only render as single-page applications and don't support static rendering or React Server Components. When the project uses React Server Components "use dom" will work the same as "use client" regardless of the platform. RSC Payloads can technically be passed as properties to DOM Components but they cannot be hydrated correctly on native platforms as they'll be rendered for a native runtime.
+
 ## Limitations
 
 - Unlike server components, you cannot pass `children` to DOM components.
