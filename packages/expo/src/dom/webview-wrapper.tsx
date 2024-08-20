@@ -1,3 +1,4 @@
+'use client';
 // A webview without babel to test faster.
 import React from 'react';
 import { WebView } from 'react-native-webview';

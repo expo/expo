@@ -456,6 +456,8 @@ export function ServerRouter({ children, route }: { children: ReactNode; route: 
   );
 }
 
+import { Slot as ReactSlot } from '@radix-ui/react-slot';
+
 export type LinkProps = {
   href: string;
   pending?: ReactNode;
@@ -463,6 +465,7 @@ export type LinkProps = {
   children: ReactNode;
   unstable_prefetchOnEnter?: boolean;
   unstable_prefetchOnView?: boolean;
+  asChild?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 
 export function Link({
@@ -472,6 +475,7 @@ export function Link({
   notPending,
   unstable_prefetchOnEnter,
   unstable_prefetchOnView,
+  asChild,
   ...props
 }: LinkProps): ReactElement {
   const router = useContext(RouterContext);
@@ -544,7 +548,7 @@ export function Link({
     : props.onMouseEnter;
 
   const ele = createElement(
-    Text,
+    asChild ? ReactSlot : Text,
     { ...props, href: to, onPress: onClick, onMouseEnter, ref },
     children
   );

@@ -1,0 +1,414 @@
+diff --git a/node_modules/react-native-web/dist/cjs/index.js b/node_modules/react-native-web/dist/cjs/index.js
+index b696270..0caca42 100644
+--- a/node_modules/react-native-web/dist/cjs/index.js
++++ b/node_modules/react-native-web/dist/cjs/index.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client'
+ 
+ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;
+ exports.__esModule = true;
+diff --git a/node_modules/react-native-web/dist/cjs/vendor/react-native/Animated/animations/DecayAnimation.js b/node_modules/react-native-web/dist/cjs/vendor/react-native/Animated/animations/DecayAnimation.js
+index f71026e..382d0f8 100644
+--- a/node_modules/react-native-web/dist/cjs/vendor/react-native/Animated/animations/DecayAnimation.js
++++ b/node_modules/react-native-web/dist/cjs/vendor/react-native/Animated/animations/DecayAnimation.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;
+diff --git a/node_modules/react-native-web/dist/exports/Animated/index.js b/node_modules/react-native-web/dist/exports/Animated/index.js
+index 82abb2b..875af97 100644
+--- a/node_modules/react-native-web/dist/exports/Animated/index.js
++++ b/node_modules/react-native-web/dist/exports/Animated/index.js
+@@ -6,6 +6,7 @@
+  *
+  * 
+  */
++'use client'
+ 
+ import Animated from '../../vendor/react-native/Animated/Animated';
+ export default Animated;
+\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/FlatList/index.js b/node_modules/react-native-web/dist/exports/FlatList/index.js
+index b547e8f..451a337 100644
+--- a/node_modules/react-native-web/dist/exports/FlatList/index.js
++++ b/node_modules/react-native-web/dist/exports/FlatList/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Nicolas Gallagher.
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+diff --git a/node_modules/react-native-web/dist/exports/Image/index.js b/node_modules/react-native-web/dist/exports/Image/index.js
+index 95355d5..043db18 100644
+--- a/node_modules/react-native-web/dist/exports/Image/index.js
++++ b/node_modules/react-native-web/dist/exports/Image/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+diff --git a/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js b/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js
+index d8182d5..aa89634 100644
+--- a/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js
++++ b/node_modules/react-native-web/dist/exports/KeyboardAvoidingView/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+ var _excluded = ["behavior", "contentContainerStyle", "keyboardVerticalOffset"];
+diff --git a/node_modules/react-native-web/dist/exports/Modal/index.js b/node_modules/react-native-web/dist/exports/Modal/index.js
+index d5df021..cd73f91 100644
+--- a/node_modules/react-native-web/dist/exports/Modal/index.js
++++ b/node_modules/react-native-web/dist/exports/Modal/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+ var _excluded = ["animationType", "children", "onDismiss", "onRequestClose", "onShow", "transparent", "visible"];
+diff --git a/node_modules/react-native-web/dist/exports/NativeModules/index.js b/node_modules/react-native-web/dist/exports/NativeModules/index.js
+index 4f205c0..8c9aa41 100644
+--- a/node_modules/react-native-web/dist/exports/NativeModules/index.js
++++ b/node_modules/react-native-web/dist/exports/NativeModules/index.js
+@@ -6,7 +6,7 @@
+  *
+  * 
+  */
+-
++'use client'
+ import UIManager from '../UIManager';
+ 
+ // NativeModules shim
+diff --git a/node_modules/react-native-web/dist/exports/Picker/index.js b/node_modules/react-native-web/dist/exports/Picker/index.js
+index 7d764ce..450f44b 100644
+--- a/node_modules/react-native-web/dist/exports/Picker/index.js
++++ b/node_modules/react-native-web/dist/exports/Picker/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+ var _excluded = ["children", "enabled", "onValueChange", "selectedValue", "style", "testID", "itemStyle", "mode", "prompt"];
+diff --git a/node_modules/react-native-web/dist/exports/Pressable/index.js b/node_modules/react-native-web/dist/exports/Pressable/index.js
+index fd72143..18e9a35 100644
+--- a/node_modules/react-native-web/dist/exports/Pressable/index.js
++++ b/node_modules/react-native-web/dist/exports/Pressable/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
+diff --git a/node_modules/react-native-web/dist/exports/SafeAreaView/index.js b/node_modules/react-native-web/dist/exports/SafeAreaView/index.js
+index dd7b80e..ed7e6b2 100644
+--- a/node_modules/react-native-web/dist/exports/SafeAreaView/index.js
++++ b/node_modules/react-native-web/dist/exports/SafeAreaView/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+ var _excluded = ["style"];
+diff --git a/node_modules/react-native-web/dist/exports/ScrollView/index.js b/node_modules/react-native-web/dist/exports/ScrollView/index.js
+index 63a2220..53c71a4 100644
+--- a/node_modules/react-native-web/dist/exports/ScrollView/index.js
++++ b/node_modules/react-native-web/dist/exports/ScrollView/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+diff --git a/node_modules/react-native-web/dist/exports/SectionList/index.js b/node_modules/react-native-web/dist/exports/SectionList/index.js
+index f9c6016..f35af01 100644
+--- a/node_modules/react-native-web/dist/exports/SectionList/index.js
++++ b/node_modules/react-native-web/dist/exports/SectionList/index.js
+@@ -6,6 +6,7 @@
+  *
+  * 
+  */
++'use client'
+ 
+ import SectionList from '../../vendor/react-native/SectionList';
+ export default SectionList;
+\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/Switch/index.js b/node_modules/react-native-web/dist/exports/Switch/index.js
+index 38b96ed..edf8174 100644
+--- a/node_modules/react-native-web/dist/exports/Switch/index.js
++++ b/node_modules/react-native-web/dist/exports/Switch/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+diff --git a/node_modules/react-native-web/dist/exports/Text/index.js b/node_modules/react-native-web/dist/exports/Text/index.js
+index 8c5f79b..2cc5386 100644
+--- a/node_modules/react-native-web/dist/exports/Text/index.js
++++ b/node_modules/react-native-web/dist/exports/Text/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+ var _excluded = ["hrefAttrs", "numberOfLines", "onClick", "onLayout", "onPress", "onMoveShouldSetResponder", "onMoveShouldSetResponderCapture", "onResponderEnd", "onResponderGrant", "onResponderMove", "onResponderReject", "onResponderRelease", "onResponderStart", "onResponderTerminate", "onResponderTerminationRequest", "onScrollShouldSetResponder", "onScrollShouldSetResponderCapture", "onSelectionChangeShouldSetResponder", "onSelectionChangeShouldSetResponderCapture", "onStartShouldSetResponder", "onStartShouldSetResponderCapture", "selectable"];
+diff --git a/node_modules/react-native-web/dist/exports/TextInput/index.js b/node_modules/react-native-web/dist/exports/TextInput/index.js
+index 521e420..f999e3b 100644
+--- a/node_modules/react-native-web/dist/exports/TextInput/index.js
++++ b/node_modules/react-native-web/dist/exports/TextInput/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Nicolas Gallagher.
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+diff --git a/node_modules/react-native-web/dist/exports/Touchable/index.js b/node_modules/react-native-web/dist/exports/Touchable/index.js
+index 7f5bcca..5fc8149 100644
+--- a/node_modules/react-native-web/dist/exports/Touchable/index.js
++++ b/node_modules/react-native-web/dist/exports/Touchable/index.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+diff --git a/node_modules/react-native-web/dist/exports/TouchableHighlight/index.js b/node_modules/react-native-web/dist/exports/TouchableHighlight/index.js
+index 38a9ceb..fe7fd75 100644
+--- a/node_modules/react-native-web/dist/exports/TouchableHighlight/index.js
++++ b/node_modules/react-native-web/dist/exports/TouchableHighlight/index.js
+@@ -7,7 +7,7 @@
+  * 
+  * @format
+  */
+-
++'use client'
+ 'use strict';
+ 
+ import _extends from "@babel/runtime/helpers/extends";
+diff --git a/node_modules/react-native-web/dist/exports/TouchableNativeFeedback/index.js b/node_modules/react-native-web/dist/exports/TouchableNativeFeedback/index.js
+index c3bcde9..d9d2e98 100644
+--- a/node_modules/react-native-web/dist/exports/TouchableNativeFeedback/index.js
++++ b/node_modules/react-native-web/dist/exports/TouchableNativeFeedback/index.js
+@@ -7,5 +7,6 @@
+  * 
+  */
+ 
++'use client'
+ import UnimplementedView from '../../modules/UnimplementedView';
+ export default UnimplementedView;
+\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/TouchableOpacity/index.js b/node_modules/react-native-web/dist/exports/TouchableOpacity/index.js
+index 9993a41..394661f 100644
+--- a/node_modules/react-native-web/dist/exports/TouchableOpacity/index.js
++++ b/node_modules/react-native-web/dist/exports/TouchableOpacity/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
+diff --git a/node_modules/react-native-web/dist/exports/TouchableWithoutFeedback/index.js b/node_modules/react-native-web/dist/exports/TouchableWithoutFeedback/index.js
+index b74ce35..d101e03 100644
+--- a/node_modules/react-native-web/dist/exports/TouchableWithoutFeedback/index.js
++++ b/node_modules/react-native-web/dist/exports/TouchableWithoutFeedback/index.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ import * as React from 'react';
+diff --git a/node_modules/react-native-web/dist/exports/View/index.js b/node_modules/react-native-web/dist/exports/View/index.js
+index c812d77..bd56e10 100644
+--- a/node_modules/react-native-web/dist/exports/View/index.js
++++ b/node_modules/react-native-web/dist/exports/View/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectWithoutPropertiesLoose from "@babel/runtime/helpers/objectWithoutPropertiesLoose";
+ var _excluded = ["hrefAttrs", "onLayout", "onMoveShouldSetResponder", "onMoveShouldSetResponderCapture", "onResponderEnd", "onResponderGrant", "onResponderMove", "onResponderReject", "onResponderRelease", "onResponderStart", "onResponderTerminate", "onResponderTerminationRequest", "onScrollShouldSetResponder", "onScrollShouldSetResponderCapture", "onSelectionChangeShouldSetResponder", "onSelectionChangeShouldSetResponderCapture", "onStartShouldSetResponder", "onStartShouldSetResponderCapture"];
+ /**
+diff --git a/node_modules/react-native-web/dist/exports/VirtualizedList/index.js b/node_modules/react-native-web/dist/exports/VirtualizedList/index.js
+index efdcaef..b443db3 100644
+--- a/node_modules/react-native-web/dist/exports/VirtualizedList/index.js
++++ b/node_modules/react-native-web/dist/exports/VirtualizedList/index.js
+@@ -6,6 +6,7 @@
+  *
+  * 
+  */
++'use client'
+ 
+ import VirtualizedList from '../../vendor/react-native/VirtualizedList';
+ export default VirtualizedList;
+\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/render/index.js b/node_modules/react-native-web/dist/exports/render/index.js
+index bf707a7..8ac8621 100644
+--- a/node_modules/react-native-web/dist/exports/render/index.js
++++ b/node_modules/react-native-web/dist/exports/render/index.js
+@@ -7,6 +7,7 @@
+  * 
+  */
+ 
++'use client'
+ import { hydrate as domLegacyHydrate, render as domLegacyRender } from 'react-dom';
+ import { createRoot as domCreateRoot, hydrateRoot as domHydrateRoot } from 'react-dom/client';
+ import unmountComponentAtNode from '../unmountComponentAtNode';
+diff --git a/node_modules/react-native-web/dist/exports/unmountComponentAtNode/index.js b/node_modules/react-native-web/dist/exports/unmountComponentAtNode/index.js
+index 925051c..9881808 100644
+--- a/node_modules/react-native-web/dist/exports/unmountComponentAtNode/index.js
++++ b/node_modules/react-native-web/dist/exports/unmountComponentAtNode/index.js
+@@ -6,6 +6,6 @@
+  *
+  * 
+  */
+-
++'use client'
+ import { unmountComponentAtNode } from 'react-dom';
+ export default unmountComponentAtNode;
+\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/useColorScheme/index.js b/node_modules/react-native-web/dist/exports/useColorScheme/index.js
+index 733d29e..eb72f31 100644
+--- a/node_modules/react-native-web/dist/exports/useColorScheme/index.js
++++ b/node_modules/react-native-web/dist/exports/useColorScheme/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Nicolas Gallagher.
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+diff --git a/node_modules/react-native-web/dist/exports/useLocaleContext/index.js b/node_modules/react-native-web/dist/exports/useLocaleContext/index.js
+index 6e1d983..ce589ef 100644
+--- a/node_modules/react-native-web/dist/exports/useLocaleContext/index.js
++++ b/node_modules/react-native-web/dist/exports/useLocaleContext/index.js
+@@ -6,6 +6,6 @@
+  *
+  * 
+  */
+-
++'use client'
+ import { useLocaleContext } from '../../modules/useLocale';
+ export default useLocaleContext;
+\ No newline at end of file
+diff --git a/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js b/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js
+index d6b8342..c2f75ca 100644
+--- a/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js
++++ b/node_modules/react-native-web/dist/exports/useWindowDimensions/index.js
+@@ -8,6 +8,7 @@
+  * 
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ import Dimensions from '../Dimensions';
+diff --git a/node_modules/react-native-web/dist/index.js b/node_modules/react-native-web/dist/index.js
+index 4f69987..c15c683 100644
+--- a/node_modules/react-native-web/dist/index.js
++++ b/node_modules/react-native-web/dist/index.js
+@@ -1,3 +1,4 @@
++
+ export { default as unstable_createElement } from './exports/createElement';
+ export { default as findNodeHandle } from './exports/findNodeHandle';
+ export { default as processColor } from './exports/processColor';
+diff --git a/node_modules/react-native-web/dist/modules/UnimplementedView/index.js b/node_modules/react-native-web/dist/modules/UnimplementedView/index.js
+index bbcafe4..16891bb 100644
+--- a/node_modules/react-native-web/dist/modules/UnimplementedView/index.js
++++ b/node_modules/react-native-web/dist/modules/UnimplementedView/index.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
+diff --git a/node_modules/react-native-web/dist/modules/useLocale/index.js b/node_modules/react-native-web/dist/modules/useLocale/index.js
+index 2c4e233..41b91bc 100644
+--- a/node_modules/react-native-web/dist/modules/useLocale/index.js
++++ b/node_modules/react-native-web/dist/modules/useLocale/index.js
+@@ -6,6 +6,7 @@
+  *
+  * 
+  */
++'use client'
+ 
+ import React, { createContext, useContext } from 'react';
+ import { isLocaleRTL } from './isLocaleRTL';
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/Animated/animations/DecayAnimation.js b/node_modules/react-native-web/dist/vendor/react-native/Animated/animations/DecayAnimation.js
+index 892b692..102747c 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/Animated/animations/DecayAnimation.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/Animated/animations/DecayAnimation.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ import Animation from './Animation';
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedInterpolation.js b/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedInterpolation.js
+index b83f55f..ef3488f 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedInterpolation.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedInterpolation.js
+@@ -11,7 +11,7 @@
+ /* eslint no-bitwise: 0 */
+ 
+ 'use strict';
+-
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ import AnimatedWithChildren from './AnimatedWithChildren';
+ import NativeAnimatedHelper from '../NativeAnimatedHelper';
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedNode.js b/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedNode.js
+index b9943b6..204e957 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedNode.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedNode.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ import NativeAnimatedHelper from '../NativeAnimatedHelper';
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedValue.js b/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedValue.js
+index 05b50af..83e6e62 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedValue.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/Animated/nodes/AnimatedValue.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++'use client'
+ 'use strict';
+ 
+ import AnimatedInterpolation from './AnimatedInterpolation';
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js b/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js
+index c04f503..817d139 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/Animated/useAnimatedProps.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js
+index 196028a..20d263c 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/StateSafePureComponent.js
+@@ -1,3 +1,4 @@
++'use client'
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js
+index 813b005..526c68c 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListCellRenderer.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _extends from "@babel/runtime/helpers/extends";
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ /**
+diff --git a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js
+index b69965b..cdb0045 100644
+--- a/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js
++++ b/node_modules/react-native-web/dist/vendor/react-native/VirtualizedList/VirtualizedListContext.js
+@@ -1,3 +1,4 @@
++'use client'
+ import _objectSpread from "@babel/runtime/helpers/objectSpread2";
+ /**
+  * Copyright (c) Meta Platforms, Inc. and affiliates.

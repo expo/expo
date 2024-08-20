@@ -10,7 +10,8 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
     visitor: {
       Program(path, state) {
         const isUseClient = path.node.directives.some(
-          (directive: any) => directive.value.value === 'use client'
+          (directive: any) =>
+            directive.value.value === 'use client' || directive.value.value === 'use dom'
         );
         // TODO: use server can be added to scopes inside of the file. https://github.com/facebook/react/blob/29fbf6f62625c4262035f931681c7b7822ca9843/packages/react-server-dom-webpack/src/ReactFlightWebpackNodeRegister.js#L55
         const isUseServer = path.node.directives.some(

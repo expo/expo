@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -11,6 +12,8 @@ const Head = ({ children }) => {
 };
 exports.Head = Head;
 exports.Head.Provider = react_native_helmet_async_1.HelmetProvider;
-exports.Meta = 'meta';
-exports.Title = 'title';
+const Meta = (props) => <meta {...props}/>;
+exports.Meta = Meta;
+const Title = (props) => <title {...props}/>;
+exports.Title = Title;
 //# sourceMappingURL=ExpoHead.js.map

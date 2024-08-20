@@ -1,0 +1,50 @@
+diff --git a/node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js b/node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js
+index e26d677..b191452 100644
+--- a/node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js
++++ b/node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js
+@@ -8,6 +8,8 @@
+  * @flow strict-local
+  */
+ 
++'use client'
++
+ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+ import type {
+   ViewLayout,
+diff --git a/node_modules/react-native/Libraries/Components/Pressable/Pressable.js b/node_modules/react-native/Libraries/Components/Pressable/Pressable.js
+index bd0d6a4..5ac461f 100644
+--- a/node_modules/react-native/Libraries/Components/Pressable/Pressable.js
++++ b/node_modules/react-native/Libraries/Components/Pressable/Pressable.js
+@@ -8,6 +8,8 @@
+  * @format
+  */
+ 
++"use client";
++
+ import type {
+   LayoutEvent,
+   MouseEvent,
+diff --git a/node_modules/react-native/Libraries/Image/ImageBackground.js b/node_modules/react-native/Libraries/Image/ImageBackground.js
+index c08bf49..28bc0e4 100644
+--- a/node_modules/react-native/Libraries/Image/ImageBackground.js
++++ b/node_modules/react-native/Libraries/Image/ImageBackground.js
+@@ -8,6 +8,7 @@
+  * @format
+  */
+ 
++"use client";
+ 'use strict';
+ 
+ import type {ViewProps} from '../Components/View/ViewPropTypes';
+diff --git a/node_modules/react-native/index.js b/node_modules/react-native/index.js
+index f087b70..fccc3ad 100644
+--- a/node_modules/react-native/index.js
++++ b/node_modules/react-native/index.js
+@@ -9,6 +9,7 @@
+  */
+ 
+ 'use strict';
++'use client'
+ 
+ // APIs
+ import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';

@@ -1,3 +1,4 @@
+'use client';
 import React, { forwardRef } from 'react';
 import View from '../primitives/RNWView';
 function createView(nativeProps) {

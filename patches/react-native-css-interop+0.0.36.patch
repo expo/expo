@@ -1,0 +1,215 @@
+diff --git a/node_modules/react-native-css-interop/dist/metro/transformer.js b/node_modules/react-native-css-interop/dist/metro/transformer.js
+index d99b243..3b7d0ad 100644
+--- a/node_modules/react-native-css-interop/dist/metro/transformer.js
++++ b/node_modules/react-native-css-interop/dist/metro/transformer.js
+@@ -17,8 +17,8 @@ function transform(config, projectRoot, filename, data, options) {
+     const runtimeData = JSON.stringify((0, css_to_rn_1.cssToReactNativeRuntime)(data, config.cssToReactNativeRuntime));
+     const isCSSModule = matchCssModule(filename);
+     data = isCSSModule
+-        ? `module.exports = require("react-native-css-interop").StyleSheet.create(${runtimeData});`
+-        : `require("react-native-css-interop").StyleSheet.registerCompiled(${runtimeData});`;
++        ? `'use client'; module.exports = require("react-native-css-interop").StyleSheet.create(${runtimeData});`
++        : `'use client'; require("react-native-css-interop").StyleSheet.registerCompiled(${runtimeData});`;
+     if (options.platform !== "web" && options.dev && options.hot) {
+         data = `${data}\nrequire("react-native-css-interop/dist/metro/poll-update-client")`;
+     }
+diff --git a/node_modules/react-native-css-interop/dist/runtime/api.native.js b/node_modules/react-native-css-interop/dist/runtime/api.native.js
+index 679523b..b549f26 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/api.native.js
++++ b/node_modules/react-native-css-interop/dist/runtime/api.native.js
+@@ -1,18 +1,32 @@
+-"use strict";
+-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+-    if (k2 === undefined) k2 = k;
+-    var desc = Object.getOwnPropertyDescriptor(m, k);
+-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+-      desc = { enumerable: true, get: function() { return m[k]; } };
+-    }
+-    Object.defineProperty(o, k2, desc);
+-}) : (function(o, m, k, k2) {
+-    if (k2 === undefined) k2 = k;
+-    o[k2] = m[k];
+-}));
+-var __exportStar = (this && this.__exportStar) || function(m, exports) {
+-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+-};
+-Object.defineProperty(exports, "__esModule", { value: true });
+-__exportStar(require("./native/api"), exports);
++'use client';
++'use strict';
++var __createBinding =
++  (this && this.__createBinding) ||
++  (Object.create
++    ? function (o, m, k, k2) {
++        if (k2 === undefined) k2 = k;
++        var desc = Object.getOwnPropertyDescriptor(m, k);
++        if (!desc || ('get' in desc ? !m.__esModule : desc.writable || desc.configurable)) {
++          desc = {
++            enumerable: true,
++            get: function () {
++              return m[k];
++            },
++          };
++        }
++        Object.defineProperty(o, k2, desc);
++      }
++    : function (o, m, k, k2) {
++        if (k2 === undefined) k2 = k;
++        o[k2] = m[k];
++      });
++var __exportStar =
++  (this && this.__exportStar) ||
++  function (m, exports) {
++    for (var p in m)
++      if (p !== 'default' && !Object.prototype.hasOwnProperty.call(exports, p))
++        __createBinding(exports, m, p);
++  };
++Object.defineProperty(exports, '__esModule', { value: true });
++__exportStar(require('./native/api'), exports);
+ //# sourceMappingURL=api.native.js.map
+diff --git a/node_modules/react-native-css-interop/dist/runtime/components.js b/node_modules/react-native-css-interop/dist/runtime/components.js
+index c4832b0..c17fddc 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/components.js
++++ b/node_modules/react-native-css-interop/dist/runtime/components.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ Object.defineProperty(exports, "__esModule", { value: true });
+ const react_native_1 = require("react-native");
+ const api_1 = require("./api");
+diff --git a/node_modules/react-native-css-interop/dist/runtime/native/globals.js b/node_modules/react-native-css-interop/dist/runtime/native/globals.js
+index 644ae27..56e4a19 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/native/globals.js
++++ b/node_modules/react-native-css-interop/dist/runtime/native/globals.js
+@@ -1,4 +1,6 @@
+ "use strict";
++'use client';
++
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.isReduceMotionEnabled = exports.vh = exports.vw = exports.rem = exports.cssVariableObservable = exports.colorScheme = exports.systemColorScheme = exports.containerContext = exports.variableContext = exports.universalVariables = exports.rootVariables = exports.externalCallbackRef = exports.warned = exports.warnings = void 0;
+ const react_native_1 = require("react-native");
+diff --git a/node_modules/react-native-css-interop/dist/runtime/native/resolve-value.js b/node_modules/react-native-css-interop/dist/runtime/native/resolve-value.js
+index 5f9c2b2..b80bb6f 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/native/resolve-value.js
++++ b/node_modules/react-native-css-interop/dist/runtime/native/resolve-value.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.calc = exports.defaultValues = exports.getHeight = exports.getWidth = exports.setDeep = exports.getEasing = exports.timeToMS = exports.resolveTransitionValue = exports.resolveAnimation = exports.resolveValue = void 0;
+ const react_native_1 = require("react-native");
+diff --git a/node_modules/react-native-css-interop/dist/runtime/native/stylesheet.js b/node_modules/react-native-css-interop/dist/runtime/native/stylesheet.js
+index fde83c3..1e58fed 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/native/stylesheet.js
++++ b/node_modules/react-native-css-interop/dist/runtime/native/stylesheet.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.StyleSheet = exports.globalStyles = exports.animationMap = void 0;
+ const react_native_1 = require("react-native");
+diff --git a/node_modules/react-native-css-interop/dist/runtime/web/color-scheme.js b/node_modules/react-native-css-interop/dist/runtime/web/color-scheme.js
+index b1d62c6..2599dcf 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/web/color-scheme.js
++++ b/node_modules/react-native-css-interop/dist/runtime/web/color-scheme.js
+@@ -1,11 +1,11 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.colorScheme = void 0;
+-const react_native_1 = require("react-native");
++import { Appearance, AppState } from "react-native";
+ const stylesheet_1 = require("./stylesheet");
+ const shared_1 = require("../../shared");
+ const observable_1 = require("../observable");
+-let appearance = react_native_1.Appearance;
++let appearance = Appearance;
+ let appearanceListener;
+ const [darkMode, darkModeValue] = stylesheet_1.StyleSheet.getFlag("darkMode")?.split(" ") ?? ["media"];
+ let initialColor = undefined;
+@@ -53,7 +53,7 @@ function resetAppearanceListeners($appearance) {
+     appearance = $appearance;
+     appearanceListener?.remove();
+     appearanceListener = appearance.addChangeListener((state) => {
+-        if (react_native_1.AppState.currentState === "active") {
++        if (AppState.currentState === "active") {
+             systemColorScheme.set(state.colorScheme ?? "light");
+         }
+     });
+diff --git a/node_modules/react-native-css-interop/dist/runtime/web/stylesheet.js b/node_modules/react-native-css-interop/dist/runtime/web/stylesheet.js
+index b81b304..0cc4f9f 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/web/stylesheet.js
++++ b/node_modules/react-native-css-interop/dist/runtime/web/stylesheet.js
+@@ -1,7 +1,7 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.StyleSheet = void 0;
+-const react_native_1 = require("react-native");
++import { StyleSheet } from "react-native";
+ const shared_1 = require("../../shared");
+ const documentStyle = globalThis.window?.getComputedStyle(globalThis.window?.document.documentElement);
+ const commonStyleSheet = {
+@@ -23,5 +23,5 @@ const commonStyleSheet = {
+         throw new Error("Stylesheet.getGlobalStyle is not available on web");
+     },
+ };
+-exports.StyleSheet = Object.assign({}, commonStyleSheet, react_native_1.StyleSheet);
++exports.StyleSheet = Object.assign({}, commonStyleSheet, StyleSheet);
+ //# sourceMappingURL=stylesheet.js.map
+\ No newline at end of file
+diff --git a/node_modules/react-native-css-interop/dist/runtime/wrap-jsx.js b/node_modules/react-native-css-interop/dist/runtime/wrap-jsx.js
+index 76873c3..413e65c 100644
+--- a/node_modules/react-native-css-interop/dist/runtime/wrap-jsx.js
++++ b/node_modules/react-native-css-interop/dist/runtime/wrap-jsx.js
+@@ -6,13 +6,17 @@ function wrapJSX(jsx) {
+         if (type === "react-native-css-interop-jsx-pragma-check") {
+             return true;
+         }
++        
+         if (process.env.NODE_ENV !== "test")
+             require("./components");
+         if (props && props.cssInterop === false) {
+             delete props.cssInterop;
+         }
+         else {
+-            type = api_1.interopComponents.get(type) ?? type;
++            if (!process.env.EXPO_SERVER) {
++                console.log('wrapJSX type:', type, api_1.interopComponents.get(type), props.className)
++                type = api_1.interopComponents.get(type) ?? type;
++            }
+         }
+         return jsx.call(jsx, type, props, ...rest);
+     };
+diff --git a/node_modules/react-native-css-interop/dist/src/runtime/native/resolve-value.js b/node_modules/react-native-css-interop/dist/src/runtime/native/resolve-value.js
+index 07cc301..7c0a598 100644
+--- a/node_modules/react-native-css-interop/dist/src/runtime/native/resolve-value.js
++++ b/node_modules/react-native-css-interop/dist/src/runtime/native/resolve-value.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.defaultValues = exports.setDeep = exports.getEasing = exports.timeToMS = exports.resolveTransitionValue = exports.resolveAnimation = exports.resolveValue = void 0;
+ const react_native_1 = require("react-native");
+diff --git a/node_modules/react-native-css-interop/dist/src/runtime/native/stylesheet.js b/node_modules/react-native-css-interop/dist/src/runtime/native/stylesheet.js
+index ae1d0ea..93a4cd3 100644
+--- a/node_modules/react-native-css-interop/dist/src/runtime/native/stylesheet.js
++++ b/node_modules/react-native-css-interop/dist/src/runtime/native/stylesheet.js
+@@ -1,4 +1,5 @@
+ "use strict";
++'use client';
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.StyleSheet = exports.globalStyles = exports.animationMap = void 0;
+ const react_native_1 = require("react-native");
+diff --git a/node_modules/react-native-css-interop/dist/src/runtime/wrap-jsx.js b/node_modules/react-native-css-interop/dist/src/runtime/wrap-jsx.js
+index 6921c0b..e65af31 100644
+--- a/node_modules/react-native-css-interop/dist/src/runtime/wrap-jsx.js
++++ b/node_modules/react-native-css-interop/dist/src/runtime/wrap-jsx.js
+@@ -9,7 +9,9 @@ function wrapJSX(jsx) {
+             delete props.cssInterop;
+         }
+         else {
++            if (!process.env.EXPO_SERVER) {
+             type = api_1.interopComponents.get(type) ?? type;
++            }
+         }
+         return jsx.call(jsx, type, props, ...rest);
+     };

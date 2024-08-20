@@ -1,6 +1,9 @@
 // Entry file for a DOM Component.
 import '@expo/metro-runtime';
 
+globalThis.__webpack_chunk_load__ = global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`];
+globalThis.__webpack_require__ = global[`${__METRO_GLOBAL_PREFIX__}__r`];
+
 import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
 import React from 'react';
 

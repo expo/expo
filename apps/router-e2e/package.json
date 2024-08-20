@@ -15,6 +15,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "nativewind": "^4.0.1",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
     "sonner": "^1.5.0",

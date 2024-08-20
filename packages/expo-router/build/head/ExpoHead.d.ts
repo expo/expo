@@ -5,6 +5,6 @@ export declare const Head: React.FC<{
 }> & {
     Provider: typeof HelmetProvider;
 };
-export declare const Meta = "meta";
-export declare const Title = "title";
+export declare const Meta: (props: any) => React.JSX.Element;
+export declare const Title: (props: any) => React.JSX.Element;
 //# sourceMappingURL=ExpoHead.d.ts.map

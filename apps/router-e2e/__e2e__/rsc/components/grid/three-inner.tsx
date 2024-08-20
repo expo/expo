@@ -1,7 +1,10 @@
+'use dom';
+
 import GridTileImage from './tile';
-import { getCollectionProducts } from '../../lib/shopify';
 import type { Product } from '../../lib/shopify/types';
 import { Link } from 'expo-router';
+
+import '../../globals.css';
 
 function ThreeItemGridItem({
   item,
@@ -70,27 +73,27 @@ function ThreeItemGridItem({
   );
 }
 
-import { Div } from '@expo/html-elements';
+import { Div, Section } from '@expo/html-elements';
 import { TouchableOpacity } from '../../lib/react-native';
 
-import ThreeInner from './three-inner';
-export function ThreeItemGrid({ products }) {
-  // Collections that start with `hidden-*` are hidden from the search page.
-  // const homepageItems = await getCollectionProducts({
-  //   collection: 'hidden-homepage-featured-items',
-  // });
+export default function ThreeInner({ products }: { products: Product[] }) {
+  const [firstProduct, secondProduct, thirdProduct] = products;
 
-  // if (!homepageItems[0] || !homepageItems[1] || !homepageItems[2]) return null;
+  if (process.env.EXPO_OS === 'web') {
+    return (
+      <section className="mx-auto grid max-w-screen-2xl gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
+        <ThreeItemGridItem size="full" item={firstProduct} />
+        <ThreeItemGridItem size="half" item={secondProduct} />
+        <ThreeItemGridItem size="half" item={thirdProduct} />
+      </section>
+    );
+  }
 
   return (
-    <ThreeInner
-      products={products}
-      dom={{
-        style: {
-          flex: 1,
-          minHeight: 560,
-        },
-      }}
-    />
+    <Section className="max-w-screen-2xl gap-4 px-4 pb-4">
+      <ThreeItemGridItem size="full" item={firstProduct} />
+      <ThreeItemGridItem size="half" item={secondProduct} />
+      <ThreeItemGridItem size="half" item={thirdProduct} />
+    </Section>
   );
 }

@@ -8,7 +8,8 @@ import { ReactNode } from 'react';
 // import { Toaster } from 'sonner';
 import '../globals.css';
 
-import { View } from '../lib/react-native';
+import { SafeAreaView, ScrollView, View } from '../lib/react-native';
+import { Div, Main } from '@expo/html-elements';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const cartId = cookies().get('cartId')?.value;
@@ -16,16 +17,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   // const cart = getCart(cartId);
 
   return (
-    <View className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
-      {/* <CartProvider> */}
-      {/* <Navbar /> */}
-      <View>
-        {children}
-        {/* <Toaster closeButton /> */}
-        {/* <WelcomeToast /> */}
-      </View>
-      {/* </CartProvider> */}
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Div className="flex flex-1 bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
+        {/* <CartProvider> */}
+        {/* <Navbar /> */}
+
+        {process.env.EXPO_OS === 'web' ? (
+          <main>
+            {children}
+            {/* <Toaster closeButton /> */}
+            {/* <WelcomeToast /> */}
+          </main>
+        ) : (
+          <ScrollView>{children}</ScrollView>
+        )}
+        {/* </CartProvider> */}
+      </Div>
+    </SafeAreaView>
   );
   // return (
   //   <html lang="en">

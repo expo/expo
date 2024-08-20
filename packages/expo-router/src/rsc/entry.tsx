@@ -13,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Router } from './router/client';
 import { ErrorBoundary } from '../views/ErrorBoundary';
 import { ErrorBoundaryProps, Try } from '../views/Try';
+import { View } from './router/react-native';
 
 // Add root error recovery.
 function RootErrorBoundary(props: ErrorBoundaryProps) {

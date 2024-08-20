@@ -250,8 +250,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   extraPlugins.push([require('./define-plugin'), inlines]);
 
-  extraPlugins.push(expoUseDomDirectivePlugin);
-
   if (isProduction) {
     // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
     // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
@@ -297,6 +295,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(reactClientReferencesPlugin);
 
     extraPlugins.push(environmentRestrictedReactAPIsPlugin);
+  } else {
+    // DOM components must run after "use client" and only in client environments.
+    extraPlugins.push(expoUseDomDirectivePlugin);
   }
 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.

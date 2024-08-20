@@ -50,9 +50,9 @@ export function environmentRestrictedReactAPIsPlugin(
     visitor: {
       ImportDeclaration(path, state) {
         // Skip node_modules
-        if (isNodeModule(state.file.opts.filename)) {
-          return;
-        }
+        // if (isNodeModule(state.file.opts.filename)) {
+        //   return;
+        // }
 
         const sourceValue = path.node.source.value;
         const forbiddenList = FORBIDDEN_IMPORTS[sourceValue];

@@ -310,7 +310,8 @@ function ServerRouter({ children, route }) {
     }, children));
 }
 exports.ServerRouter = ServerRouter;
-function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, ...props }) {
+const react_slot_1 = require("@radix-ui/react-slot");
+function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, asChild, ...props }) {
     const router = (0, react_1.useContext)(RouterContext);
     const changeRoute = router
         ? router.changeRoute
@@ -369,7 +370,7 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
             props.onMouseEnter?.(event);
         }
         : props.onMouseEnter;
-    const ele = (0, react_1.createElement)(react_native_1.Text, { ...props, href: to, onPress: onClick, onMouseEnter, ref }, children);
+    const ele = (0, react_1.createElement)(asChild ? react_slot_1.Slot : react_native_1.Text, { ...props, href: to, onPress: onClick, onMouseEnter, ref }, children);
     if (isPending && pending !== undefined) {
         return (0, react_1.createElement)(react_1.Fragment, null, ele, pending);
     }

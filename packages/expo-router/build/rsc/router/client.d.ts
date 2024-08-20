@@ -57,7 +57,8 @@ export type LinkProps = {
     children: ReactNode;
     unstable_prefetchOnEnter?: boolean;
     unstable_prefetchOnView?: boolean;
+    asChild?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
-export declare function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, ...props }: LinkProps): ReactElement;
+export declare function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, asChild, ...props }: LinkProps): ReactElement;
 export {};
 //# sourceMappingURL=client.d.ts.map
