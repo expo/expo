@@ -292,14 +292,21 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
     // Draw borders on top of the video
     if (borderDrawableLazyHolder.isInitialized()) {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
       }
 
       borderDrawable.apply {
-        resolvedLayoutDirection = layoutDirection
+        val setLayoutDirectionMethod = try {
+          // React Native 0.74.0 and below
+          ReactViewBackgroundDrawable::class.java.getDeclaredMethod("setResolvedLayoutDirection", Int::class.java)
+        } catch (e: NoSuchMethodException) {
+          // React Native 0.75.0 and above
+          ReactViewBackgroundDrawable::class.java.getMethod("setLayoutDirectionOverride", Int::class.java)
+        }
+        setLayoutDirectionMethod.invoke(this, newLayoutDirection)
         setBounds(0, 0, width, height)
         draw(canvas)
       }
