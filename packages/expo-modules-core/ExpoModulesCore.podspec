@@ -18,16 +18,15 @@ end
 reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-fabric_compiler_flags = '-DRCT_NEW_ARCH_ENABLED'
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
-compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
+new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+new_arch_compiler_flags = '-DRCT_NEW_ARCH_ENABLED'
+compiler_flags = get_folly_config()[:compiler_flags] + ' ' + "-DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
 
 if use_hermes
   compiler_flags << ' -DUSE_HERMES'
 end
-if fabric_enabled
-  compiler_flags << ' ' << fabric_compiler_flags
+if new_arch_enabled
+  compiler_flags << ' ' << new_arch_compiler_flags
 end
 
 Pod::Spec.new do |s|
@@ -54,12 +53,13 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}"
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => [
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
+
     ],
   }
 

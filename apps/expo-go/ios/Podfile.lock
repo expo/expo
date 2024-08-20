@@ -2371,7 +2371,7 @@ SPEC CHECKSUMS:
   ExpoLocation: 5984ee7f947706976013671f233275fcf03f6de1
   ExpoMailComposer: 3265925aea36fe7165a889565644f84e7f89eaf7
   ExpoMediaLibrary: ff80f9210432e0e77428c24ed9ea9eb61e8f5d52
-  ExpoModulesCore: 9cb88e3ac85ddb58386b5a92eb9e4d81c5c66a5c
+  ExpoModulesCore: eed88ab3141bbafa476f042479834397d8ea9032
   ExpoModulesTestCore: 0ac6cceba4dce3798d9c2c9ab755ce307ca34545
   ExpoNetwork: 19af2b57d6c88c15b56c1084cc21c352e67aeab9
   ExpoPrint: ab75a41dd1f48c14a6f8de320e75cd6d57c53153
