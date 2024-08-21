@@ -17,7 +17,7 @@ export var LocationAccuracy;
      */
     LocationAccuracy[LocationAccuracy["Balanced"] = 3] = "Balanced";
     /**
-     * Accurate to within ten meters of the desired target. (Default)
+     * Accurate to within ten meters of the desired target.
      */
     LocationAccuracy[LocationAccuracy["High"] = 4] = "High";
     /**
