@@ -92,7 +92,7 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 <Step label="3">
 
-Run `npx expo prebuild --clean` to apply the config plugin. Start a new build of the app (`npx expo run:[android|ios]`) &mdash; the font files are embedded into the app binary during build. Install the app on your device or Android Emulator or iOS Simulator.
+After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
 
 You can use the font with `<Text>` by specifying the `fontFamily` style prop. See the [next section](#how-to-determine-which-font-family-name-to-use) on how to determine the font family name.
 
@@ -237,7 +237,7 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 <Step label="3">
 
-Run `npx expo prebuild --clean` to apply the config plugin. Start a new build of the app (`npx expo run:[android|ios]`) &mdash; the font files are embedded into the app binary during build. Install the app on your device or Android Emulator or iOS Simulator.
+After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
 
 On Android, you can use the font file name. For example, `Inter_900Black`. On iOS, use the font and its weight name ([PostScript name](#what-is-postscript-name-of-a-font)). The example below demonstrates how to use [`Platform`](https://reactnative.dev/docs/platform-specific-code#platform-module) to select the correct font family name for each platform:
 
