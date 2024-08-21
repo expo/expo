@@ -8,7 +8,7 @@ import {
   CameraType,
   MountErrorListener,
   WebCameraSettings,
-} from '../legacy/Camera.types';
+} from '../Camera.types';
 
 const VALID_SETTINGS_KEYS = [
   'autoFocus',

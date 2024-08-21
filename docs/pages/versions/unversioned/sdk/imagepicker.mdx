@@ -10,14 +10,14 @@ platforms: ['android', 'ios', 'web']
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { BoxLink } from '~/ui/components/BoxLink';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { BoxLink } from '~/ui/components/BoxLink';
+} from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';

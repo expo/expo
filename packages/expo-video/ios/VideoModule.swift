@@ -7,16 +7,15 @@ public final class VideoModule: Module {
     Name("ExpoVideo")
 
     Function("isPictureInPictureSupported") { () -> Bool in
-      if #available(iOS 13.4, tvOS 14.0, *) {
-        return AVPictureInPictureController.isPictureInPictureSupported()
-      }
-      return false
+      return AVPictureInPictureController.isPictureInPictureSupported()
     }
 
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenEnter",
+        "onFullscreenExit"
       )
 
       Prop("player") { (view, player: VideoPlayer?) in
@@ -136,10 +135,6 @@ public final class VideoModule: Module {
         player.pointer.allowsExternalPlayback = allowsExternalPlayback
       }
 
-      Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
-      }
-
       Property("staysActiveInBackground") { player -> Bool in
         return player.staysActiveInBackground
       }
@@ -155,7 +150,8 @@ public final class VideoModule: Module {
       }
 
       Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
+        let currentTime = player.pointer.currentTime().seconds
+        return currentTime.isNaN ? 0 : currentTime
       }
       .set { (player, time: Double) in
         // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
@@ -190,7 +186,8 @@ public final class VideoModule: Module {
       }
 
       Property("duration") { player -> Double in
-        return player.pointer.currentItem?.duration.seconds ?? 0
+        let duration = player.pointer.currentItem?.duration.seconds ?? 0
+        return duration.isNaN ? 0 : duration
       }
 
       Property("playbackRate") { player -> Float in

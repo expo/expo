@@ -5,13 +5,13 @@ description: Learn how to add custom native code to your Expo project.
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Expo projects can use both third-party React Native libraries with native code and your own custom native code. Creating a [development build](/workflow/overview/#development-builds) allows you to include your specific native dependencies and customizations and not what's in the latest [Expo SDK](/versions/latest/). These native customizations can be any React Native library or your own custom native code.
+Expo projects can use both third-party React Native libraries with native code and your own custom native code. Creating a [development build](/workflow/overview/#development-builds) allows you to include your specific native dependencies and customizations and not only what comes with the latest [Expo SDK](/versions/latest/). These native customizations can be any React Native library or your own custom native code.
 
-For most third-party native libraries, [autolinking](/modules/autolinking/) makes it easy. All you have to do is install the package and create a new development build to use the module. Some modules might also need a [config-plugin](/config-plugins/introduction) for additional native customizations. When adding your own custom native code, the approach varies based on how you want to work with native code.
+For most third-party native libraries, [autolinking](/modules/autolinking/) makes it easy. All you have to do is install the npm package and run [prebuild](/workflow/prebuild/) to use the module. Some modules might also need a [config-plugin](/config-plugins/introduction) for additional native customizations. When adding your own custom native code, the approach varies based on how you want to work with native code.
 
 ## Create a local module with the Expo Modules API
 
-By default, Expo projects use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation). This means that projects do not have **android** and **ios** directories containing the native code and configuration. Instead, the native directories are generated right before building the app and is based on your [app config](/workflow/configuration) and native modules in **package.json**. This simplifies the management and upgrading of native code.
+By default, Expo projects use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation). This means that projects do not have **android** and **ios** directories containing the native code and configuration. Instead, the native directories are generated right before building the app and are based on your [app config](/workflow/configuration) and native modules in **package.json**. This simplifies the management and upgrading of native code.
 
 It might seem you cannot add custom native code to a project using CNG. However, you can still add that by [creating a local Expo module](/modules/get-started/#creating-the-local-expo-module).
 
@@ -21,7 +21,7 @@ Creating a local module allows you to write custom Swift and Kotlin code that yo
 
 ## Manage custom native projects
 
-You can opt out of CNG and directly manage the code and configuration inside your **android** and **ios** directories. To generate these directories, run `npx expo prebuild` or [compile your app locally](/guides/local-app-development/#local-app-compilation) (`npx expo run android` or `npx expo run ios`). You can also create a development build before compiling your app locally. To do so, run `npx expo install expo-dev-client` before `prebuild` or `run`.
+You can opt out of CNG and directly manage the code and configuration inside your **android** and **ios** directories. To generate these directories, run `npx expo prebuild` or [compile your app locally](/guides/local-app-development/#local-app-compilation) (`npx expo run:android` or `npx expo run:ios`). You can also create a development build before compiling your app locally. To do so, run `npx expo install expo-dev-client` before `prebuild` or `run`.
 
 <Terminal
   cmd={[
@@ -57,7 +57,7 @@ Suppose you have decided to roll your app back to being fully managed (no **andr
 
 ### Develop apps with custom native code
 
-Once you have customized the native code in your project, you can use the [`expo-dev-client`](/develop/development-builds/introduction/#what-is-an-expo-dev-client) library to create a development build and retain the convenience of working with JavaScript or TypeScript in Expo Go. You can [create a development build](/develop/development-builds/create-a-build/) for your managed or bare workflow.
+Once you have customized the native code in your project, you can use the [`expo-dev-client`](/develop/development-builds/introduction/#what-is-an-expo-dev-client) library to [create a development build](/develop/development-builds/create-a-build/) and retain the convenience of working with JavaScript or TypeScript in Expo Go.
 
 ## Release apps with custom native code to production
 

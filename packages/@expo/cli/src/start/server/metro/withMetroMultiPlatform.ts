@@ -319,11 +319,8 @@ export function withExtendedResolver(
         }
 
         if (context.customResolverOptions?.environment === 'react-server') {
-          // Ensure `expo-router/build/server-actions` module is external as it contains state that must be accessed by the CLI
-          // in order to retrieve the server actions.
-
           // Ensure these non-react-server modules are excluded when bundling for React Server Components in development.
-          return /^(expo-router\/build\/server-actions|source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
+          return /^(source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
             moduleName
           );
         }
@@ -721,6 +718,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isNamedRequiresEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -731,10 +729,11 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
-  if (env.EXPO_USE_METRO_REQUIRE) {
+  if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
     require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(

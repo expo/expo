@@ -54,7 +54,7 @@ export declare enum LocationActivityType {
     /**
      * Intended for airborne activities. Fall backs to `ActivityType.Other` if
      * unsupported.
-     * @platform ios 12+
+     * @platform ios
      */
     Airborne = 5
 }
@@ -140,7 +140,7 @@ export type LocationTaskOptions = LocationOptions & {
      * A boolean indicating whether the status bar changes its appearance when
      * location services are used in the background.
      * @default false
-     * @platform ios 11+
+     * @platform ios
      */
     showsBackgroundLocationIndicator?: boolean;
     /**

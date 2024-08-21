@@ -50,6 +50,9 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         platform: '',
         projectRoot: '',
     };
+    // Is bundling for webview.
+    const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
+    const isExport = options.publicPath.includes('?export_path=');
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
     if (options.customTransformOptions?.environment === 'react-server') {
         const clientReference = node_url_1.default.pathToFileURL(absolutePath).href;
@@ -65,7 +68,11 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
             reactClientReference: clientReference,
         };
     }
-    const data = await (0, getAssets_1.getUniversalAssetData)(absolutePath, filename, assetDataPlugins, options.platform, options.publicPath);
+    const data = await (0, getAssets_1.getUniversalAssetData)(absolutePath, filename, assetDataPlugins, options.platform, isDomComponent && isExport
+        ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
+            // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
+            `/assets?export_path=assets`
+        : options.publicPath);
     return {
         ast: (0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
     };

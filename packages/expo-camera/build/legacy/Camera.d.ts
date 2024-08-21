@@ -24,7 +24,7 @@ export default class Camera extends React.Component<CameraProps> {
         type: Record<"front" | "back", string | number | undefined>;
         flashMode: Record<"off" | "on" | "auto" | "torch", string | number | undefined>;
         autoFocus: Record<"off" | "on" | "auto" | "singleShot", string | number | boolean | undefined>;
-        whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
+        whiteBalance: Record<"auto" | "continuous" | "manual" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent", string | number | undefined>;
     };
     static defaultProps: CameraProps;
     /**

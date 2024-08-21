@@ -5,7 +5,6 @@ import { nanoid } from 'nanoid/non-secure';
 import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { resolveHref } from '../link/href';
-import { resolve } from '../link/path';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
@@ -18,20 +17,22 @@ function assertIsReady(store: RouterStore) {
   }
 }
 
-export function navigate(this: RouterStore, url: Href) {
-  return this.linkTo(resolveHref(url), 'NAVIGATE');
+export type NavigationOptions = Omit<LinkToOptions, 'event'>;
+
+export function navigate(this: RouterStore, url: Href, options?: NavigationOptions) {
+  return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
-export function push(this: RouterStore, url: Href) {
-  return this.linkTo(resolveHref(url), 'PUSH');
+export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
+  return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
 
 export function dismiss(this: RouterStore, count?: number) {
   this.navigationRef?.dispatch(StackActions.pop(count));
 }
 
-export function replace(this: RouterStore, url: Href) {
-  return this.linkTo(resolveHref(url), 'REPLACE');
+export function replace(this: RouterStore, url: Href, options?: NavigationOptions) {
+  return this.linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
 }
 
 export function dismissAll(this: RouterStore) {
@@ -71,12 +72,29 @@ export function canDismiss(this: RouterStore): boolean {
   return false;
 }
 
-export function setParams(this: RouterStore, params: Record<string, string | number> = {}) {
+export function setParams(
+  this: RouterStore,
+  params: Record<string, string | number | (string | number)[]> = {}
+) {
   assertIsReady(this);
   return (this.navigationRef?.current?.setParams as any)(params);
 }
 
-export function linkTo(this: RouterStore, href: string, event?: string) {
+export type LinkToOptions = {
+  event?: string;
+
+  /**
+   * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
+   * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
+   */
+  relativeToDirectory?: boolean;
+};
+
+export function linkTo(
+  this: RouterStore,
+  href: string,
+  { event, relativeToDirectory }: LinkToOptions = {}
+) {
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
     return;
@@ -125,11 +143,11 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
         .filter(Boolean)
         .join('/') ?? '/';
 
-    if (!this.routeInfo?.isIndex) {
-      base += '/..';
+    if (relativeToDirectory) {
+      base = `${base}/`;
     }
 
-    href = resolve(base, href);
+    href = new URL(href, `http://hostname/${base}`).pathname;
   }
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);

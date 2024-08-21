@@ -47,18 +47,17 @@ export async function getUserAsync(): Promise<Actor | undefined> {
   return currentUser;
 }
 
-export async function loginAsync(json: {
+export async function loginAsync(credentials: {
   username: string;
   password: string;
   otp?: string;
 }): Promise<void> {
   const res = await fetchAsync('auth/loginAsync', {
     method: 'POST',
-    body: JSON.stringify(json),
+    body: JSON.stringify(credentials),
   });
-  const {
-    data: { sessionSecret },
-  } = await res.json();
+  const json: any = await res.json();
+  const sessionSecret = json.data.sessionSecret;
 
   const userData = await fetchUserAsync({ sessionSecret });
 

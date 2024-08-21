@@ -1,4 +1,4 @@
-# Bare Workflow
+# Bare-Expo
 
 Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/main/CONTRIBUTING.md).
 

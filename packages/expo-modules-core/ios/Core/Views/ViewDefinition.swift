@@ -3,7 +3,7 @@
 /**
  A definition representing the native view to export to React.
  */
-public final class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefinition {
+public class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDefinition {
   /**
    An array of view props definitions.
    */
@@ -59,6 +59,10 @@ public final class ViewDefinition<ViewType: UIView>: ObjectDefinition, AnyViewDe
     return props.reduce(into: [String: AnyViewProp]()) { acc, prop in
       acc[prop.name] = prop
     }
+  }
+
+  public func getSupportedPropNames() -> [String] {
+    return props.map(\.name)
   }
 
   public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView) {

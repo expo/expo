@@ -9,6 +9,8 @@ import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
+import crypto from 'crypto';
+import fs from 'fs';
 import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
@@ -21,8 +23,12 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
-import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
+import {
+  createServerComponentsMiddleware,
+  fileURLToFilePath,
+} from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -40,6 +46,7 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
@@ -53,6 +60,10 @@ import {
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
+import {
+  createDomComponentsMiddleware,
+  getDomComponentVirtualProxy,
+} from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -110,6 +121,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
   private hmrServer: MetroHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
+  isReactServerComponentsEnabled?: boolean;
 
   get name(): string {
     return 'metro';
@@ -152,13 +164,33 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const files: ExportAssetMap = new Map();
 
+    // Inject RSC middleware.
+    const rscPath = '/_flight/[...rsc]';
+
+    if (
+      // If the RSC route is not already in the manifest, add it.
+      !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
+    ) {
+      debug('Adding RSC route to the manifest:', rscPath);
+      // NOTE: This might need to be sorted to the correct spot in the future.
+      manifest.apiRoutes.push({
+        file: resolveFrom(this.projectRoot, '@expo/cli/static/template/[...rsc]+api.ts'),
+        page: rscPath,
+        namedRegex: '^/_flight(?:/(?<rsc>.+?))?(?:/)?$',
+        routeKeys: { rsc: 'rsc' },
+      });
+    }
+
     for (const route of manifest.apiRoutes) {
-      const filepath = path.join(appDir, route.file);
+      const filepath = route.file.startsWith('/') ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
-      const artifactFilename = path.join(
-        outputDir,
-        path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
-      );
+
+      const artifactFilename =
+        route.page === rscPath
+          ? // HACK: Add RSC renderer to the output...
+            path.join(outputDir, '.' + rscPath + '.js')
+          : path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')));
+
       if (contents) {
         let src = contents.src;
 
@@ -230,6 +262,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
+  async getServerManifestAsync(): Promise<{ serverManifest: ExpoRouterServerManifestV1 }> {
+    // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
+    const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
+      typeof import('expo-router/build/static/getServerManifest')
+    >('expo-router/build/static/getServerManifest.js', {
+      environment: 'react-server',
+    });
+
+    return {
+      serverManifest: await getBuildTimeServerManifestAsync(),
+    };
+  }
+
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
     manifest: ExpoRouterRuntimeManifest;
@@ -239,7 +284,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<typeof import('expo-router/build/static/renderStaticContent')>(
-        'expo-router/node/render.js'
+        'expo-router/node/render.js',
+        {
+          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+          // the previous React SSG utilities which aren't available in React 19.
+          environment: 'node',
+        }
       );
 
     const { exp } = getConfig(this.projectRoot);
@@ -333,6 +383,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const { getStaticContent } = await this.ssrLoadModule<
         typeof import('expo-router/build/static/renderStaticContent')
       >('expo-router/node/render.js', {
+        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+        // the previous React SSG utilities which aren't available in React 19.
+        environment: 'node',
         minify: false,
         isExporting,
         platform,
@@ -371,7 +424,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
 
-    if (extras.hot) {
+    if (extras.hot && this.instanceMetroOptions.isExporting !== true) {
       // Register SSR HMR
       const serverRoot = getMetroServerRoot(this.projectRoot);
       const relativePath = path.relative(serverRoot, res.filename);
@@ -514,8 +567,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       engine: 'hermes',
       minify: false,
       bytecode: false,
-      // Bundle in Node.js mode for SSR.
-      environment: 'node',
+      // Bundle in Node.js mode for SSR unless RSC is enabled.
+      environment: this.isReactServerComponentsEnabled ? 'react-server' : 'node',
       platform: 'web',
       mode: 'development',
       //
@@ -549,10 +602,133 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async legacySinglePageExportBundleAsync(
+  async nativeExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
       'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    files: ExportAssetMap,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ): Promise<{
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files?: ExportAssetMap;
+  }> {
+    if (this.isReactServerComponentsEnabled) {
+      return this.singlePageReactServerComponentExportAsync(options, files, extraOptions);
+    }
+
+    return this.legacySinglePageExportBundleAsync(options, extraOptions);
+  }
+
+  private async singlePageReactServerComponentExportAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    files: ExportAssetMap,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ): Promise<{
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files: ExportAssetMap;
+  }> {
+    // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
+    const { reactClientReferences: clientBoundaries, cssModules } =
+      await this.rscRenderer!.getExpoRouterClientReferencesAsync(
+        {
+          platform: options.platform,
+        },
+        files
+      );
+
+    debug('Evaluated client boundaries:', clientBoundaries);
+
+    // Run metro bundler and create the JS bundles/source maps.
+    const bundle = await this.legacySinglePageExportBundleAsync(
+      {
+        ...options,
+        clientBoundaries,
+      },
+      extraOptions
+    );
+
+    // Inject the global CSS that was imported during the server render.
+    bundle.artifacts.push(...cssModules);
+
+    const serverRoot = getMetroServerRoot(this.projectRoot);
+
+    // HACK: Maybe this should be done in the serializer.
+    const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
+      path.relative(serverRoot, boundary)
+    );
+    const moduleIdToSplitBundle = (
+      bundle.artifacts
+        .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
+        .filter(Boolean)
+        .flat() as Record<string, string>[]
+    ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
+
+    debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
+
+    const ssrManifest = new Map<string, string>();
+
+    if (Object.keys(moduleIdToSplitBundle).length) {
+      clientBoundariesAsOpaqueIds.forEach((boundary) => {
+        if (boundary in moduleIdToSplitBundle) {
+          // Account for nullish values (bundle is in main chunk).
+          ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
+        } else {
+          throw new Error(
+            `Could not find boundary "${boundary}" in the SSR manifest. Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
+          );
+        }
+      });
+    } else {
+      // Native apps with bundle splitting disabled.
+      debug('No split bundles');
+      clientBoundariesAsOpaqueIds.forEach((boundary) => {
+        // @ts-expect-error
+        ssrManifest.set(boundary, null);
+      });
+    }
+
+    // Export the static RSC files
+    await this.rscRenderer!.exportRoutesAsync(
+      {
+        platform: options.platform,
+        ssrManifest,
+      },
+      files
+    );
+
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${options.platform}/ssr-manifest.json`, {
+      targetDomain: 'server',
+      contents: JSON.stringify(
+        // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+        Object.fromEntries(
+          Array.from(ssrManifest.entries()).map(([key, value]) => [
+            path.join(serverRoot, key),
+            [key, value],
+          ])
+        )
+      ),
+    });
+
+    return { ...bundle, files };
+  }
+
+  async legacySinglePageExportBundleAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     extraOptions: {
       sourceMapUrl?: string;
@@ -560,6 +736,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } = {}
   ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(options.mainModuleName != null, 'mainModuleName must be provided in options.');
     assert(
       baseUrl != null && routerRoot != null && isExporting != null,
       'The server must be started before calling legacySinglePageExportBundleAsync.'
@@ -619,6 +796,32 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
+  rscRenderer: Awaited<ReturnType<typeof createServerComponentsMiddleware>> | null = null;
+
+  async getDomComponentVirtualEntryModuleAsync(file: string) {
+    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
+    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
+
+    const generatedEntry = path.join(this.projectRoot, '.expo/@dom', hash + '.js');
+
+    const entryFile = getDomComponentVirtualProxy(generatedEntry, filePath);
+
+    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
+
+    const exists = await fileExistsAsync(entryFile.filePath);
+    // TODO: Assert no default export at runtime.
+    await fs.promises.writeFile(entryFile.filePath, entryFile.contents);
+
+    if (!exists) {
+      // Give time for watchman to compute the file...
+      // TODO: Virtual modules which can have dependencies.
+      await new Promise((res) => setTimeout(res, 1000));
+    }
+
+    return generatedEntry;
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -627,6 +830,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
+    // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
+    const isReactServerComponentsEnabled =
+      !!exp.experiments?.reactCanary && !!exp.experiments?.reactServerComponents;
+    this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
@@ -635,7 +842,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
 
-    this.instanceMetroOptions = {
+    const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
       mode,
@@ -645,6 +852,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       asyncRoutes,
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
     };
+    this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {
       port: options.port,
@@ -703,6 +911,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
       middleware.use(deepLinkMiddleware.getHandler());
 
+      const serverRoot = getMetroServerRoot(this.projectRoot);
+
+      // Add support for DOM components.
+      // TODO: Maybe put behind a flag for now?
+      middleware.use(
+        createDomComponentsMiddleware(
+          {
+            projectRoot: this.projectRoot,
+            metroRoot: serverRoot,
+            getDevServerUrl: this.getDevServerUrlOrAssert.bind(this),
+          },
+          instanceMetroOptions
+        )
+      );
+
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
       // Append support for redirecting unhandled requests to the index.html page on web.
@@ -715,15 +938,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
-      if (exp.experiments?.reactCanary) {
+      if (isReactServerComponentsEnabled) {
+        this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          getServerUrl: () => {
-            return this.getDevServerUrlOrAssert();
-          },
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
+          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
         });
+        this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
         this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
       }
@@ -780,6 +1003,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
           );
         }
+      }
+    } else {
+      // If React 19 is enabled, then add RSC middleware to the dev server.
+      if (isReactServerComponentsEnabled) {
+        this.bindRSCDevModuleInjectionHandler();
+        const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
+          instanceMetroOptions: this.instanceMetroOptions,
+          rscPath: '/_flight',
+          ssrLoadModule: this.ssrLoadModule.bind(this),
+          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+        });
+        this.rscRenderer = rscMiddleware;
       }
     }
     // Extend the close method to ensure that we clean up the local info.
@@ -1029,6 +1264,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+  }
+
+  // Ensure the global is available for SSR CSS modules to inject client updates.
+  private bindRSCDevModuleInjectionHandler() {
+    // Used by SSR CSS modules to broadcast client updates.
+    // @ts-expect-error
+    globalThis.__expo_rsc_inject_module = this.sendClientModule.bind(this);
+  }
+
+  // NOTE: This can only target a single platform at a time (web).
+  // used for sending RSC CSS to the root client in development.
+  private sendClientModule({ code, id }: { code: string; id: string }) {
+    this.broadcastMessage('sendDevCommand', {
+      name: 'module-import',
+      data: {
+        code,
+        id,
+      },
+    });
   }
 
   // Metro HMR

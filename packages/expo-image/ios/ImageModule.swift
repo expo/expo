@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 import SDWebImage
-import SDWebImageWebPCoder
 import SDWebImageAVIFCoder
 import SDWebImageSVGCoder
 
@@ -206,13 +205,8 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
-    if #available(iOS 14.0, tvOS 14.0, *) {
-      // By default Animated WebP is not supported
-      SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
-    } else {
-      // This coder is much slower, but it's the only one that works in iOS 13
-      SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
-    }
+    // By default Animated WebP is not supported
+    SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)

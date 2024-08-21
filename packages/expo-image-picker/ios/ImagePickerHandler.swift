@@ -6,7 +6,6 @@ import PhotosUI
  Protocol that describes scenarios we care about while the user is picking media.
  */
 protocol OnMediaPickingResultHandler {
-  @available(iOS 14, *)
   func didPickMultipleMedia(selection: [PHPickerResult])
   func didPickMedia(mediaInfo: MediaInfo)
   func didCancelPicking()
@@ -40,7 +39,6 @@ internal class ImagePickerHandler: NSObject,
     onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
   }
 
-  @available(iOS 14, *)
   private func handlePickedMedia(selection: [PHPickerResult]) {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
     onMediaPickingResultHandler.didPickMultipleMedia(selection: selection)
@@ -54,35 +52,25 @@ internal class ImagePickerHandler: NSObject,
   // MARK: - UIImagePickerControllerDelegate
 
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: MediaInfo) {
-    DispatchQueue.main.async {
-      picker.dismiss(animated: true) { [weak self] in
-        self?.handlePickedMedia(mediaInfo: info)
-      }
-    }
+    handlePickedMedia(mediaInfo: info)
+    picker.dismiss(animated: true)
   }
 
   func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-    DispatchQueue.main.async {
-      picker.dismiss(animated: true) { [weak self] in
-        self?.handlePickingCancellation()
-      }
-    }
+    handlePickingCancellation()
+    picker.dismiss(animated: true)
   }
 
   // MARK: - PHPickerViewControllerDelegate
 
-  @available(iOS 14, *)
   func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-    DispatchQueue.main.async {
-      picker.dismiss(animated: true) { [weak self] in
-        // The PHPickerViewController returns empty collection when canceled
-        if results.isEmpty {
-          self?.handlePickingCancellation()
-        } else {
-          self?.handlePickedMedia(selection: results)
-        }
-      }
+    // The PHPickerViewController returns empty collection when canceled
+    if results.isEmpty {
+      handlePickingCancellation()
+    } else {
+      handlePickedMedia(selection: results)
     }
+    picker.dismiss(animated: true)
   }
 
   // MARK: - UIAdaptivePresentationControllerDelegate
@@ -112,7 +100,6 @@ extension UIImagePickerController: PickerUIController {
   }
 }
 
-@available(iOS 14, *)
 extension PHPickerViewController: PickerUIController {
   func setResultHandler(_ handler: ImagePickerHandler) {
     self.delegate = handler

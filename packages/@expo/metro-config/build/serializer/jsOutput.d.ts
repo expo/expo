@@ -24,6 +24,7 @@ export type JsOutput = {
         hasCjsExports?: boolean;
         readonly reconcile?: ReconcileTransformSettings;
         readonly reactClientReference?: string;
+        readonly expoDomComponentReference?: string;
     };
     type: JSFileType;
 };

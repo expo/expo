@@ -90,7 +90,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImage/Tests (1.12.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
@@ -98,7 +97,6 @@ PODS:
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (12.0.5):
     - EXImageLoader
     - ExpoModulesCore
@@ -218,10 +216,6 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (14.0.3):
     - ExpoModulesCore
-    - "sqlite3 (~> 3.45.3+1)"
-    - "sqlite3/bytecodevtab (~> 3.45.3+1)"
-    - "sqlite3/fts (~> 3.45.3+1)"
-    - "sqlite3/fts5 (~> 3.45.3+1)"
   - ExpoStoreReview (7.0.2):
     - ExpoModulesCore
   - ExpoSymbols (0.1.4):
@@ -289,7 +283,6 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdates/Tests (0.25.14):
     - DoubleConversion
@@ -318,7 +311,6 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - "sqlite3 (~> 3.45.3+1)"
     - Yoga
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
@@ -1766,7 +1758,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.31.1):
+  - RNScreens (3.34.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1802,15 +1794,6 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - "sqlite3 (3.45.3+1)":
-    - "sqlite3/common (= 3.45.3+1)"
-  - "sqlite3/bytecodevtab (3.45.3+1)":
-    - sqlite3/common
-  - "sqlite3/common (3.45.3+1)"
-  - "sqlite3/fts (3.45.3+1)":
-    - sqlite3/common
-  - "sqlite3/fts5 (3.45.3+1)":
-    - sqlite3/common
   - Stripe (23.26.0):
     - StripeApplePay (= 23.26.0)
     - StripeCore (= 23.26.0)
@@ -2041,7 +2024,6 @@ SPEC REPOS:
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
     - SocketRocket
-    - sqlite3
     - Stripe
     - StripeApplePay
     - StripeCore
@@ -2348,71 +2330,71 @@ SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
-  EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
-  EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
-  EXAV: cb6e8dbcc40873d8a386af357e6c2eb55d6d739e
-  EXBarCodeScanner: e2dd9b42c1b522a2adc9202b1dfbc64cb34456d1
-  EXConstants: 9a008dbf262550884e6280dea95b81b51f65ea6f
-  EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
-  EXJSONUtils: fa6c5cd41afdcec8f0eca28a78b96abb86c28493
-  EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
-  EXNotifications: a01203397855862df7e4ac3bcf9fc7bc6914893e
-  Expo: a4053ae9e65c5f14e5bd7400d532e4b10942a57b
-  ExpoAppleAuthentication: 7af0b493e820dc0b22150cb9531fc1c31dc4fbfd
-  ExpoAsset: 9b7433ecc5f1b608ccbb823492e062bde944abd2
-  ExpoAudio: 7a5deb52fb0691bb3f51f573013ffbc962fec2d0
-  ExpoBackgroundFetch: a06c553ecaf0bade0acd691042d996b9ce926327
-  ExpoBattery: 4b21f628f2b70af3af66e83c566949ba9cc65eb1
-  ExpoBlur: fa53f874e7b208bc3756d1bf07903c12e790beb1
-  ExpoBrightness: c184f0ef116a51d7f5c1dd4c253d4d9806a5e022
-  ExpoCalendar: 135beb39ea3795f854a4ea287a49f74c9203ce51
-  ExpoCamera: 73221bf7176a6271c7367ac12b5c52b07c3e4175
-  ExpoCellular: c903c51bb54cc7d3fa9f5c572d77e302b73203f1
-  ExpoClipboard: 6483bd23f5868c9e0a481f261f36aaa5d4f70082
-  ExpoContacts: 605d517d1e7a8a3f12f736db67cc502c0dd22b53
-  ExpoCrypto: 68fa06e232e1413199b5131a47bbb428d38016f8
-  ExpoDevice: fc94f0e42ecdfd897e7590f2874fc64dfa7e9b1c
-  ExpoDocumentPicker: 326d1d098a574d621ed2cc05296c9895f10eea44
-  ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
-  ExpoFont: 690b76008be824e47907f200cb0764870108dfd1
-  ExpoGL: a2d717e4b7279a075d7dff04d8d2471cb404ad2c
-  ExpoHaptics: 5a3a88971af384255baf2504f38b41189cec6984
-  ExpoHead: 28ccee5977648d15f6a62b9a680a4bd169a1515b
-  ExpoImage: eab004b9363e388d3f6a118f18716de6dcfb8e8d
-  ExpoImageManipulator: aea99205c66043a00a0af90e345395637b9902fa
-  ExpoImagePicker: dc3e6f221ce5717e6e0a771780e6e7d50a790189
-  ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
-  ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
-  ExpoLinking: 82ccf130af1ebeb4bcdb0e7e101a2be36dbdd335
-  ExpoLocalAuthentication: f119167649d0465a06fa7c5b44c6c70f43f477ee
-  ExpoLocalization: f04eeec2e35bed01ab61c72ee1768ec04d093d01
-  ExpoLocation: 77c2e1f0c9c85bdd8808d34cbeec5d9f1c75cb1b
-  ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
-  ExpoMediaLibrary: d94d530648c1051a09fa906e93b9b6eb225d70db
-  ExpoModulesCore: 4eb2165cde325c8c121d495bb8beb0da9b30c92e
-  ExpoModulesTestCore: 3d1007a5db579e867829b0f9cd4be07e29cf7c0c
-  ExpoNetwork: 0d2c2504d56096fe8be3930d5c70cb3390dac5bf
-  ExpoPrint: 0acb8b37c43634602ef20eec38dd108111736ef0
-  ExpoScreenCapture: b4e8b8a5ceeedfaed0a0572d8d6f55b4191feb98
-  ExpoScreenOrientation: 5d6a977177dc2f904cc072b51a0d37d0983c0d6a
-  ExpoSecureStore: 5f6b712785986b54d95a92bd365aabb82a52088e
-  ExpoSensors: 3b5afeda6a10f062c7d071d984f890384b6d29ce
-  ExpoSharing: 97225e76c5261bec2d9bfce75cc35b589fb1fbba
-  ExpoSMS: a5184fc4d4b33071b2dd9d43bb9ac8ef952b1dd7
-  ExpoSpeech: 258ea713923eb70ef63d3bdb14f47a462d0b6f0e
-  ExpoSQLite: 0091da247fdd8095f2cc213d98f812dba0ec7ca3
-  ExpoStoreReview: 3906c48e9b11eaee2f288a353eb69605fe17aeab
-  ExpoSymbols: fc85d6e697e3cc9b5e591a1913920266d7db8299
-  ExpoSystemUI: b5ecc4b6781b6369fb8b3a0903bea36fae3dd090
-  ExpoTrackingTransparency: 005340638bbd48449066a6c1a54ee44ae65ed7b4
-  ExpoVideo: 73a2ca98c0c432fe81ede97816656d4246c0b450
-  ExpoVideoThumbnails: 2ae80bf49c7e0b5cc65483d409e492b746d10881
-  ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
-  EXSplashScreen: d439ca817211886dc80a00f3761e3b6d861d7205
-  EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
-  EXTaskManager: 79eddd6874d41785e61b5d76652da36b991e4ad0
-  EXUpdates: 5db80118c2175539f36af57527443d2c4660968a
-  EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
+  EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
+  EXApplication: a329dec35dfc3ef30c64d1746698f209ef2b4db6
+  EXAV: 1abd55830a134995b308d8ba9e3acbce67a2a666
+  EXBarCodeScanner: 4c91ca90083a88ac4870a76a7d22035f8efb7b6d
+  EXConstants: d33b2d197e277c371b53c661d3f4b69eac8acb51
+  EXImageLoader: 4c0287c5425c5fe8155791773d69494b82d769db
+  EXJSONUtils: 047b3da7cef41bb7b6b595bb9867563e964fb0d3
+  EXManifests: 50d7a3c95ffe2080a91462b0cb6926ecb18b20ad
+  EXNotifications: 020a77554a24739af75483b054a470ebade292ab
+  Expo: 453d4891e9559869c2f35ca0e31001db2d6a65a8
+  ExpoAppleAuthentication: c8b5a198d4145db193b23ae2bbe3fcae94c63f5d
+  ExpoAsset: a8c3b2e67b6aa9d647e46e1dd448e924adb0d096
+  ExpoAudio: 4d379bf679869faa88b31d334fcb55a2593f1419
+  ExpoBackgroundFetch: 7d489b6f20a8c40af1a174160bdc731f23c9031c
+  ExpoBattery: aeba4b3b68c9299352bd53341cf00434379a7926
+  ExpoBlur: 79b0717d6add6b3cad2f19a0edc43d8af4035c95
+  ExpoBrightness: 176a68162d7ea7439b5ba0a92392d332cb28ab99
+  ExpoCalendar: 27586c8d8968ba748cfcb2dbd1218038e0c01c0d
+  ExpoCamera: ed6079c35ad5f8c47f1c34a84891c5b6d541d70d
+  ExpoCellular: 20cdb9137bce7130bc5173e3309b07e053a708c1
+  ExpoClipboard: 811323cf2da38ce4e4a07ceb8339a0ee6f314552
+  ExpoContacts: 27c71e3e8c2534f0128c7adac040d9623299e0da
+  ExpoCrypto: f00f63a8a5ecd2b7057af35e684cffc5b8f86b35
+  ExpoDevice: 7d3225af2ca41978e44b4c08d0d716e1341cf842
+  ExpoDocumentPicker: bdf8ee5573ea32ff59c2dd25e7b7ef07f755008e
+  ExpoFileSystem: 4fe2130545fed1936aa8eb3022d4720036f00824
+  ExpoFont: 8052e556507ff9c37bbd3fd24a4d52e79d60892e
+  ExpoGL: 538b9cfb79816799a06c6557571d08bf50654a7e
+  ExpoHaptics: 0b0a0bbbf3eeda6d2101e8987a0530dd00f7e0d2
+  ExpoHead: ffaa3a54a24ab83b1f20460c107802ce5e7911ae
+  ExpoImage: 64e08fd55723edc561f8c9b031c66b0f3474e57b
+  ExpoImageManipulator: b70951c53b638b8a2535a9533b730b63ccf7b051
+  ExpoImagePicker: 645d49aff6a6c9592bdd16c9488b6b8717621348
+  ExpoKeepAwake: a273e4ddd0ef6bfd967f088df97b4734729b93c3
+  ExpoLinearGradient: 88044e57782ec9b0e8e09f097f65bfb8e3060e44
+  ExpoLinking: 8b0fac743fcd6930db9d611e0eead676ad924fb0
+  ExpoLocalAuthentication: ab6dab7ff1913e230830829d1c79422fd4c2e62c
+  ExpoLocalization: 94949fd92a4bcd80fff90b45227ef0f694f9b09d
+  ExpoLocation: 5984ee7f947706976013671f233275fcf03f6de1
+  ExpoMailComposer: 3265925aea36fe7165a889565644f84e7f89eaf7
+  ExpoMediaLibrary: ff80f9210432e0e77428c24ed9ea9eb61e8f5d52
+  ExpoModulesCore: ed0f8d50aad4ca6b68d46417f3c335fb4fd2bba3
+  ExpoModulesTestCore: 0ac6cceba4dce3798d9c2c9ab755ce307ca34545
+  ExpoNetwork: 19af2b57d6c88c15b56c1084cc21c352e67aeab9
+  ExpoPrint: ab75a41dd1f48c14a6f8de320e75cd6d57c53153
+  ExpoScreenCapture: 1f7ac662e67a14261424bebb046e0e9c7bb4e73d
+  ExpoScreenOrientation: 988799a82735d82421a988882b2e1cd403db7464
+  ExpoSecureStore: 74ea9ca707ce12d855a98c6ff6afe44691c355c1
+  ExpoSensors: e6e78e3a1522e320fe79b1ae41a09b6ec8a598b8
+  ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
+  ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
+  ExpoSpeech: bd49d99ccf7ec89e89cd2f677f88795870e30f54
+  ExpoSQLite: 12e09c65608b7d8db6b9e7d281bbb598370c6128
+  ExpoStoreReview: 92cbbce52bbb5c7c45d00956356eea404bcb8f98
+  ExpoSymbols: bd22f3ef7bb28605084b355a407552e96915d493
+  ExpoSystemUI: ab9245591d740dd89acb4648dee2ae1714bd2262
+  ExpoTrackingTransparency: 898b8ee712eb9edd62bad3530fc44c9a008971ec
+  ExpoVideo: 08f4c5a7f225ae1381d28cc0f6fcc198255ca578
+  ExpoVideoThumbnails: 910b69f603ed888da6f7543fce34c1ccf195d148
+  ExpoWebBrowser: f331aa109e7eee380b43a52ec33f2351bc7d70df
+  EXSplashScreen: 1c5a9b07bec975d72967e1625d7dc2c139188499
+  EXStructuredHeaders: 404356f2621ca76fd54e8c5c686091d0fa00cbc7
+  EXTaskManager: 080da17150fba107155b6800be1370dd1a252c39
+  EXUpdates: db2582fb4d574f9f1e195df6e20b522beb9c4127
+  EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
   FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
@@ -2423,7 +2405,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 4d4b2f42a4a8abea391b4dcc4d065351cbe93fb5
+  hermes-engine: f6d858f3bb6b6bdae5e0f3992a0d5b5e5a5d3ca5
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -2498,15 +2480,14 @@ SPEC CHECKSUMS:
   RNDateTimePicker: cd42eda5f315fc320f0b359413bd598957f7e601
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 2fb2c561d694d6a884850c8507c180a2cc2ed4e9
-  RNReanimated: 33c6135cdf421b795c2f1173075a11cca2a39bf2
-  RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
+  RNReanimated: 7b2cba3718525c2aa671df63939049a3fd157896
+  RNScreens: aa943ad421c3ced3ef5a47ede02b0cbfc43a012e
   RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
   stripe-react-native: f1af0235d838495e0c209da6da321eb6f74b70b8
   StripeApplePay: d6ef43f2bf834463e1dcaaf4a61c681aec04990e
@@ -2516,10 +2497,10 @@ SPEC CHECKSUMS:
   StripePaymentSheet: b7cab74c10a5a4b225f948e225dda427a6899e08
   StripePaymentsUI: 1f0cbac9145149fbbb87e27660af0d3be91aae98
   StripeUICore: d6803286f1e2b80c62c320b304503c87bf65de3c
-  UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
+  UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
   Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 08d42139077d6c9a60951d31532300d7f641d419
+PODFILE CHECKSUM: 6ec27595fc1a1dcf906e759b1bff76ab5de670f7
 
 COCOAPODS: 1.15.2

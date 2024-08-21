@@ -247,6 +247,10 @@ export interface ExpoConfig {
      */
     supportsTVOnly?: boolean;
     /**
+     * If true, the window spans the entire display size by drawing behind transparent system bars.
+     */
+    edgeToEdge?: boolean;
+    /**
      * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
      */
     tsconfigPaths?: boolean;
@@ -266,6 +270,10 @@ export interface ExpoConfig {
      * Experimentally enable React Compiler.
      */
     reactCompiler?: boolean;
+    /**
+     * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+     */
+    reactServerComponents?: boolean;
   };
   /**
    * Internal properties for developer tools

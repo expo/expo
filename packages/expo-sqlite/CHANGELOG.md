@@ -4,15 +4,22 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824), [#30825](https://github.com/expo/expo/pull/30825) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30483](https://github.com/expo/expo/pull/30483) by [@byCedric](https://github.com/byCedric))
+- Fixed build errors on iOS if other third-party libraries building with iOS system SQLite. ([#30824](https://github.com/expo/expo/pull/30824) by [@kudo](https://github.com/kudo))
+- Fixed build error when using `incremental_installation` mode in CocoaPods. ([#30918](https://github.com/expo/expo/pull/30918) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
 
 ## 14.0.6 - 2024-07-31
 

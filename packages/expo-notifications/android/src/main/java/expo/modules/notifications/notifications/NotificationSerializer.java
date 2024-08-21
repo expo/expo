@@ -1,5 +1,8 @@
 package expo.modules.notifications.notifications;
 
+import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
+import static expo.modules.notifications.UtilsKt.isValidJSONString;
+
 import android.os.Build;
 import android.os.Bundle;
 
@@ -9,7 +12,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import expo.modules.core.arguments.MapArguments;
 
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -59,19 +62,26 @@ public class NotificationSerializer {
     Bundle content = toBundle(request.getContent());
     Bundle existingContentData = content.getBundle("data");
     if (existingContentData == null) {
-      FirebaseNotificationTrigger trigger = (FirebaseNotificationTrigger) request.getTrigger();
-      RemoteMessage message = trigger.getRemoteMessage();
-      RemoteMessage.Notification notification = message.getNotification();
-      Map<String, String> data = message.getData();
-      String dataBody = data.get("body");
-      String notificationBody = notification != null ? notification.getBody() : null;
-      if (isValidJSONString(dataBody) && notificationBody != null && notificationBody.equals(data.get("message"))) {
-        // Expo sends notification.body as data.message, and JSON stringifies data.body
-        content.putString("dataString", dataBody);
-      } else {
-        // The message was sent directly from Firebase or some other service,
-        // and we copy the data as is
-        content.putBundle("data", toBundle(data));
+      if(request.getTrigger() instanceof FirebaseNotificationTrigger trigger) {
+        RemoteMessage message = trigger.getRemoteMessage();
+        RemoteMessage.Notification notification = message.getNotification();
+        Map<String, String> data = message.getData();
+        String dataBody = data.get("body");
+        String notificationBody = notification != null ? notification.getBody() : null;
+        if (isValidJSONString(dataBody) && notificationBody != null && notificationBody.equals(data.get("message"))) {
+          // Expo sends notification.body as data.message, and JSON stringifies data.body
+          content.putString("dataString", dataBody);
+        } else {
+          // The message was sent directly from Firebase or some other service,
+          // and we copy the data as is
+          content.putBundle("data", toBundle(data));
+        }
+      } else if(request.getTrigger() instanceof SchedulableNotificationTrigger) {
+        JSONObject body = request.getContent().getBody();
+        if (body != null) {
+          // Expo sends notification.body as data.message, and JSON stringifies data.body
+          content.putString("dataString", body.toString());
+        }
       }
     }
     serializedRequest.putBundle("content", content);
@@ -226,17 +236,17 @@ public class NotificationSerializer {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", extras.getString("title"));
     String body = extras.getString("body");
-    String projectId = extras.getString("projectId");
-    if (projectId != null && isValidJSONString(body) ) {
-      // If projectId is set in the bundle, and the body is a JSON string,
+    if (isValidJSONString(body) ) {
+      // If the body is a JSON string,
       // the notification was sent by the Expo notification service,
       // so we do the expected remapping of fields
       serializedContent.putString("dataString", body);
       serializedContent.putString("body", extras.getString("message"));
     } else {
       // The notification came directly from Firebase or some other service,
-      // so we copy the data as is from the extras bundle
-      serializedContent.putBundle("data", extras);
+      // so we copy the data as is from the extras bundle, after
+      // ensuring it can be converted for emitting to JS
+      serializedContent.putBundle("data", filteredBundleForJSTypeConverter(extras));
     }
 
     Bundle serializedTrigger = new Bundle();
@@ -257,19 +267,6 @@ public class NotificationSerializer {
     serializedResponse.putBundle("notification", serializedNotification);
 
     return serializedResponse;
-  }
-
-  public static boolean isValidJSONString(String test) {
-    try {
-      new JSONObject(test);
-    } catch (JSONException objectEx) {
-      try {
-        new JSONArray(test);
-      } catch (JSONException arrayEx) {
-        return false;
-      }
-    }
-    return true;
   }
 
 }

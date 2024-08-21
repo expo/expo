@@ -84,6 +84,10 @@ export function getRscMiddleware(options: {
       ''
     );
 
+    // First segment should be the target platform.
+    // This is used for aligning with production exports which are statically exported to a single location at build-time.
+    encodedInput = encodedInput.replace(new RegExp(`^${platform}/`), '');
+
     try {
       encodedInput = decodeInput(encodedInput);
     } catch {

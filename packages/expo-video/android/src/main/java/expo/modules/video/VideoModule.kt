@@ -45,7 +45,9 @@ class VideoModule : Module() {
     View(VideoView::class) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenEnter",
+        "onFullscreenExit"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->

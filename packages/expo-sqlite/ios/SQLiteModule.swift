@@ -1,5 +1,4 @@
 import ExpoModulesCore
-import sqlite3
 
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
@@ -57,7 +56,7 @@ public final class SQLiteModule: Module {
 
     OnDestroy {
       cachedDatabases.values.forEach {
-        sqlite3_close($0)
+        exsqlite3_close($0)
       }
     }
   }
@@ -90,7 +89,7 @@ public final class SQLiteModule: Module {
 
     cachedDatabases.removeValue(forKey: databaseName)
 
-    if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
+    if exsqlite3_open(path.absoluteString, &db) != SQLITE_OK {
       return nil
     }
 
@@ -105,11 +104,11 @@ public final class SQLiteModule: Module {
     var insertId: Int64 = 0
     var error: String?
 
-    if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK {
+    if exsqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK {
       return [convertSqlLiteErrorToString(db: db)]
     }
 
-    let queryIsReadOnly = sqlite3_stmt_readonly(statement) > 0
+    let queryIsReadOnly = exsqlite3_stmt_readonly(statement) > 0
 
     if readOnly && !queryIsReadOnly {
       return ["could not prepare \(sql)"]
@@ -128,15 +127,15 @@ public final class SQLiteModule: Module {
     var hasMore = true
 
     while hasMore {
-      let result = sqlite3_step(statement)
+      let result = exsqlite3_step(statement)
 
       switch result {
       case SQLITE_ROW:
         if !fetchedColumns {
-          columnCount = sqlite3_column_count(statement)
+          columnCount = exsqlite3_column_count(statement)
 
           for i in 0..<Int(columnCount) {
-            let columnName = NSString(format: "%s", sqlite3_column_name(statement, Int32(i))) as String
+            let columnName = NSString(format: "%s", exsqlite3_column_name(statement, Int32(i))) as String
             columnNames.append(columnName)
           }
           fetchedColumns = true
@@ -145,7 +144,7 @@ public final class SQLiteModule: Module {
         var entry = [Any]()
 
         for i in 0..<Int(columnCount) {
-          columnType = sqlite3_column_type(statement, Int32(i))
+          columnType = exsqlite3_column_type(statement, Int32(i))
           value = getSqlValue(for: columnType, with: statement, index: Int32(i))
           entry.append(value)
         }
@@ -160,13 +159,13 @@ public final class SQLiteModule: Module {
     }
 
     if !queryIsReadOnly {
-      rowsAffected = sqlite3_changes(db)
+      rowsAffected = exsqlite3_changes(db)
       if rowsAffected > 0 {
-        insertId = sqlite3_last_insert_rowid(db)
+        insertId = exsqlite3_last_insert_rowid(db)
       }
     }
 
-    sqlite3_finalize(statement)
+    exsqlite3_finalize(statement)
 
     if error != nil {
       return [error]
@@ -177,9 +176,9 @@ public final class SQLiteModule: Module {
 
   private func bindStatement(statement: OpaquePointer?, with arg: NSObject, at index: Int32) {
     if arg == NSNull() {
-      sqlite3_bind_null(statement, index)
+      exsqlite3_bind_null(statement, index)
     } else if arg is Double {
-      sqlite3_bind_double(statement, index, arg as? Double ?? 0.0)
+      exsqlite3_bind_double(statement, index, arg as? Double ?? 0.0)
     } else {
       var stringArg: NSString
 
@@ -192,26 +191,26 @@ public final class SQLiteModule: Module {
       let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 
       let data = stringArg.data(using: NSUTF8StringEncoding)
-      sqlite3_bind_text(statement, index, stringArg.utf8String, Int32(data?.count ?? 0), SQLITE_TRANSIENT)
+      exsqlite3_bind_text(statement, index, stringArg.utf8String, Int32(data?.count ?? 0), SQLITE_TRANSIENT)
     }
   }
 
   private func getSqlValue(for columnType: Int32, with statement: OpaquePointer?, index: Int32) -> Any? {
     switch columnType {
     case SQLITE_INTEGER:
-      return sqlite3_column_int64(statement, index)
+      return exsqlite3_column_int64(statement, index)
     case SQLITE_FLOAT:
-      return sqlite3_column_double(statement, index)
+      return exsqlite3_column_double(statement, index)
     case SQLITE_BLOB, SQLITE_TEXT:
-      return NSString(bytes: sqlite3_column_text(statement, index), length: Int(sqlite3_column_bytes(statement, index)), encoding: NSUTF8StringEncoding)
+      return NSString(bytes: exsqlite3_column_text(statement, index), length: Int(exsqlite3_column_bytes(statement, index)), encoding: NSUTF8StringEncoding)
     default:
       return nil
     }
   }
 
   private func convertSqlLiteErrorToString(db: OpaquePointer?) -> String {
-    let code = sqlite3_errcode(db)
-    let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
+    let code = exsqlite3_errcode(db)
+    let message = NSString(utf8String: exsqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
   }
 }

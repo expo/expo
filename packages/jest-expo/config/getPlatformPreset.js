@@ -69,7 +69,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     displayName: displayOptions,
     testMatch,
     testPathIgnorePatterns: isReactServer
-      ? ['/node_modules/']
+      ? ['/node_modules/', '/__tests__/']
       : [
           '/node_modules/',
           // Ignore the files in the `__rsc_tests__` directory when not targeting RSC.

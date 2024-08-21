@@ -1,11 +1,13 @@
 import { vol } from 'memfs';
 import path from 'path';
 
+import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 import {
   createReactNativeConfigAsync,
   findDependencyRootsAsync,
+  resolveAppProjectConfigAsync,
   resolveDependencyConfigAsync,
 } from '../reactNativeConfig';
 import type {
@@ -155,6 +157,42 @@ describe(findDependencyRootsAsync, () => {
         "@react-native/subtest": "/project/node_modules/@react-native/subtest",
         "react-native": "/project/node_modules/react-native",
         "react-native-test": "/project/node_modules/react-native-test",
+      }
+    `);
+  });
+});
+
+describe(resolveAppProjectConfigAsync, () => {
+  it('should return app project config for android', async () => {
+    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
+      typeof findGradleAndManifestAsync
+    >;
+    mockFindGradleAndManifestAsync.mockResolvedValueOnce({
+      gradle: 'app/build.gradle',
+      manifest: 'src/main/AndroidManifest.xml',
+    });
+    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
+      typeof parsePackageNameAsync
+    >;
+    mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
+    const config = await resolveAppProjectConfigAsync('/app', 'android');
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "android": {
+          "packageName": "com.test",
+          "sourceDir": "/app/android",
+        },
+      }
+    `);
+  });
+
+  it('should return app project config for ios', async () => {
+    const config = await resolveAppProjectConfigAsync('/app', 'ios');
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "ios": {
+          "sourceDir": "/app/ios",
+        },
       }
     `);
   });

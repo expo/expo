@@ -1,10 +1,12 @@
 import fs from 'fs/promises';
+import type { IMinimatch } from 'minimatch';
 import os from 'os';
 import path from 'path';
 
 import { loadConfigAsync } from './Config';
 import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
 import { SourceSkips } from './sourcer/SourceSkips';
+import { buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -98,7 +100,11 @@ export async function normalizeOptionsAsync(
     // Explicit options
     ...options,
     // These options are computed by both default and explicit options, so we put them last.
-    ignorePaths: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
+    ignorePathMatchObjects: await collectIgnorePathsAsync(
+      projectRoot,
+      config?.ignorePaths,
+      options
+    ),
   };
 }
 
@@ -106,7 +112,7 @@ async function collectIgnorePathsAsync(
   projectRoot: string,
   pathsFromConfig: Config['ignorePaths'],
   options: Options | undefined
-): Promise<string[]> {
+): Promise<IMinimatch[]> {
   const ignorePaths = [
     ...DEFAULT_IGNORE_PATHS,
     ...(pathsFromConfig ?? []),
@@ -126,5 +132,5 @@ async function collectIgnorePathsAsync(
     }
   } catch {}
 
-  return ignorePaths;
+  return buildPathMatchObjects(ignorePaths);
 }
