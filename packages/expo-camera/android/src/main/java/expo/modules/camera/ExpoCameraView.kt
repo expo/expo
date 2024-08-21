@@ -37,6 +37,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -95,7 +96,7 @@ class ExpoCameraView(
   CameraViewInterface {
   private val currentActivity
     get() = appContext.currentActivity as? AppCompatActivity
-      ?: throw Exceptions.MissingActivity()
+            ?: throw Exceptions.MissingActivity()
 
   val orientationEventListener by lazy {
     object : OrientationEventListener(currentActivity) {
@@ -164,7 +165,7 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
-  var ratio: CameraRatio = CameraRatio.ONE_ONE
+  var ratio: CameraRatio? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -333,7 +334,7 @@ class ExpoCameraView(
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
                     event.cause?.message
-                      ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
+                    ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
                   )
                 )
               }
@@ -341,7 +342,7 @@ class ExpoCameraView(
           }
         }
     }
-      ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
+    ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
   }
 
   @SuppressLint("UnsafeOptInUsageError")
@@ -354,7 +355,7 @@ class ExpoCameraView(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
-        previewView.scaleType = if (ratio != CameraRatio.ONE_ONE) {
+        previewView.scaleType = if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
           PreviewView.ScaleType.FIT_CENTER
         } else {
           PreviewView.ScaleType.FILL_CENTER
@@ -373,14 +374,7 @@ class ExpoCameraView(
           .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
-          .apply {
-            if (pictureSize.isNotEmpty()) {
-              val size = Size.parseSize(pictureSize)
-              setTargetResolution(size)
-            } else {
-              setResolutionSelector(resolutionSelector)
-            }
-          }
+          .setResolutionSelector(resolutionSelector)
           .build()
 
         val videoCapture = createVideoCapture()
@@ -437,18 +431,30 @@ class ExpoCameraView(
         }
       }
 
-  private fun buildResolutionSelector(): ResolutionSelector = if (ratio == CameraRatio.ONE_ONE) {
-    ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
-      return@setResolutionFilter supportedSizes.filter {
-        it.width == it.height
-      }
-    }.setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
-  } else {
-    ResolutionSelector.Builder().apply {
-      setAspectRatioStrategy(ratio.mapToStrategy())
-      setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-    }.build()
+  private fun buildResolutionSelector(): ResolutionSelector {
+    val strategy = if (pictureSize.isNotEmpty()) {
+      val size = Size.parseSize(pictureSize)
+      ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+    } else {
+      ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+    }
+
+    return if (ratio == CameraRatio.ONE_ONE) {
+      ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+        return@setResolutionFilter supportedSizes.filter {
+          it.width == it.height
+        }
+      }.setResolutionStrategy(strategy).build()
+    } else {
+      ResolutionSelector.Builder().apply {
+        ratio?.let {
+          setAspectRatioStrategy(it.mapToStrategy())
+        }
+        setResolutionStrategy(strategy)
+      }.build()
+    }
   }
+
 
   private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
