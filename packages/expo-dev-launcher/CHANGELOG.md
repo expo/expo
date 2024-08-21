@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.26 — 2024-08-21
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.25 — 2024-08-14
 
 ### 🎉 New features
