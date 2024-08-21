@@ -144,7 +144,7 @@ export type CameraPictureOptions = {
      */
     maxDownsampling?: number;
     /**
-     * To programatically disable the camera shutter sound
+     * To programmatically disable the camera shutter sound
      * @default true
      */
     shutterSound?: boolean;
@@ -360,7 +360,7 @@ export type CameraProps = ViewProps & {
     /**
      * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
      * Note: Setting the aspect ratio here will change the scaleType of the camera preview from `FILL` to `FIT`.
-     * @default 1:1
+     * Also, when using 1:1, devices only support certain sizes. If you specify an unsupported size, the closest supported ratio will be used.
      * @platform android
      */
     ratio?: CameraRatio;
