@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [Web] Change module registration.
+
 ## 12.0.2 — 2024-05-09
 
 ### 🐛 Bug fixes
