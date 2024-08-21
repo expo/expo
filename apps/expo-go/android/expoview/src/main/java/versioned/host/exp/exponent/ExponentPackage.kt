@@ -19,7 +19,7 @@ import com.reactnativecommunity.webview.RNCWebViewPackage
 import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
-//import com.shopify.reactnative.skia.RNSkiaPackage
+import com.shopify.reactnative.skia.RNSkiaPackage
 import com.rnmaps.maps.MapsPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
@@ -139,7 +139,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
-//        nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
+        nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
@@ -183,7 +183,7 @@ class ExponentPackage : ReactPackage {
         PagerViewPackage(),
         SafeAreaContextPackage(),
         stripePackage,
-//        skiaPackage,
+        skiaPackage,
         ReactNativeFlashListPackage()
       )
     )
@@ -217,7 +217,7 @@ class ExponentPackage : ReactPackage {
 
     // Need to avoid initializing duplicated packages
     private val stripePackage = StripeSdkPackage()
-//    private val skiaPackage = RNSkiaPackage()
+    private val skiaPackage = RNSkiaPackage()
 
     fun kernelExponentPackage(
       context: Context,
