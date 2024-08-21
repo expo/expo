@@ -5,13 +5,13 @@ import android.net.Uri
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
-import expo.modules.image.GlideBlurhashModel
+import expo.modules.image.BlurhashModelProvider
 
-class BlurhashModelLoader : ModelLoader<GlideBlurhashModel, Bitmap> {
-  override fun handles(model: GlideBlurhashModel): Boolean = true
+class BlurhashModelLoader : ModelLoader<BlurhashModelProvider, Bitmap> {
+  override fun handles(model: BlurhashModelProvider): Boolean = true
 
   override fun buildLoadData(
-    model: GlideBlurhashModel,
+    model: BlurhashModelProvider,
     width: Int,
     height: Int,
     options: Options
