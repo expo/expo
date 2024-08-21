@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 5.0.20 — 2024-08-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 5.0.19 — 2024-08-14
 
