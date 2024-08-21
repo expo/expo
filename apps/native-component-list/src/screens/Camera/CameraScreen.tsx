@@ -178,6 +178,9 @@ export default class CameraScreen extends React.Component<object, State> {
     }));
 
   collectPictureSizes = async () => {
+    if (this.state.pictureSizes.length > 0) {
+      return;
+    }
     const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
     let pictureSizeId = 0;
     if (Platform.OS === 'ios') {
@@ -443,7 +446,6 @@ export default class CameraScreen extends React.Component<object, State> {
           mode={this.state.mode}
           mute={this.state.mute}
           zoom={this.state.zoom}
-          ratio="1:1"
           videoQuality="2160p"
           onMountError={this.handleMountError}
           barcodeScannerSettings={{
