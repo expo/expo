@@ -19,8 +19,8 @@ class ExponentDevBundleDownloadListener(private val listener: DevBundleDownloadP
   }
 
   override fun onFailure(cause: Exception?) {
-    if(cause !== null){
-      listener.onFailure(cause)
+    cause?.let {
+      listener.onFailure(it)
     }
   }
 }
