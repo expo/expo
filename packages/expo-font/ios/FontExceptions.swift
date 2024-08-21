@@ -18,14 +18,21 @@ internal final class FontNoPostScriptException: GenericException<String> {
   }
 }
 
-internal final class FontRegistrationFailedException: GenericException<CFError> {
+internal struct FontRegistrationErrorInfo {
+  let fontFamilyAlias: String
+  let cfError: CFError
+  let ctFontManagerError: CTFontManagerError?
+}
+
+internal final class FontRegistrationFailedException: GenericException<FontRegistrationErrorInfo> {
   override var reason: String {
-    "Registering '\(param)' font failed with message: '\(param.localizedDescription)'"
+    let ctErrorDescription = "CTFontManagerError code: " + (param.ctFontManagerError.map { String($0.rawValue) } ?? "N/A")
+    return "Registering '\(param.fontFamilyAlias)' font failed with message: '\(param.cfError.localizedDescription)'. \(ctErrorDescription)"
   }
 }
 
 internal final class UnregisteringFontFailedException: GenericException<CFError> {
   override var reason: String {
-    "Unregistering '\(param)' font failed with message: '\(param.localizedDescription)'"
+    "Unregistering font failed with message: '\(param.localizedDescription)'"
   }
 }

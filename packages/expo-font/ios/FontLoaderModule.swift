@@ -33,7 +33,7 @@ public final class FontLoaderModule: Module {
       }
 
       // Register the font
-      try registerFont(fontUrl)
+      try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
 
       // Create a font object from the given URL
       let font = try loadFont(fromUrl: fontUrl, alias: fontFamilyAlias)
