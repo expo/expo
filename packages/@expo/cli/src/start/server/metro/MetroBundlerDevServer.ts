@@ -168,6 +168,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const rscPath = '/_flight/[...rsc]';
 
     if (
+      this.isReactServerComponentsEnabled &&
       // If the RSC route is not already in the manifest, add it.
       !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
     ) {
