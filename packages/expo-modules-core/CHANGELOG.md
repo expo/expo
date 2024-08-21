@@ -20,7 +20,7 @@
 - [Android] Introduced experimental converter to support a broader range of types that can be passed to the JS. ([#30944](https://github.com/expo/expo/pull/30944) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Add functions that are called before and after a shared object is removed from the registry. ([#30949](https://github.com/expo/expo/pull/30949) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Rewrite map converter to support a broader range of types that can be passed to the JS. ([#31016](https://github.com/expo/expo/pull/31016) by [@lukmccall](https://github.com/lukmccall))
-- [Android] `EitherTypeConverter` now can work with the `Dynamic` class.
+- [Android] `EitherTypeConverter` now can work with the `Dynamic` class. ([#31074](https://github.com/expo/expo/pull/31074) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
