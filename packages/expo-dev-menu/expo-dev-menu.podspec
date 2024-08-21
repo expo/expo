@@ -108,6 +108,9 @@ Pod::Spec.new do |s|
     main.pod_target_xcconfig = {}
 
     main.dependency 'React-Core'
+    if reactNativeTargetVersion >= 75
+      add_dependency(main, "React-rendererconsistency")
+    end
     add_dependency(main, "React-jsinspector", :framework_name => 'jsinspector_modern')
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
