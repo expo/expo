@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error with React Native 0.75 on Android. ([#31084](https://github.com/expo/expo/pull/31084) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.25.22 — 2024-08-07

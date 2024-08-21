@@ -76,6 +76,13 @@ android {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/certificates".toString())
+
+    def rnVersion = getRNVersion()
+    if (rnVersion >= versionToNumber(0, 75, 0)) {
+      main.java.srcDirs += "src/react-native-75/main"
+    } else {
+      main.java.srcDirs += "src/react-native-74/main"
+    }
   }
 }
 
@@ -117,4 +124,29 @@ dependencies {
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion()}"
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+}
+
+def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+    major,
+    minor,
+    patch
+  )
+}
+
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
