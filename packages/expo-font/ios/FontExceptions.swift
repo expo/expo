@@ -14,7 +14,7 @@ internal final class FontCreationFailedException: GenericException<String> {
 
 internal final class FontNoPostScriptException: GenericException<String> {
   override var reason: String {
-    "Could not create font from loaded data for '\(param)'. Could not obtain font's 'postScriptName'."
+    "Could not create font '\(param)' from loaded data because it is missing the PostScript name"
   }
 }
 
