@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- On iOS `loadAsync()` will reject if font loading fails.
 - Add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
