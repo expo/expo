@@ -1881,7 +1881,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.3.1):
     - React-Core
-  - react-native-pager-view (6.3.0):
+  - react-native-pager-view (6.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2976,7 +2976,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 1c08607305558666fd16678b85ef135e455d5c96
   React-microtasksnativemodule: 87b8de96f937faefece8afd2cb3a518321b2ef99
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
-  react-native-pager-view: 04f0d3af26fd33c722467ccfac64760f321bfb80
+  react-native-pager-view: 2aef9f11fb8f436a68e0c58f7658cad8736d1121
   react-native-safe-area-context: 422017db8bcabbada9ad607d010996c56713234c
   react-native-segmented-control: b92809e9111013dfa266e1168ba366d62898d9a4
   react-native-slider: 97ce0bd921f40de79cead9754546d5e4e7ba44f8
