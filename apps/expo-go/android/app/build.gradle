@@ -110,6 +110,9 @@ android {
     // AGP will give priority of libc++_shared coming from App modules.
     pickFirst "**/libc++_shared.so"
   }
+  androidResources {
+    ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+  }
 }
 
 // [BEGIN] Applying namespace for 3rd party vendor modules

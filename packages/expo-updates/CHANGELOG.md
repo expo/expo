@@ -29,7 +29,7 @@
 
 ### ⚠️ Notices
 
-- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.25.21 - 2024-07-22
 

@@ -33,7 +33,7 @@ export class Asset {
      * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
      * server running on your computer and the asset is served directly from your computer. If you
      * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
-     * are on device before before running your application logic.
+     * are on device before running your application logic.
      */
     uri;
     /**

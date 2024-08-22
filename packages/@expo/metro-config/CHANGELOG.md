@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for CSS in server components. ([#31073](https://github.com/expo/expo/pull/31073) by [@EvanBacon](https://github.com/EvanBacon))
+- Add initial version of DOM Components and expose `expoDomComponentReference` on metadata. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Implement `require.unstable_importMaybeSync` and use it in JSResource. ([#30703](https://github.com/expo/expo/pull/30703) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental support for bundling split native chunks in production. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental support for tree shaking. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
@@ -20,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- Update source map URL when config mutates modules. ([#30980](https://github.com/expo/expo/pull/30980) by [@EvanBacon](https://github.com/EvanBacon))
 - Terminate module source maps with a null mapping [upstream](https://github.com/facebook/metro/commit/96c6b893eb77b5929b6050d7189905232ddf6d6d). ([#30701](https://github.com/expo/expo/pull/30701) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Typescript type export. ([#22410](https://github.com/expo/expo/pull/22410) by [@dcposch](https://github.com/dcposch])
 - Account for the entire dependency tree when creating module name hashes. ([#30512](https://github.com/expo/expo/pull/30512) by [@EvanBacon](https://github.com/EvanBacon))

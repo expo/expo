@@ -44,7 +44,7 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
 jsi::Value convert(
   JNIEnv *env,
   jsi::Runtime &rt,
-  jni::local_ref<jobject> value
+  const jni::local_ref<jobject> &value
 ) {
   if (value == nullptr) {
     return jsi::Value::undefined();
@@ -54,8 +54,9 @@ jsi::Value convert(
 
 #define CAST_AND_RETURN(type, classId) \
   if (env->IsInstanceOf(unpackedValue, cache->getJClass(#classId).clazz)) { \
-    return convertToJS(rt, jni::static_ref_cast<type>(value)); \
+    return convertToJS(env, rt, jni::static_ref_cast<type>(value)); \
   }
+#define COMMA ,
 
   CAST_AND_RETURN(jni::JDouble, java/lang/Double)
   CAST_AND_RETURN(jni::JInteger, java/lang/Integer)
@@ -69,6 +70,9 @@ jsi::Value convert(
   CAST_AND_RETURN(JSharedObject::javaobject, expo/modules/kotlin/sharedobjects/SharedObject)
   CAST_AND_RETURN(JavaScriptTypedArray::javaobject, expo/modules/kotlin/jni/JavaScriptTypedArray)
 
+  CAST_AND_RETURN(jni::JMap<jstring COMMA jobject>, java/util/Map)
+  CAST_AND_RETURN(jni::JCollection<jobject>, java/util/Collection)
+
   // Primitives arrays
   CAST_AND_RETURN(jni::JArrayDouble, [D)
   CAST_AND_RETURN(jni::JArrayBoolean, [Z)
@@ -76,6 +80,7 @@ jsi::Value convert(
   CAST_AND_RETURN(jni::JArrayLong, [J)
   CAST_AND_RETURN(jni::JArrayFloat, [F)
 
+#undef COMMA
 #undef CAST_AND_RETURN
 
   return jsi::Value::undefined();

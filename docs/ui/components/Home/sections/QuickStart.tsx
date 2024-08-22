@@ -22,7 +22,12 @@ export function QuickStart() {
             'bg-element min-h-[250px] !bg-cell-quickstart-pattern bg-blend-multiply',
             'max-md-gutters:min-h-[200px]'
           )}>
-          <div className="inset-0 size-full absolute rounded-lg bg-cell-quickstart-fade" />
+          <div
+            className={mergeClasses(
+              'inset-0 size-full absolute rounded-lg bg-gradient-to-b from-15% from-subtle to-[#21262d00]',
+              'dark:from-[#181a1b]'
+            )}
+          />
           <div className="flex flex-col gap-4 relative z-10">
             <RawH2 className="!font-bold">
               <QuickStartIcon /> Quick Start
@@ -42,7 +47,12 @@ export function QuickStart() {
             'dark:bg-palette-blue3',
             'max-md-gutters:min-h-[200px]'
           )}>
-          <div className="inset-0 size-full absolute rounded-lg bg-cell-tutorial-fade" />
+          <div
+            className={mergeClasses(
+              'inset-0 size-full absolute rounded-lg bg-gradient-to-b from-15% from-palette-blue3 to-[#201d5200]',
+              'dark:from-palette-blue3 dark:to-transparent'
+            )}
+          />
           <DevicesImage />
           <RawH2 className="!font-bold !text-palette-blue12 relative z-10">
             Create a universal Android, iOS, and web app

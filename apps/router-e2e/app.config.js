@@ -8,6 +8,7 @@ module.exports = {
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
+  userInterfaceStyle: 'automatic',
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'dev.expo.routere2e',
@@ -63,3 +64,7 @@ module.exports = {
     ],
   ],
 };
+
+if (typeof process.env.E2E_ROUTER_SRC === 'string') {
+  process.env.EXPO_PUBLIC_FOLDER = path.join('__e2e__', process.env.E2E_ROUTER_SRC, 'public');
+}

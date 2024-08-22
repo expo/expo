@@ -9,14 +9,14 @@ platforms: ['android', 'ios', 'web']
 
 import { Speedometer04Icon } from '@expo/styleguide-icons/outline/Speedometer04Icon';
 
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { BoxLink } from '~/ui/components/BoxLink';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { BoxLink } from '~/ui/components/BoxLink';
+} from '~/ui/components/ConfigSection';
 
 `expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 

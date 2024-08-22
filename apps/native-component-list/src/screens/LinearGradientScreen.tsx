@@ -113,7 +113,7 @@ const ControlPointTest: React.FunctionComponent<{
   );
 };
 
-const ColorsTest = ({ colors }: { colors: string[] }) => {
+const ColorsTest = ({ colors }: { colors: [string, string, ...string[]] }) => {
   const info = colors.map((value) => `"${value}"`).join(', ');
   return (
     <Container title="Colors">
@@ -123,7 +123,9 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
   );
 };
 
-const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locations }) => {
+const LocationsTest: React.FunctionComponent<{ locations: [number, number, ...number[]] }> = ({
+  locations,
+}) => {
   const locationsInfo = locations.map((location) => +location.toFixed(2)).join(', ');
   return (
     <Container title="Locations">

@@ -14,7 +14,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Initializes a new audio player instance with the given source.
      * @hidden
      */
-    constructor(source: AudioSource | string | number | null, updateInterval: number);
+    constructor(source: AudioSource, updateInterval: number);
     /**
      * Unique identifier for the player object.
      */
@@ -107,7 +107,7 @@ type AudioSample = {
     }[];
     timestamp: number;
 };
-type AudioEvents = {
+export type AudioEvents = {
     onPlaybackStatusUpdate(status: AudioStatus): void;
     onAudioSampleUpdate(data: AudioSample): void;
 };
@@ -175,10 +175,6 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * @param seconds The time in seconds to stop recording at.
      */
     recordForDuration(seconds: number): void;
-    /**
-     * Release the recorder and frees up resources.
-     */
-    release(): void;
 }
 export type RecordingEvents = {
     onRecordingStatusUpdate: (status: RecordingStatus) => void;

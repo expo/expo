@@ -72,7 +72,6 @@
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
-    "expo-status-bar": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"

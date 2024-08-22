@@ -112,65 +112,6 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeFalsy();
   });
 
-  // unintentionally bare check
-  it('returns result with isSuccessful = true if no ios/android folders and no config plugins', async () => {
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeTruthy();
-  });
-
-  it('returns result with isSuccessful = true if ios/android folders but no config plugins', async () => {
-    vol.fromJSON({
-      [projectRoot + '/ios/something.pbxproj']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeTruthy();
-  });
-
-  it('returns result with isSuccessful = false with ios/ android folders and config plugins present, not in gitignore', async () => {
-    mockIsGitIgnoredResult(false);
-
-    vol.fromJSON({
-      [projectRoot + '/ios/Podfile']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-      exp: {
-        name: 'name',
-        slug: 'slug',
-        plugins: ['expo-something'],
-      },
-    });
-    expect(result.isSuccessful).toBeFalsy();
-  });
-
-  it('returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore', async () => {
-    mockIsGitIgnoredResult(true);
-    vol.fromJSON({
-      [projectRoot + '/ios/Podfile']: 'test',
-    });
-    const check = new ProjectSetupCheck();
-    const result = await check.runAsync({
-      pkg: { name: 'name', version: '1.0.0' },
-      ...additionalProjectProps,
-      exp: {
-        name: 'name',
-        slug: 'slug',
-        plugins: ['expo-something'],
-      },
-    });
-    expect(result.isSuccessful).toBeTruthy();
-  });
-
   // multiple lock files
   it('returns result with isSuccessful = true if just one lock file', async () => {
     vol.fromJSON({

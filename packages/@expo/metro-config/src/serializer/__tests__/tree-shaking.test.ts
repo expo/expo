@@ -984,6 +984,7 @@ it(`removes unused exports`, async () => {
       {
         "filename": "_expo/static/js/web/index-d0f2de52175bf8c38bbd9fb976cd1222.js",
         "metadata": {
+          "expoDomComponentReferences": [],
           "isAsync": false,
           "modulePaths": [
             "/app/index.js",

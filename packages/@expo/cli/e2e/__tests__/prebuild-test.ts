@@ -366,6 +366,8 @@ it(
         "android/gradle.properties",
         "android/gradlew",
         "android/gradlew.bat",
+        "android/react-settings-plugin/build.gradle.kts",
+        "android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt",
         "android/settings.gradle",
         "app.json",
         "bun.lockb",

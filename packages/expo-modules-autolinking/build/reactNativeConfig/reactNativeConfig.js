@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveDependencyConfigAsync = exports.findDependencyRootsAsync = exports.createReactNativeConfigAsync = void 0;
+exports.resolveAppProjectConfigAsync = exports.resolveDependencyConfigAsync = exports.findDependencyRootsAsync = exports.createReactNativeConfigAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
@@ -23,7 +23,7 @@ async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths
         return [name, config];
     }));
     const dependencyResults = Object.fromEntries(dependencyConfigs.filter(([, config]) => config != null));
-    const projectData = platform === 'ios' ? { ios: { sourceDir: path_1.default.join(projectRoot, 'ios') } } : {};
+    const projectData = await resolveAppProjectConfigAsync(projectRoot, platform);
     return {
         root: projectRoot,
         reactNativePath,
@@ -92,4 +92,26 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
     };
 }
 exports.resolveDependencyConfigAsync = resolveDependencyConfigAsync;
+async function resolveAppProjectConfigAsync(projectRoot, platform) {
+    if (platform === 'android') {
+        const androidDir = path_1.default.join(projectRoot, 'android');
+        const { gradle, manifest } = await (0, androidResolver_1.findGradleAndManifestAsync)({ androidDir, isLibrary: false });
+        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(path_1.default.join(androidDir, manifest), path_1.default.join(androidDir, gradle));
+        return {
+            android: {
+                packageName: packageName ?? '',
+                sourceDir: path_1.default.join(projectRoot, 'android'),
+            },
+        };
+    }
+    if (platform === 'ios') {
+        return {
+            ios: {
+                sourceDir: path_1.default.join(projectRoot, 'ios'),
+            },
+        };
+    }
+    return {};
+}
+exports.resolveAppProjectConfigAsync = resolveAppProjectConfigAsync;
 //# sourceMappingURL=reactNativeConfig.js.map

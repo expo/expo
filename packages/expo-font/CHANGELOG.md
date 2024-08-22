@@ -8,8 +8,11 @@
 
 ### 🎉 New features
 
+- Add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
+- On iOS `loadAsync()` will reject if font loading fails. ([#31053](https://github.com/expo/expo/pull/31053) by [@vonovak](https://github.com/vonovak))
 - Add missing `react` peer dependencies for isolated modules. ([#30467](https://github.com/expo/expo/pull/30467) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
 
@@ -28,7 +31,7 @@
 
 ### 🎉 New features
 
-- Allow woff and woff2 format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
+- Allow `woff` and `woff2` format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
 
 ## 12.0.7 - 2024-06-06
 
