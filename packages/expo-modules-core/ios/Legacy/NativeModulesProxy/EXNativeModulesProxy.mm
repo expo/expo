@@ -351,7 +351,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
 
-#ifdef RTC_NEW_ARCH_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext className:className];
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 #endif

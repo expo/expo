@@ -18,9 +18,12 @@
 @end
 
 #endif // __cplusplus
+#else // Paper
 
 @interface ExpoFabricViewObjC : RCTView
 @end
+
+#endif // !RCT_NEW_ARCH_ENABLED
 
 @class EXAppContext;
 
@@ -38,5 +41,3 @@
 - (void)prepareForRecycle;
 
 @end
-
-#endif // RCT_NEW_ARCH_ENABLED
