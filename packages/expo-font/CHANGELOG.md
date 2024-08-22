@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- More detailed error messages for `FontLoader` native module rejections
+- More detailed error messages for `FontLoader` native module rejections ([#31104](https://github.com/expo/expo/pull/31104) by [@vonovak](https://github.com/vonovak))
 - Add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
