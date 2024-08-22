@@ -16,12 +16,6 @@ describe('FormData', () => {
     const a = new FormData();
     expect(() =>
       // @ts-expect-error: Testing invalid usage
-      a.append(0)
-    ).toThrow(
-      "Failed to execute 'append' on 'FormData': 2 arguments required, but only 1 present."
-    );
-    expect(() =>
-      // @ts-expect-error: Testing invalid usage
       a.set(0)
     ).toThrow("Failed to execute 'set' on 'FormData': 2 arguments required, but only 1 present.");
     expect(() =>

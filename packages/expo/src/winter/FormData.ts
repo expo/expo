@@ -29,8 +29,7 @@ function normalizeArgs(name: string, value: any): [string, File | string] {
 export function installFormDataPatch(formData: typeof FormData) {
   // https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-client/src/ReactFlightReplyClient.js#L212
 
-  // Force override the append method to ensure the function follows the same error handling as the other methods.
-  formData.prototype.append = function append(this: ReactNativeFormDataInternal, ...props) {
+  formData.prototype.append ??= function append(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('append', props, 2);
     const [name, value] = props;
     this._parts.push(normalizeArgs(name, value));
