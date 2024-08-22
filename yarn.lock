@@ -8801,7 +8801,7 @@ find-up@^5.0.0, find-up@~5.0.0:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
 
-find-yarn-workspace-root@^2.0.0, find-yarn-workspace-root@~2.0.0:
+find-yarn-workspace-root@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/find-yarn-workspace-root/-/find-yarn-workspace-root-2.0.0.tgz#f47fb8d239c900eb78179aa81b66673eac88f7bd"
   integrity sha512-1IMnbjt4KzsQfnhnzNd8wUEgXZ44IzZaZmnLYx7D5FZlaHt2gW20Cri8Q+E/t5tIj4+epTBub+2Zxu/vNILzqQ==
@@ -14611,6 +14611,11 @@ resolve-url@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
   integrity sha1-LGN/53yJOv0qZj/iGqkIAGjiBSo=
+
+resolve-workspace-root@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/resolve-workspace-root/-/resolve-workspace-root-1.0.0.tgz#c5c0b393e446b6a20bb608d710757635051d6158"
+  integrity sha512-1TUtBwAjc5DAxF6OcZvrUn9o9tFJWT4JQEey7lRlUN2mh5Y66PwhKXnWP2kAr7cBYjc8gF86KgejocApDdBuhg==
 
 resolve.exports@^2.0.0, resolve.exports@^2.0.2:
   version "2.0.2"
