@@ -1,8 +1,9 @@
 package expo.modules.filesystem.next
 
 import android.webkit.URLUtil
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.devtools.await
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.typedarray.TypedArray
@@ -19,39 +20,32 @@ class FileSystemNextModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
 
-    AsyncFunction("download") { url: URI, to: FileSystemPath, promise: Promise ->
-      try {
-        val request = Request.Builder().url(url.toURL()).build()
-        val client = OkHttpClient()
+    AsyncFunction("download") Coroutine { url: URI, to: FileSystemPath ->
+      val request = Request.Builder().url(url.toURL()).build()
+      val client = OkHttpClient()
+      val response = request.await(client)
 
-        client.newCall(request).execute().use { response ->
-          if (!response.isSuccessful) {
-            return@AsyncFunction promise.reject(UnableToDownloadException("response has status: ${response.code}"))
-          }
-
-          val contentDisposition = response.headers["content-disposition"]
-          val contentType = response.headers["content-type"]
-          val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
-
-          val destination = if (to is FileSystemDirectory) {
-            File(to.path, fileName)
-          } else {
-            to.path
-          }
-
-          val body = response.body ?: return@AsyncFunction promise.reject(UnableToDownloadException("response body is null"))
-          body.byteStream().use { input ->
-            FileOutputStream(destination).use { output ->
-              input.copyTo(output)
-            }
-          }
-
-          promise.resolve(destination.path)
-        }
-      } catch (e: Exception) {
-        promise.reject(UnableToDownloadException(e.message))
-        return@AsyncFunction
+      if (!response.isSuccessful) {
+        throw UnableToDownloadException("response has status: ${response.code}")
       }
+
+      val contentDisposition = response.headers["content-disposition"]
+      val contentType = response.headers["content-type"]
+      val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
+
+      val destination = if (to is FileSystemDirectory) {
+        File(to.path, fileName)
+      } else {
+        to.path
+      }
+
+      val body = response.body ?: throw UnableToDownloadException("response body is null")
+      body.byteStream().use { input ->
+        FileOutputStream(destination).use { output ->
+          input.copyTo(output)
+        }
+      }
+      return@Coroutine destination.path
     }
 
     Class(FileSystemFile::class) {
