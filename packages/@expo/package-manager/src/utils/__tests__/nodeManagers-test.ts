@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import path from 'path';
 
 import { BunPackageManager } from '../../node/BunPackageManager';
 import { NpmPackageManager } from '../../node/NpmPackageManager';
@@ -15,7 +14,9 @@ import {
   YARN_LOCK_FILE,
 } from '../nodeManagers';
 
-jest.mock('fs');
+// Jest doesn't mock `node:fs` when mocking `fs`
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 
 describe(createForProject, () => {
   const projectRoot = '/foo';
@@ -116,8 +117,8 @@ describe(createForProject, () => {
 });
 
 describe(resolvePackageManager, () => {
-  const workspaceRoot = path.resolve('/monorepo/');
-  const projectRoot = path.resolve('/monorepo/packages/test/');
+  const workspaceRoot = '/monorepo/';
+  const projectRoot = '/monorepo/packages/test/';
 
   afterEach(() => vol.reset());
 
