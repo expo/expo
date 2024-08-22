@@ -8,6 +8,7 @@ import {
 
 // @docsMissing
 export type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
+
 // @docsMissing
 export type StatusBarAnimation = 'none' | 'fade' | 'slide';
 
@@ -81,6 +82,7 @@ export function StatusBar({
   // Pick appropriate default value depending on current theme, so if we are
   // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
+  const barStyle = React.useMemo(() => styleToBarStyle(style, colorScheme), [style, colorScheme]);
 
   // If translucent and no backgroundColor is provided, then use transparent
   // background
@@ -93,7 +95,7 @@ export function StatusBar({
     <NativeStatusBar
       {...props}
       translucent={translucent}
-      barStyle={styleToBarStyle(style, colorScheme)}
+      barStyle={barStyle}
       backgroundColor={backgroundColor}
       showHideTransition={hideTransitionAnimation === 'none' ? undefined : hideTransitionAnimation}
     />
