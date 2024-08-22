@@ -263,17 +263,6 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('Downloads files', () => {
-      // describe('by using fetch', () => {
-      // import { fetch } from 'expo/fetch';
-      // it('downloads a file', async () => {
-      //   const url = 'https://httpbin.org/image/jpeg';
-      //   const result = await fetch(url, { method: 'GET' });
-      //   const blob = await result.blob();
-      //   // const file = new File([blob], testDirectory + 'image.jpeg');
-      //   console.log(blob, result);
-      //   // expect(file.exists()).toBe(true);
-      // });
-      // });
       it('downloads a file to a target file', async () => {
         const url = 'https://httpbin.org/image/jpeg';
         const file = new File(testDirectory + 'image.jpeg');
@@ -292,13 +281,6 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.exists()).toBe(true);
         expect(output.path).toBe(file.path);
       });
-
-      // it('errors out on invalid url', async () => {
-      //   const url = 'https://www.apple.com/%';
-      //   const directory = new Directory(testDirectory);
-
-      //   // await download(url, directory).rejects.toMatch('404');
-      // });
     });
   });
 }
