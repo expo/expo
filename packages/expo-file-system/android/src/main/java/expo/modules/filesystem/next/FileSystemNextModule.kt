@@ -59,9 +59,9 @@ class FileSystemNextModule : Module() {
         file.move(destination)
       }
 
-      Property("path") { file -> 
-	      file.asString()
-	    }
+      Property("path") { file ->
+        file.asString()
+      }
     }
 
     Class(FileSystemDirectory::class) {
@@ -93,9 +93,9 @@ class FileSystemNextModule : Module() {
         directory.move(destination)
       }
 
-      Property("path") { directory -> 
-	      directory.asString()
-	    }
+      Property("path") { directory ->
+        directory.asString()
+      }
     }
   }
 }
