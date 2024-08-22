@@ -31,7 +31,7 @@ class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
     )
 
     // For some reason, updating the system gesture exclusion rects has to be called on that view
-    // instead of calling it on the fab view itself. Probably, because we want to extend the react by view margins.
+    // instead of calling it on the fab view itself. Probably, because we want to extend the rect by view margins.
     ViewCompat.setSystemGestureExclusionRects(this, listOf(rect))
   }
 
