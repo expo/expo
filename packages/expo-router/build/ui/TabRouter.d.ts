@@ -1,19 +1,18 @@
 import { CommonNavigationAction, ParamListBase, Router, TabActionType as RNTabActionType, TabNavigationState, TabRouterOptions as RNTabRouterOptions } from '@react-navigation/native';
 import { TriggerMap } from './common';
-import { Href } from '../types';
-export type TabRouterOptions = RNTabRouterOptions & {
+export type ExpoTabRouterOptions = RNTabRouterOptions & {
     triggerMap: TriggerMap;
 };
-export type TabActionType<T extends string | object> = RNTabActionType | CommonNavigationAction | {
+export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
     type: 'SWITCH_TABS';
     payload: {
         name: string;
-        href?: Href<T>;
+        reset?: boolean;
     };
     source?: string;
     target?: string;
 };
-export declare function TabRouter({ triggerMap, ...options }: TabRouterOptions): Router<TabNavigationState<ParamListBase>, {
+export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
     type: "GO_BACK";
     source?: string | undefined;
     target?: string | undefined;
@@ -100,7 +99,7 @@ export declare function TabRouter({ triggerMap, ...options }: TabRouterOptions):
     type: "SWITCH_TABS";
     payload: {
         name: string;
-        href?: Href<any> | undefined;
+        reset?: boolean | undefined;
     };
     source?: string | undefined;
     target?: string | undefined;

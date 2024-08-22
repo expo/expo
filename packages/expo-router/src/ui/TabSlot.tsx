@@ -1,9 +1,10 @@
 import { Slot } from '@radix-ui/react-slot';
-import { ComponentType, useState, useContext } from 'react';
+import { ReactElement, ComponentType, useState, useContext } from 'react';
 import { View, Platform, ViewProps, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
-import { TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './Tab-shared';
+import { TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
+import { TabListProps } from './TabList';
 
 export type UseTabSlotOptions = {
   detachInactiveScreens?: boolean;
@@ -77,11 +78,17 @@ export function defaultTabsSlotRender(
     <Screen
       key={descriptor.route.key}
       activityState={isFocused ? 2 : 0}
-      freezeOnBlur={freezeOnBlur}
-      style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
-      <View style={styles.flexBoxGrowOnly}>{descriptor.render()}</View>
+      enabled={isFocused}
+      freezeOnBlur={freezeOnBlur}>
+      <View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
+        {descriptor.render()}
+      </View>
     </Screen>
   );
+}
+
+export function isTabSlot(child: ReactElement<any>): child is ReactElement<TabListProps> {
+  return child.type === TabSlot;
 }
 
 const styles = StyleSheet.create({
@@ -97,5 +104,6 @@ const styles = StyleSheet.create({
   },
   unfocused: {
     zIndex: -1,
+    display: 'none',
   },
 });

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.triggersToScreens = exports.PressableSlot = exports.ViewSlot = void 0;
+exports.triggersToScreens = exports.ViewSlot = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
 const native_1 = require("@react-navigation/native");
 const href_1 = require("../link/href");
@@ -11,19 +11,17 @@ const useScreens_1 = require("../useScreens");
 const { Screen } = (0, native_1.createNavigatorFactory)({})();
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 exports.ViewSlot = react_slot_1.Slot;
-exports.PressableSlot = react_slot_1.Slot;
 function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName) {
     const configs = [];
-    const triggerMap = new Map();
     for (const trigger of triggers) {
+        if (trigger.type === 'external') {
+            configs.push(trigger);
+            continue;
+        }
         let state = linking.getStateFromPath?.((0, href_1.resolveHref)(trigger.href), linking.config)?.routes[0];
         if (!state) {
             continue;
         }
-        triggerMap.set(trigger.name, {
-            navigate: stateToActionPayload(state, layoutRouteNode.route),
-            switch: stateToActionPayload(state, layoutRouteNode.route, { depth: 1 }),
-        });
         if (layoutRouteNode.route) {
             while (state?.state) {
                 const previousState = state;
@@ -42,19 +40,41 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName)
             }
             continue;
         }
-        configs.push({ routeNode });
+        configs.push({
+            ...trigger,
+            routeNode,
+            action: stateToAction(state, layoutRouteNode.route),
+        });
     }
     const sortFn = (0, sortRoutes_1.sortRoutesWithInitial)(initialRouteName);
-    const children = configs
-        .sort((a, b) => sortFn(a.routeNode, b.routeNode))
-        .map(({ routeNode }) => (<Screen key={routeNode.route} name={routeNode.route} getId={(0, useScreens_1.createGetIdForRoute)(routeNode)} getComponent={() => (0, useScreens_1.getQualifiedRouteComponent)(routeNode)} options={(0, useScreens_1.screenOptionsFactory)(routeNode)}/>));
+    const sortedConfigs = configs.sort((a, b) => {
+        // External routes should be last. They will eventually be dropped
+        if (a.type === 'external' && b.type === 'external') {
+            return 0;
+        }
+        else if (a.type === 'external') {
+            return 1;
+        }
+        else if (b.type === 'external') {
+            return -1;
+        }
+        return sortFn(a.routeNode, b.routeNode);
+    });
+    const children = [];
+    const triggerMap = {};
+    for (const [index, config] of sortedConfigs.entries()) {
+        triggerMap[config.name] = { ...config, index };
+        if (config.type === 'internal') {
+            children.push(<Screen key={config.routeNode.route} name={config.routeNode.route} getId={(0, useScreens_1.createGetIdForRoute)(config.routeNode)} getComponent={() => (0, useScreens_1.getQualifiedRouteComponent)(config.routeNode)} options={(0, useScreens_1.screenOptionsFactory)(config.routeNode)}/>);
+        }
+    }
     return {
         children,
         triggerMap,
     };
 }
 exports.triggersToScreens = triggersToScreens;
-function stateToActionPayload(state, startAtRoute, { depth = Infinity } = {}) {
+function stateToAction(state, startAtRoute, { depth = Infinity } = {}) {
     const rootPayload = {};
     let payload = rootPayload;
     let foundStartingPoint = false;
@@ -80,13 +100,16 @@ function stateToActionPayload(state, startAtRoute, { depth = Infinity } = {}) {
             if (state.name === startAtRoute || !startAtRoute) {
                 foundStartingPoint = true;
             }
-            const nextState = state.state?.routes[state.state?.routes.length - 1];
-            if (nextState) {
-                state = nextState;
+            else {
+                const nextState = state.state?.routes[state.state?.routes.length - 1];
+                if (nextState) {
+                    state = nextState;
+                }
             }
         }
     }
     return {
+        type: 'JUMP_TO',
         payload: rootPayload,
     };
 }

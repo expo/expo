@@ -1,5 +1,6 @@
+import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/ui';
 import { StyleSheet } from 'react-native';
-import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/headless';
+
 import { TabButton } from '../components/TabButton';
 
 export default function Layout() {
@@ -7,13 +8,18 @@ export default function Layout() {
     <Tabs style={styles.root}>
       <TabSlot />
       <TabList style={styles.tabList}>
-        <TabTrigger href="/" asChild style={styles.tabTrigger}>
+        <TabTrigger name="home" href="/" asChild style={styles.tabTrigger}>
           <TabButton icon="home">Index</TabButton>
         </TabTrigger>
-        <TabTrigger asChild href="/styles" style={styles.tabTrigger}>
-          <TabButton icon="paint-brush">Style Libraries</TabButton>
+        <TabTrigger
+          name="movies"
+          asChild
+          href="/movies"
+          reset="longPress"
+          style={styles.tabTrigger}>
+          <TabButton icon="paint-brush">Movies</TabButton>
         </TabTrigger>
-        <TabTrigger asChild href="http://www.google.com" style={styles.tabTrigger}>
+        <TabTrigger name="google" asChild href="http://www.google.com" style={styles.tabTrigger}>
           <TabButton icon="google">Google</TabButton>
         </TabTrigger>
       </TabList>

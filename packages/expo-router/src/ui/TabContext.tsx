@@ -13,6 +13,8 @@ import {
 } from '@react-navigation/native';
 import { createContext } from 'react';
 
+import { TriggerMap } from './common';
+
 export type ExpoTabsProps = DefaultNavigatorOptions<
   ParamListBase,
   TabNavigationState<ParamListBase>,
@@ -52,7 +54,9 @@ export type TabsContextValue = ReturnType<
   >
 >;
 
+export const TabTriggerMapContext = createContext<TriggerMap>({});
 export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
+export const TabsNavigatorContext = createContext<TabsContextValue['navigation'] | null>(null);
 export const TabsStateContext = createContext<TabsContextValue['state']>({
   type: 'tab',
   history: [],

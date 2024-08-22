@@ -52,7 +52,7 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
       '(group)/banana/index': () => <Text testID="banana">Banana Index</Text>,
       '(group)/banana/color': () => <Text testID="banana-color">Banana Color</Text>,
       '(group)/banana/shape': () => <Text testID="banana">Banana Shape</Text>,
-      '(group)/banana/[test]': () => <Text testID="banana">Banana dynamic</Text>,
+      '(group)/banana/[dynamic]': () => <Text testID="banana-dynamic">Banana dynamic</Text>,
 
       // Orange
       '(group)/orange/_layout': {
@@ -84,7 +84,8 @@ it('should render the correct screen with nested navigators', () => {
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
   fireEvent.press(screen.getByTestId('goto-banana'));
-  expect(screen).toHaveSegments(['(group)', 'banana', '[test]']);
+  expect(screen.getByTestId('banana-dynamic')).toBeVisible();
+  expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
   act(() => router.push('/banana/shape'));
   expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 

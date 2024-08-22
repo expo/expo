@@ -9,46 +9,61 @@ import {
 } from '@react-navigation/native';
 
 import { TriggerMap } from './common';
-import { Href } from '../types';
+import { store } from '../global-state/router-store';
 
-export type TabRouterOptions = RNTabRouterOptions & {
+export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
 };
 
-export type TabActionType<T extends string | object> =
+export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
   | {
       type: 'SWITCH_TABS';
-      payload: { name: string; href?: Href<T> };
+      payload: { name: string; reset?: boolean };
       source?: string;
       target?: string;
     };
 
-export function TabRouter({ triggerMap, ...options }: TabRouterOptions) {
+export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) {
   const rnTabRouter = RNTabRouter(options);
 
   const router: Router<
     TabNavigationState<ParamListBase>,
-    TabActionType<any> | CommonNavigationAction
+    ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
     getStateForAction(state, action, options) {
       if (action.type === 'SWITCH_TABS') {
         const name = action.payload.name;
-        const payload = triggerMap.get(name);
+        const trigger = triggerMap[name];
 
-        if (!payload) {
+        if (!trigger) {
           if (process.env.NODE_ENV === 'development') {
             console.warn(`Unable to switch to tab with name ${name}. Tab does not exist`);
           }
           return state;
-        }
+        } else if (trigger.type === 'internal') {
+          const name = trigger.action.payload.name;
+          const shouldReset = action.payload.reset === true;
+          const isLoaded = state.routes.find((route) => route.name === name);
 
-        action = {
-          type: 'JUMP_TO',
-          ...payload.navigate,
-        };
+          if (shouldReset || !isLoaded) {
+            // Load the tab with the tabs specified route
+            action = trigger.action;
+          } else {
+            // Else swap to the tab
+            action = {
+              type: 'JUMP_TO',
+              payload: {
+                name,
+              },
+            };
+          }
+        } else {
+          store.navigate(trigger.href);
+          return state;
+        }
 
         return rnTabRouter.getStateForAction(state, action as any, options);
       } else {

@@ -1,14 +1,14 @@
 import { Slot } from '@radix-ui/react-slot';
 import {
   LinkingOptions,
-  NavigationAction,
   ParamListBase,
   PartialRoute,
   Route,
   createNavigatorFactory,
 } from '@react-navigation/native';
-import { Pressable, PressableProps, ViewProps, View } from 'react-native';
+import { ViewProps, View } from 'react-native';
 
+import type { ExpoTabActionType } from './TabRouter';
 import { RouteNode } from '../Route';
 import { resolveHref } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
@@ -27,49 +27,44 @@ const { Screen } = createNavigatorFactory({} as any)();
 export const ViewSlot = Slot as React.ForwardRefExoticComponent<
   ViewProps & React.RefAttributes<View>
 >;
-export const PressableSlot = Slot as React.ForwardRefExoticComponent<
-  PressableProps & React.RefAttributes<typeof Pressable>
->;
 
-export type ScreenTrigger<T extends string | object> = {
-  href: Href<T>;
-  name: string;
-};
+export type ScreenTrigger<T extends string | object> =
+  | {
+      type: 'internal';
+      href: Href<T>;
+      name: string;
+    }
+  | {
+      type: 'external';
+      name: string;
+      href: string;
+    };
 
-export type ResolvedScreenTrigger = {
-  href: string;
-  name: string;
-};
-
-export type TriggerMap = Map<
-  string,
-  {
-    navigate: any;
-    switch: any;
-  }
->;
+type JumpToNavigationAction = Extract<ExpoTabActionType, { type: 'JUMP_TO' }>;
+type TriggerConfig =
+  | { type: 'internal'; name: string; routeNode: RouteNode; action: JumpToNavigationAction }
+  | { type: 'external'; name: string; href: string };
+export type TriggerMap = Record<string, TriggerConfig & { index: number }>;
 
 export function triggersToScreens(
-  triggers: ScreenTrigger<any>[] | ResolvedScreenTrigger[],
+  triggers: ScreenTrigger<any>[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   initialRouteName: undefined | string
 ) {
-  const configs: { routeNode: RouteNode }[] = [];
-
-  const triggerMap: TriggerMap = new Map();
+  const configs: TriggerConfig[] = [];
 
   for (const trigger of triggers) {
+    if (trigger.type === 'external') {
+      configs.push(trigger);
+      continue;
+    }
+
     let state = linking.getStateFromPath?.(resolveHref(trigger.href), linking.config)?.routes[0];
 
     if (!state) {
       continue;
     }
-
-    triggerMap.set(trigger.name, {
-      navigate: stateToActionPayload(state, layoutRouteNode.route),
-      switch: stateToActionPayload(state, layoutRouteNode.route, { depth: 1 }),
-    });
 
     if (layoutRouteNode.route) {
       while (state?.state) {
@@ -94,22 +89,46 @@ export function triggersToScreens(
       continue;
     }
 
-    configs.push({ routeNode });
+    configs.push({
+      ...trigger,
+      routeNode,
+      action: stateToAction(state, layoutRouteNode.route),
+    });
   }
 
   const sortFn = sortRoutesWithInitial(initialRouteName);
 
-  const children = configs
-    .sort((a, b) => sortFn(a.routeNode, b.routeNode))
-    .map(({ routeNode }) => (
-      <Screen
-        key={routeNode.route}
-        name={routeNode.route}
-        getId={createGetIdForRoute(routeNode)}
-        getComponent={() => getQualifiedRouteComponent(routeNode)}
-        options={screenOptionsFactory(routeNode)}
-      />
-    ));
+  const sortedConfigs = configs.sort((a, b) => {
+    // External routes should be last. They will eventually be dropped
+    if (a.type === 'external' && b.type === 'external') {
+      return 0;
+    } else if (a.type === 'external') {
+      return 1;
+    } else if (b.type === 'external') {
+      return -1;
+    }
+
+    return sortFn(a.routeNode, b.routeNode);
+  });
+
+  const children: React.JSX.Element[] = [];
+  const triggerMap: TriggerMap = {};
+
+  for (const [index, config] of sortedConfigs.entries()) {
+    triggerMap[config.name] = { ...config, index };
+
+    if (config.type === 'internal') {
+      children.push(
+        <Screen
+          key={config.routeNode.route}
+          name={config.routeNode.route}
+          getId={createGetIdForRoute(config.routeNode)}
+          getComponent={() => getQualifiedRouteComponent(config.routeNode)}
+          options={screenOptionsFactory(config.routeNode)}
+        />
+      );
+    }
+  }
 
   return {
     children,
@@ -117,11 +136,11 @@ export function triggersToScreens(
   };
 }
 
-function stateToActionPayload(
+function stateToAction(
   state: PartialRoute<Route<string, object | undefined>> | undefined,
   startAtRoute: string,
   { depth = Infinity } = {}
-): NavigationAction['payload'] {
+): JumpToNavigationAction {
   const rootPayload: any = {};
   let payload = rootPayload;
 
@@ -148,16 +167,17 @@ function stateToActionPayload(
     } else {
       if (state.name === startAtRoute || !startAtRoute) {
         foundStartingPoint = true;
-      }
-
-      const nextState = state.state?.routes[state.state?.routes.length - 1];
-      if (nextState) {
-        state = nextState;
+      } else {
+        const nextState = state.state?.routes[state.state?.routes.length - 1];
+        if (nextState) {
+          state = nextState;
+        }
       }
     }
   }
 
   return {
+    type: 'JUMP_TO',
     payload: rootPayload,
   };
 }

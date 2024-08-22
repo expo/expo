@@ -1,41 +1,31 @@
-import { css, html } from 'react-strict-dom';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { LinkProps, Href, Link } from 'expo-router';
+import { TabTriggerSlotProps } from 'expo-router/ui';
 import { ComponentProps } from 'react';
+import { Text, StyleSheet, Pressable } from 'react-native';
 
 type Icon = ComponentProps<typeof FontAwesome>['name'];
 
-export type TabButtonProps<T extends string | object> = Omit<LinkProps<any>, 'href'> & {
-  href?: Href<T>;
+export type TabButtonProps = TabTriggerSlotProps & {
   icon: Icon;
 };
 
-export function TabButton<T extends string | object>({
-  icon,
-  children,
-  ...props
-}: TabButtonProps<T>) {
+export function TabButton({ icon, children, isFocused, ...props }: TabButtonProps) {
   return (
-    <Link href="/" {...props}>
-      <FontAwesome name={icon} size={24} color="black" />
-      <html.div style={styles.tabTriggerText}>{children}</html.div>
-    </Link>
+    <Pressable {...props} style={[styles.button, isFocused ? styles.focusedBackground : undefined]}>
+      <FontAwesome name={icon} size={24} color={isFocused ? 'white' : 'black'} />
+      <Text style={[styles.tabTriggerText, isFocused ? styles.focusedText : undefined]}>
+        {children}
+      </Text>
+    </Pressable>
   );
 }
 
-const styles = css.create({
+const styles = StyleSheet.create({
   root: {
     backgroundColor: '#DDDDDD',
     flex: 1,
   },
-  tabList: {
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-  },
-  tabTrigger: {
+  button: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -45,5 +35,11 @@ const styles = css.create({
   },
   tabTriggerText: {
     fontSize: 16,
+  },
+  focusedBackground: {
+    backgroundColor: 'grey',
+  },
+  focusedText: {
+    color: 'white',
   },
 });
