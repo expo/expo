@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `DOM.Iterable` to TypeScript libs to support `FormData`.
 - Add support for passing `platform` and `isServer` to the Babel caller to support `process.env.EXPO_OS` and other standard Expo CLI transforms in Jest. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

@@ -112,7 +112,6 @@ describe('FormData', () => {
       const a = new FormData();
       a.append('a', 'b');
       const fn = jest.fn();
-      // @ts-expect-error
       for (const [key, value] of a) {
         fn(key, value);
         expect(key).toBe('a');
@@ -121,7 +120,6 @@ describe('FormData', () => {
       expect(fn).toBeCalledTimes(1);
 
       const keysFn = jest.fn();
-      // @ts-expect-error
       for (const key of a.keys()) {
         keysFn(key);
         expect(key).toBe('a');
@@ -129,7 +127,6 @@ describe('FormData', () => {
       expect(keysFn).toBeCalledTimes(1);
 
       const valuesFn = jest.fn();
-      // @ts-expect-error
       for (const value of a.values()) {
         valuesFn(value);
         expect(value).toBe('b');
@@ -137,7 +134,6 @@ describe('FormData', () => {
       expect(valuesFn).toBeCalledTimes(1);
 
       const entriesFn = jest.fn();
-      // @ts-expect-error
       for (const [key, value] of a.entries()) {
         entriesFn(key, value);
         expect(key).toBe('a');
