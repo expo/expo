@@ -53,7 +53,7 @@ export type StatusBarProps = {
  * This component is built on top of the [StatusBar](https://reactnative.dev/docs/statusbar)
  * component exported from React Native, and it provides defaults that work better for Expo users.
  */
-export declare function ExpoStatusBar({ style, hideTransitionAnimation, translucent, backgroundColor: backgroundColorProp, ...props }: StatusBarProps): React.JSX.Element;
+export declare function StatusBar({ style, hideTransitionAnimation, translucent, backgroundColor: backgroundColorProp, ...props }: StatusBarProps): React.JSX.Element;
 /**
  * Set the bar style of the status bar.
  * @param style The color of the status bar text.
