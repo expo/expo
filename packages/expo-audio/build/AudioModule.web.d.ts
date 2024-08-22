@@ -40,13 +40,12 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     setup(): Promise<void>;
     id: number;
     _options: Partial<RecordingOptions>;
-    _mediaRecorder?: MediaRecorder;
+    _mediaRecorder: MediaRecorder | null;
     _mediaRecorderUptimeOfLastStartResume: number;
-    _mediaRecorderDurationAlreadyRecorded: number;
     _mediaRecorderIsRecording: boolean;
     currentTime: number;
-    isRecording: boolean;
     uri: string | null;
+    get isRecording(): boolean;
     record(): void;
     getAvailableInputs(): RecordingInput[];
     getCurrentInput(): RecordingInput;

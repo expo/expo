@@ -76,7 +76,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     }
   };
 
-  const stopAndUnload = async () => {
+  const stop = async () => {
     if (onDone) {
       await audioRecorder.stop();
       onDone(audioRecorder.uri!);
@@ -96,7 +96,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   };
 
   const renderRecorderButtons = () => {
-    if (!recorderState.isRecording) {
+    if (!recorderState.isRecording && recorderState.durationMillis === 0) {
       return (
         <TouchableOpacity
           onPress={record}
@@ -122,7 +122,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={stopAndUnload}
+          onPress={stop}
           style={[
             styles.smallRoundButton,
             {

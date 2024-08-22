@@ -236,13 +236,15 @@ export class AudioRecorderWeb
 
   id = nextId();
   _options: Partial<RecordingOptions>;
-  _mediaRecorder?: MediaRecorder;
+  _mediaRecorder: MediaRecorder | null = null;
   _mediaRecorderUptimeOfLastStartResume = 0;
-  _mediaRecorderDurationAlreadyRecorded = 0;
   _mediaRecorderIsRecording = false;
   currentTime = 0;
-  isRecording = false;
   uri: string | null = null;
+
+  get isRecording(): boolean {
+    return this._mediaRecorder?.state === 'recording';
+  }
 
   record(): void {
     if (this._mediaRecorder === null) {
@@ -295,11 +297,20 @@ export class AudioRecorderWeb
     this._mediaRecorder?.pause();
   }
 
-  recordForDuration(seconds: number): void {}
+  recordForDuration(seconds: number): void {
+    this.record();
+    setTimeout(() => {
+      this.stop();
+    }, seconds * 1000);
+  }
 
   setInput(input: string): void {}
 
-  startRecordingAtTime(seconds: number): void {}
+  startRecordingAtTime(seconds: number): void {
+    setTimeout(() => {
+      this.record();
+    }, seconds * 1000);
+  }
 
   async stop(): Promise<void> {
     if (this._mediaRecorder === null) {
@@ -313,6 +324,7 @@ export class AudioRecorderWeb
     );
 
     this._mediaRecorder?.stop();
+    this._mediaRecorder = null;
 
     const data = await dataPromise;
     const url = URL.createObjectURL(data);
@@ -334,7 +346,7 @@ export class AudioRecorderWeb
     }
 
     this._mediaRecorderUptimeOfLastStartResume = 0;
-    this._mediaRecorderDurationAlreadyRecorded = 0;
+    this.currentTime = 0;
 
     const stream = await getUserMedia({ audio: true });
 
@@ -344,7 +356,7 @@ export class AudioRecorderWeb
     );
 
     mediaRecorder.addEventListener('pause', () => {
-      this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
+      this.currentTime = this._getAudioRecorderDurationMillis();
       this._mediaRecorderIsRecording = false;
     });
 
@@ -355,12 +367,12 @@ export class AudioRecorderWeb
 
     mediaRecorder.addEventListener('start', () => {
       this._mediaRecorderUptimeOfLastStartResume = Date.now();
-      this._mediaRecorderDurationAlreadyRecorded = 0;
+      this.currentTime = 0;
       this._mediaRecorderIsRecording = true;
     });
 
     mediaRecorder?.addEventListener('stop', () => {
-      this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
+      this.currentTime = 0;
       this._mediaRecorderIsRecording = false;
 
       // Clears recording icon in Chrome tab
@@ -371,7 +383,7 @@ export class AudioRecorderWeb
   }
 
   _getAudioRecorderDurationMillis() {
-    let duration = this._mediaRecorderDurationAlreadyRecorded;
+    let duration = this.currentTime;
     if (this._mediaRecorderIsRecording && this._mediaRecorderUptimeOfLastStartResume > 0) {
       duration += Date.now() - this._mediaRecorderUptimeOfLastStartResume;
     }
