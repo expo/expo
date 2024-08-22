@@ -18,7 +18,7 @@ internal class FileSystemPath: SharedObject {
     }
     if destination is FileSystemFile {
       guard !url.hasDirectoryPath else {
-        throw CopyFolderToFileException()
+        throw CopyDirectoryToFileException()
       }
       try FileManager.default.copyItem(at: url, to: destination.url)
     }
@@ -30,7 +30,7 @@ internal class FileSystemPath: SharedObject {
     }
     if destination is FileSystemFile {
       guard !url.hasDirectoryPath else {
-        throw MoveFolderToFileException()
+        throw MoveDirectoryToFileException()
       }
       try FileManager.default.moveItem(at: url, to: destination.url)
     }
