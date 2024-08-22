@@ -1,5 +1,6 @@
 // React Native's FormData implementation is missing several methods that are used in React for server actions.
 // https://github.com/facebook/react-native/blob/42dcfdd2cdb59fe545523cb57db6ee32a96b9298/packages/react-native/Libraries/Network/FormData.js#L1
+// https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-client/src/ReactFlightReplyClient.js#L212
 
 type ReactNativeFormDataInternal = FormData & {
   _parts: [string, string | Blob][];
@@ -27,8 +28,6 @@ function normalizeArgs(name: string, value: any): [string, File | string] {
 }
 
 export function installFormDataPatch(formData: typeof FormData) {
-  // https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-client/src/ReactFlightReplyClient.js#L212
-
   formData.prototype.append ??= function append(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('append', props, 2);
     const [name, value] = props;
@@ -99,7 +98,7 @@ export function installFormDataPatch(formData: typeof FormData) {
     return false;
   };
 
-  // https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-dom-bindings/src/server/ReactFizzConfigDOM.js#L1056
+  // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-dom-bindings/src/server/ReactFizzConfigDOM.js#L1056
   formData.prototype.forEach ??= function forEach(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('forEach', props, 1);
 
@@ -114,29 +113,33 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
-  // https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-server/src/ReactFlightServer.js#L2117
-  // @ts-expect-error: TODO fix dom types
-  formData.prototype.entries = function* entries(this: ReactNativeFormDataInternal) {
+  // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-server/src/ReactFlightServer.js#L2117
+  formData.prototype.entries = function* entries(
+    this: ReactNativeFormDataInternal
+  ): IterableIterator<[string, FormDataEntryValue]> {
     for (const part of this._parts) {
+      // @ts-expect-error: We don't perform correct normalization when setting the args so the return value will
+      // not be a normalized File object.
       yield part;
     }
   };
 
-  // @ts-expect-error: TODO fix dom types
   formData.prototype.keys ??= function* keys(this: ReactNativeFormDataInternal) {
     for (const part of this._parts) {
       yield part[0];
     }
   };
 
-  // @ts-expect-error: TODO fix dom types
-  formData.prototype.values ??= function* values(this: ReactNativeFormDataInternal) {
+  formData.prototype.values ??= function* values(
+    this: ReactNativeFormDataInternal
+  ): IterableIterator<FormDataEntryValue> {
     for (const part of this._parts) {
+      // @ts-expect-error: We don't perform correct normalization when setting the args so the return value will
+      // not be a normalized File object.
       yield part[1];
     }
   };
 
-  // @ts-expect-error: TODO fix dom types
   formData.prototype[Symbol.iterator] = formData.prototype.entries;
 
   return formData;
