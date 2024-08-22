@@ -14,7 +14,7 @@ import androidx.core.graphics.transform
 import androidx.core.view.isVisible
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.views.view.ReactViewBackgroundDrawable
+import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.records.ContentPosition
@@ -45,19 +45,9 @@ class ExpoImageView(
   private var transformationMatrixChanged = false
 
   private val borderDrawableLazyHolder = lazy {
-    ReactViewBackgroundDrawable(context).apply {
+    CSSBackgroundDrawable(context).apply {
       callback = this@ExpoImageView
-
-      outlineProvider.borderRadiiConfig
-        .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
-        .withIndex()
-        .forEach { (i, radius) ->
-          if (i == 0) {
-            setRadius(radius)
-          } else {
-            setRadius(radius, i - 1)
-          }
-        }
+      applyBorderRadius(outlineProvider.borderRadiiConfig)
     }
   }
 

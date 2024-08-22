@@ -18,7 +18,7 @@ import androidx.media3.ui.PlayerView
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
-import com.facebook.react.views.view.ReactViewBackgroundDrawable
+import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
@@ -26,6 +26,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.utils.applyBorderRadius
 import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 
@@ -58,19 +59,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val outlineProvider = OutlineProvider(context)
 
   private val borderDrawableLazyHolder = lazy {
-    ReactViewBackgroundDrawable(context).apply {
+    CSSBackgroundDrawable(context).apply {
       callback = this@VideoView
-
-      outlineProvider.borderRadiiConfig
-        .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
-        .withIndex()
-        .forEach { (i, radius) ->
-          if (i == 0) {
-            setRadius(radius)
-          } else {
-            setRadius(radius, i - 1)
-          }
-        }
+      applyBorderRadius(outlineProvider.borderRadiiConfig)
     }
   }
 
