@@ -33,7 +33,6 @@ public final class FileSystemNextModule: Module {
             promise.resolve(FileSystemFile(url: destination).url.absoluteString)
           } else {
             try FileManager.default.moveItem(at: fileURL, to: to.url)
-            // TODO: Remove .url once returning shared objects works
             promise.resolve(to.url.absoluteString)
           }
         } catch {
