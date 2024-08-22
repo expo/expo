@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add downloading to the new file system module.
+- Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
 - Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
 - Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
 
