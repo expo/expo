@@ -63,20 +63,31 @@ export function triggersToScreens(
     let state = linking.getStateFromPath?.(resolveHref(trigger.href), linking.config)?.routes[0];
 
     if (!state) {
+      // This shouldn't occur, as you should get the global +not-found
+      console.warn(
+        `Unable to find screen for trigger ${JSON.stringify(trigger)}. Does this point to a valid screen?`
+      );
       continue;
     }
 
+    let routeState = state;
+
+    // The state object is the current state from the rootNavigator
+    // We need to work out the state for just this trigger
     if (layoutRouteNode.route) {
       while (state?.state) {
         const previousState = state;
-        state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
         if (previousState.name === layoutRouteNode.route) break;
+        state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
       }
+      routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
     }
 
-    const routeNode = layoutRouteNode.children.find((child) => child.route === state?.name);
-
+    const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
     if (!routeNode) {
+      console.warn(
+        `Unable to find routeNode for trigger ${JSON.stringify(trigger)}. This might be a bug with Expo Router`
+      );
       continue;
     }
 
@@ -144,7 +155,7 @@ function stateToAction(
   const rootPayload: any = {};
   let payload = rootPayload;
 
-  let foundStartingPoint = false;
+  let foundStartingPoint = !startAtRoute;
 
   while (state) {
     if (foundStartingPoint) {
@@ -165,13 +176,12 @@ function stateToAction(
         payload = payload.params;
       }
     } else {
-      if (state.name === startAtRoute || !startAtRoute) {
+      if (state.name === startAtRoute) {
         foundStartingPoint = true;
-      } else {
-        const nextState = state.state?.routes[state.state?.routes.length - 1];
-        if (nextState) {
-          state = nextState;
-        }
+      }
+      const nextState = state.state?.routes[state.state?.routes.length - 1];
+      if (nextState) {
+        state = nextState;
       }
     }
   }
