@@ -37,10 +37,6 @@ class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
 
   private val fab by lazy {
     MovableFloatingActionButton(context) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        return@MovableFloatingActionButton
-      }
-
       // `setSystemGestureExclusionRects` should be call after the view is laid out
       doOnLayout {
         updateSystemGestureExclusionRects()
