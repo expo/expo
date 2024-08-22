@@ -9,19 +9,16 @@ public final class FileSystemNextModule: Module {
     AsyncFunction("download") { (url: URL, to: FileSystemPath, promise: Promise) in
       let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
-          promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
-          return
+          return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
         }
         guard let httpResponse = responseOrNil as? HTTPURLResponse else {
-          promise.reject(UnableToDownloadException("no response"))
-          return
+          return promise.reject(UnableToDownloadException("no response"))
         }
         guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
-          promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
-          return
+          return promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
         }
         guard let fileURL = urlOrNil else {
-          return
+          return promise.reject(UnableToDownloadException("no file url"))
         }
 
         do {
@@ -33,6 +30,7 @@ public final class FileSystemNextModule: Module {
             promise.resolve(FileSystemFile(url: destination).url.absoluteString)
           } else {
             try FileManager.default.moveItem(at: fileURL, to: to.url)
+            // TODO: Remove .url once returning shared objects works
             promise.resolve(to.url.absoluteString)
           }
         } catch {
