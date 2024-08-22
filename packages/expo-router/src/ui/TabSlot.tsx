@@ -33,7 +33,7 @@ export function useTabSlot({
   }
 
   return (
-    <ScreenContainer enabled={detachInactiveScreens} hasTwoStates>
+    <ScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.flexBoxGrowOnly}>
       {state.routes.map((route, index) => {
         return renderFn(descriptors[route.key], {
           index,
@@ -79,7 +79,8 @@ export function defaultTabsSlotRender(
       key={descriptor.route.key}
       activityState={isFocused ? 2 : 0}
       enabled={isFocused}
-      freezeOnBlur={freezeOnBlur}>
+      freezeOnBlur={freezeOnBlur}
+      style={styles.flexBoxGrowOnly}>
       <View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
         {descriptor.render()}
       </View>

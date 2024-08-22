@@ -1,26 +1,36 @@
 import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/ui';
+import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { TabButton } from '../components/TabButton';
 
 export default function Layout() {
+  const [showExtraTab, setShowExtraTab] = useState(false);
   return (
     <Tabs style={styles.root}>
       <TabSlot />
       <TabList style={styles.tabList}>
-        <TabTrigger name="home" href="/" asChild style={styles.tabTrigger}>
+        <TabTrigger name="home" href="/" asChild reset="longPress" style={styles.tabTrigger}>
           <TabButton icon="home">Index</TabButton>
         </TabTrigger>
         <TabTrigger
           name="movies"
           asChild
           href="/movies"
-          reset="longPress"
-          style={styles.tabTrigger}>
-          <TabButton icon="paint-brush">Movies</TabButton>
+          style={styles.tabTrigger}
+          onLongPress={(event) => {
+            event.preventDefault(); //
+            setShowExtraTab((state) => !state);
+          }}>
+          <TabButton icon="paint-brush">Movies (long press to show expo tab)</TabButton>
         </TabTrigger>
+        {showExtraTab ? (
+          <TabTrigger name="expo" asChild href="http://expo.dev" style={styles.tabTrigger}>
+            <TabButton icon="android">Expo</TabButton>
+          </TabTrigger>
+        ) : null}
         <TabTrigger name="google" asChild href="http://www.google.com" style={styles.tabTrigger}>
-          <TabButton icon="google">Google</TabButton>
+          <TabButton icon="google">Google (external)</TabButton>
         </TabTrigger>
       </TabList>
     </Tabs>

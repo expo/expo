@@ -40,7 +40,7 @@ export function TabTrigger<T extends string | object>({
   reset,
   ...props
 }: TabTriggerProps<T>) {
-  const { switchTab, isFocused } = useTabTrigger(name);
+  const { switchTab, isFocused } = useTabTrigger();
 
   const pressReset = reset === true;
   const longPressReset =
@@ -76,7 +76,7 @@ export function TabTrigger<T extends string | object>({
         {...props}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}
-        isFocused={isFocused}>
+        isFocused={isFocused(name)}>
         {props.children}
       </TabTriggerSlot>
     );
@@ -99,20 +99,19 @@ export function isTabTrigger(
   return child.type === TabTrigger;
 }
 
-export function useTabTrigger(name: string) {
+export function useTabTrigger() {
   const navigation = useNavigation();
   const triggerMap = useContext(TabTriggerMapContext);
   const state = useContext(TabsStateContext);
 
-  const config = triggerMap[name];
-  const { index } = config;
-
-  if (!config) {
-    throw new Error(`Unable to find trigger with name ${name}`);
-  }
-
   const switchTab = useCallback(
     (name: string, reset?: boolean) => {
+      const config = triggerMap[name];
+
+      if (!config) {
+        throw new Error(`Unable to find trigger with name ${name}`);
+      }
+
       if (config.type === 'internal') {
         const action: Extract<ExpoTabActionType, { type: 'SWITCH_TABS' }> = {
           type: 'SWITCH_TABS',
@@ -128,14 +127,25 @@ export function useTabTrigger(name: string) {
         return router.navigate(config.href);
       }
     },
-    [navigation]
+    [navigation, triggerMap]
+  );
+
+  const isFocused = useCallback(
+    (name: string) => {
+      const config = triggerMap[name];
+
+      if (!config) {
+        throw new Error(`Unable to find trigger with name ${name}`);
+      }
+
+      return state.index === config.index;
+    },
+    [triggerMap]
   );
 
   return {
     switchTab,
-    name,
-    index,
-    isFocused: state.index === index,
+    isFocused,
   };
 }
 

@@ -9,7 +9,7 @@ const TabContext_1 = require("./TabContext");
 const imperative_api_1 = require("../imperative-api");
 const TabTriggerSlot = react_slot_1.Slot;
 function TabTrigger({ asChild, name, href, reset, ...props }) {
-    const { switchTab, isFocused } = useTabTrigger(name);
+    const { switchTab, isFocused } = useTabTrigger();
     const pressReset = reset === true;
     const longPressReset = reset === true || typeof reset === 'string' ? reset === 'longPress' : Boolean(reset);
     const handleOnPress = (0, react_1.useCallback)((event) => {
@@ -28,7 +28,7 @@ function TabTrigger({ asChild, name, href, reset, ...props }) {
     }, [props.onPress]);
     // Pressable doesn't accept the extra props, so only pass them if we are using asChild
     if (asChild) {
-        return (<TabTriggerSlot style={styles.tabTrigger} {...props} onPress={handleOnPress} onLongPress={handleOnLongPress} isFocused={isFocused}>
+        return (<TabTriggerSlot style={styles.tabTrigger} {...props} onPress={handleOnPress} onLongPress={handleOnLongPress} isFocused={isFocused(name)}>
         {props.children}
       </TabTriggerSlot>);
     }
@@ -43,16 +43,15 @@ function isTabTrigger(child) {
     return child.type === TabTrigger;
 }
 exports.isTabTrigger = isTabTrigger;
-function useTabTrigger(name) {
+function useTabTrigger() {
     const navigation = (0, native_1.useNavigation)();
     const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const state = (0, react_1.useContext)(TabContext_1.TabsStateContext);
-    const config = triggerMap[name];
-    const { index } = config;
-    if (!config) {
-        throw new Error(`Unable to find trigger with name ${name}`);
-    }
     const switchTab = (0, react_1.useCallback)((name, reset) => {
+        const config = triggerMap[name];
+        if (!config) {
+            throw new Error(`Unable to find trigger with name ${name}`);
+        }
         if (config.type === 'internal') {
             const action = {
                 type: 'SWITCH_TABS',
@@ -67,12 +66,17 @@ function useTabTrigger(name) {
         else {
             return imperative_api_1.router.navigate(config.href);
         }
-    }, [navigation]);
+    }, [navigation, triggerMap]);
+    const isFocused = (0, react_1.useCallback)((name) => {
+        const config = triggerMap[name];
+        if (!config) {
+            throw new Error(`Unable to find trigger with name ${name}`);
+        }
+        return state.index === config.index;
+    }, [triggerMap]);
     return {
         switchTab,
-        name,
-        index,
-        isFocused: state.index === index,
+        isFocused,
     };
 }
 exports.useTabTrigger = useTabTrigger;

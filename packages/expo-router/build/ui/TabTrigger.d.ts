@@ -21,11 +21,9 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
 };
 export declare function TabTrigger<T extends string | object>({ asChild, name, href, reset, ...props }: TabTriggerProps<T>): import("react").JSX.Element;
 export declare function isTabTrigger(child: ReactElement<any>): child is ReactElement<ComponentProps<typeof TabTrigger>>;
-export declare function useTabTrigger(name: string): {
+export declare function useTabTrigger(): {
     switchTab: (name: string, reset?: boolean) => void;
-    name: string;
-    index: number;
-    isFocused: boolean;
+    isFocused: (name: string) => boolean;
 };
 export {};
 //# sourceMappingURL=TabTrigger.d.ts.map

@@ -16,7 +16,7 @@ function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'we
     if (!loaded[focusedRouteKey]) {
         setLoaded({ ...loaded, [focusedRouteKey]: true });
     }
-    return (<react_native_screens_1.ScreenContainer enabled={detachInactiveScreens} hasTwoStates>
+    return (<react_native_screens_1.ScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.flexBoxGrowOnly}>
       {state.routes.map((route, index) => {
             return renderFn(descriptors[route.key], {
                 index,
@@ -43,7 +43,7 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded }) {
         // Don't render a lazy screen if we've never navigated to it
         return null;
     }
-    return (<react_native_screens_1.Screen key={descriptor.route.key} activityState={isFocused ? 2 : 0} enabled={isFocused} freezeOnBlur={freezeOnBlur}>
+    return (<react_native_screens_1.Screen key={descriptor.route.key} activityState={isFocused ? 2 : 0} enabled={isFocused} freezeOnBlur={freezeOnBlur} style={styles.flexBoxGrowOnly}>
       <react_native_1.View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
         {descriptor.render()}
       </react_native_1.View>

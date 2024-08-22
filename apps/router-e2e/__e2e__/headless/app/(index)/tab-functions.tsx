@@ -11,7 +11,7 @@ export default function OtherPage() {
       <TabTrigger name="movies" reset>
         <Text>Jump to movies tab (and reset tab)</Text>
       </TabTrigger>
-      <TabTrigger name="movies" reset="long">
+      <TabTrigger name="movies" reset="longPress">
         <Text>Jump to movies tab (and reset on long press)</Text>
       </TabTrigger>
     </View>
