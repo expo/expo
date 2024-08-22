@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import com.facebook.react.ReactRootView
 import expo.modules.devmenu.fab.MovableFloatingActionButton
@@ -18,7 +19,6 @@ import expo.modules.devmenu.fab.MovableFloatingActionButton
 private const val enableFAB = false
 
 class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
-  @RequiresApi(Build.VERSION_CODES.Q)
   private val updateSystemGestureExclusionRects: () -> Unit = {
     val marginLayoutParams = fab.layoutParams as MarginLayoutParams
 
@@ -32,7 +32,7 @@ class DevMenuReactRootViewContainer(context: Context) : FrameLayout(context) {
 
     // For some reason, updating the system gesture exclusion rects has to be called on that view
     // instead of calling it on the fab view itself. Probably, because we want to extend the react by view margins.
-    setSystemGestureExclusionRects(listOf(rect))
+    ViewCompat.setSystemGestureExclusionRects(this, listOf(rect))
   }
 
   private val fab by lazy {
