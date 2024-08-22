@@ -45,7 +45,7 @@ internal func loadFont(fromUrl url: CFURL, alias: String) throws -> CGFont {
 /**
  Registers the given font to make it discoverable through font descriptor matching.
  */
-internal func registerFont(_ fontUrl: CFURL) throws {
+internal func registerFont(fontUrl: CFURL, fontFamilyAlias: String) throws {
   var error: Unmanaged<CFError>?
 
   if !CTFontManagerRegisterFontsForURL(fontUrl, .process, &error), let error = error?.takeRetainedValue() {
@@ -58,7 +58,7 @@ internal func registerFont(_ fontUrl: CFURL) throws {
       // - another instance already registered with the same name (assuming it's most likely the same font anyway)
       return
     default:
-      throw FontRegistrationFailedException(error)
+      throw FontRegistrationFailedException(FontRegistrationErrorInfo(fontFamilyAlias: fontFamilyAlias, cfError: error, ctFontManagerError: fontError))
     }
   }
 }
