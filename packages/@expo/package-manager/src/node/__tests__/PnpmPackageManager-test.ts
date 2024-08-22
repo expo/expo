@@ -452,7 +452,7 @@ describe('PnpmPackageManager', () => {
         {
           'packages/test/package.json': JSON.stringify({ name: 'project' }),
           'package.json': JSON.stringify({ name: 'monorepo' }),
-          'pnpm-workspace.yaml': 'packages:\n  - "packages/*"',
+          'pnpm-workspace.yaml': 'packages:\n  - packages/*',
         },
         workspaceRoot
       );

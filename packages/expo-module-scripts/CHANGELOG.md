@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Detect workspace root for monorepos using pnpm.
+- Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

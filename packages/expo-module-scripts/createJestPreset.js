@@ -131,7 +131,7 @@ function _getDefaultTypeRoots(currentDirectory) {
   // If the TypeScript configuration is in a Yarn workspace, workspace's npm dependencies may be
   // installed in the workspace root. If the configuration is in a non-workspace package, its
   // dependencies are installed only in the package's directory.
-  const rootPath = resolveWorkspaceRoot(packageDirectory);
+  const rootPath = resolveWorkspaceRoot(packageDirectory) || packageDirectory;
 
   let relativeAncestorDirectoryPath = '..';
   while (currentDirectory !== rootPath) {
