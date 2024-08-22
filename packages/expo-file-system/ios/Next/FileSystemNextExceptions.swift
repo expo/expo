@@ -1,8 +1,6 @@
 import Foundation
 import ExpoModulesCore
 
-let defaultErrorMessage = "unspecified error"
-
 internal class CopyDirectoryToFileException: Exception {
   override var reason: String {
     "Unable to copy a directory to a file"
