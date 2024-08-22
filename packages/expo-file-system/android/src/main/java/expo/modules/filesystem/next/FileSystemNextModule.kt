@@ -21,7 +21,6 @@ class FileSystemNextModule : Module() {
     AsyncFunction("download") { url: URI, to: FileSystemPath, promise: Promise ->
       try {
         with(url.toURL().openConnection() as HttpURLConnection) {
-          // check if code is 200 to 299
           if (responseCode !in 200..299) {
             promise.reject(UnableToDownloadException("response has status: $responseCode"))
             return@AsyncFunction
