@@ -1,6 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
-import { getBareExtensions } from '@expo/config/paths';
+import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
@@ -14,7 +14,7 @@ import resolveFrom from 'resolve-from';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { FileStore } from './file-store';
-import { getModulesPaths, getServerRoot } from './getModulesPaths';
+import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
@@ -210,7 +210,7 @@ export function getDefaultConfig(
     root: path.join(os.tmpdir(), 'metro-cache'),
   });
 
-  const serverRoot = getServerRoot(projectRoot);
+  const serverRoot = getMetroServerRoot(projectRoot);
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
