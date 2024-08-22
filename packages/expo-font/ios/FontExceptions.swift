@@ -12,6 +12,12 @@ internal final class FontCreationFailedException: GenericException<String> {
   }
 }
 
+internal final class FontNoPostScriptException: GenericException<String> {
+  override var reason: String {
+    "Could not create font '\(param)' from loaded data because it is missing the PostScript name"
+  }
+}
+
 internal final class FontRegistrationFailedException: GenericException<CFError> {
   override var reason: String {
     "Registering '\(param)' font failed with message: '\(param.localizedDescription)'"
