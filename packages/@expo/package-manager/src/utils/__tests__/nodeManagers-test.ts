@@ -5,14 +5,15 @@ import { BunPackageManager } from '../../node/BunPackageManager';
 import { NpmPackageManager } from '../../node/NpmPackageManager';
 import { PnpmPackageManager } from '../../node/PnpmPackageManager';
 import { YarnPackageManager } from '../../node/YarnPackageManager';
-import { createForProject, resolvePackageManager } from '../nodeManagers';
 import {
+  createForProject,
+  resolvePackageManager,
+  resolveWorkspaceRoot,
   BUN_LOCK_FILE,
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
-  PNPM_WORKSPACE_FILE,
   YARN_LOCK_FILE,
-} from '../nodeWorkspaces';
+} from '../nodeManagers';
 
 jest.mock('fs');
 
@@ -150,7 +151,7 @@ describe(resolvePackageManager, () => {
           name: 'monorepo',
         }),
         [PNPM_LOCK_FILE]: '',
-        [PNPM_WORKSPACE_FILE]: 'packages:\n  - packages/*',
+        'pnpm-workspace.yaml': 'packages:\n  - packages/*',
       },
       workspaceRoot
     );
@@ -227,5 +228,50 @@ describe(resolvePackageManager, () => {
     // Due to the `yarn.lock` file being present when running `bun install --yarn`,
     // yarn can be returned as package manager when prefering `yarn`.
     expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
+  });
+});
+
+describe(resolveWorkspaceRoot, () => {
+  const workspaceRoot = '/monorepo';
+
+  afterEach(() => vol.reset());
+
+  it('resolves root from project', () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ private: true, name: '@acme/monorepo' }),
+        'pnpm-workspace.yaml': 'packages:\n  - packages/*',
+        'packages/test/package.json': JSON.stringify({ name: '@acme/test' }),
+      },
+      workspaceRoot
+    );
+
+    expect(resolveWorkspaceRoot('/monorepo/packages/test')).toBe(workspaceRoot);
+  });
+
+  it('resolves root from workspace', () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ private: true, name: '@acme/monorepo' }),
+        'pnpm-workspace.yaml': 'packages:\n  - packages/*',
+        'packages/test/package.json': JSON.stringify({ name: '@acme/test' }),
+      },
+      workspaceRoot
+    );
+
+    expect(resolveWorkspaceRoot('/monorepo/packages/test')).toBe(workspaceRoot);
+  });
+
+  it('ignores root from uncoupled project', () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ private: true, name: '@acme/monorepo' }),
+        'pnpm-workspace.yaml': 'packages:\n  - packages-not-included/*',
+        'packages/test/package.json': JSON.stringify({ name: '@acme/test' }),
+      },
+      workspaceRoot
+    );
+
+    expect(resolveWorkspaceRoot('/monorepo/packages/test')).toBeNull();
   });
 });
