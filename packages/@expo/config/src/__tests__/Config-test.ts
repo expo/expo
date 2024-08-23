@@ -422,4 +422,92 @@ describe(modifyConfigAsync, () => {
       },
     });
   });
+
+  it('succeeds when modifying static with function-like dynamic config, when mutating updates.url', async () => {
+    createProject('/static-dynamic-function-updates.url', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { requestHeaders: { 'expo-channel-name': 'existing-property' } },
+      }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    console.log(JSON.parse(vol.readFileSync('/static-dynamic-function-updates.url/app.json', { encoding: 'utf-8' })));
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates.url', {
+        updates: { url: 'https://u.expo.dev/test-project' },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        version: '9.9.9', // Modified by dynamic config
+        // The combined nested object
+        updates: {
+          requestHeaders: { 'expo-channel-name': 'existing-property' },
+          url: 'https://u.expo.dev/test-project',
+        },
+      },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when mutating and extending extra.eas', async () => {
+    createProject('/static-dynamic-function-extra.eas', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config, 
+        extra: { 
+          ...config.extra, 
+          eas: { 
+            ...config.extra?.eas, 
+            someProperty: 'dynamic-property'
+          }
+        }
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-extra.eas', {
+        extra: { eas: { projectId: 'test-project' } },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        // The combined nested object
+        extra: {
+          eas: {
+            someProperty: 'dynamic-property',
+            projectId: 'test-project',
+          },
+        },
+      },
+    });
+  });
+
+  it('warns when modifying static with function-like dynamic config, when mutating but not extending extra.eas', async () => {
+    createProject('/static-dynamic-function-extra.eas-override', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config, 
+        extra: { 
+          ...config.extra, 
+          eas: { 
+            someProperty: 'dynamic-property'
+          }
+        }
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-extra.eas-override', {
+        extra: { eas: { projectId: 'test-project' } },
+      })
+    ).resolves.toMatchObject({
+      type: 'warn',
+      config: null,
+      message: expect.stringMatching(/dynamic config/),
+    });
+  });
 });
