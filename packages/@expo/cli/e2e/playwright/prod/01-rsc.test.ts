@@ -89,6 +89,8 @@ test.describe.serial(inputDir, () => {
     await page.waitForSelector('[data-testid="index-text"]');
 
     await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
+    await expect(page.locator('[data-testid="index-path"]')).toHaveText('/');
+    await expect(page.locator('[data-testid="index-query"]')).toHaveText('');
 
     console.timeEnd('hydrate');
 
