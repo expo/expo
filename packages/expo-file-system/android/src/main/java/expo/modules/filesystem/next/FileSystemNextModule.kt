@@ -1,6 +1,5 @@
 package expo.modules.filesystem.next
 
-import android.net.Uri
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -52,8 +51,17 @@ class FileSystemNextModule : Module() {
         file.exists()
       }
 
-      Property("path")
-        .get { file: FileSystemFile -> return@get Uri.fromFile(file.path) }
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
+        file.copy(destination)
+      }
+
+      Function("move") { file: FileSystemFile, destination: FileSystemPath ->
+        file.move(destination)
+      }
+
+      Property("path") { file ->
+        file.asString()
+      }
     }
 
     Class(FileSystemDirectory::class) {
@@ -77,8 +85,17 @@ class FileSystemNextModule : Module() {
         directory.validatePath()
       }
 
-      Property("path")
-        .get { directory: FileSystemDirectory -> return@get Uri.fromFile(directory.path) }
+      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath ->
+        directory.copy(destination)
+      }
+
+      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
+        directory.move(destination)
+      }
+
+      Property("path") { directory ->
+        directory.asString()
+      }
     }
   }
 }

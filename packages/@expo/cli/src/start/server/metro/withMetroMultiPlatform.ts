@@ -718,6 +718,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isNamedRequiresEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -728,10 +729,11 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
-  if (env.EXPO_USE_METRO_REQUIRE) {
+  if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
     require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(

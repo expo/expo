@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Minimize modules. ([#31088](https://github.com/expo/expo/pull/31088) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 1.12.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

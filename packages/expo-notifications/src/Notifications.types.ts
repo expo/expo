@@ -429,7 +429,7 @@ export type NotificationContentIos = {
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
    * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
-   * @platform ios 15+
+   * @platform ios
    */
   interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
@@ -569,7 +569,7 @@ export type NotificationContentInput = {
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
    * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
-   * @platform ios 15+
+   * @platform ios
    */
   interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };

@@ -8,9 +8,13 @@
 
 ### 🎉 New features
 
+- Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824), [#30825](https://github.com/expo/expo/pull/30825) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30483](https://github.com/expo/expo/pull/30483) by [@byCedric](https://github.com/byCedric))
+- Fixed build errors on iOS if other third-party libraries building with iOS system SQLite. ([#30824](https://github.com/expo/expo/pull/30824) by [@kudo](https://github.com/kudo))
+- Fixed build error when using `incremental_installation` mode in CocoaPods. ([#30918](https://github.com/expo/expo/pull/30918) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

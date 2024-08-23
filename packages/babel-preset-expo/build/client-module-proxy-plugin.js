@@ -14,7 +14,9 @@ function reactClientReferencesPlugin() {
         name: 'expo-client-references',
         visitor: {
             Program(path, state) {
-                const isUseClient = path.node.directives.some((directive) => directive.value.value === 'use client');
+                const isUseClient = path.node.directives.some((directive) => directive.value.value === 'use client' ||
+                    // Convert DOM Components to client proxies in React Server environments.
+                    directive.value.value === 'use dom');
                 // TODO: use server can be added to scopes inside of the file. https://github.com/facebook/react/blob/29fbf6f62625c4262035f931681c7b7822ca9843/packages/react-server-dom-webpack/src/ReactFlightWebpackNodeRegister.js#L55
                 const isUseServer = path.node.directives.some((directive) => directive.value.value === 'use server');
                 if (isUseClient && isUseServer) {

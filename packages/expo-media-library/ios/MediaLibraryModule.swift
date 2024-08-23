@@ -65,14 +65,10 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
 
     AsyncFunction("presentPermissionsPickerAsync") {
-      if #available(iOS 14.0, *) {
-        guard let vc = appContext?.utilities?.currentViewController() else {
-          return
-        }
-        PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
-      } else {
-        throw MethodUnavailableException()
+      guard let vc = appContext?.utilities?.currentViewController() else {
+        return
       }
+      PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
     }.runOnQueue(.main)
 
     AsyncFunction("createAssetAsync") { (uri: URL, promise: Promise) in
@@ -434,12 +430,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
             reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
             return
           }
-
-          if #available(iOS 14.0, *) {
-            if permissions["accessPrivileges"] as? String != "all" {
-              reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
-              return
-            }
+          if permissions["accessPrivileges"] as? String != "all" {
+            reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
+            return
           }
           block()
         }

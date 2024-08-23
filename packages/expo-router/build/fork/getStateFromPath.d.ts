@@ -44,7 +44,7 @@ export declare function getUrlWithReactNavigationConcessions(path: string, baseU
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-export default function getStateFromPath<ParamList extends object>(this: RouterStore | undefined, path: string, options?: Options<ParamList>): ResultState | undefined;
+export default function getStateFromPath<ParamList extends object>(this: RouterStore | undefined | void, path: string, options?: Options<ParamList>): ResultState | undefined;
 export declare function getMatchableRouteConfigs<ParamList extends object>(options?: Options<ParamList>, previousSegments?: string[]): {
     configs: {
         isInitial: boolean;

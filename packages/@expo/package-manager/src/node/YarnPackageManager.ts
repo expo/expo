@@ -1,5 +1,5 @@
 import { BasePackageManager } from './BasePackageManager';
-import { findYarnOrNpmWorkspaceRoot, YARN_LOCK_FILE } from '../utils/nodeWorkspaces';
+import { resolveWorkspaceRoot, YARN_LOCK_FILE } from '../utils/nodeManagers';
 import { createPendingSpawnAsync } from '../utils/spawn';
 import { isYarnOfflineAsync } from '../utils/yarn';
 
@@ -14,7 +14,7 @@ export class YarnPackageManager extends BasePackageManager {
   }
 
   workspaceRoot() {
-    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
       return new YarnPackageManager({
         ...this.options,

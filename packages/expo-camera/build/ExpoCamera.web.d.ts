@@ -1,5 +1,5 @@
 import { type PropsWithChildren } from 'react';
-import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions } from './legacy/Camera.types';
+import { CameraNativeProps, CameraCapturedPicture, CameraPictureOptions } from './Camera.types';
 export interface ExponentCameraRef {
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;

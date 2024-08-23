@@ -1,12 +1,10 @@
-import { loaded, loadPromises } from '../memory';
+import { loadPromises, purgeCache } from '../memory';
 
 let Font;
 let NativeModulesProxy;
 
 function clearMemory() {
-  for (const key of Object.keys(loaded)) {
-    delete loaded[key];
-  }
+  purgeCache();
   for (const key of Object.keys(loadPromises)) {
     delete loadPromises[key];
   }
@@ -32,6 +30,7 @@ function _createMockAsset({
 beforeEach(() => {
   ({ NativeModulesProxy } = require('expo-modules-core'));
   NativeModulesProxy.ExpoFontLoader.loadAsync.mockImplementation(async () => {});
+  NativeModulesProxy.ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
   Font = require('expo-font');
 });
 
@@ -278,10 +277,16 @@ describe('in bare workflow', () => {
   it(`does not scope font names`, async () => {
     const fontName = 'test-font';
     const mockAsset = _createMockAsset();
+    expect(Font.isLoaded(fontName)).toBe(false);
     await Font.loadAsync(fontName, mockAsset);
     expect(Font.isLoaded(fontName)).toBe(true);
 
     const processedFontFamily = Font.processFontFamily(fontName);
     expect(processedFontFamily).toEqual(fontName);
+  });
+
+  it('getLoadedFonts is available', () => {
+    expect(Font.getLoadedFonts()).toHaveLength(0);
+    expect(NativeModulesProxy.ExpoFontLoader.getLoadedFonts).toHaveBeenCalledTimes(1);
   });
 });

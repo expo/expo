@@ -11,9 +11,9 @@ When you make a change to your iOS entitlements, this change needs to be updated
 
 ## Entitlements
 
-In the managed workflow, the entitlements are read from the introspected app config. To edit them, see the [`ios.entitlements`](/versions/latest/config/app/#entitlements) field in your app config file. You can see your introspected config by running `npx expo config --type introspect` in your project and then look for the `ios.entitlements` object for the results.
+In an Expo app, the entitlements are read from the introspected app config. To edit them, see the [`ios.entitlements`](/versions/latest/config/app/#entitlements) field in your app config file. You can see your introspected config by running `npx expo config --type introspect` in your project and then look for the `ios.entitlements` object for the results.
 
-In bare workflow apps, the entitlements are read from your **ios/\*\*/\*.entitlements** file.
+In a bare React Native app, the entitlements are read from your **ios/\*\*/\*.entitlements** file.
 
 ## Enabling
 
@@ -111,7 +111,7 @@ There are two ways to manually enable Apple capabilities, both systems will requ
 
 ### Xcode
 
-> Preferred method for bare workflow or projects that do **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the native **android** and **ios** directories.
+> Preferred method for projects that do **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the native **android** and **ios** directories.
 
 1. Open the **ios** directory in Xcode with `xed ios`. If you don't have an **ios** directory, run `npx expo prebuild -p ios` to generate one.
 2. Then follow the steps mentioned in [Add a capability][apple-enable-capability].

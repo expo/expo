@@ -1,4 +1,5 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
@@ -12,6 +13,7 @@ import util from 'node:util';
 import semver from 'semver';
 import { URL } from 'url';
 
+import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
@@ -25,7 +27,6 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
@@ -89,6 +90,13 @@ export async function loadMetroConfigAsync(
   }: { exp: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
+
+  // NOTE: Enable all the experimental Metro flags when RSC is enabled.
+  if (exp.experiments?.reactServerComponents) {
+    process.env.EXPO_USE_METRO_REQUIRE = '1';
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -159,7 +167,9 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    isReactCanaryEnabled:
+      (exp.experiments?.reactServerComponents || exp.experiments?.reactCanary) ?? false,
+    isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     getMetroBundler,
   });
 
@@ -271,6 +281,7 @@ export async function instantiateMetroAsync(
       websocketEndpoints: {
         ...websocketEndpoints,
         ...debugWebsocketEndpoints,
+        ...createDevToolsPluginWebsocketEndpoint(),
       },
       watch: !isExporting && isWatchEnabled(),
     },

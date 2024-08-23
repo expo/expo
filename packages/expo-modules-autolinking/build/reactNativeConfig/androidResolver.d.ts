@@ -10,3 +10,10 @@ export declare function parsePackageNameAsync(manifestPath: string | null, gradl
 export declare function parseNativePackageClassNameAsync(packageRoot: string, androidDir: string): Promise<string | null>;
 export declare function parseLibraryNameAsync(androidDir: string, packageJson: any): Promise<string | null>;
 export declare function parseComponentDescriptorsAsync(packageRoot: string, pacakgeJson: any): Promise<string[]>;
+export declare function findGradleAndManifestAsync({ androidDir, isLibrary, }: {
+    androidDir: string;
+    isLibrary: boolean;
+}): Promise<{
+    gradle: string;
+    manifest: string;
+}>;
