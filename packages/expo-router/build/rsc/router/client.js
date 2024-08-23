@@ -14,12 +14,21 @@ exports.ServerRouter = exports.Router = void 0;
 const react_1 = require("react");
 const common_js_1 = require("./common.js");
 const host_js_1 = require("./host.js");
-const parseRoute = (url) => {
-    const { pathname, searchParams } = url;
-    if (searchParams.has(common_js_1.PARAM_KEY_SKIP)) {
-        console.warn(`The search param "${common_js_1.PARAM_KEY_SKIP}" is reserved`);
+const normalizeRoutePath = (path) => {
+    for (const suffix of ['/', '/index.html']) {
+        if (path.endsWith(suffix)) {
+            return path.slice(0, -suffix.length) || '/';
+        }
     }
-    return { path: pathname, searchParams };
+    return path;
+};
+const parseRoute = (url) => {
+    const { pathname, searchParams, hash } = url;
+    return {
+        path: normalizeRoutePath(pathname),
+        query: searchParams.toString(),
+        hash,
+    };
 };
 const getHref = () => process.env.EXPO_OS === 'web'
     ? window.location.href
@@ -35,7 +44,7 @@ function InnerRouter() {
         const refetchRoute = () => {
             const loc = parseRoute(new URL(getHref()));
             const input = (0, common_js_1.getInputString)(loc.path);
-            refetch(input, loc.searchParams);
+            refetch(input, loc.query);
         };
         globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
         const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_ROUTE__);
@@ -52,9 +61,11 @@ function InnerRouter() {
 function Router() {
     const route = parseRoute(new URL(getHref()));
     const initialInput = (0, common_js_1.getInputString)(route.path);
-    const initialSearchParamsString = route.searchParams.toString();
-    const unstable_onFetchData = () => { };
-    return (0, react_1.createElement)(host_js_1.Root, { initialInput, initialSearchParamsString, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter));
+    const initialParams = JSON.stringify({ query: route.query });
+    const unstable_onFetchData = () => {
+        // TODO: add data fetching
+    };
+    return (0, react_1.createElement)(host_js_1.Root, { initialInput, initialParams, unstable_onFetchData }, (0, react_1.createElement)(InnerRouter));
 }
 exports.Router = Router;
 /**

@@ -32,7 +32,7 @@ export type GetSsrConfig = (pathname: string, options: {
 }) => Promise<{
     input: string;
     searchParams?: URLSearchParams;
-    body: ReactNode;
+    html: ReactNode;
 } | null>;
 export declare function defineEntries(renderEntries: RenderEntries, getBuildConfig?: GetBuildConfig, getSsrConfig?: GetSsrConfig): {
     renderEntries: RenderEntries;

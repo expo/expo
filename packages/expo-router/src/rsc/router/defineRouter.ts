@@ -176,15 +176,15 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
     }
     const componentIds = getComponentIds(pathname);
     const input = getInputString(pathname);
-    const body = createElement(
+    const html = createElement(
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
-      { route: { path: pathname, searchParams } },
+      { route: { path: pathname, query: searchParams.toString(), hash: '' } },
       componentIds.reduceRight(
         (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
         null
       )
     );
-    return { input, body };
+    return { input, params: JSON.stringify({ query: searchParams.toString() }), html };
   };
 
   return { renderEntries, getBuildConfig, getSsrConfig };
