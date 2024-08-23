@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Add experimental `__rsc_tests__` directory to npm ignore. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))

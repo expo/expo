@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Add prototype members `set`, `delete`, `get`, `has`, `forEach`, `entries`, `keys`, `values`, `[Symbol.iterator]` to global `FormData` on native. ([#31117](https://github.com/expo/expo/pull/31117) by [@EvanBacon](https://github.com/EvanBacon))
+- Polyfill `Symbol.asyncIterator` on native. ([#31127](https://github.com/expo/expo/pull/31127) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and `expo/dom` module. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Support `URL.canParse`. ([#30697](https://github.com/expo/expo/pull/30697) by [@EvanBacon](https://github.com/EvanBacon))
 - Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))

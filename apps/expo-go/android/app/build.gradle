@@ -39,6 +39,9 @@ react {
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
   bundleCommand = "export:embed"
+
+  /* Autolinking */
+  autolinkLibrariesWithApp()
 }
 
 android {

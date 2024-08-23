@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add basic support for using DOM Components in React Server Components projects. ([#31080](https://github.com/expo/expo/pull/31080) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and expose `expoDomComponentReference` on metadata. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `hasCjsExports` metadata for tracking static exports. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `process.env.EXPO_SERVER` for detecting when the JS was bundled for a server or react server environment. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))

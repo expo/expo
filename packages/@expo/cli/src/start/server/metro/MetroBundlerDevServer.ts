@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
@@ -67,7 +68,7 @@ import {
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -168,6 +169,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const rscPath = '/_flight/[...rsc]';
 
     if (
+      this.isReactServerComponentsEnabled &&
       // If the RSC route is not already in the manifest, add it.
       !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
     ) {

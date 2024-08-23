@@ -29,3 +29,7 @@ install('URL', () => require('./url').URL);
 install('URLSearchParams', () => require('./url').URLSearchParams);
 
 installFormDataPatch(FormData);
+
+// Polyfill async iterator symbol for Hermes.
+// @ts-expect-error: readonly property only applies when the engine supports it
+Symbol.asyncIterator ??= Symbol.for('Symbol.asyncIterator');
