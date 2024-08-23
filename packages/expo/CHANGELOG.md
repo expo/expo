@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed expo-updates crash when R8 is enabled on Android. ([#30765](https://github.com/expo/expo/pull/30765) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 51.0.31 — 2024-08-23
+
+### 🐛 Bug fixes
+
+- Fixed expo-updates crash when R8 is enabled on Android. ([#30765](https://github.com/expo/expo/pull/30765) by [@kudo](https://github.com/kudo))
 
 ## 51.0.30 — 2024-08-21
 
