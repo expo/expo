@@ -60,7 +60,7 @@ function useTabsWithTriggers({ triggers, ...options }) {
     const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName);
     const { state, descriptors, navigation, NavigationContent: RNNavigationContent, } = (0, native_1.useNavigationBuilder)(TabRouter_1.ExpoTabRouter, {
         children,
-        backBehavior: expo_modules_core_1.Platform.OS === 'web' ? 'history' : 'firstRoute',
+        backBehavior: expo_modules_core_1.Platform.OS === 'web' ? 'history' : undefined,
         ...options,
         triggerMap,
         id: contextKey,

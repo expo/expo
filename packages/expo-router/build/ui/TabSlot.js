@@ -43,7 +43,7 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded }) {
         // Don't render a lazy screen if we've never navigated to it
         return null;
     }
-    return (<react_native_screens_1.Screen key={descriptor.route.key} activityState={isFocused ? 2 : 0} enabled={isFocused} freezeOnBlur={freezeOnBlur} style={styles.flexBoxGrowOnly}>
+    return (<react_native_screens_1.Screen key={descriptor.route.key} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={styles.flexBoxGrowOnly}>
       <react_native_1.View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
         {descriptor.render()}
       </react_native_1.View>

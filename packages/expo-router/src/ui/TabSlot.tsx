@@ -78,7 +78,6 @@ export function defaultTabsSlotRender(
     <Screen
       key={descriptor.route.key}
       activityState={isFocused ? 2 : 0}
-      enabled={isFocused}
       freezeOnBlur={freezeOnBlur}
       style={styles.flexBoxGrowOnly}>
       <View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>

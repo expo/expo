@@ -11,7 +11,6 @@ export default function Home() {
       <Link href="/tab-functions" style={styles.link}>
         Go to Tab functions
       </Link>
-      <Text>You can reset to this tab by long pressing the tab button</Text>
       <Text style={styles.subheader}>Movies</Text>
       <View style={styles.listRoot}>
         <MovieList />

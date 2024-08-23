@@ -223,9 +223,9 @@ export declare function useTabsWithChildren({ children, ...options }: UseTabsWit
             };
         };
     };
-    NavigationContent: ({ children }: {
+    NavigationContent: import("react").ForwardRefExoticComponent<{
         children: ReactNode;
-    }) => import("react").JSX.Element;
+    } & import("react").RefAttributes<unknown>>;
 };
 export declare function useTabsWithTriggers<T extends string | object>({ triggers, ...options }: UseTabsWithTriggersOptions<T>): {
     state: TabNavigationState<any>;
@@ -430,8 +430,8 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
             };
         };
     };
-    NavigationContent: ({ children }: {
+    NavigationContent: import("react").ForwardRefExoticComponent<{
         children: ReactNode;
-    }) => import("react").JSX.Element;
+    } & import("react").RefAttributes<unknown>>;
 };
 //# sourceMappingURL=Tabs.d.ts.map

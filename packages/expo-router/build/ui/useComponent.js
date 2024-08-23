@@ -14,13 +14,13 @@ function useComponent(render) {
     (0, react_1.useEffect)(() => {
         renderRef.current = null;
     });
-    return (0, react_1.useRef)(({ children }) => {
+    return (0, react_1.useRef)((0, react_1.forwardRef)(({ children }, _ref) => {
         const render = renderRef.current;
         if (render === null) {
             throw new Error('The returned component must be rendered in the same render phase as the hook.');
         }
         return <NavigationContent render={render}>{children}</NavigationContent>;
-    }).current;
+    })).current;
 }
 exports.useComponent = useComponent;
 //# sourceMappingURL=useComponent.js.map

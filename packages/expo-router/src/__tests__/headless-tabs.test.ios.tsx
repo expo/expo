@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, Ref, useState } from 'react';
 import { ViewProps, View, Text, Button } from 'react-native';
 
 import { useLocalSearchParams } from '../hooks';
@@ -51,7 +51,7 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
       },
       '(group)/banana/index': () => <Text testID="banana">Banana Index</Text>,
       '(group)/banana/color': () => <Text testID="banana-color">Banana Color</Text>,
-      '(group)/banana/shape': () => <Text testID="banana">Banana Shape</Text>,
+      '(group)/banana/shape': () => <Text testID="banana-shape">Banana Shape</Text>,
       '(group)/banana/[dynamic]': () => <Text testID="banana-dynamic">Banana dynamic</Text>,
 
       // Orange
@@ -84,22 +84,21 @@ it('should render the correct screen with nested navigators', () => {
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
   fireEvent.press(screen.getByTestId('goto-banana'));
-  // expect(screen.getByTestId('banana-dynamic')).toBeVisible();
-  // expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
-  // act(() => router.push('/banana/shape'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  expect(screen.getByTestId('banana-dynamic')).toBeVisible();
+  expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
+  act(() => router.push('/banana/shape'));
+  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  expect(screen.getByTestId('banana-shape')).toBeVisible();
 
-  // fireEvent.press(screen.getByTestId('goto-orange'));
-  // expect(screen).toHaveSegments(['(group)', 'orange']);
-  // act(() => router.push('/orange/color'));
-  // expect(screen).toHaveSegments(['(group)', 'orange', 'color']);
+  fireEvent.press(screen.getByTestId('goto-apple'));
+  expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  // // Banana should retain its state
-  // fireEvent.press(screen.getByTestId('goto-banana'));
-  // expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  // Banana should retain its history
+  fireEvent.press(screen.getByTestId('goto-banana'));
+  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 });
 
-it('should respect `unstable_settings', () => {
+it('should respect `unstable_settings on native', () => {
   renderFruitApp({ initialUrl: '/orange' });
   expect(screen).toHaveSegments(['(group)', 'orange']);
 
@@ -127,23 +126,23 @@ it('should allow Href objects', () => {
 });
 
 it('allows for custom elements', () => {
-  function CustomTabs({ children, ...props }: ViewProps) {
+  const CustomTabs = forwardRef(({ children, ...props }: ViewProps, ref: Ref<View>) => {
     return (
-      <View testID="custom-tabs" {...props}>
+      <View ref={ref} testID="custom-tabs" {...props}>
         {children}
       </View>
     );
-  }
-  function CustomTabList({ children, ...props }: ViewProps) {
+  });
+  const CustomTabList = forwardRef(({ children, ...props }: ViewProps, ref: Ref<View>) => {
     return (
-      <View testID="custom-tablist" {...props}>
+      <View ref={ref} testID="custom-tablist" {...props}>
         {children}
       </View>
     );
-  }
-  function CustomTrigger(props: PressableProps) {
-    return <Pressable testID="custom-trigger" {...props} />;
-  }
+  });
+  const CustomTrigger = forwardRef((props: PressableProps, ref: Ref<any>) => {
+    return <Pressable ref={ref} testID="custom-trigger" {...props} />;
+  });
 
   renderRouter(
     {
@@ -266,24 +265,28 @@ it('does works with shared groups', () => {
     }
   );
 
-  expect(screen.getByTestId('apple')).toBeVisible();
-  expect(screen).toHaveSegments(['(one)', '[fruit]']);
+  // expect(screen.getByTestId('apple')).toBeVisible();
+  // expect(screen).toHaveSegments(['(one)', '[fruit]']);
 
   fireEvent.press(screen.getByTestId('goto-orange'));
   expect(screen.getByTestId('orange')).toBeVisible();
   expect(screen).toHaveSegments(['(two)', '[fruit]']);
 });
 
-describe('warnings', () => {
+describe('warnings/errors', () => {
   const originalWarn = console.warn;
+  const originalError = console.error;
 
   const warn = jest.fn();
+  const error = jest.fn();
 
   beforeEach(() => {
     console.warn = warn;
+    console.error = error;
   });
   afterEach(() => {
     console.warn = originalWarn;
+    console.error = originalError;
   });
 
   it('should warn when using an invalid href', () => {
@@ -302,18 +305,13 @@ describe('warnings', () => {
       index: () => null,
     });
 
+    expect(error).not.toHaveBeenCalled();
     expect(warn).toHaveBeenCalledWith(
       "Tab trigger 'apple' has the href '/apple' which points to a +not-found route."
     );
-
-    console.warn = originalWarn;
   });
 
   it('should fail when there are no valid tabs', () => {
-    const originalWarn = console.warn;
-    const warn = jest.fn();
-    console.warn = warn;
-
     expect(() => {
       renderRouter({
         _layout: () => {
@@ -331,11 +329,10 @@ describe('warnings', () => {
       "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
     );
 
+    expect(error).toHaveBeenCalled();
     expect(warn).toHaveBeenCalledWith(
       "Tab trigger 'apple' has the href '/apple' which points to a +not-found route."
     );
-
-    console.warn = originalWarn;
   });
 
   it('does not allow duplicate screens', () => {

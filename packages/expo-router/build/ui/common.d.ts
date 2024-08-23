@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { LinkingOptions, ParamListBase } from '@react-navigation/native';
+import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
 import { ViewProps, View } from 'react-native';
 import type { ExpoTabActionType } from './TabRouter';
 import { RouteNode } from '../Route';
@@ -34,5 +34,6 @@ export declare function triggersToScreens(triggers: ScreenTrigger<any>[], layout
     children: import("react").JSX.Element[];
     triggerMap: TriggerMap;
 };
+export declare function stateToAction(state: PartialRoute<Route<string, object | undefined>> | undefined, startAtRoute?: string): JumpToNavigationAction;
 export {};
 //# sourceMappingURL=common.d.ts.map

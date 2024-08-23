@@ -147,10 +147,9 @@ export function triggersToScreens(
   };
 }
 
-function stateToAction(
+export function stateToAction(
   state: PartialRoute<Route<string, object | undefined>> | undefined,
-  startAtRoute: string,
-  { depth = Infinity } = {}
+  startAtRoute?: string
 ): JumpToNavigationAction {
   const rootPayload: any = {};
   let payload = rootPayload;
@@ -159,9 +158,6 @@ function stateToAction(
 
   while (state) {
     if (foundStartingPoint) {
-      if (depth === 0) break;
-      depth--;
-
       if (payload === rootPayload) {
         payload.name = state.name;
       } else {

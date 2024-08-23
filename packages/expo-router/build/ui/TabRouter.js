@@ -12,34 +12,27 @@ function ExpoTabRouter({ triggerMap, ...options }) {
                 const name = action.payload.name;
                 const trigger = triggerMap[name];
                 if (!trigger) {
-                    if (process.env.NODE_ENV === 'development') {
-                        console.warn(`Unable to switch to tab with name ${name}. Tab does not exist`);
-                    }
-                    return state;
+                    // Maybe this trigger is handled by a parent Tabs?
+                    return null;
                 }
-                else if (trigger.type === 'internal') {
-                    const name = trigger.action.payload.name;
-                    const shouldReset = action.payload.reset === true;
-                    const isLoaded = state.routes.find((route) => route.name === name);
-                    if (shouldReset || !isLoaded) {
-                        // Load the tab with the tabs specified route
-                        action = trigger.action;
-                    }
-                    else {
-                        // Else swap to the tab
-                        action = {
-                            type: 'JUMP_TO',
-                            payload: {
-                                name,
-                            },
-                        };
-                    }
-                }
-                else {
+                else if (trigger.type === 'external') {
                     router_store_1.store.navigate(trigger.href);
                     return state;
                 }
-                return rnTabRouter.getStateForAction(state, action, options);
+                const route = state.routes.find((route) => route.name === trigger.routeNode.route);
+                if (!route) {
+                    // Maybe we have two <Tabs /> with triggers with the same name, but different routes
+                    return null;
+                }
+                const shouldReset = action.payload.reset === true;
+                const historyState = state.history.find((item) => item.key === route?.key);
+                if (shouldReset || !historyState) {
+                    return rnTabRouter.getStateForAction(state, trigger.action, options);
+                }
+                else {
+                    state = rnTabRouter.getStateForRouteFocus(state, route.key);
+                    return state;
+                }
             }
             else {
                 return rnTabRouter.getStateForAction(state, action, options);

@@ -118,7 +118,7 @@ export function useTabsWithTriggers<T extends string | object>({
     TabNavigationEventMap
   >(ExpoTabRouter, {
     children,
-    backBehavior: Platform.OS === 'web' ? 'history' : 'firstRoute',
+    backBehavior: Platform.OS === 'web' ? 'history' : undefined,
     ...options,
     triggerMap,
     id: contextKey,

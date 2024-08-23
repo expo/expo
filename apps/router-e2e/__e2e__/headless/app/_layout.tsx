@@ -19,7 +19,7 @@ export default function Layout() {
           href="/movies"
           style={styles.tabTrigger}
           onLongPress={(event) => {
-            event.preventDefault(); //
+            event.preventDefault();
             setShowExtraTab((state) => !state);
           }}>
           <TabButton icon="paint-brush">Movies (long press to show expo tab)</TabButton>

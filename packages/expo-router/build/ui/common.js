@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.triggersToScreens = exports.ViewSlot = void 0;
+exports.stateToAction = exports.triggersToScreens = exports.ViewSlot = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
 const native_1 = require("@react-navigation/native");
 const href_1 = require("../link/href");
@@ -81,15 +81,12 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName)
     };
 }
 exports.triggersToScreens = triggersToScreens;
-function stateToAction(state, startAtRoute, { depth = Infinity } = {}) {
+function stateToAction(state, startAtRoute) {
     const rootPayload = {};
     let payload = rootPayload;
     let foundStartingPoint = !startAtRoute;
     while (state) {
         if (foundStartingPoint) {
-            if (depth === 0)
-                break;
-            depth--;
             if (payload === rootPayload) {
                 payload.name = state.name;
             }
@@ -118,4 +115,5 @@ function stateToAction(state, startAtRoute, { depth = Infinity } = {}) {
         payload: rootPayload,
     };
 }
+exports.stateToAction = stateToAction;
 //# sourceMappingURL=common.js.map

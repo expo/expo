@@ -12,7 +12,7 @@ export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
     source?: string;
     target?: string;
 };
-export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
+export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, RNTabActionType | {
     type: "GO_BACK";
     source?: string | undefined;
     target?: string | undefined;
@@ -95,7 +95,7 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
     };
     source?: string | undefined;
     target?: string | undefined;
-} | RNTabActionType | {
+} | {
     type: "SWITCH_TABS";
     payload: {
         name: string;
