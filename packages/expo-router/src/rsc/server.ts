@@ -35,7 +35,7 @@ export type BuildConfig = {
 export type RenderEntries = (
   input: string,
   options: {
-    searchParams: URLSearchParams;
+    params: unknown | undefined;
     buildConfig: BuildConfig | undefined;
   }
 ) => Promise<Elements | null>;
@@ -53,7 +53,7 @@ export type GetSsrConfig = (
 ) => Promise<{
   input: string;
   searchParams?: URLSearchParams;
-  body: ReactNode;
+  html: ReactNode;
 } | null>;
 
 export function defineEntries(
@@ -75,9 +75,9 @@ export type EntriesPrd = EntriesDev & {
   publicIndexHtml: string;
 };
 
-type RenderStore<RscContext extends Record<string, unknown> = Record<string, unknown>> = {
-  rerender: (input: string, searchParams?: URLSearchParams) => void;
-  context: RscContext;
+type RenderStore<> = {
+  rerender: (input: string, params?: unknown) => void;
+  context: Record<string, unknown>;
 };
 
 // TODO(EvanBacon): This can leak between platforms and runs.
@@ -138,12 +138,12 @@ export const runWithRenderStore = <T>(renderStore: RenderStore, fn: () => T): T 
   }
 };
 
-export function rerender(input: string, searchParams?: URLSearchParams) {
+export function rerender(input: string, params?: unknown) {
   const renderStore = renderStorage?.getStore() ?? currentRenderStore;
   if (!renderStore) {
     throw new Error('Render store is not available');
   }
-  renderStore.rerender(input, searchParams);
+  renderStore.rerender(input, params);
 }
 
 export function getContext<

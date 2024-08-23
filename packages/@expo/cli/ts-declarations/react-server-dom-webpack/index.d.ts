@@ -32,12 +32,13 @@ type ClientManifest = {
 declare module 'react-server-dom-webpack/node-loader';
 
 declare module 'react-server-dom-webpack/server.edge' {
-  export type Options = {
+  type Options = {
     environmentName?: string;
     identifierPrefix?: string;
     signal?: AbortSignal;
-    onError?: (error: unknown) => string | undefined;
-    onPostpone?: (reason: string) => void;
+    temporaryReferences?: TemporaryReferenceSet;
+    onError?: ((error: unknown) => void) | undefined;
+    onPostpone?: ((reason: string) => void) | undefined;
   };
 
   export function renderToReadableStream(

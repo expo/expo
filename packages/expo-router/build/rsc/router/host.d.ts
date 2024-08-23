@@ -8,23 +8,30 @@
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/client.ts#L1
  */
 import type { ReactNode } from 'react';
-type Elements = Promise<Record<string, ReactNode>>;
+type OnFetchData = (data: unknown) => void;
 type SetElements = (updater: Elements | ((prev: Elements) => Elements)) => void;
-type CacheEntry = [
-    input: string,
-    searchParamsString: string,
-    setElements: SetElements,
-    elements: Elements
-];
-declare const fetchCache: [CacheEntry?];
-export declare const fetchRSC: (input: string, searchParamsString: string, setElements: SetElements, cache?: [(CacheEntry | undefined)?], unstable_onFetchData?: ((data: unknown) => void) | undefined, fetchOptions?: {
-    remote: boolean;
-}) => Elements;
-export declare const prefetchRSC: (input: string, searchParamsString: string) => void;
-export declare const Root: ({ initialInput, initialSearchParamsString, cache, unstable_onFetchData, children, }: {
+declare const ENTRY = "e";
+declare const SET_ELEMENTS = "s";
+declare const ON_FETCH_DATA = "o";
+type FetchCache = {
+    [ENTRY]?: [input: string, params: unknown, elements: Elements];
+    [SET_ELEMENTS]?: SetElements;
+    [ON_FETCH_DATA]?: OnFetchData | undefined;
+};
+type Elements = Promise<Record<string, ReactNode>> & {
+    prev?: Record<string, ReactNode> | undefined;
+};
+/**
+ * callServer callback
+ * This is not a public API.
+ */
+export declare const callServerRSC: (actionId: string, args?: unknown[], fetchCache?: FetchCache) => Promise<ReactNode>;
+export declare const fetchRSC: (input: string, params?: unknown, fetchCache?: FetchCache) => Elements;
+export declare const prefetchRSC: (input: string, params?: unknown) => void;
+export declare const Root: ({ initialInput, initialParams, fetchCache, unstable_onFetchData, children, }: {
     initialInput?: string | undefined;
-    initialSearchParamsString?: string | undefined;
-    cache?: [(CacheEntry | undefined)?] | undefined;
+    initialParams?: unknown;
+    fetchCache?: FetchCache | undefined;
     unstable_onFetchData?: ((data: unknown) => void) | undefined;
     children: ReactNode;
 }) => import("react").FunctionComponentElement<import("react").ProviderProps<(input: string, searchParams?: URLSearchParams) => void>>;

@@ -14,6 +14,20 @@ const common_1 = require("./common");
 const host_1 = require("./host");
 const path_1 = require("../path");
 const server_1 = require("../server");
+const safeJsonParse = (str) => {
+    if (typeof str === 'string') {
+        try {
+            const obj = JSON.parse(str);
+            if (typeof obj === 'object') {
+                return obj;
+            }
+        }
+        catch {
+            // ignore
+        }
+    }
+    return undefined;
+};
 function unstable_defineRouter(getPathConfig, getComponent) {
     let cachedPathConfig;
     const getMyPathConfig = async (buildConfig) => {
@@ -36,14 +50,15 @@ function unstable_defineRouter(getPathConfig, getComponent) {
         const found = pathConfig.find(({ pathname: pathSpec }) => (0, path_1.getPathMapping)(pathSpec, pathname));
         return found ? (found.customData.noSsr ? ['FOUND', 'NO_SSR'] : ['FOUND']) : ['NOT_FOUND'];
     };
-    const shouldSkipObj = {};
-    const renderEntries = async (input, { searchParams, buildConfig }) => {
+    const renderEntries = async (input, { params, buildConfig }) => {
         const pathname = (0, common_1.parseInputString)(input);
         if ((await existsPath(pathname, buildConfig))[0] === 'NOT_FOUND') {
             return null;
         }
-        const skip = searchParams.getAll(common_1.PARAM_KEY_SKIP) || [];
-        searchParams.delete(common_1.PARAM_KEY_SKIP); // delete all
+        const shouldSkipObj = {};
+        const parsedParams = safeJsonParse(params);
+        const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
+        const skip = Array.isArray(parsedParams?.skip) ? parsedParams.skip : [];
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const entries = (await Promise.all(componentIds.map(async (id) => {
             if (skip?.includes(id)) {
@@ -64,11 +79,11 @@ function unstable_defineRouter(getPathConfig, getComponent) {
             if (!component) {
                 return [];
             }
-            const element = (0, react_1.createElement)(component, id.endsWith('/layout') ? { path: pathname } : { path: pathname, searchParams }, (0, react_1.createElement)(host_1.Children));
+            const element = (0, react_1.createElement)(component, id.endsWith('/layout') ? { path: pathname } : { path: pathname, query }, (0, react_1.createElement)(host_1.Children));
             return [[id, element]];
         }))).flat();
         entries.push([common_1.SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
-        entries.push([common_1.LOCATION_ID, [pathname, searchParams.toString()]]);
+        entries.push([common_1.LOCATION_ID, [pathname, query]]);
         return Object.fromEntries(entries);
     };
     const getBuildConfig = async (unstable_collectClientModules) => {
@@ -118,21 +133,15 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
         }
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const input = (0, common_1.getInputString)(pathname);
-        const body = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, searchParams } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
-        return { input, body };
+        const html = (0, react_1.createElement)(client_1.ServerRouter, { route: { path: pathname, query: searchParams.toString(), hash: '' } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_1.Slot, { id, fallback: acc }, acc), null));
+        return { input, params: JSON.stringify({ query: searchParams.toString() }), html };
     };
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
 exports.unstable_defineRouter = unstable_defineRouter;
-function unstable_redirect(pathname, searchParams, skip) {
-    if (skip) {
-        searchParams = new URLSearchParams(searchParams);
-        for (const id of skip) {
-            searchParams.append(common_1.PARAM_KEY_SKIP, id);
-        }
-    }
+function unstable_redirect(pathname, query, skip) {
     const input = (0, common_1.getInputString)(pathname);
-    (0, server_1.rerender)(input, searchParams);
+    (0, server_1.rerender)(input, { query, skip });
 }
 exports.unstable_redirect = unstable_redirect;
 //# sourceMappingURL=defineRouter.js.map
