@@ -84,7 +84,6 @@ const checkStatus = async (responsePromise) => {
         }
         throw new errors_1.ReactServerError(responseText, response.url, response.status);
     }
-    console.log('[Router] Fetched', response.url, response.status);
     return response;
 };
 function getCached(c, m, k) {
@@ -129,7 +128,6 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
     }
     const options = {
         async callServer(actionId, args) {
-            // console.log('[Router] Server Action invoked:', actionId, args);
             const reqPath = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeURIComponent(actionId)));
             const response = (0, fetch_1.fetch)(reqPath, {
                 method: 'POST',
@@ -146,7 +144,6 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
                 setElements((prev) => mergeElements(prev, data));
             });
             const fullRes = await data;
-            // console.log('[Router] Server Action resolved:', fullRes._value);
             return fullRes._value;
         },
     };
@@ -154,7 +151,6 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     const url = BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '');
     const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-    console.log('fetch', reqPath);
     const response = prefetched[url] ||
         (0, fetch_1.fetch)(reqPath, {
             headers: {

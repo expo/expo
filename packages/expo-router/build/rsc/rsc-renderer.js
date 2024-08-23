@@ -13,12 +13,6 @@ exports.renderRsc = void 0;
 const server_1 = require("react-server-dom-webpack/server");
 const server_2 = require("./server");
 const server_actions_1 = require("../server-actions");
-global.__webpack_chunk_load__ = (url) => {
-    return Promise.resolve();
-};
-global.__webpack_require__ = (id) => {
-    return global._knownServerReferences.get(process.env.EXPO_OS)?.get(id);
-};
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = server_1.registerServerReference;

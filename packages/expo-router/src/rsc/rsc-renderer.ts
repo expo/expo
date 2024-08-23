@@ -20,14 +20,6 @@ import {
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 import { getServerReference, getDebugDescription } from '../server-actions';
 
-global.__webpack_chunk_load__ = (url) => {
-  return Promise.resolve();
-};
-
-global.__webpack_require__ = (id) => {
-  return global._knownServerReferences.get(process.env.EXPO_OS!)?.get(id);
-};
-
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = registerServerReference;
