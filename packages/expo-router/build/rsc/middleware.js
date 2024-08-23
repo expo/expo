@@ -45,11 +45,16 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
                 chunks: chunk ? [chunk] : [],
             };
         },
-        entries: entries,
-        loadServerModuleRsc: async (url) => {
+        async loadServerModuleRsc(file) {
             // TODO: SSR load action code from on disk file.
             throw new Error('React server actions are not implemented yet');
+            const [id, chunk] = ssrManifest[file];
+            return {
+                id,
+                chunks: chunk ? [chunk] : [],
+            };
         },
+        entries: entries,
     });
 }
 exports.renderRscWithImportsAsync = renderRscWithImportsAsync;
