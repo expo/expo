@@ -50,6 +50,5 @@ export declare const ServerRoot: ({ elements, children }: {
     elements: Elements;
     children: ReactNode;
 }) => import("react").FunctionComponentElement<import("react").ProviderProps<Elements | null>>;
-export declare const encodeActionId: (actionId: string) => string;
 export {};
 //# sourceMappingURL=host.d.ts.map

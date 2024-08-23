@@ -307,7 +307,6 @@ export function createServerComponentsMiddleware(
         searchParams,
         context: getRscRenderContext(platform),
         config: {},
-        method,
         input,
         contentType,
       },
@@ -315,6 +314,10 @@ export function createServerComponentsMiddleware(
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
+        loadServerModuleRsc: async (url) => {
+          // TODO: SSR load action code from Metro URL.
+          throw new Error('React server actions are not implemented yet');
+        },
       }
     );
   }

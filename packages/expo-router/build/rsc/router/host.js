@@ -37,12 +37,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.encodeActionId = exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
+exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
 const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
+const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;
 // NOTE: Ensured to start with `/`.
@@ -129,7 +130,7 @@ const mergeElements = (a, b) => {
  * This is not a public API.
  */
 const callServerRSC = async (actionId, args, fetchCache = defaultFetchCache) => {
-    const url = getAdjustedRemoteFilePath(BASE_PATH + encodeInput((0, exports.encodeActionId)(actionId)));
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)((0, utils_1.encodeActionId)(actionId)));
     const response = args === undefined
         ? (0, fetch_1.fetch)(url, { headers: ACTION_HEADERS })
         : encodeReply(args).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', body, headers: ACTION_HEADERS }));
@@ -176,7 +177,7 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     // TODO: Load from on-disk on native when indicated.
     // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-    const url = getAdjustedFilePath(BASE_PATH + encodeInput(input));
+    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     const hasValidPrefetchedResponse = !!prefetched[url] &&
         // HACK .has() is for the initial hydration
         // It's limited and may result in a wrong result. FIXME
@@ -217,7 +218,7 @@ function getAdjustedFilePath(path) {
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = BASE_PATH + encodeInput(input);
+    const url = BASE_PATH + (0, utils_1.encodeInput)(input);
     if (!(url in prefetched)) {
         prefetched[url] = fetchRSCInternal(url, params);
         prefetchedParams.set(prefetched[url], params);
@@ -272,28 +273,4 @@ exports.Children = Children;
  */
 const ServerRoot = ({ elements, children }) => (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children);
 exports.ServerRoot = ServerRoot;
-const encodeInput = (input) => {
-    if (input === '') {
-        return 'index.txt';
-    }
-    if (input === 'index') {
-        throw new Error('Input should not be `index`');
-    }
-    if (input.startsWith('/')) {
-        throw new Error('Input should not start with `/`');
-    }
-    if (input.endsWith('/')) {
-        throw new Error('Input should not end with `/`');
-    }
-    return input + '.txt';
-};
-const ACTION_PREFIX = 'ACTION_';
-const encodeActionId = (actionId) => {
-    const [file, name] = actionId.split('#');
-    if (name.includes('/')) {
-        throw new Error('Unsupported action name');
-    }
-    return ACTION_PREFIX + file + '/' + name;
-};
-exports.encodeActionId = encodeActionId;
 //# sourceMappingURL=host.js.map

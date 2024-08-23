@@ -19,6 +19,7 @@ export type RenderRscArgs = {
   method: 'GET' | 'POST';
   body?: ReadableStream | null;
   contentType?: string | undefined;
+  decodedBody?: unknown;
   moduleIdCallback?: ((id: string) => void) | undefined;
   onError?: (err: unknown) => void;
 };
@@ -111,6 +112,7 @@ export function getRscMiddleware(options: {
         method,
         body: req.body,
         contentType: req.headers.get('Content-Type') ?? '',
+        decodedBody: req.headers.get('x-expo-params'),
         onError: options.onError,
       };
       const readable = await options.renderRsc(args);

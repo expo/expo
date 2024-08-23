@@ -17,8 +17,9 @@ import {
   registerServerReference,
 } from 'react-server-dom-webpack/server';
 
+import { fileURLToFilePath } from './path';
+import { filePathToFileURL, decodeActionId } from './router/utils';
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
-import { getServerReference, getDebugDescription } from '../server-actions';
 
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions
@@ -38,10 +39,10 @@ export type RenderRscArgs = {
   // Done
   input: string;
   searchParams: URLSearchParams;
-  method: 'GET' | 'POST';
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
   contentType?: string | undefined;
+  decodedBody?: unknown;
   moduleIdCallback?: (module: {
     id: string;
     chunks: string[];
@@ -57,10 +58,11 @@ type RenderRscOpts = {
   isExporting: boolean;
   entries: EntriesDev;
   resolveClientEntry: ResolveClientEntry;
+  loadServerModuleRsc: (url: string) => Promise<any>;
 };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
-  const { searchParams, method, input, body, contentType, context, onError } = args;
+  const { searchParams, input, body, contentType, context, onError } = args;
   const { resolveClientEntry, entries } = opts;
 
   const {
@@ -173,29 +175,32 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     });
   };
 
-  if (method === 'POST') {
-    // TODO(Bacon): Fix Server action ID generation
-    const rsfId = decodeURIComponent(input);
-    let args: unknown[] = [];
-    let bodyStr = '';
-    if (body) {
-      bodyStr = await streamToString(body);
-    }
+  let decodedBody: unknown | undefined = args.decodedBody;
+  if (body) {
+    const bodyStr = await streamToString(body);
     if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
       // XXX This doesn't support streaming unlike busboy
       const formData = parseFormData(bodyStr, contentType);
-      args = await decodeReply(formData, bundlerConfig);
+      decodedBody = await decodeReply(
+        formData,
+        // TODO: add server action config
+        bundlerConfig
+      );
     } else if (bodyStr) {
-      args = await decodeReply(bodyStr, bundlerConfig);
+      decodedBody = await decodeReply(
+        bodyStr,
+        // TODO: add server action config
+        bundlerConfig
+      );
     }
-    const [, name] = rsfId.split('#') as [string, string];
-    // xxxx#greet
-    if (!getServerReference(rsfId)) {
-      throw new Error(`Server action not found: "${rsfId}". ${getDebugDescription()}`);
-    }
-    const mod: any = getServerReference(rsfId);
+  }
 
-    const fn = name ? mod[name] || mod : mod;
+  const actionId = decodeActionId(input);
+  if (actionId) {
+    const args = Array.isArray(decodedBody) ? decodedBody : [];
+    const [fileId, name] = actionId.split('#') as [string, string];
+    const mod = await opts.loadServerModuleRsc(filePathToFileURL(fileId));
+    const fn = name === '*' ? name : mod[name] || mod;
     return renderWithContextWithAction(context, fn, args);
   }
 
@@ -235,13 +240,6 @@ const parseFormData = (body: string, contentType: string) => {
     }
   }
   return formData;
-};
-
-const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
 };
 
 const streamToString = async (stream: ReadableStream): Promise<string> => {

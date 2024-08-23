@@ -17,10 +17,10 @@ export type RenderRscArgs = {
     config: ResolvedConfig;
     input: string;
     searchParams: URLSearchParams;
-    method: 'GET' | 'POST';
     context: Record<string, unknown> | undefined;
     body?: ReadableStream | undefined;
     contentType?: string | undefined;
+    decodedBody?: unknown;
     moduleIdCallback?: (module: {
         id: string;
         chunks: string[];
@@ -37,6 +37,7 @@ type RenderRscOpts = {
     isExporting: boolean;
     entries: EntriesDev;
     resolveClientEntry: ResolveClientEntry;
+    loadServerModuleRsc: (url: string) => Promise<any>;
 };
 export declare function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream>;
 export {};

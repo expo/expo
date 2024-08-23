@@ -28,6 +28,7 @@ import RSDWClient from 'react-server-dom-webpack/client';
 
 import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
+import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
 
 const { createFromFetch, encodeReply } = RSDWClient;
@@ -346,29 +347,3 @@ export const Children = () => use(ChildrenContext);
  */
 export const ServerRoot = ({ elements, children }: { elements: Elements; children: ReactNode }) =>
   createElement(ElementsContext.Provider, { value: elements }, children);
-
-const encodeInput = (input: string) => {
-  if (input === '') {
-    return 'index.txt';
-  }
-  if (input === 'index') {
-    throw new Error('Input should not be `index`');
-  }
-  if (input.startsWith('/')) {
-    throw new Error('Input should not start with `/`');
-  }
-  if (input.endsWith('/')) {
-    throw new Error('Input should not end with `/`');
-  }
-  return input + '.txt';
-};
-
-const ACTION_PREFIX = 'ACTION_';
-
-export const encodeActionId = (actionId: string) => {
-  const [file, name] = actionId.split('#') as [string, string];
-  if (name.includes('/')) {
-    throw new Error('Unsupported action name');
-  }
-  return ACTION_PREFIX + file + '/' + name;
-};
