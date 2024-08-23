@@ -41,6 +41,8 @@ def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROI
 def useDevClient = findProject(":expo-dev-client") != null
 
 android {
+  def rnVersion = getRNVersion()
+
   buildFeatures {
     buildConfig true
   }
@@ -72,12 +74,20 @@ android {
       pickFirst "**/libc++_shared.so"
     }
   }
+  buildTypes {
+    release {
+      if (rnVersion >= versionToNumber(0, 75, 0)) {
+        proguardFiles 'proguard-rules-75.pro'
+      } else {
+        proguardFiles 'proguard-rules.pro'
+      }
+    }
+  }
   sourceSets {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/certificates".toString())
 
-    def rnVersion = getRNVersion()
     if (rnVersion >= versionToNumber(0, 75, 0)) {
       main.java.srcDirs += "src/react-native-75/main"
     } else {
