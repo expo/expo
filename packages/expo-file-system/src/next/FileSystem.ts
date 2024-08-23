@@ -8,6 +8,7 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 }
 
+// Cannot use `static` keyword in class declaration because of a runtime error.
 File.download = async function download(url: string, to: File | Directory) {
   const outputPath = await ExpoFileSystem.download(url, to);
   return new File(outputPath);
