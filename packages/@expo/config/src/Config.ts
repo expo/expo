@@ -1,5 +1,6 @@
 import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
+import deepmerge from 'deepmerge';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -340,32 +341,13 @@ function mergeConfigModifications(
   modifications: Partial<ExpoConfig>
 ): AppJSONConfig {
   if (!config.rootConfig.expo) {
-    return deepMergeObjects(config.rootConfig, modifications);
+    return deepmerge(config.rootConfig, modifications);
   }
 
   return {
     ...config.rootConfig,
-    expo: deepMergeObjects(config.rootConfig.expo, modifications),
+    expo: deepmerge(config.rootConfig.expo, modifications),
   };
-}
-
-function deepMergeObjects<T extends Record<string, any>, S extends Record<string, any>>(
-  target: T,
-  source: S
-): T {
-  for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      if (typeof source[key] === 'object' && source[key] !== null) {
-        if (!target[key]) {
-          target[key] = {} as any;
-        }
-        deepMergeObjects(target[key], source[key]);
-      } else {
-        target[key] = source[key] as any;
-      }
-    }
-  }
-  return target;
 }
 
 function isMatchingObject<T extends Record<string, any>>(

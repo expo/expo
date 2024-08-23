@@ -30,6 +30,13 @@ function _jsonFile() {
   };
   return data;
 }
+function _deepmerge() {
+  const data = _interopRequireDefault(require("deepmerge"));
+  _deepmerge = function () {
+    return data;
+  };
+  return data;
+}
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -397,17 +404,11 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
 /** Merge the config modifications, using an optional possible top-level `expo` object. */
 function mergeConfigModifications(config, modifications) {
   if (!config.rootConfig.expo) {
-    return {
-      ...config.rootConfig,
-      ...modifications
-    };
+    return (0, _deepmerge().default)(config.rootConfig, modifications);
   }
   return {
     ...config.rootConfig,
-    expo: {
-      ...config.rootConfig.expo,
-      ...modifications
-    }
+    expo: (0, _deepmerge().default)(config.rootConfig.expo, modifications)
   };
 }
 function isMatchingObject(expectedValues, actualValues) {

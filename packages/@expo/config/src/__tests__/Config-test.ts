@@ -388,6 +388,13 @@ describe(modifyConfigAsync, () => {
       config: null,
       message: expect.stringMatching(/dynamic config/),
     });
+
+    // Ensure the config was rolled back
+    expect(appFile).toMatchObject(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-object/app.json', { encoding: 'utf-8' }) as string
+      )
+    );
   });
 
   it('warns when modifying static with function-like dynamic config, without extending config', async () => {
@@ -403,6 +410,13 @@ describe(modifyConfigAsync, () => {
       config: null,
       message: expect.stringMatching(/dynamic config/),
     });
+
+    // Ensure the config was rolled back
+    expect(appFile).toMatchObject(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function/app.json', { encoding: 'utf-8' }) as string
+      )
+    );
   });
 
   it('succeeds when modifying static with function-like dynamic config, with extending config', async () => {
@@ -533,5 +547,14 @@ describe(modifyConfigAsync, () => {
       config: null,
       message: expect.stringMatching(/dynamic config/),
     });
+
+    // Ensure the config was rolled back
+    expect(appFile).toMatchObject(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function-extra.eas-override/app.json', {
+          encoding: 'utf-8',
+        }) as string
+      )
+    );
   });
 });
