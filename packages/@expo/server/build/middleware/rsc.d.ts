@@ -17,6 +17,7 @@ export type RenderRscArgs = {
     method: 'GET' | 'POST';
     body?: ReadableStream | null;
     contentType?: string | undefined;
+    decodedBody?: unknown;
     moduleIdCallback?: ((id: string) => void) | undefined;
     onError?: (err: unknown) => void;
 };
