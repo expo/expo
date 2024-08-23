@@ -83,4 +83,3 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 def getRNVersion() {
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
-
