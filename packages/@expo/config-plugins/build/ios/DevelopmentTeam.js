@@ -62,11 +62,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Set the Apple development team ID for all build configurations using the first native target.
  */
 const withDevelopmentTeam = (config, {
-  developmentTeam
+  appleTeamId
 } = {}) => {
   return (0, _iosPlugins().withXcodeProject)(config, config => {
-    // TODO: maybe infer from `EXPO_APPLE_TEAM_ID` env variable?
-    const teamId = developmentTeam ?? getDevelopmentTeam(config);
+    const teamId = appleTeamId ?? getDevelopmentTeam(config);
     if (teamId) {
       config.modResults = updateDevelopmentTeamForPbxproj(config.modResults, teamId);
     }
@@ -77,7 +76,7 @@ const withDevelopmentTeam = (config, {
 /** Get the Apple development team ID from Expo config, if defined */
 exports.withDevelopmentTeam = withDevelopmentTeam;
 function getDevelopmentTeam(config) {
-  return config.ios?.developmentTeam ?? null;
+  return config.ios?.appleTeamId ?? null;
 }
 
 /** Set the Apple development team ID for an XCBuildConfiguration object */
@@ -90,17 +89,17 @@ function setDevelopmentTeamForBuildConfiguration(xcBuildConfiguration, developme
 }
 
 /**
- * Update the Apple development team ID for all XCBuildConfiguration entries using the first native target
+ * Update the Apple development team ID for all XCBuildConfiguration entries, in all native targets.
  *
  * A development team is stored as a value in XCBuildConfiguration entry.
  * Those entries exist for every pair (build target, build configuration).
  * Unless target name is passed, the first target defined in the pbxproj is used
  * (to keep compatibility with the inaccurate legacy implementation of this function).
  */
-function updateDevelopmentTeamForPbxproj(project, developmentTeam) {
+function updateDevelopmentTeamForPbxproj(project, appleTeamId) {
   const nativeTargets = (0, _Target().getNativeTargets)(project);
   nativeTargets.forEach(([, nativeTarget]) => {
-    (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, buildConfig]) => setDevelopmentTeamForBuildConfiguration(buildConfig, developmentTeam));
+    (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, buildConfig]) => setDevelopmentTeamForBuildConfiguration(buildConfig, appleTeamId));
   });
   return project;
 }
@@ -109,15 +108,15 @@ function updateDevelopmentTeamForPbxproj(project, developmentTeam) {
  * Updates the Apple development team ID for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
- * @param {[string]} developmentTeam Desired Apple development team ID
+ * @param {[string]} appleTeamId Desired Apple development team ID
  */
-function setDevelopmentTeamForPbxproj(projectRoot, developmentTeam) {
+function setDevelopmentTeamForPbxproj(projectRoot, appleTeamId) {
   // Get all pbx projects in the ${projectRoot}/ios directory
   const pbxprojPaths = (0, _Paths().getAllPBXProjectPaths)(projectRoot);
   for (const pbxprojPath of pbxprojPaths) {
     let project = _xcode().default.project(pbxprojPath);
     project.parseSync();
-    project = updateDevelopmentTeamForPbxproj(project, developmentTeam);
+    project = updateDevelopmentTeamForPbxproj(project, appleTeamId);
     _nodeFs().default.writeFileSync(pbxprojPath, project.writeSync());
   }
 }

@@ -23,7 +23,7 @@ describe('DevelopmentTeam module', () => {
     });
 
     it('returns the `developmentTeam` when provided', () => {
-      const expoConfig = { ...baseExpoConfig, ios: { developmentTeam: 'X0XX00XXXX' } };
+      const expoConfig = { ...baseExpoConfig, ios: { appleTeamId: 'X0XX00XXXX' } };
       expect(getDevelopmentTeam(expoConfig)).toBe('X0XX00XXXX');
     });
   });

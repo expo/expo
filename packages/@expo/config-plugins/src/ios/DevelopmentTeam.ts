@@ -12,13 +12,12 @@ import { withXcodeProject } from '../plugins/ios-plugins';
 /**
  * Set the Apple development team ID for all build configurations using the first native target.
  */
-export const withDevelopmentTeam: ConfigPlugin<{ developmentTeam?: string } | void> = (
+export const withDevelopmentTeam: ConfigPlugin<{ appleTeamId?: string } | void> = (
   config,
-  { developmentTeam } = {}
+  { appleTeamId } = {}
 ) => {
   return withXcodeProject(config, (config) => {
-    // TODO: maybe infer from `EXPO_APPLE_TEAM_ID` env variable?
-    const teamId = developmentTeam ?? getDevelopmentTeam(config);
+    const teamId = appleTeamId ?? getDevelopmentTeam(config);
     if (teamId) {
       config.modResults = updateDevelopmentTeamForPbxproj(config.modResults, teamId);
     }
@@ -29,7 +28,7 @@ export const withDevelopmentTeam: ConfigPlugin<{ developmentTeam?: string } | vo
 
 /** Get the Apple development team ID from Expo config, if defined */
 export function getDevelopmentTeam(config: Pick<ExpoConfig, 'ios'>): string | null {
-  return config.ios?.developmentTeam ?? null;
+  return config.ios?.appleTeamId ?? null;
 }
 
 /** Set the Apple development team ID for an XCBuildConfiguration object */
@@ -54,13 +53,13 @@ export function setDevelopmentTeamForBuildConfiguration(
  */
 export function updateDevelopmentTeamForPbxproj(
   project: XcodeProject,
-  developmentTeam?: string
+  appleTeamId?: string
 ): XcodeProject {
   const nativeTargets = getNativeTargets(project);
 
   nativeTargets.forEach(([, nativeTarget]) => {
     getBuildConfigurationsForListId(project, nativeTarget.buildConfigurationList).forEach(
-      ([, buildConfig]) => setDevelopmentTeamForBuildConfiguration(buildConfig, developmentTeam)
+      ([, buildConfig]) => setDevelopmentTeamForBuildConfiguration(buildConfig, appleTeamId)
     );
   });
 
@@ -71,16 +70,16 @@ export function updateDevelopmentTeamForPbxproj(
  * Updates the Apple development team ID for pbx projects inside the ios directory of the given project root
  *
  * @param {string} projectRoot Path to project root containing the ios directory
- * @param {[string]} developmentTeam Desired Apple development team ID
+ * @param {[string]} appleTeamId Desired Apple development team ID
  */
-export function setDevelopmentTeamForPbxproj(projectRoot: string, developmentTeam?: string): void {
+export function setDevelopmentTeamForPbxproj(projectRoot: string, appleTeamId?: string): void {
   // Get all pbx projects in the ${projectRoot}/ios directory
   const pbxprojPaths = getAllPBXProjectPaths(projectRoot);
 
   for (const pbxprojPath of pbxprojPaths) {
     let project = xcode.project(pbxprojPath);
     project.parseSync();
-    project = updateDevelopmentTeamForPbxproj(project, developmentTeam);
+    project = updateDevelopmentTeamForPbxproj(project, appleTeamId);
     fs.writeFileSync(pbxprojPath, project.writeSync());
   }
 }
