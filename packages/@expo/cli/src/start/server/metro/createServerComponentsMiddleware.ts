@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
@@ -14,7 +15,6 @@ import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
 import { streamToStringAsync } from '../../../utils/stream';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
 

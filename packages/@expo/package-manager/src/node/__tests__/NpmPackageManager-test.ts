@@ -6,7 +6,9 @@ import { mockSpawnPromise, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils'
 import { NpmPackageManager } from '../NpmPackageManager';
 
 jest.mock('@expo/spawn-async');
-jest.mock('fs');
+// Jest doesn't mock `node:fs` when mocking `fs`
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 
 beforeAll(() => {
   // Disable logging to clean up test ouput
