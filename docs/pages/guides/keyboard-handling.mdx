@@ -149,6 +149,8 @@ export default function RootLayout() {
 
 ### Handling multiple inputs
 
+The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping but requires platform-specific configuration and is not very customizable. To achieve the same functionality, you can use [`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view), which automatically scrolls to focused `TextInput` and provides a native-like performance, we recommend using `KeyboardAwareScrollView` for simple screens with not many elements.
+
 For screens with multiple inputs, the Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
 
 ```tsx FormScreen.tsx
@@ -203,8 +205,6 @@ const styles = StyleSheet.create({
 The above example wraps the inputs with `KeyboardAwareScrollView` to prevent the keyboard from covering them. The `KeyboardToolbar` component displays navigation controls and a dismiss button. While it works without configuration, you can customize the toolbar content if needed.
 
 ### Animating views in sync with keyboard height
-
-The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping but requires platform-specific configuration and is not very customizable. To achieve the same functionality, you can use [`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view), which automatically scrolls to focused `TextInput` and provides a native-like performance, we recommend using `KeyboardAwareScrollView` for simple screens with not many elements.
 
 For a more advanced and customizable approach, you can use [`useKeyboardHandler`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/hooks/keyboard/use-keyboard-handler). It provides access to keyboard lifecycle events. It allows us to determine when the keyboard starts animating and its position in every frame of the animation.
 
