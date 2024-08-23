@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const resolveWorkspaceRoot = require('resolve-workspace-root');
+const { resolveWorkspaceRoot } = require('resolve-workspace-root');
 
 module.exports = function (basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
