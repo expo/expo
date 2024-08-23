@@ -57,10 +57,6 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   const record = () => audioRecorder.record();
 
-  const prepare = async () => {
-    await audioRecorder.prepareToRecordAsync();
-  };
-
   const renderOptionsButton = (title: string, options: RecordingOptions) => (
     <Button
       onPress={() => setRecorderOptions(options)}
@@ -145,7 +141,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       <View style={styles.container}>
         {renderOptionsButton('High Quality', RecordingPresets.HIGH_QUALITY)}
         <Button
-          onPress={() => prepare()}
+          onPress={() => audioRecorder.prepareToRecordAsync()}
           disabled={recorderState.canRecord}
           title="Prepare Recording"
           style={[!recorderState.canRecord && { backgroundColor: 'gray' }]}

@@ -35,7 +35,10 @@ export function useAudioRecorder(options, statusListener) {
         const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
             statusListener?.(status);
         });
-        return () => subscription.remove();
+        return () => {
+            recorder.clearTimeouts();
+            subscription.remove();
+        };
     }, [recorder.id]);
     return recorder;
 }
