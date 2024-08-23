@@ -432,8 +432,6 @@ describe(modifyConfigAsync, () => {
       'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
     });
 
-    console.log(JSON.parse(vol.readFileSync('/static-dynamic-function-updates.url/app.json', { encoding: 'utf-8' })));
-
     await expect(
       modifyConfigAsync('/static-dynamic-function-updates.url', {
         updates: { url: 'https://u.expo.dev/test-project' },
@@ -446,6 +444,32 @@ describe(modifyConfigAsync, () => {
         // The combined nested object
         updates: {
           requestHeaders: { 'expo-channel-name': 'existing-property' },
+          url: 'https://u.expo.dev/test-project',
+        },
+      },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when mutating and deleting updates.url properties', async () => {
+    createProject('/static-dynamic-function-updates.url', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { requestHeaders: { 'expo-channel-name': 'existing-property' } },
+      }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates.url', {
+        updates: { url: 'https://u.expo.dev/test-project', requestHeaders: undefined },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        version: '9.9.9', // Modified by dynamic config
+        // The combined nested object
+        updates: {
           url: 'https://u.expo.dev/test-project',
         },
       },

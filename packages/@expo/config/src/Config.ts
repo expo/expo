@@ -340,13 +340,32 @@ function mergeConfigModifications(
   modifications: Partial<ExpoConfig>
 ): AppJSONConfig {
   if (!config.rootConfig.expo) {
-    return { ...config.rootConfig, ...modifications };
+    return deepMergeObjects(config.rootConfig, modifications);
   }
 
   return {
     ...config.rootConfig,
-    expo: { ...config.rootConfig.expo, ...modifications },
+    expo: deepMergeObjects(config.rootConfig.expo, modifications),
   };
+}
+
+function deepMergeObjects<T extends Record<string, any>, S extends Record<string, any>>(
+  target: T,
+  source: S
+): T {
+  for (const key in source) {
+    if (source.hasOwnProperty(key)) {
+      if (typeof source[key] === 'object' && source[key] !== null) {
+        if (!target[key]) {
+          target[key] = {} as any;
+        }
+        deepMergeObjects(target[key], source[key]);
+      } else {
+        target[key] = source[key] as any;
+      }
+    }
+  }
+  return target;
 }
 
 function isMatchingObject<T extends Record<string, any>>(
