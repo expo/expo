@@ -2,7 +2,7 @@
 
 import React
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 public typealias ExpoView = ExpoFabricView
 #else
 /**

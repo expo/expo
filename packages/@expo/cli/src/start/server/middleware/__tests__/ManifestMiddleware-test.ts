@@ -21,6 +21,7 @@ jest.mock('../resolveAssets', () => ({
   resolveGoogleServicesFile: jest.fn(),
 }));
 jest.mock('@expo/config/paths', () => ({
+  ...jest.requireActual('@expo/config/paths'),
   resolveEntryPoint: jest.fn((projectRoot: string) =>
     require('path').join(projectRoot, './index.js')
   ),

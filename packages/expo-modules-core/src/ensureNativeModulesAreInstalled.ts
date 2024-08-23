@@ -1,5 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 
+import { registerWebGlobals } from './web/index';
+
 /**
  * Ensures that the native modules are installed in the current runtime.
  * Otherwise, it synchronously calls a native function that installs them.
@@ -11,7 +13,7 @@ export function ensureNativeModulesAreInstalled(): void {
   try {
     if (Platform.OS === 'web') {
       // Requiring web folder sets up the `globalThis.expo` object.
-      require('./web');
+      registerWebGlobals();
     } else {
       // TODO: ExpoModulesCore shouldn't be optional here,
       // but to keep backwards compatibility let's just ignore it in SDK 50.

@@ -20,7 +20,7 @@ export declare function isLoaded(fontFamily: string): boolean;
  * Synchronously get all the fonts that have been loaded.
  * This includes fonts that were bundled at build time using the config plugin, as well as those loaded at runtime using `loadAsync`.
  *
- * @returns Returns array of font family names that have been loaded.
+ * @returns Returns array of strings which you can use as `fontFamily` [style prop](https://reactnative.dev/docs/text#style).
  */
 export declare function getLoadedFonts(): string[];
 /**
@@ -31,9 +31,11 @@ export declare function getLoadedFonts(): string[];
  */
 export declare function isLoading(fontFamily: string): boolean;
 /**
- * Highly efficient method for loading fonts from static or remote resources which can then be used
- * with the platform's native text elements. In the browser this generates a `@font-face` block in
+ * An efficient method for loading fonts from static or remote resources which can then be used
+ * with the platform's native text elements. In the browser, this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
+ *
+ * > **Note**: We recommend using the [config plugin](#configuration-in-appjsonappconfigjs) instead whenever possible.
  *
  * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
  * with React Native `Text` elements.

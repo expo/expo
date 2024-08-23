@@ -46,7 +46,8 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "canRecord": true,
       "isRecording": isRecording,
       "durationMillis": duration,
-      "mediaServicesDidReset": false
+      "mediaServicesDidReset": false,
+      "url": ref.url
     ]
 
     if ref.isMeteringEnabled {
@@ -63,6 +64,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "id": id,
       "isFinished": true,
       "hasError": false,
+      "error": nil,
       "url": recorder.url
     ])
   }

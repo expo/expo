@@ -7,6 +7,8 @@ export declare function resolveEntryPoint(projectRoot: string, { platform, pkg, 
     pkg?: PackageJSONConfig;
 }): string;
 export declare function getFileWithExtensions(fromDirectory: string, moduleId: string, extensions: string[]): string | null;
+/** Get the Metro server root, when working in monorepos */
+export declare function getMetroServerRoot(projectRoot: string): string;
 /**
  * Convert an absolute entry point to a server or project root relative filepath.
  * This is useful on Android where the entry point is an absolute path.

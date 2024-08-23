@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Update `tar` dependency. ([#29663](https://github.com/expo/expo/pull/29663) by [@Simek](https://github.com/Simek))
+- Use `npx` for npm examples. ([#31012](https://github.com/expo/expo/pull/31012) by [](@kadikraman)(https://github.com/kadikraman))
 
 ## 3.0.0 — 2024-06-10
 

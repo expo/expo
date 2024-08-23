@@ -32,6 +32,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     hasError: false,
     error: null,
     isFinished: false,
+    url: null,
   });
 
   useEffect(() => {

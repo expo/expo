@@ -41,6 +41,7 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
+  const reactServer = options.customTransformOptions?.environment === 'react-server';
   if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
@@ -153,6 +154,7 @@ export async function transform(
       filename,
       src: code,
       options: {
+        reactServer,
         projectRoot,
         dev: options.dev,
         minify: options.minify,
@@ -218,7 +220,9 @@ export async function transform(
     config,
     projectRoot,
     filename,
-    options.dev ? Buffer.from(wrapDevelopmentCSS({ src: code, filename })) : Buffer.from(''),
+    options.dev
+      ? Buffer.from(wrapDevelopmentCSS({ src: code, filename, reactServer }))
+      : Buffer.from(''),
     options
   );
 
