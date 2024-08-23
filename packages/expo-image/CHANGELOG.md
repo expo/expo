@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed `resolvedLayoutDirection` building issues when using react-native 0.75.X. ([#31062](https://github.com/expo/expo/pull/31062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix `NoSuchMethodException` when running react-native 0.75.X in release mode with Proguard enabled.
 
 ## 1.12.13 — 2024-07-16
 
