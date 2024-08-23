@@ -14,7 +14,6 @@ import {
   getComponentIds,
   getInputString,
   parseInputString,
-  PARAM_KEY_SKIP,
   SHOULD_SKIP_ID,
   LOCATION_ID,
 } from './common';
@@ -105,7 +104,7 @@ export function unstable_defineRouter(
     const parsedParams = safeJsonParse(params);
 
     const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams.skip as unknown[]) : [];
+    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams!.skip as unknown[]) : [];
     const componentIds = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(

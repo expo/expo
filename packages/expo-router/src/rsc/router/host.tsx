@@ -208,7 +208,7 @@ export const fetchRSC = (
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
   // TODO: Load from on-disk on native when indicated.
   // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-  const url = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(input));
+  const url = getAdjustedFilePath(BASE_PATH + encodeInput(input));
   const hasValidPrefetchedResponse =
     !!prefetched[url] &&
     // HACK .has() is for the initial hydration
@@ -255,6 +255,7 @@ function getAdjustedFilePath(path: string): string {
 }
 
 export const prefetchRSC = (input: string, params?: unknown): void => {
+  // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
   const url = BASE_PATH + encodeInput(input);
   if (!(url in prefetched)) {
