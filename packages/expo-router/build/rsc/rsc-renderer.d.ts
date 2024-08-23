@@ -27,6 +27,7 @@ export type RenderRscArgs = {
         name: string;
         async: boolean;
     }) => void;
+    onError?: (err: unknown) => void;
 };
 type ResolveClientEntry = (id: string) => {
     id: string;

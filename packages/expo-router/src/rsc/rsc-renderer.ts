@@ -48,6 +48,7 @@ export type RenderRscArgs = {
     name: string;
     async: boolean;
   }) => void;
+  onError?: (err: unknown) => void;
 };
 
 type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
@@ -59,7 +60,7 @@ type RenderRscOpts = {
 };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
-  const { searchParams, method, input, body, contentType, context } = args;
+  const { searchParams, method, input, body, contentType, context, onError } = args;
   const { resolveClientEntry, entries } = opts;
 
   const {
@@ -109,7 +110,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   const renderWithContext = async (
     context: Record<string, unknown> | undefined,
     input: string,
-    searchParams: URLSearchParams
+    params: unknown
   ) => {
     const renderStore = {
       context: context || {},
@@ -119,7 +120,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     };
     return runWithRenderStore(renderStore, async () => {
       const elements = await renderEntries(input, {
-        searchParams,
+        params,
         buildConfig,
       });
       if (elements === null) {
@@ -130,7 +131,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
-      return renderToReadableStream(elements, bundlerConfig);
+      return renderToReadableStream(elements, bundlerConfig, {
+        onError,
+      });
     });
   };
 
@@ -143,13 +146,13 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     let rendered = false;
     const renderStore = {
       context: context || {},
-      rerender: async (input: string, searchParams = new URLSearchParams()) => {
+      rerender: async (input: string, params?: unknown) => {
         if (rendered) {
           throw new Error('already rendered');
         }
         elementsPromise = Promise.all([
           elementsPromise,
-          renderEntries(input, { searchParams, buildConfig }),
+          renderEntries(input, { params, buildConfig }),
         ]).then(([oldElements, newElements]) => ({
           ...oldElements,
           // FIXME we should actually check if newElements is null and send an error
@@ -164,7 +167,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
-      return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig);
+      return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig, {
+        onError,
+      });
     });
   };
 

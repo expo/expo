@@ -17,7 +17,7 @@ const server_actions_1 = require("../server-actions");
 // @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = server_1.registerServerReference;
 async function renderRsc(args, opts) {
-    const { searchParams, method, input, body, contentType, context } = args;
+    const { searchParams, method, input, body, contentType, context, onError } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
     // @ts-expect-error
@@ -52,7 +52,7 @@ async function renderRsc(args, opts) {
             return { id: resolved.id, chunks: resolved.chunks, name, async: true };
         },
     });
-    const renderWithContext = async (context, input, searchParams) => {
+    const renderWithContext = async (context, input, params) => {
         const renderStore = {
             context: context || {},
             rerender: () => {
@@ -61,7 +61,7 @@ async function renderRsc(args, opts) {
         };
         return (0, server_2.runWithRenderStore)(renderStore, async () => {
             const elements = await renderEntries(input, {
-                searchParams,
+                params,
                 buildConfig,
             });
             if (elements === null) {
@@ -72,7 +72,9 @@ async function renderRsc(args, opts) {
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
             }
-            return (0, server_1.renderToReadableStream)(elements, bundlerConfig);
+            return (0, server_1.renderToReadableStream)(elements, bundlerConfig, {
+                onError,
+            });
         });
     };
     const renderWithContextWithAction = async (context, actionFn, actionArgs) => {
@@ -80,13 +82,13 @@ async function renderRsc(args, opts) {
         let rendered = false;
         const renderStore = {
             context: context || {},
-            rerender: async (input, searchParams = new URLSearchParams()) => {
+            rerender: async (input, params) => {
                 if (rendered) {
                     throw new Error('already rendered');
                 }
                 elementsPromise = Promise.all([
                     elementsPromise,
-                    renderEntries(input, { searchParams, buildConfig }),
+                    renderEntries(input, { params, buildConfig }),
                 ]).then(([oldElements, newElements]) => ({
                     ...oldElements,
                     // FIXME we should actually check if newElements is null and send an error
@@ -101,7 +103,9 @@ async function renderRsc(args, opts) {
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
             }
-            return (0, server_1.renderToReadableStream)({ ...elements, _value: actionValue }, bundlerConfig);
+            return (0, server_1.renderToReadableStream)({ ...elements, _value: actionValue }, bundlerConfig, {
+                onError,
+            });
         });
     };
     if (method === 'POST') {

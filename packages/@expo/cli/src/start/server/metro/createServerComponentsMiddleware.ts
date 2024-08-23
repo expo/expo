@@ -52,6 +52,7 @@ export function createServerComponentsMiddleware(
     // Disabled in development
     baseUrl: '',
     rscPath,
+    onError: console.error,
     renderRsc: async (args) => {
       // Dev server-only implementation.
       try {
