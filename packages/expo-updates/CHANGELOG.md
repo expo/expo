@@ -15,7 +15,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build error with React Native 0.75 on Android. ([#31084](https://github.com/expo/expo/pull/31084) by [@kudo](https://github.com/kudo))
-- Add different set of proguard rules when using React Native 0.75 on Android.
+- Add different set of proguard rules when using React Native 0.75 on Android. ([#31136](https://github.com/expo/expo/pull/31136) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.25.22 — 2024-08-07
 
