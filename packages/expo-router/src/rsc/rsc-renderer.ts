@@ -13,6 +13,8 @@
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
 
+import { fileURLToFilePath } from './path';
+import { filePathToFileURL, decodeActionId } from './router/utils';
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 
 export interface RenderContext<T = unknown> {
@@ -29,16 +31,17 @@ export type RenderRscArgs = {
   // Done
   input: string;
   searchParams: URLSearchParams;
-  method: 'GET' | 'POST';
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
   contentType?: string | undefined;
+  decodedBody?: unknown;
   moduleIdCallback?: (module: {
     id: string;
     chunks: string[];
     name: string;
     async: boolean;
   }) => void;
+  onError?: (err: unknown) => void;
 };
 
 type ResolveClientEntry = (id: string, server: boolean) => { id: string; chunks: string[] };
@@ -47,11 +50,11 @@ type RenderRscOpts = {
   isExporting: boolean;
   entries: EntriesDev;
   resolveClientEntry: ResolveClientEntry;
-  loadServerModuleRsc: (id: string) => any;
+  loadServerModuleRsc: (url: string) => Promise<any>;
 };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
-  const { searchParams, method, input, body, contentType, context } = args;
+  const { searchParams, input, body, contentType, context, onError } = args;
   const { resolveClientEntry, entries } = opts;
 
   const {
@@ -124,7 +127,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   const renderWithContext = async (
     context: Record<string, unknown> | undefined,
     input: string,
-    searchParams: URLSearchParams
+    params: unknown
   ) => {
     const renderStore = {
       context: context || {},
@@ -134,7 +137,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     };
     return runWithRenderStore(renderStore, async () => {
       const elements = await renderEntries(input, {
-        searchParams,
+        params,
         buildConfig,
       });
       if (elements === null) {
@@ -145,7 +148,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
-      return renderToReadableStream(elements, bundlerConfig);
+      return renderToReadableStream(elements, bundlerConfig, {
+        onError,
+      });
     });
   };
 
@@ -158,13 +163,13 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     let rendered = false;
     const renderStore = {
       context: context || {},
-      rerender: async (input: string, searchParams = new URLSearchParams()) => {
+      rerender: async (input: string, params?: unknown) => {
         if (rendered) {
           throw new Error('already rendered');
         }
         elementsPromise = Promise.all([
           elementsPromise,
-          renderEntries(input, { searchParams, buildConfig }),
+          renderEntries(input, { params, buildConfig }),
         ]).then(([oldElements, newElements]) => ({
           ...oldElements,
           // FIXME we should actually check if newElements is null and send an error
@@ -181,18 +186,15 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
-      return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig);
+      return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig, {
+        onError,
+      });
     });
   };
 
-  if (method === 'POST') {
-    // TODO(Bacon): Fix Server action ID generation
-    const rsfId = decodeURIComponent(input);
-    let args: unknown[] = [];
-    let bodyStr = '';
-    if (body) {
-      bodyStr = await streamToString(body);
-    }
+  let decodedBody: unknown | undefined = args.decodedBody;
+  if (body) {
+    const bodyStr = await streamToString(body);
     if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
       console.log('======.-1');
       console.log(body);
@@ -203,16 +205,22 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       console.log('======.2');
       // XXX This doesn't support streaming unlike busboy
       const formData = parseFormData(bodyStr, contentType);
-      args = await decodeReply(formData, serverConfig);
+      decodedBody = await decodeReply(formData, serverConfig);
     } else if (bodyStr) {
-      args = await decodeReply(bodyStr, serverConfig);
+      decodedBody = await decodeReply(bodyStr, serverConfig);
     }
+  }
 
-    const [, name] = rsfId.split('#') as [string, string];
+  const actionId = decodeActionId(input);
+  if (actionId) {
+    const args = Array.isArray(decodedBody) ? decodedBody : [];
+    const [fileId, name] = actionId.split('#') as [string, string];
+
     // TODO: Add production version of this codepath.
-    const mod: any = await opts.loadServerModuleRsc(serverConfig[rsfId].chunks[0]);
+    const mod: any = await opts.loadServerModuleRsc(serverConfig[actionId].chunks[0]);
 
-    const fn = name ? (name === '*' ? mod : mod[name] || mod) : mod;
+    // const mod = await opts.loadServerModuleRsc(filePathToFileURL(fileId));
+    const fn = name === '*' ? name : mod[name] || mod;
     return renderWithContextWithAction(context, fn, args);
   }
 
@@ -252,13 +260,6 @@ const parseFormData = (body: string, contentType: string) => {
     }
   }
   return formData;
-};
-
-const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
 };
 
 const streamToString = async (stream: ReadableStream): Promise<string> => {

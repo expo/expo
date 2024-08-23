@@ -54,18 +54,13 @@ export async function renderRscWithImportsAsync(
   imports: ImportMap,
   { body, platform, searchParams, config, method, input, contentType }: RenderRscArgs
 ): Promise<ReadableStream<any>> {
-  if (method === 'POST') {
-    if (!body)
-      throw new Error('Server request must be provided when method is POST (server actions)');
+  if (method === 'POST' && !body) {
+    throw new Error('Server request must be provided when method is POST (server actions)');
   }
 
   const context = getRscRenderContext(platform);
 
   const entries = await imports.router();
-  if (method === 'POST') {
-    // HACK: This is some mock function to load the JS in to memory which in turn ensures the server actions are registered.
-    entries.default.getBuildConfig!(async (input) => []);
-  }
 
   const ssrManifest = getSSRManifest(distFolder, platform);
 
@@ -75,7 +70,6 @@ export async function renderRscWithImportsAsync(
       searchParams,
       context,
       config,
-      method,
       input,
       contentType,
     },
@@ -88,7 +82,10 @@ export async function renderRscWithImportsAsync(
           chunks: chunk ? [chunk] : [],
         };
       },
-      loadServerModuleRsc(file) {
+      async loadServerModuleRsc(file) {
+        // TODO: SSR load action code from on disk file.
+        throw new Error('React server actions are not implemented yet');
+
         const [id, chunk] = ssrManifest[file];
         return {
           id,

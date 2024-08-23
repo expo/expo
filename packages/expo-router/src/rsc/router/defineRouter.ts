@@ -14,7 +14,6 @@ import {
   getComponentIds,
   getInputString,
   parseInputString,
-  PARAM_KEY_SKIP,
   SHOULD_SKIP_ID,
   LOCATION_ID,
 } from './common';
@@ -30,6 +29,20 @@ type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
 };
 
 type ShouldSkipValue = ShouldSkip[number][1];
+
+const safeJsonParse = (str: unknown) => {
+  if (typeof str === 'string') {
+    try {
+      const obj = JSON.parse(str);
+      if (typeof obj === 'object') {
+        return obj as Record<string, unknown>;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return undefined;
+};
 
 export function unstable_defineRouter(
   getPathConfig: () => Promise<
@@ -78,17 +91,20 @@ export function unstable_defineRouter(
     const found = pathConfig.find(({ pathname: pathSpec }) => getPathMapping(pathSpec, pathname));
     return found ? (found.customData.noSsr ? ['FOUND', 'NO_SSR'] : ['FOUND']) : ['NOT_FOUND'];
   };
-  const shouldSkipObj: {
-    [componentId: ShouldSkip[number][0]]: ShouldSkip[number][1];
-  } = {};
 
-  const renderEntries: RenderEntries = async (input, { searchParams, buildConfig }) => {
+  const renderEntries: RenderEntries = async (input, { params, buildConfig }) => {
     const pathname = parseInputString(input);
     if ((await existsPath(pathname, buildConfig))[0] === 'NOT_FOUND') {
       return null;
     }
-    const skip = searchParams.getAll(PARAM_KEY_SKIP) || [];
-    searchParams.delete(PARAM_KEY_SKIP); // delete all
+    const shouldSkipObj: {
+      [componentId: ShouldSkip[number][0]]: ShouldSkip[number][1];
+    } = {};
+
+    const parsedParams = safeJsonParse(params);
+
+    const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
+    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams!.skip as unknown[]) : [];
     const componentIds = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
@@ -114,9 +130,9 @@ export function unstable_defineRouter(
           const element = createElement(
             component as FunctionComponent<{
               path: string;
-              searchParams?: URLSearchParams;
+              query?: string;
             }>,
-            id.endsWith('/layout') ? { path: pathname } : { path: pathname, searchParams },
+            id.endsWith('/layout') ? { path: pathname } : { path: pathname, query },
             createElement(Children)
           );
           return [[id, element]] as const;
@@ -124,7 +140,7 @@ export function unstable_defineRouter(
       )
     ).flat();
     entries.push([SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
-    entries.push([LOCATION_ID, [pathname, searchParams.toString()]]);
+    entries.push([LOCATION_ID, [pathname, query]]);
     return Object.fromEntries(entries);
   };
 
@@ -176,31 +192,21 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
     }
     const componentIds = getComponentIds(pathname);
     const input = getInputString(pathname);
-    const body = createElement(
+    const html = createElement(
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
-      { route: { path: pathname, searchParams } },
+      { route: { path: pathname, query: searchParams.toString(), hash: '' } },
       componentIds.reduceRight(
         (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
         null
       )
     );
-    return { input, body };
+    return { input, params: JSON.stringify({ query: searchParams.toString() }), html };
   };
 
   return { renderEntries, getBuildConfig, getSsrConfig };
 }
 
-export function unstable_redirect(
-  pathname: string,
-  searchParams?: URLSearchParams,
-  skip?: string[]
-) {
-  if (skip) {
-    searchParams = new URLSearchParams(searchParams);
-    for (const id of skip) {
-      searchParams.append(PARAM_KEY_SKIP, id);
-    }
-  }
+export function unstable_redirect(pathname: string, query?: string, skip?: string[]) {
   const input = getInputString(pathname);
-  rerender(input, searchParams);
+  rerender(input, { query, skip });
 }

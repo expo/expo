@@ -31,7 +31,6 @@ test.beforeAll('bundle and serve', async () => {
       E2E_CANARY_ENABLED: '1',
       E2E_RSC_ENABLED: '1',
       EXPO_USE_STATIC: 'single',
-      EXPO_PUBLIC_USE_RSC: '1',
       NODE_ENV: 'production',
       E2E_ROUTER_SRC: '01-rsc',
       TEST_SECRET_VALUE: 'test-secret',
@@ -90,6 +89,8 @@ test.describe.serial(inputDir, () => {
     await page.waitForSelector('[data-testid="index-text"]');
 
     await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
+    await expect(page.locator('[data-testid="index-path"]')).toHaveText('/');
+    await expect(page.locator('[data-testid="index-query"]')).toHaveText('');
 
     console.timeEnd('hydrate');
 
@@ -108,6 +109,25 @@ test.describe.serial(inputDir, () => {
     await page.locator('[data-testid="client-button"]').click();
 
     await expect(page.locator('[data-testid="client-button"]')).toHaveText('Count: 1');
+
+    // CSS styles exist
+    await expect(page.locator('[data-testid="layout-global-style"]')).toHaveCSS(
+      'background-color',
+      'rgb(0, 128, 0)'
+    );
+    await expect(page.locator('[data-testid="layout-module-style"]')).toHaveCSS(
+      'background-color',
+      'rgb(127, 255, 212)'
+    );
+
+    // Ensure head has preloaded CSS files:
+    // <link rel="preload" href="/_expo/static/css/global-9c7022062f03d614bbbb2e534c66e10a.css" as="style"><link rel="stylesheet" href="/_expo/static/css/global-9c7022062f03d614bbbb2e534c66e10a.css"><link rel="preload" href="/_expo/static/css/home.module-8cd85e4c745d413359c336799092a7ea.css" as="style"><link rel="stylesheet" href="/_expo/static/css/home.module-8cd85e4c745d413359c336799092a7ea.css"></head>
+    await expect(page.locator('link[rel="preload"][as="style"][href*="global"]')).toBeAttached();
+    await expect(page.locator('link[rel="stylesheet"][href*="global"]')).toBeAttached();
+    await expect(
+      page.locator('link[rel="preload"][as="style"][href*="home.module"]')
+    ).toBeAttached();
+    await expect(page.locator('link[rel="stylesheet"][href*="home.module"]')).toBeAttached();
   });
 
   test('dynamically renders RSC', async ({ page }) => {

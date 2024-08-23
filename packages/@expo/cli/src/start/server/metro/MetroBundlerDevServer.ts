@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
@@ -67,7 +68,7 @@ import {
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -168,6 +169,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const rscPath = '/_flight/[...rsc]';
 
     if (
+      this.isReactServerComponentsEnabled &&
       // If the RSC route is not already in the manifest, add it.
       !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
     ) {
@@ -640,12 +642,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const clientBoundaries = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
-      {
-        platform: options.platform,
-      },
-      files
-    );
+    const { reactClientReferences: clientBoundaries, cssModules } =
+      await this.rscRenderer!.getExpoRouterClientReferencesAsync(
+        {
+          platform: options.platform,
+        },
+        files
+      );
 
     debug('Evaluated client boundaries:', clientBoundaries);
 
@@ -657,6 +660,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       extraOptions
     );
+
+    // Inject the global CSS that was imported during the server render.
+    bundle.artifacts.push(...cssModules);
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
@@ -935,6 +941,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
+        this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
@@ -1002,6 +1009,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } else {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
+        this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
@@ -1258,6 +1266,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+  }
+
+  // Ensure the global is available for SSR CSS modules to inject client updates.
+  private bindRSCDevModuleInjectionHandler() {
+    // Used by SSR CSS modules to broadcast client updates.
+    // @ts-expect-error
+    globalThis.__expo_rsc_inject_module = this.sendClientModule.bind(this);
+  }
+
+  // NOTE: This can only target a single platform at a time (web).
+  // used for sending RSC CSS to the root client in development.
+  private sendClientModule({ code, id }: { code: string; id: string }) {
+    this.broadcastMessage('sendDevCommand', {
+      name: 'module-import',
+      data: {
+        code,
+        id,
+      },
+    });
   }
 
   // Metro HMR
