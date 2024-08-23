@@ -113,4 +113,12 @@ export declare class File {
    * Moves a directory.
    */
   move(destination: Directory | File);
+
+  /**
+   * Downloads a file from the network.
+   * @param url - The URL of the file to download.
+   * @param destination - The destination directory or file. If a destination is provided, the resulting filename will be determined based on the response headers.
+   * @returns A promise that resolves to the downloaded file.
+   */
+  static download(url: string, destination: Directory | File): Promise<File>;
 }

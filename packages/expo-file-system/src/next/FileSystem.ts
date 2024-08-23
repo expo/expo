@@ -8,6 +8,11 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 }
 
+File.download = async function download(url: string, to: File | Directory) {
+  const outputPath = await ExpoFileSystem.download(url, to);
+  return new File(outputPath);
+};
+
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
   constructor(path: Path) {
     super(path);
@@ -18,9 +23,4 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
 // consider module functions as API alternative
 export async function write(file: File, contents: string) {
   return file.write(contents);
-}
-
-export async function download(url: string, to: Directory | File) {
-  const outputPath = await ExpoFileSystem.download(url, to);
-  return new File(outputPath);
 }
