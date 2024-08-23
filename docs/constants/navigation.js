@@ -423,6 +423,7 @@ const general = [
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
+        makePage('guides/keyboard-handling.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
