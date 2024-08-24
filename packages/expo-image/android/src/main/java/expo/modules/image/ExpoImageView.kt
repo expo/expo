@@ -219,9 +219,12 @@ class ExpoImageView(
 
       borderDrawable.apply {
         val setLayoutDirectionMethod = try {
+          // 0.74
           ReactViewBackgroundDrawable::class.java.getDeclaredMethod("setResolvedLayoutDirection", Int::class.java)
         } catch (e: NoSuchMethodException) {
-          ReactViewBackgroundDrawable::class.java.getMethod("setLayoutDirectionOverride", Int::class.java)
+          // 0.75
+          val clazz = Class.forName("com.facebook.react.uimanager.drawable.CSSBackgroundDrawable")
+          clazz.getDeclaredMethod("setLayoutDirectionOverride", Int::class.java)
         }
         setLayoutDirectionMethod.invoke(this, newLayoutDirection)
         setBounds(0, 0, width, height)

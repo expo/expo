@@ -15,11 +15,16 @@ buildscript {
 }
 
 android {
+  def rnVersion = getRNVersion()
   namespace "expo.modules.image"
   defaultConfig {
     versionCode 1
     versionName "1.12.14"
-    consumerProguardFiles("proguard-rules.pro")
+    if (rnVersion >= versionToNumber(0, 75, 0)) {
+      consumerProguardFiles('proguard-rules.pro', 'proguard-rules-75.pro')
+    } else {
+      consumerProguardFiles('proguard-rules.pro')
+    }
 
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
   }
@@ -52,4 +57,29 @@ dependencies {
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation "jp.wasabeef:glide-transformations:4.3.0"
+}
+
+def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
