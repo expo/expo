@@ -25,16 +25,22 @@ async function getMainActivityAsync(projectRoot: string): Promise<string> {
   return activity.$['android:name'];
 }
 
-export async function resolveLaunchPropsAsync(projectRoot: string): Promise<LaunchProps> {
+export async function resolveLaunchPropsAsync(
+  projectRoot: string,
+  options: { appIdSuffix?: string }
+): Promise<LaunchProps> {
   // Often this is ".MainActivity"
   const mainActivity = await getMainActivityAsync(projectRoot);
 
   const packageName = await new AndroidAppIdResolver(projectRoot).getAppIdFromNativeAsync();
+  const packageNameWithSuffix = options.appIdSuffix
+    ? `${packageName}.${options.appIdSuffix}`
+    : packageName;
   const launchActivity = `${packageName}/${mainActivity}`;
 
   return {
     mainActivity,
     launchActivity,
-    packageName,
+    packageName: packageNameWithSuffix,
   };
 }

@@ -53,6 +53,7 @@ describe(resolveOptionsAsync, () => {
         install: true,
         port: 8081,
         variant: 'firstSecondThirdDebug',
+        appIdSuffix: 'demo',
       })
     ).toEqual({
       apkVariantDirectory: '/android/app/build/outputs/apk/firstSecondThird/debug',
@@ -70,7 +71,7 @@ describe(resolveOptionsAsync, () => {
       install: true,
       launchActivity: 'com.bacon.mydevicefamilyproject/.MainActivity',
       mainActivity: '.MainActivity',
-      packageName: 'com.bacon.mydevicefamilyproject',
+      packageName: 'com.bacon.mydevicefamilyproject.demo',
       port: 8081,
       shouldStartBundler: true,
       variant: 'firstSecondThirdDebug',

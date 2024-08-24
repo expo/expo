@@ -6,6 +6,7 @@ import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
   variant?: string;
+  appIdSuffix?: string;
   device?: boolean | string;
   port?: number;
   bundler?: boolean;
@@ -35,7 +36,7 @@ export async function resolveOptionsAsync(
   return {
     ...(await resolveBundlerPropsAsync(projectRoot, options)),
     ...(await resolveGradlePropsAsync(projectRoot, options, device.device)),
-    ...(await resolveLaunchPropsAsync(projectRoot)),
+    ...(await resolveLaunchPropsAsync(projectRoot, options)),
     variant: options.variant ?? 'debug',
     // Resolve the device based on the provided device id or prompt
     // from a list of devices (connected or simulated) that are filtered by the scheme.

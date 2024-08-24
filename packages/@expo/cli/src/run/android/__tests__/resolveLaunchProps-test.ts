@@ -8,16 +8,16 @@ describe(resolveLaunchPropsAsync, () => {
 
   it(`asserts no android folder`, async () => {
     vol.fromJSON({}, '/');
-    await expect(resolveLaunchPropsAsync('/')).rejects.toThrow(
+    await expect(resolveLaunchPropsAsync('/', {})).rejects.toThrow(
       /Android project folder is missing in project/
     );
   });
   it(`resolves launch properties`, async () => {
     vol.fromJSON(rnFixture, '/');
-    expect(await resolveLaunchPropsAsync('/')).toEqual({
+    expect(await resolveLaunchPropsAsync('/', { appIdSuffix: 'demo' })).toEqual({
       launchActivity: 'com.bacon.mydevicefamilyproject/.MainActivity',
       mainActivity: '.MainActivity',
-      packageName: 'com.bacon.mydevicefamilyproject',
+      packageName: 'com.bacon.mydevicefamilyproject.demo',
     });
   });
 });

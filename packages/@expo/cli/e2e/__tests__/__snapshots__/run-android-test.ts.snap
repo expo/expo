@@ -13,6 +13,7 @@ exports[`runs \`npx expo run:android --help\` 1`] = `
     --no-install           Skip installing dependencies
     --no-bundler           Skip starting the bundler
     --variant <name>       Build variant. Default: debug
+    --appIdSuffix <name>   Application ID suffix.
     --binary <path>        Path to existing .apk or .aab to install.
     -d, --device [device]  Device name to run the app on
     -p, --port <port>      Port to start the dev server on. Default: 8081
