@@ -1,9 +1,10 @@
 import React from 'react';
 
+import { useScrollToTop } from '@react-navigation/native';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
+import { RouteParams, Routes, RouteSegments, UnknownOutputParams } from './types';
 
 type SearchParams = Record<string, string | string[]>;
 export function useRootNavigationState() {
@@ -185,3 +186,18 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
     throw new Error('The URLSearchParams object return from useSearchParams is read-only');
   }
 }
+
+/**
+ * Returns the Navigation's function of scroll to Top where needed in scroll
+ *
+ * e.g  `const ref = useRef(null)
+ *        useScrollToTop(ref)
+ *        ....
+ *        return (
+ *          <ScrollView ref={ref}>
+ *            ...
+ *          </ScrollView>
+ *        )`
+ */
+
+export { useScrollToTop };

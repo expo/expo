@@ -11,6 +11,7 @@ export {
   useSegments,
   useRootNavigation,
   useRootNavigationState,
+  useScrollToTop
 } from './hooks';
 
 export { router, Router } from './imperative-api';
