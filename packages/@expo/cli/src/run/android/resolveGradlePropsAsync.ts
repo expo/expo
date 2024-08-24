@@ -37,10 +37,13 @@ export async function resolveGradlePropsAsync(
 
   const apkDirectory = path.join(projectRoot, 'android', appName, 'build', 'outputs', 'apk');
 
-  // buildDeveloperTrust -> build, developer, trust (where developer, and trust are flavors).
+  // buildDeveloperTrustDebug -> build, developer, trust (where developer, and trust are flavors) and debug is build type.
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
-  const [buildType, ...flavors] = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
-  const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
+  const parts = variant.split(/(?=[A-Z])/);
+  const buildType = parts.pop()!.toLowerCase();
+  const flavors = parts.map((v) => v.toLowerCase());
+  const flavorPath = variant.slice(0, variant.length - buildType.length);
+  const apkVariantDirectory = path.join(apkDirectory, flavorPath, buildType);
   const architectures = await getConnectedDeviceABIS(buildType, device, options.allArch);
 
   return {

@@ -30,12 +30,16 @@ describe(resolveGradlePropsAsync, () => {
   });
   it(`parses flavors`, async () => {
     expect(
-      await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true }, testDevice)
+      await resolveGradlePropsAsync(
+        '/',
+        { variant: 'firstSecondThirdDebug', allArch: true },
+        testDevice
+      )
     ).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/second/third/first',
+      apkVariantDirectory: '/android/app/build/outputs/apk/firstSecondThird/debug',
       appName: 'app',
-      buildType: 'first',
-      flavors: ['second', 'third'],
+      buildType: 'debug',
+      flavors: ['first', 'second', 'third'],
       architectures: '',
     });
   });
