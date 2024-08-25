@@ -84,32 +84,28 @@ class SystemUIModule : Module() {
       val window = currentActivity.window
       val insetsController = WindowInsetsControllerCompat(window, window.decorView)
 
-      currentActivity.runOnUiThread {
-        with(config) {
-          statusBarStyle?.let {
-            insetsController.isAppearanceLightStatusBars = it == SystemBarStyle.DARK
+      config.statusBarStyle?.let {
+        insetsController.isAppearanceLightStatusBars = it == SystemBarStyle.DARK
+      }
+
+      if (config.statusBarHidden != null || config.navigationBarHidden != null) {
+        insetsController.systemBarsBehavior =
+          WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        config.statusBarHidden?.let {
+          when (it) {
+            true -> insetsController.hide(WindowInsetsCompat.Type.statusBars())
+            else -> insetsController.show(WindowInsetsCompat.Type.statusBars())
           }
-
-          if (statusBarHidden != null || navigationBarHidden != null) {
-            insetsController.systemBarsBehavior =
-              WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-
-            statusBarHidden?.let {
-              when (it) {
-                true -> insetsController.hide(WindowInsetsCompat.Type.statusBars())
-                else -> insetsController.show(WindowInsetsCompat.Type.statusBars())
-              }
-            }
-            navigationBarHidden?.let {
-              when (it) {
-                true -> insetsController.hide(WindowInsetsCompat.Type.navigationBars())
-                else -> insetsController.show(WindowInsetsCompat.Type.navigationBars())
-              }
-            }
+        }
+        config.navigationBarHidden?.let {
+          when (it) {
+            true -> insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+            else -> insetsController.show(WindowInsetsCompat.Type.navigationBars())
           }
         }
       }
-    }
+    }.runOnQueue(Queues.MAIN)
   }
 
   private fun setBackgroundColor(color: Int) {
