@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react';
+import React from 'react';
 import { Appearance, Platform, StatusBar, useColorScheme } from 'react-native';
 import ExpoSystemUI from './ExpoSystemUI';
 function getColorScheme() {
@@ -117,15 +117,20 @@ function replaceStackEntry(entry, props) {
     updatePropsStack();
     return copy;
 }
-export const SystemBars = memo((props) => {
+export function SystemBars({ statusBarStyle, statusBarHidden, navigationBarHidden, }) {
+    const stableProps = React.useMemo(() => ({
+        statusBarStyle,
+        statusBarHidden,
+        navigationBarHidden,
+    }), [statusBarStyle, statusBarHidden, navigationBarHidden]);
     const colorScheme = useColorScheme();
-    const stackEntryRef = useRef(null);
-    useEffect(() => {
+    const stackEntryRef = React.useRef(null);
+    React.useEffect(() => {
         // Every time a SystemBars component is mounted, we push it's prop to a stack
         // and always update the native system bars with the props from the top of then
         // stack. This allows having multiple SystemBars components and the one that is
         // added last or is deeper in the view hierarchy will have priority.
-        stackEntryRef.current = pushStackEntry(props);
+        stackEntryRef.current = pushStackEntry(stableProps);
         return () => {
             // When a SystemBars is unmounted, remove itself from the stack and update
             // the native bars with the next props.
@@ -134,12 +139,14 @@ export const SystemBars = memo((props) => {
             }
         };
     }, []);
-    useEffect(() => {
+    React.useEffect(() => {
         if (stackEntryRef.current) {
-            stackEntryRef.current = replaceStackEntry(stackEntryRef.current, props);
+            stackEntryRef.current = replaceStackEntry(stackEntryRef.current, stableProps);
         }
-    }, [colorScheme, props]);
+    }, [colorScheme, stableProps]);
     return null;
-});
-SystemBars.displayName = 'SystemBars';
+}
+SystemBars.pushStackEntry = pushStackEntry;
+SystemBars.popStackEntry = popStackEntry;
+SystemBars.replaceStackEntry = replaceStackEntry;
 //# sourceMappingURL=SystemBars.js.map

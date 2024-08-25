@@ -4,5 +4,10 @@ export type SystemBarsProps = {
     statusBarHidden?: boolean;
     navigationBarHidden?: boolean;
 };
-export declare const SystemBars: import("react").MemoExoticComponent<(props: SystemBarsProps) => null>;
+export declare function SystemBars({ statusBarStyle, statusBarHidden, navigationBarHidden, }: SystemBarsProps): null;
+export declare namespace SystemBars {
+    var pushStackEntry: (props: SystemBarsProps) => SystemBarsProps;
+    var popStackEntry: (entry: SystemBarsProps) => void;
+    var replaceStackEntry: (entry: SystemBarsProps, props: SystemBarsProps) => SystemBarsProps;
+}
 //# sourceMappingURL=SystemBars.d.ts.map
