@@ -249,7 +249,7 @@ For example, the `index` route in the following layout structure shows a list of
   ]}
 />
 
-The `Stack` navigator will push a new screen every time the app user navigates to a different profile but will fail. If you provide a `getId()` function that returns a new ID every time, the `Stack` will push a new screen every time the app user navigates to a profile.
+The `Stack` navigator will push a new screen every time the app user navigates to a different profile. However, if you provide a `getId()` function that returns a new ID every time, the `Stack` will push a new screen every time the app user navigates to a profile.
 
 You can use the `<Stack.Screen name="[profile]" getId={}>` component in the layout component route to modify the push behavior:
 
