@@ -148,6 +148,7 @@ function replaceStackEntry(entry: SystemBarsProps, props: SystemBarsProps): Syst
 }
 
 export const SystemBars = memo((props: SystemBarsProps) => {
+  const colorScheme = useColorScheme();
   const stackEntryRef = useRef<SystemBarsProps | null>(null);
 
   useEffect(() => {
@@ -170,7 +171,7 @@ export const SystemBars = memo((props: SystemBarsProps) => {
     if (stackEntryRef.current) {
       stackEntryRef.current = replaceStackEntry(stackEntryRef.current, props);
     }
-  }, [props]);
+  }, [colorScheme, props]);
 
   return null;
 });

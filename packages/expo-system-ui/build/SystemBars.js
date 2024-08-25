@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef } from 'react';
-import { Appearance, Platform, StatusBar } from 'react-native';
+import { Appearance, Platform, StatusBar, useColorScheme } from 'react-native';
 import ExpoSystemUI from './ExpoSystemUI';
 function getColorScheme() {
     return Appearance?.getColorScheme() ?? 'light';
@@ -118,6 +118,7 @@ function replaceStackEntry(entry, props) {
     return copy;
 }
 export const SystemBars = memo((props) => {
+    const colorScheme = useColorScheme();
     const stackEntryRef = useRef(null);
     useEffect(() => {
         // Every time a SystemBars component is mounted, we push it's prop to a stack
@@ -137,7 +138,7 @@ export const SystemBars = memo((props) => {
         if (stackEntryRef.current) {
             stackEntryRef.current = replaceStackEntry(stackEntryRef.current, props);
         }
-    }, [props]);
+    }, [colorScheme, props]);
     return null;
 });
 SystemBars.displayName = 'SystemBars';
