@@ -117,6 +117,13 @@
   return false;
 }
 
+#pragma mark - Memory pressure
+
+- (void)setExternalMemoryPressure:(size_t)size
+{
+  _jsObjectPtr->setExternalMemoryPressure(*[_runtime get], size);
+}
+
 #pragma mark - Private helpers
 
 - (jsi::Object)preparePropertyDescriptorWithOptions:(EXJavaScriptObjectPropertyDescriptor)options

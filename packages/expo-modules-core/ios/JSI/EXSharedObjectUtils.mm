@@ -15,11 +15,4 @@
   [object get]->setNativeState(*[runtime get], nativeState);
 }
 
-+ (void)setExternalMemoryPressure:(nonnull EXJavaScriptObject *)object
-                          runtime:(nonnull EXJavaScriptRuntime *)runtime
-                             size:(size_t)size
-{
-  [object get]->setExternalMemoryPressure(*[runtime get], size);
-}
-
 @end

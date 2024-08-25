@@ -107,7 +107,7 @@ public final class SharedObjectRegistry {
 
       let memoryPressure = nativeObject.getAdditionalMemoryPressure()
       if memoryPressure > 0 {
-        SharedObjectUtils.setExternalMemoryPressure(jsObject, runtime: runtime, size: memoryPressure)
+        jsObject.setExternalMemoryPressure(memoryPressure)
       }
     }
 
