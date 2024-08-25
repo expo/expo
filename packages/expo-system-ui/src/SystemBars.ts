@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef } from 'react';
-import { Appearance, ColorSchemeName, Platform, StatusBar } from 'react-native';
+import { Appearance, Platform, StatusBar, useColorScheme } from 'react-native';
 
 import ExpoSystemUI, { SystemBarsConfig } from './ExpoSystemUI';
 
@@ -52,31 +52,7 @@ const propsStack: SystemBarsProps[] = [];
 let updateImmediate: number | null = null;
 
 // The current merged values from the props stack.
-let currentValues: SystemBarsProps | null = null;
-
-function applyStackEntry(entry: SystemBarsProps, colorScheme: ColorSchemeName) {
-  const { statusBarHidden, navigationBarHidden } = entry;
-  const autoBarStyle = colorScheme === 'light' ? 'dark' : 'light';
-
-  const statusBarStyle: SystemBarsConfig['statusBarStyle'] =
-    entry.statusBarStyle === 'auto' ? autoBarStyle : entry.statusBarStyle;
-
-  if (Platform.OS === 'android') {
-    ExpoSystemUI.setSystemBarsConfigAsync({
-      statusBarStyle,
-      statusBarHidden,
-      navigationBarHidden,
-    });
-  } else {
-    // Emulate android behavior with react-native StatusBar
-    if (statusBarStyle != null) {
-      StatusBar.setBarStyle(`${statusBarStyle}-content`, true);
-    }
-    if (statusBarHidden != null) {
-      StatusBar.setHidden(statusBarHidden, 'fade'); // 'slide' doesn't work in this context
-    }
-  }
-}
+let currentMergedProps: SystemBarsProps | null = null;
 
 /**
  * Updates the native system bars with the props from the stack.
@@ -87,24 +63,44 @@ function updatePropsStack() {
   }
 
   updateImmediate = setImmediate(() => {
-    const oldProps = currentValues;
+    const prevMergedProps = currentMergedProps;
     const mergedProps = mergePropsStack(propsStack);
 
     if (mergedProps != null) {
       if (
-        oldProps?.statusBarStyle !== mergedProps.statusBarStyle ||
-        oldProps?.statusBarHidden !== mergedProps.statusBarHidden ||
-        oldProps?.navigationBarHidden !== mergedProps.navigationBarHidden
+        prevMergedProps?.statusBarStyle !== mergedProps.statusBarStyle ||
+        prevMergedProps?.statusBarHidden !== mergedProps.statusBarHidden ||
+        prevMergedProps?.navigationBarHidden !== mergedProps.navigationBarHidden
       ) {
-        applyStackEntry(
-          mergedProps,
-          mergedProps.statusBarStyle === 'auto' ? getColorScheme() : null
-        );
+        const { statusBarHidden, navigationBarHidden } = mergedProps;
+
+        const statusBarStyle: SystemBarsConfig['statusBarStyle'] =
+          mergedProps.statusBarStyle === 'auto'
+            ? getColorScheme() === 'light'
+              ? 'dark'
+              : 'light'
+            : mergedProps.statusBarStyle;
+
+        if (Platform.OS === 'android') {
+          ExpoSystemUI.setSystemBarsConfigAsync({
+            statusBarStyle,
+            statusBarHidden,
+            navigationBarHidden,
+          });
+        } else {
+          // Emulate android behavior with react-native StatusBar
+          if (statusBarStyle != null) {
+            StatusBar.setBarStyle(`${statusBarStyle}-content`, true);
+          }
+          if (statusBarHidden != null) {
+            StatusBar.setHidden(statusBarHidden, 'fade'); // 'slide' doesn't work in this context
+          }
+        }
       }
 
-      currentValues = mergedProps;
+      currentMergedProps = mergedProps;
     } else {
-      currentValues = null;
+      currentMergedProps = null;
     }
   });
 }
