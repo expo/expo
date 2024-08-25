@@ -19,14 +19,19 @@ import expo.modules.kotlin.types.Enumerable
 const val PREFERENCE_KEY = "expoRootBackgroundColor"
 
 enum class SystemBarStyle(val value: String) : Enumerable {
-  Light("light"),
-  Dark("dark")
+  LIGHT("light"),
+  DARK("dark")
 }
 
 class SystemBarsConfig : Record {
-  @Field val statusBarStyle: SystemBarStyle? = null
-  @Field val statusBarHidden: Boolean? = null
-  @Field val navigationBarHidden: Boolean? = null
+  @Field
+  val statusBarStyle: SystemBarStyle? = null
+
+  @Field
+  val statusBarHidden: Boolean? = null
+
+  @Field
+  val navigationBarHidden: Boolean? = null
 }
 
 class SystemUIModule : Module() {
@@ -82,7 +87,7 @@ class SystemUIModule : Module() {
       currentActivity.runOnUiThread {
         with(config) {
           statusBarStyle?.let {
-            insetsController.isAppearanceLightStatusBars = it == SystemBarStyle.Dark
+            insetsController.isAppearanceLightStatusBars = it == SystemBarStyle.DARK
           }
 
           if (statusBarHidden != null || navigationBarHidden != null) {
