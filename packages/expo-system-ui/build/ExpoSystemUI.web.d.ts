@@ -1,6 +1,4 @@
-declare const _default: {
-    getBackgroundColorAsync(): any;
-    setBackgroundColorAsync(color: string | null): void;
-};
-export default _default;
+import type { ExpoSystemUIModule } from './ExpoSystemUI';
+declare const webModule: ExpoSystemUIModule;
+export default webModule;
 //# sourceMappingURL=ExpoSystemUI.web.d.ts.map

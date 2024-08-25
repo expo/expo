@@ -17,7 +17,7 @@ export async function setBackgroundColorAsync(color: ColorValue | null): Promise
     return await ExpoSystemUI.setBackgroundColorAsync(null);
   } else {
     const colorNumber = Platform.OS === 'web' ? color : processColor(color);
-    return await ExpoSystemUI.setBackgroundColorAsync(colorNumber);
+    return await ExpoSystemUI.setBackgroundColorAsync(colorNumber as ColorValue | null);
   }
 }
 
@@ -33,3 +33,5 @@ export async function setBackgroundColorAsync(color: ColorValue | null): Promise
 export async function getBackgroundColorAsync(): Promise<ColorValue | null> {
   return await ExpoSystemUI.getBackgroundColorAsync();
 }
+
+export { SystemBars, SystemBarsProps, SystemBarStyle } from './SystemBars';

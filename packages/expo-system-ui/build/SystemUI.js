@@ -31,4 +31,5 @@ export async function setBackgroundColorAsync(color) {
 export async function getBackgroundColorAsync() {
     return await ExpoSystemUI.getBackgroundColorAsync();
 }
+export { SystemBars } from './SystemBars';
 //# sourceMappingURL=SystemUI.js.map
