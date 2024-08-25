@@ -12,4 +12,8 @@ NS_SWIFT_NAME(SharedObjectUtils)
               objectId:(long)objectId
               releaser:(nonnull ObjectReleaser)releaser;
 
++ (void)setExternalMemoryPressure:(nonnull EXJavaScriptObject *)object
+                          runtime:(nonnull EXJavaScriptRuntime *)runtime
+                             size:(size_t)size;
+
 @end
