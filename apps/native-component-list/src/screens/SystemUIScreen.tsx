@@ -1,7 +1,6 @@
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import * as SystemUI from 'expo-system-ui';
 import * as React from 'react';
-import { ColorValue, ScrollView, View, Text, Switch } from 'react-native';
+import { ColorValue, ScrollView, View } from 'react-native';
 
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
@@ -52,37 +51,19 @@ function SystemBarsExample() {
 
   return (
     <>
-      <Text style={{ marginBottom: 10 }}>Status bar style</Text>
+      <Button onPress={() => setStatusBarStyle('auto')} title="Set status bar style to auto" />
+      <Button onPress={() => setStatusBarStyle('light')} title="Set status bar style to light" />
+      <Button onPress={() => setStatusBarStyle('dark')} title="Set status bar style to dark" />
 
-      <SegmentedControl
-        values={STYLES_VALUES}
-        selectedIndex={STYLES_VALUES.indexOf(statusBarStyle)}
-        onChange={(event) => {
-          setStatusBarStyle(STYLES_VALUES[event.nativeEvent.selectedSegmentIndex]);
-        }}
-      />
+      <View collapsable style={{ height: 20 }} />
 
-      <View
-        style={{
-          marginVertical: 10,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-        <Text>Status bar hidden</Text>
-        <Switch value={statusBarHidden} onValueChange={setStatusBarHidden} />
-      </View>
+      <Button onPress={() => setStatusBarHidden(true)} title="Hide status bar" />
+      <Button onPress={() => setStatusBarHidden(false)} title="Show status bar" />
 
-      <View
-        style={{
-          marginBottom: 10,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-        <Text>Navigation bar hidden</Text>
-        <Switch value={navigationBarHidden} onValueChange={setNavigationBarHidden} />
-      </View>
+      <View collapsable style={{ height: 20 }} />
+
+      <Button onPress={() => setNavigationBarHidden(true)} title="Hide navigation bar" />
+      <Button onPress={() => setNavigationBarHidden(false)} title="Show navigation bar" />
 
       <SystemUI.SystemBars
         statusBarStyle={statusBarStyle}
