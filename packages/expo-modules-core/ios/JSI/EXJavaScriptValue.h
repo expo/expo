@@ -19,7 +19,7 @@ NS_SWIFT_NAME(JavaScriptValue)
 @interface EXJavaScriptValue : NSObject
 
 #ifdef __cplusplus
-- (nonnull instancetype)initWithRuntime:(nonnull EXJavaScriptRuntime *)runtime
+- (nonnull instancetype)initWithRuntime:(nullable EXJavaScriptRuntime *)runtime
                                   value:(std::shared_ptr<jsi::Value>)value;
 
 /**
@@ -56,5 +56,11 @@ NS_SWIFT_NAME(JavaScriptValue)
 #pragma mark - Helpers
 
 - (nonnull NSString *)toString;
+
+#pragma mark - Statics
+
+@property (class, nonatomic, assign, readonly, nonnull) EXJavaScriptValue *undefined;
+
++ (nonnull EXJavaScriptValue *)from:(nullable id)value runtime:(nonnull EXJavaScriptRuntime *)runtime;
 
 @end

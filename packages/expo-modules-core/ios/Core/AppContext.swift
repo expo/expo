@@ -87,6 +87,8 @@ public final class AppContext: NSObject {
    */
   internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule)
 
+  internal private(set) lazy var converter = MainValueConverter(appContext: self)
+
   /**
    Designated initializer without modules provider.
    */
