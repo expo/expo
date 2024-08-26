@@ -8,6 +8,8 @@ export declare function getIsReactServer(caller?: any): boolean;
 export declare function getIsDev(caller?: any): boolean;
 export declare function getIsFastRefreshEnabled(caller?: any): boolean | undefined;
 export declare function getIsProd(caller?: any): boolean;
+/** Is bundling for a DOM component. This will always be for platform = web. */
+export declare function getIsDOM(caller?: any): boolean;
 export declare function getIsNodeModule(caller?: any): boolean;
 export declare function getBaseUrl(caller?: any): string;
 export declare function getReactCompiler(caller?: any): boolean;
