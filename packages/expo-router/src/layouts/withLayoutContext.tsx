@@ -1,6 +1,8 @@
 import { EventMapBase, NavigationState } from '@react-navigation/native';
 import React from 'react';
 
+import { View } from 'react-native';
+
 import { useContextKey } from '../Route';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
@@ -98,10 +100,8 @@ export function withLayoutContext<
         return null;
       }
 
-      return (
-        // @ts-expect-error
-        <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-      );
+      // @ts-expect-error
+      return <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
     }
   );
 

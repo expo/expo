@@ -1,36 +1,37 @@
+import { router, Tabs as RNTabs } from 'expo-router';
 import { Tabs, TabList, TabSlot, TabTrigger } from 'expo-router/ui';
-import { useState } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { TabButton } from '../components/TabButton';
 
+const useRNTabs = false;
+
 export default function Layout() {
-  const [showExtraTab, setShowExtraTab] = useState(false);
+  if (useRNTabs) {
+    return <RNTabs />;
+  }
+
   return (
     <Tabs style={styles.root}>
       <TabSlot />
       <TabList style={styles.tabList}>
-        <TabTrigger name="home" href="/" asChild reset="longPress" style={styles.tabTrigger}>
+        <TabTrigger name="home" href="/" asChild style={styles.tabTrigger}>
           <TabButton icon="home">Index</TabButton>
         </TabTrigger>
+        <TabTrigger name="movies" asChild href="/movies" style={styles.tabTrigger}>
+          <TabButton icon="film">Movies (does not reset)</TabButton>
+        </TabTrigger>
         <TabTrigger
-          name="movies"
+          name="google"
           asChild
-          href="/movies"
+          href="http://www.google.com"
           style={styles.tabTrigger}
           onLongPress={(event) => {
             event.preventDefault();
-            setShowExtraTab((state) => !state);
+            router.navigate('http://expo.dev');
           }}>
-          <TabButton icon="paint-brush">Movies (long press to show expo tab)</TabButton>
-        </TabTrigger>
-        {showExtraTab ? (
-          <TabTrigger name="expo" asChild href="http://expo.dev" style={styles.tabTrigger}>
-            <TabButton icon="android">Expo</TabButton>
-          </TabTrigger>
-        ) : null}
-        <TabTrigger name="google" asChild href="http://www.google.com" style={styles.tabTrigger}>
-          <TabButton icon="google">Google (external)</TabButton>
+          <TabButton icon="google">Google (external) (long press to go to expo.dev</TabButton>
         </TabTrigger>
       </TabList>
     </Tabs>
@@ -41,6 +42,9 @@ const styles = StyleSheet.create({
   root: {
     backgroundColor: '#DDDDDD',
     flex: 1,
+  },
+  behaviorRoot: {
+    flexDirection: 'row',
   },
   tabList: {
     backgroundColor: '#FFFFFF',

@@ -5,9 +5,9 @@ import { MovieList } from '../../components/MovieList';
 
 export default function Home() {
   return (
-    <View style={styles.root}>
+    <>
       <Text style={styles.header}>Home</Text>
-      <Text style={styles.subheader}>Test pages</Text>
+      <Text style={styles.subheader}>Test pages1111</Text>
       <Link href="/tab-functions" style={styles.link}>
         Go to Tab functions
       </Link>
@@ -15,13 +15,15 @@ export default function Home() {
       <View style={styles.listRoot}>
         <MovieList />
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    flexGrow: 1,
+    flexShrink: 0,
   },
   link: {
     textDecorationLine: 'underline',

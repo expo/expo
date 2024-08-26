@@ -6,7 +6,6 @@ import {
   TabNavigationState,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import { Platform } from 'expo-modules-core';
 import {
   Children,
   ComponentProps,
@@ -89,6 +88,7 @@ export function useTabsWithTriggers<T extends string | object>({
   triggers,
   ...options
 }: UseTabsWithTriggersOptions<T>) {
+  const parentTriggerMap = useContext(TabTriggerMapContext);
   const routeNode = useRouteNode();
   const contextKey = useContextKey();
   const linking = useContext(LinkingContext).options;
@@ -102,7 +102,8 @@ export function useTabsWithTriggers<T extends string | object>({
     triggers,
     routeNode,
     linking,
-    initialRouteName
+    initialRouteName,
+    parentTriggerMap
   );
 
   const {
@@ -118,7 +119,6 @@ export function useTabsWithTriggers<T extends string | object>({
     TabNavigationEventMap
   >(ExpoTabRouter, {
     children,
-    backBehavior: Platform.OS === 'web' ? 'history' : undefined,
     ...options,
     triggerMap,
     id: contextKey,

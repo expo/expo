@@ -1,11 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
-import {
-  LinkingOptions,
-  ParamListBase,
-  PartialRoute,
-  Route,
-  createNavigatorFactory,
-} from '@react-navigation/native';
+import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
 import { ViewProps, View } from 'react-native';
 
 import type { ExpoTabActionType } from './TabRouter';
@@ -13,15 +7,7 @@ import { RouteNode } from '../Route';
 import { resolveHref } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
-import {
-  createGetIdForRoute,
-  getQualifiedRouteComponent,
-  screenOptionsFactory,
-} from '../useScreens';
-
-// `@react-navigation/core` does not expose the Screen or Group components directly, so we have to
-// do this hack.
-const { Screen } = createNavigatorFactory({} as any)();
+import { routeToScreen } from '../useScreens';
 
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 export const ViewSlot = Slot as React.ForwardRefExoticComponent<
@@ -42,25 +28,47 @@ export type ScreenTrigger<T extends string | object> =
 
 type JumpToNavigationAction = Extract<ExpoTabActionType, { type: 'JUMP_TO' }>;
 type TriggerConfig =
-  | { type: 'internal'; name: string; routeNode: RouteNode; action: JumpToNavigationAction }
+  | {
+      type: 'internal';
+      name: string;
+      href: string;
+      routeNode: RouteNode;
+      action: JumpToNavigationAction;
+    }
   | { type: 'external'; name: string; href: string };
+
 export type TriggerMap = Record<string, TriggerConfig & { index: number }>;
 
 export function triggersToScreens(
   triggers: ScreenTrigger<any>[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
-  initialRouteName: undefined | string
+  initialRouteName: undefined | string,
+  parentTriggerMap: TriggerMap
 ) {
   const configs: TriggerConfig[] = [];
 
   for (const trigger of triggers) {
+    if (trigger.name in parentTriggerMap) {
+      const parentTrigger = parentTriggerMap[trigger.name];
+      throw new Error(
+        `Trigger ${JSON.stringify({
+          name: trigger.name,
+          href: trigger.href,
+        })} has the same name as parent trigger ${JSON.stringify({
+          name: parentTrigger.name,
+          href: parentTrigger.href,
+        })}. Triggers must have unique names.`
+      );
+    }
+
     if (trigger.type === 'external') {
       configs.push(trigger);
       continue;
     }
 
-    let state = linking.getStateFromPath?.(resolveHref(trigger.href), linking.config)?.routes[0];
+    const resolvedHref = resolveHref(trigger.href);
+    let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
 
     if (!state) {
       // This shouldn't occur, as you should get the global +not-found
@@ -100,8 +108,27 @@ export function triggersToScreens(
       continue;
     }
 
+    const duplicateTrigger =
+      trigger.type === 'internal' &&
+      configs.find((config): config is Extract<TriggerConfig, { type: 'internal' }> => {
+        if (config.type === 'external') {
+          return false;
+        }
+
+        return config.routeNode.route === routeNode.route;
+      });
+
+    if (duplicateTrigger) {
+      const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })}, ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
+
+      throw new Error(
+        `A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}`
+      );
+    }
+
     configs.push({
       ...trigger,
+      href: resolvedHref,
       routeNode,
       action: stateToAction(state, layoutRouteNode.route),
     });
@@ -129,18 +156,9 @@ export function triggersToScreens(
     triggerMap[config.name] = { ...config, index };
 
     if (config.type === 'internal') {
-      children.push(
-        <Screen
-          key={config.routeNode.route}
-          name={config.routeNode.route}
-          getId={createGetIdForRoute(config.routeNode)}
-          getComponent={() => getQualifiedRouteComponent(config.routeNode)}
-          options={screenOptionsFactory(config.routeNode)}
-        />
-      );
+      children.push(routeToScreen(config.routeNode));
     }
   }
-
   return {
     children,
     triggerMap,
@@ -154,7 +172,7 @@ export function stateToAction(
   const rootPayload: any = {};
   let payload = rootPayload;
 
-  let foundStartingPoint = !startAtRoute;
+  let foundStartingPoint = !startAtRoute || !state?.state;
 
   while (state) {
     if (foundStartingPoint) {

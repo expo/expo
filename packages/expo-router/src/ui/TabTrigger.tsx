@@ -18,7 +18,7 @@ export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFu
   /** Forward props to child component. Useful for custom wrappers. */
   asChild?: boolean;
   /** Reset the route when switching to the tab */
-  reset?: boolean | 'longPress';
+  reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 
 export type TabTriggerOptions<T extends string | object> = {
@@ -37,14 +37,10 @@ export function TabTrigger<T extends string | object>({
   asChild,
   name,
   href,
-  reset,
+  reset = 'onFocus',
   ...props
 }: TabTriggerProps<T>) {
   const { switchTab, isFocused } = useTabTrigger();
-
-  const pressReset = reset === true;
-  const longPressReset =
-    reset === true || typeof reset === 'string' ? reset === 'longPress' : Boolean(reset);
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
@@ -52,9 +48,9 @@ export function TabTrigger<T extends string | object>({
       if (event?.isDefaultPrevented()) {
         return;
       }
-      switchTab(name, pressReset);
+      switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
     },
-    [props.onPress, pressReset]
+    [props.onPress, reset]
   );
 
   const handleOnLongPress = useCallback<NonNullable<PressableProps['onPress']>>(
@@ -63,9 +59,11 @@ export function TabTrigger<T extends string | object>({
       if (event?.isDefaultPrevented()) {
         return;
       }
-      switchTab(name, longPressReset);
+      switchTab(name, {
+        reset: reset === 'onLongPress' ? 'always' : reset,
+      });
     },
-    [props.onPress]
+    [props.onPress, reset]
   );
 
   // Pressable doesn't accept the extra props, so only pass them if we are using asChild
@@ -99,13 +97,18 @@ export function isTabTrigger(
   return child.type === TabTrigger;
 }
 
+export type SwitchToOptions = Omit<
+  Extract<ExpoTabActionType, { type: 'SWITCH_TABS' }>['payload'],
+  'name'
+>;
+
 export function useTabTrigger() {
   const navigation = useNavigation();
   const triggerMap = useContext(TabTriggerMapContext);
   const state = useContext(TabsStateContext);
 
   const switchTab = useCallback(
-    (name: string, reset?: boolean) => {
+    (name: string, options?: SwitchToOptions) => {
       const config = triggerMap[name];
 
       if (!config) {
@@ -115,10 +118,9 @@ export function useTabTrigger() {
       if (config.type === 'internal') {
         const action: Extract<ExpoTabActionType, { type: 'SWITCH_TABS' }> = {
           type: 'SWITCH_TABS',
-          source: '',
           payload: {
             name,
-            reset,
+            ...options,
           },
         };
 

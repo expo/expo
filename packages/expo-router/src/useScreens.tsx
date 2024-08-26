@@ -284,7 +284,7 @@ export function screenOptionsFactory(
   };
 }
 
-function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
+export function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
   return (
     <Screen
       // Users can override the screen getId function.

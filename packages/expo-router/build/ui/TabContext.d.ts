@@ -25,6 +25,8 @@ export type TabNavigationEventMap = {
     };
 };
 export type TabsContextValue = ReturnType<typeof useNavigationBuilder<TabNavigationState<any>, TabRouterOptions, TabActionHelpers<ParamListBase>, BottomTabNavigationOptions, TabNavigationEventMap>>;
+export type TabContextValue = TabsDescriptor['options'];
+export declare const TabContext: import("react").Context<BottomTabNavigationOptions>;
 export declare const TabTriggerMapContext: import("react").Context<TriggerMap>;
 export declare const TabsDescriptorsContext: import("react").Context<Record<string, import("@react-navigation/native").Descriptor<BottomTabNavigationOptions, Omit<{
     dispatch(action: Readonly<{

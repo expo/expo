@@ -20,6 +20,7 @@ type JumpToNavigationAction = Extract<ExpoTabActionType, {
 type TriggerConfig = {
     type: 'internal';
     name: string;
+    href: string;
     routeNode: RouteNode;
     action: JumpToNavigationAction;
 } | {
@@ -30,7 +31,7 @@ type TriggerConfig = {
 export type TriggerMap = Record<string, TriggerConfig & {
     index: number;
 }>;
-export declare function triggersToScreens(triggers: ScreenTrigger<any>[], layoutRouteNode: RouteNode, linking: LinkingOptions<ParamListBase>, initialRouteName: undefined | string): {
+export declare function triggersToScreens(triggers: ScreenTrigger<any>[], layoutRouteNode: RouteNode, linking: LinkingOptions<ParamListBase>, initialRouteName: undefined | string, parentTriggerMap: TriggerMap): {
     children: import("react").JSX.Element[];
     triggerMap: TriggerMap;
 };

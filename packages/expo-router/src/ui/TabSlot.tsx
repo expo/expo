@@ -1,12 +1,12 @@
-import { Slot } from '@radix-ui/react-slot';
-import { ReactElement, ComponentType, useState, useContext } from 'react';
-import { View, Platform, ViewProps, StyleSheet } from 'react-native';
+import { ComponentProps, ReactElement, useState, useContext } from 'react';
+import { View, Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
-import { TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
+import { TabContext, TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
 import { TabListProps } from './TabList';
+import { useNavigation } from '../useNavigation';
 
-export type UseTabSlotOptions = {
+export type UseTabSlotOptions = ComponentProps<typeof ScreenContainer> & {
   detachInactiveScreens?: boolean;
   renderFn?: typeof defaultTabsSlotRender;
 };
@@ -15,12 +15,14 @@ export type TabsSlotRenderOptions = {
   index: number;
   isFocused: boolean;
   loaded: boolean;
+  detachInactiveScreens: boolean;
 };
 
 export function useTabSlot({
   detachInactiveScreens = Platform.OS === 'web' ||
     Platform.OS === 'android' ||
     Platform.OS === 'ios',
+  style,
   renderFn = defaultTabsSlotRender,
 }: UseTabSlotOptions = {}) {
   const state = useContext(TabsStateContext);
@@ -33,35 +35,47 @@ export function useTabSlot({
   }
 
   return (
-    <ScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.flexBoxGrowOnly}>
+    <ScreenContainer
+      enabled={detachInactiveScreens}
+      hasTwoStates
+      style={style || styles.flexBoxGrowOnly}>
       {state.routes.map((route, index) => {
-        return renderFn(descriptors[route.key], {
-          index,
-          isFocused: state.index === index,
-          loaded: loaded[route.key],
-        });
+        const descriptor = descriptors[route.key];
+
+        return (
+          <TabContext.Provider key={descriptor.route.key} value={descriptor.options}>
+            {renderFn(descriptor, {
+              index,
+              isFocused: state.index === index,
+              loaded: loaded[route.key],
+              detachInactiveScreens,
+            })}
+          </TabContext.Provider>
+        );
       })}
     </ScreenContainer>
   );
 }
 
-export type TabSlotProps = ViewProps & {
-  asChild?: boolean;
-  options?: UseTabSlotOptions;
-};
+export type TabSlotProps = UseTabSlotOptions;
 
-export function TabSlot({ options, asChild, ...props }: TabSlotProps) {
-  const Element: ComponentType<any> = asChild ? Slot : View;
-  return (
-    <Element style={styles.flexBoxGrowOnly} {...props}>
-      {useTabSlot(options)}
-    </Element>
-  );
+export function TabSlot(props: TabSlotProps) {
+  return useTabSlot(props);
+}
+
+export function useTab() {
+  const navigation = useNavigation();
+  const options = useContext(TabContext);
+
+  return {
+    options,
+    setOptions: navigation.setOptions,
+  };
 }
 
 export function defaultTabsSlotRender(
   descriptor: TabsDescriptor,
-  { isFocused, loaded }: TabsSlotRenderOptions
+  { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions
 ) {
   const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
 
@@ -77,6 +91,7 @@ export function defaultTabsSlotRender(
   return (
     <Screen
       key={descriptor.route.key}
+      enabled={detachInactiveScreens}
       activityState={isFocused ? 2 : 0}
       freezeOnBlur={freezeOnBlur}
       style={styles.flexBoxGrowOnly}>

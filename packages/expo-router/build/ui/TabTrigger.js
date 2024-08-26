@@ -8,24 +8,24 @@ const react_native_1 = require("react-native");
 const TabContext_1 = require("./TabContext");
 const imperative_api_1 = require("../imperative-api");
 const TabTriggerSlot = react_slot_1.Slot;
-function TabTrigger({ asChild, name, href, reset, ...props }) {
+function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
     const { switchTab, isFocused } = useTabTrigger();
-    const pressReset = reset === true;
-    const longPressReset = reset === true || typeof reset === 'string' ? reset === 'longPress' : Boolean(reset);
     const handleOnPress = (0, react_1.useCallback)((event) => {
         props.onPress?.(event);
         if (event?.isDefaultPrevented()) {
             return;
         }
-        switchTab(name, pressReset);
-    }, [props.onPress, pressReset]);
+        switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
+    }, [props.onPress, reset]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
         props.onLongPress?.(event);
         if (event?.isDefaultPrevented()) {
             return;
         }
-        switchTab(name, longPressReset);
-    }, [props.onPress]);
+        switchTab(name, {
+            reset: reset === 'onLongPress' ? 'always' : reset,
+        });
+    }, [props.onPress, reset]);
     // Pressable doesn't accept the extra props, so only pass them if we are using asChild
     if (asChild) {
         return (<TabTriggerSlot style={styles.tabTrigger} {...props} onPress={handleOnPress} onLongPress={handleOnLongPress} isFocused={isFocused(name)}>
@@ -47,7 +47,7 @@ function useTabTrigger() {
     const navigation = (0, native_1.useNavigation)();
     const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const state = (0, react_1.useContext)(TabContext_1.TabsStateContext);
-    const switchTab = (0, react_1.useCallback)((name, reset) => {
+    const switchTab = (0, react_1.useCallback)((name, options) => {
         const config = triggerMap[name];
         if (!config) {
             throw new Error(`Unable to find trigger with name ${name}`);
@@ -55,10 +55,9 @@ function useTabTrigger() {
         if (config.type === 'internal') {
             const action = {
                 type: 'SWITCH_TABS',
-                source: '',
                 payload: {
                     name,
-                    reset,
+                    ...options,
                 },
             };
             return navigation.dispatch(action);

@@ -2,23 +2,30 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stateToAction = exports.triggersToScreens = exports.ViewSlot = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
-const native_1 = require("@react-navigation/native");
 const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
-// `@react-navigation/core` does not expose the Screen or Group components directly, so we have to
-// do this hack.
-const { Screen } = (0, native_1.createNavigatorFactory)({})();
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 exports.ViewSlot = react_slot_1.Slot;
-function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName) {
+function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap) {
     const configs = [];
     for (const trigger of triggers) {
+        if (trigger.name in parentTriggerMap) {
+            const parentTrigger = parentTriggerMap[trigger.name];
+            throw new Error(`Trigger ${JSON.stringify({
+                name: trigger.name,
+                href: trigger.href,
+            })} has the same name as parent trigger ${JSON.stringify({
+                name: parentTrigger.name,
+                href: parentTrigger.href,
+            })}. Triggers must have unique names.`);
+        }
         if (trigger.type === 'external') {
             configs.push(trigger);
             continue;
         }
-        let state = linking.getStateFromPath?.((0, href_1.resolveHref)(trigger.href), linking.config)?.routes[0];
+        const resolvedHref = (0, href_1.resolveHref)(trigger.href);
+        let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
         if (!state) {
             // This shouldn't occur, as you should get the global +not-found
             console.warn(`Unable to find screen for trigger ${JSON.stringify(trigger)}. Does this point to a valid screen?`);
@@ -47,8 +54,20 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName)
             }
             continue;
         }
+        const duplicateTrigger = trigger.type === 'internal' &&
+            configs.find((config) => {
+                if (config.type === 'external') {
+                    return false;
+                }
+                return config.routeNode.route === routeNode.route;
+            });
+        if (duplicateTrigger) {
+            const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })}, ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
+            throw new Error(`A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}`);
+        }
         configs.push({
             ...trigger,
+            href: resolvedHref,
             routeNode,
             action: stateToAction(state, layoutRouteNode.route),
         });
@@ -72,7 +91,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName)
     for (const [index, config] of sortedConfigs.entries()) {
         triggerMap[config.name] = { ...config, index };
         if (config.type === 'internal') {
-            children.push(<Screen key={config.routeNode.route} name={config.routeNode.route} getId={(0, useScreens_1.createGetIdForRoute)(config.routeNode)} getComponent={() => (0, useScreens_1.getQualifiedRouteComponent)(config.routeNode)} options={(0, useScreens_1.screenOptionsFactory)(config.routeNode)}/>);
+            children.push((0, useScreens_1.routeToScreen)(config.routeNode));
         }
     }
     return {
@@ -84,7 +103,7 @@ exports.triggersToScreens = triggersToScreens;
 function stateToAction(state, startAtRoute) {
     const rootPayload = {};
     let payload = rootPayload;
-    let foundStartingPoint = !startAtRoute;
+    let foundStartingPoint = !startAtRoute || !state?.state;
     while (state) {
         if (foundStartingPoint) {
             if (payload === rootPayload) {

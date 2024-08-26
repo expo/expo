@@ -93,7 +93,7 @@ it('should render the correct screen with nested navigators', () => {
   fireEvent.press(screen.getByTestId('goto-apple'));
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  // Banana should retain its history
+  // Banana route should be preserved
   fireEvent.press(screen.getByTestId('goto-banana'));
   expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
 });
@@ -335,29 +335,41 @@ describe('warnings/errors', () => {
     );
   });
 
-  it('does not allow duplicate screens', () => {
-    // TODO: We should try an implement this functionality
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          <Tabs>
-            <TabList>
-              <TabTrigger name="apple" href={{ pathname: '/[fruit]', params: { fruit: 'apple' } }}>
-                <Text>Apple</Text>
-              </TabTrigger>
-              <TabTrigger
-                name="orange"
-                href={{ pathname: '/[fruit]', params: { fruit: 'orange' } }}>
-                <Text>Orange</Text>
-              </TabTrigger>
-            </TabList>
-            <TabSlot />
-          </Tabs>
-        ),
-        '[fruit]': () => null,
-      })
-    ).toThrow(
-      `A navigator cannot contain multiple 'Screen' components with the same name (found duplicate screen named '[fruit]')`
+  it('does not allow for nested triggers with the same name', () => {
+    expect(() => {
+      renderRouter(
+        {
+          _layout: () => (
+            <Tabs>
+              <TabSlot />
+              <TabList>
+                <TabTrigger name="one" href="/">
+                  <Text>One</Text>
+                </TabTrigger>
+                <TabTrigger name="duplicate" href="/two">
+                  <Text>Two</Text>
+                </TabTrigger>
+              </TabList>
+            </Tabs>
+          ),
+          index: () => <Text testID="index">index</Text>,
+          '/two/_layout': () => (
+            <Tabs>
+              <TabSlot />
+              <TabList>
+                <TabTrigger name="duplicate" href="http://expo.dev">
+                  <Text>Two</Text>
+                </TabTrigger>
+              </TabList>
+            </Tabs>
+          ),
+        },
+        {
+          initialUrl: '/two',
+        }
+      );
+    }).toThrow(
+      'Trigger {"name":"duplicate","href":"http://expo.dev"} has the same name as parent trigger {"name":"duplicate","href":"/two"}. Triggers must have unique names.'
     );
   });
 });

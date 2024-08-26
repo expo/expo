@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -193,4 +193,5 @@ function routeToScreen(route, { options, ...props } = {}) {
     // Users can override the screen getId function.
     getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
+exports.routeToScreen = routeToScreen;
 //# sourceMappingURL=useScreens.js.map

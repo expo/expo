@@ -33,4 +33,5 @@ export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | '
     params?: Record<string, any> | undefined;
 }) => string;
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any>['options'];
+export declare function routeToScreen(route: RouteNode, { options, ...props }?: Partial<ScreenProps>): React.JSX.Element;
 //# sourceMappingURL=useScreens.d.ts.map

@@ -16,7 +16,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useTabsWithTriggers = exports.useTabsWithChildren = exports.Tabs = void 0;
 const native_1 = require("@react-navigation/native");
-const expo_modules_core_1 = require("expo-modules-core");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const TabContext_1 = require("./TabContext");
@@ -50,6 +49,7 @@ function useTabsWithChildren({ children, ...options }) {
 }
 exports.useTabsWithChildren = useTabsWithChildren;
 function useTabsWithTriggers({ triggers, ...options }) {
+    const parentTriggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const routeNode = (0, Route_1.useRouteNode)();
     const contextKey = (0, Route_1.useContextKey)();
     const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
@@ -57,10 +57,9 @@ function useTabsWithTriggers({ triggers, ...options }) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');
     }
     const initialRouteName = routeNode.initialRouteName;
-    const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName);
+    const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName, parentTriggerMap);
     const { state, descriptors, navigation, NavigationContent: RNNavigationContent, } = (0, native_1.useNavigationBuilder)(TabRouter_1.ExpoTabRouter, {
         children,
-        backBehavior: expo_modules_core_1.Platform.OS === 'web' ? 'history' : undefined,
         ...options,
         triggerMap,
         id: contextKey,

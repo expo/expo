@@ -54,6 +54,9 @@ export type TabsContextValue = ReturnType<
   >
 >;
 
+export type TabContextValue = TabsDescriptor['options'];
+
+export const TabContext = createContext<TabContextValue>({});
 export const TabTriggerMapContext = createContext<TriggerMap>({});
 export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
 export const TabsNavigatorContext = createContext<TabsContextValue['navigation'] | null>(null);
