@@ -15,13 +15,14 @@ const common_1 = require("./common");
 function expoUseDomDirectivePlugin(api) {
     // TODO: Is exporting
     const isProduction = api.caller(common_1.getIsProd);
+    const isDOMBundle = api.caller(common_1.getIsDOM);
     const platform = api.caller((caller) => caller?.platform);
     return {
         name: 'expo-use-dom-directive',
         visitor: {
             Program(path, state) {
                 // Native only feature.
-                if (platform === 'web') {
+                if (platform === 'web' && !isDOMBundle) {
                     return;
                 }
                 const hasUseDomDirective = path.node.directives.some((directive) => directive.value.value === 'use dom');
@@ -33,6 +34,17 @@ function expoUseDomDirectivePlugin(api) {
                 // File starts with "use dom" directive.
                 if (!hasUseDomDirective) {
                     // Do nothing for code that isn't marked as a dom component.
+                    return;
+                }
+                if (isDOMBundle) {
+                    // Inject the DOM component registration.
+                    //
+                    // Entry file for the web-side of a DOM Component.
+                    // import { registerDOMComponent } from 'expo/dom/internal';
+                    //
+                    // registerDOMComponent([default export], [file path]);
+                    path.pushContainer('body', core_1.template.ast(`import { registerDOMComponent } from 'expo/dom/internal';
+registerDOMComponent(exports.default);`));
                     return;
                 }
                 // Assert that a default export must exist and that no other exports should be present.

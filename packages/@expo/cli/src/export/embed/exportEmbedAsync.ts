@@ -231,7 +231,7 @@ async function exportDomComponentsAsync(
       // MUST MATCH THE BABEL PLUGIN!
       const hash = crypto.createHash('sha1').update(filePath).digest('hex');
       const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
-      const generatedEntryPath = await devServer.getDomComponentVirtualEntryModuleAsync(filePath);
+      const generatedEntryPath = filePath.startsWith('file://') ? filePath.slice(7) : filePath;
       const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
       // Run metro bundler and create the JS bundles/source maps.
       const bundle = await devServer.legacySinglePageExportBundleAsync({

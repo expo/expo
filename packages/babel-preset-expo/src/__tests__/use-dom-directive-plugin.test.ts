@@ -41,10 +41,15 @@ afterAll(() => {
   process.env = { ...originalEnv };
 });
 
-function transformClient(sourceCode: string, platform: string = 'ios', isDev: boolean = false) {
+function transformClient(
+  sourceCode: string,
+  platform: string = 'ios',
+  isDev: boolean = false,
+  isDOM: boolean = false
+) {
   const options = {
     ...DEF_OPTIONS,
-    caller: getCaller({ ...ENABLED_CALLER, isReactServer: false, platform, isDev }),
+    caller: getCaller({ ...ENABLED_CALLER, isReactServer: false, platform, isDev, isDOM }),
   };
 
   const results = babel.transform(sourceCode, options);
@@ -88,6 +93,42 @@ export default function App() {
       });"
     `);
   });
+});
+
+it(`registers a DOM component on web for dom bundles`, () => {
+  const res = transformClient(sourceCode, 'web', true, true);
+  expect(res.code).toMatch('react');
+  expect(res.code).toMatch('expo/dom/internal');
+  expect(res.code).toMatch('registerDOMComponent');
+  expect(res.code).toMatchInlineSnapshot(`
+    ""use dom";
+
+    var _jsxFileName = "/unknown";
+    export default function App() {
+      return /*#__PURE__*/_jsxDEV("div", {}, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 5,
+        columnNumber: 10
+      }, this);
+    }
+    import { registerDOMComponent } from 'expo/dom/internal';
+    import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+    registerDOMComponent(exports.default);"
+  `);
+});
+
+it(`skips registering a DOM component on web for dom bundles without directive`, () => {
+  const res = transformClient(
+    `export default function App() {
+  return <div />
+}`,
+    'web',
+    true,
+    true
+  );
+  expect(res.code).toMatch('react');
+  expect(res.code).not.toMatch('expo/dom/internal');
+  expect(res.code).not.toMatch('registerDOMComponent');
 });
 
 it(`does nothing on web`, () => {
