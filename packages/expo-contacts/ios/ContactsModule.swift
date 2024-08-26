@@ -18,6 +18,8 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         ContactsPermissionRequester()
       ])
     }
+    
+    View(ExpoContactsAccessButton.self) 
 
     AsyncFunction("getDefaultContainerIdentifierAsync") {
       return contactStore.defaultContainerIdentifier()

@@ -8,6 +8,7 @@ import {
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
+export { ContactsAccessButton } from './ContactsAccessButton';
 
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 

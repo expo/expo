@@ -1,0 +1,1 @@
+{"version":3,"file":"ContactsAccessButton.d.ts","sourceRoot":"","sources":["../src/ContactsAccessButton.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAC;AAEzC,UAAU,iBAAkB,SAAQ,SAAS;IAC3C,WAAW,EAAE,MAAM,CAAC;IACpB,OAAO,CAAC,EAAE,MAAM,CAAC;CAClB;AAED,eAAO,MAAM,oBAAoB,kDAA8D,CAAC"}

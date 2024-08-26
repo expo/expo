@@ -1,6 +1,7 @@
 import { PermissionStatus, UnavailabilityError, uuid, } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 import ExpoContacts from './ExpoContacts';
+export { ContactsAccessButton } from './ContactsAccessButton';
 export { PermissionStatus };
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.

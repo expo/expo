@@ -1,5 +1,6 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { type ShareOptions } from 'react-native';
+export { ContactsAccessButton } from './ContactsAccessButton';
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;
 export type ContactType = ContactTypes | `${ContactTypes}`;

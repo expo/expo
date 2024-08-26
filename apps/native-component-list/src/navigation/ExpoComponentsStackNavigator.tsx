@@ -41,6 +41,12 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ContactsAccessButtonScreen'));
+    },
+    name: 'Contacts Access Button',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/MaskedViewScreen'));
     },
     name: 'MaskedView',
