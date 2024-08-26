@@ -104,6 +104,7 @@ it(`registers a DOM component on web for dom bundles`, () => {
     ""use dom";
 
     var _jsxFileName = "/unknown";
+    import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
     export default function App() {
       return /*#__PURE__*/_jsxDEV("div", {}, void 0, false, {
         fileName: _jsxFileName,
@@ -111,9 +112,7 @@ it(`registers a DOM component on web for dom bundles`, () => {
         columnNumber: 10
       }, this);
     }
-    import { registerDOMComponent } from 'expo/dom/internal';
-    import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
-    registerDOMComponent(exports.default);"
+    require('expo/dom/internal').registerDOMComponent(exports.default);"
   `);
 });
 

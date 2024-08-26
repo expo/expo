@@ -38,13 +38,7 @@ function expoUseDomDirectivePlugin(api) {
                 }
                 if (isDOMBundle) {
                     // Inject the DOM component registration.
-                    //
-                    // Entry file for the web-side of a DOM Component.
-                    // import { registerDOMComponent } from 'expo/dom/internal';
-                    //
-                    // registerDOMComponent([default export], [file path]);
-                    path.pushContainer('body', core_1.template.ast(`import { registerDOMComponent } from 'expo/dom/internal';
-registerDOMComponent(exports.default);`));
+                    path.pushContainer('body', core_1.template.ast(`require('expo/dom/internal').registerDOMComponent(exports.default);`));
                     return;
                 }
                 // Assert that a default export must exist and that no other exports should be present.

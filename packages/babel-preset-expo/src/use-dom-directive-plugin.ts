@@ -42,19 +42,9 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
 
         if (isDOMBundle) {
           // Inject the DOM component registration.
-
-          //
-          // Entry file for the web-side of a DOM Component.
-          // import { registerDOMComponent } from 'expo/dom/internal';
-          //
-          // registerDOMComponent([default export], [file path]);
-
           path.pushContainer(
             'body',
-            template.ast(
-              `import { registerDOMComponent } from 'expo/dom/internal';
-registerDOMComponent(exports.default);`
-            )
+            template.ast(`require('expo/dom/internal').registerDOMComponent(exports.default);`)
           );
           return;
         }
