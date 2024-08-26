@@ -24,6 +24,7 @@
 ### 💡 Others
 
 - Use the `src` folder as the Metro target. ([#30665](https://github.com/expo/expo/pull/30665) by [@tsapeta](https://github.com/tsapeta))
+- Provide image's memory footprint for better garbage collection. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 
