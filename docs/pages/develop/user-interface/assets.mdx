@@ -12,9 +12,9 @@ This guide covers different ways you can load and use static assets in your proj
 
 ## Serve an asset locally
 
-When an asset is stored in your project's file system, it can be embedded in your app binary at build time or loaded at runtime. You can import them like JavaScript modules using `require` or `import` statements.
+When an asset is stored in your project's file system, it can be embedded in your app binary at build time or loaded at runtime. You can import it like a JavaScript module using `require` or `import` statements.
 
-For example, to render an image called **example.png** in **App.js**, you can directly use `require` to import the image from the project's **assets/images** directory and pass it to the `<Image>` component:
+For example, to render an image called **example.png** in **App.js**, you can use `require` to import the image from the project's **assets/images** directory and pass it to the `<Image>` component:
 
 ```tsx app/index.tsx
 <Image source={require('./assets/images/example.png')} />
@@ -30,7 +30,7 @@ Locally stored assets are served over HTTP in development. They are automaticall
 
 ### Load an asset at build time with `expo-asset` config plugin
 
-> **Note:** The `expo-asset` config plugin is only available for SDK 51 and above. If you are using an older SDK, you can load a [using the `useAssets` hook](/versions/latest/sdk/asset/#useassetsmoduleids).
+> **Note:** The `expo-asset` config plugin is only available for SDK 51 and above. If you are using an older SDK, you can load a [using the `useAssets` hook](#load-an-asset-at-runtime-with-useassets-hook).
 
 To load an asset at build time, you can use the [config plugin](/versions/latest/sdk/asset/#example-appjson-with-config-plugin) from the `expo-asset` library. This plugin will embed the asset file in your native project.
 
