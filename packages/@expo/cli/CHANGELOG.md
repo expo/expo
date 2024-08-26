@@ -29,6 +29,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix DOM component exports in CI. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
 - prevent RSC errors from crashing server. ([#31019](https://github.com/expo/expo/pull/31019) by [@EvanBacon](https://github.com/EvanBacon))
 - prevent exporting RSC endpoint by default. ([#31102](https://github.com/expo/expo/pull/31102) by [@EvanBacon](https://github.com/EvanBacon))
 - Update source map URL when config mutates modules. ([#30980](https://github.com/expo/expo/pull/30980) by [@EvanBacon](https://github.com/EvanBacon))
