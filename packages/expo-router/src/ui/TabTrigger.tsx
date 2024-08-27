@@ -29,6 +29,7 @@ export type TabTriggerOptions<T extends string | object> = {
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
   React.RefAttributes<View> & {
     isFocused?: boolean;
+    href: string;
   };
 
 const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotProps>;
@@ -40,7 +41,7 @@ export function TabTrigger<T extends string | object>({
   reset = 'onFocus',
   ...props
 }: TabTriggerProps<T>) {
-  const { switchTab, isFocused } = useTabTrigger();
+  const { switchTab, isFocused, getTrigger } = useTabTrigger();
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
@@ -74,14 +75,19 @@ export function TabTrigger<T extends string | object>({
         {...props}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}
-        isFocused={isFocused(name)}>
+        isFocused={isFocused(name)}
+        href={getTrigger(name).href}>
         {props.children}
       </TabTriggerSlot>
     );
   } else {
+    // These props are not typed, but are allowed by React Native Web
+    const reactNativeWebProps = { href: getTrigger(name).href };
+
     return (
       <Pressable
         style={styles.tabTrigger}
+        {...reactNativeWebProps}
         {...props}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}>
@@ -106,6 +112,13 @@ export function useTabTrigger() {
   const navigation = useNavigation();
   const triggerMap = useContext(TabTriggerMapContext);
   const state = useContext(TabsStateContext);
+
+  const getTrigger = useCallback(
+    (name: string) => {
+      return triggerMap[name];
+    },
+    [triggerMap]
+  );
 
   const switchTab = useCallback(
     (name: string, options?: SwitchToOptions) => {
@@ -148,6 +161,7 @@ export function useTabTrigger() {
   return {
     switchTab,
     isFocused,
+    getTrigger,
   };
 }
 

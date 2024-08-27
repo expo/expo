@@ -19,6 +19,7 @@ export type TabTriggerOptions<T extends string | object> = {
 };
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.RefAttributes<View> & {
     isFocused?: boolean;
+    href: string;
 };
 export declare function TabTrigger<T extends string | object>({ asChild, name, href, reset, ...props }: TabTriggerProps<T>): import("react").JSX.Element;
 export declare function isTabTrigger(child: ReactElement<any>): child is ReactElement<ComponentProps<typeof TabTrigger>>;
@@ -28,6 +29,19 @@ export type SwitchToOptions = Omit<Extract<ExpoTabActionType, {
 export declare function useTabTrigger(): {
     switchTab: (name: string, options?: SwitchToOptions) => void;
     isFocused: (name: string) => boolean;
+    getTrigger: (name: string) => ({
+        type: "internal";
+        name: string;
+        href: string;
+        routeNode: import("../Route").RouteNode;
+        action: import("@react-navigation/native").TabActionType;
+    } | {
+        type: "external";
+        name: string;
+        href: string;
+    }) & {
+        index: number;
+    };
 };
 export {};
 //# sourceMappingURL=TabTrigger.d.ts.map
