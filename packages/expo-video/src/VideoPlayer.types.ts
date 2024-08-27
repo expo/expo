@@ -171,20 +171,32 @@ export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
 export type VideoSource =
   | string
+  | number
   | {
       /**
        * The URI of the video.
+       *
+       * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
        */
-      uri: string;
+      uri?: string;
+
+      /**
+       * The asset ID of a local video asset, acquired with the `require` function.
+       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+       */
+      assetId?: number;
+
       /**
        * Specifies the DRM options which will be used by the player while loading the video.
        */
       drm?: DRMOptions;
+
       /**
        * Specifies information which will be displayed in the now playing notification.
        * When undefined the player will display information contained in the video metadata.
        */
       metadata?: VideoMetadata;
+
       /**
        * Specifies headers sent with the video request.
        * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
