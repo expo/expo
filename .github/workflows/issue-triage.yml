@@ -144,7 +144,7 @@ jobs:
               repo: context.repo.repo,
               body: `Hello! Our GitHub issues are reserved for bug reports.
 
-              If you have a question about Expo or related tools, please post on our forums at https://forums.expo.dev/ or join our Discord at https://chat.expo.dev/.
+              If you have a question about Expo or related tools, please join our Discord at https://chat.expo.dev/
 
               ### Resources
 
