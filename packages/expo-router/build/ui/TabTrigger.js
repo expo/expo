@@ -9,14 +9,17 @@ const TabContext_1 = require("./TabContext");
 const imperative_api_1 = require("../imperative-api");
 const TabTriggerSlot = react_slot_1.Slot;
 function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
-    const { switchTab, isFocused, getTrigger } = useTabTrigger();
+    const { switchTab, trigger } = useTabTrigger(name);
+    if (!trigger) {
+        throw new Error(`Unable to locate trigger with name ${name}`);
+    }
     const handleOnPress = (0, react_1.useCallback)((event) => {
         props.onPress?.(event);
         if (event?.isDefaultPrevented()) {
             return;
         }
         switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
-    }, [props.onPress, reset]);
+    }, [props.onPress, name, reset]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
         props.onLongPress?.(event);
         if (event?.isDefaultPrevented()) {
@@ -25,16 +28,16 @@ function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
         switchTab(name, {
             reset: reset === 'onLongPress' ? 'always' : reset,
         });
-    }, [props.onPress, reset]);
+    }, [props.onPress, name, reset]);
     // Pressable doesn't accept the extra props, so only pass them if we are using asChild
     if (asChild) {
-        return (<TabTriggerSlot style={styles.tabTrigger} {...props} onPress={handleOnPress} onLongPress={handleOnLongPress} isFocused={isFocused(name)} href={getTrigger(name).href}>
+        return (<TabTriggerSlot style={styles.tabTrigger} {...props} onPress={handleOnPress} onLongPress={handleOnLongPress} isFocused={trigger.isFocused} href={trigger.href}>
         {props.children}
       </TabTriggerSlot>);
     }
     else {
         // These props are not typed, but are allowed by React Native Web
-        const reactNativeWebProps = { href: getTrigger(name).href };
+        const reactNativeWebProps = { href: trigger.href };
         return (<react_native_1.Pressable style={styles.tabTrigger} {...reactNativeWebProps} {...props} onPress={handleOnPress} onLongPress={handleOnLongPress}>
         {props.children}
       </react_native_1.Pressable>);
@@ -45,13 +48,10 @@ function isTabTrigger(child) {
     return child.type === TabTrigger;
 }
 exports.isTabTrigger = isTabTrigger;
-function useTabTrigger() {
+function useTabTrigger(name) {
     const navigation = (0, native_1.useNavigation)();
     const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const state = (0, react_1.useContext)(TabContext_1.TabsStateContext);
-    const getTrigger = (0, react_1.useCallback)((name) => {
-        return triggerMap[name];
-    }, [triggerMap]);
     const switchTab = (0, react_1.useCallback)((name, options) => {
         const config = triggerMap[name];
         if (!config) {
@@ -71,17 +71,20 @@ function useTabTrigger() {
             return imperative_api_1.router.navigate(config.href);
         }
     }, [navigation, triggerMap]);
-    const isFocused = (0, react_1.useCallback)((name) => {
+    const getTrigger = (0, react_1.useCallback)((name) => {
         const config = triggerMap[name];
         if (!config) {
             throw new Error(`Unable to find trigger with name ${name}`);
         }
-        return state.index === config.index;
+        return {
+            isFocused: state.index === config.index,
+            ...config,
+        };
     }, [triggerMap]);
     return {
         switchTab,
-        isFocused,
         getTrigger,
+        trigger: name !== undefined ? getTrigger(name) : undefined,
     };
 }
 exports.useTabTrigger = useTabTrigger;

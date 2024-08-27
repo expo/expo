@@ -26,22 +26,38 @@ export declare function isTabTrigger(child: ReactElement<any>): child is ReactEl
 export type SwitchToOptions = Omit<Extract<ExpoTabActionType, {
     type: 'SWITCH_TABS';
 }>['payload'], 'name'>;
-export declare function useTabTrigger(): {
+export declare function useTabTrigger(name?: string): {
     switchTab: (name: string, options?: SwitchToOptions) => void;
-    isFocused: (name: string) => boolean;
-    getTrigger: (name: string) => ({
+    getTrigger: (name: string) => {
         type: "internal";
         name: string;
         href: string;
         routeNode: import("../Route").RouteNode;
         action: import("@react-navigation/native").TabActionType;
+        index: number;
+        isFocused: boolean;
     } | {
         type: "external";
         name: string;
         href: string;
-    }) & {
         index: number;
+        isFocused: boolean;
     };
+    trigger: {
+        type: "internal";
+        name: string;
+        href: string;
+        routeNode: import("../Route").RouteNode;
+        action: import("@react-navigation/native").TabActionType;
+        index: number;
+        isFocused: boolean;
+    } | {
+        type: "external";
+        name: string;
+        href: string;
+        index: number;
+        isFocused: boolean;
+    } | undefined;
 };
 export {};
 //# sourceMappingURL=TabTrigger.d.ts.map

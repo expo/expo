@@ -12,7 +12,7 @@ export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
         reset?: 'always' | 'onFocus' | 'never';
     };
 };
-export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, RNTabActionType | {
+export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
     type: "GO_BACK";
     source?: string | undefined;
     target?: string | undefined;
@@ -95,13 +95,13 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
     };
     source?: string | undefined;
     target?: string | undefined;
-} | {
+} | RNTabActionType | {
     type: "SWITCH_TABS";
     source?: string | undefined;
     target?: string | undefined;
     payload: {
         name: string;
-        reset?: "onFocus" | "always" | "never" | undefined;
+        reset?: "onFocus" | "never" | "always" | undefined;
     };
 }>;
 //# sourceMappingURL=TabRouter.d.ts.map

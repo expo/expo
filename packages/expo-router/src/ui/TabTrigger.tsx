@@ -41,7 +41,11 @@ export function TabTrigger<T extends string | object>({
   reset = 'onFocus',
   ...props
 }: TabTriggerProps<T>) {
-  const { switchTab, isFocused, getTrigger } = useTabTrigger();
+  const { switchTab, trigger } = useTabTrigger(name);
+
+  if (!trigger) {
+    throw new Error(`Unable to locate trigger with name ${name}`);
+  }
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
@@ -51,7 +55,7 @@ export function TabTrigger<T extends string | object>({
       }
       switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
     },
-    [props.onPress, reset]
+    [props.onPress, name, reset]
   );
 
   const handleOnLongPress = useCallback<NonNullable<PressableProps['onPress']>>(
@@ -64,7 +68,7 @@ export function TabTrigger<T extends string | object>({
         reset: reset === 'onLongPress' ? 'always' : reset,
       });
     },
-    [props.onPress, reset]
+    [props.onPress, name, reset]
   );
 
   // Pressable doesn't accept the extra props, so only pass them if we are using asChild
@@ -75,14 +79,14 @@ export function TabTrigger<T extends string | object>({
         {...props}
         onPress={handleOnPress}
         onLongPress={handleOnLongPress}
-        isFocused={isFocused(name)}
-        href={getTrigger(name).href}>
+        isFocused={trigger.isFocused}
+        href={trigger.href}>
         {props.children}
       </TabTriggerSlot>
     );
   } else {
     // These props are not typed, but are allowed by React Native Web
-    const reactNativeWebProps = { href: getTrigger(name).href };
+    const reactNativeWebProps = { href: trigger.href };
 
     return (
       <Pressable
@@ -108,17 +112,10 @@ export type SwitchToOptions = Omit<
   'name'
 >;
 
-export function useTabTrigger() {
+export function useTabTrigger(name?: string) {
   const navigation = useNavigation();
   const triggerMap = useContext(TabTriggerMapContext);
   const state = useContext(TabsStateContext);
-
-  const getTrigger = useCallback(
-    (name: string) => {
-      return triggerMap[name];
-    },
-    [triggerMap]
-  );
 
   const switchTab = useCallback(
     (name: string, options?: SwitchToOptions) => {
@@ -145,7 +142,7 @@ export function useTabTrigger() {
     [navigation, triggerMap]
   );
 
-  const isFocused = useCallback(
+  const getTrigger = useCallback(
     (name: string) => {
       const config = triggerMap[name];
 
@@ -153,15 +150,18 @@ export function useTabTrigger() {
         throw new Error(`Unable to find trigger with name ${name}`);
       }
 
-      return state.index === config.index;
+      return {
+        isFocused: state.index === config.index,
+        ...config,
+      };
     },
     [triggerMap]
   );
 
   return {
     switchTab,
-    isFocused,
     getTrigger,
+    trigger: name !== undefined ? getTrigger(name) : undefined,
   };
 }
 
