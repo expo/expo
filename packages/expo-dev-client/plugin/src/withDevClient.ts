@@ -12,14 +12,16 @@ import { withGeneratedIosScheme } from './withGeneratedIosScheme';
 const pkg = require('expo-dev-client/package.json');
 
 type DevClientPluginConfigType = PluginConfigType & {
-  disableDevClientScheme?: boolean;
+  addGeneratedScheme?: boolean;
 };
 
 function withDevClient(config: ExpoConfig, props: DevClientPluginConfigType) {
   config = withDevMenu(config);
   config = withDevLauncher(config, props);
 
-  if (!props.disableDevClientScheme) {
+  const mySchemeProps = { addGeneratedScheme: true, ...props };
+
+  if (mySchemeProps.addGeneratedScheme) {
     config = withGeneratedAndroidScheme(config);
     config = withGeneratedIosScheme(config);
   }

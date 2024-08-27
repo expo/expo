@@ -14,7 +14,8 @@ const pkg = require('expo-dev-client/package.json');
 function withDevClient(config, props) {
     config = (0, app_plugin_2.default)(config);
     config = (0, app_plugin_1.default)(config, props);
-    if (!props.disableDevClientScheme) {
+    const mySchemeProps = { addGeneratedScheme: true, ...props };
+    if (mySchemeProps.addGeneratedScheme) {
         config = (0, withGeneratedAndroidScheme_1.withGeneratedAndroidScheme)(config);
         config = (0, withGeneratedIosScheme_1.withGeneratedIosScheme)(config);
     }
