@@ -8,9 +8,9 @@ export type TabListProps = ViewProps & {
   asChild?: boolean;
 };
 
-export function TabList({ asChild, ...props }: TabListProps) {
+export function TabList({ asChild, style, ...props }: TabListProps) {
   const Comp = asChild ? ViewSlot : View;
-  return <Comp style={styles.tabList} {...props} />;
+  return <Comp style={[styles.tabList, style]} {...props} />;
 }
 
 export function isTabList(

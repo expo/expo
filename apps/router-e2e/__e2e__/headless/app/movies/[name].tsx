@@ -8,7 +8,7 @@ export default function Movie() {
   const title = name.toString();
 
   return (
-    <View>
+    <View style={styles.root}>
       <Stack.Screen options={{ title }} />
       <Text style={styles.header}>{name}</Text>
       <View style={styles.listRoot}>
@@ -22,22 +22,21 @@ export default function Movie() {
         </Text>
       </View>
       <Text style={styles.subheader}>Other Movies</Text>
-      <View style={styles.listRoot}>
-        <MovieList />
-      </View>
+      <MovieList />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    gap: 10,
+  },
   header: {
     fontSize: 24,
     marginBottom: 20,
   },
   listRoot: {
-    flex: 1,
     justifyContent: 'flex-start',
-    gap: 20,
   },
   subheader: {
     fontSize: 24,

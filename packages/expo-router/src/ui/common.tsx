@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
-import { ViewProps, View } from 'react-native';
+import { ViewProps, View, SafeAreaView } from 'react-native';
 
 import type { ExpoTabActionType } from './TabRouter';
 import { RouteNode } from '../Route';
@@ -12,6 +12,10 @@ import { routeToScreen } from '../useScreens';
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 export const ViewSlot = Slot as React.ForwardRefExoticComponent<
   ViewProps & React.RefAttributes<View>
+>;
+
+export const SafeAreaViewSlot = Slot as React.ForwardRefExoticComponent<
+  ViewProps & React.RefAttributes<SafeAreaView>
 >;
 
 export type ScreenTrigger<T extends string | object> =

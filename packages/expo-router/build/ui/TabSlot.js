@@ -16,7 +16,7 @@ function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'we
     if (!loaded[focusedRouteKey]) {
         setLoaded({ ...loaded, [focusedRouteKey]: true });
     }
-    return (<react_native_screens_1.ScreenContainer enabled={detachInactiveScreens} hasTwoStates style={style || styles.flexBoxGrowOnly}>
+    return (<react_native_screens_1.ScreenContainer enabled={detachInactiveScreens} hasTwoStates style={[styles.screenContainer, style]}>
       {state.routes.map((route, index) => {
             const descriptor = descriptors[route.key];
             return (<TabContext_1.TabContext.Provider key={descriptor.route.key} value={descriptor.options}>
@@ -53,10 +53,8 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveSc
         // Don't render a lazy screen if we've never navigated to it
         return null;
     }
-    return (<react_native_screens_1.Screen key={descriptor.route.key} enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={styles.flexBoxGrowOnly}>
-      <react_native_1.View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
-        {descriptor.render()}
-      </react_native_1.View>
+    return (<react_native_screens_1.Screen key={descriptor.route.key} enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
+      {descriptor.render()}
     </react_native_screens_1.Screen>);
 }
 exports.defaultTabsSlotRender = defaultTabsSlotRender;
@@ -65,19 +63,25 @@ function isTabSlot(child) {
 }
 exports.isTabSlot = isTabSlot;
 const styles = react_native_1.StyleSheet.create({
-    flexBoxGrowOnly: {
-        flexShrink: 0,
-        flexGrow: 1,
+    screen: {
+        flex: 1,
         position: 'relative',
     },
-    focused: {
-        zIndex: 0,
-        flexGrow: 1,
+    screenContainer: {
         flexShrink: 0,
+        flexGrow: 1,
+    },
+    focused: {
+        zIndex: 1,
+        display: 'flex',
+        flexShrink: 0,
+        flexGrow: 1,
     },
     unfocused: {
         zIndex: -1,
         display: 'none',
+        flexShrink: 1,
+        flexGrow: 0,
     },
 });
 //# sourceMappingURL=TabSlot.js.map

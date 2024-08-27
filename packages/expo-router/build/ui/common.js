@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateToAction = exports.triggersToScreens = exports.ViewSlot = void 0;
+exports.stateToAction = exports.triggersToScreens = exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
 const react_slot_1 = require("@radix-ui/react-slot");
 const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 exports.ViewSlot = react_slot_1.Slot;
+exports.SafeAreaViewSlot = react_slot_1.Slot;
 function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap) {
     const configs = [];
     for (const trigger of triggers) {

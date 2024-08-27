@@ -1,5 +1,5 @@
 import { ComponentProps, ReactElement, useState, useContext } from 'react';
-import { View, Platform, StyleSheet } from 'react-native';
+import { View, Platform, StyleSheet, Text } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
 import { TabContext, TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
@@ -38,7 +38,7 @@ export function useTabSlot({
     <ScreenContainer
       enabled={detachInactiveScreens}
       hasTwoStates
-      style={style || styles.flexBoxGrowOnly}>
+      style={[styles.screenContainer, style]}>
       {state.routes.map((route, index) => {
         const descriptor = descriptors[route.key];
 
@@ -94,10 +94,8 @@ export function defaultTabsSlotRender(
       enabled={detachInactiveScreens}
       activityState={isFocused ? 2 : 0}
       freezeOnBlur={freezeOnBlur}
-      style={styles.flexBoxGrowOnly}>
-      <View style={[styles.flexBoxGrowOnly, isFocused ? styles.focused : styles.unfocused]}>
-        {descriptor.render()}
-      </View>
+      style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
+      {descriptor.render()}
     </Screen>
   );
 }
@@ -107,18 +105,24 @@ export function isTabSlot(child: ReactElement<any>): child is ReactElement<TabLi
 }
 
 const styles = StyleSheet.create({
-  flexBoxGrowOnly: {
-    flexShrink: 0,
-    flexGrow: 1,
+  screen: {
+    flex: 1,
     position: 'relative',
   },
-  focused: {
-    zIndex: 0,
-    flexGrow: 1,
+  screenContainer: {
     flexShrink: 0,
+    flexGrow: 1,
+  },
+  focused: {
+    zIndex: 1,
+    display: 'flex',
+    flexShrink: 0,
+    flexGrow: 1,
   },
   unfocused: {
     zIndex: -1,
     display: 'none',
+    flexShrink: 1,
+    flexGrow: 0,
   },
 });

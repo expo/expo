@@ -48,8 +48,6 @@ const styles = StyleSheet.create({
   },
   tabList: {
     backgroundColor: '#FFFFFF',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 30,
   },
