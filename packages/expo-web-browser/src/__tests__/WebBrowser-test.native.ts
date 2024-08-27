@@ -10,6 +10,7 @@ const fakeReturnValue = {
 function applyMocks() {
   mockLinking();
   ExpoWebBrowser.openBrowserAsync.mockImplementation(async () => fakeReturnValue);
+  ExpoWebBrowser.dismissBrowser.mockImplementation(async () => Promise.resolve({ type: 'dismiss' }));
 }
 
 beforeEach(() => {
@@ -27,8 +28,8 @@ it(`openBrowserAsync returns correctly`, async () => {
   expect(ExpoWebBrowser.openBrowserAsync).toHaveBeenCalledWith(pageUrl, {});
 });
 
-it(`dismissBrowser returns nothing`, () => {
-  const closeResult = WebBrowser.dismissBrowser();
-  expect(closeResult).toBeUndefined();
+it(`dismissBrowser returns promise`, async () => {
+  const closeResult = await WebBrowser.dismissBrowser();
+  expect(closeResult).toEqual({ type: 'dismiss' });
   expect(ExpoWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
 });
