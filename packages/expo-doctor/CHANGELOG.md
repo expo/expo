@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Warn if project is incompatible with upcoming Play Store Android API level requirements. ([#31067](https://github.com/expo/expo/pull/31067) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.10.0 — 2024-08-27
+
+### 🎉 New features
+
+- Warn if project is incompatible with upcoming Play Store Android API level requirements. ([#31067](https://github.com/expo/expo/pull/31067) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.9.1 — 2024-08-16
 
