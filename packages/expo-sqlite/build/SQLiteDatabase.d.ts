@@ -7,9 +7,10 @@ export { SQLiteOpenOptions };
  */
 export declare class SQLiteDatabase {
     readonly databaseName: string;
+    readonly appGroup: string | null;
     readonly options: SQLiteOpenOptions;
     private readonly nativeDatabase;
-    constructor(databaseName: string, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
+    constructor(databaseName: string, appGroup: string | null, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
@@ -225,7 +226,7 @@ export declare class SQLiteDatabase {
  * @param databaseName The name of the database file to open.
  * @param options Open options.
  */
-export declare function openDatabaseAsync(databaseName: string, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
+export declare function openDatabaseAsync(databaseName: string, appGroup: string | null, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
 /**
  * Open a database.
  *
@@ -234,7 +235,7 @@ export declare function openDatabaseAsync(databaseName: string, options?: SQLite
  * @param databaseName The name of the database file to open.
  * @param options Open options.
  */
-export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions): SQLiteDatabase;
+export declare function openDatabaseSync(databaseName: string, appGroup: string | null, options?: SQLiteOpenOptions): SQLiteDatabase;
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
@@ -256,7 +257,7 @@ export declare function deserializeDatabaseSync(serializedData: Uint8Array, opti
  *
  * @param databaseName The name of the database file to delete.
  */
-export declare function deleteDatabaseAsync(databaseName: string): Promise<void>;
+export declare function deleteDatabaseAsync(databaseName: string, appGroup: string | null): Promise<void>;
 /**
  * Delete a database file.
  *
@@ -264,7 +265,7 @@ export declare function deleteDatabaseAsync(databaseName: string): Promise<void>
  *
  * @param databaseName The name of the database file to delete.
  */
-export declare function deleteDatabaseSync(databaseName: string): void;
+export declare function deleteDatabaseSync(databaseName: string, appGroup: string | null): void;
 /**
  * The event payload for the listener of [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener)
  */

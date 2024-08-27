@@ -4,6 +4,7 @@ import type { DatabaseChangeEvent } from './SQLiteDatabase';
 export default {
   NativeDatabase(
     databaseName: string,
+    appGroup?: string | null,
     options?: SQLiteOpenOptions,
     serializedData?: Uint8Array
   ): void {
@@ -14,16 +15,17 @@ export default {
     throw new Error('Unimplemented');
   },
 
-  async deleteDatabaseAsync(databaseName: string): Promise<void> {
+  async deleteDatabaseAsync(databaseName: string, appGroup: string | null): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  deleteDatabaseSync(databaseName: string): void {
+  deleteDatabaseSync(databaseName: string, appGroup: string | null): void {
     throw new Error('Unimplemented');
   },
 
   importAssetDatabaseAsync(
     databaseName: string,
+    appGroup: string | null,
     assetDatabasePath: string,
     forceOverwrite: boolean
   ): Promise<void> {

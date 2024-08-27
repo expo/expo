@@ -18,6 +18,10 @@ export interface SQLiteProviderProps {
      */
     databaseName: string;
     /**
+     * Optional appGroup for iOS
+     */
+    appGroup?: string;
+    /**
      * Open options.
      */
     options?: SQLiteOpenOptions;
@@ -94,5 +98,5 @@ export declare function useSQLiteContext(): SQLiteDatabase;
  * Exposed only for testing purposes.
  * @hidden
  */
-export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource): Promise<void>;
+export declare function importDatabaseFromAssetAsync(databaseName: string, appGroup: string | null, assetSource: SQLiteProviderAssetSource): Promise<void>;
 //# sourceMappingURL=hooks.d.ts.map

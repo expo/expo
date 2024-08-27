@@ -5,10 +5,12 @@ import { SQLiteStatement, } from './SQLiteStatement';
  */
 export class SQLiteDatabase {
     databaseName;
+    appGroup;
     options;
     nativeDatabase;
-    constructor(databaseName, options, nativeDatabase) {
+    constructor(databaseName, appGroup, options, nativeDatabase) {
         this.databaseName = databaseName;
+        this.appGroup = appGroup;
         this.options = options;
         this.nativeDatabase = nativeDatabase;
     }
@@ -286,11 +288,11 @@ export class SQLiteDatabase {
  * @param databaseName The name of the database file to open.
  * @param options Open options.
  */
-export async function openDatabaseAsync(databaseName, options) {
+export async function openDatabaseAsync(databaseName, appGroup, options) {
     const openOptions = options ?? {};
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, appGroup, openOptions);
     await nativeDatabase.initAsync();
-    return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+    return new SQLiteDatabase(databaseName, appGroup, openOptions, nativeDatabase);
 }
 /**
  * Open a database.
@@ -300,11 +302,11 @@ export async function openDatabaseAsync(databaseName, options) {
  * @param databaseName The name of the database file to open.
  * @param options Open options.
  */
-export function openDatabaseSync(databaseName, options) {
+export function openDatabaseSync(databaseName, appGroup, options) {
     const openOptions = options ?? {};
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, appGroup, openOptions);
     nativeDatabase.initSync();
-    return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+    return new SQLiteDatabase(databaseName, appGroup, openOptions, nativeDatabase);
 }
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
@@ -314,9 +316,9 @@ export function openDatabaseSync(databaseName, options) {
  */
 export async function deserializeDatabaseAsync(serializedData, options) {
     const openOptions = options ?? {};
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', null, openOptions, serializedData);
     await nativeDatabase.initAsync();
-    return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
+    return new SQLiteDatabase(':memory:', null, openOptions, nativeDatabase);
 }
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
@@ -328,17 +330,17 @@ export async function deserializeDatabaseAsync(serializedData, options) {
  */
 export function deserializeDatabaseSync(serializedData, options) {
     const openOptions = options ?? {};
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', null, openOptions, serializedData);
     nativeDatabase.initSync();
-    return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
+    return new SQLiteDatabase(':memory:', null, openOptions, nativeDatabase);
 }
 /**
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
  */
-export async function deleteDatabaseAsync(databaseName) {
-    return await ExpoSQLite.deleteDatabaseAsync(databaseName);
+export async function deleteDatabaseAsync(databaseName, appGroup) {
+    return await ExpoSQLite.deleteDatabaseAsync(databaseName, appGroup);
 }
 /**
  * Delete a database file.
@@ -347,8 +349,8 @@ export async function deleteDatabaseAsync(databaseName) {
  *
  * @param databaseName The name of the database file to delete.
  */
-export function deleteDatabaseSync(databaseName) {
-    return ExpoSQLite.deleteDatabaseSync(databaseName);
+export function deleteDatabaseSync(databaseName, appGroup) {
+    return ExpoSQLite.deleteDatabaseSync(databaseName, appGroup);
 }
 /**
  * Add a listener for database changes.
@@ -367,9 +369,9 @@ export function addDatabaseChangeListener(listener) {
 class Transaction extends SQLiteDatabase {
     static async createAsync(db) {
         const options = { ...db.options, useNewConnection: true };
-        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, options);
+        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.appGroup, options);
         await nativeDatabase.initAsync();
-        return new Transaction(db.databaseName, options, nativeDatabase);
+        return new Transaction(db.databaseName, db.appGroup, options, nativeDatabase);
     }
 }
 //# sourceMappingURL=SQLiteDatabase.js.map

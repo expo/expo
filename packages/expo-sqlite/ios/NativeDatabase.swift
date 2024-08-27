@@ -4,12 +4,14 @@ import ExpoModulesCore
 
 final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable, Hashable {
   let databaseName: String
+  let appGroup: String?
   let openOptions: OpenDatabaseOptions
   var isClosed = false
 
-  init(_ pointer: OpaquePointer?, databaseName: String, openOptions: OpenDatabaseOptions) {
+  init(_ pointer: OpaquePointer?, databaseName: String, appGroup: String?, openOptions: OpenDatabaseOptions) {
     self.databaseName = databaseName
     self.openOptions = openOptions
+    self.appGroup = appGroup
     super.init(pointer)
   }
 

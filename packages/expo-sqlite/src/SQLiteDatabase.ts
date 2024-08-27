@@ -19,6 +19,7 @@ export { SQLiteOpenOptions };
 export class SQLiteDatabase {
   constructor(
     public readonly databaseName: string,
+    public readonly appGroup: string | null,
     public readonly options: SQLiteOpenOptions,
     private readonly nativeDatabase: NativeDatabase
   ) {}
@@ -415,12 +416,13 @@ export class SQLiteDatabase {
  */
 export async function openDatabaseAsync(
   databaseName: string,
+  appGroup: string | null,
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, appGroup, openOptions);
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databaseName, appGroup, openOptions, nativeDatabase);
 }
 
 /**
@@ -433,12 +435,13 @@ export async function openDatabaseAsync(
  */
 export function openDatabaseSync(
   databaseName: string,
+  appGroup: string | null,
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, appGroup, openOptions);
   nativeDatabase.initSync();
-  return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databaseName, appGroup, openOptions, nativeDatabase);
 }
 
 /**
@@ -452,9 +455,9 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', null, openOptions, serializedData);
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
+  return new SQLiteDatabase(':memory:', null, openOptions, nativeDatabase);
 }
 
 /**
@@ -470,9 +473,9 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', null, openOptions, serializedData);
   nativeDatabase.initSync();
-  return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
+  return new SQLiteDatabase(':memory:', null, openOptions, nativeDatabase);
 }
 
 /**
@@ -480,8 +483,8 @@ export function deserializeDatabaseSync(
  *
  * @param databaseName The name of the database file to delete.
  */
-export async function deleteDatabaseAsync(databaseName: string): Promise<void> {
-  return await ExpoSQLite.deleteDatabaseAsync(databaseName);
+export async function deleteDatabaseAsync(databaseName: string, appGroup: string | null): Promise<void> {
+  return await ExpoSQLite.deleteDatabaseAsync(databaseName, appGroup);
 }
 
 /**
@@ -491,8 +494,8 @@ export async function deleteDatabaseAsync(databaseName: string): Promise<void> {
  *
  * @param databaseName The name of the database file to delete.
  */
-export function deleteDatabaseSync(databaseName: string): void {
-  return ExpoSQLite.deleteDatabaseSync(databaseName);
+export function deleteDatabaseSync(databaseName: string, appGroup: string | null): void {
+  return ExpoSQLite.deleteDatabaseSync(databaseName, appGroup);
 }
 
 /**
@@ -532,8 +535,8 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, options);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.appGroup, options);
     await nativeDatabase.initAsync();
-    return new Transaction(db.databaseName, options, nativeDatabase);
+    return new Transaction(db.databaseName, db.appGroup, options, nativeDatabase);
   }
 }
