@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { isFileIgnoredAsync } from '../utils/isFileIgnoredAsync';
+import { isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {
   description = 'Check for common project setup issues';
