@@ -8,7 +8,7 @@ const useScreens_1 = require("../useScreens");
 // Fix the TypeScript types for <Slot />. It complains about the ViewProps["style"]
 exports.ViewSlot = react_slot_1.Slot;
 exports.SafeAreaViewSlot = react_slot_1.Slot;
-function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap) {
+function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey) {
     const configs = [];
     for (const trigger of triggers) {
         if (trigger.name in parentTriggerMap) {
@@ -25,7 +25,17 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             configs.push(trigger);
             continue;
         }
-        const resolvedHref = (0, href_1.resolveHref)(trigger.href);
+        let resolvedHref = (0, href_1.resolveHref)(trigger.href);
+        if (resolvedHref.startsWith('../')) {
+            throw new Error('Trigger href cannot link to a parent directory');
+        }
+        const segmentsWithoutGroups = contextKey.split('/').filter((segment) => {
+            return !(segment.startsWith('(') && segment.endsWith(')'));
+        });
+        resolvedHref = (0, href_1.resolveHrefStringWithSegments)(resolvedHref, {
+            ...routeInfo,
+            segments: segmentsWithoutGroups,
+        }, true);
         let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
         if (!state) {
             // This shouldn't occur, as you should get the global +not-found
@@ -63,7 +73,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
                 return config.routeNode.route === routeNode.route;
             });
         if (duplicateTrigger) {
-            const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })}, ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
+            const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })} and ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
             throw new Error(`A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}`);
         }
         configs.push({
@@ -88,7 +98,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         return sortFn(a.routeNode, b.routeNode);
     });
     const children = [];
-    const triggerMap = {};
+    const triggerMap = { ...parentTriggerMap };
     for (const [index, config] of sortedConfigs.entries()) {
         triggerMap[config.name] = { ...config, index };
         if (config.type === 'internal') {

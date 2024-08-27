@@ -109,34 +109,7 @@ function linkTo(href, { event, relativeToDirectory } = {}) {
         return;
     }
     const rootState = navigationRef.getRootState();
-    if (href.startsWith('.')) {
-        // Resolve base path by merging the current segments with the params
-        let base = this.routeInfo?.segments
-            ?.map((segment) => {
-            if (!segment.startsWith('['))
-                return segment;
-            if (segment.startsWith('[...')) {
-                segment = segment.slice(4, -1);
-                const params = this.routeInfo?.params?.[segment];
-                if (Array.isArray(params)) {
-                    return params.join('/');
-                }
-                else {
-                    return params?.split(',')?.join('/') ?? '';
-                }
-            }
-            else {
-                segment = segment.slice(1, -1);
-                return this.routeInfo?.params?.[segment];
-            }
-        })
-            .filter(Boolean)
-            .join('/') ?? '/';
-        if (relativeToDirectory) {
-            base = `${base}/`;
-        }
-        href = new URL(href, `http://hostname/${base}`).pathname;
-    }
+    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, relativeToDirectory);
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);

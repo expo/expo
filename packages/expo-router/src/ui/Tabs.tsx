@@ -34,6 +34,7 @@ import { useComponent } from './useComponent';
 import { useRouteNode, useContextKey } from '../Route';
 import { resolveHref } from '../link/href';
 import { shouldLinkExternally } from '../utils/url';
+import { useRouteInfo } from '../hooks';
 
 export * from './TabContext';
 export * from './TabList';
@@ -88,22 +89,27 @@ export function useTabsWithTriggers<T extends string | object>({
   triggers,
   ...options
 }: UseTabsWithTriggersOptions<T>) {
+  // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = useContext(TabTriggerMapContext);
   const routeNode = useRouteNode();
   const contextKey = useContextKey();
   const linking = useContext(LinkingContext).options;
+  const routeInfo = useRouteInfo();
 
   if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
   const initialRouteName = routeNode.initialRouteName;
+
   const { children, triggerMap } = triggersToScreens(
     triggers,
     routeNode,
     linking,
     initialRouteName,
-    parentTriggerMap
+    parentTriggerMap,
+    routeInfo,
+    contextKey
   );
 
   const {
@@ -204,7 +210,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    return screenTriggers.push({ type: 'internal', href, name });
+    return screenTriggers.push({ type: 'internal', href: resolvedHref, name });
   });
 
   return screenTriggers;

@@ -3,8 +3,9 @@ import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navig
 import { ViewProps, View, SafeAreaView } from 'react-native';
 
 import type { ExpoTabActionType } from './TabRouter';
+import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
-import { resolveHref } from '../link/href';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
@@ -48,7 +49,9 @@ export function triggersToScreens(
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   initialRouteName: undefined | string,
-  parentTriggerMap: TriggerMap
+  parentTriggerMap: TriggerMap,
+  routeInfo: UrlObject,
+  contextKey: string
 ) {
   const configs: TriggerConfig[] = [];
 
@@ -71,7 +74,25 @@ export function triggersToScreens(
       continue;
     }
 
-    const resolvedHref = resolveHref(trigger.href);
+    let resolvedHref = resolveHref(trigger.href);
+
+    if (resolvedHref.startsWith('../')) {
+      throw new Error('Trigger href cannot link to a parent directory');
+    }
+
+    const segmentsWithoutGroups = contextKey.split('/').filter((segment) => {
+      return !(segment.startsWith('(') && segment.endsWith(')'));
+    });
+
+    resolvedHref = resolveHrefStringWithSegments(
+      resolvedHref,
+      {
+        ...routeInfo,
+        segments: segmentsWithoutGroups,
+      },
+      true
+    );
+
     let state = linking.getStateFromPath?.(resolvedHref, linking.config)?.routes[0];
 
     if (!state) {
@@ -123,7 +144,7 @@ export function triggersToScreens(
       });
 
     if (duplicateTrigger) {
-      const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })}, ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
+      const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })} and ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
 
       throw new Error(
         `A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}`
@@ -154,7 +175,7 @@ export function triggersToScreens(
   });
 
   const children: React.JSX.Element[] = [];
-  const triggerMap: TriggerMap = {};
+  const triggerMap: TriggerMap = { ...parentTriggerMap };
 
   for (const [index, config] of sortedConfigs.entries()) {
     triggerMap[config.name] = { ...config, index };

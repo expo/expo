@@ -28,6 +28,7 @@ const useComponent_1 = require("./useComponent");
 const Route_1 = require("../Route");
 const href_1 = require("../link/href");
 const url_1 = require("../utils/url");
+const hooks_1 = require("../hooks");
 __exportStar(require("./TabContext"), exports);
 __exportStar(require("./TabList"), exports);
 __exportStar(require("./TabSlot"), exports);
@@ -49,15 +50,17 @@ function useTabsWithChildren({ children, ...options }) {
 }
 exports.useTabsWithChildren = useTabsWithChildren;
 function useTabsWithTriggers({ triggers, ...options }) {
+    // Ensure we extend the parent triggers, so we can trigger them as well
     const parentTriggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const routeNode = (0, Route_1.useRouteNode)();
     const contextKey = (0, Route_1.useContextKey)();
     const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
+    const routeInfo = (0, hooks_1.useRouteInfo)();
     if (!routeNode || !linking) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');
     }
     const initialRouteName = routeNode.initialRouteName;
-    const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName, parentTriggerMap);
+    const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey);
     const { state, descriptors, navigation, NavigationContent: RNNavigationContent, } = (0, native_1.useNavigationBuilder)(TabRouter_1.ExpoTabRouter, {
         children,
         ...options,
@@ -118,7 +121,7 @@ function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = 
             }
             return;
         }
-        return screenTriggers.push({ type: 'internal', href, name });
+        return screenTriggers.push({ type: 'internal', href: resolvedHref, name });
     });
     return screenTriggers;
 }

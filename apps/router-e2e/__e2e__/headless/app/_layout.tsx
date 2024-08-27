@@ -20,7 +20,10 @@ export default function Layout() {
           <TabButton icon="home">Index</TabButton>
         </TabTrigger>
         <TabTrigger name="movies" asChild href="/movies" style={styles.tabTrigger}>
-          <TabButton icon="film">Movies (does not reset)</TabButton>
+          <TabButton icon="film">Movies</TabButton>
+        </TabTrigger>
+        <TabTrigger name="old-tabs" asChild href="/old-tabs" style={styles.tabTrigger}>
+          <TabButton icon="indent">Old Tabs</TabButton>
         </TabTrigger>
         <TabTrigger
           name="google"
@@ -31,7 +34,7 @@ export default function Layout() {
             event.preventDefault();
             router.navigate('http://expo.dev');
           }}>
-          <TabButton icon="google">Google (external) (long press to go to expo.dev</TabButton>
+          <TabButton icon="google">Google</TabButton>
         </TabTrigger>
       </TabList>
     </Tabs>

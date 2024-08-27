@@ -7,22 +7,28 @@ import {
   TabNavigationState,
   TabRouterOptions as RNTabRouterOptions,
 } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
 
 import { TriggerMap } from './common';
-import { store } from '../global-state/router-store';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
 };
 
+export type ExpoTabsResetValue = 'always' | 'onFocus' | 'never';
+
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
   | {
-      type: 'SWITCH_TABS';
+      type: 'JUMP_TO';
       source?: string;
       target?: string;
-      payload: { name: string; reset?: 'always' | 'onFocus' | 'never' };
+      payload: {
+        name: string;
+        reset?: ExpoTabsResetValue;
+        params?: object | undefined;
+      };
     };
 
 export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) {
@@ -34,7 +40,7 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
   > = {
     ...rnTabRouter,
     getStateForAction(state, action, options) {
-      if (action.type !== 'SWITCH_TABS') {
+      if (action.type !== 'JUMP_TO') {
         return rnTabRouter.getStateForAction(state, action, options);
       }
 
@@ -42,10 +48,10 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
       const trigger = triggerMap[name];
 
       if (!trigger) {
-        // actions are resolved top-down. This is probably for a different navigator
+        // This is probably for a different navigator
         return null;
       } else if (trigger.type === 'external') {
-        store.navigate(trigger.href);
+        Linking.openURL(trigger.href);
         return state;
       }
 
@@ -59,7 +65,7 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
       // We should reset if this is the first time visiting the route
       let shouldReset = !state.history.some((item) => item.key === route?.key) && !route.state;
 
-      if (!shouldReset && action.payload.reset) {
+      if (!shouldReset && 'reset' in action.payload && action.payload.reset) {
         switch (action.payload.reset) {
           case 'never': {
             shouldReset = false;
