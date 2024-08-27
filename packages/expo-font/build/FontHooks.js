@@ -15,9 +15,21 @@ function useRuntimeFonts(map) {
     isMapLoaded(map));
     const [error, setError] = useState(null);
     useEffect(() => {
+        let isMounted = true;
         loadAsync(map)
-            .then(() => setLoaded(true))
-            .catch(setError);
+            .then(() => {
+            if (isMounted) {
+                setLoaded(true);
+            }
+        })
+            .catch((error) => {
+            if (isMounted) {
+                setError(error);
+            }
+        });
+        return () => {
+            isMounted = false;
+        };
     }, []);
     return [loaded, error];
 }
