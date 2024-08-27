@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Enable normal scrolling in DOM components by default on iOS. ([#31197](https://github.com/expo/expo/pull/31197) by [@EvanBacon](https://github.com/EvanBacon))
 - Add prototype members `set`, `delete`, `get`, `has`, `forEach`, `entries`, `keys`, `values`, `[Symbol.iterator]` to global `FormData` on native. ([#31117](https://github.com/expo/expo/pull/31117) by [@EvanBacon](https://github.com/EvanBacon))
 - Polyfill `Symbol.asyncIterator` on native. ([#31127](https://github.com/expo/expo/pull/31127) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and `expo/dom` module. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
