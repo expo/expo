@@ -3,7 +3,7 @@ import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
-import { isFileIgnoredAsync } from '../utils/isFileIgnoredAsync';
+import { existsAndIsNotIgnoredAsync } from '../utils/files';
 
 const appConfigFieldsToSyncWithNative = [
   'ios',
@@ -73,8 +73,4 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
       advice,
     };
   }
-}
-
-async function existsAndIsNotIgnoredAsync(filePath: string): Promise<boolean> {
-  return fs.existsSync(filePath) && !(await isFileIgnoredAsync(filePath));
 }

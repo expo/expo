@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Warn if project is incompatible with upcoming Play Store Android API level requirements. ([#31067](https://github.com/expo/expo/pull/31067) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

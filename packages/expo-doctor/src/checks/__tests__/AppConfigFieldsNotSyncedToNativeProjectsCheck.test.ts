@@ -1,10 +1,10 @@
-import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
-import { mockSpawnPromise } from '../../__tests__/spawn-utils';
+import { existsAndIsNotIgnoredAsync } from '../../utils/files';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../AppConfigFieldsNotSyncedToNativeProjectsCheck';
 
 jest.mock('fs');
+jest.mock('../../utils/files');
 
 const projectRoot = '/tmp/project';
 
@@ -19,31 +19,6 @@ const additionalProjectProps = {
   staticConfigPath: null,
   dynamicConfigPath: null,
 };
-
-/**
- * Helper to mock the results of git rev-parse and git check-ignore based on whether the file should be ignored or not.
- * Only works when checking a single file.
- */
-function mockIsGitIgnoredResult(isFileIgnored: boolean) {
-  jest
-    .mocked(spawnAsync)
-    .mockImplementationOnce(() =>
-      mockSpawnPromise(
-        Promise.resolve({
-          status: 0,
-          stdout: '',
-        })
-      )
-    )
-    .mockImplementationOnce(() => {
-      if (isFileIgnored) {
-        return mockSpawnPromise(Promise.resolve({ status: 0, stdout: '' }));
-      }
-      const error: any = new Error();
-      error.status = -1; // git check-ignore errors if file is not ignored
-      return mockSpawnPromise(Promise.reject(error));
-    });
-}
 
 describe('runAsync', () => {
   afterEach(() => {
@@ -73,7 +48,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false with ios/ android folders and config plugins present, not in gitignore', async () => {
-    mockIsGitIgnoredResult(false);
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
 
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
@@ -92,7 +67,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore', async () => {
-    mockIsGitIgnoredResult(true);
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
     });
@@ -110,7 +85,7 @@ describe('runAsync', () => {
   });
 
   it('mentions app.config.ts in issue when dynamic config is used', async () => {
-    mockIsGitIgnoredResult(false);
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
     });
@@ -136,7 +111,7 @@ describe('runAsync', () => {
   });
 
   it('reports multiple unsynced fields correctly', async () => {
-    mockIsGitIgnoredResult(false);
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(true);
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
     });
