@@ -128,6 +128,15 @@ export async function resolveTemplateArgAsync(
 ): Promise<string> {
   assert(template, 'template is required');
 
+  if (template.startsWith('npm:')) {
+    const templatePackageName = template.substring('npm:'.length);
+    Log.log(`Running prebuild with template from npm package: ${chalk.cyan(templatePackageName)}`);
+    return await downloadAndExtractNpmModuleAsync(templatePackageName, {
+      cwd: templateDirectory,
+      name: appName,
+    });
+  }
+
   let repoUrl: URL | undefined;
 
   try {
