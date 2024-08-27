@@ -147,13 +147,12 @@ export type VideoSource = string | number | {
     /**
      * The URI of the video.
      *
-     * This property is exclusive with the `assetId` property, when both are present the `assetId` will be ignored.
+     * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
      */
     uri?: string;
     /**
-     * The assetId of a local video asset, acquired with the `require` function.
-     *
-     * This property is exclusive with the `uri` property, when both are present the `assetId` will be ignored.
+     * The asset ID of a local video asset, acquired with the `require` function.
+     * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
      */
     assetId?: number;
     /**
