@@ -204,7 +204,7 @@ export function getMetroDirectBundleOptions(
       routerRoot,
       bytecode: bytecode || undefined,
       reactCompiler: reactCompiler || undefined,
-      dom: isDOM ? '1' : undefined,
+      dom: isDOM ? 'true' : undefined,
     },
     customResolverOptions: {
       __proto__: null,
@@ -316,7 +316,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.reactCompiler', String(reactCompiler));
   }
   if (isDOM) {
-    queryParams.append('transform.dom', '1');
+    queryParams.append('transform.dom', 'true');
   }
 
   if (environment) {

@@ -11,8 +11,20 @@ import type { ReactNode } from 'react';
 import type { RouteProps } from './common.js';
 export declare function Router(): import("react").FunctionComponentElement<Omit<{
     initialInput?: string | undefined;
-    initialSearchParamsString?: string | undefined;
-    cache?: [([input: string, searchParamsString: string, setElements: (updater: Promise<Record<string, ReactNode>> | ((prev: Promise<Record<string, ReactNode>>) => Promise<Record<string, ReactNode>>)) => void, elements: Promise<Record<string, ReactNode>>] | undefined)?] | undefined;
+    initialParams?: unknown;
+    fetchCache?: {
+        e?: [input: string, params: unknown, elements: Promise<Record<string, ReactNode>> & {
+            prev?: Record<string, ReactNode> | undefined;
+        }] | undefined;
+        s?: ((updater: (Promise<Record<string, ReactNode>> & {
+            prev?: Record<string, ReactNode> | undefined;
+        }) | ((prev: Promise<Record<string, ReactNode>> & {
+            prev?: Record<string, ReactNode> | undefined;
+        }) => Promise<Record<string, ReactNode>> & {
+            prev?: Record<string, ReactNode> | undefined;
+        })) => void) | undefined;
+        o?: ((data: unknown) => void) | undefined;
+    } | undefined;
     unstable_onFetchData?: ((data: unknown) => void) | undefined;
     children: ReactNode;
 }, "children">>;

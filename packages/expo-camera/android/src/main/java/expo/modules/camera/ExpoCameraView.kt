@@ -164,7 +164,7 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
-  var ratio: CameraRatio = CameraRatio.ONE_ONE
+  var ratio: CameraRatio? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -354,7 +354,7 @@ class ExpoCameraView(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
-        previewView.scaleType = if (ratio != CameraRatio.ONE_ONE) {
+        previewView.scaleType = if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
           PreviewView.ScaleType.FIT_CENTER
         } else {
           PreviewView.ScaleType.FILL_CENTER
@@ -373,14 +373,7 @@ class ExpoCameraView(
           .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
-          .apply {
-            if (pictureSize.isNotEmpty()) {
-              val size = Size.parseSize(pictureSize)
-              setTargetResolution(size)
-            } else {
-              setResolutionSelector(resolutionSelector)
-            }
-          }
+          .setResolutionSelector(resolutionSelector)
           .build()
 
         val videoCapture = createVideoCapture()
@@ -437,17 +430,28 @@ class ExpoCameraView(
         }
       }
 
-  private fun buildResolutionSelector(): ResolutionSelector = if (ratio == CameraRatio.ONE_ONE) {
-    ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
-      return@setResolutionFilter supportedSizes.filter {
-        it.width == it.height
-      }
-    }.setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
-  } else {
-    ResolutionSelector.Builder().apply {
-      setAspectRatioStrategy(ratio.mapToStrategy())
-      setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-    }.build()
+  private fun buildResolutionSelector(): ResolutionSelector {
+    val strategy = if (pictureSize.isNotEmpty()) {
+      val size = Size.parseSize(pictureSize)
+      ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+    } else {
+      ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+    }
+
+    return if (ratio == CameraRatio.ONE_ONE) {
+      ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+        return@setResolutionFilter supportedSizes.filter {
+          it.width == it.height
+        }
+      }.setResolutionStrategy(strategy).build()
+    } else {
+      ResolutionSelector.Builder().apply {
+        ratio?.let {
+          setAspectRatioStrategy(it.mapToStrategy())
+        }
+        setResolutionStrategy(strategy)
+      }.build()
+    }
   }
 
   private fun createVideoCapture(): VideoCapture<Recorder> {

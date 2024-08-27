@@ -1,12 +1,6 @@
 pluginManagement {
-  def version = providers.exec {
-    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-  }.standardOutput.asText.get().trim()
-  def (_, reactNativeMinor) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
-
-  if(reactNativeMinor >= 75) {
     includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
-  }
+
   repositories {
     mavenCentral()
     gradlePluginPortal()
@@ -14,29 +8,15 @@ pluginManagement {
     google()
   }
 }
+plugins { id("com.facebook.react.settings") }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 
 include ':app'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-def getRNMinorVersion() {
-  def version = providers.exec {
-    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-  }.standardOutput.asText.get().trim()
-
-  def coreVersion = version.split("-")[0]
-  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-
-  return minor
-}
-
-if (getRNMinorVersion() < 75) {
-  apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
-  applyNativeModulesSettingsGradle(settings)
-}
-
-includeBuild('../../../react-native-lab/react-native/packages/react-native-gradle-plugin/')
+includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
 
 include ':expoview'
 include ':tools'

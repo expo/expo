@@ -29,6 +29,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix DOM component exports in CI. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
+- prevent RSC errors from crashing server. ([#31019](https://github.com/expo/expo/pull/31019) by [@EvanBacon](https://github.com/EvanBacon))
+- prevent exporting RSC endpoint by default. ([#31102](https://github.com/expo/expo/pull/31102) by [@EvanBacon](https://github.com/EvanBacon))
 - Update source map URL when config mutates modules. ([#30980](https://github.com/expo/expo/pull/30980) by [@EvanBacon](https://github.com/EvanBacon))
 - Use `react-server` resolution when experimental react canary support is enabled. ([#30747](https://github.com/expo/expo/pull/30747) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server closing in headless run commands. ([#30432](https://github.com/expo/expo/pull/30432) by [@EvanBacon](https://github.com/EvanBacon))
@@ -36,6 +39,7 @@
 - Fix assetId for static web assets. ([#29686](https://github.com/expo/expo/pull/29686) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads. ([#30424](https://github.com/expo/expo/pull/30424) by [@byCedric](https://github.com/byCedric))
 - Fixed the `CorsMiddleware` is a not registered since react-native 0.75. ([#30752](https://github.com/expo/expo/pull/30752) by [@kudo](https://github.com/kudo))
+- Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

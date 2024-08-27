@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import crypto from 'crypto';
-import fs from 'fs';
 import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
@@ -25,10 +24,7 @@ import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import {
-  createServerComponentsMiddleware,
-  fileURLToFilePath,
-} from './createServerComponentsMiddleware';
+import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -46,7 +42,6 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
-import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
@@ -60,14 +55,11 @@ import {
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
-import {
-  createDomComponentsMiddleware,
-  getDomComponentVirtualProxy,
-} from '../middleware/DomComponentsMiddleware';
+import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -168,6 +160,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const rscPath = '/_flight/[...rsc]';
 
     if (
+      this.isReactServerComponentsEnabled &&
       // If the RSC route is not already in the manifest, add it.
       !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
     ) {
@@ -798,30 +791,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   rscRenderer: Awaited<ReturnType<typeof createServerComponentsMiddleware>> | null = null;
 
-  async getDomComponentVirtualEntryModuleAsync(file: string) {
-    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-
-    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
-
-    const generatedEntry = path.join(this.projectRoot, '.expo/@dom', hash + '.js');
-
-    const entryFile = getDomComponentVirtualProxy(generatedEntry, filePath);
-
-    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
-
-    const exists = await fileExistsAsync(entryFile.filePath);
-    // TODO: Assert no default export at runtime.
-    await fs.promises.writeFile(entryFile.filePath, entryFile.contents);
-
-    if (!exists) {
-      // Give time for watchman to compute the file...
-      // TODO: Virtual modules which can have dependencies.
-      await new Promise((res) => setTimeout(res, 1000));
-    }
-
-    return generatedEntry;
-  }
-
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -913,18 +882,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const serverRoot = getMetroServerRoot(this.projectRoot);
 
+      const domComponentRenderer = createDomComponentsMiddleware(
+        {
+          metroRoot: serverRoot,
+        },
+        instanceMetroOptions
+      );
       // Add support for DOM components.
       // TODO: Maybe put behind a flag for now?
-      middleware.use(
-        createDomComponentsMiddleware(
-          {
-            projectRoot: this.projectRoot,
-            metroRoot: serverRoot,
-            getDevServerUrl: this.getDevServerUrlOrAssert.bind(this),
-          },
-          instanceMetroOptions
-        )
-      );
+      middleware.use(domComponentRenderer);
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 

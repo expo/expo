@@ -1,4 +1,5 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
@@ -26,7 +27,6 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';

@@ -1,3 +1,3 @@
 import '@expo/metro-runtime';
-export declare function registerDOMComponent(importer: () => Promise<any>, moduleId: string): void;
+export declare function registerDOMComponent(AppModule: any): void;
 //# sourceMappingURL=dom-entry.d.ts.map

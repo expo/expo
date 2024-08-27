@@ -1,39 +1,5 @@
 import { IOSOutputFormat, type RecordingOptions, AudioQuality } from './Audio.types';
 
-// @docsMissing
-export enum AndroidOutputFormat {
-  DEFAULT = 0,
-  THREE_GPP = 1,
-  MPEG_4 = 2,
-  AMR_NB = 3,
-  AMR_WB = 4,
-  AAC_ADIF = 5,
-  AAC_ADTS = 6,
-  RTP_AVP = 7,
-  MPEG2TS = 8,
-  WEBM = 9,
-}
-
-// @docsMissing
-export enum AndroidAudioEncoder {
-  DEFAULT = 0,
-  AMR_NB = 1,
-  AMR_WB = 2,
-  AAC = 3,
-  HE_AAC = 4,
-  AAC_ELD = 5,
-}
-
-// @docsMissing
-export enum IOSBitRateStrategy {
-  CONSTANT = 0,
-  LONG_TERM_AVERAGE = 1,
-  VARIABLE_CONSTRAINED = 2,
-  VARIABLE = 3,
-}
-
-// TODO : maybe make presets for music and speech, or lossy / lossless.
-
 const HIGH_QUALITY: RecordingOptions = {
   extension: '.m4a',
   sampleRate: 44100,
@@ -65,7 +31,6 @@ const LOW_QUALITY: RecordingOptions = {
     extension: '.3gp',
     outputFormat: '3gp',
     audioEncoder: 'amr_nb',
-    sampleRate: 44100,
   },
   ios: {
     audioQuality: AudioQuality.MIN,
@@ -142,7 +107,7 @@ const LOW_QUALITY: RecordingOptions = {
  * };
  * ```
  */
-export const RecordingOptionsPresets: Record<string, RecordingOptions> = {
+export const RecordingPresets: Record<string, RecordingOptions> = {
   HIGH_QUALITY,
   LOW_QUALITY,
 };

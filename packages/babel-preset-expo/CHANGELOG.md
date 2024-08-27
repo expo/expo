@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add basic support for using DOM Components in React Server Components projects. ([#31080](https://github.com/expo/expo/pull/31080) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and expose `expoDomComponentReference` on metadata. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `hasCjsExports` metadata for tracking static exports. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `process.env.EXPO_SERVER` for detecting when the JS was bundled for a server or react server environment. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
@@ -18,6 +19,7 @@
 
 ### 💡 Others
 
+- Inline the generated DOM component entry function for DOM bundles. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
 - Make `babel-plugin-react-compiler` an optional peer dependency. ([#30960](https://github.com/expo/expo/pull/30960) by [@EvanBacon](https://github.com/EvanBacon))
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed DOM components bundling issues for Android emulators and release builds. ([#30974](https://github.com/expo/expo/pull/30974) by [@kudo](https://github.com/kudo))

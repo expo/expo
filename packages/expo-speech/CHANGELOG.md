@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [Web] Change module registration. ([#29870](https://github.com/expo/expo/pull/29870) by [@aleqsio](https://github.com/aleqsio))
+
 ## 12.0.2 — 2024-05-09
 
 ### 🐛 Bug fixes

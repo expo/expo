@@ -1,11 +1,9 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { ExpoConfig, getConfig } from '@expo/config';
-import { resolveEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-
-import { getServerRoot } from './getModulesPaths';
 
 const debug = require('debug')('expo:metro:config:rewriteRequestUrl');
 
@@ -97,7 +95,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
         }
       }
 
-      const serverRoot = getServerRoot(projectRoot);
+      const serverRoot = getMetroServerRoot(projectRoot);
       const relativeEntry = path.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
       debug('Resolved entry point', { entry, relativeEntry, serverRoot });
 

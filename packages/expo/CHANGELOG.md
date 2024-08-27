@@ -8,6 +8,9 @@
 
 ### 🎉 New features
 
+- Enable normal scrolling in DOM components by default on iOS. ([#31197](https://github.com/expo/expo/pull/31197) by [@EvanBacon](https://github.com/EvanBacon))
+- Add prototype members `set`, `delete`, `get`, `has`, `forEach`, `entries`, `keys`, `values`, `[Symbol.iterator]` to global `FormData` on native. ([#31117](https://github.com/expo/expo/pull/31117) by [@EvanBacon](https://github.com/EvanBacon))
+- Polyfill `Symbol.asyncIterator` on native. ([#31127](https://github.com/expo/expo/pull/31127) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and `expo/dom` module. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Support `URL.canParse`. ([#30697](https://github.com/expo/expo/pull/30697) by [@EvanBacon](https://github.com/EvanBacon))
 - Add minimal `TextDecoder` support to native client platforms. ([#29620](https://github.com/expo/expo/pull/29620) by [@EvanBacon](https://github.com/EvanBacon))
@@ -28,6 +31,7 @@
 
 ### 💡 Others
 
+- Remove nested loading for DOM components. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
 - Redesign Fast Refresh overlay for web. ([#30507](https://github.com/expo/expo/pull/30507) by [@EvanBacon](https://github.com/EvanBacon))
 - Change `sideEffects` to use `src` folder. ([#29964](https://github.com/expo/expo/pull/29964) by [@EvanBacon](https://github.com/EvanBacon))
 - Keep using the legacy event emitter for the `DevLoadingView` in Expo Go. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))

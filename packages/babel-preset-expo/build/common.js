@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getReactCompiler = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getIsReactServer = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getReactCompiler = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsDOM = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getIsReactServer = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 const path_1 = __importDefault(require("path"));
 function hasModule(name) {
     try {
@@ -89,6 +89,11 @@ function getIsProd(caller) {
     return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
 exports.getIsProd = getIsProd;
+/** Is bundling for a DOM component. This will always be for platform = web. */
+function getIsDOM(caller) {
+    return caller?.isDOM ?? false;
+}
+exports.getIsDOM = getIsDOM;
 function getIsNodeModule(caller) {
     return caller?.isNodeModule ?? false;
 }

@@ -43,8 +43,8 @@ Sentry.init({
   ],
   integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
   tracesSampleRate: 0.002,
-  replaysSessionSampleRate: 0.001,
-  replaysOnErrorSampleRate: 0.5,
+  replaysSessionSampleRate: 0.0001,
+  replaysOnErrorSampleRate: 0.05,
 });
 
 import('@sentry/react').then(lazyLoadedSentry => {
