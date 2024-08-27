@@ -132,14 +132,16 @@ function sortConfigs(a, b, previousSegments = []) {
     if (a.pattern === b.pattern) {
         return b.routeNames.join('>').localeCompare(a.routeNames.join('>'));
     }
+    const isAIndex = a.screen === 'index' || a.screen.endsWith('/index');
+    const isBIndex = b.screen === 'index' || b.screen.endsWith('/index');
     // If one of the patterns starts with the other, it's more exhaustive
     // So move it up
     if (a.pattern.startsWith(b.pattern) &&
         // NOTE(EvanBacon): This is a hack to make sure that `*` is always at the end
-        b.screen !== 'index') {
+        !isBIndex) {
         return -1;
     }
-    if (b.pattern.startsWith(a.pattern) && a.screen !== 'index') {
+    if (b.pattern.startsWith(a.pattern) && !isAIndex) {
         return 1;
     }
     // NOTE(EvanBacon): Here we append `index` if the screen was `index` so the length is the same
