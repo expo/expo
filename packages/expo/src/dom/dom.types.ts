@@ -1,4 +1,4 @@
-import type { WebViewProps } from 'react-native-webview';
+import type { WebView, WebViewProps } from 'react-native-webview';
 
 export type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
 
@@ -13,6 +13,14 @@ export type BridgeMessage<TData extends JSONValue> = {
   data: TData;
 };
 
+/**
+ * The return type of the init function for `useDomImperativeHandle`.
+ */
+export interface DOMImperativeFactory {
+  [key: string]: (...args: JSONValue[]) => void;
+}
+
+export type WebViewRef = WebView;
 export { WebViewProps };
 
 export interface DOMProps extends Omit<WebViewProps, 'source'> {
