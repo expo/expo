@@ -13,7 +13,7 @@ async function resolveDependencyConfigImplIosAsync(packageRoot, reactNativeConfi
         return null;
     }
     const podspecs = await (0, fast_glob_1.default)('*.podspec', { cwd: packageRoot });
-    if (podspecs.length === 0) {
+    if (!podspecs?.length) {
         return null;
     }
     const mainPackagePodspec = path_1.default.basename(packageRoot) + '.podspec';
