@@ -125,41 +125,6 @@ export function useTabsWithTriggers<T extends string | object>({
     initialRouteName,
   });
 
-  const routes = Object.fromEntries(
-    state.routes.map((route, index) => {
-      const options = descriptors[route.key].options;
-      const action = {
-        ...options.action,
-        target: state.key,
-      };
-
-      return [
-        route.name,
-        {
-          route,
-          action,
-          key: route.key,
-          isFocused: state.index === index,
-          props: {
-            key: route.key,
-            onPress: () => {
-              const isFocused = state.index === index;
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: route.key,
-                canPreventDefault: true,
-              });
-
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.dispatch(action);
-              }
-            },
-          },
-        },
-      ];
-    })
-  );
-
   const NavigationContent = useComponent((children: React.ReactNode) => (
     <TabTriggerMapContext.Provider value={triggerMap}>
       <TabsNavigatorContext.Provider value={navigation}>
@@ -172,7 +137,7 @@ export function useTabsWithTriggers<T extends string | object>({
     </TabTriggerMapContext.Provider>
   ));
 
-  return { state, descriptors, navigation, routes, NavigationContent };
+  return { state, descriptors, navigation, NavigationContent };
 }
 
 function parseTriggersFromChildren(

@@ -170,59 +170,6 @@ export declare function useTabsWithChildren({ children, ...options }: UseTabsWit
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
         setParams<RouteName_2 extends string>(params: Partial<object | undefined>): void;
     } & TabActionHelpers<ParamListBase>;
-    routes: {
-        [k: string]: {
-            route: Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<any> | undefined;
-            }> & {
-                state?: Readonly<{
-                    key: string;
-                    index: number;
-                    routeNames: string[];
-                    history?: unknown[] | undefined;
-                    routes: (Readonly<{
-                        key: string;
-                        name: string;
-                        path?: string | undefined;
-                    }> & Readonly<{
-                        params?: Readonly<object | undefined>;
-                    }> & any)[];
-                    type: string;
-                    stale: false;
-                }> | import("@react-navigation/native").PartialState<Readonly<{
-                    key: string;
-                    index: number;
-                    routeNames: string[];
-                    history?: unknown[] | undefined;
-                    routes: (Readonly<{
-                        key: string;
-                        name: string;
-                        path?: string | undefined;
-                    }> & Readonly<{
-                        params?: Readonly<object | undefined>;
-                    }> & any)[];
-                    type: string;
-                    stale: false;
-                }>> | undefined;
-            };
-            action: {
-                target: string;
-                type: string;
-                payload?: object | undefined;
-                source?: string | undefined;
-            };
-            key: string;
-            isFocused: boolean;
-            props: {
-                key: string;
-                onPress: () => void;
-            };
-        };
-    };
     NavigationContent: import("react").ForwardRefExoticComponent<{
         children: ReactNode;
     } & import("react").RefAttributes<unknown>>;
@@ -377,59 +324,6 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<TabNavigationEventMap> & {
         setParams<RouteName_2 extends string>(params: Partial<object | undefined>): void;
     } & TabActionHelpers<ParamListBase>;
-    routes: {
-        [k: string]: {
-            route: Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<any> | undefined;
-            }> & {
-                state?: Readonly<{
-                    key: string;
-                    index: number;
-                    routeNames: string[];
-                    history?: unknown[] | undefined;
-                    routes: (Readonly<{
-                        key: string;
-                        name: string;
-                        path?: string | undefined;
-                    }> & Readonly<{
-                        params?: Readonly<object | undefined>;
-                    }> & any)[];
-                    type: string;
-                    stale: false;
-                }> | import("@react-navigation/native").PartialState<Readonly<{
-                    key: string;
-                    index: number;
-                    routeNames: string[];
-                    history?: unknown[] | undefined;
-                    routes: (Readonly<{
-                        key: string;
-                        name: string;
-                        path?: string | undefined;
-                    }> & Readonly<{
-                        params?: Readonly<object | undefined>;
-                    }> & any)[];
-                    type: string;
-                    stale: false;
-                }>> | undefined;
-            };
-            action: {
-                target: string;
-                type: string;
-                payload?: object | undefined;
-                source?: string | undefined;
-            };
-            key: string;
-            isFocused: boolean;
-            props: {
-                key: string;
-                onPress: () => void;
-            };
-        };
-    };
     NavigationContent: import("react").ForwardRefExoticComponent<{
         children: ReactNode;
     } & import("react").RefAttributes<unknown>>;

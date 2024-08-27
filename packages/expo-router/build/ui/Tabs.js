@@ -65,36 +65,6 @@ function useTabsWithTriggers({ triggers, ...options }) {
         id: contextKey,
         initialRouteName,
     });
-    const routes = Object.fromEntries(state.routes.map((route, index) => {
-        const options = descriptors[route.key].options;
-        const action = {
-            ...options.action,
-            target: state.key,
-        };
-        return [
-            route.name,
-            {
-                route,
-                action,
-                key: route.key,
-                isFocused: state.index === index,
-                props: {
-                    key: route.key,
-                    onPress: () => {
-                        const isFocused = state.index === index;
-                        const event = navigation.emit({
-                            type: 'tabPress',
-                            target: route.key,
-                            canPreventDefault: true,
-                        });
-                        if (!isFocused && !event.defaultPrevented) {
-                            navigation.dispatch(action);
-                        }
-                    },
-                },
-            },
-        ];
-    }));
     const NavigationContent = (0, useComponent_1.useComponent)((children) => (<TabContext_1.TabTriggerMapContext.Provider value={triggerMap}>
       <TabContext_1.TabsNavigatorContext.Provider value={navigation}>
         <TabContext_1.TabsDescriptorsContext.Provider value={descriptors}>
@@ -104,7 +74,7 @@ function useTabsWithTriggers({ triggers, ...options }) {
         </TabContext_1.TabsDescriptorsContext.Provider>
       </TabContext_1.TabsNavigatorContext.Provider>
     </TabContext_1.TabTriggerMapContext.Provider>));
-    return { state, descriptors, navigation, routes, NavigationContent };
+    return { state, descriptors, navigation, NavigationContent };
 }
 exports.useTabsWithTriggers = useTabsWithTriggers;
 function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = false) {

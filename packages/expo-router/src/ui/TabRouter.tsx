@@ -85,8 +85,7 @@ export function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions) 
           ...options.routeParamList[route.name],
           ...trigger.action.payload.params,
         };
-        const state2 = rnTabRouter.getStateForAction(state, trigger.action, options);
-        return state2;
+        return rnTabRouter.getStateForAction(state, trigger.action, options);
       } else {
         return rnTabRouter.getStateForRouteFocus(state, route.key);
       }
