@@ -61,6 +61,10 @@ NS_SWIFT_NAME(JavaScriptValue)
 
 @property (class, nonatomic, assign, readonly, nonnull) EXJavaScriptValue *undefined;
 
++ (nonnull EXJavaScriptValue *)number:(double)value;
+
++ (nonnull EXJavaScriptValue *)string:(nonnull NSString *)value runtime:(nonnull EXJavaScriptRuntime *)runtime;
+
 + (nonnull EXJavaScriptValue *)from:(nullable id)value runtime:(nonnull EXJavaScriptRuntime *)runtime;
 
 @end
