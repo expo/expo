@@ -176,6 +176,19 @@
   return [[EXJavaScriptValue alloc] initWithRuntime:nil value:undefined];
 }
 
++ (nonnull EXJavaScriptValue *)number:(double)value
+{
+  auto number = std::make_shared<jsi::Value>(value);
+  return [[EXJavaScriptValue alloc] initWithRuntime:nil value:number];
+}
+
++ (nonnull EXJavaScriptValue *)string:(nonnull NSString *)value runtime:(nonnull EXJavaScriptRuntime *)runtime
+{
+  jsi::Runtime *jsiRuntime = [runtime get];
+  auto string = std::make_shared<jsi::Value>(jsi::String::createFromUtf8(*jsiRuntime, [value UTF8String]));
+  return [[EXJavaScriptValue alloc] initWithRuntime:runtime value:string];
+}
+
 + (nonnull EXJavaScriptValue *)from:(nullable id)value runtime:(nonnull EXJavaScriptRuntime *)runtime
 {
   jsi::Runtime *jsiRuntime = [runtime get];
