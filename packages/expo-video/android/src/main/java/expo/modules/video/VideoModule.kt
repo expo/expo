@@ -197,7 +197,7 @@ class VideoModule : Module() {
           }
         }
 
-      Property("currentDate")
+      Property("currentLiveTimestamp")
         .get { ref: VideoPlayer ->
           // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
