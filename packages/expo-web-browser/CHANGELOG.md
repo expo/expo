@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+- [iOS] `dismissBrowser` function updated to return a promise. ([#31210](https://github.com/expo/expo/pull/31210) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🛠 Breaking changes
 
