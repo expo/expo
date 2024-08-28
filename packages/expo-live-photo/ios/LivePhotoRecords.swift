@@ -9,10 +9,7 @@ internal struct LivePhotoAsset: Record {
   @Field var pairedVideoUri: URL? = nil
 
   func toLivePhotoStream(targetSize: CGSize, contentFit: ContentFit = .contain) throws -> AsyncThrowingStream<(Bool, PHLivePhoto), Error> {
-    guard
-      let photoUri,
-      let pairedVideoUri
-    else {
+    guard let photoUri, let pairedVideoUri else {
       throw InvalidSourceException("the `photoUri` and `pairedVideoUri` have to be provided")
     }
 

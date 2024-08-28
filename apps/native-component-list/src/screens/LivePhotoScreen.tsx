@@ -1,12 +1,6 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import * as ImagePicker from 'expo-image-picker';
-import {
-  LivePhotoAsset,
-  LivePhotoView,
-  ContentFit,
-  LivePhotoViewType,
-  isAvailable as livePhotoIsAvailable,
-} from 'expo-live-photo';
+import { LivePhotoAsset, LivePhotoView, ContentFit, LivePhotoViewType } from 'expo-live-photo';
 import { useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
@@ -37,7 +31,7 @@ export default function LivePhotoScreen() {
     }
   };
 
-  if (!livePhotoIsAvailable()) {
+  if (!LivePhotoView.isAvailable()) {
     return (
       <View style={styles.container}>
         <Text>expo-live-photo is not available on this platform 😕</Text>

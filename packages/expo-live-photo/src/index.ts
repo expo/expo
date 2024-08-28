@@ -5,7 +5,6 @@ import {
   PlaybackStyle,
   LivePhotoViewType,
 } from './LivePhoto.types';
-import { isAvailable } from './LivePhotoModule';
 import LivePhotoView from './LivePhotoView';
 
 export {
@@ -15,5 +14,4 @@ export {
   ContentFit,
   PlaybackStyle,
   LivePhotoViewType,
-  isAvailable,
 };

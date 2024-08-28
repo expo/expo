@@ -73,6 +73,13 @@ export type LivePhotoViewType = {
   stopPlayback: () => void;
 };
 
+export interface LivePhotoViewStatics {
+  /**
+   * Determines whether expo-live-photo is available on the current device.
+   */
+  isAvailable(): boolean;
+}
+
 /**
  * A live photo asset.
  *

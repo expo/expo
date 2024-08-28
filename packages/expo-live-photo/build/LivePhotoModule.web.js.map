@@ -1,1 +1,0 @@
-{"version":3,"file":"LivePhotoModule.web.js","sourceRoot":"","sources":["../src/LivePhotoModule.web.ts"],"names":[],"mappings":"AAAA,eAAe,EAAE,CAAC;AAElB,MAAM,UAAU,WAAW;IACzB,OAAO,KAAK,CAAC;AACf,CAAC","sourcesContent":["export default {};\n\nexport function isAvailable(): boolean {\n  return false;\n}\n"]}

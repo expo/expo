@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LivePhotoViewProps } from './LivePhoto.types';
-declare const _default: React.ForwardRefExoticComponent<LivePhotoViewProps & React.RefAttributes<unknown>>;
-export default _default;
+import { LivePhotoViewProps, LivePhotoViewStatics } from './LivePhoto.types';
+declare const LivePhotoViewWithStatics: React.ForwardRefExoticComponent<LivePhotoViewProps & React.RefAttributes<unknown>> & LivePhotoViewStatics;
+export default LivePhotoViewWithStatics;
 //# sourceMappingURL=LivePhotoView.d.ts.map

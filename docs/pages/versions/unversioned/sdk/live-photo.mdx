@@ -1,6 +1,6 @@
 ---
 title: LivePhoto
-description: A library that allows displaying of iOS LivePhotos.
+description: A library that allows displaying Live Photos on iOS.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-live-photo'
 packageName: 'expo-live-photo'
 platforms: ['ios']
@@ -20,11 +20,11 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 Here's a simple example of `expo-live-photo` usage combined with `expo-image-picker`.
 
-<SnackInline label='Video' dependencies={['expo-video', 'expo-image-picker', 'react', 'react-native']}>
+<SnackInline label='LivePhoto' dependencies={['expo-live-photo', 'expo-image-picker', 'react', 'react-native']}>
 
 ```tsx
 import * as ImagePicker from 'expo-image-picker';
-import { LivePhotoAsset, LivePhotoView, LivePhotoViewType, isAvailable } from 'expo-live-photo';
+import { LivePhotoAsset, LivePhotoView, LivePhotoViewType } from 'expo-live-photo';
 import { Platform } from 'expo-modules-core';
 import { useRef, useState } from 'react';
 import { View, StyleSheet, Text, Button } from 'react-native';
@@ -49,7 +49,7 @@ export default function LivePhotoScreen() {
     }
   };
 
-  if (!isAvailable()) {
+  if (!LivePhotoView.isAvailable()) {
     return (
       <View style={styles.container}>
         <Text>expo-live-photo is not available on {Platform.OS} 😕</Text>
