@@ -83,7 +83,7 @@ public final class SQLiteModuleNext: Module {
           }
         }
 
-        let database = NativeDatabase(db, databaseName: databaseName, appGroup: iosOptions.appGroup, openOptions: options)
+        let database = NativeDatabase(db, databaseName: databaseName, iosOptions: iosOptions, openOptions: options)
         addCachedDatabase(database)
         return database
       }
@@ -401,15 +401,15 @@ public final class SQLiteModuleNext: Module {
     }
   }
 
-  private func deleteDatabase(databaseName: String, iosOptions: IOSOptions) throws {
-    if findCachedDatabase(where: { $0.databaseName == databaseName && $0.iosOptions == iosOptions }) != nil {
+  private func deleteDatabase(databaseName: String, appGroup: String?) throws {
+    if findCachedDatabase(where: { $0.databaseName == databaseName && $0.iosOptions.appGroup == appGroup }) != nil {
       throw DeleteDatabaseException(databaseName)
     }
 
     if databaseName == MEMORY_DB_NAME {
       return
     }
-    guard let path = pathForDatabaseName(name: databaseName, appGroup: iosOptions.appGroup) else {
+    guard let path = pathForDatabaseName(name: databaseName, appGroup: appGroup) else {
       throw Exceptions.FileSystemModuleNotFound()
     }
 

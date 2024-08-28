@@ -8,7 +8,7 @@ struct IOSOptions: Record, Equatable {
 
   // MARK: - Equatable
 
-  static func == (lhs: iOSOptions, rhs: iOSOptions) -> Bool {
+  static func == (lhs: IOSOptions, rhs: IOSOptions) -> Bool {
     return lhs.appGroup == rhs.appGroup 
   }
 }
