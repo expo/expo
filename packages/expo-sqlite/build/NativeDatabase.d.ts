@@ -3,7 +3,7 @@ import { NativeStatement } from './NativeStatement';
  * A class that represents an instance of the SQLite database.
  */
 export declare class NativeDatabase {
-    constructor(databaseName: string, appGroup?: string | null, options?: SQLiteOpenOptions, serializedData?: Uint8Array);
+    constructor(databaseName: string, iosOptions?: IOSOptions, options?: SQLiteOpenOptions, serializedData?: Uint8Array);
     initAsync(): Promise<void>;
     isInTransactionAsync(): Promise<boolean>;
     closeAsync(): Promise<void>;
@@ -42,5 +42,12 @@ export interface SQLiteOpenOptions {
      * @hidden
      */
     finalizeUnusedStatementsBeforeClosing?: boolean;
+}
+export interface IOSOptions {
+    /**
+     * An optional app group name that lets you to share data between
+     * apps/extensions.
+     */
+    appGroup?: string | null;
 }
 //# sourceMappingURL=NativeDatabase.d.ts.map

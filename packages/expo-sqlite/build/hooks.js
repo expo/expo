@@ -50,10 +50,10 @@ export function useSQLiteContext() {
     return context;
 }
 let databaseInstance = null;
-function SQLiteProviderSuspense({ databaseName, appGroup, options, assetSource, children, onInit, }) {
+function SQLiteProviderSuspense({ databaseName, iosOptions, options, assetSource, children, onInit, }) {
     const databasePromise = getDatabaseAsync({
         databaseName,
-        appGroup,
+        iosOptions,
         options,
         assetSource,
         onInit,
@@ -61,14 +61,20 @@ function SQLiteProviderSuspense({ databaseName, appGroup, options, assetSource, 
     const database = use(databasePromise);
     return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
 }
-function SQLiteProviderNonSuspense({ databaseName, appGroup, options, assetSource, children, onInit, onError, }) {
+function SQLiteProviderNonSuspense({ databaseName, iosOptions, options, assetSource, children, onInit, onError, }) {
     const databaseRef = useRef(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     useEffect(() => {
         async function setup() {
             try {
-                const db = await openDatabaseWithInitAsync({ databaseName, appGroup, options, assetSource, onInit });
+                const db = await openDatabaseWithInitAsync({
+                    databaseName,
+                    iosOptions,
+                    options,
+                    assetSource,
+                    onInit,
+                });
                 databaseRef.current = db;
                 setLoading(false);
             }
@@ -91,7 +97,7 @@ function SQLiteProviderNonSuspense({ databaseName, appGroup, options, assetSourc
             databaseRef.current = null;
             setLoading(true);
         };
-    }, [databaseName, appGroup, options, onInit]);
+    }, [databaseName, iosOptions, options, onInit]);
     if (error != null) {
         const handler = onError ??
             ((e) => {
@@ -104,10 +110,10 @@ function SQLiteProviderNonSuspense({ databaseName, appGroup, options, assetSourc
     }
     return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
 }
-function getDatabaseAsync({ databaseName, appGroup, options, assetSource, onInit, }) {
+function getDatabaseAsync({ databaseName, iosOptions, options, assetSource, onInit, }) {
     if (databaseInstance?.promise != null &&
         databaseInstance?.databaseName === databaseName &&
-        databaseInstance?.appGroup === appGroup &&
+        databaseInstance?.iosOptions === iosOptions &&
         databaseInstance?.options === options &&
         databaseInstance?.onInit === onInit) {
         return databaseInstance.promise;
@@ -119,26 +125,32 @@ function getDatabaseAsync({ databaseName, appGroup, options, assetSource, onInit
             db.closeAsync();
         })
             .then(() => {
-            return openDatabaseWithInitAsync({ databaseName, appGroup, options, assetSource, onInit });
+            return openDatabaseWithInitAsync({
+                databaseName,
+                iosOptions,
+                options,
+                assetSource,
+                onInit,
+            });
         });
     }
     else {
-        promise = openDatabaseWithInitAsync({ databaseName, appGroup, options, assetSource, onInit });
+        promise = openDatabaseWithInitAsync({ databaseName, iosOptions, options, assetSource, onInit });
     }
     databaseInstance = {
         databaseName,
-        appGroup,
+        iosOptions,
         options,
         onInit,
         promise,
     };
     return promise;
 }
-async function openDatabaseWithInitAsync({ databaseName, appGroup, options, assetSource, onInit, }) {
+async function openDatabaseWithInitAsync({ databaseName, iosOptions, options, assetSource, onInit, }) {
     if (assetSource != null) {
-        await importDatabaseFromAssetAsync(databaseName, appGroup ?? null, assetSource);
+        await importDatabaseFromAssetAsync(databaseName, assetSource, iosOptions);
     }
-    const database = await openDatabaseAsync(databaseName, appGroup ?? null, options);
+    const database = await openDatabaseAsync(databaseName, iosOptions, options);
     if (onInit != null) {
         await onInit(database);
     }
@@ -150,12 +162,13 @@ async function openDatabaseWithInitAsync({ databaseName, appGroup, options, asse
  * Exposed only for testing purposes.
  * @hidden
  */
-export async function importDatabaseFromAssetAsync(databaseName, appGroup, assetSource) {
+export async function importDatabaseFromAssetAsync(databaseName, assetSource, iosOptions) {
+    const resolvedIosOptions = iosOptions ?? {};
     const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
     if (!asset.localUri) {
         throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);
     }
-    await ExpoSQLite.importAssetDatabaseAsync(databaseName, appGroup, asset.localUri, assetSource.forceOverwrite ?? false);
+    await ExpoSQLite.importAssetDatabaseAsync(databaseName, resolvedIosOptions, asset.localUri, assetSource.forceOverwrite ?? false);
 }
 // Referenced from https://github.com/reactjs/react.dev/blob/6570e6cd79a16ac3b1a2902632eddab7e6abb9ad/src/content/reference/react/Suspense.md
 /**

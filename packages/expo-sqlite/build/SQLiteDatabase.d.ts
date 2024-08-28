@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { NativeDatabase, SQLiteOpenOptions, IOSOptions } from './NativeDatabase';
 import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
 export { SQLiteOpenOptions };
 /**
@@ -7,10 +7,10 @@ export { SQLiteOpenOptions };
  */
 export declare class SQLiteDatabase {
     readonly databaseName: string;
-    readonly appGroup: string | null;
+    readonly iosOptions: IOSOptions;
     readonly options: SQLiteOpenOptions;
     private readonly nativeDatabase;
-    constructor(databaseName: string, appGroup: string | null, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
+    constructor(databaseName: string, iosOptions: IOSOptions, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
@@ -224,22 +224,25 @@ export declare class SQLiteDatabase {
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
-export declare function openDatabaseAsync(databaseName: string, appGroup: string | null, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
+export declare function openDatabaseAsync(databaseName: string, iosOptions?: IOSOptions, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
 /**
  * Open a database.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to open.
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
-export declare function openDatabaseSync(databaseName: string, appGroup: string | null, options?: SQLiteOpenOptions): SQLiteDatabase;
+export declare function openDatabaseSync(databaseName: string, iosOptions?: IOSOptions, options?: SQLiteOpenOptions): SQLiteDatabase;
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export declare function deserializeDatabaseAsync(serializedData: Uint8Array, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
@@ -249,6 +252,7 @@ export declare function deserializeDatabaseAsync(serializedData: Uint8Array, opt
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export declare function deserializeDatabaseSync(serializedData: Uint8Array, options?: SQLiteOpenOptions): SQLiteDatabase;
@@ -256,16 +260,18 @@ export declare function deserializeDatabaseSync(serializedData: Uint8Array, opti
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
+ * @param iosOptions Options for iOS.
  */
-export declare function deleteDatabaseAsync(databaseName: string, appGroup: string | null): Promise<void>;
+export declare function deleteDatabaseAsync(databaseName: string, iosOptions?: IOSOptions): Promise<void>;
 /**
  * Delete a database file.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to delete.
+ * @param iosOptions Options for iOS.
  */
-export declare function deleteDatabaseSync(databaseName: string, appGroup: string | null): void;
+export declare function deleteDatabaseSync(databaseName: string, iosOptions?: IOSOptions): void;
 /**
  * The event payload for the listener of [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener)
  */

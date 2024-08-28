@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 
 import ExpoSQLite from './ExpoSQLiteNext';
-import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { NativeDatabase, SQLiteOpenOptions, IOSOptions } from './NativeDatabase';
 import {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
@@ -19,7 +19,7 @@ export { SQLiteOpenOptions };
 export class SQLiteDatabase {
   constructor(
     public readonly databaseName: string,
-    public readonly appGroup: string | null,
+    public readonly iosOptions: IOSOptions,
     public readonly options: SQLiteOpenOptions,
     private readonly nativeDatabase: NativeDatabase
   ) {}
@@ -412,17 +412,23 @@ export class SQLiteDatabase {
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export async function openDatabaseAsync(
   databaseName: string,
-  appGroup: string | null,
+  iosOptions?: IOSOptions,
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, appGroup, openOptions);
+  const resolvedIosOptions = iosOptions ?? {};
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    databaseName,
+    resolvedIosOptions,
+    openOptions
+  );
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(databaseName, appGroup, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databaseName, resolvedIosOptions, openOptions, nativeDatabase);
 }
 
 /**
@@ -431,23 +437,30 @@ export async function openDatabaseAsync(
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to open.
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export function openDatabaseSync(
   databaseName: string,
-  appGroup: string | null,
+  iosOptions?: IOSOptions,
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, appGroup, openOptions);
+  const resolvedIosOptions = iosOptions ?? {};
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    databaseName,
+    resolvedIosOptions,
+    openOptions
+  );
   nativeDatabase.initSync();
-  return new SQLiteDatabase(databaseName, appGroup, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databaseName, resolvedIosOptions, openOptions, nativeDatabase);
 }
 
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export async function deserializeDatabaseAsync(
@@ -455,9 +468,15 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', null, openOptions, serializedData);
+  const iosOptions = {};
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    ':memory:',
+    iosOptions,
+    openOptions,
+    serializedData
+  );
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(':memory:', null, openOptions, nativeDatabase);
+  return new SQLiteDatabase(':memory:', iosOptions, openOptions, nativeDatabase);
 }
 
 /**
@@ -466,6 +485,7 @@ export async function deserializeDatabaseAsync(
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
+ * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export function deserializeDatabaseSync(
@@ -473,18 +493,29 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', null, openOptions, serializedData);
+  const iosOptions = {};
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(
+    ':memory:',
+    iosOptions,
+    openOptions,
+    serializedData
+  );
   nativeDatabase.initSync();
-  return new SQLiteDatabase(':memory:', null, openOptions, nativeDatabase);
+  return new SQLiteDatabase(':memory:', iosOptions, openOptions, nativeDatabase);
 }
 
 /**
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
+ * @param iosOptions Options for iOS.
  */
-export async function deleteDatabaseAsync(databaseName: string, appGroup: string | null): Promise<void> {
-  return await ExpoSQLite.deleteDatabaseAsync(databaseName, appGroup);
+export async function deleteDatabaseAsync(
+  databaseName: string,
+  iosOptions?: IOSOptions
+): Promise<void> {
+  const resolvedIosOptions = iosOptions ?? {};
+  return await ExpoSQLite.deleteDatabaseAsync(databaseName, resolvedIosOptions);
 }
 
 /**
@@ -493,9 +524,11 @@ export async function deleteDatabaseAsync(databaseName: string, appGroup: string
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to delete.
+ * @param iosOptions Options for iOS.
  */
-export function deleteDatabaseSync(databaseName: string, appGroup: string | null): void {
-  return ExpoSQLite.deleteDatabaseSync(databaseName, appGroup);
+export function deleteDatabaseSync(databaseName: string, iosOptions?: IOSOptions): void {
+  const resolvedIosOptions = iosOptions ?? {};
+  return ExpoSQLite.deleteDatabaseSync(databaseName, resolvedIosOptions);
 }
 
 /**
@@ -535,8 +568,8 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.appGroup, options);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.iosOptions, options);
     await nativeDatabase.initAsync();
-    return new Transaction(db.databaseName, db.appGroup, options, nativeDatabase);
+    return new Transaction(db.databaseName, db.iosOptions, options, nativeDatabase);
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SQLiteOpenOptions } from './NativeDatabase';
+import type { SQLiteOpenOptions, IOSOptions } from './NativeDatabase';
 import { type SQLiteDatabase } from './SQLiteDatabase';
 export interface SQLiteProviderAssetSource {
     /**
@@ -18,9 +18,9 @@ export interface SQLiteProviderProps {
      */
     databaseName: string;
     /**
-     * Optional appGroup for iOS
+     * iOS specific options.
      */
-    appGroup?: string;
+    iosOptions?: IOSOptions;
     /**
      * Open options.
      */
@@ -98,5 +98,5 @@ export declare function useSQLiteContext(): SQLiteDatabase;
  * Exposed only for testing purposes.
  * @hidden
  */
-export declare function importDatabaseFromAssetAsync(databaseName: string, appGroup: string | null, assetSource: SQLiteProviderAssetSource): Promise<void>;
+export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource, iosOptions?: IOSOptions): Promise<void>;
 //# sourceMappingURL=hooks.d.ts.map
