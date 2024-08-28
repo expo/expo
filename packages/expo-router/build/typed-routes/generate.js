@@ -11,12 +11,20 @@ function getTypedRoutesDeclarationFile(ctx) {
     const staticRoutes = new Set();
     const dynamicRoutes = new Set();
     const dynamicRouteContextKeys = new Set();
-    walkRouteNode((0, getRoutes_1.getRoutes)(ctx, {
-        platformRoutes: false,
-        ignoreEntryPoints: true,
-        ignoreRequireErrors: true,
-        importMode: 'async',
-    }), '', staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    let routeNode = null;
+    try {
+        routeNode = (0, getRoutes_1.getRoutes)(ctx, {
+            platformRoutes: false,
+            ignoreEntryPoints: true,
+            ignoreRequireErrors: true,
+            importMode: 'async',
+        });
+    }
+    catch {
+        // Ignore errors from `getRoutes`. This is also called inside the app, which has
+        // a nicer UX for showing error messages
+    }
+    walkRouteNode(routeNode, '', staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     return `/* eslint-disable */
 import * as Router from 'expo-router';
 
