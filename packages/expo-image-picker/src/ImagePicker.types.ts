@@ -401,16 +401,6 @@ export type ImagePickerOptions = {
    */
   allowsEditing?: boolean;
   /**
-   * Whether to enable live photo support when picking images. When this property is `true` and a live photo is selected,
-   * the resulting `ImagePickerAsset` will contain an unaltered image and the `pairedVideoAsset` field will contain a
-   * video asset paired with the image. This option will be ignored when the `allowsEditing` option is enabled. Due
-   * to platform limitations live photos are returned at original quality, regardless of the `quality` option.
-   *
-   * @default false
-   * @platform ios
-   */
-  useLivePhotos?: boolean;
-  /**
    * An array with two entries `[x, y]` specifying the aspect ratio to maintain if the user is
    * allowed to edit the image (by passing `allowsEditing: true`). This is only applicable on
    * Android, since on iOS the crop rectangle is always a square.
