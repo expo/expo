@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.provider.Settings;
@@ -33,8 +32,6 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
   public static final String META_DATA_DEFAULT_COLOR_KEY = "expo.modules.notifications.default_notification_color";
   public static final String EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY = "expo.notification_request";
   private static final String EXTRAS_BODY_KEY = "body";
-
-  private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
 
   public ExpoNotificationBuilder(Context context) {
     super(context);
