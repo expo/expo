@@ -126,28 +126,32 @@ export function useLocalSearchParams<
   TParams2 extends SearchParams = UnknownOutputParams,
 >(): RouteParams<TParams1, TParams2> {
   const params = React.useContext(LocalRouteParamsContext) ?? {};
-  return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        return [
-          key,
-          value.map((v) => {
+  return React.useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(params).map(([key, value]) => {
+          if (Array.isArray(value)) {
+            return [
+              key,
+              value.map((v) => {
+                try {
+                  return decodeURIComponent(v);
+                } catch {
+                  return v;
+                }
+              }),
+            ];
+          } else {
             try {
-              return decodeURIComponent(v);
+              return [key, decodeURIComponent(value as string)];
             } catch {
-              return v;
+              return [key, value];
             }
-          }),
-        ];
-      } else {
-        try {
-          return [key, decodeURIComponent(value as string)];
-        } catch {
-          return [key, value];
-        }
-      }
-    })
-  ) as RouteParams<TParams1, TParams2>;
+          }
+        })
+      ) as RouteParams<TParams1, TParams2>,
+    [params]
+  );
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {

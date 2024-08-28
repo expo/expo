@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- wraps return of` useLocalSearchParams` with `useMemo`
+
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))

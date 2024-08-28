@@ -82,7 +82,7 @@ function useGlobalSearchParams() {
 exports.useGlobalSearchParams = useGlobalSearchParams;
 function useLocalSearchParams() {
     const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
+    return react_1.default.useMemo(() => Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [
                 key,
@@ -104,7 +104,7 @@ function useLocalSearchParams() {
                 return [key, value];
             }
         }
-    }));
+    })), [params]);
 }
 exports.useLocalSearchParams = useLocalSearchParams;
 function useSearchParams({ global = false } = {}) {
