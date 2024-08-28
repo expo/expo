@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Take `channelId` into account when presenting notifications. ([#31201](https://github.com/expo/expo/pull/31201) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.28.16 — 2024-08-21
