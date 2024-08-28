@@ -79,7 +79,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style'> {
     /** @hidden */
     style?: StyleProp<RNImageStyle>;
     /**

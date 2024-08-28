@@ -11,6 +11,12 @@
  see the `~` prefix operator below that handles types conforming to `AnyArgument` in a faster way.
  */
 private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
+  if type is any Numeric.Type {
+    return DynamicNumberType(numberType: T.self)
+  }
+  if type is String.Type {
+    return DynamicStringType()
+  }
   if let ArrayType = T.self as? AnyArray.Type {
     return DynamicArrayType(elementType: ArrayType.getElementDynamicType())
   }

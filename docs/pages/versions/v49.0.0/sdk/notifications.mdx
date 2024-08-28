@@ -463,9 +463,10 @@ To add custom push notification sounds to your app, add the `expo-notifications`
 After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput).
 You only need to provide the base filename. Here's an example using the config above:
 
-```js
+```ts
 await Notifications.setNotificationChannelAsync('new-emails', {
   name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
   sound: 'mySoundFile.wav', // Provide ONLY the base filename
 });
 
