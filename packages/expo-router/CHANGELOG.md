@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- wraps return of` useLocalSearchParams` with `useMemo`
+- wraps return of` useLocalSearchParams` with `useMemo` ([#31229](https://github.com/expo/expo/pull/31229) by [@michalak111](https://github.com/michalak111))
 
 ### 🛠 Breaking changes
 
