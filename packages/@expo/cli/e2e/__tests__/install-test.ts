@@ -48,6 +48,7 @@ it('runs `npx expo install --help`', async () => {
       Options
         --check     Check which installed packages need to be updated
         --fix       Automatically update any invalid package versions
+        --skipCompatibilityCheck   Skip checking the New Architecture compatibility of installed packages
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
         --bun       Use bun to install dependencies. Default when bun.lockb exists
