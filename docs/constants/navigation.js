@@ -145,7 +145,11 @@ const general = [
     makePage('guides/deep-linking.mdx'),
     makeGroup(
       'Linking',
-      [makePage('linking/into-other-apps.mdx'), makePage('linking/into-your-app.mdx')],
+      [
+        makePage('linking/into-other-apps.mdx'),
+        makePage('linking/into-your-app.mdx'),
+        makePage('linking/android-app-links.mdx'),
+      ],
       {
         expanded: false,
       }
