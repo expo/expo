@@ -199,10 +199,10 @@ You may want to measure the size of a DOM component and report it back to the na
 You need to use the `dom={{ autoSize: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
 
 ```tsx App.tsx (native)
-import MyComponent from './my-component';
+import DOMComponent from './my-component';
 
 export default function Route() {
-  return <MyComponent dom={{ autoSize: true }} />;
+  return <DOMComponent dom={{ autoSize: true }} />;
 }
 ```
 
@@ -225,7 +225,7 @@ import { useState } from 'react';
 export default function Route() {
   const [height, setHeight] = useState(270);
   return (
-    <MyComponent
+    <DOMComponent
       updateSize={async size => {
         if (size[1] !== height) {
           setHeight(size[1]);
