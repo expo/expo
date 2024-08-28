@@ -162,7 +162,7 @@ export default function Player(props: Props) {
           style={styles.slider}
           thumbTintColor={Colors.tintColor}
           value={isScrubbing ? initialScrubbingMillis : props.currentTime}
-          maximumValue={props.duration}
+          maximumValue={props.duration === Infinity || isNaN(props.duration) ? 0 : props.duration}
           disabled={!props.isLoaded}
           minimumTrackTintColor={Colors.tintColor}
           onSlidingComplete={_playFromPosition}

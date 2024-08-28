@@ -1,6 +1,6 @@
 import { BasePackageManager } from './BasePackageManager';
 import env from '../utils/env';
-import { findPnpmWorkspaceRoot, PNPM_LOCK_FILE } from '../utils/nodeWorkspaces';
+import { resolveWorkspaceRoot, PNPM_LOCK_FILE } from '../utils/nodeManagers';
 
 export class PnpmPackageManager extends BasePackageManager {
   readonly name = 'pnpm';
@@ -8,7 +8,7 @@ export class PnpmPackageManager extends BasePackageManager {
   readonly lockFile = PNPM_LOCK_FILE;
 
   workspaceRoot() {
-    const root = findPnpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
       return new PnpmPackageManager({
         ...this.options,

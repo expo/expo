@@ -1,1 +1,0 @@
-{"version":3,"file":"styleToBarStyle.d.ts","sourceRoot":"","sources":["../src/styleToBarStyle.ts"],"names":[],"mappings":"AAAA,OAAO,EAAc,eAAe,EAAE,MAAM,cAAc,CAAC;AAE3D,OAAO,EAAE,cAAc,EAAE,MAAM,mBAAmB,CAAC;AAUnD,MAAM,CAAC,OAAO,UAAU,eAAe,CACrC,KAAK,GAAE,cAAuB,EAC9B,WAAW,GAAE,eAAkC,GAC9C,eAAe,GAAG,cAAc,CAalC"}

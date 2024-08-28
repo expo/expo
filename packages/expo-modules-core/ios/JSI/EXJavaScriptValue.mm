@@ -12,7 +12,7 @@
   std::shared_ptr<jsi::Value> _value;
 }
 
-- (nonnull instancetype)initWithRuntime:(nonnull EXJavaScriptRuntime *)runtime
+- (nonnull instancetype)initWithRuntime:(nullable EXJavaScriptRuntime *)runtime
                                   value:(std::shared_ptr<jsi::Value>)value
 {
   if (self = [super init]) {
@@ -166,6 +166,34 @@
 {
   jsi::Runtime *runtime = [_runtime get];
   return expo::convertJSIStringToNSString(*runtime, _value->toString(*runtime));
+}
+
+#pragma mark - Static properties
+
++ (nonnull EXJavaScriptValue *)undefined
+{
+  auto undefined = std::make_shared<jsi::Value>();
+  return [[EXJavaScriptValue alloc] initWithRuntime:nil value:undefined];
+}
+
++ (nonnull EXJavaScriptValue *)number:(double)value
+{
+  auto number = std::make_shared<jsi::Value>(value);
+  return [[EXJavaScriptValue alloc] initWithRuntime:nil value:number];
+}
+
++ (nonnull EXJavaScriptValue *)string:(nonnull NSString *)value runtime:(nonnull EXJavaScriptRuntime *)runtime
+{
+  jsi::Runtime *jsiRuntime = [runtime get];
+  auto string = std::make_shared<jsi::Value>(jsi::String::createFromUtf8(*jsiRuntime, [value UTF8String]));
+  return [[EXJavaScriptValue alloc] initWithRuntime:runtime value:string];
+}
+
++ (nonnull EXJavaScriptValue *)from:(nullable id)value runtime:(nonnull EXJavaScriptRuntime *)runtime
+{
+  jsi::Runtime *jsiRuntime = [runtime get];
+  auto jsiValue = std::make_shared<jsi::Value>(*jsiRuntime, expo::convertObjCObjectToJSIValue(*jsiRuntime, value));
+  return [[EXJavaScriptValue alloc] initWithRuntime:runtime value:jsiValue];
 }
 
 @end

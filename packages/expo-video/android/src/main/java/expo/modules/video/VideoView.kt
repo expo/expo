@@ -36,6 +36,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val playerView: PlayerView = PlayerView(context.applicationContext)
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
+  val onFullscreenEnter by EventDispatcher<Unit>()
+  val onFullscreenExit by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
   var isInFullscreen: Boolean = false
@@ -154,6 +156,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       @Suppress("DEPRECATION")
       currentActivity.overridePendingTransition(0, 0)
     }
+    onFullscreenEnter(Unit)
     isInFullscreen = true
   }
 
@@ -162,6 +165,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
     fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_enter)
     videoPlayer?.changePlayerView(playerView)
+    onFullscreenExit(Unit)
     isInFullscreen = false
   }
 

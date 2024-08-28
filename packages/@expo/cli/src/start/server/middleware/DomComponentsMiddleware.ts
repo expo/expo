@@ -1,11 +1,8 @@
-import crypto from 'crypto';
-import fs from 'fs';
 import path from 'path';
 
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { Log } from '../../../log';
-import { fileExistsAsync } from '../../../utils/dir';
 import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
@@ -18,37 +15,9 @@ const warnUnstable = memoize(() =>
 );
 
 export function createDomComponentsMiddleware(
-  {
-    projectRoot,
-    metroRoot,
-    getDevServerUrl,
-  }: { projectRoot: string; metroRoot: string; getDevServerUrl: () => string },
+  { metroRoot }: { metroRoot: string },
   instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
 ) {
-  async function getDomComponentVirtualEntryModuleAsync(file: string) {
-    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-
-    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
-
-    const generatedEntry = path.join(projectRoot, '.expo/@dom', hash + '.js');
-
-    const entryFile = getDomComponentVirtualProxy(generatedEntry, filePath);
-
-    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
-
-    const exists = await fileExistsAsync(entryFile.filePath);
-    // TODO: Assert no default export at runtime.
-    await fs.promises.writeFile(entryFile.filePath, entryFile.contents);
-
-    if (!exists) {
-      // Give time for watchman to compute the file...
-      // TODO: Virtual modules which can have dependencies.
-      await new Promise((res) => setTimeout(res, 1000));
-    }
-
-    return generatedEntry;
-  }
-
   return async (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (!req.url) return next();
 
@@ -71,7 +40,7 @@ export function createDomComponentsMiddleware(
     warnUnstable();
 
     // Generate a unique entry file for the webview.
-    const generatedEntry = await getDomComponentVirtualEntryModuleAsync(file);
+    const generatedEntry = file.startsWith('file://') ? fileURLToFilePath(file) : file;
 
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
@@ -107,29 +76,6 @@ function coerceUrl(url: string) {
   } catch {
     return new URL(url, 'https://localhost:0');
   }
-}
-
-export function getDomComponentVirtualProxy(generatedEntry: string, filePath: string) {
-  // filePath relative to the generated entry
-  let relativeFilePath = path.relative(path.dirname(generatedEntry), filePath);
-
-  if (!relativeFilePath.startsWith('.')) {
-    relativeFilePath = './' + relativeFilePath;
-  }
-
-  const stringifiedFilePath = JSON.stringify(relativeFilePath);
-  // NOTE: This might need to be in the Metro transform cache if we ever change it.
-  const contents = `
-// Entry file for the web-side of a DOM Component.
-import { registerDOMComponent } from 'expo/dom/internal';
-
-registerDOMComponent(() => import(${stringifiedFilePath}), ${stringifiedFilePath});
-`;
-
-  return {
-    filePath: generatedEntry,
-    contents,
-  };
 }
 
 export function getDomComponentHtml(src?: string, { title }: { title?: string } = {}) {

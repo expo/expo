@@ -8,7 +8,7 @@ const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
-    return value === true || value === 'true';
+    return String(value) === 'true';
 }
 function memoize(fn) {
     const cache = new Map();
@@ -52,6 +52,8 @@ function getBabelCaller({ filename, options, }) {
         // Ensure we always use a mostly-valid router root.
         routerRoot: routerRoot ?? 'app',
         isDev: options.dev,
+        // Supply the DOM directive to the Babel preset.
+        isDOM: options.platform === 'web' && isCustomTruthy(options.customTransformOptions?.dom),
         // This value indicates if the user has disabled the feature or not.
         // Other criteria may still cause the feature to be disabled, but all inputs used are
         // already considered in the cache key.

@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Added `expo-router/link` export. ([#31174](https://github.com/expo/expo/pull/31174) by [@EvanBacon](https://github.com/EvanBacon))
 - Added production exports for experimental server renderer. ([#30850](https://github.com/expo/expo/pull/30850) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental server renderer. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Add virtual client boundary. ([#30534](https://github.com/expo/expo/pull/30534) by [@EvanBacon](https://github.com/EvanBacon))
@@ -17,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix nested server actions. ([#31019](https://github.com/expo/expo/pull/31019) by [@EvanBacon](https://github.com/EvanBacon))
 - Add client boundary callback for production exports. ([#30747](https://github.com/expo/expo/pull/30747) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent duplicated `NSUserActivityTypes` strings in prebuild. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))
 - Ensure navigation keeps within the closest group. ([#30266](https://github.com/expo/expo/pull/30266) by [@marklawlor](https://github.com/marklawlor))
@@ -27,6 +29,7 @@
 
 ### 💡 Others
 
+- Drop `expo-status-bar`. ([#31097](https://github.com/expo/expo/pull/31097) by [@EvanBacon](https://github.com/EvanBacon))
 - Support RSC only being hosted at platform subpaths. ([#30875](https://github.com/expo/expo/pull/30875) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic RSC tests for views. ([#30589](https://github.com/expo/expo/pull/30589) by [@EvanBacon](https://github.com/EvanBacon))
 - Import `@expo/metro-runtime` internals from `src` directory. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))

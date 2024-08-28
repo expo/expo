@@ -8,6 +8,7 @@
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `resolveRelativeEntryPoint` that takes possible server root into account. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
+- Export `getMetroServerRoot` method for monorepo root detection with bun, npm, pnpm, and yarn. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 

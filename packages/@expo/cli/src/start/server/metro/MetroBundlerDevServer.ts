@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import crypto from 'crypto';
-import fs from 'fs';
 import { TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
@@ -25,10 +24,7 @@ import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import {
-  createServerComponentsMiddleware,
-  fileURLToFilePath,
-} from './createServerComponentsMiddleware';
+import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -46,7 +42,6 @@ import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObser
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
-import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
@@ -60,14 +55,11 @@ import {
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
-import {
-  createDomComponentsMiddleware,
-  getDomComponentVirtualProxy,
-} from '../middleware/DomComponentsMiddleware';
+import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { getMetroServerRoot, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -168,6 +160,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const rscPath = '/_flight/[...rsc]';
 
     if (
+      this.isReactServerComponentsEnabled &&
       // If the RSC route is not already in the manifest, add it.
       !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
     ) {
@@ -640,12 +633,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const clientBoundaries = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
-      {
-        platform: options.platform,
-      },
-      files
-    );
+    const { reactClientReferences: clientBoundaries, cssModules } =
+      await this.rscRenderer!.getExpoRouterClientReferencesAsync(
+        {
+          platform: options.platform,
+        },
+        files
+      );
 
     debug('Evaluated client boundaries:', clientBoundaries);
 
@@ -657,6 +651,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       extraOptions
     );
+
+    // Inject the global CSS that was imported during the server render.
+    bundle.artifacts.push(...cssModules);
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
@@ -794,30 +791,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   rscRenderer: Awaited<ReturnType<typeof createServerComponentsMiddleware>> | null = null;
 
-  async getDomComponentVirtualEntryModuleAsync(file: string) {
-    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-
-    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
-
-    const generatedEntry = path.join(this.projectRoot, '.expo/@dom', hash + '.js');
-
-    const entryFile = getDomComponentVirtualProxy(generatedEntry, filePath);
-
-    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
-
-    const exists = await fileExistsAsync(entryFile.filePath);
-    // TODO: Assert no default export at runtime.
-    await fs.promises.writeFile(entryFile.filePath, entryFile.contents);
-
-    if (!exists) {
-      // Give time for watchman to compute the file...
-      // TODO: Virtual modules which can have dependencies.
-      await new Promise((res) => setTimeout(res, 1000));
-    }
-
-    return generatedEntry;
-  }
-
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -909,18 +882,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       const serverRoot = getMetroServerRoot(this.projectRoot);
 
+      const domComponentRenderer = createDomComponentsMiddleware(
+        {
+          metroRoot: serverRoot,
+        },
+        instanceMetroOptions
+      );
       // Add support for DOM components.
       // TODO: Maybe put behind a flag for now?
-      middleware.use(
-        createDomComponentsMiddleware(
-          {
-            projectRoot: this.projectRoot,
-            metroRoot: serverRoot,
-            getDevServerUrl: this.getDevServerUrlOrAssert.bind(this),
-          },
-          instanceMetroOptions
-        )
-      );
+      middleware.use(domComponentRenderer);
 
       middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
@@ -935,6 +905,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
+        this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
@@ -1002,6 +973,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } else {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
+        this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
@@ -1258,6 +1230,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+  }
+
+  // Ensure the global is available for SSR CSS modules to inject client updates.
+  private bindRSCDevModuleInjectionHandler() {
+    // Used by SSR CSS modules to broadcast client updates.
+    // @ts-expect-error
+    globalThis.__expo_rsc_inject_module = this.sendClientModule.bind(this);
+  }
+
+  // NOTE: This can only target a single platform at a time (web).
+  // used for sending RSC CSS to the root client in development.
+  private sendClientModule({ code, id }: { code: string; id: string }) {
+    this.broadcastMessage('sendDevCommand', {
+      name: 'module-import',
+      data: {
+        code,
+        id,
+      },
+    });
   }
 
   // Metro HMR

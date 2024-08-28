@@ -22,10 +22,12 @@ internal struct DynamicDictionaryType: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    let converter = appContext.converter
+
     if let jsObject = try? jsValue.asObject() {
       var result: [AnyHashable: Any] = [:]
       for key in jsObject.getPropertyNames() {
-        result[key] = try valueType.cast(jsValue: jsObject.getProperty(key), appContext: appContext)
+        result[key] = try converter.toNative(jsObject.getProperty(key), valueType)
       }
       return result
     }

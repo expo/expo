@@ -76,7 +76,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                stack:(nullable NSArray *)stack
                          exceptionId:(NSNumber *)exceptionId
 {
-  [[self _bridgeForRecord].redBox updateErrorMessage:message withStack:stack];
+  RCTRedBox *redbox = [[self _bridgeForRecord] moduleForName:@"RedBox"];
+  [redbox updateErrorMessage:message withStack:stack];
 }
 
 #pragma mark - internal
