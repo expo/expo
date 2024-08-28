@@ -31,7 +31,7 @@ There are two ways you can use common URL schemes to open a URL from your app to
 
 The [`expo-linking`](/versions/latest/sdk/linking) API provides a universal abstraction over native linking APIs (such as `window.history` on the web) and offers utilities for your app to interact with other installed apps.
 
-You can use a [common URL scheme](#common-url-schemes) to open a URL with [`Linking.openURL()`](/versions/latest/sdk/linking/#linkingopenurlurl). The example below opens a web URL in the default browser of the native operating system:
+You can use a [common URL scheme](#common-url-schemes) to open a URL with [`Linking.openURL`](/versions/latest/sdk/linking/#linkingopenurlurl). The example below opens a web URL in the default browser of the native operating system:
 
 ```tsx index.tsx|collapseHeight=240
 import { Button, View, StyleSheet } from 'react-native';
@@ -142,7 +142,7 @@ In the above example, it can be possible that the user might not have the Uber a
 
 ### Specify custom schemes for iOS
 
-On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linkingcanopenurlurl) to query other apps's linking schemes. It requires additional configuration to specify a list of schemes in **InfoPlist**. You can use the [`ios.infoPlist`](/versions/latest/config/app/#infoplist) property in your app config to specify a list of schemes your app needs to query. For example:
+On iOS, you can use [`Linking.canOpenURL`](/versions/latest/sdk/linking/#linkingcanopenurlurl) to query other apps's linking schemes. It requires additional configuration to specify a list of schemes in **InfoPlist**. You can use the [`ios.infoPlist`](/versions/latest/config/app/#infoplist) property in your app config to specify a list of schemes your app needs to query. For example:
 
 ```json app.json
 {
@@ -156,20 +156,20 @@ On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linki
 }
 ```
 
-If your don't specify this list, `Linking.canOpenURL()` may return `false` regardless of whether the device has the app installed.
+If your don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed.
 
 > **info** **Tip**: To test the configuration described above from an iOS device, [use a development build](/develop/development-builds/introduction/). It cannot be tested with Expo Go.
 
 ## Create URLs
 
-You can use [`Linking.createURL()`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. This method resolves to the following:
+You can use [`Linking.createURL`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. This method resolves to the following:
 
 - **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/#add-a-scheme-in-app-config) defined in the app config
 - **Development in Expo Go**: `exp://127.0.0.1:8081`
 
-Using `Linking.createURL()` helps you avoid hardcoding URLs. You can modify the returned URL by passing optional parameters to this method.
+Using `Linking.createURL` helps you avoid hardcoding URLs. You can modify the returned URL by passing optional parameters to this method.
 
-To pass data to your app, you can append it as a path or query string to the URL. `Linking.createURL()` will construct a working URL automatically. For example:
+To pass data to your app, you can append it as a path or query string to the URL. `Linking.createURL` will construct a working URL automatically. For example:
 
 ```tsx Example
 const redirectUrl = Linking.createURL('path/into/app', {
