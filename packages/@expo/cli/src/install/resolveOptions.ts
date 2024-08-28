@@ -12,6 +12,8 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   silent?: boolean;
   /** Should be installed as dev dependencies */
   dev?: boolean;
+  /** Should skip the New Architecture check against RND */
+  skipCompatibilityCheck?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
@@ -32,7 +34,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    ['--check', '--fix', '--npm', '--pnpm', '--yarn', '--bun'],
+    ['--check', '--fix', '--npm', '--pnpm', '--yarn', '--bun', '--skipCompatibilityCheck'],
     { variadic, extras, flags },
     'npx expo install'
   );
@@ -47,6 +49,7 @@ export async function resolveArgsAsync(
       npm: !!flags['--npm'],
       pnpm: !!flags['--pnpm'],
       bun: !!flags['--bun'],
+      skipCompatibilityCheck: !!flags['--skipCompatibilityCheck'],
     }),
     extras,
   };

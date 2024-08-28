@@ -26,6 +26,7 @@ export const expoInstall: Command = async (argv) => {
       [
         `--check     Check which installed packages need to be updated`,
         `--fix       Automatically update any invalid package versions`,
+        `--skipCompatibilityCheck   Skip checking the New Architecture compatibility of installed packages`,
         chalk`--npm       Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--bun       Use bun to install dependencies. {dim Default when bun.lockb exists}`,
