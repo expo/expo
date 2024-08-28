@@ -193,8 +193,7 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
         const parsed = parsePlistBuffer(resp.PairRecordData);
         if (Array.isArray(parsed)) {
           return parsed[0] as UsbmuxdPairRecord;
-        }
-        else {
+        } else {
           return parsed as UsbmuxdPairRecord;
         }
       } else {
