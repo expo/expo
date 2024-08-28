@@ -9,6 +9,17 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 Linking to other apps from your app is achieved using a URL based on the target app's URL scheme. This **URL scheme** allows you to reference resources within a native app. Your app can implement any URL scheme, including `https` and `http` (commonly used by web browsers like Chrome, Safari, and so on), and use JavaScript to handle the URL that launches the corresponding native app.
 
+## Common URL schemes
+
+There are built-in URL schemes that provide access to core functionality on all platforms. Here is a list of commonly used schemes:
+
+| Scheme           | Description           | Example                   |
+| ---------------- | --------------------- | ------------------------- |
+| `https` / `http` | Open web browser app. | `https://expo.dev`        |
+| `mailto`         | Open mail app.        | `mailto:support@expo.dev` |
+| `tel`            | Open phone app.       | `tel:+123456789`          |
+| `sms`            | Open SMS app.         | `sms:+123456789`          |
+
 ## Usage
 
 There are two ways you can use common URL schemes to open a URL from your app to another app:
@@ -45,7 +56,7 @@ const styles = StyleSheet.create({
 
 ### Expo Router
 
-If your project uses [Expo Router](/router/introduction/), use the `Link` component to open a URL with the operating system's default or preferred web browser app. It wraps a `<Text>` component on native platforms and an `<a>` element on the web. It also uses the `expo-linking` API to handle URL schemes.
+If your project uses [Expo Router](/router/introduction/), use the `Link` component to open a URL. It wraps a `<Text>` component on native platforms and an `<a>` element on the web. It also uses the `expo-linking` API to handle URL schemes.
 
 The example below opens a web URL in the default browser of the native operating system using a [common URL scheme](#common-url-schemes):
 
@@ -70,18 +81,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Common URL schemes
-
-There are built-in URL schemes that provide access to core functionality on all platforms. Here is a list of commonly used schemes:
-
-| Scheme           | Description           | Example                   |
-| ---------------- | --------------------- | ------------------------- |
-| `https` / `http` | Open web browser app. | `https://expo.dev`        |
-| `mailto`         | Open mail app.        | `mailto:support@expo.dev` |
-| `tel`            | Open phone app.       | `tel:+123456789`          |
-| `sms`            | Open SMS app.         | `sms:+123456789`          |
-
-### Specify Android intents
+## Specify Android intents to handle common URL schemes
 
 For Android versions 11 (SDK 30) and above, you must specify the intents your app will handle in the **AndroidManifest.xml** file. You can accomplish this by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin).
 
@@ -113,7 +113,7 @@ const withAndroidQueries: ConfigPlugin = config => {
 module.exports = withAndroidQueries;
 ```
 
-After creating the config plugin, you [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) under the `plugins` property:
+After creating the config plugin, [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) under the `plugins` property:
 
 ```json app.json
 {
@@ -126,11 +126,11 @@ After creating the config plugin, you [import the custom config plugin](/config-
 }
 ```
 
-> **info** **Tip**: On Android, you can use `expo-intent-launcher` to open a specific settings screen. See [`expo-intent-launcher` API reference](/versions/latest/sdk/intent-launcher/#enums) to view the list of available intents.
+> **info** **Tip**: On Android, you can use `expo-intent-launcher` to open a **specific settings screen** on the device. See [`expo-intent-launcher` API reference](/versions/latest/sdk/intent-launcher/#enums) to view the list of available intents.
 
 ## Custom URL schemes
 
-> If you know the custom scheme for the app you want open, you can link to it from your app using the method describes in [Usage](#usage).
+> If you know the custom scheme for the app you want to open from your app, you can link to it from your app using the method described in [Usage](#usage).
 
 Some services provide documentation for deep linking and on how to handle their apps's custom URL schemes. For example, the [Uber deep linking documentation](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction#standard-deep-links) describes how to link directly to a specific pickup location and destination:
 
@@ -138,11 +138,11 @@ Some services provide documentation for deep linking and on how to handle their 
 uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup[longitude]=-122.418028&pickup[nickname]=UberHQ&pickup[formatted_address]=1455%20Market%20St%2C%20San%20Francisco%2C%20CA%2094103&dropoff[latitude]=37.802374&dropoff[longitude]=-122.405818&dropoff[nickname]=Coit%20Tower&dropoff[formatted_address]=1%20Telegraph%20Hill%20Blvd%2C%20San%20Francisco%2C%20CA%2094133&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d&link_text=View%20team%20roster&partner_deeplink=partner%3A%2F%2Fteam%2F9383
 ```
 
-In this example, it can be possible that the user might not have the Uber app installed on their device. In this case, your app can open Google Play Store or Apple App Store, or let the user know that they need to install the desired app. We recommend using the library [`react-native-app-link`](https://github.com/FiberJW/react-native-app-link) to handle these scenarios.
+In the above example, it can be possible that the user might not have the Uber app installed on their device. In this case, your app can open Google Play Store or Apple App Store, and let the user know that they need to install the desired app. We recommend using the [`react-native-app-link`](https://github.com/FiberJW/react-native-app-link) library to handle these scenarios.
 
 ### Specify custom schemes for iOS
 
-On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linkingcanopenurlurl) to query other apps's linking schemes. It requires additional configuration to specify a list of schemes in **InfoPlist**. You can use the `expo.ios.infoPlist` property in your app config to specify a list of schemes your app needs to query. For example:
+On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linkingcanopenurlurl) to query other apps's linking schemes. It requires additional configuration to specify a list of schemes in **InfoPlist**. You can use the [`ios.infoPlist`](/versions/latest/config/app/#infoplist) property in your app config to specify a list of schemes your app needs to query. For example:
 
 ```json app.json
 {
@@ -158,13 +158,13 @@ On iOS, you can use [`Linking.canOpenURL()`](/versions/latest/sdk/linking/#linki
 
 If your don't specify this list, `Linking.canOpenURL()` may return `false` regardless of whether the device has the app installed.
 
-> **info** **Tip**: To test the configuration described above, [use a development build](/develop/development-builds/introduction/). It cannot be tested with Expo Go.
+> **info** **Tip**: To test the configuration described above from an iOS device, [use a development build](/develop/development-builds/introduction/). It cannot be tested with Expo Go.
 
 ## Create URLs
 
-You can use [`Linking.createURL()`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. It resolves to the following:
+You can use [`Linking.createURL()`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. This method resolves to the following:
 
-- **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/) defined in the app config
+- **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/#add-a-scheme-in-app-config) defined in the app config
 - **Development in Expo Go**: `exp://127.0.0.1:8081`
 
 Using `Linking.createURL()` helps you avoid hardcoding URLs. You can modify the returned URL by passing optional parameters to this method.
@@ -190,11 +190,11 @@ For apps that require a stable URL (for example, authorization provider redirect
 
 ## In-app browsers
 
-The `expo-linking` API allows you to open a URL using the operating system's default or preferred web browser app. You can use the [`expo-web-browser`](/versions/latest/sdk/webbrowser) library to open URLs in an in-app browser, which is particularly useful for secure [authentication](/guides/authentication).
+The `expo-linking` API allows you to open a URL using the operating system's default or preferred web browser app. You can use the [`expo-web-browser`](/versions/latest/sdk/webbrowser) library to open URLs in an in-app browser. For example, an in-app browser is useful for secure [authentication](/guides/authentication).
 
-See the example below to test the behavior of opening a URL in an in-app browser using `expo-web-browser` and the default or preferred web browser using `expo-linking`:
+The example below simulates the behavior of opening a URL in an in-app browser using `expo-web-browser` and the default or preferred web browser using `expo-linking`:
 
-<SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-linking"]}>
+<SnackInline label="WebBrowser compared to Linking" dependencies={["expo-web-browser", "expo-linking"]}>
 
 ```tsx
 import { Button, View, StyleSheet } from 'react-native';
