@@ -66,6 +66,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-light-sensor': [['LightSensor.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-linking': ['Linking.ts'],
   'expo-linear-gradient': ['LinearGradient.tsx'],
+  'expo-live-photo': ['index.ts'],
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
   'expo-location': ['index.ts'],

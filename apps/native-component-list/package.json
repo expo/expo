@@ -91,6 +91,7 @@
     "expo-local-authentication": "~14.0.0",
     "expo-localization": "~15.0.0",
     "expo-location": "~17.0.0",
+    "expo-live-photo": "~0.0.1",
     "expo-mail-composer": "~13.0.0",
     "expo-maps": "0.4.0",
     "expo-media-library": "~16.0.0",
