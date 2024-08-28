@@ -117,6 +117,36 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
+  it('returns result with isSuccessful = true if expo-build-properties plugin added but does not include android prop', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
+    const check = new StoreCompatibilityCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      exp: {
+        ...expProjectProps,
+        sdkVersion: `${PLAY_STORE_MINIMUM_REQS.ExpoSdkVersion}.0.0`,
+        plugins: [['expo-build-properties', { blah: 'blah' }]],
+      },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  it('returns result with isSuccessful = true if expo-build-properties plugin added, includes android prop, but not targetSdkVersion prop', async () => {
+    jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
+    const check = new StoreCompatibilityCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      exp: {
+        ...expProjectProps,
+        sdkVersion: `${PLAY_STORE_MINIMUM_REQS.ExpoSdkVersion}.0.0`,
+        plugins: [['expo-build-properties', { android: { compileSdkVersion: 15 } }]],
+      },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
   it(`returns result with isSuccessful = false if SDK <${PLAY_STORE_MINIMUM_REQS.ExpoSdkVersion}`, async () => {
     jest.mocked(existsAndIsNotIgnoredAsync).mockResolvedValue(false);
     const check = new StoreCompatibilityCheck();
