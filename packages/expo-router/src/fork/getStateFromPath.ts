@@ -16,6 +16,7 @@ type Options<ParamList extends object> = {
 type ParseConfig = Record<string, (value: string) => any>;
 
 type RouteConfig = {
+  type: 'layout' | 'static' | 'dynamic';
   isInitial?: boolean;
   screen: string;
   regex?: RegExp;
@@ -27,6 +28,8 @@ type RouteConfig = {
   hasChildren: boolean;
   userReadableName: string;
   _route?: RouteNode;
+  isIndex: boolean;
+  parts: string[];
 };
 
 type InitialRouteConfig = {
@@ -208,7 +211,6 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
 
   /*
    * If one of the patterns starts with the other, it is earlier in the config sorting.
-   *
    * However, configs are a mix of route configs and layout configs
    * e.g There will be a config for `/(group)`, but maybe there isn't a `/(group)/index.tsx`
    *
@@ -220,51 +222,20 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
    *
    * NOTE(marklawlor): Is this a feature we want? I'm unsure if this is a gimmick or a feature.
    */
-  const isAIndex = a.screen === 'index' || a.screen.endsWith('/index');
-  const isBIndex = b.screen === 'index' || b.screen.endsWith('/index');
-
-  if (a.pattern.startsWith(b.pattern) && !isBIndex) {
+  if (a.pattern.startsWith(b.pattern) && !b.isIndex) {
     return -1;
   }
 
-  if (b.pattern.startsWith(a.pattern) && !isAIndex) {
+  if (b.pattern.startsWith(a.pattern) && !a.isIndex) {
     return 1;
   }
 
-  // NOTE(EvanBacon): Here we append `index` if the screen was `index` so the length is the same
-  // as a slug or wildcard when nested more than one level deep.
-  // This is so we can compare the length of the pattern, e.g. `foo/*` > `foo` vs `*` < ``.
-  const aParts = a.pattern
-    .split('/')
-    // Strip out group names to ensure they don't affect the priority.
-    .filter((part) => matchGroupName(part) == null);
-  if (a.screen === 'index' || a.screen.match(/\/index$/)) {
-    aParts.push('index');
-  }
-
-  const bParts = b.pattern.split('/').filter((part) => matchGroupName(part) == null);
-  if (b.screen === 'index' || b.screen.match(/\/index$/)) {
-    bParts.push('index');
-  }
-
-  const isAStaticRoute =
-    !a.hasChildren && // Layout configs will have children
-    !aParts.some(
-      (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
-    );
-  const isBStaticRoute =
-    !b.hasChildren &&
-    !bParts.some(
-      (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
-    );
-
   /*
-   * Static routes should always be higher than dynamic routes.
-   * Layouts are excluded from this and are ranked lower than routes
+   * Static routes should always be higher than dynamic and layout routes.
    */
-  if (isAStaticRoute && !isBStaticRoute) {
+  if (a.type === 'static' && b.type !== 'static') {
     return -1;
-  } else if (!isAStaticRoute && isBStaticRoute) {
+  } else if (a.type !== 'static' && b.type === 'static') {
     return 1;
   }
 
@@ -290,22 +261,22 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
   /*
    * If there is not difference in similarity, then each non-group segment is compared against each other
    */
-  for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+  for (let i = 0; i < Math.max(a.parts.length, b.parts.length); i++) {
     // if b is longer, b get higher priority
-    if (aParts[i] == null) {
+    if (a.parts[i] == null) {
       return 1;
     }
     // if a is longer, a get higher priority
-    if (bParts[i] == null) {
+    if (b.parts[i] == null) {
       return -1;
     }
 
-    const aWildCard = aParts[i].startsWith('*');
-    const bWildCard = bParts[i].startsWith('*');
+    const aWildCard = a.parts[i].startsWith('*');
+    const bWildCard = b.parts[i].startsWith('*');
     // if both are wildcard we compare next component
     if (aWildCard && bWildCard) {
-      const aNotFound = aParts[i].match(/^[*]not-found$/);
-      const bNotFound = bParts[i].match(/^[*]not-found$/);
+      const aNotFound = a.parts[i].match(/^[*]not-found$/);
+      const bNotFound = b.parts[i].match(/^[*]not-found$/);
 
       if (aNotFound && bNotFound) {
         continue;
@@ -325,12 +296,12 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
       return -1;
     }
 
-    const aSlug = aParts[i].startsWith(':');
-    const bSlug = bParts[i].startsWith(':');
+    const aSlug = a.parts[i].startsWith(':');
+    const bSlug = b.parts[i].startsWith(':');
     // if both are wildcard we compare next component
     if (aSlug && bSlug) {
-      const aNotFound = aParts[i].match(/^[*]not-found$/);
-      const bNotFound = bParts[i].match(/^[*]not-found$/);
+      const aNotFound = a.parts[i].match(/^[*]not-found$/);
+      const bNotFound = b.parts[i].match(/^[*]not-found$/);
 
       if (aNotFound && bNotFound) {
         continue;
@@ -373,7 +344,7 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
     return 1;
   }
 
-  return bParts.length - aParts.length;
+  return b.parts.length - a.parts.length;
 }
 
 function getStateFromEmptyPathWithConfigs(
@@ -706,7 +677,31 @@ const createConfigItem = (
   _route?: any
 ): RouteConfig => {
   // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
-  pattern = pattern.split('/').filter(Boolean).join('/');
+  const patternParts: string[] = [];
+  const parts: string[] = [];
+  let isDynamic = false;
+  const isIndex = screen === 'index' || screen.endsWith('/index');
+
+  for (const part of pattern.split('/')) {
+    if (part) {
+      patternParts.push(part);
+
+      // If any part is dynamic, then the route is dynamic
+      isDynamic ||= part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
+
+      if (!matchGroupName(part)) {
+        parts.push(part);
+      }
+    }
+  }
+
+  pattern = patternParts.join('/');
+
+  if (isIndex) {
+    parts.push('index');
+  }
+
+  const type = hasChildren ? 'layout' : isDynamic ? 'dynamic' : 'static';
 
   const regex = pattern
     ? new RegExp(`^(${pattern.split('/').map(formatRegexPattern).join('')})$`)
@@ -726,6 +721,9 @@ const createConfigItem = (
     userReadableName: [...routeNames.slice(0, -1), path || screen].join('/'),
     hasChildren: !!hasChildren,
     _route,
+    type,
+    isIndex,
+    parts,
   };
 };
 
