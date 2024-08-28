@@ -1,6 +1,38 @@
 import NativeModulesProxy from './NativeModulesProxy';
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 
+function proxyModule(m) {
+  return new Proxy(m, {
+    get(target, propKey) {
+      const origMethod = target[propKey];
+      if (typeof origMethod !== 'function') return origMethod;
+
+      return (...args) => {
+        const start = performance.now();
+        const result = origMethod.apply(this, args);
+        const end = performance.now();
+        if (result instanceof Promise) {
+          return new Promise((resolve, reject) => {
+            result
+              .then((data) => {
+                const promiseEnd = performance.now();
+                (globalThis?.expo as any)?.registerBenchmark(
+                  propKey.toString(),
+                  promiseEnd - start
+                );
+                resolve(data);
+              })
+              .catch(reject);
+          });
+        } else {
+          (globalThis?.expo as any)?.registerBenchmark(propKey.toString(), end - start);
+          return result;
+        }
+      };
+    },
+  });
+}
+
 /**
  * Imports the native module registered with given name. In the first place it tries to load
  * the module installed through the JSI host object and then falls back to the bridge proxy module.
@@ -30,6 +62,6 @@ export function requireOptionalNativeModule<ModuleType = any>(
   moduleName: string
 ): ModuleType | null {
   ensureNativeModulesAreInstalled();
-
-  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
+  const mod = globalThis.expo?.modules?.[moduleName];
+  return (mod && proxyModule(mod)) ?? NativeModulesProxy[moduleName] ?? null;
 }

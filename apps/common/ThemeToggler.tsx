@@ -6,12 +6,27 @@ import { useTheme } from './ThemeProvider';
 export default function ThemeToggler() {
   const { theme, name, setTheme } = useTheme();
   return (
-    <TouchableOpacity onPress={() => setTheme(name === 'light' ? 'dark' : 'light')} hitSlop={4}>
-      <Ionicons
-        name={name === 'dark' ? 'sunny' : 'moon'}
-        size={Platform.OS === 'ios' ? 22 : 25}
-        color={theme.icon.info}
-      />
-    </TouchableOpacity>
+    <>
+      <TouchableOpacity onPress={() => setTheme(name === 'light' ? 'dark' : 'light')} hitSlop={4}>
+        <Ionicons
+          name={name === 'dark' ? 'sunny' : 'moon'}
+          size={Platform.OS === 'ios' ? 22 : 25}
+          color={theme.icon.info}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={async () => {
+          if (globalThis?.expo) {
+            console.log((globalThis?.expo as any).printBenchmarkResults());
+          }
+        }}
+        hitSlop={4}>
+        <Ionicons
+          name={'clipboard'}
+          size={Platform.OS === 'ios' ? 22 : 25}
+          color={theme.icon.info}
+        />
+      </TouchableOpacity>
+    </>
   );
 }

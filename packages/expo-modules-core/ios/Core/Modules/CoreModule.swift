@@ -9,6 +9,15 @@ internal final class CoreModule: Module {
     Function("uuidv4") { () -> String in
       return UUID().uuidString.lowercased()
     }
+    
+    Function("registerBenchmark", { (name: String, time: Double) in
+      appContext?.benchmark.registerWrapperTime(name: name, time: time)
+    }
+    )
+    
+    Function("printBenchmarkResults") {
+      return appContext?.benchmark.printResults()
+    }
 
     Function("uuidv5") { (name: String, namespace: String) -> String in
       guard let namespaceUuid = UUID(uuidString: namespace) else {

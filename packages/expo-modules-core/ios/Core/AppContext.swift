@@ -147,6 +147,8 @@ public final class AppContext: NSObject {
    Perhaps it should be kept by the `ModuleHolder`.
    */
   internal let classRegistry = ClassRegistry()
+  
+  internal let benchmark = Benchmark()
 
   /**
    Creates a new JavaScript object with the class prototype associated with the given native class.

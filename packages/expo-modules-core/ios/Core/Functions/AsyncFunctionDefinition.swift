@@ -63,7 +63,10 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
   var takesOwner: Bool = false
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+    var time = 0.0
     let promise = Promise { value in
+      let resTime = (CFAbsoluteTimeGetCurrent() - time) * 1000
+      appContext.benchmark.registerBodyTime(name: self.name, time: resTime)
       callback(.success(Conversions.convertFunctionResult(value)))
     } rejecter: { exception in
       callback(.failure(exception))
@@ -100,8 +103,9 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 
         // swiftlint:disable:next force_cast
         let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-
+        time = CFAbsoluteTimeGetCurrent()
         returnedValue = try body(argumentsTuple)
+        
       } catch let error as Exception {
         promise.reject(FunctionCallException(name).causedBy(error))
         return

@@ -91,8 +91,11 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
       guard let argumentsTuple = try Conversions.toTuple(arguments) as? Args else {
         throw ArgumentConversionException()
       }
-
-      return try body(argumentsTuple)
+      let time = CFAbsoluteTimeGetCurrent()
+      let res = try body(argumentsTuple)
+      let resTime = (CFAbsoluteTimeGetCurrent() - time) * 1000
+      appContext.benchmark.registerBodyTime(name: name, time: resTime)
+      return res
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -126,7 +129,11 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
       guard let argumentsTuple = try Conversions.toTuple(allNativeArguments) as? Args else {
         throw ArgumentConversionException()
       }
+      let time = CFAbsoluteTimeGetCurrent()
       let result = try body(argumentsTuple)
+      let resTime = (CFAbsoluteTimeGetCurrent() - time) * 1000
+      appContext.benchmark.registerBodyTime(name: name, time: resTime)
+
 
       return try appContext.converter.toJS(result, ~ReturnType.self)
     } catch let error as Exception {
