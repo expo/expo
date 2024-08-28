@@ -37,6 +37,12 @@ export declare enum MediaTypeOptions {
  * - `'images'` - for images.
  * - `'videos'` - for videos.
  * - `'livePhotos'` - for live photos (iOS only).
+ *
+ * > When the `livePhotos` type is added to the media types array and a live photo is selected,
+ * > the resulting `ImagePickerAsset` will contain an unaltered image and the `pairedVideoAsset` field will contain a
+ * > video asset paired with the image. This option will be ignored when the `allowsEditing` option is enabled. Due
+ * > to platform limitations live photos are returned at original quality, regardless of the `quality` option.
+ *
  * > When on Android or Web `livePhotos` type passed as a media type will be ignored.
  */
 export type MediaType = 'images' | 'videos' | 'livePhotos';
@@ -359,16 +365,6 @@ export type ImagePickerOptions = {
      */
     allowsEditing?: boolean;
     /**
-     * Whether to enable live photo support when picking images. When this property is `true` and a live photo is selected,
-     * the resulting `ImagePickerAsset` will contain an unaltered image and the `pairedVideoAsset` field will contain a
-     * video asset paired with the image. This option will be ignored when the `allowsEditing` option is enabled. Due
-     * to platform limitations live photos are returned at original quality, regardless of the `quality` option.
-     *
-     * @default false
-     * @platform ios
-     */
-    useLivePhotos?: boolean;
-    /**
      * An array with two entries `[x, y]` specifying the aspect ratio to maintain if the user is
      * allowed to edit the image (by passing `allowsEditing: true`). This is only applicable on
      * Android, since on iOS the crop rectangle is always a square.
@@ -489,9 +485,9 @@ export type ImagePickerOptions = {
 export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
-     * @default ['images']
+     * @default 'images'
      */
-    mediaTypes: MediaTypeOptions | MediaType[] | MediaType;
+    mediaTypes: MediaType | MediaType[] | MediaTypeOptions;
     capture?: boolean;
     /**
      * Whether or not to allow selecting multiple media files at once.

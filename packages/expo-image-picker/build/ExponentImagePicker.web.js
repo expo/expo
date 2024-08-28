@@ -1,6 +1,6 @@
 import { PermissionStatus, Platform } from 'expo-modules-core';
-import { parseMediaTypes } from './ImagePicker';
 import { MediaTypeOptions, } from './ImagePicker.types';
+import { parseMediaTypes } from './utils';
 const MediaTypeInput = {
     images: 'image/*',
     videos: 'video/mp4,video/quicktime,video/x-m4v,video/*',
@@ -153,7 +153,6 @@ function readFile(targetFile, options) {
 function createMediaTypeFormat(mediaTypes) {
     const filteredMediaTypes = mediaTypes.filter((mediaType) => mediaType !== 'livePhotos');
     if (filteredMediaTypes.length === 0) {
-        console.log('image/*');
         return 'image/*';
     }
     let result = '';
@@ -163,7 +162,6 @@ function createMediaTypeFormat(mediaTypes) {
             result = result.concat(',', MediaTypeInput[mediaType]);
         }
     }
-    console.log(result);
     return result;
 }
 //# sourceMappingURL=ExponentImagePicker.web.js.map

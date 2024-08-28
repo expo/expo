@@ -1,6 +1,5 @@
 import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 
-import { parseMediaTypes } from './ImagePicker';
 import {
   ImagePickerAsset,
   ImagePickerResult,
@@ -8,6 +7,7 @@ import {
   MediaTypeOptions,
   OpenFileBrowserOptions,
 } from './ImagePicker.types';
+import { parseMediaTypes } from './utils';
 
 const MediaTypeInput: Record<MediaType, string> = {
   images: 'image/*',
@@ -187,7 +187,6 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
 function createMediaTypeFormat(mediaTypes: MediaType[]): string {
   const filteredMediaTypes = mediaTypes.filter((mediaType) => mediaType !== 'livePhotos');
   if (filteredMediaTypes.length === 0) {
-    console.log('image/*');
     return 'image/*';
   }
   let result = '';
@@ -197,6 +196,5 @@ function createMediaTypeFormat(mediaTypes: MediaType[]): string {
       result = result.concat(',', MediaTypeInput[mediaType]);
     }
   }
-  console.log(result);
   return result;
 }

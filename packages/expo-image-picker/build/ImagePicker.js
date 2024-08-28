@@ -1,6 +1,6 @@
 import { CodedError, createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
-import { MediaTypeOptions, } from './ImagePicker.types';
+import { mapDeprecatedOptions } from './utils';
 function validateOptions(options) {
     const { aspect, quality, videoMaxDuration } = options;
     if (aspect != null) {
@@ -144,8 +144,8 @@ export async function launchCameraAsync(options = {}) {
  * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
  * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
-export async function launchImageLibraryAsync(options) {
-    const mappedOptions = mapDeprecatedOptions(options ?? {});
+export async function launchImageLibraryAsync(options = {}) {
+    const mappedOptions = mapDeprecatedOptions(options);
     if (!ExponentImagePicker.launchImageLibraryAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
     }
@@ -155,31 +155,6 @@ export async function launchImageLibraryAsync(options) {
             'to fix this warning.');
     }
     return await ExponentImagePicker.launchImageLibraryAsync(mappedOptions);
-}
-function mapDeprecatedOptions(options) {
-    if (!options.mediaTypes) {
-        return options;
-    }
-    return { ...options, mediaTypes: parseMediaTypes(options.mediaTypes ?? []) };
-}
-// @hidden
-export function parseMediaTypes(mediaTypes) {
-    const mediaTypeOptionsToMediaType = {
-        Images: ['images'],
-        Videos: ['videos'],
-        All: ['images', 'videos'],
-    };
-    if (mediaTypes === MediaTypeOptions.Images ||
-        mediaTypes === MediaTypeOptions.Videos ||
-        mediaTypes === MediaTypeOptions.All) {
-        console.warn('[expo-image-picker] `ImagePicker.MediaTypeOptions` have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.');
-        return mediaTypeOptionsToMediaType[mediaTypes];
-    }
-    // Unlike iOS, Android can't auto-cast to array
-    if (typeof mediaTypes === 'string') {
-        return [mediaTypes];
-    }
-    return mediaTypes;
 }
 export * from './ImagePicker.types';
 export { PermissionStatus };

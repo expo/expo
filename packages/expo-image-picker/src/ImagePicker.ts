@@ -15,9 +15,8 @@ import {
   ImagePickerOptions,
   ImagePickerResult,
   MediaLibraryPermissionResponse,
-  MediaType,
-  MediaTypeOptions,
 } from './ImagePicker.types';
+import { mapDeprecatedOptions } from './utils';
 
 function validateOptions(options: ImagePickerOptions) {
   const { aspect, quality, videoMaxDuration } = options;
@@ -197,9 +196,9 @@ export async function launchCameraAsync(
  * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export async function launchImageLibraryAsync(
-  options?: ImagePickerOptions
+  options: ImagePickerOptions = {}
 ): Promise<ImagePickerResult> {
-  const mappedOptions = mapDeprecatedOptions(options ?? {});
+  const mappedOptions = mapDeprecatedOptions(options);
 
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
@@ -212,40 +211,6 @@ export async function launchImageLibraryAsync(
     );
   }
   return await ExponentImagePicker.launchImageLibraryAsync(mappedOptions);
-}
-
-function mapDeprecatedOptions(options: ImagePickerOptions) {
-  if (!options.mediaTypes) {
-    return options;
-  }
-  return { ...options, mediaTypes: parseMediaTypes(options.mediaTypes ?? []) };
-}
-
-// @hidden
-export function parseMediaTypes(
-  mediaTypes: MediaTypeOptions | MediaType | MediaType[]
-): MediaType[] {
-  const mediaTypeOptionsToMediaType: Record<MediaTypeOptions, MediaType[]> = {
-    Images: ['images'],
-    Videos: ['videos'],
-    All: ['images', 'videos'],
-  };
-
-  if (
-    mediaTypes === MediaTypeOptions.Images ||
-    mediaTypes === MediaTypeOptions.Videos ||
-    mediaTypes === MediaTypeOptions.All
-  ) {
-    console.warn(
-      '[expo-image-picker] `ImagePicker.MediaTypeOptions` have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.'
-    );
-    return mediaTypeOptionsToMediaType[mediaTypes];
-  }
-  // Unlike iOS, Android can't auto-cast to array
-  if (typeof mediaTypes === 'string') {
-    return [mediaTypes];
-  }
-  return mediaTypes;
 }
 
 export * from './ImagePicker.types';
