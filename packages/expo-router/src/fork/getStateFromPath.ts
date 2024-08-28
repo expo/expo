@@ -206,16 +206,24 @@ function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] 
     return b.routeNames.join('>').localeCompare(a.routeNames.join('>'));
   }
 
+  /*
+   * If one of the patterns starts with the other, it is earlier in the config sorting.
+   *
+   * However, configs are a mix of route configs and layout configs
+   * e.g There will be a config for `/(group)`, but maybe there isn't a `/(group)/index.tsx`
+   *
+   * This is because you can navigate to a directory and its navigator will determine the route
+   * These routes should be later in the config sorting, as their patterns are very open
+   * and will prevent routes from being matched
+   *
+   * Therefore before we compare segment parts, we force these layout configs later in the sorting
+   *
+   * NOTE(marklawlor): Is this a feature we want? I'm unsure if this is a gimmick or a feature.
+   */
   const isAIndex = a.screen === 'index' || a.screen.endsWith('/index');
   const isBIndex = b.screen === 'index' || b.screen.endsWith('/index');
 
-  // If one of the patterns starts with the other, it's more exhaustive
-  // So move it up
-  if (
-    a.pattern.startsWith(b.pattern) &&
-    // NOTE(EvanBacon): This is a hack to make sure that `*` is always at the end
-    !isBIndex
-  ) {
+  if (a.pattern.startsWith(b.pattern) && !isBIndex) {
     return -1;
   }
 
