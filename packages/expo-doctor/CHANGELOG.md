@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix error when `expo-build-properties` is present but `android` key is not. ([#31228](https://github.com/expo/expo/pull/31228) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 💡 Others
+
+## 1.10.1 — 2024-08-28
+
+### 🐛 Bug fixes
+
+- Fix error when `expo-build-properties` is present but `android` key is not. ([#31228](https://github.com/expo/expo/pull/31228) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 1.10.0 — 2024-08-27
 
