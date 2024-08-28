@@ -1,4 +1,4 @@
-import { useEffect, type DependencyList } from 'react';
+import { useCallback, useEffect, useImperativeHandle, type DependencyList, type Ref } from 'react';
 
 import type { DOMImperativeFactory } from './dom.types';
 
@@ -7,13 +7,27 @@ import type { DOMImperativeFactory } from './dom.types';
  *
  */
 export function useDomImperativeHandle<T extends DOMImperativeFactory>(
+  ref: Ref<T>,
   init: () => T,
   deps?: DependencyList
 ) {
+  // @ts-expect-error: Added via react-native-webview
+  const isTargetWeb = typeof window.ReactNativeWebView === 'undefined';
+
+  const stubHandlerFactory = useCallback(() => ({}) as T, deps ?? []);
+
+  // This standard useImperativeHandle hook is serving for web
+  useImperativeHandle(ref, isTargetWeb ? init : stubHandlerFactory, deps);
+
+  // This `globalThis._domRefProxy` is serving for native
   useEffect(() => {
-    globalThis._domRefProxy = init();
+    if (!isTargetWeb) {
+      globalThis._domRefProxy = init();
+    }
     return () => {
-      globalThis._domRefProxy = undefined;
+      if (!isTargetWeb) {
+        globalThis._domRefProxy = undefined;
+      }
     };
   }, deps);
 }

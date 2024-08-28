@@ -187,16 +187,17 @@ export default function App() {
 'use dom';
 
 import { useDomImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
-import { useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 
 export interface MyRef extends DOMImperativeFactory {
   focus: () => void;
 }
 
-export default function MyComponent(props: React.RefAttributes<MyRef>) {
+export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useDomImperativeHandle(
+    ref,
     () => ({
       focus: () => {
         inputRef.current?.focus();
@@ -206,7 +207,7 @@ export default function MyComponent(props: React.RefAttributes<MyRef>) {
   );
 
   return <input ref={inputRef} />;
-}
+});
 ```
 
 ## Feature detection
