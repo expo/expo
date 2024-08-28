@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "14.0.14",
+  "version": "14.0.3",
   "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,11 +38,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/IgorKhramtsov/expo.git",
+    "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-sqlite"
   },
   "bugs": {
-    "url": "https://github.com/IgorKhramtsov/expo/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
