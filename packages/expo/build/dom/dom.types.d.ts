@@ -10,7 +10,7 @@ export type BridgeMessage<TData extends JSONValue> = {
     data: TData;
 };
 /**
- * The return type of the init function for `useDomImperativeHandle`.
+ * The return type of the init function for `useDOMImperativeHandle`.
  */
 export interface DOMImperativeFactory {
     [key: string]: (...args: JSONValue[]) => void;

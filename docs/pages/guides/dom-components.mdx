@@ -158,7 +158,7 @@ Think of these functions like React Server Actions, but instead of residing on t
 
 ## Passing refs
 
-You can use the `useDomImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
+You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
 
 ```tsx App.tsx (native)
 import { useRef } from 'react';
@@ -186,7 +186,7 @@ export default function App() {
 ```tsx my-component.tsx (web)
 'use dom';
 
-import { useDomImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
 import { forwardRef, useRef } from 'react';
 
 export interface MyRef extends DOMImperativeFactory {
@@ -196,7 +196,7 @@ export interface MyRef extends DOMImperativeFactory {
 export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useDomImperativeHandle(
+  useDOMImperativeHandle(
     ref,
     () => ({
       focus: () => {

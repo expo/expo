@@ -1,6 +1,6 @@
 'use dom';
 
-import { useDomImperativeHandle, type DOMImperativeFactory, type DOMProps } from 'expo/dom';
+import { useDOMImperativeHandle, type DOMImperativeFactory, type DOMProps } from 'expo/dom';
 import { forwardRef, useRef, useState } from 'react';
 
 export interface ForwardedImperativeRef extends DOMImperativeFactory {
@@ -12,7 +12,7 @@ export default forwardRef<ForwardedImperativeRef, { dom?: DOMProps }>(function P
   const [text, setText] = useState('');
   const divRef = useRef<HTMLDivElement>(null);
 
-  useDomImperativeHandle<ForwardedImperativeRef>(
+  useDOMImperativeHandle<ForwardedImperativeRef>(
     ref,
     () => ({
       toggleWidth: () => {

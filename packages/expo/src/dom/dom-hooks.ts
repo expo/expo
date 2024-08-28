@@ -6,7 +6,7 @@ import type { DOMImperativeFactory } from './dom.types';
  * A React `useImperativeHandle` like hook for DOM components.
  *
  */
-export function useDomImperativeHandle<T extends DOMImperativeFactory>(
+export function useDOMImperativeHandle<T extends DOMImperativeFactory>(
   ref: Ref<T>,
   init: () => T,
   deps?: DependencyList
