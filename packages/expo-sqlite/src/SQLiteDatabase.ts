@@ -412,13 +412,13 @@ export class SQLiteDatabase {
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
- * @param iosOptions Options for iOS.
  * @param options Open options.
+ * @param iosOptions Options for iOS.
  */
 export async function openDatabaseAsync(
   databaseName: string,
-  iosOptions?: IOSOptions,
-  options?: SQLiteOpenOptions
+  options?: SQLiteOpenOptions,
+  iosOptions?: IOSOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
   const resolvedIosOptions = iosOptions ?? {};
@@ -437,13 +437,13 @@ export async function openDatabaseAsync(
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to open.
- * @param iosOptions Options for iOS.
  * @param options Open options.
+ * @param iosOptions Options for iOS.
  */
 export function openDatabaseSync(
   databaseName: string,
-  iosOptions?: IOSOptions,
-  options?: SQLiteOpenOptions
+  options?: SQLiteOpenOptions,
+  iosOptions?: IOSOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
   const resolvedIosOptions = iosOptions ?? {};
@@ -460,7 +460,6 @@ export function openDatabaseSync(
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
- * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export async function deserializeDatabaseAsync(
@@ -485,7 +484,6 @@ export async function deserializeDatabaseAsync(
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
- * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export function deserializeDatabaseSync(

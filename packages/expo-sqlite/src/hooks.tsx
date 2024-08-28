@@ -291,7 +291,7 @@ async function openDatabaseWithInitAsync({
   if (assetSource != null) {
     await importDatabaseFromAssetAsync(databaseName, assetSource, iosOptions);
   }
-  const database = await openDatabaseAsync(databaseName, iosOptions, options);
+  const database = await openDatabaseAsync(databaseName, options);
   if (onInit != null) {
     await onInit(database);
   }

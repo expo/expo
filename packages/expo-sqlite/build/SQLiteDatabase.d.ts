@@ -224,25 +224,24 @@ export declare class SQLiteDatabase {
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
- * @param iosOptions Options for iOS.
  * @param options Open options.
+ * @param iosOptions Options for iOS.
  */
-export declare function openDatabaseAsync(databaseName: string, iosOptions?: IOSOptions, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
+export declare function openDatabaseAsync(databaseName: string, options?: SQLiteOpenOptions, iosOptions?: IOSOptions): Promise<SQLiteDatabase>;
 /**
  * Open a database.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to open.
- * @param iosOptions Options for iOS.
  * @param options Open options.
+ * @param iosOptions Options for iOS.
  */
-export declare function openDatabaseSync(databaseName: string, iosOptions?: IOSOptions, options?: SQLiteOpenOptions): SQLiteDatabase;
+export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions, iosOptions?: IOSOptions): SQLiteDatabase;
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
- * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export declare function deserializeDatabaseAsync(serializedData: Uint8Array, options?: SQLiteOpenOptions): Promise<SQLiteDatabase>;
@@ -252,7 +251,6 @@ export declare function deserializeDatabaseAsync(serializedData: Uint8Array, opt
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
- * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export declare function deserializeDatabaseSync(serializedData: Uint8Array, options?: SQLiteOpenOptions): SQLiteDatabase;

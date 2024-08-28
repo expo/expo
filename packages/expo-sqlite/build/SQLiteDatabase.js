@@ -286,10 +286,10 @@ export class SQLiteDatabase {
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
- * @param iosOptions Options for iOS.
  * @param options Open options.
+ * @param iosOptions Options for iOS.
  */
-export async function openDatabaseAsync(databaseName, iosOptions, options) {
+export async function openDatabaseAsync(databaseName, options, iosOptions) {
     const openOptions = options ?? {};
     const resolvedIosOptions = iosOptions ?? {};
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, resolvedIosOptions, openOptions);
@@ -302,10 +302,10 @@ export async function openDatabaseAsync(databaseName, iosOptions, options) {
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to open.
- * @param iosOptions Options for iOS.
  * @param options Open options.
+ * @param iosOptions Options for iOS.
  */
-export function openDatabaseSync(databaseName, iosOptions, options) {
+export function openDatabaseSync(databaseName, options, iosOptions) {
     const openOptions = options ?? {};
     const resolvedIosOptions = iosOptions ?? {};
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, resolvedIosOptions, openOptions);
@@ -316,7 +316,6 @@ export function openDatabaseSync(databaseName, iosOptions, options) {
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeAsync()`](#serializeasyncdatabasename).
- * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export async function deserializeDatabaseAsync(serializedData, options) {
@@ -332,7 +331,6 @@ export async function deserializeDatabaseAsync(serializedData, options) {
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param serializedData The binary array to deserialize from [`SQLiteDatabase.serializeSync()`](#serializesyncdatabasename)
- * @param iosOptions Options for iOS.
  * @param options Open options.
  */
 export function deserializeDatabaseSync(serializedData, options) {
