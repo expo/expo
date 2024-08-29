@@ -20,7 +20,7 @@ class FileSystemNextModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
 
-    AsyncFunction("download") Coroutine { url: URI, to: FileSystemPath ->
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
       val request = Request.Builder().url(url.toURL()).build()
       val client = OkHttpClient()
       val response = request.await(client)
