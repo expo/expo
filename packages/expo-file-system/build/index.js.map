@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,cAAc,CAAC;AAC7B,cAAc,oBAAoB,CAAC","sourcesContent":["export * from './FileSystem';\nexport * from './FileSystem.types';\n"]}
