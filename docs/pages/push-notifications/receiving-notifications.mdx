@@ -4,6 +4,7 @@ description: Learn how to respond to a notification received by your app and tak
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 The [`expo-notifications`](/versions/latest/sdk/notifications) library contains event listeners that handle how your app responds when receiving a notification.
 
@@ -36,12 +37,12 @@ useEffect(() => {
 }, []);
 ```
 
-<Collapsible summary="Android Notification Object Example from addNotificationReceivedListener">
+<Collapsible summary={<>Android notification object example from <CODE>addNotificationReceivedListener</CODE></>}>
 
-Here's a sample of the notification object received by the callback function when using `Notifications.addNotificationReceivedListener`:
+Sample of the `notification` object received by the callback function when using `Notifications.addNotificationReceivedListener`:
 
-```jsx
-console.log(notification);
+```json
+// console.log(notification);
 {
   "request": {
     "trigger": {
@@ -116,9 +117,12 @@ console.log(notification);
   },
   "date": 1724782348210
 }
+```
 
-// You can access the notification custom data as follows:
-console.log(notification.request.content.data);
+You can directly access the notification custom data by logging the `notification.request.content.data` object:
+
+```json
+// console.log(notification.request.content.data);
 {
   "senderId": "user123",
   "senderName": "John Doe",
@@ -131,12 +135,12 @@ console.log(notification.request.content.data);
 
 </Collapsible>
 
-<Collapsible summary="iOS Notification Object Example from addNotificationReceivedListener">
+<Collapsible summary={<>iOS notification object example from <CODE>addNotificationReceivedListener</CODE></>}>
 
-Here's a sample of the notification object received by the callback function when using `Notifications.addNotificationReceivedListener`:
+Sample of the `notification` object received by the callback function when using `Notifications.addNotificationReceivedListener`:
 
-```jsx
-console.log(notification);
+```json
+// console.log(notification);
 {
   "request": {
     "trigger": {
@@ -195,9 +199,12 @@ console.log(notification);
   },
   "date": 1724798493.0589335
 }
+```
 
-// You can access the notification custom data as follows:
-console.log(notification.request.content.data);
+You can directly access the notification custom data by logging the `notification.request.content.data` object:
+
+```json
+// console.log(notification.request.content.data);
 {
   "senderId": "user123",
   "senderName": "John Doe",
