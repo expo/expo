@@ -226,7 +226,9 @@ class Exponent private constructor(val context: Context, val application: Applic
               printSourceFile(sourceFile.absolutePath)
             }
 
-            expoHandler.post { bundleListener.onBundleLoaded(sourceFile.absolutePath) }
+            expoHandler.post {
+              bundleListener.onBundleLoaded(sourceFile.absolutePath)
+            }
           } catch (e: Exception) {
             bundleListener.onError(e)
           }
@@ -337,7 +339,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       return URLEncoder.encode("experience-$manifestId", "UTF-8")
     }
 
-    fun getPort(urlArg: String): Int {
+    private fun getPort(urlArg: String): Int {
       var url = urlArg
       if (!url.contains("://")) {
         url = "http://$url"
@@ -351,7 +353,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       }
     }
 
-    fun getHostname(urlArg: String): String? {
+    private fun getHostname(urlArg: String): String? {
       var url = urlArg
       if (!url.contains("://")) {
         url = "http://$url"

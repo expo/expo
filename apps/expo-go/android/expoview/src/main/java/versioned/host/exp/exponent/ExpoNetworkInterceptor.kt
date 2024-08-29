@@ -26,7 +26,7 @@ class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
     this.onResume(reactInstanceManager)
   }
 
-  fun onResume(reactInstanceManager: ReactInstanceManager) {
+  private fun onResume(reactInstanceManager: ReactInstanceManager) {
     if (!isStarted || !reactInstanceManager.devSupportManager.devSupportEnabled) {
       return
     }
@@ -34,7 +34,7 @@ class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
     ExpoRequestCdpInterceptor.setDelegate(this)
   }
 
-  fun onPause() {
+  private fun onPause() {
     if (!isStarted) {
       return
     }
