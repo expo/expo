@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Bump media3 version to 1.4.0. ([#31239](https://github.com/expo/expo/pull/31239) by [@behenate](https://github.com/behenate))
+
 ## 1.2.5 — 2024-08-20
 
 ### 🐛 Bug fixes
