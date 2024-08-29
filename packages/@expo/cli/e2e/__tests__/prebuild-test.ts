@@ -88,7 +88,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
         --bun                                    Use bun to install dependencies. Default when bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
-        --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package (\`npm:{package}\`) or a github repo
+        --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
         -h, --help                               Usage info
@@ -285,18 +285,14 @@ it(
 );
 
 it(
-  'runs `npx expo prebuild --template npm:expo-template-bare-minimum@50.0.43`',
+  'runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank');
 
     const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
-    await execa(
-      'node',
-      [bin, 'prebuild', '--no-install', '--template', `npm:${npmTemplatePackage}`],
-      {
-        cwd: projectRoot,
-      }
-    );
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', npmTemplatePackage], {
+      cwd: projectRoot,
+    });
 
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
