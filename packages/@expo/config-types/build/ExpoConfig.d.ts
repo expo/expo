@@ -307,6 +307,10 @@ export interface Splash {
  */
 export interface IOS {
     /**
+     * The Apple development team ID to use for all build configurations.
+     */
+    appleTeamId?: string;
+    /**
      * The manifest for the iOS version of your app will be written to this path during publish.
      */
     publishManifestPath?: string;

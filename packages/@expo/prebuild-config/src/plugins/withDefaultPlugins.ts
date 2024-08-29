@@ -60,6 +60,7 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.DeviceFamily.withDeviceFamily,
     IOSConfig.Bitcode.withBitcode,
     IOSConfig.Locales.withLocales,
+    IOSConfig.DevelopmentTeam.withDevelopmentTeam,
     // Dangerous
     withIosIcons,
     IOSConfig.PrivacyInfo.withPrivacyInfo,
