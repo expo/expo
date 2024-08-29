@@ -1,13 +1,14 @@
 # Changelog
 
 ## Unpublished
-- [iOS] `dismissBrowser` function updated to return a promise. ([#31210](https://github.com/expo/expo/pull/31210) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30864](https://github.com/expo/expo/pull/30864) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
+
+- [iOS] `dismissBrowser` function updated to return a promise. ([#31210](https://github.com/expo/expo/pull/31210) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

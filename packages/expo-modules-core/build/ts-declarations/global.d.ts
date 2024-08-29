@@ -71,17 +71,6 @@ declare global {
         };
         [key: string]: any;
     };
-    interface FormData {
-        keys(): IterableIterator<string>;
-        values(): IterableIterator<string | Blob>;
-        entries(): IterableIterator<[string, string | Blob]>;
-        set(name: string, value: string | Blob): void;
-        has(name: string): boolean;
-        get(name: string): string | Blob | null;
-        delete(name: string): void;
-        forEach(callback: (value: string | Blob, key: string, formData: FormData) => void, thisArg?: any): void;
-        [Symbol.iterator](): IterableIterator<[string, string | Blob]>;
-    }
 }
 export {};
 //# sourceMappingURL=global.d.ts.map
