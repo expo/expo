@@ -91,7 +91,7 @@ declare global {
     };
     [key: string]: any;
   };
-  
+
   interface FormData {
     keys(): IterableIterator<string>;
     values(): IterableIterator<string | Blob>;
@@ -100,7 +100,10 @@ declare global {
     has(name: string): boolean;
     get(name: string): string | Blob | null;
     delete(name: string): void;
-    forEach(callback: (value: string | Blob, key: string, formData: FormData) => void, thisArg?: any): void;
+    forEach(
+      callback: (value: string | Blob, key: string, formData: FormData) => void,
+      thisArg?: any
+    ): void;
     [Symbol.iterator](): IterableIterator<[string, string | Blob]>;
   }
 }
