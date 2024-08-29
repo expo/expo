@@ -160,6 +160,31 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("currentLiveTimestamp") { player -> Double? in
+        guard let currentDate = player.pointer.currentItem?.currentDate() else {
+          return nil
+        }
+        let timeIntervalSince = currentDate.timeIntervalSince1970
+        return Double(timeIntervalSince * 1000)
+      }
+
+      Property("currentOffsetFromLive") { player -> Double? in
+        guard let currentDate = player.pointer.currentItem?.currentDate() else {
+          return nil
+        }
+        let timeIntervalSince = currentDate.timeIntervalSince1970
+        let unixTime = Date().timeIntervalSince1970
+        return unixTime - timeIntervalSince
+      }
+
+      Property("targetOffsetFromLive") { player -> Double in
+        return player.pointer.currentItem?.configuredTimeOffsetFromLive.seconds ?? 0
+      }
+      .set { (player, timeOffset: Double) in
+        let timeOffset = CMTime(seconds: timeOffset, preferredTimescale: .max)
+        player.pointer.currentItem?.configuredTimeOffsetFromLive = timeOffset
+      }
+
       Property("duration") { player -> Double in
         let duration = player.pointer.currentItem?.duration.seconds ?? 0
         return duration.isNaN ? 0 : duration
