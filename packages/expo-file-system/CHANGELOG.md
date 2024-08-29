@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Use the `src` folder as the Metro target.
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
 ## 17.0.1 — 2024-04-23
