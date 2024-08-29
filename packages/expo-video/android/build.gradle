@@ -21,6 +21,7 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
 
+  // Remember to keep this in sync with the version in `expo-audio`
   def androidxMedia3Version = "1.4.0"
   implementation "androidx.media3:media3-session:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
