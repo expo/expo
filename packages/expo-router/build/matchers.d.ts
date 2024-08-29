@@ -6,6 +6,8 @@ export declare function matchDeepDynamicRouteName(name: string): string | undefi
 export declare function testNotFound(name: string): boolean;
 /** Match `(page)` -> `page` */
 export declare function matchGroupName(name: string): string | undefined;
+/** Match `(app)/(page)` -> `page` */
+export declare function matchLastGroupName(name: string): string | undefined;
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 export declare function matchArrayGroupName(name: string): string | undefined;
 export declare function getNameFromFilePath(name: string): string;

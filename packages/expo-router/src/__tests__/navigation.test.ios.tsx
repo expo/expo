@@ -1437,3 +1437,37 @@ it('can push relative links that are relative to the directory', () => {
   act(() => router.push('./banana'));
   expect(screen.getByText('banana')).toBeOnTheScreen();
 });
+
+it('respects nested unstable settings', async () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    '(app)/_layout': () => {
+      return (
+        <Tabs>
+          <Tabs.Screen name="(index)" options={{ title: 'Home' }} />
+          <Tabs.Screen name="(search)" options={{ title: 'Search' }} />
+          <Tabs.Screen name="(profile)" options={{ title: 'Profile' }} />
+        </Tabs>
+      );
+    },
+    '(app)/(index,search,profile)/_layout': {
+      unstable_settings: {
+        index: { initialRouteName: 'index' },
+        search: { initialRouteName: 'search' },
+        profile: { initialRouteName: 'profile' },
+      },
+      default: () => <Stack />,
+    },
+    '(app)/(index,search,profile)/index': () => <Text testID="index">Index Screen</Text>,
+    '(app)/(index,search,profile)/search': () => <Text testID="search">Search Screen</Text>,
+    '(app)/(index,search,profile)/profile': () => <Text testID="profile">Profile Screen</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  fireEvent.press(screen.getByText('Search'));
+  expect(screen.getByTestId('search')).toBeVisible();
+  fireEvent.press(screen.getByText('Profile'));
+  expect(screen.getByTestId('profile')).toBeVisible();
+  fireEvent.press(screen.getByText('Home'));
+  expect(screen.getByTestId('index')).toBeVisible();
+});
