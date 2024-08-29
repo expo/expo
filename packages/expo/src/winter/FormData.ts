@@ -34,6 +34,7 @@ export function installFormDataPatch(formData: typeof FormData) {
     this._parts.push(normalizeArgs(name, value));
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.set ??= function set(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('set', props, 2);
     const [name, value] = props;
@@ -57,6 +58,7 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.delete ??= function (this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('delete', props, 1);
     let [name] = props;
@@ -69,6 +71,7 @@ export function installFormDataPatch(formData: typeof FormData) {
     }
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.get ??= function (
     this: ReactNativeFormDataInternal,
     ...props
@@ -86,6 +89,7 @@ export function installFormDataPatch(formData: typeof FormData) {
     return null;
   };
 
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.has ??= function (this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('has', props, 1);
     let [name] = props;
@@ -99,6 +103,7 @@ export function installFormDataPatch(formData: typeof FormData) {
   };
 
   // Required for RSC: https://github.com/facebook/react/blob/985747f81033833dca22f30b0c04704dd4bd3714/packages/react-dom-bindings/src/server/ReactFizzConfigDOM.js#L1056
+  // @ts-ignore: DOM.iterable is disabled for jest compat
   formData.prototype.forEach ??= function forEach(this: ReactNativeFormDataInternal, ...props) {
     ensureMinArgCount('forEach', props, 1);
 
