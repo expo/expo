@@ -55,7 +55,9 @@ After setting up the two-way association, you need to configure the runtime rout
 
 <Step label="1">
 
-Create an **assetlinks.json** file for the website verification (also known as [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json**. This file is used to verify that the app opened for a given link.
+Create an **assetlinks.json** file for the website verification (also known as [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **/.well-known/assetlinks.json**. This file is used to verify that the app opened for a given link.
+
+> **info** If you're using Expo Router to build your website (or any other modern React framework such as Remix, Next.js, and so on), create **assetlinks.json** at **public/.well-known/assetlinks.json**.
 
 </Step>
 
