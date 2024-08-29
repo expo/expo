@@ -1,1 +1,1 @@
-export * from './build/next';
+export * from './src/next';
