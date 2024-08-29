@@ -149,6 +149,7 @@ const general = [
         makePage('linking/into-other-apps.mdx'),
         makePage('linking/into-your-app.mdx'),
         makePage('linking/android-app-links.mdx'),
+        makePage('linking/ios-universal-links.mdx'),
       ],
       {
         expanded: false,
