@@ -87,7 +87,7 @@ extension CGFloat: AnyArgument {
 
 extension String: AnyArgument {
   public static func getDynamicType() -> any AnyDynamicType {
-    return DynamicStringType()
+    return DynamicStringType.shared
   }
 }
 
@@ -111,6 +111,6 @@ extension Array: AnyArgument {
 
 extension Data: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
-    return DynamicDataType()
+    return DynamicDataType.shared
   }
 }

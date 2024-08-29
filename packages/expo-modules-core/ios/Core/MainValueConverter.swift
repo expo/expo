@@ -26,13 +26,18 @@ public struct MainValueConverter {
    It **must** be run on the thread used by the JavaScript runtime.
    */
   public func toNative(_ values: [JavaScriptValue], _ types: [AnyDynamicType]) throws -> [Any] {
-    return try values.enumerated().map { index, value in
+    // While using `values.enumerated().map` sounds like a more straightforward approach,
+    // this code seems quite critical for performance and using a standard `map` performs much better.
+    var index = 0
+
+    return try values.map { value in
       let type = types[index]
+      index += 1
 
       do {
-        return try toNative(value, types[index])
+        return try toNative(value, type)
       } catch {
-        throw ArgumentCastException((index: index, type: type)).causedBy(error)
+        throw ArgumentCastException((index: index - 1, type: type)).causedBy(error)
       }
     }
   }
