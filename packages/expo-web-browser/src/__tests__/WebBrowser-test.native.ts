@@ -10,7 +10,9 @@ const fakeReturnValue = {
 function applyMocks() {
   mockLinking();
   ExpoWebBrowser.openBrowserAsync.mockImplementation(async () => fakeReturnValue);
-  ExpoWebBrowser.dismissBrowser.mockImplementation(async () => Promise.resolve({ type: 'dismiss' }));
+  ExpoWebBrowser.dismissBrowser.mockImplementation(async () =>
+    Promise.resolve({ type: 'dismiss' })
+  );
 }
 
 beforeEach(() => {
