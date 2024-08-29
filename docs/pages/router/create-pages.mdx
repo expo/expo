@@ -126,7 +126,7 @@ Every file and sub-directory inside the **app** directory is either a `_layout` 
   ]}
 />
 
-The example above demonstrates "why", if Expo Router allowed for non-route files, co-location (the technical term for keeping files within the same directory) would lead to an unstructured project. The example is using [shared routes](/router/advanced/shared-routes), and as such there are multiple route files for the `/profile` route. If you have non-route file `ProfileImage.tsx`, you cannot co-locate this file, as you only have one non-route file but two different route directories. To prevent this dilemma Expo Router simply does not allow for non-route file co-location.
+The above example uses [shared routes](/router/advanced/shared-routes) for the `/profile` route inside two sub-directories. If you want to create a non-route file (for example, **ProfileImageComponent.tsx**), finding the correct sub-directory to place this file creates a dilemma since there are two route directories. This is "why" Expo Router does not allow non-route files to exist with route files inside the **app** directory because it leads to an unstructured project.
 
 ### Recommended structure
 
