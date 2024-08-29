@@ -456,7 +456,7 @@ diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm 
 index 37d415b57d..b27f83286d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-@@ -18,10 +18,10 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+@@ -18,10 +18,10 @@
  
  - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
  {
@@ -497,14 +497,35 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index b3978b9515..a06fd2b70e 100644
+index b3978b9515..a50623eb05 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -7,39 +7,31 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
+@@ -7,38 +7,36 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
  ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
  ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
  
 -platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
++use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
++origin_autolinking_method = self.method(use_autolinking_method_symbol)
++self.define_singleton_method(use_autolinking_method_symbol) do |*args|
++  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
++    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
++    config_command = [
++      'node',
++      '--no-warnings',
++      '--eval',
++      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
++      'react-native-config',
++      '--json',
++      '--platform',
++      'ios'
++    ]
++    origin_autolinking_method.call(config_command)
++  else
++    origin_autolinking_method.call()
++  end
++end
++
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
  install! 'cocoapods',
    :deterministic_uuids => false
@@ -537,28 +558,11 @@ index b3978b9515..a06fd2b70e 100644
 -
  target 'HelloWorld' do
    use_expo_modules!
--  config = use_native_modules!
 +
-+  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
-+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
-+    config_command = [
-+      'node',
-+      '--no-warnings',
-+      '--eval',
-+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
-+      'react-native-config',
-+      '--json',
-+      '--platform',
-+      'ios'
-+    ]
-+    config = use_native_modules!(config_command)
-+  else
-+    config = use_native_modules!
-+  end
+   config = use_native_modules!
  
    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
-   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
-@@ -49,15 +41,15 @@ target 'HelloWorld' do
+@@ -49,15 +47,15 @@ target 'HelloWorld' do
      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
      # An absolute path to your application root.
      :app_path => "#{Pod::Config.instance.installation_root}/..",
@@ -578,7 +582,7 @@ index b3978b9515..a06fd2b70e 100644
  
      # This is necessary for Xcode 14, because it signs resource bundles by default
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f8f8993585..89498f9ff3 100644
+index f8f8993585..8ca20518e9 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -602,7 +606,7 @@ index f8f8993585..89498f9ff3 100644
 +    "expo": "~51.0.8",
 +    "expo-status-bar": "~1.12.1",
 +    "react": "18.3.1",
-+    "react-native": "0.75.0-rc.7"
++    "react-native": "0.75.2"
    },
    "devDependencies": {
      "@babel/core": "^7.20.0"
