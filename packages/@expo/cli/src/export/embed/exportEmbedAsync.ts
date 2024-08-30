@@ -15,6 +15,7 @@ import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
@@ -225,6 +226,7 @@ async function exportDomComponentsAsync(
   exp: ExpoConfig,
   files: ExportAssetMap
 ) {
+  const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
     expoDomComponentReferences.map(async (filePath) => {
       debug('Bundle DOM Component:', filePath);
@@ -233,10 +235,12 @@ async function exportDomComponentsAsync(
       const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
       const generatedEntryPath = filePath.startsWith('file://') ? filePath.slice(7) : filePath;
       const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
+      const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntryPath);
+
       // Run metro bundler and create the JS bundles/source maps.
       const bundle = await devServer.legacySinglePageExportBundleAsync({
         platform: 'web',
-        isDOM: true,
+        domRoot: relativeImport,
         splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
         mainModuleName: resolveRealEntryFilePath(projectRoot, generatedEntryPath),
         mode: options.dev ? 'development' : 'production',
