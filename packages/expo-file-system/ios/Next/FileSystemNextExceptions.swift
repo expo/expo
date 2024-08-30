@@ -12,3 +12,9 @@ internal class MoveDirectoryToFileException: Exception {
     "Unable to move a directory to a file"
   }
 }
+
+internal class UnableToDownloadException: GenericException<String> {
+  override var reason: String {
+    "Unable to download a file: \(param)"
+  }
+}
