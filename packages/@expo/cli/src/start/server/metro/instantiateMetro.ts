@@ -327,8 +327,11 @@ export async function instantiateMetroAsync(
     }
     if (
       modifiedTransformOptions.customTransformOptions?.asyncRoutes &&
-      // The async routes are only used in `expo-router/build/import-mode/index.js` via `process.env.EXPO_ROUTER_IMPORT_MODE`
-      !filePath.match(/\/expo-router\/build\/import-mode\/index.js$/)
+      // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
+      !(
+        filePath.match(/\/expo-router\/_ctx\.(ios|android|web)\.js$/) ||
+        filePath.match(/\/expo-router\/build\/import-mode\/index\.js$/)
+      )
     ) {
       delete modifiedTransformOptions.customTransformOptions.asyncRoutes;
     }
