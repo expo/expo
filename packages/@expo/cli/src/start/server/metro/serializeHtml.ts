@@ -120,7 +120,7 @@ function htmlFromSerialAssets(
         .join('');
 
   if (hydrate) {
-    const hydrateScript = `<script type="module" async>globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+    const hydrateScript = `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
     template = template.replace('</head>', `${hydrateScript}</head>`);
   }
 
