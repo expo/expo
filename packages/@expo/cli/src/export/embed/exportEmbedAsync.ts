@@ -228,6 +228,7 @@ async function exportDomComponentsAsync(
 ) {
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
+    // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
     expoDomComponentReferences.map(async (filePath) => {
       debug('Bundle DOM Component:', filePath);
       // MUST MATCH THE BABEL PLUGIN!
