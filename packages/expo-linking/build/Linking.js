@@ -41,7 +41,7 @@ export async function parseInitialURLAsync() {
 // @needsAudit
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
+ * > Use [`expo-intent-launcher`](./intent-launcher) instead. `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
@@ -83,7 +83,7 @@ export function getLinkingURL() {
 /**
  * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
  * for more information.
- * @param url A URL for the operating system to open, eg: `tel:5555555`, `exp://`.
+ * @param url A URL for the operating system to open. For example: `tel:5555555`, `exp://`.
  * @return A `Promise` that is fulfilled with `true` if the link is opened operating system
  * automatically or the user confirms the prompt to open the link. The `Promise` rejects if there
  * are no applications registered for the URL or the user cancels the dialog.
@@ -99,7 +99,6 @@ export async function openURL(url) {
  * @param url The URL that you want to test can be opened.
  * @return A `Promise` object that is fulfilled with `true` if the URL can be handled, otherwise it
  * `false` if not.
- *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
  * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */

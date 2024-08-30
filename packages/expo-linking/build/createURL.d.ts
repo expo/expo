@@ -25,7 +25,7 @@ import { CreateURLOptions, ParsedURL } from './Linking.types';
 export declare function createURL(path: string, { scheme, queryParams, isTripleSlashed }?: CreateURLOptions): string;
 /**
  * Helper method for parsing out deep link information from a URL.
- * @param url A URL that points to the currently running experience (e.g. an output of `Linking.createURL()`).
+ * @param url A URL that points to the currently running experience (for example, an output of `Linking.createURL()`).
  * @return A `ParsedURL` object.
  */
 export declare function parse(url: string): ParsedURL;

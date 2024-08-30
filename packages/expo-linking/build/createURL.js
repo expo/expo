@@ -114,7 +114,7 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
 // @needsAudit
 /**
  * Helper method for parsing out deep link information from a URL.
- * @param url A URL that points to the currently running experience (e.g. an output of `Linking.createURL()`).
+ * @param url A URL that points to the currently running experience (for example, an output of `Linking.createURL()`).
  * @return A `ParsedURL` object.
  */
 export function parse(url) {
