@@ -6,6 +6,7 @@ import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
+import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
@@ -298,51 +299,23 @@ export async function instantiateMetroAsync(
 
   metro.getBundler().getBundler().transformFile = async function (
     filePath: string,
-    transformOptions: any,
+    transformOptions: TransformOptions,
     fileBuffer?: Buffer
   ) {
-    // Clone the options so we don't mutate the original.
-    const modifiedTransformOptions = {
-      ...transformOptions,
-      customTransformOptions: {
-        ...transformOptions.customTransformOptions,
-      },
-    };
-
-    if (
-      modifiedTransformOptions.customTransformOptions?.dom &&
-      // The only generated file that needs the dom root is `expo/dom/entry.js`
-      !filePath.match(/expo\/dom\/entry.js$/)
-    ) {
-      // Clear the dom root option if we aren't transforming the magic entry file, this ensures
-      // that cached artifacts from other DOM component bundles can be reused.
-      delete modifiedTransformOptions.customTransformOptions.dom;
-    }
-    if (
-      modifiedTransformOptions.customTransformOptions?.routerRoot &&
-      // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-      !filePath.match(/\/expo-router\/build\//)
-    ) {
-      delete modifiedTransformOptions.customTransformOptions.routerRoot;
-    }
-    if (
-      modifiedTransformOptions.customTransformOptions?.asyncRoutes &&
-      // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
-      !(
-        filePath.match(/\/expo-router\/_ctx\.(ios|android|web)\.js$/) ||
-        filePath.match(/\/expo-router\/build\/import-mode\/index\.js$/)
-      )
-    ) {
-      delete modifiedTransformOptions.customTransformOptions.asyncRoutes;
-    }
-    if (
-      modifiedTransformOptions.customTransformOptions?.clientBoundaries &&
-      // The client boundaries are only used in `expo-router/virtual-client-boundaries.js` for production RSC exports.
-      !filePath.match(/\/expo-router\/virtual-client-boundaries.js$/)
-    ) {
-      delete modifiedTransformOptions.customTransformOptions.clientBoundaries;
-    }
-    return originalTransformFile(filePath, modifiedTransformOptions, fileBuffer);
+    return originalTransformFile(
+      filePath,
+      pruneCustomTransformOptions(
+        filePath,
+        // Clone the options so we don't mutate the original.
+        {
+          ...transformOptions,
+          customTransformOptions: Object.create({
+            ...transformOptions.customTransformOptions,
+          }),
+        }
+      ),
+      fileBuffer
+    );
   };
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
@@ -367,6 +340,48 @@ export async function instantiateMetroAsync(
     middleware,
     messageSocket: messageSocketEndpoint,
   };
+}
+
+// TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
+function pruneCustomTransformOptions(
+  filePath: string,
+  transformOptions: TransformOptions
+): TransformOptions {
+  if (
+    transformOptions.customTransformOptions?.dom &&
+    // The only generated file that needs the dom root is `expo/dom/entry.js`
+    !filePath.match(/expo\/dom\/entry.js$/)
+  ) {
+    // Clear the dom root option if we aren't transforming the magic entry file, this ensures
+    // that cached artifacts from other DOM component bundles can be reused.
+    delete transformOptions.customTransformOptions.dom;
+  }
+  if (
+    transformOptions.customTransformOptions?.routerRoot &&
+    // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
+    !filePath.match(/\/expo-router\/build\//)
+  ) {
+    delete transformOptions.customTransformOptions.routerRoot;
+  }
+  if (
+    transformOptions.customTransformOptions?.asyncRoutes &&
+    // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
+    !(
+      filePath.match(/\/expo-router\/_ctx\.(ios|android|web)\.js$/) ||
+      filePath.match(/\/expo-router\/build\/import-mode\/index\.js$/)
+    )
+  ) {
+    delete transformOptions.customTransformOptions.asyncRoutes;
+  }
+  if (
+    transformOptions.customTransformOptions?.clientBoundaries &&
+    // The client boundaries are only used in `expo-router/virtual-client-boundaries.js` for production RSC exports.
+    !filePath.match(/\/expo-router\/virtual-client-boundaries.js$/)
+  ) {
+    delete transformOptions.customTransformOptions.clientBoundaries;
+  }
+
+  return transformOptions;
 }
 
 /**
