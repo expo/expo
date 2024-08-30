@@ -400,6 +400,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
+      hydrate: true,
     });
     return {
       content,
