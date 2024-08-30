@@ -290,6 +290,49 @@ export async function instantiateMetroAsync(
     }
   );
 
+  // Patch transform file to remove inconvenient customTransformOptions which are only used in single well-known files.
+  const originalTransformFile = metro
+    .getBundler()
+    .getBundler()
+    .transformFile.bind(metro.getBundler().getBundler());
+
+  metro.getBundler().getBundler().transformFile = async function (
+    filePath: string,
+    transformOptions: any,
+    fileBuffer?: Buffer
+  ) {
+    const modifiedTransformOptions = {
+      ...transformOptions,
+      customTransformOptions: {
+        ...transformOptions.customTransformOptions,
+      },
+    };
+    if (transformOptions.customTransformOptions?.dom && !filePath.match(/expo\/dom\/entry.js$/)) {
+      // Clear the dom root option if we aren't transforming the magic entry file, this ensures
+      // that cached artifacts from other DOM component bundles can be reused.
+      delete modifiedTransformOptions.customTransformOptions.dom;
+    }
+    if (
+      transformOptions.customTransformOptions?.routerRoot &&
+      !filePath.match(/\/expo-router\/build\//)
+    ) {
+      delete modifiedTransformOptions.customTransformOptions.routerRoot;
+    }
+    if (
+      transformOptions.customTransformOptions?.asyncRoutes &&
+      !filePath.match(/\/expo-router\/build\/import-mode\/index.js$/)
+    ) {
+      delete modifiedTransformOptions.customTransformOptions.asyncRoutes;
+    }
+    if (
+      transformOptions.customTransformOptions?.clientBoundaries &&
+      !filePath.match(/\/expo-router\/virtual-client-boundaries.js$/)
+    ) {
+      delete modifiedTransformOptions.customTransformOptions.clientBoundaries;
+    }
+    return originalTransformFile(filePath, modifiedTransformOptions, fileBuffer);
+  };
+
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
     // the community CLI's serve-static from hosting `/assets/index.html` in place of all assets if it exists.
