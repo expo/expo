@@ -309,9 +309,10 @@ export async function instantiateMetroAsync(
         // Clone the options so we don't mutate the original.
         {
           ...transformOptions,
-          customTransformOptions: Object.create({
+          customTransformOptions: {
+            __proto__: null,
             ...transformOptions.customTransformOptions,
-          }),
+          },
         }
       ),
       fileBuffer
@@ -350,18 +351,20 @@ function pruneCustomTransformOptions(
   if (
     transformOptions.customTransformOptions?.dom &&
     // The only generated file that needs the dom root is `expo/dom/entry.js`
-    !filePath.match(/expo\/dom\/entry.js$/)
+    !filePath.match(/expo\/dom\/entry\.js$/)
   ) {
     // Clear the dom root option if we aren't transforming the magic entry file, this ensures
     // that cached artifacts from other DOM component bundles can be reused.
-    delete transformOptions.customTransformOptions.dom;
+    transformOptions.customTransformOptions.dom = 'true';
   }
+
   if (
     transformOptions.customTransformOptions?.routerRoot &&
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-    !filePath.match(/\/expo-router\/build\//)
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
   ) {
-    delete transformOptions.customTransformOptions.routerRoot;
+    // Set to the default value.
+    transformOptions.customTransformOptions.routerRoot = 'app';
   }
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
@@ -373,10 +376,11 @@ function pruneCustomTransformOptions(
   ) {
     delete transformOptions.customTransformOptions.asyncRoutes;
   }
+
   if (
     transformOptions.customTransformOptions?.clientBoundaries &&
     // The client boundaries are only used in `expo-router/virtual-client-boundaries.js` for production RSC exports.
-    !filePath.match(/\/expo-router\/virtual-client-boundaries.js$/)
+    !filePath.match(/\/expo-router\/virtual-client-boundaries\.js$/)
   ) {
     delete transformOptions.customTransformOptions.clientBoundaries;
   }
