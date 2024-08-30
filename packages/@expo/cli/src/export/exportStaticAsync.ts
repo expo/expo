@@ -184,6 +184,7 @@ export async function exportFromServerAsync(
         template,
         baseUrl,
         route,
+        hydrate: true,
       });
 
       if (injectFaviconTag) {
