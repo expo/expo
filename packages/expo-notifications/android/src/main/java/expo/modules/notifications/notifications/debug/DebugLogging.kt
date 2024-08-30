@@ -74,6 +74,7 @@ object DebugLogging {
         notification.notificationRequest.content.subtitle: ${notification.notificationRequest.content.subtitle}
         notification.notificationRequest.content.text: ${notification.notificationRequest.content.text}
         notification.notificationRequest.content.sound: ${notification.notificationRequest.content.sound}
+        notification.notificationRequest.content.channelID: ${notification.notificationRequest.trigger.notificationChannel}
         notification.notificationRequest.content.body: ${notification.notificationRequest.content.body}
         notification.notificationRequest.content.color: ${notification.notificationRequest.content.color}
         notification.notificationRequest.content.vibrationPattern: ${notification.notificationRequest.content.vibrationPattern.contentToString()}

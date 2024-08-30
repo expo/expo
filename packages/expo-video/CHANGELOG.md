@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Add properties for more advanced live stream configuration. ([#30648](https://github.com/expo/expo/pull/30648) by [@justjoostnl](https://github.com/justjoostnl))
 - [iOS] Add live indicator in the now playing info. ([#30629](https://github.com/expo/expo/pull/30629) by [@justjoostnl](https://github.com/justjoostnl))
 - [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
 - Add fullscreen enter and exit events. ([#30922](https://github.com/expo/expo/pull/30922) by [@fobos531](https://github.com/fobos531))
@@ -21,6 +22,8 @@
 - [Android] Fix wrong event being sent when the volume is changed. ([#30891](https://github.com/expo/expo/pull/30891) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
+
+- Bump media3 version to 1.4.0. ([#31239](https://github.com/expo/expo/pull/31239) by [@behenate](https://github.com/behenate))
 
 ### ⚠️ Notices
 
