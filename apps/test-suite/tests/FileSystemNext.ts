@@ -283,5 +283,19 @@ export async function test({ describe, expect, it, ...t }) {
         expect(output.path).toBe(file.path);
       });
     });
+
+    describe('Computes file properties', () => {
+      it('computes size', async () => {
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        expect(file.size).toBe(5);
+      });
+
+      it('computes md5', async () => {
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+      });
+    });
   });
 }

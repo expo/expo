@@ -64,6 +64,15 @@ public final class FileSystemNextModule: Module {
         }
       }
 
+      // Ideally a property but those cannot be throwable
+      Property("size") { file in
+        try? file.size
+      }
+
+      Property("md5") { file in
+        try? file.md5
+      }
+
       Function("delete") { file in
         try file.delete()
       }

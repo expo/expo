@@ -1,5 +1,6 @@
 import Foundation
 import ExpoModulesCore
+import CryptoKit
 
 internal final class FileSystemFile: FileSystemPath {
   init(url: URL) {
@@ -19,6 +20,24 @@ internal final class FileSystemFile: FileSystemPath {
   func validatePath() throws {
     guard url.isFileURL && !url.hasDirectoryPath else {
       throw Exception(name: "wrong type", description: "tried to create a file with a directory path")
+    }
+  }
+
+  var size: Int64 {
+    get throws {
+      var attributes:[FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
+      guard let size = attributes[.size] else {
+        throw Exception()
+      }
+      return (size as! NSNumber).int64Value
+    }
+  }
+
+  var md5: String {
+    get throws {
+      let fileData = try Data(contentsOf: url)
+      let hash = Insecure.MD5.hash(data: fileData)
+      return hash.map { String(format: "%02hhx", $0) }.joined()
     }
   }
 
