@@ -120,8 +120,16 @@ function getIosNamedProjectPath(projectRoot: string): string {
   return join(projectRoot, 'ios', projectName);
 }
 
-function getAppleIconName(size: number, scale: number): string {
-  return `App-Icon-${size}x${size}@${scale}x.png`;
+function getAppleIconName(size: number, scale: number, appearance?: 'dark' | 'tinted'): string {
+  let name = 'App-Icon';
+
+  if (appearance) {
+    name += `-${appearance}`;
+  }
+
+  name += `-${size}x${size}@${scale}x.png`;
+
+  return name;
 }
 
 export async function generateUniversalIconAsync(
@@ -141,7 +149,7 @@ export async function generateUniversalIconAsync(
   }
 ): Promise<ContentsJsonImage> {
   const size = 1024;
-  const filename = getAppleIconName(size, 1);
+  const filename = getAppleIconName(size, 1, appearance);
 
   let source: Buffer;
 
@@ -174,7 +182,7 @@ export async function generateUniversalIconAsync(
   await fs.writeFile(assetPath, source);
 
   return {
-    filename: getAppleIconName(size, 1),
+    filename,
     idiom: 'universal',
     platform,
     size: `${size}x${size}`,

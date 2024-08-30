@@ -143,8 +143,13 @@ function getIosNamedProjectPath(projectRoot) {
   const projectName = getProjectName(projectRoot);
   return (0, _path().join)(projectRoot, 'ios', projectName);
 }
-function getAppleIconName(size, scale) {
-  return `App-Icon-${size}x${size}@${scale}x.png`;
+function getAppleIconName(size, scale, appearance) {
+  let name = 'App-Icon';
+  if (appearance) {
+    name += `-${appearance}`;
+  }
+  name += `-${size}x${size}@${scale}x.png`;
+  return name;
 }
 async function generateUniversalIconAsync(projectRoot, {
   icon,
@@ -154,7 +159,7 @@ async function generateUniversalIconAsync(projectRoot, {
   appearance
 }) {
   const size = 1024;
-  const filename = getAppleIconName(size, 1);
+  const filename = getAppleIconName(size, 1, appearance);
   let source;
   if (icon) {
     // Using this method will cache the images in `.expo` based on the properties used to generate them.
@@ -184,7 +189,7 @@ async function generateUniversalIconAsync(projectRoot, {
   const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs().writeFile(assetPath, source);
   return {
-    filename: getAppleIconName(size, 1),
+    filename,
     idiom: 'universal',
     platform,
     size: `${size}x${size}`,
