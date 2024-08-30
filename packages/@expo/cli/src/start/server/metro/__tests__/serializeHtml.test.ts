@@ -20,6 +20,27 @@ it('serializes development static html', () => {
   expect(res).toMatch(/<script src="\/packages\/expo-router\/entry\.bundle\?platform=web" defer>/);
 });
 
+it('injects hydration flag', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: 'dist/entry.js',
+        originFilename: '../../packages/expo-router/entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+    ],
+    baseUrl: '',
+    isExporting: true,
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    devBundleUrl: '/packages/expo-router/entry.bundle?platform=web',
+    hydrate: true,
+  });
+  expect(res).toMatchSnapshot();
+  expect(res).toMatch(/__EXPO_ROUTER_HYDRATE__/);
+});
+
 it('serializes production static html for export', () => {
   const res = serializeHtmlWithAssets({
     resources: [
