@@ -23,7 +23,7 @@ class DateModel : BaseModel() {
 
   override fun fromMap(readableMap: Map<String, Any?>) {
     super.fromMap(readableMap)
-    
+
     val year = (readableMap["year"] as? Double)?.toInt()
     val month = (readableMap["month"] as? Double)?.toInt()
     val day = (readableMap["day"] as? Double)?.toInt()
@@ -59,10 +59,10 @@ class DateModel : BaseModel() {
     }
 
     return op.withValue(Columns.MIMETYPE, contentType)
-            .withValue(ContactsContract.CommonDataKinds.Event.TYPE, mapStringToType(label))
-            .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, formatDateString())
-            .withValue(ContactsContract.CommonDataKinds.Event.LABEL, label)
-            .build()
+      .withValue(ContactsContract.CommonDataKinds.Event.TYPE, mapStringToType(label))
+      .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, formatDateString())
+      .withValue(ContactsContract.CommonDataKinds.Event.LABEL, label)
+      .build()
   }
 
   private fun formatDateString(): String? {
@@ -71,10 +71,12 @@ class DateModel : BaseModel() {
     val day = map.getInt("day", -1).takeIf { it > 0 }
 
     return when {
-      year != null && month != null && day != null -> 
+      year != null && month != null && day != null ->
         String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day)
-      month != null && day != null -> 
+
+      month != null && day != null ->
         String.format(Locale.getDefault(), "--%02d-%02d", month, day)
+
       else -> null
     }
   }
