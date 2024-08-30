@@ -54,6 +54,13 @@ function convertError(error: any) {
 }
 
 export function registerDOMComponent(AppModule: any) {
+  // Prevent double registration from fast refresh
+  if (window.$$EXPO_DOM_COMPONENT_REGISTERED == null) {
+    window.$$EXPO_DOM_COMPONENT_REGISTERED = true;
+  } else {
+    return;
+  }
+
   function DOMComponentRoot(props) {
     // Props listeners
     const [marshalledProps, setProps] = React.useState(() => {
