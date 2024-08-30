@@ -6,12 +6,11 @@ import crypto from 'crypto';
 import { basename } from 'path';
 import url from 'url';
 
-import { getIsDOM, getIsProd } from './common';
+import { getIsProd } from './common';
 
 export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
   // TODO: Is exporting
   const isProduction = api.caller(getIsProd);
-  const isDOMBundle = api.caller(getIsDOM);
   const platform = api.caller((caller) => (caller as any)?.platform);
 
   return {
@@ -19,7 +18,7 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
     visitor: {
       Program(path, state) {
         // Native only feature.
-        if (platform === 'web' && !isDOMBundle) {
+        if (platform === 'web') {
           return;
         }
 
@@ -37,15 +36,6 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
         // File starts with "use dom" directive.
         if (!hasUseDomDirective) {
           // Do nothing for code that isn't marked as a dom component.
-          return;
-        }
-
-        if (isDOMBundle) {
-          // Inject the DOM component registration.
-          path.pushContainer(
-            'body',
-            template.ast(`require('expo/dom/internal').registerDOMComponent(exports.default);`)
-          );
           return;
         }
 
