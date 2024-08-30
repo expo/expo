@@ -248,6 +248,8 @@ async function exportDomComponentsAsync(
         bytecode: false,
         reactCompiler: !!exp.experiments?.reactCompiler,
         baseUrl: './',
+        // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
+        minify: true,
       });
 
       const html = await serializeHtmlWithAssets({
