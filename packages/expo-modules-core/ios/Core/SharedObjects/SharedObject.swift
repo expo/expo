@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-public protocol AnySharedObject: AnyArgument {
+public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
 }
 
@@ -26,6 +26,30 @@ open class SharedObject: AnySharedObject {
    The default public initializer of the shared object.
    */
   public init() {}
+
+  /**
+   A function that will be called before the object is removed from the registry.
+   */
+  open func sharedObjectWillRelease() {}
+
+  /**
+   A function that will be called after the object is removed from the registry.
+   */
+  open func sharedObjectDidRelease() {}
+
+  /**
+   Override this function to inform the JavaScript runtime that there is additional
+   memory associated with a given JavaScript object that is not visible to the GC.
+   This can be used if an object is known to exclusively retain some native memory,
+   and may be used to guide decisions about when to run garbage collection.
+   */
+  open func getAdditionalMemoryPressure() -> Int {
+    // The memory pressure is `0` by default. We can potentially use `class_getInstanceSize`,
+    // but it only returns a size of the type which is usually relatively small
+    // as it does not include virtual allocations such as binary data and images.
+    // Thus, it makes more sense to just skip setting the pressure and make it opt-in.
+    return 0
+  }
 
   /**
    Returns the JavaScript shared object associated with the native shared object.

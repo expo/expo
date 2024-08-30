@@ -16,6 +16,7 @@ export const expoRunIos: Command = async (argv) => {
     '--no-install': Boolean,
     '--no-bundler': Boolean,
     '--configuration': String,
+    '--binary': String,
 
     '--port': Number,
     // Aliases
@@ -41,6 +42,7 @@ export const expoRunIos: Command = async (argv) => {
         `--no-install                     Skip installing dependencies`,
         `--no-bundler                     Skip starting the Metro bundler`,
         `--scheme [scheme]                Scheme to build`,
+        `--binary <path>                  Path to existing .app or .ipa to install.`,
         chalk`--configuration <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
         `-d, --device [device]            Device name or UDID to build the app on`,
         chalk`-p, --port <port>                Port to start the Metro bundler on. {dim Default: 8081}`,
@@ -69,6 +71,7 @@ export const expoRunIos: Command = async (argv) => {
     install: !args['--no-install'],
     bundler: !args['--no-bundler'],
     port: args['--port'],
+    binary: args['--binary'],
 
     // Custom parsed args
     device: parsed.args['--device'],

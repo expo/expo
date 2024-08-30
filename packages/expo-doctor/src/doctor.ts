@@ -1,7 +1,8 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import semver from 'semver';
 
+import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from './checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
 import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
@@ -13,8 +14,11 @@ import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
 import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
+import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
+import { StoreCompatibilityCheck } from './checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
+import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
 import { env } from './utils/env';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
@@ -117,7 +121,7 @@ export async function runChecksAsync(
   );
 }
 
-export function getChecksInScopeForProject(exp: ExpoConfig) {
+export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConfig) {
   // add additional checks here
   const checks = [
     new PackageManagerVersionCheck(),
@@ -131,7 +135,17 @@ export function getChecksInScopeForProject(exp: ExpoConfig) {
     new ProjectSetupCheck(),
     new MetroConfigCheck(),
     new NativeToolingVersionCheck(),
+    new AppConfigFieldsNotSyncedToNativeProjectsCheck(),
+    new StoreCompatibilityCheck(),
   ];
+
+  if (getReactNativeDirectoryCheckEnabled(pkg)) {
+    chalk.yellow(
+      'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
+    );
+    checks.push(new ReactNativeDirectoryCheck());
+  }
+
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
     Log.log(
       chalk.yellow(
@@ -165,7 +179,7 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  const filteredChecks = getChecksInScopeForProject(projectConfig.exp);
+  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg);
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
 

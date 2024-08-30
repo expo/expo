@@ -5,6 +5,7 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
 import { RouteNode } from '../Route';
+import { RouterStore } from '../global-state/router-store';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 
 type Options<ParamList extends object> = {
@@ -21,6 +22,7 @@ type RouteConfig = {
   path: string;
   pattern: string;
   routeNames: string[];
+  expandedRouteNames: string[];
   parse?: ParseConfig;
   hasChildren: boolean;
   userReadableName: string;
@@ -91,15 +93,19 @@ export function getUrlWithReactNavigationConcessions(
  * @param options Extra options to fine-tune how to parse the path.
  */
 export default function getStateFromPath<ParamList extends object>(
+  this: RouterStore | undefined | void,
   path: string,
   options?: Options<ParamList>
 ): ResultState | undefined {
-  const { initialRoutes, configs } = getMatchableRouteConfigs(options);
+  const { initialRoutes, configs } = getMatchableRouteConfigs(options, this?.routeInfo?.segments);
 
   return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
 
-export function getMatchableRouteConfigs<ParamList extends object>(options?: Options<ParamList>) {
+export function getMatchableRouteConfigs<ParamList extends object>(
+  options?: Options<ParamList>,
+  previousSegments: string[] = []
+) {
   if (options) {
     validatePathConfig(options);
   }
@@ -137,7 +143,7 @@ export function getMatchableRouteConfigs<ParamList extends object>(options?: Opt
   }));
 
   // Sort in order of resolution. This is extremely important for the algorithm to work.
-  const configs = convertedWithInitial.sort(sortConfigs);
+  const configs = convertedWithInitial.sort((a, b) => sortConfigs(a, b, previousSegments));
 
   // Assert any duplicates before we start parsing.
   assertConfigDuplicates(configs);
@@ -189,7 +195,7 @@ function assertConfigDuplicates(configs: RouteConfig[]) {
   }, {});
 }
 
-function sortConfigs(a: RouteConfig, b: RouteConfig): number {
+function sortConfigs(a: RouteConfig, b: RouteConfig, previousSegments: string[] = []): number {
   // Sort config so that:
   // - the most exhaustive ones are always at the beginning
   // - patterns with wildcard are always at the end
@@ -230,6 +236,49 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
     bParts.push('index');
   }
 
+  const isAStaticRoute =
+    !a.hasChildren && // Layout configs will have children
+    !aParts.some(
+      (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
+    );
+  const isBStaticRoute =
+    !b.hasChildren &&
+    !bParts.some(
+      (part) => part.startsWith(':') || part.startsWith('*') || part.includes('*not-found')
+    );
+
+  /*
+   * Static routes should always be higher than dynamic routes.
+   * Layouts are excluded from this and are ranked lower than routes
+   */
+  if (isAStaticRoute && !isBStaticRoute) {
+    return -1;
+  } else if (!isAStaticRoute && isBStaticRoute) {
+    return 1;
+  }
+
+  /*
+   * If both are static/dynamic or a layout file, then we check group similarity
+   */
+  const similarToPreviousA = previousSegments.filter((value, index) => {
+    return value === a.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
+  });
+
+  const similarToPreviousB = previousSegments.filter((value, index) => {
+    return value === b.expandedRouteNames[index] && value.startsWith('(') && value.endsWith(')');
+  });
+
+  if (
+    (similarToPreviousA.length > 0 || similarToPreviousB.length > 0) &&
+    similarToPreviousA.length !== similarToPreviousB.length
+  ) {
+    // One matches more than the other, so pick the one that matches more
+    return similarToPreviousB.length - similarToPreviousA.length;
+  }
+
+  /*
+   * If there is not difference in similarity, then each non-group segment is compared against each other
+   */
   for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
     // if b is longer, b get higher priority
     if (aParts[i] == null) {
@@ -292,12 +341,24 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
     }
   }
 
-  // Sort initial routes with a higher priority than routes which will push more screens
-  // this ensures shared routes go to the shortest path.
+  /*
+   * Both configs are identical in specificity and segments count/type
+   * Try and sort by initial instead.
+   *
+   * TODO: We don't differentiate between the default initialRoute and group specific default routes
+   *
+   * const unstable_settings = {
+   *   "group": {
+   *     initialRouteName: "article"
+   *  }
+   * }
+   *
+   * "article" will be ranked higher because its an initialRoute for a group - even if not your not currently in
+   * that group. The current work around is to ways provide initialRouteName for all groups
+   */
   if (a.isInitial && !b.isInitial) {
     return -1;
-  }
-  if (!a.isInitial && b.isInitial) {
+  } else if (!a.isInitial && b.isInitial) {
     return 1;
   }
 
@@ -647,6 +708,9 @@ const createConfigItem = (
     path,
     // The routeNames array is mutated, so copy it to keep the current state
     routeNames: [...routeNames],
+    expandedRouteNames: routeNames.flatMap((name) => {
+      return name.split('/');
+    }),
     parse,
     userReadableName: [...routeNames.slice(0, -1), path || screen].join('/'),
     hasChildren: !!hasChildren,
@@ -694,7 +758,7 @@ const createStateObject = (
     if (initialRoute) {
       return {
         index: 1,
-        routes: [{ name: initialRoute }, route],
+        routes: [{ name: initialRoute, params: route.params }, route],
       };
     }
     return {
@@ -705,7 +769,10 @@ const createStateObject = (
   if (initialRoute) {
     return {
       index: 1,
-      routes: [{ name: initialRoute }, { ...route, state: { routes: [] } }],
+      routes: [
+        { name: initialRoute, params: route.params },
+        { ...route, state: { routes: [] } },
+      ],
     };
   }
   return {
@@ -791,17 +858,16 @@ const createNestedStateObject = (
 const parseQueryParams = (path: string, parseConfig?: Record<string, (value: string) => any>) => {
   const query = path.split('?')[1];
   const searchParams = new URLSearchParams(query);
-  const params = Object.fromEntries(
-    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
-    searchParams
-  );
+  const params: Record<string, string | string[]> = Object.create(null);
 
-  if (parseConfig) {
-    Object.keys(params).forEach((name) => {
-      if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
-        params[name] = parseConfig[name](params[name] as string);
-      }
-    });
+  for (const name of searchParams.keys()) {
+    const values = parseConfig?.hasOwnProperty(name)
+      ? searchParams.getAll(name).map((value) => parseConfig[name](value))
+      : searchParams.getAll(name);
+
+    // searchParams.getAll returns an array.
+    // if we only have a single value, and its not an array param, we need to extract the value
+    params[name] = values.length === 1 ? values[0] : values;
   }
 
   return Object.keys(params).length ? params : undefined;

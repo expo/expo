@@ -19,6 +19,21 @@ import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput, JsOutput } from '../serializer/jsOutput';
 
+function getStringArray(value: any): string[] | undefined {
+  if (!value) return undefined;
+  if (typeof value === 'string') {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    throw new Error('Expected an array of strings for the `clientBoundaries` option.');
+  }
+  if (Array.isArray(value)) {
+    return value;
+  }
+  throw new Error('Expected an array of strings for the `clientBoundaries` option.');
+}
+
 export async function transform(
   config: JsTransformerConfig,
   projectRoot: string,
@@ -26,6 +41,40 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
+  const reactServer = options.customTransformOptions?.environment === 'react-server';
+  if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
+    const environment = options.customTransformOptions?.environment;
+    const isServer = environment === 'node' || environment === 'react-server';
+
+    if (!isServer) {
+      const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
+      // Inject client boundaries into the root client bundle for production bundling.
+      if (clientBoundaries) {
+        console.log('Parsed client boundaries:', clientBoundaries);
+
+        // Inject source
+        const src =
+          'module.exports = {\n' +
+          clientBoundaries
+            .map((boundary: string) => {
+              return `[\`$\{require.resolveWeak('${boundary}')}\`]: /* ${boundary} */ () => import('${boundary}'),`;
+            })
+            .join('\n') +
+          '\n};';
+
+        return worker.transform(
+          config,
+          projectRoot,
+          filename,
+          Buffer.from('/* RSC client boundaries */\n' + src),
+          options
+        );
+      } else if (!options.dev) {
+        console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
+      }
+    }
+  }
+
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
@@ -105,6 +154,7 @@ export async function transform(
       filename,
       src: code,
       options: {
+        reactServer,
         projectRoot,
         dev: options.dev,
         minify: options.minify,
@@ -170,7 +220,9 @@ export async function transform(
     config,
     projectRoot,
     filename,
-    options.dev ? Buffer.from(wrapDevelopmentCSS({ src: code, filename })) : Buffer.from(''),
+    options.dev
+      ? Buffer.from(wrapDevelopmentCSS({ src: code, filename, reactServer }))
+      : Buffer.from(''),
     options
   );
 

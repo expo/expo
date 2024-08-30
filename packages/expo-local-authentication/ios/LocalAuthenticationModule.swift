@@ -18,7 +18,7 @@ public class LocalAuthenticationModule: Module {
       let context = LAContext()
       var error: NSError?
       let isSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
-      let isEnrolled: Bool = isSupported && error == nil
+      let isEnrolled: Bool = (isSupported && error == nil) || error?.code == LAError.biometryLockout.rawValue
 
       return isEnrolled
     }

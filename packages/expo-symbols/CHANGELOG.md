@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30865](https://github.com/expo/expo/pull/30865) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fix import error when using symbols on web. ([#30249](https://github.com/expo/expo/pull/30249) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

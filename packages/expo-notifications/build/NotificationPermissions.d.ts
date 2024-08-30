@@ -35,7 +35,6 @@ export declare function getPermissionsAsync(): Promise<NotificationPermissionsSt
  *       allowAlert: true,
  *       allowBadge: true,
  *       allowSound: true,
- *       allowAnnouncements: true,
  *     },
  *   });
  * }

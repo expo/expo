@@ -7,9 +7,11 @@
   "main": "build/index",
   "types": "build/index.d.ts",
   "sideEffects": [
+    "entry-rsc.js",
     "entry.js"
   ],
   "files": [
+    "link",
     "assets",
     "build",
     "ios",
@@ -22,10 +24,12 @@
     "_ctx-shared.js",
     "_error.js",
     "app.plugin.js",
+    "virtual-client-boundaries.js",
     "babel.js",
     "drawer.js",
     "drawer.d.ts",
     "entry.js",
+    "entry-rsc.js",
     "expo-module.config.json",
     "head.js",
     "head.d.ts",
@@ -55,7 +59,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "test:rsc": "jest --config jest-rsc.config.js",
+    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -68,7 +73,6 @@
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
-    "expo-status-bar": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"

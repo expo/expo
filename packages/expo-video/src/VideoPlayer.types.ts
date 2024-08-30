@@ -17,6 +17,13 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   loop: boolean;
 
   /**
+   * Determines whether the player should allow external playback.
+   * @default true
+   * @platform ios
+   */
+  allowsExternalPlayback: boolean;
+
+  /**
    * Boolean value whether the player is currently muted.
    * Setting this property to `true`/`false` will mute/unmute the player.
    * @default false
@@ -32,6 +39,31 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * Setting `currentTime` to a new value seeks the player to the given time.
    */
   currentTime: number;
+
+  /**
+   * The exact timestamp when the currently displayed video frame was sent from the server,
+   * based on the `EXT-X-PROGRAM-DATE-TIME` tag in the livestream metadata.
+   * If this metadata is missing, this property will return `null`.
+   * > This property is read-only.
+   * @platform android
+   * @platform ios
+   */
+  readonly currentLiveTimestamp: number | null;
+
+  /**
+   * Float value indicating the latency of the live stream in seconds.
+   * If a livestream doesn't have the required metadata, this will return `null`.
+   * > This property is get-only
+   * @platform android
+   * @platform ios
+   */
+  readonly currentOffsetFromLive: number | null;
+
+  /**
+   * Float value indicating the time offset from the live in seconds.
+   * @platform ios
+   */
+  targetOffsetFromLive: number;
 
   /**
    * Float value indicating the duration of the current video in seconds.
@@ -164,20 +196,32 @@ export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
 export type VideoSource =
   | string
+  | number
   | {
       /**
        * The URI of the video.
+       *
+       * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
        */
-      uri: string;
+      uri?: string;
+
+      /**
+       * The asset ID of a local video asset, acquired with the `require` function.
+       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+       */
+      assetId?: number;
+
       /**
        * Specifies the DRM options which will be used by the player while loading the video.
        */
       drm?: DRMOptions;
+
       /**
        * Specifies information which will be displayed in the now playing notification.
        * When undefined the player will display information contained in the video metadata.
        */
       metadata?: VideoMetadata;
+
       /**
        * Specifies headers sent with the video request.
        * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).

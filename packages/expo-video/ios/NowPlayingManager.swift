@@ -13,7 +13,6 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   static var shared = NowPlayingManager()
 
   private let skipTimeInterval = 10.0
-  private let fetchMetadataQueue = DispatchQueue(label: "com.expo.fetchMetadataQueue")
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
   private var players = NSHashTable<VideoPlayer>.weakObjects()
@@ -148,17 +147,18 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     let userMetadata = videoPlayerItem?.videoSource.metadata
 
     Task {
-      let assetMetadata = await try loadMetadata(for: currentItem)
+      // Metadata fetched with the video
+      let assetMetadata = try? await loadMetadata(for: currentItem)
 
-      let title = assetMetadata.first(where: {
+      let title = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyTitle
       })
 
-      let artist = assetMetadata.first(where: {
+      let artist = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyArtist
       })
 
-      let artwork = assetMetadata.first(where: {
+      let artwork = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyArtwork
       })
 
@@ -168,6 +168,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
       nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
       nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
@@ -177,15 +178,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
-    if #available(iOS 15.0, tvOS 15.0, *) {
-      return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
-    }
-
-    return await withCheckedContinuation { continuation in
-      fetchMetadataQueue.async {
-        continuation.resume(returning: mediaItem.asset.metadata)
-      }
-    }
+    return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress

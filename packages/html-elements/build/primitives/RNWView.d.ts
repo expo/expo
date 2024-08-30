@@ -12,6 +12,6 @@ import * as React from 'react';
  * In the past, you could use `createElement` to create an element with a custom HTML element, but this changed
  * somewhere between 0.14...0.17.
  */
-declare const View: React.ForwardRefExoticComponent<Pick<any, string | number | symbol> & React.RefAttributes<ViewProps>>;
+declare const View: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<ViewProps>>;
 export default View;
 //# sourceMappingURL=RNWView.d.ts.map

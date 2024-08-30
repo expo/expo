@@ -1,32 +1,48 @@
 import ExpoModulesCore
 
 public final class FontLoaderModule: Module {
+  // could be a Set, but to be able to pass to JS we keep it as an array
+  private var registeredFonts: [String]
+
+  public required init(appContext: AppContext) {
+    self.registeredFonts = queryCustomNativeFonts()
+    super.init(appContext: appContext)
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoFontLoader")
 
-    Property("customNativeFonts") {
-      return queryCustomNativeFonts()
+    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
+    // and potentially consumed outside of Expo (e.g. RN vector icons)
+    // do NOT change the property as it'll break consumers!
+    Function("getLoadedFonts") {
+      return registeredFonts
     }
 
+    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadAsync
+    // and potentially consumed outside of Expo (e.g. RN vector icons)
+    // do NOT change the function signature as it'll break consumers!
     AsyncFunction("loadAsync") { (fontFamilyAlias: String, localUri: URL) in
-      // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterGraphicsFont
+      let fontUrl = localUri as CFURL
+      // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
       // would fail because of a duplicated font name when the app reloads or someone wants to override a font.
-      if let familyName = FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) {
-        guard try unregisterFont(named: familyName) else {
+      if FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) != nil {
+        guard try unregisterFont(url: fontUrl) else {
           return
         }
       }
 
-      // Create a font object from the given file
-      let font = try loadFont(fromPath: localUri.path, alias: fontFamilyAlias)
-
       // Register the font
-      try registerFont(font)
+      try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
 
-      // The real font name might be different than it's been requested by the user,
-      // so we save the provided name as an alias.
+      // Create a font object from the given URL
+      let font = try loadFont(fromUrl: fontUrl, alias: fontFamilyAlias)
+
       if let postScriptName = font.postScriptName as? String {
-        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFamilyName: postScriptName)
+        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFont: postScriptName)
+        registeredFonts = Array(Set(registeredFonts).union([postScriptName, fontFamilyAlias]))
+      } else {
+        throw FontNoPostScriptException(fontFamilyAlias)
       }
     }
   }

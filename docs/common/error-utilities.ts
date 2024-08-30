@@ -156,18 +156,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
-  '/home/develop/user-interface/safe-areas': '/develop/user-interface/safe-areas/',
-  '/home/develop/development-builds/installation': '/develop/development-builds/create-a-build/',
-  '/home/debugging/tools/': '/debugging/tools/',
-  '/home/navigation/installation': '/routing/introduction/',
-  '/home/authentication': '/develop/authentication/',
-  '/home/get-started/create-a-project': '/get-started/create-a-project/',
-  '/home/core-concepts/': '/core-concepts/',
-  '/home/config-plugins/plugins-and-mods': '/config-plugins/plugins-and-mods/',
-  '/home/unit-testing/': '/develop/unit-testing/',
-  '/home/config-plugins/introduction/': '/config-plugins/introduction/',
-  '/home/develop/user-interface/app-icons': '/develop/user-interface/app-icons/',
-  '/home/develop/development-builds/introduction/': '/develop/development-builds/introduction/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
@@ -366,9 +354,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/known-issues/': '/eas-update/introduction/',
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
-  '/eas-update/custom-updates-server/': '/versions/latest/sdk/expo-updates/',
-  '/distribution/custom-updates-server/': '/versions/latest/sdk/expo-updates/',
+  '/eas-update/custom-updates-server/': '/versions/latest/sdk/updates/',
+  '/distribution/custom-updates-server/': '/versions/latest/sdk/updates/',
   '/bare/error-recovery/': '/eas-update/error-recovery/',
+  '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',
@@ -381,6 +370,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
+  '/router/appearance/': '/router/introduction/',
 
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
@@ -418,4 +408,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
+
+  // Based on SEO tool reports
+  '/build-reference/eas-json/': '/eas/json/',
+  '/build-reference/custom-builds/schema/': '/custom-builds/schema/',
 };

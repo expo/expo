@@ -13,7 +13,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '13.4',
+    deploymentTarget: '15.1',
   },
 };
 
@@ -71,6 +71,13 @@ export interface PluginConfigTypeAndroid {
    * This property should be used in combination with `enableProguardInReleaseBuilds`.
    */
   enableShrinkResourcesInReleaseBuilds?: boolean;
+  /**
+   * Enable [`crunchPngs`](https://developer.android.com/topic/performance/reduce-apk-size#crunch) in release builds to optimize PNG files.
+   * This property is enabled by default, but "might inflate PNG files that are already compressed", so you may want to disable it if you do your own PNG optimization.
+   *
+   * @default true
+   */
+  enablePngCrunchInReleaseBuilds?: boolean;
   /**
    * Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to **android/app/proguard-rules.pro**.
    */
@@ -480,6 +487,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
 
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
+        enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
         packagingOptions: {

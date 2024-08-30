@@ -65,6 +65,7 @@
     "xstate": "^4.37.2"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*"
   }
 }

@@ -79,6 +79,7 @@ export default function VideoScreen() {
     player.preservesPitch = preservePitch;
     player.staysActiveInBackground = staysActiveInBackground;
     player.showNowPlayingNotification = true;
+    player.allowsExternalPlayback = true;
     player.play();
   });
 
@@ -186,6 +187,12 @@ export default function VideoScreen() {
         onPictureInPictureStop={() => {
           setIsInPictureInPicture(false);
           console.log('Exited Picture in Picture mode');
+        }}
+        onFullscreenEnter={() => {
+          console.log('entered fullscreen');
+        }}
+        onFullscreenExit={() => {
+          console.log('exited fullscreen');
         }}
       />
       <ScrollView style={styles.controlsContainer}>

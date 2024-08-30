@@ -81,6 +81,11 @@ export function getIsProd(caller?: any) {
   return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
 
+/** Is bundling for a DOM component. This will always be for platform = web. */
+export function getIsDOM(caller?: any): boolean {
+  return caller?.isDOM ?? false;
+}
+
 export function getIsNodeModule(caller?: any): boolean {
   return caller?.isNodeModule ?? false;
 }

@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 import SDWebImage
-import SDWebImageWebPCoder
 import SDWebImageAVIFCoder
 import SDWebImageSVGCoder
 
@@ -25,8 +24,13 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, sources: [ImageSource]?) in
-        view.sources = sources
+      Prop("source") { (view: ImageView, sources: Either<[ImageSource], SharedRef<UIImage>>?) in
+        if let imageRef: SharedRef<UIImage> = sources?.get() {
+          view.sources = nil
+          view.renderImage(imageRef.ref)
+        } else {
+          view.sources = sources?.get()
+        }
       }
 
       Prop("placeholder") { (view, placeholders: [ImageSource]?) in
@@ -183,16 +187,26 @@ public final class ImageModule: Module {
         }
       }
     }
+
+    AsyncFunction("loadAsync") { (source: ImageSource) -> Image? in
+      let image = try await ImageLoadTask(source).load()
+      return Image(image)
+    }
+
+    Class(Image.self) {
+      Property("width", \.ref.size.width)
+      Property("height", \.ref.size.height)
+      Property("scale", \.ref.scale)
+      Property("isAnimated", \.ref.sd_isAnimated)
+      Property("mediaType") { image in
+        return imageFormatToMediaType(image.ref.sd_imageFormat)
+      }
+    }
   }
 
   static func registerCoders() {
-    if #available(iOS 14.0, tvOS 14.0, *) {
-      // By default Animated WebP is not supported
-      SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
-    } else {
-      // This coder is much slower, but it's the only one that works in iOS 13
-      SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
-    }
+    // By default Animated WebP is not supported
+    SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)

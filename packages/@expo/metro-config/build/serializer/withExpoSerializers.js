@@ -16,14 +16,23 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
+const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
+const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
+const sourceMapString = typeof sourceMapString_1.default !== 'function'
+    ? sourceMapString_1.default.sourceMapString
+    : sourceMapString_1.default;
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
+    // Then tree-shake the modules.
+    processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
+    // Then finish transforming the modules from AST to JS.
+    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
 exports.withExpoSerializers = withExpoSerializers;
@@ -85,7 +94,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             })).code;
         }
         const getEnsuredMaps = () => {
-            bundleMap ??= (0, sourceMapString_1.default)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+            bundleMap ??= sourceMapString([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 // TODO: Surface this somehow.
                 excludeSource: false,
                 // excludeSource: options.serializerOptions?.excludeSource,
@@ -153,6 +162,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 return {
                     outputMode: customSerializerOptions.output,
                     splitChunks: customSerializerOptions.splitChunks,
+                    usedExports: customSerializerOptions.usedExports,
                     includeSourceMaps: customSerializerOptions.includeSourceMaps,
                 };
             }
@@ -163,6 +173,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 const url = new URL(sourceUrl, 'https://expo.dev');
                 return {
                     outputMode: url.searchParams.get('serializer.output'),
+                    usedExports: url.searchParams.get('serializer.usedExports') === 'true',
                     splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
                     includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
                 };

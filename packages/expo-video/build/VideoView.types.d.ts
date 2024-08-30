@@ -53,27 +53,34 @@ export interface VideoViewProps extends ViewProps {
     /**
      * A callback to call after the video player enters Picture in Picture (PiP) mode.
      * @platform android
-     * @platform ios 14+
+     * @platform ios
      */
     onPictureInPictureStart?: () => void;
     /**
      * A callback to call after the video player exits Picture in Picture (PiP) mode.
      * @platform android
-     * @platform ios 14+
+     * @platform ios
      */
     onPictureInPictureStop?: () => void;
     /**
      * Determines whether the player allows Picture in Picture (PiP) mode.
+     * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+     * > has to be configured for the PiP to work.
+     *
      * @default false
-     * @platform ios 14+
+     * @platform ios
      */
     allowsPictureInPicture?: boolean;
     /**
      * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+     *
+     * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+     * > has to be configured for the PiP to work.
+     *
      * @default false
      * @platform android 12+
-     * @platform ios 14.2+
+     * @platform ios
      */
     startsPictureInPictureAutomatically?: boolean;
     /**
@@ -82,5 +89,13 @@ export interface VideoViewProps extends ViewProps {
      * @platform ios 16.0+
      */
     allowsVideoFrameAnalysis?: boolean;
+    /**
+     * A callback to call after the video player enters fullscreen mode.
+     */
+    onFullscreenEnter?: () => void;
+    /**
+     * A callback to call after the video player exits fullscreen mode.
+     */
+    onFullscreenExit?: () => void;
 }
 //# sourceMappingURL=VideoView.types.d.ts.map

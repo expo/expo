@@ -13,10 +13,9 @@ import { transformFromAstSync } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
-import types from '@babel/types';
 import * as t from '@babel/types';
 import dedent from 'dedent';
-import nullthrows from 'nullthrows';
+import assert from 'node:assert';
 
 import type {
   Dependency,
@@ -41,6 +40,22 @@ const opts: Options = {
   dependencyMapName: null,
   unstable_allowRequireContext: false,
 };
+
+// asserts non-null
+function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+  assert(x != null, message);
+  return x;
+}
+
+const originalWarn = console.warn;
+
+beforeAll(() => {
+  console.warn = jest.fn();
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+});
 
 describe(`require.context`, () => {
   const optsWithoutContext = { ...opts, unstable_allowRequireContext: false };
@@ -269,6 +284,36 @@ describe(`require.context`, () => {
         const EAGER = "eager";
         const PATTERN = /pattern/;
         const a = require(${dependencyMapName}[0], "./foo");
+      `)
+    );
+  });
+
+  it('can preserve the require.context AST in collection mode', () => {
+    const ast = astFromCode(`
+      const a = require.context('./');
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, {
+      ...optsWithContext,
+      collectOnly: true,
+    });
+    expect(dependencies).toEqual([
+      {
+        name: './',
+        data: objectContaining({
+          contextParams: {
+            filter: {
+              pattern: '.*',
+              flags: '',
+            },
+            mode: 'sync',
+            recursive: true,
+          },
+        }),
+      },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        const a = require.context(${dependencyMapName}[0], "./");
       `)
     );
   });
@@ -890,7 +935,72 @@ describe('import() prefetching', () => {
   });
 });
 
+describe('require.unstable_importMaybeSync()', () => {
+  it('collects require.unstable_importMaybeSync calls', () => {
+    const ast = astFromCode(`
+      require.unstable_importMaybeSync("some/async/module");
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'maybeSync' }),
+      },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(${dependencyMapName}[1], "asyncRequire").unstable_importMaybeSync(${dependencyMapName}[0], _dependencyMap.paths, "some/async/module");
+      `)
+    );
+  });
+
+  it('keepRequireNames: false', () => {
+    const ast = astFromCode(`
+      require.unstable_importMaybeSync("some/async/module");
+    `);
+    const { dependencies, dependencyMapName } = collectDependencies(ast, {
+      ...opts,
+      keepRequireNames: false,
+    });
+    expect(dependencies).toEqual([
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'maybeSync' }),
+      },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+    ]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(${dependencyMapName}[1]).unstable_importMaybeSync(${dependencyMapName}[0], _dependencyMap.paths);
+      `)
+    );
+  });
+
+  it('distinguishes between require.unstable_importMaybeSync and prefetch dependencies on the same module', () => {
+    const ast = astFromCode(`
+      __prefetchImport("some/async/module");
+      require.unstable_importMaybeSync("some/async/module").then(() => {});
+    `);
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'prefetch' }),
+      },
+      { name: 'asyncRequire', data: objectContaining({ asyncType: null }) },
+      {
+        name: 'some/async/module',
+        data: objectContaining({ asyncType: 'maybeSync' }),
+      },
+    ]);
+  });
+});
+
 describe('Evaluating static arguments', () => {
+  beforeEach(() => {
+    jest.mocked(console.warn).mockReset();
+  });
   it('supports template literals as arguments', () => {
     const ast = astFromCode('require(`left-pad`)');
     const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
@@ -1004,6 +1114,52 @@ describe('Evaluating static arguments', () => {
       `)
     );
   });
+  it('warns at build-time when requiring non-strings with special option', () => {
+    const ast = astFromCode('require(someVariable)');
+    const opts: Options = {
+      asyncRequireModulePath: 'asyncRequire',
+      dynamicRequires: 'warn',
+      inlineableCalls: [],
+      keepRequireNames: true,
+      allowOptionalDependencies: false,
+      dependencyMapName: null,
+      unstable_allowRequireContext: false,
+    };
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        require(someVariable);
+      `)
+    );
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Dynamic import at line 1: require(someVariable). This module may not work as intended when deployed to a runtime.'
+    );
+  });
+  it('warns at build-time when async import of non-strings with special option', () => {
+    const ast = astFromCode('import(someVariable)');
+    const opts: Options = {
+      asyncRequireModulePath: 'asyncRequire',
+      dynamicRequires: 'warn',
+      inlineableCalls: [],
+      keepRequireNames: true,
+      allowOptionalDependencies: false,
+      dependencyMapName: null,
+      unstable_allowRequireContext: false,
+    };
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([]);
+    expect(codeFromAst(ast)).toEqual(
+      comparableCode(`
+        import(someVariable);
+      `)
+    );
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      'Dynamic import at line 1: import(someVariable). This module may not work as intended when deployed to a runtime.'
+    );
+  });
 });
 
 it('exposes a string as `dependencyMapName` even without collecting dependencies', () => {
@@ -1079,9 +1235,9 @@ it('collects export from', () => {
 
   const { dependencies } = collectDependencies(ast, opts);
   expect(dependencies).toEqual([
-    { name: 'Apple', data: objectContaining({ asyncType: null }) },
-    { name: 'Banana', data: objectContaining({ asyncType: null }) },
-    { name: 'Kiwi', data: objectContaining({ asyncType: null }) },
+    { name: 'Apple', data: objectContaining({ asyncType: null, exportNames: ['Apple'] }) },
+    { name: 'Banana', data: objectContaining({ asyncType: null, exportNames: ['Banana'] }) },
+    { name: 'Kiwi', data: objectContaining({ asyncType: null, exportNames: ['*'] }) },
   ]);
 });
 
@@ -1431,6 +1587,21 @@ it('collects require.resolveWeak calls', () => {
   );
 });
 
+describe('export names', () => {
+  it('collects export names from multiple imports', () => {
+    const ast = astFromCode(`
+    import {A} from 'Apple';
+    export { A }
+    export { B, C } from 'Apple';
+  `);
+
+    const { dependencies } = collectDependencies(ast, opts);
+    expect(dependencies).toEqual([
+      { name: 'Apple', data: objectContaining({ asyncType: null, exportNames: ['A', 'B', 'C'] }) },
+    ]);
+  });
+});
+
 function formatDependencyLocs(dependencies: readonly Dependency[], code: any) {
   return (
     '\n' +
@@ -1448,14 +1619,14 @@ function adjustPosForCodeFrame(pos: { column: number; line: number }) {
   return pos ? { ...pos, column: pos.column + 1 } : pos;
 }
 
-function adjustLocForCodeFrame(loc: types.SourceLocation) {
+function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
     start: adjustPosForCodeFrame(loc.start),
     end: adjustPosForCodeFrame(loc.end),
   };
 }
 
-function formatLoc(loc: types.SourceLocation, depIndex: number, dep: Dependency, code: any) {
+function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: any) {
   return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
     message: `dep #${depIndex} (${dep.name})`,
     linesAbove: 0,
@@ -1486,6 +1657,10 @@ const MockDependencyTransformer: DependencyTransformer = {
 
   transformImportCall(path: NodePath, dependency: InternalDependency, state: State): void {
     transformAsyncRequire(path, dependency, state, 'async');
+  },
+
+  transformImportMaybeSyncCall(path: NodePath, dependency: InternalDependency, state: State): void {
+    transformAsyncRequire(path, dependency, state, 'unstable_importMaybeSync');
   },
 
   transformPrefetch(path: NodePath, dependency: InternalDependency, state: State): void {

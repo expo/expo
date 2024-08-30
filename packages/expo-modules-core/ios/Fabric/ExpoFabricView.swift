@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#if RCT_NEW_ARCH_ENABLED
+
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
@@ -175,3 +177,5 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
   // swiftlint:enable unavailable_function
 }
+
+#endif // RCT_NEW_ARCH_ENABLED

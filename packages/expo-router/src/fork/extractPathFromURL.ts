@@ -6,7 +6,7 @@ export function parsePathAndParamsFromExpoGoLink(url: string): {
   // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
 
   const href = parsePathFromExpoGoLink(url);
-  const results = href.match(/(.*?)(\?.*)/);
+  const results = href.match(/([^?]*)(\?.*)?/);
   return {
     pathname: results?.[1] ?? '',
     queryString: results?.[2] ?? '',

@@ -117,12 +117,16 @@ const home = [
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
-  makeSection('Review', [makePage('review/overview.mdx'), makePage('review/with-orbit.mdx')]),
+  makeSection('Review', [
+    makePage('review/overview.mdx'),
+    makePage('review/share-previews-with-your-team.mdx'),
+    makePage('review/with-orbit.mdx'),
+  ]),
   makeSection('Deploy', [
     makePage('deploy/build-project.mdx'),
     makePage('deploy/submit-to-app-stores.mdx'),
     makePage('deploy/app-stores-metadata.mdx'),
-    makePage('deploy/instant-updates.mdx'),
+    makePage('deploy/send-over-the-air-updates.mdx'),
   ]),
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
@@ -200,7 +204,6 @@ const general = [
     makePage('router/create-pages.mdx'),
     makePage('router/navigating-pages.mdx'),
     makePage('router/layouts.mdx'),
-    makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
     makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),
@@ -419,6 +422,8 @@ const general = [
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
+        makePage('guides/local-first.mdx'),
+        makePage('guides/keyboard-handling.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
@@ -559,6 +564,7 @@ const archive = [
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
     makePage('archive/using-flipper.mdx'),
+    makePage('archive/e2e-tests.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];

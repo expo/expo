@@ -142,29 +142,6 @@ After verifying `expo-updates` and EAS Update configurations, we can move on to 
 
 The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates. See the code example to [check for updates manually](/versions/latest/sdk/updates/#use-expo-updates-with-a-custom-server).
 
-### Viewing network requests
-
-Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
-
-With either program, we'll need to follow their instructions for installing an SSL certificate, so that the program can decode HTTPS requests. Once that's set up in a simulator or on an actual device, we can open our app and watch requests.
-
-The requests we're interested in are from https://u.expo.dev and https://assets.eascdn.net. Responses from https://u.expo.dev will contain an update manifest, which specifies which assets the app will need to fetch to run the update. Responses from https://assets.eascdn.net will contain assets, like images, font files, and so on, that are required for the update to run.
-
-When inspecting the request to https://u.expo.dev, we can look for the following request headers:
-
-- `Expo-Runtime-Version`: this should make the runtime version we made our build and update with.
-- `expo-channel-name`: this should be the channel name specified in the **eas.json** build profile.
-- `Expo-Platform`: this should be either "android" or "ios".
-
-As for all requests, we expect to see either `200` response codes, or `304` if nothing has changed.
-
-Below is a screenshot showing the request of a successful update manifest request:
-
-<ContentSpotlight
-  alt="Successful manifest request"
-  src="/static/images/eas-update/network-request.png"
-/>
-
 ### Inspecting a build manually
 
 When building a project into an app, there can be multiple steps that alter the output of `npx expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
@@ -239,6 +216,12 @@ To make it easier to test and debug native code in an environment that is closer
 
 We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update/build-locally) in a local development environment using Android Studio or Xcode, with either release or debug builds of the app.
 
+#### Android local builds
+
+- Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
+- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/updating-your-app/#configuring-the-channel-manually)
+- Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Android Studio or from the command line.
+
 #### iOS local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
@@ -251,12 +234,6 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
     ]}
   />
 - Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Xcode or from the command line.
-
-#### Android local builds
-
-- Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
-- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/updating-your-app/#configuring-the-channel-manually)
-- Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Android Studio or from the command line.
 
 #### EAS Build
 

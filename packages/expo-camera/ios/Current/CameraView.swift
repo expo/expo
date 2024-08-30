@@ -19,7 +19,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
   private var photoCaptureOptions: TakePictureOptions?
-  private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
   private var physicalOrientation: UIDeviceOrientation = .unknown
   private var motionManager: CMMotionManager = {
@@ -93,7 +92,14 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
   }
 
+  var active = true {
+    didSet {
+      updateCameraIsActive()
+    }
+  }
+
   var animateShutter = true
+  var mirror = false
 
   var zoom: CGFloat = 0 {
     didSet {
@@ -141,9 +147,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   private func setupPreview() {
-    previewLayer.videoPreviewLayer.session = session
-    previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
-    previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+    DispatchQueue.main.async {
+      self.previewLayer.videoPreviewLayer.session = self.session
+      self.previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
+      self.previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+      self.addSubview(self.previewLayer)
+    }
   }
 
   func initCamera() {
@@ -355,6 +364,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+
+      // options.mirror is deprecated but should continue to work until removed
+      connection?.isVideoMirrored = self.presetCamera == .front && (self.mirror || options.mirror)
       var photoSettings = AVCapturePhotoSettings()
 
       if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
@@ -386,6 +398,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+    if photoCaptureOptions?.shutterSound == false {
+      AudioServicesDisposeSystemSoundID(1108)
+    }
+
     guard animateShutter else {
       return
     }
@@ -548,20 +564,18 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     sessionQueue.async {
       if let videoFileOutput = self.videoFileOutput, !videoFileOutput.isRecording && self.videoRecordedPromise == nil {
         if let connection = videoFileOutput.connection(with: .video) {
-          if !connection.isVideoStabilizationSupported {
-            log.warn("\(#function): Video Stabilization is not supported on this device.")
+          if connection.isVideoStabilizationSupported {
+            connection.preferredVideoStabilizationMode = .auto
           } else {
-            if let videoStabilizationMode = self.videoStabilizationMode {
-              connection.preferredVideoStabilizationMode = videoStabilizationMode
-            }
+            log.warn("\(#function): Video Stabilization is not supported on this device.")
           }
 
           let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
           connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
           self.setVideoOptions(options: options, for: connection, promise: promise)
 
-          if connection.isVideoOrientationSupported && options.mirror {
-            connection.isVideoMirrored = options.mirror
+          if connection.isVideoOrientationSupported && self.mirror {
+            connection.isVideoMirrored = self.mirror
           }
         }
 
@@ -671,9 +685,23 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
+    self.stopSession()
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     super.removeFromSuperview()
+  }
+
+  func updateCameraIsActive() {
+    if self.session.isRunning == active {
+      return
+    }
+    sessionQueue.async {
+      if self.active {
+        self.session.startRunning()
+      } else {
+        self.session.stopRunning()
+      }
+    }
   }
 
   public func fileOutput(
@@ -773,8 +801,18 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.session.commitConfiguration()
 
       self.motionManager.stopAccelerometerUpdates()
-      self.session.stopRunning()
+      if self.session.isRunning {
+        self.session.stopRunning()
+      }
     }
+  }
+
+  func resumePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = true
+  }
+
+  func pausePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = false
   }
 
   @objc func orientationChanged(notification: Notification) {

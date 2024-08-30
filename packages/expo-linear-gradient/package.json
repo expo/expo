@@ -10,18 +10,19 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "keywords": [
     "react-native",
     "expo",
     "gradient"
   ],
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -40,6 +41,8 @@
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

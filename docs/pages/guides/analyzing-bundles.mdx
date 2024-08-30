@@ -67,7 +67,7 @@ Inside Atlas, you can hold <kbd>⌘ Cmd</kbd> and click on a graph node to see t
 
 > Alternative method for **SDK 50 and below**.
 
-If you are using SDK 50 or below, you can use the [source-map-explorer](https://www.npmjs.com/package/source-map-explorer) package to visualize and analyze the production JavaScript bundle.
+If you are using SDK 50 or below, you can use the [`source-map-explorer`](https://www.npmjs.com/package/source-map-explorer) library to visualize and analyze the production JavaScript bundle.
 
 <Step label="1">
 
@@ -105,11 +105,12 @@ Web bundles are output to the **dist/client** subdirectory to prevent exposing s
 
 <Step label="3">
 
-Export your production JavaScript bundle and include the `--source-maps` flag so that the source map explorer can read the source maps:
+Export your production JavaScript bundle and include the `--source-maps` flag so that the source map explorer can read the source maps. For native apps using Hermes, you can use the `--no-bytecode` option to disable bytecode generation.
 
 <Terminal
   cmd={[
     '$ npx expo export --source-maps --platform web',
+    '',
     '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
     '$ npx expo export --source-maps --platform ios --no-bytecode',
   ]}

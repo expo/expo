@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Add new methods for managing events using the system-provided calendar UI ([#30102](https://github.com/expo/expo/pull/30102) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
 - Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))
+- Add missing `react-native` peer dependencies for isolated modules. ([#30461](https://github.com/expo/expo/pull/30461) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

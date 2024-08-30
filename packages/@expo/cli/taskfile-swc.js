@@ -8,6 +8,36 @@ const transform = require('@swc/core').transform;
 
 module.exports = function (task) {
   const ENVIRONMENTS = {
+    metroScript: {
+      output: 'build',
+      options: {
+        module: {
+          type: 'commonjs',
+          strict: true,
+          strictMode: false,
+          // The metro runtime is a standalone JS script that should not have the
+          // `Object.defineProperty(exports, "__esModule", {value: true});` interop.
+          noInterop: true,
+        },
+        env: {
+          targets: {
+            node: '16.8.0',
+          },
+        },
+        sourceMaps: false,
+
+        jsc: {
+          // Remove comments:
+          // https://github.com/swc-project/swc/discussions/4446#discussioncomment-2639516
+          minify: { compress: false, mangle: false },
+          loose: true,
+          parser: {
+            syntax: 'typescript',
+            dynamicImport: true,
+          },
+        },
+      },
+    },
     // Settings for compiling the CLI code that runs in Node.js environments.
     cli: {
       output: 'build',
@@ -53,6 +83,9 @@ module.exports = function (task) {
       ...setting.options,
     };
 
+    if (file.data == null) {
+      throw new Error(`File "${file.base}" is empty.`);
+    }
     const output = yield transform(file.data.toString('utf-8'), options);
     const ext = path.extname(file.base);
 

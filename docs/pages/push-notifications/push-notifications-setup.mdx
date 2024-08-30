@@ -4,6 +4,7 @@ sidebar_title: Setup
 description: Learn how to setup push notifications, get credentials for development and production, and test sending push notifications.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -15,6 +16,13 @@ To get the client-side ready for push notifications, the following things are re
 
 - The user's permission to send them push notifications.
 - The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken).
+
+<br />
+<Collapsible summary="Do you want to use FCMv1/APNs directly, instead of through the Expo push notification service?">
+
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCMv1 and APNs"](/push-notifications/sending-notifications-custom/).
+
+</Collapsible>
 
 ## Prerequisites
 

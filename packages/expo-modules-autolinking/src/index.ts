@@ -59,10 +59,14 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
     )
     .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
     .action(async (searchPaths, providedOptions) => {
-      const options = await mergeLinkingOptionsAsync<OptionsType>({
-        ...providedOptions,
-        searchPaths,
-      });
+      const options = await mergeLinkingOptionsAsync<OptionsType>(
+        searchPaths.length > 0
+          ? {
+              ...providedOptions,
+              searchPaths,
+            }
+          : providedOptions
+      );
       const searchResults = await findModulesAsync(options);
       return await fn(searchResults, options);
     });

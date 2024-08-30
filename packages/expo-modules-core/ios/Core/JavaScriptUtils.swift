@@ -95,7 +95,7 @@ internal func concat(
   var result = arguments
 
   if function.takesOwner {
-    result = [owner] + arguments
+    result = [owner as Any] + arguments
   }
   if arguments.count < function.argumentsCount {
     result += Array(repeating: Any?.none as Any, count: function.argumentsCount - arguments.count)

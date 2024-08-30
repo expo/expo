@@ -3,10 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.convertEntryPointToRelative = convertEntryPointToRelative;
 exports.ensureSlash = ensureSlash;
 exports.getFileWithExtensions = getFileWithExtensions;
+exports.getMetroServerRoot = getMetroServerRoot;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
+exports.resolveRelativeEntryPoint = void 0;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -24,6 +27,20 @@ function _path() {
 function _resolveFrom() {
   const data = _interopRequireDefault(require("resolve-from"));
   _resolveFrom = function () {
+    return data;
+  };
+  return data;
+}
+function _resolveWorkspaceRoot() {
+  const data = require("resolve-workspace-root");
+  _resolveWorkspaceRoot = function () {
+    return data;
+  };
+  return data;
+}
+function _env() {
+  const data = require("./env");
+  _env = function () {
     return data;
   };
   return data;
@@ -54,7 +71,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function ensureSlash(inputPath, needsSlash) {
   const hasSlash = inputPath.endsWith('/');
   if (hasSlash && !needsSlash) {
-    return inputPath.substr(0, inputPath.length - 1);
+    return inputPath.substring(0, inputPath.length - 1);
   } else if (!hasSlash && needsSlash) {
     return `${inputPath}/`;
   } else {
@@ -132,4 +149,32 @@ function getFileWithExtensions(fromDirectory, moduleId, extensions) {
   }
   return null;
 }
+
+/** Get the Metro server root, when working in monorepos */
+function getMetroServerRoot(projectRoot) {
+  if (_env().env.EXPO_NO_METRO_WORKSPACE_ROOT) {
+    return projectRoot;
+  }
+  return (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot) ?? projectRoot;
+}
+
+/**
+ * Convert an absolute entry point to a server or project root relative filepath.
+ * This is useful on Android where the entry point is an absolute path.
+ */
+function convertEntryPointToRelative(projectRoot, absolutePath) {
+  // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
+  // We need to make sure to get the non-symlinked path to the server or project root.
+  return _path().default.relative(_fs().default.realpathSync(getMetroServerRoot(projectRoot)), _fs().default.realpathSync(absolutePath));
+}
+
+/**
+ * Resolve the entry point relative to either the server or project root.
+ * This relative entry path should be used to pass non-absolute paths to Metro,
+ * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
+ */
+const resolveRelativeEntryPoint = (projectRoot, options) => {
+  return convertEntryPointToRelative(projectRoot, resolveEntryPoint(projectRoot, options));
+};
+exports.resolveRelativeEntryPoint = resolveRelativeEntryPoint;
 //# sourceMappingURL=paths.js.map

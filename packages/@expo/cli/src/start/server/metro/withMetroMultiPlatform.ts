@@ -143,8 +143,9 @@ export function withExtendedResolver(
   }
 ) {
   if (isFastResolverEnabled) {
-    Log.warn(`Experimental bundling features are enabled.`);
+    Log.warn(`Experimental module resolution is enabled.`);
   }
+
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
   }
@@ -212,7 +213,6 @@ export function withExtendedResolver(
       debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
-
     return _universalAliases;
   }
 
@@ -297,11 +297,15 @@ export function withExtendedResolver(
     };
   }
 
+  // TODO: This is a hack to get resolveWeak working.
+  const idFactory =
+    config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
+
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
   const externals: {
     match: (context: ResolutionContext, moduleName: string, platform: string | null) => boolean;
-    replace: 'empty' | 'node';
+    replace: 'empty' | 'node' | 'weak';
   }[] = [
     {
       match: (context: ResolutionContext, moduleName: string) => {
@@ -314,6 +318,13 @@ export function withExtendedResolver(
           return false;
         }
 
+        if (context.customResolverOptions?.environment === 'react-server') {
+          // Ensure these non-react-server modules are excluded when bundling for React Server Components in development.
+          return /^(source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
+            moduleName
+          );
+        }
+
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
         return /^(source-map-support(\/.*)?|react|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
@@ -321,6 +332,39 @@ export function withExtendedResolver(
         );
       },
       replace: 'node',
+    },
+    // Externals to speed up async split chunks by extern-ing common packages that appear in the root client chunk.
+    {
+      match: (context: ResolutionContext, moduleName: string, platform: string | null) => {
+        if (
+          // Disable internal externals when exporting for production.
+          context.customResolverOptions.exporting ||
+          // These externals are only for client environments.
+          isServerEnvironment(context.customResolverOptions?.environment) ||
+          // Only enable for client boundaries
+          !context.customResolverOptions.clientboundary
+        ) {
+          return false;
+        }
+
+        // We don't support this in the resolver at the moment.
+        if (moduleName.endsWith('/package.json')) {
+          return false;
+        }
+
+        const isExternal = // Extern these modules in standard Node.js environments.
+          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|@react-native\/assets-registry\/registry|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
+            moduleName
+          ) ||
+          /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
+            moduleName
+          ) ||
+          // TODO: Add more
+          /^@babel\/runtime\/helpers\/(wrapNativeSuper)$/.test(moduleName);
+
+        return isExternal;
+      },
+      replace: 'weak',
     },
   ];
 
@@ -399,7 +443,6 @@ export function withExtendedResolver(
           }
         );
       }
-
       const contents = `module.exports=$$require_external('node:${moduleId}');`;
       debug(`Virtualizing Node.js "${moduleId}"`);
       const virtualModuleId = `\0node:${moduleId}`;
@@ -420,12 +463,36 @@ export function withExtendedResolver(
         return null;
       }
 
+      const strictResolve = getStrictResolver(context, platform);
+
       for (const external of externals) {
         if (external.match(context, moduleName, platform)) {
           if (external.replace === 'empty') {
             debug(`Redirecting external "${moduleName}" to "${external.replace}"`);
             return {
               type: external.replace,
+            };
+          } else if (external.replace === 'weak') {
+            // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
+            const realModule = strictResolve(moduleName);
+            const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
+            const opaqueId = idFactory(realPath);
+
+            const contents =
+              typeof opaqueId === 'number'
+                ? `module.exports=/*${moduleName}*/__r(${opaqueId})`
+                : `module.exports=/*${moduleName}*/__r(${JSON.stringify(opaqueId)})`;
+            // const contents = `module.exports=/*${moduleName}*/__r(require.resolveWeak('${moduleName}'))`;
+            // const generatedModuleId = fastHashMemoized(contents);
+            const virtualModuleId = `\0weak:${opaqueId}`;
+            debug('Virtualizing module:', moduleName, '->', virtualModuleId);
+            getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+              virtualModuleId,
+              contents
+            );
+            return {
+              type: 'sourceFile',
+              filePath: virtualModuleId,
             };
           } else if (external.replace === 'node') {
             const contents = `module.exports=$$require_external('${moduleName}')`;
@@ -520,6 +587,23 @@ export function withExtendedResolver(
           }
         }
       } else {
+        const isServer =
+          context.customResolverOptions?.environment === 'node' ||
+          context.customResolverOptions?.environment === 'react-server';
+
+        // react-native/Libraries/Core/InitializeCore
+        const normal = normalizeSlashes(result.filePath);
+
+        // Shim out React Native native runtime globals in server mode for native.
+        if (isServer) {
+          if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+            console.log('Shimming out InitializeCore for React Native in native SSR bundle');
+            return {
+              type: 'empty',
+            };
+          }
+        }
+
         // When server components are enabled, redirect React Native's renderer to the canary build
         // this will enable the use hook and other requisite features from React 19.
         if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {
@@ -554,6 +638,17 @@ export function withExtendedResolver(
         ...immutableContext,
         preferNativePlatform: platform !== 'web',
       };
+
+      // TODO: Remove this when we have React 19 in the expo/expo monorepo.
+      if (
+        isReactCanaryEnabled &&
+        // Change the node modules path for react and react-dom to use the vendor in Expo CLI.
+        /^(react|react\/.*|react-dom|react-dom\/.*)$/.test(moduleName)
+      ) {
+        context.nodeModulesPaths = [
+          path.join(require.resolve('@expo/cli/package.json'), '../static/canary-full'),
+        ];
+      }
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
@@ -623,6 +718,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isNamedRequiresEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -633,9 +729,18 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
+  if (isNamedRequiresEnabled) {
+    debug('Using Expo metro require runtime.');
+    // Change the default metro-runtime to a custom one that supports bundle splitting.
+    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+      '@expo/cli/build/metro-require/require'
+    );
+  }
+
   if (!config.projectRoot) {
     // @ts-expect-error: read-only types
     config.projectRoot = projectRoot;

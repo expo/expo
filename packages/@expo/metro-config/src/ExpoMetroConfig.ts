@@ -1,6 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
-import { getBareExtensions } from '@expo/config/paths';
+import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
@@ -14,10 +14,11 @@ import resolveFrom from 'resolve-from';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { FileStore } from './file-store';
-import { getModulesPaths, getServerRoot } from './getModulesPaths';
+import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
+import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
@@ -101,6 +102,44 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function createNumericModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+function createStableModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+  // This is an absolute file path.
+  return (modulePath: string): number => {
+    // TODO: We may want a hashed version for production builds in the future.
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+      if (modulePath == null) {
+        id = 'MODULE_NOT_FOUND';
+      } else if (isVirtualModule(modulePath)) {
+        // Virtual modules should be stable.
+        id = modulePath;
+      } else if (path.isAbsolute(modulePath)) {
+        id = path.relative(root, modulePath);
+      } else {
+        id = modulePath;
+      }
+      fileToIdMap.set(modulePath, id);
+    }
+    // @ts-expect-error: we patch this to support being a string.
+    return id;
+  };
+}
+
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
@@ -171,7 +210,7 @@ export function getDefaultConfig(
     root: path.join(os.tmpdir(), 'metro-cache'),
   });
 
-  const serverRoot = getServerRoot(projectRoot);
+  const serverRoot = getMetroServerRoot(projectRoot);
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
@@ -206,7 +245,7 @@ export function getDefaultConfig(
     serializer: {
       isThirdPartyModule(module) {
         // Block virtual modules from appearing in the source maps.
-        if (module.path.startsWith('\0')) return true;
+        if (isVirtualModule(module.path)) return true;
 
         // Generally block node modules
         if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
@@ -215,6 +254,10 @@ export function getDefaultConfig(
         }
         return false;
       },
+
+      createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
+        ? createStableModuleIdFactory.bind(null, serverRoot)
+        : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [

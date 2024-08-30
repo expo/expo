@@ -20,7 +20,8 @@ function getExpoDependencyChunks({
     ['@expo/config-types', '@expo/env'],
     ['@expo/config'],
     ['@expo/config-plugins'],
-    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-core', 'expo-modules-autolinking'],
+    ['expo-modules-core'],
+    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
     [
       'babel-preset-expo',
@@ -294,6 +295,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -310,6 +312,7 @@ async function preparePackageJson(
         'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
+        'patch-package': '^8.0.0',
       }
     : {};
 
@@ -352,7 +355,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.2-0',
+        'react-native': 'npm:react-native-tvos@~0.74.3-0',
         '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
@@ -451,6 +454,7 @@ function transformAppJsonForE2E(
       '@react-native-tvos/config-tv',
       {
         isTV: true,
+        tvosDeploymentTarget: '15.1',
         showVerboseWarnings: true,
       },
     ]);
@@ -476,6 +480,32 @@ function transformAppJsonForE2E(
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
+      },
+    },
+  };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, and sets the runtime version policy to fingerprint
+ */
+export function transformAppJsonForE2EWithFingerprint(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      runtimeVersion: {
+        policy: 'fingerprint',
       },
     },
   };
@@ -840,6 +870,38 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesFingerprintE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    [
+      'tsconfig.json',
+      '.fingerprintignore',
+      '.detoxrc.json',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'includedAssets',
+      'scripts',
+    ],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-fingerprint.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

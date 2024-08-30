@@ -22,9 +22,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   #else
   var startPictureInPictureAutomatically = false {
     didSet {
-      if #available(iOS 14.2, *) {
-        playerViewController.canStartPictureInPictureAutomaticallyFromInline = startPictureInPictureAutomatically
-      }
+      playerViewController.canStartPictureInPictureAutomaticallyFromInline = startPictureInPictureAutomatically
     }
   }
   #endif
@@ -32,28 +30,21 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   var allowPictureInPicture: Bool = false {
     didSet {
       // PiP requires `.playback` audio session category in `.moviePlayback` mode
-      if #available(iOS 13.4, tvOS 14.0, *) {
-        VideoManager.shared.setAppropriateAudioSessionOrWarn()
-          playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
-      }
+      VideoManager.shared.setAppropriateAudioSessionOrWarn()
+      playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
     }
   }
 
   let onPictureInPictureStart = EventDispatcher()
   let onPictureInPictureStop = EventDispatcher()
+  let onFullscreenEnter = EventDispatcher()
+  let onFullscreenExit = EventDispatcher()
 
   public override var bounds: CGRect {
     didSet {
       playerViewController.view.frame = self.bounds
     }
   }
-
-  lazy var supportsPictureInPicture: Bool = {
-    if #available(iOS 13.4, tvOS 14.0, *) {
-      return AVPictureInPictureController.isPictureInPictureSupported()
-    }
-    return false
-  }()
 
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -93,6 +84,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       wasPlaying = player?.isPlaying == true
       self.playerViewController.view.removeFromSuperview()
       self.reactViewController().present(self.playerViewController, animated: true)
+      onFullscreenEnter()
       isFullscreen = true
       #endif
     }
@@ -111,7 +103,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   func startPictureInPicture() throws {
-    if !supportsPictureInPicture {
+    if !AVPictureInPictureController.isPictureInPictureSupported() {
       throw PictureInPictureUnsupportedException()
     }
 
@@ -143,6 +135,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   public func playerViewControllerDidEndDismissalTransition(_ playerViewController: AVPlayerViewController) {
+    self.onFullscreenExit()
     self.isFullscreen = false
     // Reset the bounds of the view controller and add it back to our view
     self.playerViewController.view.frame = self.bounds
@@ -163,6 +156,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     _ playerViewController: AVPlayerViewController,
     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
   ) {
+    onFullscreenEnter()
     isFullscreen = true
   }
 
@@ -179,6 +173,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
         if wasPlaying {
           self.player?.pointer.play()
         }
+        self.onFullscreenExit()
         self.isFullscreen = false
       }
     }

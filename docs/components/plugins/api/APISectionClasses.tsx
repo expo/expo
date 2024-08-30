@@ -39,6 +39,13 @@ const CLASS_NAMES_MAP: Record<string, string> = {
   MagnetometerSensor: 'Magnetometer',
 } as const;
 
+const CLASSES_TO_IGNORE_INHERITED_PROPS = [
+  'EventEmitter',
+  'NativeModule',
+  'SharedObject',
+  'SharedRef',
+] as const;
+
 const isProp = (child: PropData) =>
   child.kind === TypeDocKind.Property &&
   !child.overwrites &&
@@ -51,6 +58,14 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
+
+// This is intended to filter out inherited properties from some
+// common classes that are documented inside the `expo` package docs.
+const isInheritedFromCommonClass = (child: PropData) =>
+  child.inheritedFrom?.type === 'reference' &&
+  CLASSES_TO_IGNORE_INHERITED_PROPS.some(className =>
+    child.inheritedFrom?.name.startsWith(`${className}.`)
+  );
 
 const remapClass = (clx: ClassDefinitionData) => {
   clx.isSensor = !!CLASS_NAMES_MAP[clx.name] || Object.values(CLASS_NAMES_MAP).includes(clx.name);
@@ -72,7 +87,7 @@ const renderClass = (
 ): JSX.Element => {
   const properties = children?.filter(isProp);
   const methods = children
-    ?.filter(child => isMethod(child, isSensor))
+    ?.filter(child => isMethod(child, isSensor) && !isInheritedFromCommonClass(child))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
 

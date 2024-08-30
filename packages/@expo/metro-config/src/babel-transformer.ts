@@ -22,6 +22,7 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   isNodeModule?: boolean;
   preserveEnvVars?: boolean;
   isDev?: boolean;
+  isDOM?: boolean;
   asyncRoutes?: boolean;
   baseUrl?: string;
   engine?: string;
@@ -34,7 +35,7 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
 
 function isCustomTruthy(value: any): boolean {
-  return value === true || value === 'true';
+  return String(value) === 'true';
 }
 
 function memoize<T extends (...args: any[]) => any>(fn: T): T {
@@ -82,7 +83,7 @@ function getBabelCaller({
     // Metro automatically updates the cache to account for the custom transform options.
     isServer,
 
-    // Enable React Server Component rules for AST.
+    // Enable React Server Component rules for AST. The naming maps to the resolver property `--conditions=react-server`.
     isReactServer,
 
     // The base url to make requests from, used for hosting from non-standard locations.
@@ -95,6 +96,9 @@ function getBabelCaller({
     routerRoot: routerRoot ?? 'app',
 
     isDev: options.dev,
+
+    // Supply the DOM directive to the Babel preset.
+    isDOM: options.platform === 'web' && isCustomTruthy(options.customTransformOptions?.dom),
 
     // This value indicates if the user has disabled the feature or not.
     // Other criteria may still cause the feature to be disabled, but all inputs used are
@@ -115,7 +119,8 @@ function getBabelCaller({
     isHMREnabled: options.hot,
 
     // Set the standard Babel flag to disable ESM transformations.
-    supportsStaticESM: options.experimentalImportSupport,
+    supportsStaticESM:
+      isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
 
     // Enable React compiler support in Babel.
     // TODO: Remove this in the future when compiler is on by default.

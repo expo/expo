@@ -23,7 +23,7 @@ class DevLauncherDevServerHelper(
   private val controller: DevLauncherControllerInterface?,
   devSettings: DeveloperSettings,
   packagerConnection: PackagerConnectionSettings
-) : DevServerHelper(devSettings, context.packageName, packagerConnection) {
+) : DevServerHelper(devSettings, context, packagerConnection) {
 
   private val httpClient: OkHttpClient by lazy {
     OkHttpClient.Builder()

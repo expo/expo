@@ -4,15 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
+- Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
+- Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
 - [iOS] fix: `getFreeDiskStorageAsync` returns result that's closer to the value reported by the system. ([#29732](https://github.com/expo/expo/pull/29732) by [@vonovak](https://github.com/vonovak))
 - Add NULL check before dereferencing pointer to error pointer in `EXFileSystemAssetLibraryHandler`. ([#29091](https://github.com/expo/expo/pull/29091) by [@hakonk](https://github.com/hakonk))
+- Add missing `react-native` peer dependencies for isolated modules. ([#30466](https://github.com/expo/expo/pull/30466) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Use the `src` folder as the Metro target. ([#31234](https://github.com/expo/expo/pull/31234) by [@aleqsio](https://github.com/aleqsio))
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
 ## 17.0.1 — 2024-04-23

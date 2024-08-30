@@ -17,6 +17,12 @@ Here are some **important rules** that apply to all authentication providers:
 - You can only invoke `promptAsync` in user interaction on the web.
 - Expo Go cannot be used for local development and testing of OAuth or OpenID Connect-enabled apps due to the inability to customize your app scheme. You can instead use a [Development Build](/develop/development-builds/introduction/), which enables an Expo Go-like development experience and supports OAuth redirects back to your app after login in a manner that works just like it would in production.
 
+## Obtaining access tokens
+
+Most provides in this guide use the [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
+
+Since [your application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a context (for example, your server). This will allow you to securely store and use a client secret to access the provider's token endpoint.
+
 ## Guides
 
 **AuthSession** can be used for any OAuth or OpenID Connect provider, we've assembled guides for using the most requested services!
@@ -70,6 +76,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
   <GridItem title="Spotify" protocol={['OAuth 2']} image={ASSETS.spotify} />
   <GridItem title="Strava" protocol={['OAuth 2']} image={ASSETS.strava} />
+  <GridItem title="Strivacity" protocol={['OAuth 2']} image={ASSETS.strivacity} />
   <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
   <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
   <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
@@ -1775,6 +1782,71 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 </Box>
 {/* End Strava */}
+
+<Box
+  name="Strivacity"
+  createUrl="https://www.strivacity.com/learn-support/developer-hub"
+  image={ASSETS.strivacity}
+>
+
+| Website                                                                      | Provider | PKCE      | Auto Discovery |
+| ---------------------------------------------------------------------------- | -------- | --------- | -------------- |
+| [Get Your Config](https://docs.strivacity.com/docs/setting-up-your-instance) | OpenID   | Supported | Available      |
+
+{/* prettier-ignore */}
+```tsx Strivacity Auth Example
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web. It will ensure that authentication is completed properly. On native platforms, this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://<instance>.strivacity.com/oauth2/auth',
+  tokenEndpoint: 'https://<instance>.strivacity.com/oauth2/token',
+  revocationEndpoint: 'https://<instance>.strivacity.com/oauth2/revoke',
+};
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      scopes: ['openid', 'profile'],
+      redirectUri: makeRedirectUri();
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</Box>
+{/* End Strivacity */}
 
 <Box
   name="Twitch"

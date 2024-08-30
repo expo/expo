@@ -8,7 +8,7 @@ const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
-    return value === true || value === 'true';
+    return String(value) === 'true';
 }
 function memoize(fn) {
     const cache = new Map();
@@ -43,7 +43,7 @@ function getBabelCaller({ filename, options, }) {
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer,
-        // Enable React Server Component rules for AST.
+        // Enable React Server Component rules for AST. The naming maps to the resolver property `--conditions=react-server`.
         isReactServer,
         // The base url to make requests from, used for hosting from non-standard locations.
         baseUrl: typeof options.customTransformOptions?.baseUrl === 'string'
@@ -52,6 +52,8 @@ function getBabelCaller({ filename, options, }) {
         // Ensure we always use a mostly-valid router root.
         routerRoot: routerRoot ?? 'app',
         isDev: options.dev,
+        // Supply the DOM directive to the Babel preset.
+        isDOM: options.platform === 'web' && isCustomTruthy(options.customTransformOptions?.dom),
         // This value indicates if the user has disabled the feature or not.
         // Other criteria may still cause the feature to be disabled, but all inputs used are
         // already considered in the cache key.
@@ -67,7 +69,7 @@ function getBabelCaller({ filename, options, }) {
         isNodeModule,
         isHMREnabled: options.hot,
         // Set the standard Babel flag to disable ESM transformations.
-        supportsStaticESM: options.experimentalImportSupport,
+        supportsStaticESM: isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
         // Enable React compiler support in Babel.
         // TODO: Remove this in the future when compiler is on by default.
         supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)

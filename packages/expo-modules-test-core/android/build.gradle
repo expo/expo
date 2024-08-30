@@ -16,6 +16,10 @@ android {
     versionCode 3
     versionName '0.18.0'
   }
+  packaging {
+    exclude 'META-INF/LICENSE-notice.md'
+    exclude 'META-INF/LICENSE.md'
+  }
 }
 
 dependencies {

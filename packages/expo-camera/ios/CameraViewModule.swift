@@ -142,8 +142,32 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("mirror") { (view, mirror: Bool?) in
+        if let mirror {
+          view.mirror = mirror
+          return
+        }
+        view.mirror = false
+      }
+
+      Prop("active") { (view, active: Bool?) in
+        if let active {
+          view.active = active
+          return
+        }
+        view.active = true
+      }
+
       OnViewDidUpdateProps { view in
         view.initCamera()
+      }
+
+      AsyncFunction("resumePreview") { view in
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view in
+        view.pausePreview()
       }
 
       AsyncFunction("getAvailablePictureSizes") { (_: String?) in

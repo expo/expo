@@ -6,17 +6,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 import generate from '@babel/generator';
-import type { ParseResult } from '@babel/parser';
 import template from '@babel/template';
 import traverse from '@babel/traverse';
 import type { NodePath } from '@babel/traverse';
 import { isImport } from '@babel/types';
-import * as types from '@babel/types';
+import * as t from '@babel/types';
 import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
-import * as crypto from 'crypto';
-import nullthrows from 'nullthrows';
+import assert from 'node:assert';
+import * as crypto from 'node:crypto';
 
-type AsyncDependencyType = 'weak' | 'async' | 'prefetch';
+// asserts non-null
+function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+  assert(x != null, message);
+  return x;
+}
+
+export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -26,6 +31,7 @@ type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
 
 type ImportDependencyOptions = Readonly<{
   asyncType: AsyncDependencyType;
+  dynamicRequires: DynamicRequiresBehavior;
 }>;
 
 export type Dependency = Readonly<{
@@ -47,21 +53,22 @@ type MutableDependencyData = {
   key: string;
   asyncType: AsyncDependencyType | null;
   isOptional?: boolean;
-  locs: readonly types.SourceLocation[];
+  locs: readonly t.SourceLocation[];
   contextParams?: RequireContextParams;
+  exportNames: string[];
 };
 
-type DependencyData = Readonly<MutableDependencyData>;
+export type DependencyData = Readonly<MutableDependencyData>;
 
 type MutableInternalDependency = MutableDependencyData & {
-  locs: types.SourceLocation[];
+  locs: t.SourceLocation[];
   index: number;
   name: string;
 };
 
-type InternalDependency = Readonly<MutableInternalDependency>;
+export type InternalDependency = Readonly<MutableInternalDependency>;
 
-type State = {
+export type State = {
   asyncRequireModulePathStringLiteral: StringLiteral | null;
   dependencyCalls: Set<string>;
   dependencyRegistry: DependencyRegistry;
@@ -71,9 +78,11 @@ type State = {
   keepRequireNames: boolean;
   allowOptionalDependencies: AllowOptionalDependencies;
   unstable_allowRequireContext: boolean;
+  /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+  collectOnly?: boolean;
 };
 
-type Options = Readonly<{
+export type Options = Readonly<{
   asyncRequireModulePath: string;
   dependencyMapName?: string | null;
   dynamicRequires: DynamicRequiresBehavior;
@@ -82,10 +91,12 @@ type Options = Readonly<{
   allowOptionalDependencies: AllowOptionalDependencies;
   dependencyTransformer?: DependencyTransformer;
   unstable_allowRequireContext: boolean;
+  /** Indicates that the pass should only collect dependencies and avoid mutating the AST. This is used for tree shaking passes. */
+  collectOnly?: boolean;
 }>;
 
-export type CollectedDependencies = Readonly<{
-  ast: ParseResult<types.File>;
+export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
+  ast: TAst;
   dependencyMapName: string;
   dependencies: readonly Dependency[];
 }>;
@@ -96,25 +107,31 @@ export interface DependencyTransformer {
     dependency: InternalDependency,
     state: State
   ): void;
+  transformImportMaybeSyncCall(
+    path: NodePath<any>,
+    dependency: InternalDependency,
+    state: State
+  ): void;
   transformImportCall(path: NodePath<any>, dependency: InternalDependency, state: State): void;
   transformPrefetch(path: NodePath<any>, dependency: InternalDependency, state: State): void;
   transformIllegalDynamicRequire(path: NodePath<any>, state: State): void;
 }
 
-export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject' | 'warn';
 
 type ImportQualifier = Readonly<{
   name: string;
   asyncType: AsyncDependencyType | null;
   optional: boolean;
   contextParams?: RequireContextParams;
+  exportNames: string[];
 }>;
 
-function collectDependencies(
-  ast: CollectedDependencies['ast'],
+function collectDependencies<TAst extends t.File>(
+  ast: TAst,
   options: Options
-): CollectedDependencies {
-  const visited = new WeakSet<types.CallExpression>();
+): CollectedDependencies<TAst> {
+  const visited = new WeakSet<t.CallExpression>();
 
   const state: State = {
     asyncRequireModulePathStringLiteral: null,
@@ -126,6 +143,7 @@ function collectDependencies(
     keepRequireNames: options.keepRequireNames,
     allowOptionalDependencies: options.allowOptionalDependencies,
     unstable_allowRequireContext: options.unstable_allowRequireContext,
+    collectOnly: options.collectOnly,
   };
 
   traverse(
@@ -141,6 +159,7 @@ function collectDependencies(
 
         if (isImport(callee)) {
           processImportCall(path, state, {
+            dynamicRequires: options.dynamicRequires,
             asyncType: 'async',
           });
           return;
@@ -148,6 +167,7 @@ function collectDependencies(
 
         if (name === '__prefetchImport' && !path.scope.getBinding(name)) {
           processImportCall(path, state, {
+            dynamicRequires: options.dynamicRequires,
             asyncType: 'prefetch',
           });
           return;
@@ -164,6 +184,7 @@ function collectDependencies(
           !path.scope.getBinding('require')
         ) {
           processRequireContextCall(path, state);
+
           visited.add(path.node);
           return;
         }
@@ -182,8 +203,30 @@ function collectDependencies(
           return;
         }
 
+        // Match `require.unstable_importMaybeSync`
+        if (
+          callee.type === 'MemberExpression' &&
+          // `require`
+          callee.object.type === 'Identifier' &&
+          callee.object.name === 'require' &&
+          // `unstable_importMaybeSync`
+          callee.property.type === 'Identifier' &&
+          callee.property.name === 'unstable_importMaybeSync' &&
+          !callee.computed &&
+          // Ensure `require` refers to the global and not something else.
+          !path.scope.getBinding('require')
+        ) {
+          processImportCall(path, state, {
+            dynamicRequires: options.dynamicRequires,
+            asyncType: 'maybeSync',
+          });
+          visited.add(path.node);
+          return;
+        }
+
         if (name != null && state.dependencyCalls.has(name) && !path.scope.getBinding(name)) {
           processRequireCall(path, state);
+
           visited.add(path.node);
         }
       },
@@ -193,12 +236,10 @@ function collectDependencies(
       ExportAllDeclaration: collectImports,
 
       Program(path, state: State) {
-        state.asyncRequireModulePathStringLiteral = types.stringLiteral(
-          options.asyncRequireModulePath
-        );
+        state.asyncRequireModulePathStringLiteral = t.stringLiteral(options.asyncRequireModulePath);
 
         if (options.dependencyMapName != null) {
-          state.dependencyMapIdentifier = types.identifier(options.dependencyMapName);
+          state.dependencyMapIdentifier = t.identifier(options.dependencyMapName);
         } else {
           state.dependencyMapIdentifier = path.scope.generateUidIdentifier('dependencyMap');
         }
@@ -325,11 +366,17 @@ function processRequireContextCall(path: NodePath<CallExpression>, state: State)
       contextParams,
       asyncType: null,
       optional: isOptionalDependency(directory, path, state),
+      exportNames: ['*'],
     },
     path
   );
 
-  path.get('callee').replaceWith(types.identifier('require'));
+  // If the pass is only collecting dependencies then we should avoid mutating the AST,
+  // this enables calling collectDependencies multiple times on the same AST.
+  if (state.collectOnly !== true) {
+    // require() the generated module representing this context
+    path.get('callee').replaceWith(t.identifier('require'));
+  }
   transformer.transformSyncRequire(path, dep, state);
 }
 
@@ -346,6 +393,7 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
       name,
       asyncType: 'weak',
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -357,6 +405,38 @@ function processResolveWeakCall(path: NodePath<CallExpression>, state: State): v
   );
 }
 
+export function getExportNamesFromPath(path: NodePath<any>): string[] {
+  if (path.node.source) {
+    if (t.isExportAllDeclaration(path.node)) {
+      return ['*'];
+    } else if (t.isExportNamedDeclaration(path.node)) {
+      return path.node.specifiers.map((specifier) => {
+        const exportedName = t.isIdentifier(specifier.exported)
+          ? specifier.exported.name
+          : specifier.exported.value;
+        const localName = 'local' in specifier ? specifier.local.name : exportedName;
+
+        // `export { default as add } from './add'`
+        return specifier.type === 'ExportSpecifier' ? localName : exportedName;
+      });
+    } else if (t.isImportDeclaration(path.node)) {
+      return path.node.specifiers
+        .map((specifier) => {
+          if (specifier.type === 'ImportDefaultSpecifier') {
+            return 'default';
+          } else if (specifier.type === 'ImportNamespaceSpecifier') {
+            return '*';
+          }
+          return t.isImportSpecifier(specifier) && t.isIdentifier(specifier.imported)
+            ? specifier.imported.name
+            : null;
+        })
+        .filter(Boolean) as string[];
+    }
+  }
+  return [];
+}
+
 function collectImports(path: NodePath<any>, state: State): void {
   if (path.node.source) {
     registerDependency(
@@ -365,6 +445,7 @@ function collectImports(path: NodePath<any>, state: State): void {
         name: path.node.source.value,
         asyncType: null,
         optional: false,
+        exportNames: getExportNamesFromPath(path),
       },
       path
     );
@@ -379,6 +460,11 @@ function processImportCall(
   const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {
+    if (options.dynamicRequires === 'warn') {
+      warnDynamicRequire(path);
+      return;
+    }
+
     throw new InvalidRequireCallError(path);
   }
 
@@ -388,17 +474,33 @@ function processImportCall(
       name,
       asyncType: options.asyncType,
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
 
   const transformer = state.dependencyTransformer;
 
-  if (options.asyncType === 'async') {
-    transformer.transformImportCall(path, dep, state);
-  } else {
-    transformer.transformPrefetch(path, dep, state);
+  switch (options.asyncType) {
+    case 'async':
+      transformer.transformImportCall(path, dep, state);
+      break;
+    case 'maybeSync':
+      transformer.transformImportMaybeSyncCall(path, dep, state);
+      break;
+    case 'prefetch':
+      transformer.transformPrefetch(path, dep, state);
+      break;
+    default:
+      throw new Error('Unreachable');
   }
+}
+
+function warnDynamicRequire({ node }: NodePath<CallExpression>, message = '') {
+  const line = node.loc && node.loc.start && node.loc.start.line;
+  console.warn(
+    `Dynamic import at line ${line || '<unknown>'}: ${generate(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim()
+  );
 }
 
 function processRequireCall(path: NodePath<CallExpression>, state: State): void {
@@ -409,9 +511,12 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
   if (name == null) {
     if (state.dynamicRequires === 'reject') {
       throw new InvalidRequireCallError(path);
+    } else if (state.dynamicRequires === 'warn') {
+      warnDynamicRequire(path);
+      return;
+    } else {
+      transformer.transformIllegalDynamicRequire(path, state);
     }
-
-    transformer.transformIllegalDynamicRequire(path, state);
     return;
   }
 
@@ -421,6 +526,7 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
       name,
       asyncType: null,
       optional: isOptionalDependency(name, path, state),
+      exportNames: ['*'],
     },
     path
   );
@@ -428,8 +534,8 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
   transformer.transformSyncRequire(path, dep, state);
 }
 
-function getNearestLocFromPath(path: NodePath<any>): types.SourceLocation | null {
-  let current: NodePath<any> | NodePath<types.Node> | null = path;
+function getNearestLocFromPath(path: NodePath<any>): t.SourceLocation | null {
+  let current: NodePath<any> | NodePath<t.Node> | null = path;
   while (current && !current.node.loc && !current.node.METRO_INLINE_REQUIRES_INIT_LOC) {
     current = current.parentPath;
   }
@@ -442,6 +548,7 @@ function registerDependency(
   path: NodePath<any>
 ): InternalDependency {
   const dependency = state.dependencyRegistry.registerDependency(qualifier);
+
   const loc = getNearestLocFromPath(path);
   if (loc != null) {
     dependency.locs.push(loc);
@@ -467,7 +574,7 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
   }
 
   let sCount = 0;
-  let p: NodePath<any> | NodePath<types.Node> | null = path;
+  let p: NodePath<any> | NodePath<t.Node> | null = path;
   while (p && sCount < 3) {
     if (p.isStatement()) {
       if (p.node.type === 'BlockStatement') {
@@ -522,6 +629,14 @@ const makeAsyncPrefetchTemplateWithName = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).prefetch(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
 `);
 
+const makeAsyncImportMaybeSyncTemplate = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+
+const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_importMaybeSync(MODULE_ID, DEPENDENCY_MAP.paths, MODULE_NAME)
+`);
+
 const makeResolveWeakTemplate = template.expression(`
   MODULE_ID
 `);
@@ -535,7 +650,7 @@ const DefaultDependencyTransformer: DependencyTransformer = {
     const moduleIDExpression = createModuleIDExpression(dependency, state);
     path.node.arguments = [moduleIDExpression];
     if (state.keepRequireNames) {
-      path.node.arguments.push(types.stringLiteral(dependency.name));
+      path.node.arguments.push(t.stringLiteral(dependency.name));
     }
   },
 
@@ -543,6 +658,23 @@ const DefaultDependencyTransformer: DependencyTransformer = {
     const makeNode = state.keepRequireNames
       ? makeAsyncRequireTemplateWithName
       : makeAsyncRequireTemplate;
+    const opts = {
+      ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+      MODULE_ID: createModuleIDExpression(dependency, state),
+      DEPENDENCY_MAP: nullthrows(state.dependencyMapIdentifier),
+      ...(state.keepRequireNames ? { MODULE_NAME: createModuleNameLiteral(dependency) } : null),
+    };
+    path.replaceWith(makeNode(opts));
+  },
+
+  transformImportMaybeSyncCall(
+    path: NodePath<any>,
+    dependency: InternalDependency,
+    state: State
+  ): void {
+    const makeNode = state.keepRequireNames
+      ? makeAsyncImportMaybeSyncTemplateWithName
+      : makeAsyncImportMaybeSyncTemplate;
     const opts = {
       ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
       MODULE_ID: createModuleIDExpression(dependency, state),
@@ -568,22 +700,22 @@ const DefaultDependencyTransformer: DependencyTransformer = {
   transformIllegalDynamicRequire(path: NodePath<any>, state: State): void {
     path.replaceWith(
       dynamicRequireErrorTemplate({
-        LINE: types.numericLiteral(path.node.loc?.start.line ?? 0),
+        LINE: t.numericLiteral(path.node.loc?.start.line ?? 0),
       })
     );
   },
 };
 
 function createModuleIDExpression(dependency: InternalDependency, state: State) {
-  return types.memberExpression(
+  return t.memberExpression(
     nullthrows(state.dependencyMapIdentifier),
-    types.numericLiteral(dependency.index),
+    t.numericLiteral(dependency.index),
     true
   );
 }
 
 function createModuleNameLiteral(dependency: InternalDependency) {
-  return types.stringLiteral(dependency.name);
+  return t.stringLiteral(dependency.name);
 }
 
 function getKeyForDependency(qualifier: ImportQualifier): string {
@@ -619,6 +751,7 @@ class DependencyRegistry {
       const newDependency: MutableInternalDependency = {
         name: qualifier.name,
         asyncType: qualifier.asyncType,
+        exportNames: qualifier.exportNames,
         locs: [],
         index: this._dependencies.size,
         key: crypto.createHash('sha1').update(key).digest('base64'),
@@ -639,6 +772,11 @@ class DependencyRegistry {
           isOptional: false,
         };
       }
+
+      dependency = {
+        ...dependency,
+        exportNames: [...new Set(dependency.exportNames.concat(qualifier.exportNames))],
+      };
     }
 
     this._dependencies.set(key, dependency);

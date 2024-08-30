@@ -29,13 +29,13 @@ Both hooks are typed and accessed the same way. However, the only difference is 
 
 The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
 
-<FileTree files={['app/_layout.js', 'app/index.js', 'app/[user].js']} />
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/[user].tsx']} />
 
 <Step label="1">
 
     The Root Layout is a stack navigator:
 
-    ```jsx app/_layout.js
+    ```tsx app/_layout.tsx
     import { Stack } from 'expo-router';
 
     export default function Layout() {
@@ -47,9 +47,9 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="2">
 
-    The initial route redirects to the dynamic route **app/[user].js**, with **user=evanbacon**:
+    The initial route redirects to the dynamic route **app/[user].tsx**, with **user=evanbacon**:
 
-    ```jsx app/index.js
+    ```tsx app/index.tsx
     import { Redirect } from 'expo-router';
 
     export default function Route() {
@@ -63,7 +63,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
     The dynamic route **app/[user]** prints out the global and local URL parameters (route parameters, in this case). It also allows for pushing new instances of the same route with different **route parameters**:
 
-    ```jsx app/[user].js
+    ```tsx app/[user].tsx
     import { Text, View } from 'react-native';
     import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
 
@@ -210,20 +210,20 @@ The following example uses a `<TextInput>` to update the search parameter **q**:
 
 ```tsx app/search.tsx
 import { useLocalSearchParams, router } from 'expo-router';
-import React from 'react';
+import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 
 export default function Page() {
-  const params = useLocalSearchParams<{ q?: string }>();
-  const [search, setSearch] = React.useState(params.q);
+  const params = useLocalSearchParams<{ query?: string }>();
+  const [search, setSearch] = useState(params.query);
 
   return (
     <TextInput
       value={search}
       onChangeText={search => {
         setSearch(search);
-        /* @info Set the search parameter <b>q</b> to the text input <b>search</b> */
-        router.setParams({ q: search });
+        /* @info Set the search parameter <b>query</b> to the text input <b>search</b> */
+        router.setParams({ query: search });
         /* @end */
       }}
       placeholderTextColor="#A0A0A0"
@@ -315,6 +315,26 @@ export default function User() {
   );
 }
 ```
+
+{/* prettier-ignore */}
+{/*
+TODO: REMOVE COMMENT WHEN https://github.com/expo/expo/pull/30268 IS PUBLISHED
+
+## Array support
+
+URL parameters that are present multiple times will be grouped together as an array.
+
+```tsx app/hash.tsx
+import { router, useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  // If the current URL is `/route?myParam=1&myParam=2
+  const { myParam } = useLocalSearchParams();
+  // myParam === ["1", "2"]
+}
+```
+
+\*/}
 
 ## Hash support
 

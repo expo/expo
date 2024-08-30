@@ -109,6 +109,7 @@ class AudioRecorder(
     if (meteringEnabled) {
       putInt("metering", getAudioRecorderLevels())
     }
+    putString("url", uri)
   }
 
   private fun getAudioRecorderDurationMillis(): Long {
@@ -145,6 +146,7 @@ class AudioRecorder(
           mapOf(
             "isFinished" to true,
             "hasError" to true,
+            "error" to null,
             "url" to Uri.fromFile(filePath?.let { File(it) }).toString()
           )
         )

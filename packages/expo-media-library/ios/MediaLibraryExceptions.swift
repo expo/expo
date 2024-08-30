@@ -1,10 +1,6 @@
 import ExpoModulesCore
 
-internal class MethodUnavailableException: Exception {
-  override var reason: String {
-    "presentLimitedLibraryPickerAsync is only available on iOS >= 14"
-  }
-}
+let defaultErrorMessage = "unspecified error"
 
 internal class MediaLibraryPermissionsException: Exception {
   override var reason: String {
@@ -12,9 +8,9 @@ internal class MediaLibraryPermissionsException: Exception {
   }
 }
 
-internal class FileExtensionException: Exception {
+internal class EmptyFileExtensionException: Exception {
   override var reason: String {
-    "Could not get the file's extension"
+    "Could not get the file's extension - it was empty."
   }
 }
 
@@ -30,9 +26,9 @@ internal class UnreadableAssetException: GenericException<String> {
   }
 }
 
-internal class SaveAssetException: Exception {
+internal class SaveAssetException: GenericException<(any Error)?> {
   override var reason: String {
-    "Asset couldn't be saved to photo library"
+    "Asset couldn't be saved to photo library: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 
@@ -54,21 +50,21 @@ internal class SaveVideoException: Exception {
   }
 }
 
-internal class SaveAlbumException: Exception {
+internal class SaveAlbumException: GenericException<(any Error)?> {
   override var reason: String {
-    "Couldn't add assets to album"
+    "Couldn't add assets to album: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 
-internal class RemoveFromAlbumException: Exception {
+internal class RemoveFromAlbumException: GenericException<(any Error)?> {
   override var reason: String {
-    "Couldn't remove assets from album"
+    "Couldn't remove assets from album: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 
-internal class RemoveAssetsException: Exception {
+internal class RemoveAssetsException: GenericException<(any Error)?> {
   override var reason: String {
-    "Couldn't remove assets"
+    "Couldn't remove assets: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 
@@ -84,21 +80,21 @@ internal class NotEnoughPermissionsException: Exception {
   }
 }
 
-internal class FailedToAddAssetException: Exception {
+internal class FailedToAddAssetException: GenericException<(any Error)?> {
   override var reason: String {
-    "Unable to add asset to the new album"
+    "Unable to add asset to the new album: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 
-internal class CreateAlbumFailedException: Exception {
+internal class CreateAlbumFailedException: GenericException<(any Error)?> {
   override var reason: String {
-    "Could not create album"
+    "Could not create album: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 
-internal class DeleteAlbumFailedException: Exception {
+internal class DeleteAlbumFailedException: GenericException<(any Error)?> {
   override var reason: String {
-    "Could not delete album"
+    "Could not delete album: \(param?.localizedDescription ?? defaultErrorMessage)"
   }
 }
 

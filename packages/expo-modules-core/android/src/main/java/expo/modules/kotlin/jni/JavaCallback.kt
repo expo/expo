@@ -6,7 +6,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.SharedObject
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
@@ -24,7 +24,11 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
       is String -> invokeNative(result)
       is WritableNativeArray -> invokeNative(result)
       is WritableNativeMap -> invokeNative(result)
-      is SharedRef<*> -> invokeNative(result)
+      is SharedObject -> invokeNative(result)
+      is IntArray -> invokeIntArray(result)
+      is LongArray -> invokeLongArray(result)
+      is FloatArray -> invokeFloatArray(result)
+      is DoubleArray -> invokeDoubleArray(result)
       else -> throw UnexpectedException("Unknown type: ${result.javaClass}")
     }
   }
@@ -65,8 +69,13 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeNative(result: String)
   private external fun invokeNative(result: WritableNativeArray)
   private external fun invokeNative(result: WritableNativeMap)
-  private external fun invokeNative(result: SharedRef<*>)
+  private external fun invokeNative(result: SharedObject)
   private external fun invokeNative(code: String, errorMessage: String)
+
+  private external fun invokeIntArray(result: IntArray)
+  private external fun invokeLongArray(result: LongArray)
+  private external fun invokeFloatArray(result: FloatArray)
+  private external fun invokeDoubleArray(result: DoubleArray)
 
   private inline fun checkIfValid(body: () -> Unit) {
     try {

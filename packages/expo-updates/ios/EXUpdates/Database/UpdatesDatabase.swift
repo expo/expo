@@ -10,7 +10,11 @@
 // swiftlint:disable file_length
 
 import Foundation
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 import EXManifests
 
 internal enum UpdatesDatabaseError: Error {

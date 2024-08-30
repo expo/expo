@@ -1,9 +1,14 @@
 package expo.modules.notifications.notifications;
 
+import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
+import static expo.modules.notifications.UtilsKt.isValidJSONString;
+
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -18,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -52,9 +58,45 @@ public class NotificationSerializer {
   public static Bundle toBundle(NotificationRequest request) {
     Bundle serializedRequest = new Bundle();
     serializedRequest.putString("identifier", request.getIdentifier());
-    serializedRequest.putBundle("content", toBundle(request.getContent()));
     serializedRequest.putBundle("trigger", toBundle(request.getTrigger()));
+    Bundle content = toBundle(request.getContent());
+    Bundle existingContentData = content.getBundle("data");
+    if (existingContentData == null) {
+      if(request.getTrigger() instanceof FirebaseNotificationTrigger trigger) {
+        RemoteMessage message = trigger.getRemoteMessage();
+        RemoteMessage.Notification notification = message.getNotification();
+        Map<String, String> data = message.getData();
+        String dataBody = data.get("body");
+        String notificationBody = notification != null ? notification.getBody() : null;
+        if (isValidJSONString(dataBody) && notificationBody != null && notificationBody.equals(data.get("message"))) {
+          // Expo sends notification.body as data.message, and JSON stringifies data.body
+          content.putString("dataString", dataBody);
+        } else {
+          // The message was sent directly from Firebase or some other service,
+          // and we copy the data as is
+          content.putBundle("data", toBundle(data));
+        }
+      } else if(
+        request.getTrigger() instanceof SchedulableNotificationTrigger ||
+          request.getTrigger() == null
+      ) {
+        JSONObject body = request.getContent().getBody();
+        if (body != null) {
+          // Expo sends notification.body as data.message, and JSON stringifies data.body
+          content.putString("dataString", body.toString());
+        }
+      }
+    }
+    serializedRequest.putBundle("content", content);
     return serializedRequest;
+  }
+
+  public static Bundle toBundle(Map<String, String> map) {
+    Bundle result = new Bundle();
+    for (String key: map.keySet()) {
+      result.putString(key, map.get(key));
+    }
+    return result;
   }
 
   public static Bundle toBundle(NotificationContent content) {
@@ -65,7 +107,7 @@ public class NotificationSerializer {
     if (content.getColor() != null) {
       serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
     }
-    serializedContent.putBundle("data", toBundle(content.getBody()));
+
     if (content.getBadgeCount() != null) {
       serializedContent.putInt("badge", content.getBadgeCount().intValue());
     } else {
@@ -82,11 +124,7 @@ public class NotificationSerializer {
       serializedContent.putString("priority", content.getPriority().getEnumValue());
     }
     if (content.getVibrationPattern() != null) {
-      double[] serializedVibrationPattern = new double[content.getVibrationPattern().length];
-      for (int i = 0; i < serializedVibrationPattern.length; i++) {
-        serializedVibrationPattern[i] = content.getVibrationPattern()[i];
-      }
-      serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
+      serializedContent.putIntArray("vibrationPattern", RemoteMessageSerializer.intArrayFromLongArray(content.getVibrationPattern()));
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     if (content.getCategoryId() != null) {
@@ -196,30 +234,42 @@ public class NotificationSerializer {
     return null;
   }
 
-    @NotNull
-    public static Bundle toResponseBundleFromExtras(Bundle extras) {
-      Bundle serializedContent = new Bundle();
-      serializedContent.putString("title", extras.getString("title"));
+  @NotNull
+  public static Bundle toResponseBundleFromExtras(Bundle extras) {
+    Bundle serializedContent = new Bundle();
+    serializedContent.putString("title", extras.getString("title"));
+    String body = extras.getString("body");
+    if (isValidJSONString(body) ) {
+      // If the body is a JSON string,
+      // the notification was sent by the Expo notification service,
+      // so we do the expected remapping of fields
+      serializedContent.putString("dataString", body);
       serializedContent.putString("body", extras.getString("message"));
-      serializedContent.putString("dataString", extras.getString("body"));
-
-      Bundle serializedTrigger = new Bundle();
-      serializedTrigger.putString("type", "push");
-      serializedTrigger.putString("channelId", extras.getString("channelId"));
-
-      Bundle serializedRequest = new Bundle();
-      serializedRequest.putString("identifier", extras.getString("google.message_id"));
-      serializedRequest.putBundle("trigger", serializedTrigger);
-      serializedRequest.putBundle("content", serializedContent);
-
-      Bundle serializedNotification = new Bundle();
-      serializedNotification.putLong("date", extras.getLong("google.sent_time"));
-      serializedNotification.putBundle("request", serializedRequest);
-
-      Bundle serializedResponse = new Bundle();
-      serializedResponse.putString("actionIdentifier", "expo.modules.notifications.actions.DEFAULT");
-      serializedResponse.putBundle("notification", serializedNotification);
-
-      return serializedResponse;
+    } else {
+      // The notification came directly from Firebase or some other service,
+      // so we copy the data as is from the extras bundle, after
+      // ensuring it can be converted for emitting to JS
+      serializedContent.putBundle("data", filteredBundleForJSTypeConverter(extras));
     }
+
+    Bundle serializedTrigger = new Bundle();
+    serializedTrigger.putString("type", "push");
+    serializedTrigger.putString("channelId", extras.getString("channelId"));
+
+    Bundle serializedRequest = new Bundle();
+    serializedRequest.putString("identifier", extras.getString("google.message_id"));
+    serializedRequest.putBundle("trigger", serializedTrigger);
+    serializedRequest.putBundle("content", serializedContent);
+
+    Bundle serializedNotification = new Bundle();
+    serializedNotification.putLong("date", extras.getLong("google.sent_time"));
+    serializedNotification.putBundle("request", serializedRequest);
+
+    Bundle serializedResponse = new Bundle();
+    serializedResponse.putString("actionIdentifier", "expo.modules.notifications.actions.DEFAULT");
+    serializedResponse.putBundle("notification", serializedNotification);
+
+    return serializedResponse;
+  }
+
 }

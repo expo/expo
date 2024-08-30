@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - Add native `getLinkingURL` function. ([#29405](https://github.com/expo/expo/pull/29405) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30473](https://github.com/expo/expo/pull/30473) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
