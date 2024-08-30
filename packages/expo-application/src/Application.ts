@@ -6,9 +6,9 @@ import ExpoApplication from './ExpoApplication';
 // @needsAudit
 /**
  * The human-readable version of the native application that may be displayed in the app store.
- * This is the version name set by `version` in app config on Android and the `Info.plist`
- *  value for `CFBundleShortVersionString` on iOS, at the
- * time the native app was built. On web, this value is `null`.
+ * At the time when native app was built, on Android, this is the version name set by `version`
+ * in app config, and on iOS, the `Info.plist` value for `CFBundleShortVersionString`.
+ * On web, this value is `null`.
  * @example
  * `"2.11.0"`
  */
@@ -18,10 +18,10 @@ export const nativeApplicationVersion: string | null = ExpoApplication
 
 // @needsAudit
 /**
- * The internal build version of the native application that the app store may use to distinguish
- * between different binaries. This is the version code set by `android.versionCode` in app config
- * on Android and the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber`
- * value in app config in a standalone app), at the time the native app was built.
+ * The internal build version of the native application that the app stores may use to distinguish
+ * between different binaries. At the time when native app was built, On Android, this is the version
+ * code set by `android.versionCode` in app config, and on iOS, the `Info.plist` value for
+ * `CFBundleVersion` (set with `ios.buildNumber` value in app config in a standalone app).
  * On web, this value is `null`. The return type on Android and iOS is `string`.
  * @example
  * Android: `"114"`, iOS: `"2.11.0"`
@@ -160,7 +160,7 @@ export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<P
  * of the app's document root directory.
  * - On web, this method returns `null`.
  *
- * @return A `Promise` that fulfills with a `Date` object which specifies the time the app
+ * @return A `Promise` that fulfills with a `Date` object that specifies the time the app
  * was installed on the device.
  *
  * @example
@@ -180,7 +180,7 @@ export async function getInstallationTimeAsync(): Promise<Date> {
 // @needsAudit
 /**
  * Gets the last time the app was updated from the Google Play Store.
- * @return A `Promise` that fulfills with a `Date` object which specifies the last time
+ * @return A `Promise` that fulfills with a `Date` object that specifies the last time
  * the app was updated via the Google Play Store.
  *
  * @example
