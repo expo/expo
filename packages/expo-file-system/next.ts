@@ -1,1 +1,1 @@
-module.exports = require('./src/next');
+export * from './src/next';
