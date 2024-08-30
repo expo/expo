@@ -6,8 +6,8 @@ import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
- * @return An `EmitterSubscription` that has the remove method from `EventSubscription.`
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
+ * @see [React Native documentation on Linking](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export declare function addEventListener(type: 'url', handler: URLListener): EmitterSubscription;
 /**
