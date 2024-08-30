@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.Columns
-import java.util.Calendar
 import java.util.Locale
 
 class DateModel : BaseModel() {
