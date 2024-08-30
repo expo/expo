@@ -5,6 +5,7 @@ import Actions from '../components/02-actions';
 import LocalAsset from '../components/03-local-asset';
 import Tailwind from '../components/04-tailwind';
 import PublicAsset from '../components/05-public-asset';
+import NestedComponents from '../components/06-nested';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
@@ -45,6 +46,10 @@ export default function Page() {
 
       <TestCase name="Tailwind">
         <Tailwind dom={{ autoSize: true }} />
+      </TestCase>
+
+      <TestCase name="Nested">
+        <NestedComponents dom={{ autoSize: true }} />
       </TestCase>
     </ScrollView>
   );

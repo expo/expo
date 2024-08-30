@@ -1,4 +1,5 @@
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
@@ -41,14 +42,15 @@ export function createDomComponentsMiddleware(
 
     // Generate a unique entry file for the webview.
     const generatedEntry = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-
+    const virtualEntry = resolveFrom(metroRoot, 'expo/dom/entry.js');
+    const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntry);
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
     const metroUrl = new URL(
       createBundleUrlPath({
         ...instanceMetroOptions,
-        isDOM: true,
-        mainModuleName: path.relative(metroRoot, generatedEntry),
+        domRoot: encodeURI(relativeImport),
+        mainModuleName: path.relative(metroRoot, virtualEntry),
         bytecode: false,
         platform: 'web',
         isExporting: false,
