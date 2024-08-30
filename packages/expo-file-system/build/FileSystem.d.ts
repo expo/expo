@@ -49,6 +49,13 @@ export declare function readAsStringAsync(fileUri: string, options?: ReadingOpti
  */
 export declare function getContentUriAsync(fileUri: string): Promise<string>;
 /**
+ * Get URI to iOS shared container.
+ * @param appGroup Name of the app group.
+ * @return Returns a Promise that resolves to a `string` containing an URI pointing to the shared container.
+ * @platform ios
+ */
+export declare function getSharedContainerUriAsync(appGroup: string): Promise<string | null>;
+/**
  * Write the entire contents of a file as a string.
  * @param fileUri `file://` or [SAF](#saf-uri) URI to the file or directory.
  * > Note: when you're using SAF URI the file needs to exist. You can't create a new file.

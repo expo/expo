@@ -2,6 +2,8 @@ import type { SQLiteOpenOptions, IOSOptions } from './NativeDatabase';
 import type { DatabaseChangeEvent } from './SQLiteDatabase';
 declare const _default: {
     NativeDatabase(databaseName: string, iosOptions?: IOSOptions, options?: SQLiteOpenOptions, serializedData?: Uint8Array): void;
+    ensureHasAccessAsync(databaseName: string, iosOptions?: IOSOptions): Promise<void>;
+    ensureHasAccessSync(databaseName: string, iosOptions?: IOSOptions): void;
     NativeStatement(): void;
     deleteDatabaseAsync(databaseName: string, iosOptions: IOSOptions): Promise<void>;
     deleteDatabaseSync(databaseName: string, iosOptions: IOSOptions): void;

@@ -2,6 +2,12 @@ export default {
     NativeDatabase(databaseName, iosOptions, options, serializedData) {
         throw new Error('Unimplemented');
     },
+    async ensureHasAccessAsync(databaseName, iosOptions) {
+        throw new Error('Unimplemented');
+    },
+    ensureHasAccessSync(databaseName, iosOptions) {
+        throw new Error('Unimplemented');
+    },
     NativeStatement() {
         throw new Error('Unimplemented');
     },

@@ -116,6 +116,23 @@ export async function getContentUriAsync(fileUri: string): Promise<string> {
 }
 
 /**
+ * Get URI to iOS shared container.
+ * @param appGroup Name of the app group.
+ * @return Returns a Promise that resolves to a `string` containing an URI pointing to the shared container.
+ * @platform ios
+ */
+export async function getSharedContainerUriAsync(appGroup: string): Promise<string | null> {
+  if (Platform.OS === 'ios') {
+    if (!ExponentFileSystem.getSharedContainerUriAsync) {
+      throw new UnavailabilityError('expo-file-system', 'getSharedContainerUriAsync');
+    }
+    return normalizeEndingSlash(await ExponentFileSystem.getSharedContainerUriAsync(appGroup));
+  } else {
+    return null;
+  }
+}
+
+/**
  * Write the entire contents of a file as a string.
  * @param fileUri `file://` or [SAF](#saf-uri) URI to the file or directory.
  * > Note: when you're using SAF URI the file needs to exist. You can't create a new file.

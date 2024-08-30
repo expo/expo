@@ -520,6 +520,45 @@ export async function test({ describe, expect, it, ...t }) {
         await FS.deleteAsync(to);
         await assertExists(false);
       });
+
+      describe('App Group', () => {
+        it(
+          'delete(dir) -> write(dir/file)[error] -> mkdir(dir) ->' +
+            'mkdir(dir)[error] -> write(dir/file) -> read',
+          async () => {
+            const sharedContainerRoot =
+              await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
+            let error;
+            const path = sharedContainerRoot + 'dir/file';
+            const dir = sharedContainerRoot + 'dir';
+            const contents = 'hello, world';
+
+            await FS.deleteAsync(dir, { idempotent: true });
+
+            error = null;
+            try {
+              await FS.writeAsStringAsync(path, contents);
+            } catch (e) {
+              error = e;
+            }
+            expect(error).toBeTruthy();
+
+            await FS.makeDirectoryAsync(dir);
+
+            error = null;
+            try {
+              await FS.makeDirectoryAsync(dir);
+            } catch (e) {
+              error = e;
+            }
+            expect(error).toBeTruthy();
+
+            await FS.writeAsStringAsync(path, contents);
+
+            expect(await FS.readAsStringAsync(path)).toBe(contents);
+          }
+        );
+      });
     }
   });
 }

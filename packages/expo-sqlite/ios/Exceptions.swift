@@ -10,6 +10,16 @@ internal class DatabaseException: Exception {
   }
 }
 
+internal class DatabaseInvalidAppGroupExcetion: GenericException<String> {
+  override var code: String {
+    "E_SQLITE_INVALID_APP_GROUP"
+  }
+
+  override var reason: String {
+    "Unable to open database with provided app group \(param). Check your entitlements"
+  }
+}
+
 internal class DeleteDatabaseException: GenericException<String> {
   override var code: String {
     "E_SQLITE_DELETE_DATABASE"

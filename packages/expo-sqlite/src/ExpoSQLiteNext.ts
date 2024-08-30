@@ -1,4 +1,4 @@
-import type { SQLiteOpenOptions, IOSOptions } from './NativeDatabase';
+import type { SQLiteOpenOptions, IOSOptions, NativeDatabase } from './NativeDatabase';
 import type { DatabaseChangeEvent } from './SQLiteDatabase';
 
 export default {
@@ -8,6 +8,14 @@ export default {
     options?: SQLiteOpenOptions,
     serializedData?: Uint8Array
   ): void {
+    throw new Error('Unimplemented');
+  },
+
+  async ensureHasAccessAsync(databaseName: string, iosOptions?: IOSOptions): Promise<void> {
+    throw new Error('Unimplemented');
+  },
+
+  ensureHasAccessSync(databaseName: string, iosOptions?: IOSOptions): void {
     throw new Error('Unimplemented');
   },
 

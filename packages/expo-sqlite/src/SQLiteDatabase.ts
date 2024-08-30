@@ -422,6 +422,7 @@ export async function openDatabaseAsync(
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
   const resolvedIosOptions = iosOptions ?? {};
+  await ExpoSQLite.ensureHasAccessAsync(databaseName, resolvedIosOptions);
   const nativeDatabase = new ExpoSQLite.NativeDatabase(
     databaseName,
     resolvedIosOptions,
@@ -447,6 +448,7 @@ export function openDatabaseSync(
 ): SQLiteDatabase {
   const openOptions = options ?? {};
   const resolvedIosOptions = iosOptions ?? {};
+  ExpoSQLite.ensureHasAccessSync(databaseName, resolvedIosOptions);
   const nativeDatabase = new ExpoSQLite.NativeDatabase(
     databaseName,
     resolvedIosOptions,
@@ -566,6 +568,7 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
+    await ExpoSQLite.ensureHasAccessAsync(db.databaseName, db.iosOptions);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.iosOptions, options);
     await nativeDatabase.initAsync();
     return new Transaction(db.databaseName, db.iosOptions, options, nativeDatabase);

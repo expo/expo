@@ -90,6 +90,15 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
     if !permissionsForInternalDirectories.isEmpty {
       return permissionsForInternalDirectories
     }
+    if let range = path.range(of: "Containers/Shared/AppGroup") {
+      let appGroupRoot = String(path[..<range.upperBound])
+      guard let appGroupRootUrl = convertToUrl(string: appGroupRoot) else {
+        return []
+      }
+
+      return getExternalPathPermissions(appGroupRootUrl)
+    }
+    
     return getExternalPathPermissions(url)
   }
 

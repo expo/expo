@@ -45,14 +45,14 @@ class SQLiteModuleNext : Module() {
       } catch (_: Throwable) {}
     }
 
-    AsyncFunction("deleteDatabaseAsync") { databaseName: String ->
+    AsyncFunction("deleteDatabaseAsync") { databaseName: String, iosOptions: IOSOptions ->
       deleteDatabase(databaseName)
     }
-    Function("deleteDatabaseSync") { databaseName: String ->
+    Function("deleteDatabaseSync") { databaseName: String, iosOptions: IOSOptions ->
       deleteDatabase(databaseName)
     }
 
-    AsyncFunction("importAssetDatabaseAsync") { databaseName: String, assetDatabasePath: String, forceOverwrite: Boolean ->
+    AsyncFunction("importAssetDatabaseAsync") { databaseName: String, iosOptions: IOSOptions, assetDatabasePath: String, forceOverwrite: Boolean ->
       val dbFile = File(pathForDatabaseName(databaseName))
       if (dbFile.exists() && !forceOverwrite) {
         return@AsyncFunction
@@ -64,13 +64,20 @@ class SQLiteModuleNext : Module() {
       assetFile.copyTo(dbFile, forceOverwrite)
     }
 
+    AsyncFunction("ensureHasAccessAsync") { databaseName: String, iosOptions: IOSOptions ->
+      ensureHasAccess(databaseName)
+    }
+    Function("ensureHasAccessSync") { databaseName: String, iosOptions: IOSOptions  ->
+      deleteDatabase(databaseName)
+    }
+
     Class(NativeDatabase::class) {
-      Constructor { databaseName: String, options: OpenDatabaseOptions, serializedData: ByteArray? ->
+      Constructor { databaseName: String, iosOptions: IOSOptions, options: OpenDatabaseOptions, serializedData: ByteArray? ->
         val database: NativeDatabase
         if (serializedData != null) {
           database = deserializeDatabase(serializedData, options)
         } else {
-          val dbPath = pathForDatabaseName(databaseName)
+          val dbPath = ensureHasAccess(databaseName)
 
           // Try to find opened database for fast refresh
           findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
@@ -184,6 +191,11 @@ class SQLiteModuleNext : Module() {
         return@Function finalize(statement, database)
       }
     }
+  }
+
+  @Throws(OpenDatabaseException::class)
+  private fun ensureHasAccess(databaseName: String): String {
+    return pathForDatabaseName(databaseName)
   }
 
   @Throws(OpenDatabaseException::class)

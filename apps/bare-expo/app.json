@@ -31,7 +31,12 @@
       ],
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
-      "requireFullScreen": false
+      "requireFullScreen": false,
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.dev.expo.Payments"
+        ]
+      }
     },
     "web": {
       "bundler": "metro"
