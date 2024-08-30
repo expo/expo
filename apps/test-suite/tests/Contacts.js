@@ -150,11 +150,11 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
 
     async function createContactWithBirthday() {
       const fields = {
-        [Contacts.Fields.Birthday]: { 
+        [Contacts.Fields.Birthday]: {
           day: 30,
           month: 8,
           year: 2024,
-         },
+        },
         [Contacts.Fields.FirstName]: 'Kenny',
         [Contacts.Fields.LastName]: 'McCormick',
       };
@@ -166,9 +166,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       const contactId = await createContactWithBirthday();
       expect(typeof contactId).toBe('string');
 
-      const contact = await Contacts.getContactByIdAsync(contactId, [
-        Contacts.Fields.Birthday,
-      ]);
+      const contact = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.Birthday]);
 
       expect(contact.birthday).toEqual('2024-08-30');
     });
