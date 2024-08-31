@@ -202,14 +202,14 @@ process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
 commands[command]().then((exec) => {
-  exec(commandArgs);
-
   if (!boolish('EXPO_NO_TELEMETRY', false)) {
     // NOTE(EvanBacon): Track some basic telemetry events indicating the command
     // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
     // We do this to determine how well deprecations are going before removing a command.
-    const { logEventAsync } =
+    const { recordCommandEvent } =
       require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
-    logEventAsync('action', { action: `expo ${command}` });
+    recordCommandEvent(command);
   }
+
+  exec(commandArgs);
 });
