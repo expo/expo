@@ -10,16 +10,6 @@ internal class DatabaseException: Exception {
   }
 }
 
-internal class DatabaseDirectoryIsNilException: Exception {
-  override var code: String {
-    "E_SQLITE_DIRECTORY_IS_NIL"
-  }
-
-  override var reason: String {
-    "Directory should be provided for not in-memory database"
-  }
-}
-
 internal class DatabaseInvalidPathException: GenericException<String> {
   override var code: String {
     "E_SQLITE_INVALID_PATH"

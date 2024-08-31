@@ -1,7 +1,7 @@
 import { Asset } from 'expo-asset';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import ExpoSQLite from './ExpoSQLiteNext';
-import { defaultDatabaseDirectory, openDatabaseAsync } from './SQLiteDatabase';
+import { createDatabasePath, defaultDatabaseDirectory, openDatabaseAsync, } from './SQLiteDatabase';
 /**
  * Create a context for the SQLite database
  */
@@ -168,7 +168,8 @@ export async function importDatabaseFromAssetAsync(databaseName, assetSource, di
     if (!asset.localUri) {
         throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);
     }
-    await ExpoSQLite.importAssetDatabaseAsync(databaseName, resolvedDirectory, asset.localUri, assetSource.forceOverwrite ?? false);
+    const path = createDatabasePath(databaseName, resolvedDirectory);
+    await ExpoSQLite.importAssetDatabaseAsync(path, asset.localUri, assetSource.forceOverwrite ?? false);
 }
 // Referenced from https://github.com/reactjs/react.dev/blob/6570e6cd79a16ac3b1a2902632eddab7e6abb9ad/src/content/reference/react/Suspense.md
 /**

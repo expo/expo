@@ -3,7 +3,7 @@ import { NativeStatement } from './NativeStatement';
  * A class that represents an instance of the SQLite database.
  */
 export declare class NativeDatabase {
-    constructor(databaseName: string, directory?: string, options?: SQLiteOpenOptions);
+    constructor(databasePath: string, options?: SQLiteOpenOptions);
     openAsync(serializedData?: Uint8Array): Promise<void>;
     initAsync(): Promise<void>;
     isInTransactionAsync(): Promise<boolean>;

@@ -1,11 +1,11 @@
 export default {
-    NativeDatabase(databaseName, directory, options, serializedData) {
+    NativeDatabase(databasePath, options, serializedData) {
         throw new Error('Unimplemented');
     },
-    async ensureHasAccessAsync(databaseName, directory) {
+    async ensureHasAccessAsync(databasePath) {
         throw new Error('Unimplemented');
     },
-    ensureHasAccessSync(databaseName, directory) {
+    ensureHasAccessSync(databasePath) {
         throw new Error('Unimplemented');
     },
     NativeStatement() {
@@ -17,7 +17,7 @@ export default {
     deleteDatabaseSync(databaseName, directory) {
         throw new Error('Unimplemented');
     },
-    importAssetDatabaseAsync(databaseName, directory, assetDatabasePath, forceOverwrite) {
+    importAssetDatabaseAsync(databasePath, assetDatabasePath, forceOverwrite) {
         throw new Error('Unimplemented');
     },
     //#region EventEmitter implementations

@@ -6,11 +6,10 @@ export { SQLiteOpenOptions };
  * A SQLite database.
  */
 export declare class SQLiteDatabase {
-    readonly databaseName: string;
-    readonly directory: string | undefined;
+    readonly databasePath: string;
     readonly options: SQLiteOpenOptions;
     private readonly nativeDatabase;
-    constructor(databaseName: string, directory: string | undefined, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
+    constructor(databasePath: string, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
@@ -224,6 +223,15 @@ export declare class SQLiteDatabase {
  * The default directory for SQLite databases.
  */
 export declare const defaultDatabaseDirectory: string;
+/**
+ * Creates a normalized database path by combining the directory and database name.
+ *
+ * Ensures the directory does not end with a trailing slash and the database name
+ * does not start with a leading slash, preventing redundant slashes in the final path.
+ *
+ * @hidden
+ */
+export declare function createDatabasePath(databaseName: string, directory: string): string;
 /**
  * Open a database.
  *

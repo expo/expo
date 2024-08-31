@@ -3,19 +3,18 @@ import type { DatabaseChangeEvent } from './SQLiteDatabase';
 
 export default {
   NativeDatabase(
-    databaseName: string,
-    directory?: string,
+    databasePath: string,
     options?: SQLiteOpenOptions,
     serializedData?: Uint8Array
   ): void {
     throw new Error('Unimplemented');
   },
 
-  async ensureHasAccessAsync(databaseName: string, directory: string): Promise<void> {
+  async ensureHasAccessAsync(databasePath: string): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  ensureHasAccessSync(databaseName: string, directory: string): void {
+  ensureHasAccessSync(databasePath: string): void {
     throw new Error('Unimplemented');
   },
 
@@ -32,8 +31,7 @@ export default {
   },
 
   importAssetDatabaseAsync(
-    databaseName: string,
-    directory: string,
+    databasePath: string,
     assetDatabasePath: string,
     forceOverwrite: boolean
   ): Promise<void> {

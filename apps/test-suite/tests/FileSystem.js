@@ -559,7 +559,15 @@ export async function test({ describe, expect, it, ...t }) {
           }
         );
         it('should throw an error when trying to get a shared container of inaccessible app group', async () => {
-          await throws(() => FS.getSharedContainerUriAsync('group.dev.expo.wrong'));
+          let error = null;
+          try {
+            await FS.getSharedContainerUriAsync('group.dev.expo.wrong');
+          } catch (e) {
+            error = e;
+          }
+          expect(error.toString()).toMatch(
+            /Unable to open shared container with provided app group/
+          );
         });
       });
     }
