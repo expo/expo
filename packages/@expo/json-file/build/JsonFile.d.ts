@@ -38,9 +38,12 @@ export default class JsonFile<TJSONObject extends JSONObject> {
     constructor(file: string, options?: Options<TJSONObject>);
     read(options?: Options<TJSONObject>): TJSONObject;
     readAsync(options?: Options<TJSONObject>): Promise<TJSONObject>;
+    write(object: TJSONObject, options?: Options<TJSONObject>): TJSONObject;
     writeAsync(object: TJSONObject, options?: Options<TJSONObject>): Promise<TJSONObject>;
     parseJsonString(json: string, options?: Options<TJSONObject>): TJSONObject;
+    getSync<K extends keyof TJSONObject, TDefault extends TJSONObject[K] | null>(key: K, defaultValue: TDefault, options?: Options<TJSONObject>): Defined<TJSONObject[K]> | TDefault;
     getAsync<K extends keyof TJSONObject, TDefault extends TJSONObject[K] | null>(key: K, defaultValue: TDefault, options?: Options<TJSONObject>): Promise<Defined<TJSONObject[K]> | TDefault>;
+    setSync(key: string, value: unknown, options?: Options<TJSONObject>): TJSONObject;
     setAsync(key: string, value: unknown, options?: Options<TJSONObject>): Promise<TJSONObject>;
     mergeAsync(sources: Partial<TJSONObject> | Partial<TJSONObject>[], options?: Options<TJSONObject>): Promise<TJSONObject>;
     deleteKeyAsync(key: string, options?: Options<TJSONObject>): Promise<TJSONObject>;

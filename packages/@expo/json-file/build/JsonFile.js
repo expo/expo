@@ -74,14 +74,23 @@ class JsonFile {
     async readAsync(options) {
         return readAsync(this.file, this._getOptions(options));
     }
+    write(object, options) {
+        return writeSync(this.file, object, this._getOptions(options));
+    }
     async writeAsync(object, options) {
         return writeAsync(this.file, object, this._getOptions(options));
     }
     parseJsonString(json, options) {
         return parseJsonString(json, options);
     }
+    getSync(key, defaultValue, options) {
+        return getSync(this.file, key, defaultValue, this._getOptions(options));
+    }
     async getAsync(key, defaultValue, options) {
         return getAsync(this.file, key, defaultValue, this._getOptions(options));
+    }
+    setSync(key, value, options) {
+        return setSync(this.file, key, value, this._getOptions(options));
     }
     async setAsync(key, value, options) {
         return setAsync(this.file, key, value, this._getOptions(options));
@@ -166,6 +175,16 @@ function parseJsonString(json, options, fileName) {
         }
     }
 }
+function getSync(file, key, defaultValue, options) {
+    const object = read(file, options);
+    if (key in object) {
+        return object[key];
+    }
+    if (defaultValue === undefined) {
+        throw new JsonFileError_1.default(`No value at key path "${String(key)}" in JSON object from: ${file}`);
+    }
+    return defaultValue;
+}
 async function getAsync(file, key, defaultValue, options) {
     const object = await readAsync(file, options);
     if (key in object) {
@@ -175,6 +194,29 @@ async function getAsync(file, key, defaultValue, options) {
         throw new JsonFileError_1.default(`No value at key path "${String(key)}" in JSON object from: ${file}`);
     }
     return defaultValue;
+}
+function writeSync(file, object, options) {
+    if (options?.ensureDir) {
+        fs_1.default.mkdirSync(path_1.default.dirname(file), { recursive: true });
+    }
+    const space = _getOption(options, 'space');
+    const json5 = _getOption(options, 'json5');
+    const addNewLineAtEOF = _getOption(options, 'addNewLineAtEOF');
+    let json;
+    try {
+        if (json5) {
+            json = json5_1.default.stringify(object, null, space);
+        }
+        else {
+            json = JSON.stringify(object, null, space);
+        }
+    }
+    catch (e) {
+        throw new JsonFileError_1.default(`Couldn't JSON.stringify object for file: ${file}`, e);
+    }
+    const data = addNewLineAtEOF ? `${json}\n` : json;
+    write_file_atomic_1.default.sync(file, data, {});
+    return object;
 }
 async function writeAsync(file, object, options) {
     if (options?.ensureDir) {
@@ -198,6 +240,12 @@ async function writeAsync(file, object, options) {
     const data = addNewLineAtEOF ? `${json}\n` : json;
     await writeFileAtomicAsync(file, data, {});
     return object;
+}
+function setSync(file, key, value, options) {
+    // TODO: Consider implementing some kind of locking mechanism, but
+    // it's not critical for our use case, so we'll leave it out for now
+    const object = read(file, options);
+    return writeSync(file, { ...object, [key]: value }, options);
 }
 async function setAsync(file, key, value, options) {
     // TODO: Consider implementing some kind of locking mechanism, but
