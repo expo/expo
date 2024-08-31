@@ -4,6 +4,8 @@ import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
 
+import { recordCommand } from '../src/utils/telemetry';
+
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
   Debug.enable('expo:*');
@@ -173,7 +175,7 @@ if (!isSubcommand) {
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
     console.log();
-    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use'
+    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use';
     console.log(
       chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please ${instruction} {bold ${replacement}} instead`
     );
@@ -204,12 +206,8 @@ process.on('SIGTERM', () => process.exit(0));
 commands[command]().then((exec) => {
   exec(commandArgs);
 
-  if (!boolish('EXPO_NO_TELEMETRY', false)) {
-    // NOTE(EvanBacon): Track some basic telemetry events indicating the command
-    // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
-    // We do this to determine how well deprecations are going before removing a command.
-    const { logEventAsync } =
-      require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
-    logEventAsync('action', { action: `expo ${command}` });
-  }
+  // NOTE(EvanBacon): Track some basic telemetry events indicating the command
+  // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
+  // We do this to determine how well deprecations are going before removing a command.
+  recordCommand(command);
 });

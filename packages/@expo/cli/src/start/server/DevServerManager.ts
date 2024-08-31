@@ -8,7 +8,7 @@ import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
-import { logEventAsync } from '../../utils/telemetry';
+import { record } from '../../utils/telemetry';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
@@ -174,8 +174,11 @@ export class DevServerManager {
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
     const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
 
-    await logEventAsync('Start Project', {
-      sdkVersion: exp.sdkVersion ?? null,
+    record({
+      event: 'Start Project',
+      properties: {
+        sdkVersion: exp.sdkVersion ?? null,
+      },
     });
 
     const platformBundlers = getPlatformBundlers(this.projectRoot, exp);

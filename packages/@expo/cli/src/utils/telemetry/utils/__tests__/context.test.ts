@@ -1,6 +1,6 @@
 import os from 'os';
 
-import { getContext } from '../getContext';
+import { createContext } from '../context';
 
 const originalVersion = process.env.__EXPO_VERSION;
 
@@ -15,7 +15,7 @@ afterAll(() => {
 });
 
 it('contains os name and version', () => {
-  expect(getContext().os).toMatchObject({
+  expect(createContext().os).toMatchObject({
     name: os.platform(),
     version: os.release(),
   });
@@ -23,14 +23,14 @@ it('contains os name and version', () => {
 
 it('contains app name and version', () => {
   process.env.__EXPO_VERSION = '1337';
-  expect(getContext().app).toMatchObject({
+  expect(createContext().app).toMatchObject({
     name: 'expo/cli',
     version: '1337',
   });
 });
 
 it('contains ci name and if its executed from PR', () => {
-  expect(getContext().ci).toMatchObject({
+  expect(createContext().ci).toMatchObject({
     name: 'GitHub Actions',
     isPr: true,
   });

@@ -7,7 +7,7 @@ import { DeviceManager } from './DeviceManager';
 import { Log } from '../../log';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import { logEventAsync } from '../../utils/telemetry';
+import { record } from '../../utils/telemetry';
 
 const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
 
@@ -121,9 +121,12 @@ export class PlatformManager<
     deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url, { appId: deviceManager.getExpoGoAppId() });
 
-    await logEventAsync('Open Url on Device', {
-      platform: this.props.platform,
-      installedExpo,
+    record({
+      event: 'Open Url on Device',
+      properties: {
+        platform: this.props.platform,
+        installedExpo,
+      },
     });
 
     return { url };
@@ -157,9 +160,12 @@ export class PlatformManager<
     }
 
     // TODO: Rethink analytics
-    await logEventAsync('Open Url on Device', {
-      platform: this.props.platform,
-      installedExpo: false,
+    record({
+      event: 'Open Url on Device',
+      properties: {
+        platform: this.props.platform,
+        installedExpo: false,
+      },
     });
 
     if (!url) {

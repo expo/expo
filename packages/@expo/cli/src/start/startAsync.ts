@@ -18,7 +18,7 @@ import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
-import { logEventAsync } from '../utils/telemetry';
+import { record } from '../utils/telemetry';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -151,15 +151,20 @@ export async function startAsync(
 }
 
 async function trackAsync(projectRoot: string, exp: ExpoConfig): Promise<void> {
-  await logEventAsync('dev client start command', {
-    status: 'started',
-    ...getDevClientProperties(projectRoot, exp),
+  record({
+    event: 'dev client start command',
+    properties: {
+      status: 'started',
+      ...getDevClientProperties(projectRoot, exp),
+    },
   });
   installExitHooks(async () => {
-    await logEventAsync('dev client start command', {
-      status: 'finished',
-      ...getDevClientProperties(projectRoot, exp),
+    record({
+      event: 'dev client start command',
+      properties: {
+        status: 'finished',
+        ...getDevClientProperties(projectRoot, exp),
+      },
     });
-    // UnifiedAnalytics.flush();
   });
 }

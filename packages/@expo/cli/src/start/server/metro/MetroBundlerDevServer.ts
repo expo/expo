@@ -46,7 +46,7 @@ import getDevClientProperties from '../../../utils/analytics/getDevClientPropert
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
-import { logEventAsync } from '../../../utils/telemetry';
+import { record } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   cachedSourceMaps,
@@ -1618,9 +1618,12 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
   return async ({ runtime }) => {
     if (runtime === 'expo') return;
     const { exp } = getConfig(projectRoot);
-    await logEventAsync('dev client start command', {
-      status: 'started',
-      ...getDevClientProperties(projectRoot, exp),
+    record({
+      event: 'dev client start command',
+      properties: {
+        status: 'started',
+        ...getDevClientProperties(projectRoot, exp),
+      },
     });
   };
 }

@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config';
 import { Middleware } from 'metro-config';
 
-import { logEventAsync } from '../../telemetry';
+import { record } from '../../telemetry';
 import { createDebuggerTelemetryMiddleware, findDebugTool } from '../metroDebuggerMiddleware';
 
 jest.mock('../getMetroDebugProperties');
@@ -47,7 +47,7 @@ describe(createDebuggerTelemetryMiddleware, () => {
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
 
-    expect(logEventAsync).toHaveBeenCalled();
+    expect(record).toHaveBeenCalled();
   });
 
   it('only reports known tool once', () => {
@@ -57,7 +57,7 @@ describe(createDebuggerTelemetryMiddleware, () => {
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
 
-    expect(logEventAsync).toHaveBeenCalledTimes(1);
+    expect(record).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledTimes(2);
   });
 
@@ -67,7 +67,7 @@ describe(createDebuggerTelemetryMiddleware, () => {
 
     middleware(req({ url: '/json', userAgent: 'unknown/4.2.0' }), {} as any, next);
 
-    expect(logEventAsync).not.toHaveBeenCalled();
+    expect(record).not.toHaveBeenCalled();
   });
 
   it('does not report when telemetry is turned off', () => {
@@ -78,7 +78,7 @@ describe(createDebuggerTelemetryMiddleware, () => {
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
 
-    expect(logEventAsync).not.toHaveBeenCalled();
+    expect(record).not.toHaveBeenCalled();
 
     delete process.env.EXPO_NO_TELEMETRY;
   });
@@ -90,6 +90,6 @@ describe(createDebuggerTelemetryMiddleware, () => {
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
 
-    expect(logEventAsync).not.toHaveBeenCalled();
+    expect(record).not.toHaveBeenCalled();
   });
 });
