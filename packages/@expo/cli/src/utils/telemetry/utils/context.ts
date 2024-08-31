@@ -1,12 +1,12 @@
 import * as ciInfo from 'ci-info';
 import os from 'os';
 
-import { groupBy } from '../array';
+import { groupBy } from '../../array';
 
-export function getContext() {
+export function createContext() {
   return {
-    os: { name: os.platform(), version: os.release() },
-    device: { arch: os.arch(), version: os.version(), memory: summarizeMemory() },
+    os: { name: os.platform(), version: os.release(), node: process.versions.node },
+    device: { arch: os.arch(), memory: summarizeMemory() },
     cpu: summarizeCpuInfo(),
     app: { name: 'expo/cli', version: process.env.__EXPO_VERSION },
     ci: ciInfo.isCI ? { name: ciInfo.name, isPr: ciInfo.isPR } : undefined,

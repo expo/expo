@@ -1,26 +1,48 @@
-import { DetachedClient } from './DetachedClient';
-import { RudderClient } from './RudderClient';
-import type { TelemetryClient, TelemetryEvent, TelemetryProperties } from './types';
+import { Telemetry } from './Telemetry';
+import type { TelemetryRecord } from './types';
 import { env } from '../env';
 
-/** The singleton telemetry client to use */
-let telemetry: TelemetryClient | null = null;
+/** The singleton telemetry manager to use */
+let telemetry: Telemetry | null = null;
 
-export function getTelemetry(): TelemetryClient | null {
+export function getTelemetry(): Telemetry | null {
   if (env.EXPO_NO_TELEMETRY || env.EXPO_OFFLINE) return null;
-  if (telemetry) return telemetry;
 
-  const client = env.EXPO_NO_TELEMETRY_DETACH
-    ? new RudderClient() // Block the CLI process when sending telemetry, useful for testing
-    : new DetachedClient(); // Do not block the CLI process when sending telemetry
+  if (!telemetry) {
+    telemetry = new Telemetry({ anonymousId: 'TODO' });
 
-  process.once('SIGINT', () => client.flush());
-  process.once('SIGTERM', () => client.flush());
-  process.once('beforeExit', () => client.flush());
+    process.once('SIGINT', () => telemetry!.flushOnExit());
+    process.once('SIGTERM', () => telemetry!.flushOnExit());
+    process.once('beforeExit', () => telemetry!.flushOnExit());
+  }
 
-  return (telemetry = client);
+  return telemetry;
 }
 
-export async function logEventAsync(event: TelemetryEvent, properties?: TelemetryProperties) {
-  await getTelemetry()?.record({ event, properties });
+/**
+ * Record a single, or multiple telemetry events.
+ * The event does not need to be awaited, its:
+ *   - Not sent when using `EXPO_NO_TELEMETRY` or `EXPO_OFFLINE`, and returns `null`
+ *   - Sent immediately for long running commands, returns the `fetch` promise
+ *   - Queued and sent in background, returns `undefined`
+ */
+export function recordEvent(records: TelemetryRecord | TelemetryRecord[]) {
+  return getTelemetry()?.record(records);
+}
+
+/**
+ * Record a single command being invoked.
+ * This changes the telemetry strategy for long running commands.
+ */
+export function recordCommandEvent(command: string) {
+  if (isLongRunningCommand(command)) {
+    getTelemetry()?.setStrategy('instant');
+  }
+
+  return recordEvent({ event: 'action', properties: { command: `expo ${command}` } });
+}
+
+/** Determine if the command is a long-running command, based on the command name */
+function isLongRunningCommand(command: string) {
+  return command === 'start' || command.startsWith('run') || command.startsWith('export');
 }
