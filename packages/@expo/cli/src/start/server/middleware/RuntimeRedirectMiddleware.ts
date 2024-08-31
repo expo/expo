@@ -27,7 +27,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: {
-      onDeepLink: DeepLinkHandler;
+      onDeepLink?: DeepLinkHandler;
       getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
     }
   ) {
@@ -44,7 +44,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
 
     debug(`props:`, { platform, runtime });
 
-    this.options.onDeepLink({ runtime, platform });
+    this.options.onDeepLink?.({ runtime, platform });
 
     const redirect = this.options.getLocation({ runtime });
     if (!redirect) {

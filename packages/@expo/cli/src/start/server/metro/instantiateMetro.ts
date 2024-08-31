@@ -21,11 +21,8 @@ import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
-import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
-import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { recordEvent } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
@@ -173,13 +170,6 @@ export async function loadMetroConfigAsync(
     getMetroBundler,
   });
 
-  if (process.env.NODE_ENV !== 'test') {
-    recordEvent({
-      event: 'metro config',
-      properties: getMetroProperties(projectRoot, exp, config),
-    });
-  }
-
   return {
     config,
     setEventReporter: (logger: (event: any) => void) => (reportEvent = logger),
@@ -255,8 +245,6 @@ export async function instantiateMetroAsync(
       }
       return middleware.use(metroMiddleware);
     };
-
-    middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
     // Initialize all React Native debug features
     const { debugMiddleware, ...options } = createDebugMiddleware(metroBundler);

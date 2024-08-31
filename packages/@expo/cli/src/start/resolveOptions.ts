@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import { canResolveDevClient } from './detectDevClient';
 import { Log } from '../log';
-import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
+import { hasDirectDevClientDependency } from '../utils/dependencies';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 

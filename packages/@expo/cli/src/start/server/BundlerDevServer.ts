@@ -17,6 +17,7 @@ import {
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
+import { hasDirectDevClientDependency } from '../../utils/dependencies';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -464,7 +465,7 @@ export abstract class BundlerDevServer {
       // if user passed --dev-client flag, skip interstitial page
       !this.isDevClient &&
       // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-client')
+      hasDirectDevClientDependency(this.projectRoot)
     );
   }
 
