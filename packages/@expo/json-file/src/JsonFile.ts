@@ -78,6 +78,10 @@ export default class JsonFile<TJSONObject extends JSONObject> {
     return readAsync(this.file, this._getOptions(options));
   }
 
+  write(object: TJSONObject, options?: Options<TJSONObject>) {
+    return writeSync(this.file, object, this._getOptions(options));
+  }
+
   async writeAsync(object: TJSONObject, options?: Options<TJSONObject>) {
     return writeAsync(this.file, object, this._getOptions(options));
   }
@@ -86,12 +90,24 @@ export default class JsonFile<TJSONObject extends JSONObject> {
     return parseJsonString(json, options);
   }
 
+  getSync<K extends keyof TJSONObject, TDefault extends TJSONObject[K] | null>(
+    key: K,
+    defaultValue: TDefault,
+    options?: Options<TJSONObject>
+  ): Defined<TJSONObject[K]> | TDefault {
+    return getSync(this.file, key, defaultValue, this._getOptions(options));
+  }
+
   async getAsync<K extends keyof TJSONObject, TDefault extends TJSONObject[K] | null>(
     key: K,
     defaultValue: TDefault,
     options?: Options<TJSONObject>
   ): Promise<Defined<TJSONObject[K]> | TDefault> {
     return getAsync(this.file, key, defaultValue, this._getOptions(options));
+  }
+
+  setSync(key: string, value: unknown, options?: Options<TJSONObject>) {
+    return setSync(this.file, key, value, this._getOptions(options));
   }
 
   async setAsync(key: string, value: unknown, options?: Options<TJSONObject>) {
@@ -191,6 +207,22 @@ function parseJsonString<TJSONObject extends JSONObject>(
   }
 }
 
+function getSync<TJSONObject extends JSONObject, K extends keyof TJSONObject, DefaultValue>(
+  file: string,
+  key: K,
+  defaultValue: DefaultValue,
+  options?: Options<TJSONObject>
+): any {
+  const object = read(file, options);
+  if (key in object) {
+    return object[key];
+  }
+  if (defaultValue === undefined) {
+    throw new JsonFileError(`No value at key path "${String(key)}" in JSON object from: ${file}`);
+  }
+  return defaultValue;
+}
+
 async function getAsync<TJSONObject extends JSONObject, K extends keyof TJSONObject, DefaultValue>(
   file: string,
   key: K,
@@ -205,6 +237,32 @@ async function getAsync<TJSONObject extends JSONObject, K extends keyof TJSONObj
     throw new JsonFileError(`No value at key path "${String(key)}" in JSON object from: ${file}`);
   }
   return defaultValue;
+}
+
+function writeSync<TJSONObject extends JSONObject>(
+  file: string,
+  object: TJSONObject,
+  options?: Options<TJSONObject>
+): TJSONObject {
+  if (options?.ensureDir) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+  }
+  const space = _getOption(options, 'space');
+  const json5 = _getOption(options, 'json5');
+  const addNewLineAtEOF = _getOption(options, 'addNewLineAtEOF');
+  let json;
+  try {
+    if (json5) {
+      json = JSON5.stringify(object, null, space);
+    } else {
+      json = JSON.stringify(object, null, space);
+    }
+  } catch (e: any) {
+    throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
+  }
+  const data = addNewLineAtEOF ? `${json}\n` : json;
+  writeFileAtomic.sync(file, data, {});
+  return object;
 }
 
 async function writeAsync<TJSONObject extends JSONObject>(
@@ -231,6 +289,18 @@ async function writeAsync<TJSONObject extends JSONObject>(
   const data = addNewLineAtEOF ? `${json}\n` : json;
   await writeFileAtomicAsync(file, data, {});
   return object;
+}
+
+function setSync<TJSONObject extends JSONObject>(
+  file: string,
+  key: string,
+  value: unknown,
+  options?: Options<TJSONObject>
+): TJSONObject {
+  // TODO: Consider implementing some kind of locking mechanism, but
+  // it's not critical for our use case, so we'll leave it out for now
+  const object = read(file, options);
+  return writeSync(file, { ...object, [key]: value }, options);
 }
 
 async function setAsync<TJSONObject extends JSONObject>(
