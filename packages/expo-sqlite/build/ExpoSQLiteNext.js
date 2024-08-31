@@ -2,10 +2,10 @@ export default {
     NativeDatabase(databasePath, options, serializedData) {
         throw new Error('Unimplemented');
     },
-    async ensureHasAccessAsync(databasePath) {
+    async ensureDatabasePathExistsAsync(databasePath) {
         throw new Error('Unimplemented');
     },
-    ensureHasAccessSync(databasePath) {
+    ensureDatabasePathExistsSync(databasePath) {
         throw new Error('Unimplemented');
     },
     NativeStatement() {

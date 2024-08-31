@@ -314,7 +314,7 @@ export function createDatabasePath(databaseName, directory) {
 export async function openDatabaseAsync(databaseName, options, directory) {
     const openOptions = options ?? {};
     const databasePath = createDatabasePath(databaseName, directory ?? defaultDatabaseDirectory);
-    await ExpoSQLite.ensureHasAccessAsync(databasePath);
+    await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
     await nativeDatabase.initAsync();
     return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
@@ -331,7 +331,7 @@ export async function openDatabaseAsync(databaseName, options, directory) {
 export function openDatabaseSync(databaseName, options, directory) {
     const openOptions = options ?? {};
     const databasePath = createDatabasePath(databaseName, directory ?? defaultDatabaseDirectory);
-    ExpoSQLite.ensureHasAccessSync(databasePath);
+    ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
     nativeDatabase.initSync();
     return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);

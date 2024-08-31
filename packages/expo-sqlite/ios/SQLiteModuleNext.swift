@@ -46,7 +46,7 @@ public final class SQLiteModuleNext: Module {
     }
 
     AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
-      let path = try ensureDatabasePathExists(path: databasePath) 
+      let path = try ensureDatabasePathExists(path: databasePath)
       let fileManager = FileManager.default
       if fileManager.fileExists(atPath: path.standardizedFileURL.path) && !forceOverwrite {
         return
@@ -59,10 +59,10 @@ public final class SQLiteModuleNext: Module {
       try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
     }
 
-    AsyncFunction("ensureHasAccessAsync") { (databasePath: String) in
+    AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
       try ensureDatabasePathExists(path: databasePath)
     }
-    Function("ensureHasAccessSync") { (databasePath: String) in
+    Function("ensureDatabasePathExistsSync") { (databasePath: String) in
       try ensureDatabasePathExists(path: databasePath)
     }
 

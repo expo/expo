@@ -10,11 +10,11 @@ export default {
     throw new Error('Unimplemented');
   },
 
-  async ensureHasAccessAsync(databasePath: string): Promise<void> {
+  async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  ensureHasAccessSync(databasePath: string): void {
+  ensureDatabasePathExistsSync(databasePath: string): void {
     throw new Error('Unimplemented');
   },
 

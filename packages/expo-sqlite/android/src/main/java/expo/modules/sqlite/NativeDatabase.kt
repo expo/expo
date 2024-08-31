@@ -5,7 +5,7 @@ package expo.modules.sqlite
 import expo.modules.kotlin.sharedobjects.SharedRef
 import java.util.concurrent.atomic.AtomicInteger
 
-internal class NativeDatabase(val databaseName: String, val openOptions: OpenDatabaseOptions) : SharedRef<NativeDatabaseBinding>(NativeDatabaseBinding()) {
+internal class NativeDatabase(val databasePath: String, val openOptions: OpenDatabaseOptions) : SharedRef<NativeDatabaseBinding>(NativeDatabaseBinding()) {
   var isClosed = false
   private val refCount = AtomicInteger(1)
 

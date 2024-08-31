@@ -5,8 +5,8 @@ package expo.modules.sqlite
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.CodedException
 
-internal class OpenDatabaseException(name: String) :
-  CodedException("Could not open database - name[$name]")
+internal class OpenDatabaseException(path: String, additionalInfo: String? = null) :
+  CodedException("Could not open database $path. ${additionalInfo ?: ""}".trim())
 
 internal class DatabaseNotFoundException(name: String) :
   CodedException("Database '$name' not found")
