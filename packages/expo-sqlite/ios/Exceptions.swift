@@ -10,13 +10,23 @@ internal class DatabaseException: Exception {
   }
 }
 
-internal class DatabaseInvalidAppGroupExcetion: GenericException<String> {
+internal class DatabaseDirectoryIsNilException: Exception {
   override var code: String {
-    "E_SQLITE_INVALID_APP_GROUP"
+    "E_SQLITE_DIRECTORY_IS_NIL"
   }
 
   override var reason: String {
-    "Unable to open database with provided app group \(param). Check your entitlements"
+    "Directory should be provided for not in-memory database"
+  }
+}
+
+internal class DatabaseInvalidPathException: GenericException<String> {
+  override var code: String {
+    "E_SQLITE_INVALID_PATH"
+  }
+
+  override var reason: String {
+    "Invalid database path: \(param)"
   }
 }
 

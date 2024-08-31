@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { NativeDatabase, SQLiteOpenOptions, IOSOptions } from './NativeDatabase';
+import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
 export { SQLiteOpenOptions };
 /**
@@ -7,10 +7,10 @@ export { SQLiteOpenOptions };
  */
 export declare class SQLiteDatabase {
     readonly databaseName: string;
-    readonly iosOptions: IOSOptions;
+    readonly directory: string | undefined;
     readonly options: SQLiteOpenOptions;
     private readonly nativeDatabase;
-    constructor(databaseName: string, iosOptions: IOSOptions, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
+    constructor(databaseName: string, directory: string | undefined, options: SQLiteOpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
@@ -221,13 +221,17 @@ export declare class SQLiteDatabase {
     getAllSync<T>(source: string, ...params: SQLiteVariadicBindParams): T[];
 }
 /**
+ * The default directory for SQLite databases.
+ */
+export declare const defaultDatabaseDirectory: string;
+/**
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function openDatabaseAsync(databaseName: string, options?: SQLiteOpenOptions, iosOptions?: IOSOptions): Promise<SQLiteDatabase>;
+export declare function openDatabaseAsync(databaseName: string, options?: SQLiteOpenOptions, directory?: string): Promise<SQLiteDatabase>;
 /**
  * Open a database.
  *
@@ -235,9 +239,9 @@ export declare function openDatabaseAsync(databaseName: string, options?: SQLite
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions, iosOptions?: IOSOptions): SQLiteDatabase;
+export declare function openDatabaseSync(databaseName: string, options?: SQLiteOpenOptions, directory?: string): SQLiteDatabase;
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
  *
@@ -258,18 +262,18 @@ export declare function deserializeDatabaseSync(serializedData: Uint8Array, opti
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function deleteDatabaseAsync(databaseName: string, iosOptions?: IOSOptions): Promise<void>;
+export declare function deleteDatabaseAsync(databaseName: string, directory?: string): Promise<void>;
 /**
  * Delete a database file.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to delete.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export declare function deleteDatabaseSync(databaseName: string, iosOptions?: IOSOptions): void;
+export declare function deleteDatabaseSync(databaseName: string, directory?: string): void;
 /**
  * The event payload for the listener of [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener)
  */

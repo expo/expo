@@ -558,6 +558,9 @@ export async function test({ describe, expect, it, ...t }) {
             expect(await FS.readAsStringAsync(path)).toBe(contents);
           }
         );
+        it('should throw an error when trying to get a shared container of inaccessible app group', async () => {
+          await throws(() => FS.getSharedContainerUriAsync('group.dev.expo.wrong'));
+        });
       });
     }
   });

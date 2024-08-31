@@ -38,19 +38,17 @@ public final class SQLiteModuleNext: Module {
       }
     }
 
-    AsyncFunction("deleteDatabaseAsync") { (databaseName: String, iosOptions: IOSOptions) in
-      try deleteDatabase(databaseName: databaseName, appGroup: iosOptions.appGroup)
+    AsyncFunction("deleteDatabaseAsync") { (databaseName: String, directory: String) in
+      try deleteDatabase(databaseName: databaseName, directory: directory)
     }
-    Function("deleteDatabaseSync") { (databaseName: String, iosOptions: IOSOptions) in
-      try deleteDatabase(databaseName: databaseName, appGroup: iosOptions.appGroup)
+    Function("deleteDatabaseSync") { (databaseName: String, directory: String) in
+      try deleteDatabase(databaseName: databaseName, directory: directory)
     }
 
-    AsyncFunction("importAssetDatabaseAsync") { (databaseName: String, iosOptions: IOSOptions, assetDatabasePath: String, forceOverwrite: Bool) in
-      guard let path = try pathForDatabaseName(name: databaseName, appGroup: iosOptions.appGroup) else {
-        throw Exceptions.FileSystemModuleNotFound()
-      }
+    AsyncFunction("importAssetDatabaseAsync") { (databaseName: String, directory: String, assetDatabasePath: String, forceOverwrite: Bool) in
+      let path = try pathForDatabaseName(name: databaseName, directory: directory) 
       let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.absoluteString) && !forceOverwrite {
+      if fileManager.fileExists(atPath: path.standardizedFileURL.path) && !forceOverwrite {
         return
       }
       guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
@@ -61,34 +59,33 @@ public final class SQLiteModuleNext: Module {
       try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
     }
 
-    AsyncFunction("ensureHasAccessAsync") { (databaseName: String, iosOptions: IOSOptions) in
-      try ensureHasAccess(databaseName: databaseName, appGroup: iosOptions.appGroup)
+    AsyncFunction("ensureHasAccessAsync") { (databaseName: String, directory: String) in
+      try pathForDatabaseName(name: databaseName, directory: directory)
     }
-    Function("ensureHasAccessSync") { (databaseName: String, iosOptions: IOSOptions) in
-      try ensureHasAccess(databaseName: databaseName, appGroup: iosOptions.appGroup)
+    Function("ensureHasAccessSync") { (databaseName: String, directory: String) in
+      try pathForDatabaseName(name: databaseName, directory: directory)
     }
 
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
-      Constructor { (databaseName: String, iosOptions: IOSOptions, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
+      Constructor { (databaseName: String, directory: String?, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
         var db: OpaquePointer?
 
         if let serializedData = serializedData {
           db = try deserializeDatabase(serializedData)
         } else {
-          let path = try ensureHasAccess(databaseName: databaseName, appGroup: iosOptions.appGroup)
-
           // Try to find opened database for fast refresh
-          if let cachedDb = findCachedDatabase(where: { $0.databaseName == databaseName && $0.iosOptions == iosOptions && $0.openOptions == options && !options.useNewConnection }) {
+          if let cachedDb = findCachedDatabase(where: { $0.databaseName == databaseName && $0.directory == directory && $0.openOptions == options && !options.useNewConnection }) {
             return cachedDb
           }
 
+          let path = try pathForDatabaseName(name: databaseName, directory: directory)
           if exsqlite3_open(path.standardizedFileURL.path, &db) != SQLITE_OK {
             throw DatabaseException()
           }
         }
 
-        let database = NativeDatabase(db, databaseName: databaseName, iosOptions: iosOptions, openOptions: options)
+        let database = NativeDatabase(db, databaseName: databaseName, directory: directory, openOptions: options)
         addCachedDatabase(database)
         return database
       }
@@ -194,35 +191,26 @@ public final class SQLiteModuleNext: Module {
     }
   }
 
-  private func ensureHasAccess(databaseName: String, appGroup: String?) throws -> URL {
-    guard let path = try pathForDatabaseName(name: databaseName, appGroup: appGroup) else {
-      throw DatabaseException()
-    }
-    return path
-  }
-
-  private func pathForDatabaseName(name: String, appGroup: String?) throws -> URL? {
+  private func pathForDatabaseName(name: String, directory: String?) throws -> URL {
     if name == MEMORY_DB_NAME {
-      return URL(string: name)
+      guard let url = URL(string: name) else {
+        throw DatabaseException()
+      }
+      return url
     }
     guard let fileSystem = appContext?.fileSystem else {
-      return nil
+      throw Exceptions.FileSystemModuleNotFound()
+    }
+    guard let directory = directory else {
+      throw DatabaseDirectoryIsNilException()
     }
     
-    let directory: URL?
-    
-    if let appGroup = appGroup {
-      let fileManager = FileManager.default
-      directory = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
-      if directory == nil {
-        throw DatabaseInvalidAppGroupExcetion(appGroup)
-      }
-    } else {
-      directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
+    guard let directoryUrl = URL(string: directory) else {
+      throw DatabaseInvalidPathException(directory)
     }
-    fileSystem.ensureDirExists(withPath: directory?.absoluteString)
+    fileSystem.ensureDirExists(withPath: directoryUrl.standardizedFileURL.path)
 
-    return directory?.appendingPathComponent(name)
+    return directoryUrl.appendingPathComponent(name)
   }
 
   private func deserializeDatabase(_ serializedData: Data) throws -> OpaquePointer? {
@@ -416,17 +404,15 @@ public final class SQLiteModuleNext: Module {
     }
   }
 
-  private func deleteDatabase(databaseName: String, appGroup: String?) throws {
-    if findCachedDatabase(where: { $0.databaseName == databaseName && $0.iosOptions.appGroup == appGroup }) != nil {
+  private func deleteDatabase(databaseName: String, directory: String) throws {
+    if findCachedDatabase(where: { $0.databaseName == databaseName && $0.directory == directory }) != nil {
       throw DeleteDatabaseException(databaseName)
     }
 
     if databaseName == MEMORY_DB_NAME {
       return
     }
-    guard let path = try pathForDatabaseName(name: databaseName, appGroup: appGroup) else {
-      throw Exceptions.FileSystemModuleNotFound()
-    }
+    let path = try pathForDatabaseName(name: databaseName, directory: directory)
 
     if !FileManager.default.fileExists(atPath: path.standardizedFileURL.path) {
       throw DatabaseNotFoundException(databaseName)

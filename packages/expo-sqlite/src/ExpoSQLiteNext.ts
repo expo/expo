@@ -1,21 +1,21 @@
-import type { SQLiteOpenOptions, IOSOptions, NativeDatabase } from './NativeDatabase';
+import type { SQLiteOpenOptions } from './NativeDatabase';
 import type { DatabaseChangeEvent } from './SQLiteDatabase';
 
 export default {
   NativeDatabase(
     databaseName: string,
-    iosOptions?: IOSOptions,
+    directory?: string,
     options?: SQLiteOpenOptions,
     serializedData?: Uint8Array
   ): void {
     throw new Error('Unimplemented');
   },
 
-  async ensureHasAccessAsync(databaseName: string, iosOptions?: IOSOptions): Promise<void> {
+  async ensureHasAccessAsync(databaseName: string, directory: string): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  ensureHasAccessSync(databaseName: string, iosOptions?: IOSOptions): void {
+  ensureHasAccessSync(databaseName: string, directory: string): void {
     throw new Error('Unimplemented');
   },
 
@@ -23,17 +23,17 @@ export default {
     throw new Error('Unimplemented');
   },
 
-  async deleteDatabaseAsync(databaseName: string, iosOptions: IOSOptions): Promise<void> {
+  async deleteDatabaseAsync(databaseName: string, directory?: string): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  deleteDatabaseSync(databaseName: string, iosOptions: IOSOptions): void {
+  deleteDatabaseSync(databaseName: string, directory?: string): void {
     throw new Error('Unimplemented');
   },
 
   importAssetDatabaseAsync(
     databaseName: string,
-    iosOptions: IOSOptions,
+    directory: string,
     assetDatabasePath: string,
     forceOverwrite: boolean
   ): Promise<void> {

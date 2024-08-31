@@ -1,3 +1,4 @@
+import * as FS from 'expo-file-system';
 import ExpoSQLite from './ExpoSQLiteNext';
 import { SQLiteStatement, } from './SQLiteStatement';
 /**
@@ -5,12 +6,12 @@ import { SQLiteStatement, } from './SQLiteStatement';
  */
 export class SQLiteDatabase {
     databaseName;
-    iosOptions;
+    directory;
     options;
     nativeDatabase;
-    constructor(databaseName, iosOptions, options, nativeDatabase) {
+    constructor(databaseName, directory, options, nativeDatabase) {
         this.databaseName = databaseName;
-        this.iosOptions = iosOptions;
+        this.directory = directory;
         this.options = options;
         this.nativeDatabase = nativeDatabase;
     }
@@ -283,19 +284,23 @@ export class SQLiteDatabase {
     }
 }
 /**
+ * The default directory for SQLite databases.
+ */
+export const defaultDatabaseDirectory = FS.documentDirectory + 'SQLite';
+/**
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export async function openDatabaseAsync(databaseName, options, iosOptions) {
+export async function openDatabaseAsync(databaseName, options, directory) {
     const openOptions = options ?? {};
-    const resolvedIosOptions = iosOptions ?? {};
-    await ExpoSQLite.ensureHasAccessAsync(databaseName, resolvedIosOptions);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, resolvedIosOptions, openOptions);
+    const resolvedDirectory = directory ?? defaultDatabaseDirectory;
+    await ExpoSQLite.ensureHasAccessAsync(databaseName, resolvedDirectory);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, resolvedDirectory, openOptions);
     await nativeDatabase.initAsync();
-    return new SQLiteDatabase(databaseName, resolvedIosOptions, openOptions, nativeDatabase);
+    return new SQLiteDatabase(databaseName, resolvedDirectory, openOptions, nativeDatabase);
 }
 /**
  * Open a database.
@@ -304,15 +309,15 @@ export async function openDatabaseAsync(databaseName, options, iosOptions) {
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export function openDatabaseSync(databaseName, options, iosOptions) {
+export function openDatabaseSync(databaseName, options, directory) {
     const openOptions = options ?? {};
-    const resolvedIosOptions = iosOptions ?? {};
-    ExpoSQLite.ensureHasAccessSync(databaseName, resolvedIosOptions);
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, resolvedIosOptions, openOptions);
+    const resolvedDirectory = directory ?? defaultDatabaseDirectory;
+    ExpoSQLite.ensureHasAccessSync(databaseName, resolvedDirectory);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, resolvedDirectory, openOptions);
     nativeDatabase.initSync();
-    return new SQLiteDatabase(databaseName, resolvedIosOptions, openOptions, nativeDatabase);
+    return new SQLiteDatabase(databaseName, resolvedDirectory, openOptions, nativeDatabase);
 }
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
@@ -322,10 +327,9 @@ export function openDatabaseSync(databaseName, options, iosOptions) {
  */
 export async function deserializeDatabaseAsync(serializedData, options) {
     const openOptions = options ?? {};
-    const iosOptions = {};
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', iosOptions, openOptions, serializedData);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', undefined, openOptions, serializedData);
     await nativeDatabase.initAsync();
-    return new SQLiteDatabase(':memory:', iosOptions, openOptions, nativeDatabase);
+    return new SQLiteDatabase(':memory:', undefined, openOptions, nativeDatabase);
 }
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).
@@ -337,20 +341,19 @@ export async function deserializeDatabaseAsync(serializedData, options) {
  */
 export function deserializeDatabaseSync(serializedData, options) {
     const openOptions = options ?? {};
-    const iosOptions = {};
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', iosOptions, openOptions, serializedData);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', undefined, openOptions, serializedData);
     nativeDatabase.initSync();
-    return new SQLiteDatabase(':memory:', iosOptions, openOptions, nativeDatabase);
+    return new SQLiteDatabase(':memory:', undefined, openOptions, nativeDatabase);
 }
 /**
  * Delete a database file.
  *
  * @param databaseName The name of the database file to delete.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export async function deleteDatabaseAsync(databaseName, iosOptions) {
-    const resolvedIosOptions = iosOptions ?? {};
-    return await ExpoSQLite.deleteDatabaseAsync(databaseName, resolvedIosOptions);
+export async function deleteDatabaseAsync(databaseName, directory) {
+    const resolvedDirectory = directory ?? defaultDatabaseDirectory;
+    return await ExpoSQLite.deleteDatabaseAsync(databaseName, resolvedDirectory);
 }
 /**
  * Delete a database file.
@@ -358,11 +361,11 @@ export async function deleteDatabaseAsync(databaseName, iosOptions) {
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param databaseName The name of the database file to delete.
- * @param iosOptions Options for iOS.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
-export function deleteDatabaseSync(databaseName, iosOptions) {
-    const resolvedIosOptions = iosOptions ?? {};
-    return ExpoSQLite.deleteDatabaseSync(databaseName, resolvedIosOptions);
+export function deleteDatabaseSync(databaseName, directory) {
+    const resolvedDirectory = directory ?? defaultDatabaseDirectory;
+    return ExpoSQLite.deleteDatabaseSync(databaseName, resolvedDirectory);
 }
 /**
  * Add a listener for database changes.
@@ -381,10 +384,12 @@ export function addDatabaseChangeListener(listener) {
 class Transaction extends SQLiteDatabase {
     static async createAsync(db) {
         const options = { ...db.options, useNewConnection: true };
-        await ExpoSQLite.ensureHasAccessAsync(db.databaseName, db.iosOptions);
-        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.iosOptions, options);
+        if (db.directory) {
+            await ExpoSQLite.ensureHasAccessAsync(db.databaseName, db.directory);
+        }
+        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, db.directory, options);
         await nativeDatabase.initAsync();
-        return new Transaction(db.databaseName, db.iosOptions, options, nativeDatabase);
+        return new Transaction(db.databaseName, db.directory, options, nativeDatabase);
     }
 }
 //# sourceMappingURL=SQLiteDatabase.js.map

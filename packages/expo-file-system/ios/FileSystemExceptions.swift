@@ -97,3 +97,9 @@ final class FailedToFindAssetException: GenericException<String> {
     "Failed to find photo library asset: \(param)"
   }
 }
+
+final class CannotGetSharedContainer: GenericException<String> {
+  override var reason: String {
+    "Unable to open shared container with provided app group \(param). Check your entitlements"
+  }
+}

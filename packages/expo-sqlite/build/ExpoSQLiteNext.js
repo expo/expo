@@ -1,23 +1,23 @@
 export default {
-    NativeDatabase(databaseName, iosOptions, options, serializedData) {
+    NativeDatabase(databaseName, directory, options, serializedData) {
         throw new Error('Unimplemented');
     },
-    async ensureHasAccessAsync(databaseName, iosOptions) {
+    async ensureHasAccessAsync(databaseName, directory) {
         throw new Error('Unimplemented');
     },
-    ensureHasAccessSync(databaseName, iosOptions) {
+    ensureHasAccessSync(databaseName, directory) {
         throw new Error('Unimplemented');
     },
     NativeStatement() {
         throw new Error('Unimplemented');
     },
-    async deleteDatabaseAsync(databaseName, iosOptions) {
+    async deleteDatabaseAsync(databaseName, directory) {
         throw new Error('Unimplemented');
     },
-    deleteDatabaseSync(databaseName, iosOptions) {
+    deleteDatabaseSync(databaseName, directory) {
         throw new Error('Unimplemented');
     },
-    importAssetDatabaseAsync(databaseName, iosOptions, assetDatabasePath, forceOverwrite) {
+    importAssetDatabaseAsync(databaseName, directory, assetDatabasePath, forceOverwrite) {
         throw new Error('Unimplemented');
     },
     //#region EventEmitter implementations

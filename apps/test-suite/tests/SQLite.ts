@@ -896,11 +896,11 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       });
 
       it('should create and delete a database in a shared container', async () => {
-        const db = await SQLite.openDatabaseAsync(
-          'SQLite/test.db',
-          {},
-          { appGroup: 'group.dev.expo.Payments' }
-        );
+        const sharedContainerRoot = await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
+        const dbDirectory = sharedContainerRoot + 'SQLite';
+        const dbUri = dbDirectory + '/test.db';
+
+        const db = await SQLite.openDatabaseAsync('test.db', {}, dbDirectory);
         await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
@@ -910,38 +910,27 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         expect(results.length).toBe(1);
         await db.closeAsync();
 
-        const sharedContainerRoot = await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
-        const dbUri = sharedContainerRoot + 'SQLite/test.db';
-
         let fileInfo = await FS.getInfoAsync(dbUri);
         expect(fileInfo.exists).toBeTruthy();
 
-        await SQLite.deleteDatabaseAsync('SQLite/test.db', { appGroup: 'group.dev.expo.Payments' });
+        await SQLite.deleteDatabaseAsync('test.db', dbDirectory);
         fileInfo = await FS.getInfoAsync(dbUri);
         expect(fileInfo.exists).toBeFalsy();
       });
 
       it('should support internal importDatabaseFromAssetAsync without using expo-file-system', async () => {
+        const sharedContainerRoot = await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
+        const dbDirectory = sharedContainerRoot + 'SQLite';
         await SQLite.importDatabaseFromAssetAsync(
-          'SQLite/test.db',
+          'test.db',
           { assetId: require('../assets/asset-db.db') },
-          { appGroup: 'group.dev.expo.Payments' }
+          dbDirectory
         );
-        const db = await SQLite.openDatabaseAsync(
-          'SQLite/test.db',
-          {},
-          { appGroup: 'group.dev.expo.Payments' }
-        );
+        const db = await SQLite.openDatabaseAsync('test.db', {}, dbDirectory);
         const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
         expect(results.length).toEqual(3);
         expect(results[0].j).toBeCloseTo(23.4);
         await db.closeAsync();
-      });
-
-      it('should throw an error when trying to open a database from inaccessible app group', async () => {
-        expect(() => {
-          SQLite.openDatabaseSync('SQLite/test.db', {}, { appGroup: 'group.dev.expo.wrong' });
-        }).toThrow();
       });
     });
   }
