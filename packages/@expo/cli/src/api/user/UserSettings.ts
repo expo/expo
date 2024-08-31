@@ -72,6 +72,18 @@ async function getAnonymousIdentifierAsync(): Promise<string> {
   return id;
 }
 
+function getAnonymousIdentifierSync(): string {
+  const settings = userSettingsJsonFile();
+  let id = settings.getSync('uuid', null);
+
+  if (!id) {
+    id = crypto.randomUUID();
+    settings.setSync('uuid', id);
+  }
+
+  return id;
+}
+
 const UserSettings = Object.assign(userSettingsJsonFile(), {
   getSession,
   setSessionAsync,
@@ -80,6 +92,7 @@ const UserSettings = Object.assign(userSettingsJsonFile(), {
   getFilePath,
   userSettingsJsonFile,
   getAnonymousIdentifierAsync,
+  getAnonymousIdentifierSync,
 });
 
 export default UserSettings;

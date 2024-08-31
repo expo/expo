@@ -1,5 +1,6 @@
 import { Telemetry } from './Telemetry';
 import type { TelemetryRecord } from './types';
+import UserSettings from '../../api/user/UserSettings';
 import { env } from '../env';
 
 /** The singleton telemetry manager to use */
@@ -9,7 +10,7 @@ export function getTelemetry(): Telemetry | null {
   if (env.EXPO_NO_TELEMETRY || env.EXPO_OFFLINE) return null;
 
   if (!telemetry) {
-    telemetry = new Telemetry({ anonymousId: 'TODO' });
+    telemetry = new Telemetry({ anonymousId: UserSettings.getAnonymousIdentifierSync() });
 
     process.once('SIGINT', () => telemetry!.flushOnExit());
     process.once('SIGTERM', () => telemetry!.flushOnExit());
