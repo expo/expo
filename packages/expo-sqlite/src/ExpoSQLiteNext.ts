@@ -22,11 +22,11 @@ export default {
     throw new Error('Unimplemented');
   },
 
-  async deleteDatabaseAsync(databaseName: string, directory?: string): Promise<void> {
+  async deleteDatabaseAsync(databasePath: string): Promise<void> {
     throw new Error('Unimplemented');
   },
 
-  deleteDatabaseSync(databaseName: string, directory?: string): void {
+  deleteDatabaseSync(databasePath: string): void {
     throw new Error('Unimplemented');
   },
 

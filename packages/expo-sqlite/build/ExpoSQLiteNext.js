@@ -11,10 +11,10 @@ export default {
     NativeStatement() {
         throw new Error('Unimplemented');
     },
-    async deleteDatabaseAsync(databaseName, directory) {
+    async deleteDatabaseAsync(databasePath) {
         throw new Error('Unimplemented');
     },
-    deleteDatabaseSync(databaseName, directory) {
+    deleteDatabaseSync(databasePath) {
         throw new Error('Unimplemented');
     },
     importAssetDatabaseAsync(databasePath, assetDatabasePath, forceOverwrite) {

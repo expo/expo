@@ -5,8 +5,8 @@ declare const _default: {
     ensureDatabasePathExistsAsync(databasePath: string): Promise<void>;
     ensureDatabasePathExistsSync(databasePath: string): void;
     NativeStatement(): void;
-    deleteDatabaseAsync(databaseName: string, directory?: string): Promise<void>;
-    deleteDatabaseSync(databaseName: string, directory?: string): void;
+    deleteDatabaseAsync(databasePath: string): Promise<void>;
+    deleteDatabaseSync(databasePath: string): void;
     importAssetDatabaseAsync(databasePath: string, assetDatabasePath: string, forceOverwrite: boolean): Promise<void>;
     addListener(eventName: string, listener: (event: DatabaseChangeEvent) => void): never;
     removeListeners(): never;
