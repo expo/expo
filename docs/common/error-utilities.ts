@@ -242,6 +242,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/submit/submit-android': '/submit/android/',
 
   // Fundamentals had too many things
+  '/workflow/linking/': '/linking/overview/',
   '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
