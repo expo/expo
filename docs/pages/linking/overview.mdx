@@ -27,9 +27,9 @@ This link is constructed by three parts:
 - **Host**: The domain name of the app that should open the URL (example: `web-app.com`).
 - **Path**: The path to the screen that should be opened (example: `/product`). If the path isn't specified, the user is taken to the home screen of the app.
 
-## Different types of linking
+## Linking strategies
 
-There are different types of linking strategies you handle in your Expo app:
+There are different linking strategies you handle in your Expo app:
 
 - Linking to other apps from your app (outgoing links)
 - Linking to your app from other apps or a web browser (incoming links)
@@ -96,3 +96,13 @@ This link type allows your app to always open when a user clicks the link instea
   href="/linking/ios-universal-links/"
   Icon={AppleIcon}
 />
+
+## Use Expo Router to handle deep linking
+
+To implement any of the above Linking strategy, **we recommend using** [Expo Router](/router/introduction/) since deep linking is automatically enabled for all of your app's screens.
+
+**Benefits**
+
+- When implementing deep links, you can skip [adding `scheme` to your app's config](/linking/into-your-app/#add-a-custom-scheme-in-app-config).
+- `Link` component from Expo Router can be used to [handle URL schemes to other apps](/linking/into-other-apps/#expo-router)
+- Android App Links and iOS Universal Links require configuring two-way association and runtime routing for the link in your app. This configuration is done in JavaScript and must be applied to every route to ensure coordination between web and native platforms. Since Expo Router enables deep links automatically, you don't have to configure runtime routing separately.

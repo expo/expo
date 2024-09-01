@@ -27,8 +27,6 @@ After adding a custom scheme to your app, you need to [create a new development 
 
 If the **custom scheme is not defined**, the app will use `android.package` and `ios.bundleIdentifier` as the default schemes in both development and production builds. This is because [Expo Prebuild](/workflow/prebuild/) automatically adds these properties as custom schemes for Android and iOS.
 
-> **info** If you're using **Expo Router**, you don't have to define a custom scheme. All screens in your app can be deep linked automatically. Instead, you can use `android.package` and `ios.bundleIdentifier` as the default schemes in both development and production builds.
-
 ## Test the deep link
 
 You can test a link that opens your app using [`npx uri-scheme`](https://github.com/expo/expo/tree/main/packages/uri-scheme#readme), which is a command-line utility for interacting and testing URI schemes.
