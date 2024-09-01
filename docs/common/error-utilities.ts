@@ -183,7 +183,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
-  '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/create-a-project/',
   '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
@@ -243,7 +242,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/submit/submit-android': '/submit/android/',
 
   // Fundamentals had too many things
-  '/workflow/linking/': '/guides/linking/',
   '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
@@ -412,4 +410,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Based on SEO tool reports
   '/build-reference/eas-json/': '/eas/json/',
   '/build-reference/custom-builds/schema/': '/custom-builds/schema/',
+
+  // After adding "Linking" (/linking/**) section
+  '/guides/linking/': '/linking/overview/',
+  '/guides/deep-linking/': '/linking/deep-linking/',
 };
