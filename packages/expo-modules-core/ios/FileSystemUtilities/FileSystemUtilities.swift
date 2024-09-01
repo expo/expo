@@ -65,7 +65,7 @@ public struct FileSystemUtilities {
 
       return getExternalPathPermissions(appGroupRootUrl)
     }
-    
+
     return getExternalPathPermissions(path)
   }
 

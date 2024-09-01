@@ -98,7 +98,7 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
       return getExternalPathPermissions(appGroupRootUrl)
     }
-    
+
     return getExternalPathPermissions(url)
   }
 

@@ -201,7 +201,7 @@ public final class SQLiteModuleNext: Module {
     guard let fileSystem = appContext?.fileSystem else {
       throw Exceptions.FileSystemModuleNotFound()
     }
-    
+
     guard let pathUrl = URL(string: path) else {
       throw DatabaseInvalidPathException(path)
     }
@@ -402,7 +402,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func deleteDatabase(databasePath: String) throws {
-    if findCachedDatabase(where: { $0.databasePath == databasePath  }) != nil {
+    if findCachedDatabase(where: { $0.databasePath == databasePath }) != nil {
       throw DeleteDatabaseException(databasePath)
     }
 
