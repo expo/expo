@@ -8,7 +8,6 @@ export declare class NativeDatabase {
 
   //#region Asynchronous API
 
-  public openAsync(serializedData?: Uint8Array): Promise<void>;
   public initAsync(): Promise<void>;
   public isInTransactionAsync(): Promise<boolean>;
   public closeAsync(): Promise<void>;
@@ -20,7 +19,6 @@ export declare class NativeDatabase {
 
   //#region Synchronous API
 
-  public openSync(serializedData?: Uint8Array): Promise<void>;
   public initSync(): void;
   public isInTransactionSync(): boolean;
   public closeSync(): void;

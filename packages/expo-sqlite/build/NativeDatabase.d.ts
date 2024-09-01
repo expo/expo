@@ -4,14 +4,12 @@ import { NativeStatement } from './NativeStatement';
  */
 export declare class NativeDatabase {
     constructor(databasePath: string, options?: SQLiteOpenOptions);
-    openAsync(serializedData?: Uint8Array): Promise<void>;
     initAsync(): Promise<void>;
     isInTransactionAsync(): Promise<boolean>;
     closeAsync(): Promise<void>;
     execAsync(source: string): Promise<void>;
     serializeAsync(databaseName: string): Promise<Uint8Array>;
     prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
-    openSync(serializedData?: Uint8Array): Promise<void>;
     initSync(): void;
     isInTransactionSync(): boolean;
     closeSync(): void;
