@@ -15,7 +15,7 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
     return DynamicNumberType(numberType: T.self)
   }
   if type is String.Type {
-    return DynamicStringType()
+    return DynamicStringType.shared
   }
   if let ArrayType = T.self as? AnyArray.Type {
     return DynamicArrayType(elementType: ArrayType.getElementDynamicType())
@@ -41,8 +41,8 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let TypedArrayType = T.self as? AnyTypedArray.Type {
     return DynamicTypedArrayType(innerType: TypedArrayType)
   }
-  if let DataType = T.self as? Data.Type {
-    return DynamicDataType()
+  if T.self is Data.Type {
+    return DynamicDataType.shared
   }
   if let JavaScriptValueType = T.self as? any AnyJavaScriptValue.Type {
     return DynamicJavaScriptType(innerType: JavaScriptValueType)
