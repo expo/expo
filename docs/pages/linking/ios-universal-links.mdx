@@ -1,26 +1,24 @@
 ---
 title: iOS Universal Links
-description: Learn how to configure iOS Universal Links in your Expo apps to open your app from a standard web URL.
+description: Learn how to configure iOS Universal Links to open your Expo app from a standard web URL.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-iOS Universal Links differ from [standard deep links](/linking/into-your-app/), as they use regular HTTP and HTTPS schemes and are exclusive to iOS devices. They allow your app to always open when a user clicks a link instead of presenting a dialog for the user to choose between the browser or another handler. If a user doesn't have your app installed, the link takes them to the associated website.
+To configure iOS Universal Links for your app, you need to set up the **two-way association** to verify your website and native app.
 
-This guide provides steps to configure iOS Universal Links in your project.
+> **Note**: After setting up the two-way association, you need to configure the runtime routing for the link in your app. This configuration is done in JavaScript and must be applied to every route to ensure coordination between web and native platforms. **Expo offers a fully automated solution for this using [Expo Router](/router/introduction/) which enables deep linking automatically.**
 
 ## Set up two-way association
 
-You need to set up the **two-way association** between the website and app for iOS. This is done in two steps:
+To setup **two-way association** between the website and app for iOS, you need to perform the following steps:
 
-- **Website verification:** This requires creating a **apple-app-site-association** file inside the **/.well-known** directory and hosting it on the target website. This file is used to verify that the app opened from a given link is the correct app.
+- **Website verification:** This requires creating a **apple-app-site-association (AASA)** file inside the **/.well-known** directory and hosting it on the target website. This file is used to verify that the app opened from a given link is the correct app.
 - **Native app verification:** This requires some form of code signing that references the target website domain (URL).
 
-After setting up the two-way association, you need to configure the runtime routing for the link in your app. This configuration is done in JavaScript and must be applied to every route, ensuring coordination between web and native platforms. Expo offers a fully automated solution for this using [Expo Router](/router/introduction/).
-
-### Create Apple App Site Association (AASA) file
+### Create AASA file
 
 Create an **apple-app-site-association** file for the website verification inside the **/.well-known** directory. This file specifies your Apple Developer Team ID, bundle identifier, and a list of supported paths to redirect to the native app.
 
@@ -36,8 +34,8 @@ If you're using Expo Router to build your website (or any other modern React fra
     "details": [
       {
         // Syntax: "<APPLE_TEAM_ID>.<BUNDLE_ID>"
-        /* @info Replace <CODE>QQ57RJ5UTD.com.acme.myapp</CODE> with your own Apple Team ID and bundle identifier. */
-        "appID": "QQ57RJ5UTD.com.acme.myapp",
+        /* @info Replace <CODE>QQ57RJ5UTD.com.example.myapp</CODE> with your own Apple Team ID and bundle identifier. */
+        "appID": "QQ57RJ5UTD.com.example.myapp",
         /* @end */
         // All paths that should support redirecting.
         /* @info Replace <CODE>/records/*</CODE> with your own path. */
@@ -59,7 +57,7 @@ If you're using Expo Router to build your website (or any other modern React fra
 
 In the above example:
 
-- Any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with a matching bundle identifier on an iOS device. It is a combination of the Apple Team ID and the bundle identifier. The Apple Team ID can be found under the membership details in the Apple Developer account.
+- Any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with a matching bundle identifier on an iOS device. It is a combination of the [Apple Team ID](https://expo.fyi/apple-team) and the bundle identifier.
 - The `*` wildcard does **not** match domain or path separators (periods and slashes).
 - The `activitycontinuation` and `webcredentials` objects are optional, but recommended.
 
@@ -67,7 +65,7 @@ In the above example:
 
 ### Supporting `details` format
 
-As of iOS 13, the [`details` format is supported](https://developer.apple.com/documentation/xcode/supporting-associated-domains) which allows you to specify:
+The [`details` format is supported](https://developer.apple.com/documentation/xcode/supporting-associated-domains) as of iOS 13. It allows you to specify:
 
 - `appIDs` instead of `appID`: Makes it easier to associate multiple apps with the same configuration
 - An array of `components`: Allows you to specify fragments, exclude specific paths, and add comments
@@ -121,9 +119,7 @@ After you have setup the AASA file, deploy your website to a server that support
 
 ### Native app configuration
 
-After deploying your **apple-app-site-association** (AASA) file, configure your app to use your associated domain by adding [`ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [app config](/workflow/configuration/).
-
-Make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains) and **not** include the protocol (`https`) in your URL. This is a common mistake that will result in the universal links not working.
+After deploying your **apple-app-site-association** (AASA) file, configure your app to use your associated domain by adding [`ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [app config](/workflow/configuration/). Make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains) and **not** include the protocol (`https`) in your URL. This is a common mistake that will result in the universal links not working.
 
 For example, if an associated website is `https://expo.dev/`, the `applinks` is:
 
@@ -156,7 +152,7 @@ If you enable through the [Apple Developer Console](/build-reference/ios-capabil
 
 ### Native app verification
 
-Install the app on your iOS device to trigger the verification process. A link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list).
+Install the app on your iOS device to trigger the verification process. A link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list).
 
 Once you have your app opened, see [Handle links into your app](/linking/into-your-app/#handle-urls) for more information on how to handle inbound links and show the user the content they requested.
 
@@ -176,7 +172,9 @@ If you're having trouble setting up the banner, run the following command to aut
 
 <Terminal cmd={['$ npx setup-safari']} />
 
-If you're building a [statically rendered website with Expo Router](/router/reference/static-rendering), then add this HTML tag to the `<head>` component in your [**app/+html.js** file](/router/reference/static-rendering#root-html).
+### Add the meta tag to your statically rendered website
+
+If you're building a [statically rendered website with Expo Router](/router/reference/static-rendering), then add the HTML tag to the `<head>` component in your [**app/+html.js** file](/router/reference/static-rendering#root-html).
 
 ```tsx app/+html.tsx
 import { type PropsWithChildren } from "react";
@@ -198,7 +196,7 @@ export default function Root({ children }: PropsWithChildren) {
 }
 ```
 
-## Test and debug iOS Universal Links locally
+## Debugging
 
 Expo CLI enables you to test iOS Universal Links without deploying a website. Utilizing the [`--tunnel`](/more/expo-cli/#tunneling) functionality, you can forward your dev server to a publicly available HTTPS URL.
 
@@ -230,7 +228,7 @@ Compile the development build on your device:
 
 </Step>
 
-You can now visit the your custom domain link on your device to open your app for the URL.
+You can now type your custom domain link in your device's web browser to open your app.
 
 ## Troubleshooting
 

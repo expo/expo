@@ -7,15 +7,18 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Android App Links differ from [standard deep links](/linking/into-your-app/), as they use regular HTTP and HTTPS schemes and are exclusive to Android devices. They allow your app to always open when a user clicks a link instead of presenting a dialog for the user to choose between the browser or another handler. If a user doesn't have your app installed, the link takes them to the associated website.
+To configure Android App Links for your app, you need to:
 
-This guide provides steps to configure Android App Links in your project.
+- Add `intentFilters` and set `autoVerify` to true in your project's app config
+- Set up two-way association to verify your website and native app
+
+> **Note**: After setting up the two-way association, you need to configure the runtime routing for the link in your app. This configuration is done in JavaScript and must be applied to every route to ensure coordination between web and native platforms. **Expo offers a fully automated solution for this using [Expo Router](/router/introduction/) which enables deep linking automatically.**
 
 ## Add `intentFilters` to the app config
 
-To enable Android App Links, configure your [app config](/workflow/configuration/) by adding the `android.intentFilters` property and setting the `autoVerify` attribute to `true`. Specifying `autoVerify` is required for Android App Links to work correctly.
+Configure your app config by adding the `android.intentFilters` property and setting the `autoVerify` attribute to `true`. Specifying `autoVerify` is required for Android App Links to work correctly.
 
-The following code example shows a basic configuration that enables your app to appear in the standard Android dialog as an option for handling any links to the `myapp.io` domain:
+The following example shows a basic configuration that enables your app to appear in the standard Android dialog as an option for handling any links to the `webapp.io` domain. It also uses regular `https` scheme since [Android App Links](/linking/overview/#android-app-links) are different from [standard deep links](/linking/into-other-apps/).
 
 ```json app.json|collapseHeight=454
 {
@@ -30,7 +33,7 @@ The following code example shows a basic configuration that enables your app to 
           "data": [
             {
               "scheme": "https",
-              "host": "*.myapp.io",
+              "host": "*.webapp.io",
               "pathPrefix": "/records"
             }
           ],
@@ -44,12 +47,10 @@ The following code example shows a basic configuration that enables your app to 
 
 ## Set up two-way association
 
-You need to set up the **two-way association** between the website and app for Android. This is done in two steps:
+To setup **two-way association** between the website and app for Android, you need to perform the following steps:
 
 - **Website verification:** This requires creating a **assetlinks.json** file inside the **/.well-known** directory and hosting it on the target website. This file is used to verify that the app opened from a given link is the correct app.
 - **Native app verification:** This requires some form of code signing that references the target website domain (URL).
-
-After setting up the two-way association, you need to configure the runtime routing for the link in your app. This configuration is done in JavaScript and must be applied to every route, ensuring coordination between web and native platforms. Expo offers a fully automated solution for this using [Expo Router](/router/introduction/).
 
 ### Create assetlinks.json file
 
@@ -63,15 +64,14 @@ If you're using Expo Router to build your website (or any other modern React fra
 
 <Step label="2">
 
-Get the value of `package_name` from your app config under `android.package`.
+Get the value of `package_name` from your app config, under `android.package`.
 
 </Step>
 
 <Step label="3">
 
-Get the value of `sha256_cert_fingerprints` from your app's signing certificate. With [EAS Build](/build/setup/):
+Get the value of `sha256_cert_fingerprints` from your app's signing certificate. If you're using [EAS Build](/build/setup/) to build your Android app, after creating a build:
 
-- Build your Android app
 - Run `eas credentials -p android` command, and select the build profile to get its fingerprint value.
 - Copy the fingerprint value listed under `SHA256 Fingerprint`.
 
@@ -111,19 +111,21 @@ Add `package_name` and `sha256_cert_fingerprints` to the **assetlinks.json** fil
 ]
 ```
 
-> **info** You can add multiple fingerprints to the `sha256_cert_fingerprints` array to support different variants of your app. For more information, see [Android's documentation on Declare website associations](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc).
+> **info** You can add multiple fingerprints to the `sha256_cert_fingerprints` array to support different variants of your app. For more information, see [Android's documentation on how to declare website associations](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc).
 
 </Step>
 
 ### Host assetlinks.json file
 
-Host the **assetlinks.json** file using a web server with your domain. This file must be served with the content-type `application/json` and accessible over an HTTPS connection. Verify that your browser can access this file.
+Host the **assetlinks.json** file using a web server with your domain. This file must be served with the content-type `application/json` and accessible over an HTTPS connection. Verify that your browser can access this file by typing the complete URL in the address bar.
 
 ### Native app verification
 
-Install the app on an Android device to trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process. This process takes at least 20 seconds. Once you have your app opened, see [Handle links into your app](/linking/into-your-app/#handle-urls) for more information on how to handle inbound links and show the user the content they requested.
+Install the app on an Android device to trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process. This process takes at least 20 seconds.
 
-## Test and debug Android App Links locally
+Once you have your app opened, see [Handle links into your app](/linking/into-your-app/#handle-urls) for more information on how to handle inbound links and show the user the content they requested.
+
+## Debugging
 
 Expo CLI enables you to test Android App Links without deploying a website. Utilizing the [`--tunnel`](/more/expo-cli/#tunneling) functionality, you can forward your dev server to a publicly available HTTPS URL.
 
@@ -157,7 +159,7 @@ Compile the development build on your device:
 
 <Step label="5">
 
-You can use the following `adb` command to start the intent activity:
+You can use the following `adb` command to start the intent activity and open the link on your app or type the custom domain link in your device's web browser.
 
 <Terminal
   cmd={[

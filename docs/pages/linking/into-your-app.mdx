@@ -1,7 +1,7 @@
 ---
 title: Linking into your app
 sidebar_title: Into your app
-description: Learn how to open and handle a URL based on the scheme for your app from other apps by creating a deep link.
+description: Learn how to open and handle a URL from other apps based on the scheme for your by creating a deep link.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -116,9 +116,9 @@ export default function Home() {
 
 If a user does not has your app installed and follows a link to your app's custom scheme, the device's operating system will indicate that the page couldn't be opened without providing any further information. This results in a poor user experience, and unfortunately, there's no way to work around this in a web browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes. For example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)). An common example is the Gmail app which strips the `href` attribute from the links of most apps.
+Additionally, many messaging apps do not autolink URLs with custom schemes. For example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might appear as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)). A common example is the Gmail app which strips the `href` attribute from the links of most apps.
 
-One technique you can use here is to use a regular HTTPS URL instead of your app's custom scheme. This will open the user's web browser. Browsers usually do not strip the `href` property so you can host a file online that redirects the user to your app's custom schemes.
+One solution is to use a regular HTTPS URL instead of your app's custom scheme. This will open the user's web browser, where the `href` property is usually preserved. You can host a file online that redirects the user to your app's custom scheme.
 
 Instead of linking to `example://path/into/app`, you can link to `https://example.com/redirect-to-app.html` and `redirect-to-app.html` can contain the custom scheme URL:
 
