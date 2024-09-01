@@ -16,7 +16,6 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
-import { record } from '../../../utils/telemetry';
 import { stripPort } from '../../../utils/url';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
@@ -246,15 +245,6 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       });
     }
     return form;
-  }
-
-  protected trackManifest(version?: string) {
-    record({
-      event: 'Serve Expo Updates Manifest',
-      properties: {
-        runtimeVersion: version,
-      },
-    });
   }
 
   private static async getScopeKeyAsync({

@@ -7,7 +7,6 @@ import { DeviceManager } from './DeviceManager';
 import { Log } from '../../log';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import { record } from '../../utils/telemetry';
 
 const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
 
@@ -116,18 +115,9 @@ export class PlatformManager<
     const { exp } = getConfig(this.projectRoot);
     const sdkVersion = exp.sdkVersion;
     assert(sdkVersion, 'sdkVersion should be resolved by getConfig');
-    const installedExpo = await deviceManager.ensureExpoGoAsync(sdkVersion);
 
     deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url, { appId: deviceManager.getExpoGoAppId() });
-
-    record({
-      event: 'Open Url on Device',
-      properties: {
-        platform: this.props.platform,
-        installedExpo,
-      },
-    });
 
     return { url };
   }
@@ -158,15 +148,6 @@ export class PlatformManager<
           )}`
       );
     }
-
-    // TODO: Rethink analytics
-    record({
-      event: 'Open Url on Device',
-      properties: {
-        platform: this.props.platform,
-        installedExpo: false,
-      },
-    });
 
     if (!url) {
       url = this._resolveAlternativeLaunchUrl(applicationId, props);

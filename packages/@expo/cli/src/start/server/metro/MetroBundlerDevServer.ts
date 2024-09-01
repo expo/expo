@@ -42,11 +42,9 @@ import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
-import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
-import { record } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   cachedSourceMaps,
@@ -62,10 +60,7 @@ import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddlewa
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
-import {
-  DeepLinkHandler,
-  RuntimeRedirectMiddleware,
-} from '../middleware/RuntimeRedirectMiddleware';
+import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import {
   convertPathToModuleSpecifier,
@@ -876,7 +871,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
 
       const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-        onDeepLink: getDeepLinkHandler(this.projectRoot),
         getLocation: ({ runtime }) => {
           if (runtime === 'custom') {
             return this.urlCreator?.constructDevClientUrl();
@@ -1612,20 +1606,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
 function getBuildID(buildNumber: number): string {
   return buildNumber.toString(36);
-}
-
-export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
-  return async ({ runtime }) => {
-    if (runtime === 'expo') return;
-    const { exp } = getConfig(projectRoot);
-    record({
-      event: 'dev client start command',
-      properties: {
-        status: 'started',
-        ...getDevClientProperties(projectRoot, exp),
-      },
-    });
-  };
 }
 
 function wrapBundle(str: string) {
