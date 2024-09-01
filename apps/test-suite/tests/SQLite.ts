@@ -920,8 +920,8 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
           const sharedContainerRoot =
             await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
           const sharedContainerDir = sharedContainerRoot + 'SQLite';
-          await FS.deleteAsync(sharedContainerDir);
-          await FS.makeDirectoryAsync(sharedContainerDir);
+          await FS.deleteAsync(sharedContainerDir, { idempotent: true });
+          await FS.makeDirectoryAsync(sharedContainerDir, { intermediates: true });
           await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
           await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
         });
