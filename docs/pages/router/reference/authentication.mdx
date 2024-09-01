@@ -98,6 +98,7 @@ The following code snippet is a basic hook that persists tokens securely on nati
 
 {/* prettier-ignore */}
 ```tsx useStorageState.ts
+import  { useEffect, useCallback } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -138,7 +139,7 @@ export function useStorageState(key: string): UseStateHook<string> {
   const [state, setState] = useAsyncState<string>();
 
   // Get
-  React.useEffect(() => {
+  useEffect(() => {
     if (Platform.OS === 'web') {
       try {
         if (typeof localStorage !== 'undefined') {
@@ -155,7 +156,7 @@ export function useStorageState(key: string): UseStateHook<string> {
   }, [key]);
 
   // Set
-  const setValue = React.useCallback(
+  const setValue = useCallback(
     (value: string | null) => {
       setState(value);
       setStorageItemAsync(key, value);
