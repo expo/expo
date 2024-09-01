@@ -18,7 +18,8 @@ export interface SQLiteProviderProps {
      */
     databaseName: string;
     /**
-     * The directory where the database file is located. The default value is `FileSystem.documentDirectory/SQLite`.
+     * The directory where the database file is located.
+     * @default FileSystem.documentDirectory/SQLite
      */
     directory?: string;
     /**
