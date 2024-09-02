@@ -1,3 +1,5 @@
+import type { IMinimatch } from 'minimatch';
+
 import type { SourceSkips } from './sourcer/SourceSkips';
 
 export type FingerprintSource = HashSource & {
@@ -107,6 +109,8 @@ export interface Options {
   debug?: boolean;
 }
 
+type SourceSkipsKeys = keyof typeof SourceSkips;
+
 /**
  * Supported options from fingerprint.config.js
  */
@@ -114,22 +118,25 @@ export type Config = Pick<
   Options,
   | 'concurrentIoLimit'
   | 'hashAlgorithm'
+  | 'ignorePaths'
   | 'extraSources'
-  | 'sourceSkips'
   | 'enableReactImportsPatcher'
   | 'debug'
->;
+> & {
+  sourceSkips?: SourceSkips | SourceSkipsKeys[];
+};
 
 //#region internal types
 
-export interface NormalizedOptions extends Options {
+export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
   platforms: NonNullable<Options['platforms']>;
   concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
   hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
-  ignorePaths: NonNullable<Options['ignorePaths']>;
   sourceSkips: NonNullable<Options['sourceSkips']>;
   enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
-}
+
+  ignorePathMatchObjects: IMinimatch[];
+};
 
 export interface HashSourceFile {
   type: 'file';

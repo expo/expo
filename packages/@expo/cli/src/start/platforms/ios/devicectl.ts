@@ -15,10 +15,10 @@ import assert from 'node:assert';
 import { Ora } from 'ora';
 import { EOL } from 'os';
 import path from 'path';
-import tempy from 'tempy';
 
 import { xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
+import { createTempFilePath } from '../../../utils/createTempPath';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
@@ -156,7 +156,7 @@ export async function getConnectedAppleDevicesAsync() {
     return [];
   }
 
-  const tmpPath = tempy.file();
+  const tmpPath = createTempFilePath();
   const devices = await devicectlAsync([
     'list',
     'devices',

@@ -24,7 +24,7 @@ export default class Camera extends React.Component<CameraProps> {
         type: Record<"front" | "back", string | number | undefined>;
         flashMode: Record<"off" | "on" | "auto" | "torch", string | number | undefined>;
         autoFocus: Record<"off" | "on" | "auto" | "singleShot", string | number | boolean | undefined>;
-        whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
+        whiteBalance: Record<"auto" | "continuous" | "manual" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent", string | number | undefined>;
     };
     static defaultProps: CameraProps;
     /**
@@ -158,7 +158,7 @@ export default class Camera extends React.Component<CameraProps> {
         nativeEvent: any;
     }) => void;
     _setReference: (ref?: React.Component) => void;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;
 //# sourceMappingURL=Camera.d.ts.map

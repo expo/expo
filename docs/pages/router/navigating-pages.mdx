@@ -73,6 +73,33 @@ To navigate, you can provide a full path (`/profile/settings`), a relative path 
 | `push`     | Always pushes a new route, and never pops or replaces to existing routes. You can push the current route multiple times or with new parameters.                                                                                                                                                                                           |
 | `replace`  | Remove the current route from the history and replace it with the specified URL. This is useful for redirects.                                                                                                                                                                                                                            |
 
+## Relative navigation
+
+> **warning** `relativeToDirectory` will be released in the next version of `expo-router`.
+
+A relative URL is a URL prefix with `./`, such as `./article`, or `./article/`. Relative URLs are resolved relative to the current rendered screen.
+
+The URL of the current screen is a document URL (a URL without a trailing slash), so relative URLs will be resolved relative to the directory. This can be confusing when the current screen is rendered by an `index` file as the relative URL is resolved from the URL's directory, not the file system. By using the `relativeToDirectory` option, Expo Router will instead treat the current URL as a directory URL.
+
+| Href         | Current URL | `relativeToDirectory` | Result              |
+| ------------ | ----------- | --------------------- | ------------------- |
+| `./article`  | `/route/v1` |                       | `/route/article`    |
+| `./article`  | `/route/v1` | `true`                | `/route/v1/article` |
+| `../article` | `/route/v1` |                       | `/article`          |
+| `../article` | `/route/v1` | `true`                | `/route/article`    |
+
+```ts
+// Using `relativeToDirectory` with Link
+<Link href="./article" relativeToDirectory>Go to article</Link>
+
+// Using `relativeToDirectory` with the imperative API
+router.push("./article", { relativeToDirectory: true })
+router.navigate("./article", { relativeToDirectory: true })
+router.replace("./article", { relativeToDirectory: true })
+```
+
+> **info** Relative URLs without a `./` prefix, such as `article`, are not supported.
+
 ## Linking to dynamic routes
 
 Dynamic routes and query parameters can be provided statically or with the convenience **Href** object.

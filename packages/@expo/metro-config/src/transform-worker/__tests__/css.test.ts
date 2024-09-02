@@ -17,6 +17,18 @@ describe(wrapDevelopmentCSS, () => {
     const result = await wrapDevelopmentCSS({
       filename: 'test.css',
       src: 'body { color: red; }',
+      reactServer: false,
+    });
+
+    expect(result).toMatchSnapshot();
+    expect(result).toMatch(/expo-css-hmr/);
+  });
+
+  it(`should transform css in dev mode for server components`, async () => {
+    const result = await wrapDevelopmentCSS({
+      filename: 'test.css',
+      src: 'body { color: red; }',
+      reactServer: true,
     });
 
     expect(result).toMatchSnapshot();

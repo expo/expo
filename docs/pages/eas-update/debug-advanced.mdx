@@ -216,6 +216,12 @@ To make it easier to test and debug native code in an environment that is closer
 
 We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update/build-locally) in a local development environment using Android Studio or Xcode, with either release or debug builds of the app.
 
+#### Android local builds
+
+- Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
+- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/updating-your-app/#configuring-the-channel-manually)
+- Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Android Studio or from the command line.
+
 #### iOS local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
@@ -228,12 +234,6 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
     ]}
   />
 - Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Xcode or from the command line.
-
-#### Android local builds
-
-- Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
-- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/updating-your-app/#configuring-the-channel-manually)
-- Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Android Studio or from the command line.
 
 #### EAS Build
 

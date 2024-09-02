@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 import type {
   PlayerError,
@@ -22,9 +23,16 @@ export function useVideoPlayer(
 }
 
 export function getSourceUri(source: VideoSource): string | null {
-  if (typeof source == 'string') {
+  if (typeof source === 'string') {
     return source;
   }
+  if (typeof source === 'number') {
+    return resolveAssetSource(source)?.uri ?? null;
+  }
+  if (typeof source?.assetId === 'number' && !source?.uri) {
+    return resolveAssetSource(source.assetId)?.uri ?? null;
+  }
+
   return source?.uri ?? null;
 }
 
@@ -52,6 +60,9 @@ export default class VideoPlayerWeb
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
+  currentLiveTimestamp: number | null = null; // Not supported on web. Dummy to match the interface.
+  currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
+  targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {

@@ -1,12 +1,17 @@
 package expo.modules.filesystem.next
 
-import android.net.Uri
+import android.webkit.URLUtil
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.devtools.await
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.File
+import java.io.FileOutputStream
 import java.net.URI
 
 class FileSystemNextModule : Module() {
@@ -14,6 +19,34 @@ class FileSystemNextModule : Module() {
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
+
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
+      val request = Request.Builder().url(url.toURL()).build()
+      val client = OkHttpClient()
+      val response = request.await(client)
+
+      if (!response.isSuccessful) {
+        throw UnableToDownloadException("response has status: ${response.code}")
+      }
+
+      val contentDisposition = response.headers["content-disposition"]
+      val contentType = response.headers["content-type"]
+      val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
+
+      val destination = if (to is FileSystemDirectory) {
+        File(to.path, fileName)
+      } else {
+        to.path
+      }
+
+      val body = response.body ?: throw UnableToDownloadException("response body is null")
+      body.byteStream().use { input ->
+        FileOutputStream(destination).use { output ->
+          input.copyTo(output)
+        }
+      }
+      return@Coroutine destination.path
+    }
 
     Class(FileSystemFile::class) {
       Constructor { path: URI ->
@@ -52,8 +85,17 @@ class FileSystemNextModule : Module() {
         file.exists()
       }
 
-      Property("path")
-        .get { file: FileSystemFile -> return@get Uri.fromFile(file.path) }
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
+        file.copy(destination)
+      }
+
+      Function("move") { file: FileSystemFile, destination: FileSystemPath ->
+        file.move(destination)
+      }
+
+      Property("path") { file ->
+        file.asString()
+      }
     }
 
     Class(FileSystemDirectory::class) {
@@ -77,8 +119,17 @@ class FileSystemNextModule : Module() {
         directory.validatePath()
       }
 
-      Property("path")
-        .get { directory: FileSystemDirectory -> return@get Uri.fromFile(directory.path) }
+      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath ->
+        directory.copy(destination)
+      }
+
+      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
+        directory.move(destination)
+      }
+
+      Property("path") { directory ->
+        directory.asString()
+      }
     }
   }
 }

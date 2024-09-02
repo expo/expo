@@ -25,7 +25,8 @@ async function transformCssModuleWeb(props) {
     let outputModule = `module.exports=Object.assign(${JSON.stringify(styles)},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
     if (props.options.dev) {
         const runtimeCss = (0, css_1.wrapDevelopmentCSS)({
-            ...props,
+            reactServer: props.options.reactServer,
+            filename: props.filename,
             src: codeAsString,
         });
         outputModule += '\n' + runtimeCss;

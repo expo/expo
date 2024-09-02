@@ -8,6 +8,7 @@ const expo_router_plugin_1 = require("./expo-router-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
+const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     return {
@@ -68,6 +69,9 @@ function babelPresetExpo(api, options = {}) {
         !isServerEnv &&
         // Give users the ability to opt-out of the feature, per-platform.
         platformOptions['react-compiler'] !== false) {
+        if (!(0, common_1.hasModule)('babel-plugin-react-compiler')) {
+            throw new Error('The `babel-plugin-react-compiler` must be installed before you can use React Compiler.');
+        }
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
@@ -87,7 +91,11 @@ function babelPresetExpo(api, options = {}) {
         // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-        extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
+        extraPlugins.push([
+            require('@babel/plugin-transform-object-rest-spread'),
+            // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
+            { loose: true, useBuiltIns: true },
+        ]);
     }
     else {
         if (platform !== 'web' && !isServerEnv) {
@@ -153,6 +161,10 @@ function babelPresetExpo(api, options = {}) {
     if (isReactServer) {
         extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
         extraPlugins.push(restricted_react_api_plugin_1.environmentRestrictedReactAPIsPlugin);
+    }
+    else {
+        // DOM components must run after "use client" and only in client environments.
+        extraPlugins.push(use_dom_directive_plugin_1.expoUseDomDirectivePlugin);
     }
     // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
     extraPlugins.push(environment_restricted_imports_1.environmentRestrictedImportsPlugin);

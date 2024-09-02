@@ -201,6 +201,30 @@ public struct Conversions {
   }
 
   /**
+   An exception thrown when the native value cannot be converted to JavaScript value.
+   */
+  internal final class ConversionToJSFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+    override var code: String {
+      "ERR_CONVERTING_TO_JS_FAILED"
+    }
+    override var reason: String {
+      "Conversion from native '\(param.nativeType)' to JavaScript value of type '\(param.kind.rawValue)' failed"
+    }
+  }
+
+  /**
+   An exception thrown when the JavaScript value cannot be converted to native value.
+   */
+  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+    override var code: String {
+      "ERR_CONVERTING_TO_NATIVE_FAILED"
+    }
+    override var reason: String {
+      "Conversion from JavaScript value of type '\(param.kind.rawValue)' to native '\(param.nativeType)' failed"
+    }
+  }
+
+  /**
    An exception that can be thrown by convertible types, when given value cannot be converted.
    */
   public class ConvertingException<TargetType>: GenericException<Any?> {

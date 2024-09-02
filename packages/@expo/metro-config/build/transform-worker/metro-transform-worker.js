@@ -387,6 +387,7 @@ async function transformJS(file, { config, options }) {
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
+                expoDomComponentReference: file.expoDomComponentReference,
                 ...(possibleReconcile
                     ? {
                         ast: wrappedAst,
@@ -449,6 +450,7 @@ async function transformJSWithBabel(file, context) {
             null,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
         reactClientReference: transformResult.metadata?.reactClientReference,
+        expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
     };
     return await transformJS(jsFile, context);
 }
@@ -575,6 +577,7 @@ exports.getCacheKey = getCacheKey;
 const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
+    transformImportMaybeSyncCall: () => { },
     transformImportCall: (path, dependency, state) => {
         // HACK: Ensure the async import code is included in the bundle when an import() call is found.
         let topParent = path;

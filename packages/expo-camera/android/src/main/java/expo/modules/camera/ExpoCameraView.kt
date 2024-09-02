@@ -18,6 +18,7 @@ import android.util.Size
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
@@ -126,7 +127,9 @@ class ExpoCameraView(
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
 
-  private var previewView = PreviewView(context)
+  private var previewView = PreviewView(context).apply {
+    elevation = 0f
+  }
   private val scope = CoroutineScope(Dispatchers.Main)
   private var shouldCreateCamera = false
   private var previewPaused = false
@@ -161,7 +164,7 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
-  var ratio: CameraRatio = CameraRatio.FOUR_THREE
+  var ratio: CameraRatio? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -208,18 +211,30 @@ class ExpoCameraView(
   // Scanning-related properties
   private var shouldScanBarcodes = false
 
-  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-    val width = right - left
-    val height = bottom - top
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    measureChild(previewView, widthMeasureSpec, heightMeasureSpec)
 
-    previewView.layout(0, 0, width, height)
-    postInvalidate(left, top, right, bottom)
+    setMeasuredDimension(
+      ViewGroup.resolveSize(previewView.measuredWidth, widthMeasureSpec),
+      ViewGroup.resolveSize(previewView.measuredHeight, heightMeasureSpec)
+    )
   }
 
-  override fun onViewAdded(child: View) {
-    if (previewView === child) {
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    if (!changed) {
       return
     }
+    val width = right - left
+    val height = bottom - top
+    previewView.layout(0, 0, width, height)
+  }
+
+  override fun onViewAdded(child: View?) {
+    super.onViewAdded(child)
+    if (child == previewView) {
+      return
+    }
+    child?.bringToFront()
     removeView(previewView)
     addView(previewView, 0)
   }
@@ -227,12 +242,13 @@ class ExpoCameraView(
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
     val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+    val hasShutterSound = options.shutterSound
 
     imageCaptureUseCase?.takePicture(
       ContextCompat.getMainExecutor(context),
       object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureStarted() {
-          if (volume != 0) {
+          if (hasShutterSound && volume != 0) {
             MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
           }
           if (!animateShutter) {
@@ -338,7 +354,15 @@ class ExpoCameraView(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
+        previewView.scaleType = if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+          PreviewView.ScaleType.FIT_CENTER
+        } else {
+          PreviewView.ScaleType.FILL_CENTER
+        }
+
+        val resolutionSelector = buildResolutionSelector()
         val preview = Preview.Builder()
+          .setResolutionSelector(resolutionSelector)
           .build()
           .also {
             it.surfaceProvider = previewView.surfaceProvider
@@ -349,19 +373,7 @@ class ExpoCameraView(
           .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
-          .apply {
-            if (pictureSize.isNotEmpty()) {
-              val size = Size.parseSize(pictureSize)
-              setTargetResolution(size)
-            } else {
-              setResolutionSelector(
-                ResolutionSelector.Builder()
-                  .setAspectRatioStrategy(ratio.mapToStrategy())
-                  .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-                  .build()
-              )
-            }
-          }
+          .setResolutionSelector(resolutionSelector)
           .build()
 
         val videoCapture = createVideoCapture()
@@ -418,9 +430,33 @@ class ExpoCameraView(
         }
       }
 
+  private fun buildResolutionSelector(): ResolutionSelector {
+    val strategy = if (pictureSize.isNotEmpty()) {
+      val size = Size.parseSize(pictureSize)
+      ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+    } else {
+      ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+    }
+
+    return if (ratio == CameraRatio.ONE_ONE) {
+      ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+        return@setResolutionFilter supportedSizes.filter {
+          it.width == it.height
+        }
+      }.setResolutionStrategy(strategy).build()
+    } else {
+      ResolutionSelector.Builder().apply {
+        ratio?.let {
+          setAspectRatioStrategy(it.mapToStrategy())
+        }
+        setResolutionStrategy(strategy)
+      }.build()
+    }
+  }
+
   private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
-    val fallbackStrategy = FallbackStrategy.lowerQualityOrHigherThan(preferredQuality)
+    val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
 
     val recorder = Recorder.Builder()
@@ -599,7 +635,13 @@ class ExpoCameraView(
         parent?.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
       }
     })
-    addView(previewView)
+    addView(
+      previewView,
+      ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT
+      )
+    )
   }
 
   fun onPictureSaved(response: Bundle) {

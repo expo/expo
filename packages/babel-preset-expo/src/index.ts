@@ -20,6 +20,7 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
+import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -183,6 +184,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // Give users the ability to opt-out of the feature, per-platform.
     platformOptions['react-compiler'] !== false
   ) {
+    if (!hasModule('babel-plugin-react-compiler')) {
+      throw new Error(
+        'The `babel-plugin-react-compiler` must be installed before you can use React Compiler.'
+      );
+    }
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -203,7 +209,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    extraPlugins.push([require('@babel/plugin-transform-object-rest-spread'), { loose: false }]);
+    extraPlugins.push([
+      require('@babel/plugin-transform-object-rest-spread'),
+      // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
+      { loose: true, useBuiltIns: true },
+    ]);
   } else {
     if (platform !== 'web' && !isServerEnv) {
       // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
@@ -284,6 +294,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(reactClientReferencesPlugin);
 
     extraPlugins.push(environmentRestrictedReactAPIsPlugin);
+  } else {
+    // DOM components must run after "use client" and only in client environments.
+    extraPlugins.push(expoUseDomDirectivePlugin);
   }
 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.

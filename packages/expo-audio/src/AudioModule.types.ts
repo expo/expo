@@ -28,7 +28,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Initializes a new audio player instance with the given source.
    * @hidden
    */
-  constructor(source: AudioSource | string | number | null, updateInterval: number);
+  constructor(source: AudioSource, updateInterval: number);
 
   /**
    * Unique identifier for the player object.
@@ -59,6 +59,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Boolean value indicating whether the player is finished loading.
    */
   isLoaded: boolean;
+
+  /**
+   * Boolean value indicating whether audio sampling is supported on the platform.
+   */
+  isAudioSamplingSupported: boolean;
 
   /**
    * Boolean value indicating whether the player is buffering.
@@ -120,13 +125,25 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
 
   /**
+   *
+   * @hidden
+   */
+  setAudioSamplingEnabled(enabled: boolean): void;
+
+  /**
    * Remove the player from memory to free up resources.
    */
   remove(): void;
 }
 
-type AudioEvents = {
+type AudioSample = {
+  channels: { frames: number[] }[];
+  timestamp: number;
+};
+
+export type AudioEvents = {
   onPlaybackStatusUpdate(status: AudioStatus): void;
+  onAudioSampleUpdate(data: AudioSample): void;
 };
 
 export declare class AudioRecorder extends SharedObject<RecordingEvents> {
@@ -202,15 +219,15 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   startRecordingAtTime(seconds: number): void;
 
   /**
+   * Prepares the recording for recording.
+   */
+  prepareToRecordAsync(): Promise<void>;
+
+  /**
    * Stops the recording once the specified time has elapsed.
    * @param seconds The time in seconds to stop recording at.
    */
   recordForDuration(seconds: number): void;
-
-  /**
-   * Release the recorder and frees up resources.
-   */
-  release(): void;
 }
 
 export type RecordingEvents = {

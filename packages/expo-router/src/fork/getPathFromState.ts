@@ -1,4 +1,4 @@
-import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
+import type { PathConfig, PathConfigMap } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
 
 import {
@@ -116,6 +116,36 @@ export default function getPathFromState<ParamList extends object>(
   }
 ): string {
   return getPathDataFromState(state, _options).path;
+}
+
+const formatToList = (items: string[]) => items.map((key) => `- ${key}`).join('\n');
+
+function validatePathConfig(config: any, root = true) {
+  const validKeys = ['initialRouteName', 'screens'];
+
+  if (!root) {
+    validKeys.push('path', 'exact', 'stringify', 'parse');
+  }
+
+  const invalidKeys = Object.keys(config).filter((key) => !validKeys.includes(key));
+
+  if (invalidKeys.length) {
+    throw new Error(
+      `Found invalid properties in the configuration:\n${formatToList(
+        invalidKeys
+      )}\n\nDid you forget to specify them under a 'screens' property?\n\nYou can only specify the following properties:\n${formatToList(
+        validKeys
+      )}\n\nSee https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration.`
+    );
+  }
+
+  if (config.screens) {
+    Object.entries(config.screens).forEach(([_, value]) => {
+      if (typeof value !== 'string') {
+        validatePathConfig(value, false);
+      }
+    });
+  }
 }
 
 export function getPathDataFromState<ParamList extends object>(
@@ -415,7 +445,13 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = new URLSearchParams(focusedParams).toString();
+        const params = new URLSearchParams(
+          Object.entries(focusedParams).flatMap(([key, values]) => {
+            return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
+          })
+        );
+
+        const query = params.toString();
 
         if (query) {
           path += `?${query}`;

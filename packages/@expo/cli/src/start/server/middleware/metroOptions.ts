@@ -30,7 +30,10 @@ export type ExpoMetroOptions = {
   reactCompiler: boolean;
   baseUrl?: string;
   isExporting: boolean;
+  /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
+  domRoot?: string;
   inlineSourceMap?: boolean;
+  clientBoundaries?: string[];
   splitChunks?: boolean;
   usedExports?: boolean;
   /** Enable optimized bundling (required for tree shaking). */
@@ -67,7 +70,7 @@ export function shouldEnableAsyncImports(projectRoot: string): boolean {
 function withDefaults({
   mode = 'development',
   minify = mode === 'production',
-  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
+  preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
@@ -154,6 +157,8 @@ export function getMetroDirectBundleOptions(
     usedExports,
     reactCompiler,
     optimize,
+    domRoot,
+    clientBoundaries,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -178,6 +183,29 @@ export function getMetroDirectBundleOptions(
     }
   }
 
+  const customTransformOptions: ExpoMetroBundleOptions['customTransformOptions'] = {
+    __proto__: null,
+    optimize: optimize || undefined,
+    engine,
+    clientBoundaries,
+    preserveEnvVars: preserveEnvVars || undefined,
+    // Use string to match the query param behavior.
+    asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
+    environment,
+    baseUrl: baseUrl || undefined,
+    routerRoot,
+    bytecode: bytecode || undefined,
+    reactCompiler: reactCompiler || undefined,
+    dom: domRoot,
+  };
+
+  // Iterate and delete undefined values
+  for (const key in customTransformOptions) {
+    if (customTransformOptions[key] === undefined) {
+      delete customTransformOptions[key];
+    }
+  }
+
   const bundleOptions: Partial<ExpoMetroBundleOptions> = {
     platform,
     entryFile: mainModuleName,
@@ -186,18 +214,7 @@ export function getMetroDirectBundleOptions(
     inlineSourceMap: inlineSourceMap ?? false,
     lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
-    customTransformOptions: {
-      __proto__: null,
-      optimize: optimize || undefined,
-      engine,
-      preserveEnvVars,
-      asyncRoutes,
-      environment,
-      baseUrl,
-      routerRoot,
-      bytecode,
-      reactCompiler,
-    },
+    customTransformOptions,
     customResolverOptions: {
       __proto__: null,
       environment,
@@ -252,9 +269,11 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     reactCompiler,
     inlineSourceMap,
     isExporting,
+    clientBoundaries,
     splitChunks,
     usedExports,
     optimize,
+    domRoot,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -287,7 +306,6 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (bytecode) {
     queryParams.append('transform.bytecode', String(bytecode));
   }
-
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
   }
@@ -297,11 +315,17 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
   }
+  if (clientBoundaries?.length) {
+    queryParams.append('transform.clientBoundaries', JSON.stringify(clientBoundaries));
+  }
   if (routerRoot != null) {
     queryParams.append('transform.routerRoot', routerRoot);
   }
   if (reactCompiler) {
     queryParams.append('transform.reactCompiler', String(reactCompiler));
+  }
+  if (domRoot) {
+    queryParams.append('transform.dom', domRoot);
   }
 
   if (environment) {
@@ -327,6 +351,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  if (engine === 'hermes') {
+    queryParams.append('unstable_transformProfile', 'hermes-stable');
   }
 
   return queryParams;

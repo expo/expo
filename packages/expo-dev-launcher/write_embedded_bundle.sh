@@ -22,7 +22,7 @@ rm -rf ios/assets/
 EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform ios \
     --dev false \
-    --entry-file index.js \
+    --entry-file $(node --print "require('@expo/config/paths').resolveRelativeEntryPoint(process.cwd(), { platform: 'ios', pkg: { main: 'bundle/index.ts' } })") \
     --unstable-transform-profile default \
     --bundle-output ios/main.jsbundle \
     --assets-dest ios \
@@ -39,7 +39,7 @@ rm -rf android/src/debug/res/
 EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform android \
     --dev false \
-    --entry-file index.js \
+    --entry-file $(node --print "require('@expo/config/paths').resolveEntryPoint(process.cwd(), { platform: 'android', pkg: { main: 'bundle/index.ts' } })") \
     --unstable-transform-profile default \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
     --assets-dest android/src/debug/res

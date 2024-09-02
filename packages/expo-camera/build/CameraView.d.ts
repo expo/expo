@@ -118,6 +118,6 @@ export default class CameraView extends Component<CameraProps> {
         nativeEvent: any;
     }) => void;
     _setReference: (ref: Ref<CameraViewRef>) => void;
-    render(): JSX.Element;
+    render(): import("react").JSX.Element;
 }
 //# sourceMappingURL=CameraView.d.ts.map

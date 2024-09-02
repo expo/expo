@@ -87,6 +87,11 @@ function Gestures({ children }: { children: React.ReactNode }) {
         }),
     []
   );
+
+  if (Platform.OS === 'web') {
+    return children;
+  }
+
   return (
     <GestureDetector gesture={Gesture.Race(doubleTapGesture, longPressGesture)}>
       {children}
@@ -173,6 +178,9 @@ export default class CameraScreen extends React.Component<object, State> {
     }));
 
   collectPictureSizes = async () => {
+    if (this.state.pictureSizes.length > 0) {
+      return;
+    }
     const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
     let pictureSizeId = 0;
     if (Platform.OS === 'ios') {
@@ -203,7 +211,10 @@ export default class CameraScreen extends React.Component<object, State> {
   };
 
   takePicture = async () => {
-    await this.camera?.current?.takePictureAsync({ onPictureSaved: this.onPictureSaved });
+    await this.camera?.current?.takePictureAsync({
+      onPictureSaved: this.onPictureSaved,
+      shutterSound: !this.state.mute,
+    });
   };
 
   recordVideo = async () => {
@@ -431,10 +442,10 @@ export default class CameraScreen extends React.Component<object, State> {
           mirror={this.state.mirror}
           pictureSize={this.state.pictureSize}
           flash={this.state.flash}
+          active
           mode={this.state.mode}
           mute={this.state.mute}
           zoom={this.state.zoom}
-          ratio="4:3"
           videoQuality="2160p"
           onMountError={this.handleMountError}
           barcodeScannerSettings={{

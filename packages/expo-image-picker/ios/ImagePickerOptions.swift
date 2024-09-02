@@ -4,7 +4,6 @@ import ExpoModulesCore
 import MobileCoreServices
 import PhotosUI
 
-internal let DEFAULT_QUALITY = 0.2
 internal let MAXIMUM_QUALITY = 1.0
 
 internal let UNLIMITED_SELECTION = 0
@@ -18,7 +17,7 @@ internal struct ImagePickerOptions: Record {
   var aspect: [Double]
 
   @Field
-  var quality: Double?
+  var quality: Double = 1.0
 
   @Field
   var mediaTypes: MediaType = .images
@@ -101,7 +100,6 @@ internal enum PreferredAssetRepresentationMode: String, Enumerable {
   case compatible
   case current
 
-  @available(iOS 14.0, *)
   func toAssetRepresentationMode() -> PHPickerConfiguration.AssetRepresentationMode {
     switch self {
     case .automatic:
@@ -167,7 +165,6 @@ internal enum MediaType: String, Enumerable {
     }
   }
 
-  @available(iOS 14, *)
   func toPickerFilter() -> PHPickerFilter {
     // TODO: (barthap) Maybe add support for live photos
     switch self {

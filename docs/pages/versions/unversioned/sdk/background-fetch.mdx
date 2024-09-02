@@ -7,9 +7,9 @@ platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
@@ -40,7 +40,7 @@ Below is an example that demonstrates how to use `expo-background-fetch`.
 <SnackInline label="Background Fetch Usage" dependencies={['expo-background-fetch', 'expo-task-manager']}>
 
 ```tsx
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
@@ -77,10 +77,10 @@ async function unregisterBackgroundFetchAsync() {
 }
 
 export default function BackgroundFetchScreen() {
-  const [isRegistered, setIsRegistered] = React.useState(false);
-  const [status, setStatus] = React.useState(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [status, setStatus] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     checkStatusAsync();
   }, []);
 
