@@ -230,8 +230,8 @@ export type ImagePickerAsset = {
    * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
    * > On Android, the ID is unavailable when the user selects a photo by directly browsing file system.
    *
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   assetId?: string | null;
   /**
@@ -262,8 +262,8 @@ export type ImagePickerAsset = {
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
    * respective EXIF values for those tags.
    *
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   exif?: Record<string, any> | null;
   /**
