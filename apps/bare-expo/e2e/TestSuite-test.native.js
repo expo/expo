@@ -23,4 +23,5 @@ export const TESTS = [
   'KeepAwake',
   // 'Audio',
   'HTML',
+  'FileSystem@next',
 ];
