@@ -7,6 +7,7 @@ import Tailwind from '../components/04-tailwind';
 import PublicAsset from '../components/05-public-asset';
 import NestedComponents from '../components/06-nested';
 import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
+import NativeModuleProxy from '../components/08-native-module-proxy';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
@@ -56,7 +57,7 @@ export default function Page() {
       </TestCase>
 
       <TestCase name="forwardRef">
-        <ForwardRef dom={{ autoSize: true }} ref={forwardedRef} />
+        <ForwardRef dom={{ matchContents: true }} ref={forwardedRef} />
         <Button
           title="Toggle width"
           onPress={() => {
@@ -69,6 +70,10 @@ export default function Page() {
             forwardedRef.current?.updateText(Date.now().toString());
           }}
         />
+      </TestCase>
+
+      <TestCase name="NativeModuleProxy">
+        <NativeModuleProxy dom={{ matchContents: true, useExpoDOMWebView: true }} />
       </TestCase>
     </ScrollView>
   );
