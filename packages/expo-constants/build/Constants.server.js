@@ -1,25 +1,13 @@
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants.web.js';
 export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
-// Fall back to ExponentConstants.manifest if we don't have one from Updates
-let rawAppConfig = null;
-if (ExponentConstants?.manifest) {
-    const appConfig = ExponentConstants.manifest;
-    // On Android we pass the manifest in JSON form so this step is necessary
-    if (typeof appConfig === 'string') {
-        rawAppConfig = JSON.parse(appConfig);
+const PARSED_MANIFEST = (() => {
+    if (typeof ExponentConstants?.manifest === 'string') {
+        return JSON.parse(ExponentConstants.manifest);
     }
-    else {
-        rawAppConfig = appConfig;
-    }
-}
-let rawManifest = rawAppConfig;
-const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
-const constants = {
-    ...nativeConstants,
-    // Ensure this is null in bare workflow
-    appOwnership: appOwnership ?? null,
-};
+    return ExponentConstants?.manifest;
+})();
+const constants = ExponentConstants;
 Object.defineProperties(constants, {
     /**
      * Use `manifest` property by default.
@@ -29,107 +17,34 @@ Object.defineProperties(constants, {
      */
     __unsafeNoWarnManifest: {
         get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
-                return null;
-            }
-            return maybeManifest;
-        },
-        enumerable: false,
-    },
-    __unsafeNoWarnManifest2: {
-        get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
-                return null;
-            }
-            return maybeManifest;
+            return PARSED_MANIFEST;
         },
         enumerable: false,
     },
     manifest: {
         get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
-                return null;
-            }
-            return maybeManifest;
-        },
-        enumerable: true,
-    },
-    manifest2: {
-        get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
-                return null;
-            }
-            return maybeManifest;
+            return PARSED_MANIFEST;
         },
         enumerable: true,
     },
     expoConfig: {
         get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest) {
-                return null;
-            }
-            if (isExpoUpdatesManifest(maybeManifest)) {
-                return maybeManifest.extra?.expoClient ?? null;
-            }
-            else if (isEmbeddedManifest(maybeManifest)) {
-                return maybeManifest;
-            }
-            return null;
+            return PARSED_MANIFEST;
         },
         enumerable: true,
     },
     expoGoConfig: {
         get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest) {
-                return null;
-            }
-            if (isExpoUpdatesManifest(maybeManifest)) {
-                return maybeManifest.extra?.expoGo ?? null;
-            }
-            else if (isEmbeddedManifest(maybeManifest)) {
-                return maybeManifest;
-            }
-            return null;
+            return PARSED_MANIFEST;
         },
         enumerable: true,
     },
     easConfig: {
         get() {
-            const maybeManifest = rawManifest;
-            if (!maybeManifest) {
-                return null;
-            }
-            if (isExpoUpdatesManifest(maybeManifest)) {
-                return maybeManifest.extra?.eas ?? null;
-            }
-            else if (isEmbeddedManifest(maybeManifest)) {
-                return maybeManifest;
-            }
-            return null;
+            return PARSED_MANIFEST;
         },
         enumerable: true,
     },
-    __rawManifest_TEST: {
-        get() {
-            return rawManifest;
-        },
-        set(value) {
-            rawManifest = value;
-        },
-        enumerable: false,
-    },
 });
-function isEmbeddedManifest(manifest) {
-    return true;
-}
-function isExpoUpdatesManifest(manifest) {
-    return false;
-}
 export default constants;
 //# sourceMappingURL=Constants.server.js.map

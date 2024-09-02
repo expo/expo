@@ -1,3 +1,8 @@
+import type { ExpoConfig } from 'expo/config';
+import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
+import type { EmbeddedManifest, EASConfig, ExpoGoConfig } from 'expo-manifests';
+import type { Manifest as UpdatesManifest } from 'expo-updates';
+
 import {
   AndroidManifest,
   AppOwnership,
@@ -11,17 +16,6 @@ import {
 } from './Constants.types';
 import ExponentConstants from './ExponentConstants.web.js';
 
-import type { ExpoConfig } from 'expo/config';
-import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
-import type {
-  EmbeddedManifest,
-  EASConfig,
-  ExpoGoConfig,
-  ExpoUpdatesManifest,
-} from 'expo-manifests';
-
-import type { Manifest as UpdatesManifest } from 'expo-updates';
-
 export {
   AndroidManifest,
   AppOwnership,
@@ -34,29 +28,16 @@ export {
   WebManifest,
 };
 
-// Fall back to ExponentConstants.manifest if we don't have one from Updates
-let rawAppConfig: ExpoConfig | null = null;
-if (ExponentConstants?.manifest) {
-  const appConfig: object | string = ExponentConstants.manifest;
-
-  // On Android we pass the manifest in JSON form so this step is necessary
-  if (typeof appConfig === 'string') {
-    rawAppConfig = JSON.parse(appConfig);
-  } else {
-    rawAppConfig = appConfig as any;
-  }
-}
-
 type RawManifest = UpdatesManifest | DevLauncherManifest | ExpoConfig;
-let rawManifest: RawManifest | null = rawAppConfig;
 
-const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {}) as any;
+const PARSED_MANIFEST: RawManifest = (() => {
+  if (typeof ExponentConstants?.manifest === 'string') {
+    return JSON.parse(ExponentConstants.manifest);
+  }
+  return ExponentConstants?.manifest as any;
+})();
 
-const constants: Constants = {
-  ...nativeConstants,
-  // Ensure this is null in bare workflow
-  appOwnership: appOwnership ?? null,
-};
+const constants: Constants = ExponentConstants;
 
 Object.defineProperties(constants, {
   /**
@@ -67,41 +48,13 @@ Object.defineProperties(constants, {
    */
   __unsafeNoWarnManifest: {
     get(): EmbeddedManifest | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
-        return null;
-      }
-      return maybeManifest;
-    },
-    enumerable: false,
-  },
-  __unsafeNoWarnManifest2: {
-    get(): ExpoUpdatesManifest | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
-        return null;
-      }
-      return maybeManifest;
+      return PARSED_MANIFEST as any;
     },
     enumerable: false,
   },
   manifest: {
     get(): EmbeddedManifest | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
-        return null;
-      }
-      return maybeManifest;
-    },
-    enumerable: true,
-  },
-  manifest2: {
-    get(): ExpoUpdatesManifest | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
-        return null;
-      }
-      return maybeManifest;
+      return PARSED_MANIFEST as any;
     },
     enumerable: true,
   },
@@ -114,72 +67,22 @@ Object.defineProperties(constants, {
           hostUri?: string;
         })
       | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest) {
-        return null;
-      }
-
-      if (isExpoUpdatesManifest(maybeManifest)) {
-        return maybeManifest.extra?.expoClient ?? null;
-      } else if (isEmbeddedManifest(maybeManifest)) {
-        return maybeManifest as any;
-      }
-
-      return null;
+      return PARSED_MANIFEST as any;
     },
     enumerable: true,
   },
   expoGoConfig: {
     get(): ExpoGoConfig | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest) {
-        return null;
-      }
-
-      if (isExpoUpdatesManifest(maybeManifest)) {
-        return maybeManifest.extra?.expoGo ?? null;
-      } else if (isEmbeddedManifest(maybeManifest)) {
-        return maybeManifest as any;
-      }
-
-      return null;
+      return PARSED_MANIFEST as any;
     },
     enumerable: true,
   },
   easConfig: {
     get(): EASConfig | null {
-      const maybeManifest = rawManifest;
-      if (!maybeManifest) {
-        return null;
-      }
-
-      if (isExpoUpdatesManifest(maybeManifest)) {
-        return maybeManifest.extra?.eas ?? null;
-      } else if (isEmbeddedManifest(maybeManifest)) {
-        return maybeManifest as any;
-      }
-
-      return null;
+      return PARSED_MANIFEST as any;
     },
     enumerable: true,
   },
-  __rawManifest_TEST: {
-    get(): RawManifest | null {
-      return rawManifest;
-    },
-    set(value: RawManifest | null) {
-      rawManifest = value;
-    },
-    enumerable: false,
-  },
 });
-
-function isEmbeddedManifest(manifest: RawManifest): manifest is EmbeddedManifest {
-  return true;
-}
-
-function isExpoUpdatesManifest(manifest: RawManifest): manifest is ExpoUpdatesManifest {
-  return false;
-}
 
 export default constants as Constants;
