@@ -1,5 +1,5 @@
 import { ComponentProps, ReactElement, useState, useContext } from 'react';
-import { View, Platform, StyleSheet, Text } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
 import { TabContext, TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';

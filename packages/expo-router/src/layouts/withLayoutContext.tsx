@@ -1,8 +1,6 @@
 import { EventMapBase, NavigationState } from '@react-navigation/native';
 import React from 'react';
 
-import { View } from 'react-native';
-
 import { useContextKey } from '../Route';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';

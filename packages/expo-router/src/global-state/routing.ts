@@ -8,7 +8,6 @@ import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
-import { UrlObject } from '../LocationProvider';
 
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {

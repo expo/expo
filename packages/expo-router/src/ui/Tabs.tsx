@@ -32,9 +32,9 @@ import { isTabTrigger } from './TabTrigger';
 import { SafeAreaViewSlot, ScreenTrigger, triggersToScreens } from './common';
 import { useComponent } from './useComponent';
 import { useRouteNode, useContextKey } from '../Route';
+import { useRouteInfo } from '../hooks';
 import { resolveHref } from '../link/href';
 import { shouldLinkExternally } from '../utils/url';
-import { useRouteInfo } from '../hooks';
 
 export * from './TabContext';
 export * from './TabList';
