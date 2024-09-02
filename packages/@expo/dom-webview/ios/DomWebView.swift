@@ -177,6 +177,10 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     """
     userContentController.addUserScript(WKUserScript(source: addRNWObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
 
+    guard let webViewId = self.id else {
+      return
+    }
+
     // swiftlint:disable line_length
     let addExpoDomWebViewObjectScript = """
     class Deferred {
@@ -200,10 +204,93 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       }
     }
 
+    class EventEmitterProxy {
+      constructor(moduleName) {
+        this.moduleName = moduleName;
+      }
+
+      addListener = (eventName, listener) => {
+        if (!this.listeners) {
+          this.listeners = new Map();
+        }
+        if (!this.listeners?.has(eventName)) {
+          this.listeners?.set(eventName, new Set());
+        }
+        this.listeners?.get(eventName)?.add(listener);
+
+        const moduleName = this.moduleName;
+        const nativeListenerId = window.ExpoDomWebView.nextEventListenerId++;
+        listener.$$nativeListenerId = nativeListenerId;
+
+        const source = `
+          globalThis.expo.$$DomWebViewEventListenerMap ||= {};
+          globalThis.expo.$$DomWebViewEventListenerMap['${eventName}'] ||= new Map();
+          const listener = (...args) => {
+            const serializeArgs = args.map((arg) => JSON.stringify(arg)).join(',');
+            const script = 'window.ExpoDomWebView.eventEmitterProxy.${moduleName}.emit("${eventName}", ' + serializeArgs + ')';
+            globalThis.expo.modules.ExpoDomWebViewModule.evalJsForWebViewAsync(\(webViewId), script);
+          };
+          globalThis.expo.$$DomWebViewEventListenerMap['${eventName}'].set(${nativeListenerId}, listener);
+          globalThis.expo.modules.${moduleName}.addListener('${eventName}', listener);
+        `;
+        window.ExpoDomWebView.eval(source);
+
+        return {
+          remove: () => {
+            this.removeListener(eventName, listener);
+          },
+        };
+      };
+
+      removeListener = (eventName, listener) => {
+        const moduleName = this.moduleName;
+        const nativeListenerId = listener.$$nativeListenerId;
+        if (listener.$$nativeListenerId != null) {
+          const source = `(function() {
+            const nativeListener = globalThis.expo.$$DomWebViewEventListenerMap['${eventName}'].get(${nativeListenerId});
+            if (nativeListener != null) {
+              globalThis.expo.modules.${moduleName}.removeListener('${eventName}', nativeListener);
+              globalThis.expo.$$DomWebViewEventListenerMap['${eventName}'].delete(${nativeListenerId});
+            }
+            })();
+            true;
+          `;
+          window.ExpoDomWebView.eval(source);
+        }
+        this.listeners?.get(eventName)?.delete(listener);
+      };
+
+      removeAllListeners = (eventName) => {
+        const moduleName = this.moduleName;
+        const source = `
+          globalThis.expo.$$DomWebViewEventListenerMap['${eventName}'].clear();
+          globalThis.expo.modules.${moduleName}.removeAllListeners('${eventName}');
+        `;
+        window.ExpoDomWebView.eval(source);
+        this.listeners?.get(eventName)?.clear();
+      };
+
+      emit = (eventName, ...args) => {
+        const listeners = new Set(this.listeners?.get(eventName));
+
+        listeners.forEach((listener) => {
+          // When the listener throws an error, don't stop the execution of subsequent listeners and
+          // don't propagate the error to the `emit` function. The motivation behind this is that
+          // errors thrown from a module or user's code shouldn't affect other modules' behavior.
+          try {
+            listener(...args);
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      };
+    }
+
     class ExpoDomWebView {
       constructor() {
         this.nextDeferredId = 0;
         this.nextSharedObjectId = 0;
+        this.nextEventListenerId = 0; // for globalThis.expo.$$DomWebViewEventListenerMap in native land
         this.deferredMap = new Map();
         this.sharedObjectFinalizationRegistry = new FinalizationRegistry((sharedObjectId) => {
           this.eval(`globalThis.expo.sharedObjectRegistry.delete(${sharedObjectId})`);
@@ -322,6 +409,9 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
         {
           get: (target, prop) => {
             const name = String(prop);
+            if (['addListener', 'removeListener', 'removeAllListeners'].includes(name)) {
+              return window.ExpoDomWebView.eventEmitterProxy[moduleName][name];
+            }
             return createPropertyProxy(propertyTypeCache, moduleName, name);
           },
         }
@@ -329,11 +419,13 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     }
 
     const expoModules = {};
+    const eventEmitterProxy = {};
     window.ExpoDomWebView.eval('Object.keys(globalThis.expo.modules)').forEach((name) => {
       expoModules[name] = createExpoModuleProxy(name);
+      eventEmitterProxy[name] = new EventEmitterProxy(name);
     });
-    window.expo = window.expo || {};
-    window.expo.modules = expoModules;
+    window.ExpoDomWebView.expoModulesProxy = expoModules;
+    window.ExpoDomWebView.eventEmitterProxy = eventEmitterProxy;
 
     true;
     """
