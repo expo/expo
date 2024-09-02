@@ -288,7 +288,7 @@ export async function test({ describe, expect, it, ...t }) {
       it('computes size', async () => {
         const file = new File(testDirectory + 'file.txt');
         file.write('Hello world');
-        expect(file.size).toBe(5);
+        expect(file.size).toBe(11);
       });
 
       it('computes md5', async () => {
