@@ -34,7 +34,7 @@ extension UIColor: Convertible {
         let darkColor = try appearances["dark"].map({ try UIColor.convert(from: $0, appContext: appContext) }) {
         let highContrastLightColor = try appearances["highContrastLight"].map({ try UIColor.convert(from: $0, appContext: appContext) })
         let highContrastDarkColor = try appearances["highContrastDark"].map({ try UIColor.convert(from: $0, appContext: appContext) })
- 
+
         #if os(iOS) || os(tvOS)
         let color = UIColor { (traitCollection: UITraitCollection) -> UIColor in
           if traitCollection.userInterfaceStyle == .dark {
