@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 1.12.23 — 2024-08-23
