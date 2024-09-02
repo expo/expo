@@ -1,6 +1,7 @@
 'use dom';
 
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
 import * as SQLite from 'expo-sqlite';
 import React, { useEffect, useState } from 'react';
 
@@ -40,6 +41,22 @@ export default function Page(_: { dom?: import('expo/dom').DOMProps }) {
 
   return (
     <div style={{ padding: '20px' }}>
+      <button
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#007BFF',
+          color: '#FFF',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginBottom: '20px',
+        }}
+        onClick={() => {
+          Speech.speak('Hello, world!');
+        }}>
+        Speak "Hello, world!"
+      </button>
       <button
         style={{
           padding: '10px 20px',
