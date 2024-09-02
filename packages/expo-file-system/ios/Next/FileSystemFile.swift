@@ -25,7 +25,7 @@ internal final class FileSystemFile: FileSystemPath {
 
   var size: Int64 {
     get throws {
-      let attributes:[FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
+      let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
       guard let size = attributes[.size] else {
         throw UnableToGetFileSizeException("attributes do not contain size")
       }
