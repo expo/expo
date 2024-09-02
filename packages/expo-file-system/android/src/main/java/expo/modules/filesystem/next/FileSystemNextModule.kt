@@ -96,6 +96,14 @@ class FileSystemNextModule : Module() {
       Property("path") { file ->
         file.asString()
       }
+
+      Property("md5") { file ->
+        file.md5
+      }
+
+      Property("size") { file ->
+        file.size
+      }
     }
 
     Class(FileSystemDirectory::class) {
