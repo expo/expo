@@ -25,11 +25,14 @@ internal final class FileSystemFile: FileSystemPath {
 
   var size: Int64 {
     get throws {
-      var attributes:[FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
+      let attributes:[FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
       guard let size = attributes[.size] else {
-        throw Exception()
+        throw UnableToGetFileSizeException("attributes do not contain size")
       }
-      return (size as! NSNumber).int64Value
+      guard let size = size as? NSNumber else {
+        throw UnableToGetFileSizeException("size is not a number")
+      }
+      return size.int64Value
     }
   }
 
