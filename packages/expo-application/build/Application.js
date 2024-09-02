@@ -4,8 +4,8 @@ import ExpoApplication from './ExpoApplication';
 // @needsAudit
 /**
  * The human-readable version of the native application that may be displayed in the app store.
- * This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set
- * by `version` in `app.json` on Android at the time the native app was built.
+ * At time when native app is built, on Android, this is the version name set by `version`
+ * in app config, and on iOS, the `Info.plist` value for `CFBundleShortVersionString`.
  * On web, this value is `null`.
  * @example
  * `"2.11.0"`
@@ -15,11 +15,11 @@ export const nativeApplicationVersion = ExpoApplication
     : null;
 // @needsAudit
 /**
- * The internal build version of the native application that the app store may use to distinguish
- * between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with
- * `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by
- * `android.versionCode` in `app.json` on Android at the time the native app was built. On web, this
- * value is `null`. The return type on Android and iOS is `string`.
+ * The internal build version of the native application that the app stores may use to distinguish
+ * between different binaries. At the time when native app is built, On Android, this is the version
+ * code set by `android.versionCode` in app config, and on iOS, the `Info.plist` value for
+ * `CFBundleVersion` (set with `ios.buildNumber` value in app config in a standalone app).
+ * On web, this value is `null`. The return type on Android and iOS is `string`.
  * @example
  * Android: `"114"`, iOS: `"2.11.0"`
  */
@@ -117,7 +117,7 @@ export async function getIosIdForVendorAsync() {
 // @needsAudit
 /**
  * Gets the iOS application release type.
- * @return Returns a promise which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
+ * @return A `Promise` which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
  * @platform ios
  */
 export async function getIosApplicationReleaseTypeAsync() {
@@ -130,7 +130,7 @@ export async function getIosApplicationReleaseTypeAsync() {
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
- * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
+ * @return A `Promise` that fulfills with the string, either `'development'` or `'production'`,
  * based on the current APN environment, or `null` on the simulator as it does not support registering with APNs.
  * @platform ios
  */
@@ -144,12 +144,12 @@ export async function getIosPushNotificationServiceEnvironmentAsync() {
 /**
  * Gets the time the app was installed onto the device, not counting subsequent updates. If the app
  * is uninstalled and reinstalled, this method returns the time the app was reinstalled.
+ * - On Android, this method uses [`PackageInfo.firstInstallTime`](https://developer.android.com/reference/android/content/pm/PackageInfo.html#firstInstallTime).
  * - On iOS, this method uses the [`NSFileCreationDate`](https://developer.apple.com/documentation/foundation/nsfilecreationdate?language=objc)
  * of the app's document root directory.
- * - On Android, this method uses [`PackageInfo.firstInstallTime`](https://developer.android.com/reference/android/content/pm/PackageInfo.html#firstInstallTime).
  * - On web, this method returns `null`.
  *
- * @return Returns a `Promise` that fulfills with a `Date` object that specifies the time the app
+ * @return A `Promise` that fulfills with a `Date` object that specifies the time the app
  * was installed on the device.
  *
  * @example
@@ -168,8 +168,8 @@ export async function getInstallationTimeAsync() {
 // @needsAudit
 /**
  * Gets the last time the app was updated from the Google Play Store.
- * @return Returns a `Promise` that fulfills with a `Date` object that specifies the last time
- * the app was updated via the Google Play Store).
+ * @return A `Promise` that fulfills with a `Date` object that specifies the last time
+ * the app was updated via the Google Play Store.
  *
  * @example
  * ```ts
