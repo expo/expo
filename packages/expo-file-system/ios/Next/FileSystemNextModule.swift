@@ -64,7 +64,6 @@ public final class FileSystemNextModule: Module {
         }
       }
 
-      // Ideally a property but those cannot be throwable
       Property("size") { file in
         try? file.size
       }
