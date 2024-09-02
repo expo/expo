@@ -76,7 +76,10 @@ public class NotificationSerializer {
           // and we copy the data as is
           content.putBundle("data", toBundle(data));
         }
-      } else if(request.getTrigger() instanceof SchedulableNotificationTrigger) {
+      } else if(
+        request.getTrigger() instanceof SchedulableNotificationTrigger ||
+          request.getTrigger() == null
+      ) {
         JSONObject body = request.getContent().getBody();
         if (body != null) {
           // Expo sends notification.body as data.message, and JSON stringifies data.body

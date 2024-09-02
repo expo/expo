@@ -57,6 +57,14 @@ function getStringArray(value) {
 }
 async function transform(config, projectRoot, filename, data, options) {
     const reactServer = options.customTransformOptions?.environment === 'react-server';
+    if (typeof options.customTransformOptions?.dom === 'string' &&
+        filename.match(/expo\/dom\/entry\.js/)) {
+        // TODO: Find some method to do this without invalidating the cache between different DOM components.
+        // Inject source for DOM component entry.
+        const relativeDomComponentEntry = JSON.stringify(decodeURI(options.customTransformOptions.dom));
+        const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
+        return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
+    }
     if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';

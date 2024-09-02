@@ -7,7 +7,6 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
     isNodeModule?: boolean;
     preserveEnvVars?: boolean;
     isDev?: boolean;
-    isDOM?: boolean;
     asyncRoutes?: boolean;
     baseUrl?: string;
     engine?: string;
