@@ -31,10 +31,12 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
     _ name: String,
     firstArgType: FirstArgType.Type,
     dynamicArgumentTypes: [AnyDynamicType],
+    returnType: AnyDynamicType = ~ReturnType.self,
     _ body: @escaping ClosureType
   ) {
     self.name = name
     self.dynamicArgumentTypes = dynamicArgumentTypes
+    self.returnType = returnType
     self.body = body
   }
 
@@ -43,6 +45,8 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
   let name: String
 
   let dynamicArgumentTypes: [AnyDynamicType]
+
+  let returnType: AnyDynamicType
 
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
@@ -86,6 +90,42 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
       }
 
       return try body(argumentsTuple)
+    } catch let error as Exception {
+      throw FunctionCallException(name).causedBy(error)
+    } catch {
+      throw UnexpectedException(error)
+    }
+  }
+
+  func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue {
+    do {
+      try validateArgumentsNumber(function: self, received: arguments.count)
+
+      // This array will include the owner (if needed) and function arguments.
+      var allNativeArguments: [Any] = []
+
+      // If the function takes the owner, convert it and add to the final arguments.
+      if takesOwner, let this, let ownerType = dynamicArgumentTypes.first {
+        let nativeOwner = try appContext.converter.toNative(this, ownerType)
+        allNativeArguments.append(nativeOwner)
+      }
+
+      // Convert JS values to non-JS native types desired by the function.
+      let nativeArguments = try appContext.converter.toNative(arguments, Array(dynamicArgumentTypes.dropFirst(allNativeArguments.count)))
+
+      allNativeArguments.append(contentsOf: nativeArguments)
+
+      // Fill in with nils in place of missing optional arguments.
+      if arguments.count < argumentsCount {
+        allNativeArguments.append(contentsOf: Array(repeating: Any?.none as Any, count: argumentsCount - arguments.count))
+      }
+
+      guard let argumentsTuple = try Conversions.toTuple(allNativeArguments) as? Args else {
+        throw ArgumentConversionException()
+      }
+      let result = try body(argumentsTuple)
+
+      return try appContext.converter.toJS(result, returnType)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {

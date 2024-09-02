@@ -41,6 +41,9 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let JavaScriptValueType = T.self as? any AnyJavaScriptValue.Type {
     return DynamicJavaScriptType(innerType: JavaScriptValueType)
   }
+  if T.self == Void.self {
+    return DynamicVoidType.shared
+  }
   return DynamicRawType(innerType: T.self)
 }
 
@@ -54,4 +57,8 @@ internal prefix func ~ <T>(type: T.Type) -> AnyDynamicType {
 
 internal prefix func ~ <T>(type: T.Type) -> AnyDynamicType where T: AnyArgument {
   return T.getDynamicType()
+}
+
+internal prefix func ~ (type: Void.Type) -> AnyDynamicType {
+  return DynamicVoidType.shared
 }
