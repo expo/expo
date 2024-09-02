@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.provider.Settings
@@ -21,11 +22,13 @@ import expo.modules.notifications.notifications.presentation.builders.ExpoNotifi
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
+import java.util.Date
 
 open class ExpoPresentationDelegate(
-  protected val context: Context
+  protected val context: Context,
+  private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 ) : PresentationDelegate {
+
   companion object {
     protected const val ANDROID_NOTIFICATION_ID = 0
 
@@ -87,9 +90,10 @@ open class ExpoPresentationDelegate(
   override fun presentNotification(notification: Notification, behavior: NotificationBehavior?) {
     if (behavior != null && !behavior.shouldShowAlert()) {
       if (behavior.shouldPlaySound()) {
+        val sound = getNotificationSoundUri(notification) ?: Settings.System.DEFAULT_NOTIFICATION_URI
         RingtoneManager.getRingtone(
           context,
-          notification.notificationRequest.content.sound ?: Settings.System.DEFAULT_NOTIFICATION_URI
+          sound
         ).play()
       }
       return
@@ -99,6 +103,16 @@ open class ExpoPresentationDelegate(
       getNotifyId(notification.notificationRequest),
       createNotification(notification, behavior)
     )
+  }
+
+  private fun getNotificationSoundUri(notification: Notification): Uri? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notification.notificationRequest.trigger.notificationChannel?.let {
+        notificationManager.getNotificationChannel(it)?.sound
+      }
+    } else {
+      notification.notificationRequest.content.sound
+    }
   }
 
   protected open fun getNotifyId(request: NotificationRequest?): Int {

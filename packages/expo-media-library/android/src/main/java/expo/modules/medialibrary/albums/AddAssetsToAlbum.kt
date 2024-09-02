@@ -45,7 +45,7 @@ internal class AddAssetsToAlbum(
         val fileInAlbum = File(albumCursor.getString(filePathColumnIndex))
 
         // Media store table can be corrupted. Extra check won't harm anyone.
-        if (!fileInAlbum.isFile) {
+        if (!fileInAlbum.isFile && !fileInAlbum.isDirectory) {
           throw MediaLibraryException()
         }
         return File(fileInAlbum.parent!!)

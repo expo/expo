@@ -52,8 +52,6 @@ function getBabelCaller({ filename, options, }) {
         // Ensure we always use a mostly-valid router root.
         routerRoot: routerRoot ?? 'app',
         isDev: options.dev,
-        // Supply the DOM directive to the Babel preset.
-        isDOM: options.platform === 'web' && isCustomTruthy(options.customTransformOptions?.dom),
         // This value indicates if the user has disabled the feature or not.
         // Other criteria may still cause the feature to be disabled, but all inputs used are
         // already considered in the cache key.

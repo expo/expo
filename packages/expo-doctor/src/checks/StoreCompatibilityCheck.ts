@@ -46,7 +46,7 @@ export class StoreCompatibilityCheck implements DoctorCheck {
       if (
         buildPropertiesConfig &&
         buildPropertiesConfig.length > 1 &&
-        buildPropertiesConfig[1].android.targetSdkVersion <
+        buildPropertiesConfig[1].android?.targetSdkVersion <
           PLAY_STORE_MINIMUM_REQS.AndroidSdkVersion
       ) {
         issue = `This project is using expo-build-properties to target Android API level ${PLAY_STORE_MINIMUM_REQS.AndroidSdkVersion - 1} or lower. `;
