@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@expo/vector-icons": ["react-native-vector-icons"],
-      "ThemeProvider": ["../common/ThemeProvider"]
+      "ThemeProvider": ["../common/ThemeProvider"],
+      "benchmarking": ["../bare-expo/modules/benchmarking"]
     },
     "types": ["jest"],
     "typeRoots": ["./ts-declarations", "./node_modules/@types", "../../node_modules/@types"],
