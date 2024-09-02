@@ -246,6 +246,9 @@ export type ImagePickerAsset = {
      * The `exif` field is included if the `exif` option is truthy, and is an object containing the
      * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
      * respective EXIF values for those tags.
+     *
+     * @platform ios
+     * @platform android
      */
     exif?: Record<string, any> | null;
     /**
