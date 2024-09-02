@@ -1,6 +1,7 @@
 
 #import <UIKit/UIKit.h>
 #import <React/RCTBridgeDelegate.h>
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
 
 #import "EXAppFetcher.h"
 #import "EXKernelAppRecord.h"
@@ -45,6 +46,7 @@ typedef enum EXReactAppManagerStatus {
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;
 @property (nonatomic, readonly) NSString *scopedCachesDirectory;
 @property (nonatomic, strong) id reactBridge;
+@property (nonatomic, strong) RCTAppDelegate *reactAppDelegate;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 

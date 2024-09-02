@@ -14,11 +14,10 @@
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
-		2066A861E6445B5BCEAB281C /* libPods-Expo Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6713E5AC1CD25EAB11686B87 /* libPods-Expo Go.a */; };
 		2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */; };
+		24C3B781E40BA87F7702303B /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */; };
 		25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */; };
 		28F885A428FEC26000CFD75C /* EXTextDirectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */; };
-		2D27CAA71656C7458DE5E8BA /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E1417121838E61F500BA69 /* libPods-ExponentIntegrationTests.a */; };
 		2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5265EA294998B5001BB2BB /* EXDevelopmentHomeLoader.m */; };
 		312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 312D2ED1234DF2DC002F4049 /* EXScopedFacebook.m */; };
 		31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A592260B2F600662769 /* EXScopedSecureStore.m */; };
@@ -129,11 +128,12 @@
 		B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74231FF6DADB001C764B /* EXTest.m */; };
 		B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74261FF6DADB001C764B /* EXScopedBridgeModule.m */; };
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
-		BAF227C84082AD4EF8643DE2 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D7091A8EF73DEDE086337FF /* libPods-Expo Go-Tests.a */; };
+		B832D3668B2FFD1CED2DDE12 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
 		CBB185782BE29F7A00E5067C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */; };
 		E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */; };
+		EC8D7E182E36030D45964678 /* libPods-Expo Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */; };
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
 		F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
@@ -207,7 +207,6 @@
 		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
-		0D7091A8EF73DEDE086337FF /* libPods-Expo Go-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
 		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
 		1A7952F30F72271C821848D7 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -215,6 +214,7 @@
 		2168B25B23E3058500A94C0D /* EXScopedFirebaseCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFirebaseCore.h; sourceTree = "<group>"; };
 		25742BE52174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXExpoUserNotificationCenterProxy.h; sourceTree = "<group>"; };
 		25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXExpoUserNotificationCenterProxy.m; sourceTree = "<group>"; };
+		265F3243A214713066396657 /* Pods-Expo Go (main)-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Tests.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Tests/Pods-Expo Go (main)-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXTextDirectionController.swift; sourceTree = "<group>"; };
 		2D5265E9294998B5001BB2BB /* EXDevelopmentHomeLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevelopmentHomeLoader.h; sourceTree = "<group>"; };
 		2D5265EA294998B5001BB2BB /* EXDevelopmentHomeLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevelopmentHomeLoader.m; sourceTree = "<group>"; };
@@ -361,13 +361,13 @@
 		31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDeviceInstallationUUIDService.m; sourceTree = "<group>"; };
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		36E1417121838E61F500BA69 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRMapUrlTileCachedOverlay.m; sourceTree = "<group>"; };
+		45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmap.m; sourceTree = "<group>"; };
-		6713E5AC1CD25EAB11686B87 /* libPods-Expo Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		71773906C5EB4CA89B3A271F /* Pods-Expo Go (main)-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Tests/Pods-Expo Go (main)-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Expo Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expo Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78D82525204E8F9C00CBD9D9 /* EXApiV2Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Client.h; sourceTree = "<group>"; };
@@ -392,6 +392,7 @@
 		878B4AFD24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoadingProgressWindowController.m; sourceTree = "<group>"; };
 		88A25B1DAF71DFE5C4134A46 /* libPods-Expo Go-Expo Go (versioned).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Expo Go (versioned).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE60BD85240AF63736C047A /* Pods-Expo Go-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F659FB2CBFC44A68F23FE80 /* AIRMapUrlTileCachedOverlay.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRMapUrlTileCachedOverlay.h; sourceTree = "<group>"; };
 		A12E8B62266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenViewController.h; sourceTree = "<group>"; };
 		A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenViewController.m; sourceTree = "<group>"; };
@@ -559,6 +560,8 @@
 		BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFontLoader.m; sourceTree = "<group>"; };
 		C279B31A23EF096F3969DAD5 /* Pods-Expo Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.debug.xcconfig"; sourceTree = "<group>"; };
 		CBB185772BE29F7A00E5067C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
 		F108698C2448C6B800B7DC04 /* EXDevMenuGestureInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureInterceptor.h; sourceTree = "<group>"; };
@@ -582,6 +585,7 @@
 		F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Exponent-Bridging-Header.h"; sourceTree = "<group>"; };
 		F1F7433D24ABECD500EA5023 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		FACEDA38C6E33F74459F0298 /* Pods-Expo Go (main)-Expo Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.debug.xcconfig"; sourceTree = "<group>"; };
 		FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSerializer.m; sourceTree = "<group>"; };
 		FC756CCA24CB542800665AE6 /* EXScopedNotificationSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSerializer.h; sourceTree = "<group>"; };
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
@@ -600,7 +604,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */,
-				2066A861E6445B5BCEAB281C /* libPods-Expo Go.a in Frameworks */,
+				EC8D7E182E36030D45964678 /* libPods-Expo Go.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,7 +612,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BAF227C84082AD4EF8643DE2 /* libPods-Expo Go-Tests.a in Frameworks */,
+				B832D3668B2FFD1CED2DDE12 /* libPods-Expo Go-Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -616,7 +620,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D27CAA71656C7458DE5E8BA /* libPods-ExponentIntegrationTests.a in Frameworks */,
+				24C3B781E40BA87F7702303B /* libPods-ExponentIntegrationTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -650,9 +654,9 @@
 			children = (
 				F77DDB921E04AC1100624CA2 /* SafariServices.framework */,
 				88A25B1DAF71DFE5C4134A46 /* libPods-Expo Go-Expo Go (versioned).a */,
-				36E1417121838E61F500BA69 /* libPods-ExponentIntegrationTests.a */,
-				6713E5AC1CD25EAB11686B87 /* libPods-Expo Go.a */,
-				0D7091A8EF73DEDE086337FF /* libPods-Expo Go-Tests.a */,
+				D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */,
+				D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */,
+				9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -812,6 +816,10 @@
 				83BF8C0E87795C6808128A31 /* Pods-Expo Go.release.xcconfig */,
 				8EE60BD85240AF63736C047A /* Pods-Expo Go-Tests.debug.xcconfig */,
 				A6EAF60D92D03B190DFCD5D2 /* Pods-Expo Go-Tests.release.xcconfig */,
+				FACEDA38C6E33F74459F0298 /* Pods-Expo Go (main)-Expo Go.debug.xcconfig */,
+				45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */,
+				71773906C5EB4CA89B3A271F /* Pods-Expo Go (main)-Tests.debug.xcconfig */,
+				265F3243A214713066396657 /* Pods-Expo Go (main)-Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -2196,6 +2204,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -2221,6 +2230,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CXX = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2247,9 +2257,15 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD = "";
+				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -2257,6 +2273,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -2282,6 +2299,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CXX = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2303,8 +2321,13 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD = "";
+				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "$(inherited)  ";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

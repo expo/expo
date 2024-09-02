@@ -13,14 +13,14 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 /**
  * A trigger representing an incoming remote Firebase notification.
  */
-class FirebaseNotificationTrigger(private val remoteMessage: RemoteMessage) : NotificationTrigger {
+class FirebaseNotificationTrigger(val remoteMessage: RemoteMessage) : NotificationTrigger {
 
   private constructor(parcel: Parcel) : this(
     parcel.readParcelable(FirebaseNotificationTrigger::class.java.classLoader)
       ?: throw IllegalArgumentException("RemoteMessage from readParcelable must not be null")
   )
 
-  fun getRemoteMessage(): RemoteMessage = remoteMessage
+//  fun getRemoteMessage(): RemoteMessage = remoteMessage
 
   @RequiresApi(api = Build.VERSION_CODES.O)
   override fun getNotificationChannel(): String? {

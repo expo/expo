@@ -117,20 +117,23 @@
                                                    logFunction:[self logFunction]
                                                   logThreshold:[self logLevel]];
 
-    _reactBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
+//    _reactBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
+    _reactAppDelegate = [[RCTAppDelegate alloc] init];
 
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
       // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
-      _reactRootView = [[RCTRootView alloc] initWithBridge:_reactBridge
-                                                moduleName:[self applicationKeyForRootView]
-                                         initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [_reactAppDelegate.rootViewFactory viewWithModuleName:[self applicationKeyForRootView]
+                                                           initialProperties:[self initialPropertiesForRootView]];
+//      _reactRootView = [[RCTRootView alloc] initWithBridge:_reactBridge
+//                                                moduleName:[self applicationKeyForRootView]
+//                                         initialProperties:[self initialPropertiesForRootView]];
     }
 
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
 
-    NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
+//    NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
     [_versionManager bridgeWillStartLoading:_reactBridge];
   }
 }

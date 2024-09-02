@@ -178,21 +178,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     };
   }
 
-  if ([self _isBridgeInspectable:bridge] && isDevModeEnabled) {
-    items[@"dev-remote-debug"] = @{
-      @"label": @"Open JS Debugger",
-      @"isEnabled": @YES
-    };
-  } else if (
-      [self.manifest.expoGoSDKVersion compare:@"49.0.0" options:NSNumericSearch] == NSOrderedAscending &&
-      devSettings.isRemoteDebuggingAvailable &&
-      isDevModeEnabled
-    ) {
-    items[@"dev-remote-debug"] = @{
-      @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
-      @"isEnabled": @YES
-    };
-  }
+  items[@"dev-remote-debug"] = @{
+    @"label": @"Open JS Debugger",
+    @"isEnabled": @YES
+  };
 
   if (devSettings.isHotLoadingAvailable && isDevModeEnabled) {
     items[@"dev-hmr"] = @{
@@ -232,11 +221,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     // the return type
     [(RCTBridgeHack *)bridge reload];
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
-    if ([self _isBridgeInspectable:bridge]) {
-      [self _openJsInspector:bridge];
-    } else {
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-    }
+    [self _openJsInspector:bridge];
   } else if ([key isEqualToString:@"dev-profiler"]) {
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
@@ -313,11 +298,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (BOOL)_isDevModeEnabledForBridge:(id)bridge
 {
   return ([RCTGetURLQueryParam([bridge bundleURL], @"dev") boolValue]);
-}
-
-- (BOOL)_isBridgeInspectable:(id)bridge
-{
-  return [[bridge batchedBridge] isInspectable];
 }
 
 - (void)_openJsInspector:(id)bridge

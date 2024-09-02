@@ -23,13 +23,13 @@
 #import "EXUtil.h"
 
 #import <EXSplashScreen/EXSplashScreenService.h>
-#import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
+#import <React/RCTUtils.h>
 #import <React/RCTAppearance.h>
+#import <React/RCTDevSettings.h>
 
 #import <RNScreens/RNSScreenWindowTraits.h>
-
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -598,11 +598,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-  __weak typeof(self) weakSelf = self;
+  __weak EXAppViewController *weakSelf = self;
 
   // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
   [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-    __strong __typeof(self) strongSelf = weakSelf;
+    __strong EXAppViewController *strongSelf = weakSelf;
 
     if (!strongSelf) {
       return;
