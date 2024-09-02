@@ -78,6 +78,7 @@
 - [iOS] Use singletons for string and data dynamic types. ([#31220](https://github.com/expo/expo/pull/31220) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a bottleneck in the performance-critical code by getting away from `enumerated` function. ([#31226](https://github.com/expo/expo/pull/31226) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Cached argument's type information to improve memory and startup time. ([#31297](https://github.com/expo/expo/pull/31297) by [@lukmccall](https://github.com/lukmccall))
+- Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31294](https://github.com/expo/expo/pull/31294) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
