@@ -5,9 +5,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## Unpublished
 
-- **`expo-contact`**
-  - On android phone number and email labels were ignored on contact creation. ([#31309](https://github.com/expo/expo/pull/31309) by [@mlecoq](https://github.com/mlecoq))
-
 ### 📚 3rd party library updates
 
 ### 🛠 Breaking changes

@@ -73,7 +73,7 @@ abstract class BaseModel : CommonProvider {
     get() = getString(typeAlias)
 
   private val isPrimary: Int
-    get() = if (map.containsKey(isPrimaryAlias)) if(map.getBoolean(isPrimaryAlias)) 1 else 0 else 0
+    get() = if (map.containsKey(isPrimaryAlias)) if (map.getBoolean(isPrimaryAlias)) 1 else 0 else 0
 
   fun getString(key: String?): String? {
     return if (map.containsKey(key)) map.getString(key) else null
