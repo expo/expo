@@ -228,6 +228,7 @@ async function exportDomComponentsAsync(
 ) {
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
+    // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
     expoDomComponentReferences.map(async (filePath) => {
       debug('Bundle DOM Component:', filePath);
       // MUST MATCH THE BABEL PLUGIN!
@@ -248,6 +249,8 @@ async function exportDomComponentsAsync(
         bytecode: false,
         reactCompiler: !!exp.experiments?.reactCompiler,
         baseUrl: './',
+        // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
+        minify: true,
       });
 
       const html = await serializeHtmlWithAssets({
