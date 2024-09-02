@@ -16,6 +16,7 @@
 
 - Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed `process.env.EXPO_DOM_BASE_URL` is undefined on web for DOM components. ([#31299](https://github.com/expo/expo/pull/31299) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
