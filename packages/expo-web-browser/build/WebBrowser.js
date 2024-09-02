@@ -131,11 +131,11 @@ export async function openBrowserAsync(url, browserParams = {}) {
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ * @return The promise that resolves with `{ type: 'dismiss' }` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
 export function dismissBrowser() {
-    ExponentWebBrowser.dismissBrowser?.();
+    return ExponentWebBrowser.dismissBrowser?.();
 }
 // @needsAudit
 /**
