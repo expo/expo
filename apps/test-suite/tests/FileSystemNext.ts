@@ -326,6 +326,7 @@ export async function test({ describe, expect, it, ...t }) {
           new File(testDirectory + 'file.txt'),
           new Directory(testDirectory + 'directory'),
         ]);
+        expect(new Directory(testDirectory).list()[0] instanceof File).toBe(true);
       });
     });
   });

@@ -31,14 +31,11 @@ internal final class FileSystemDirectory: FileSystemPath {
   // Internal only function
   func listAsRecords() throws -> [[String: Any]] {
     var contents: [[String: Any]] = []
-    do {
-      let items = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
-        for item in items {
-          contents.append(["isDirectory": item.hasDirectoryPath, "path": item.absoluteString])
-        }
-    } catch {
-        // failed to read directory – bad permissions, perhaps?
-    }
+
+    let items = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+      for item in items {
+        contents.append(["isDirectory": item.hasDirectoryPath, "path": item.absoluteString])
+      }
     return contents
   }
 
