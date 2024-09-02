@@ -68,7 +68,7 @@ public final class NetworkModule: Module {
 
       if family == UInt8(AF_INET) {
         let name = String(cString: temp.ifa_name)
-        if name == "en0" || name == "en1" {
+        if name.starts(with: "en") {
           var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
           getnameinfo(
             temp.ifa_addr,
