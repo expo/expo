@@ -124,6 +124,9 @@ function babelPresetExpo(api, options = {}) {
     if (process.env.NODE_ENV !== 'test') {
         inlines['process.env.EXPO_BASE_URL'] = baseUrl;
     }
+    if (platform === 'web') {
+        inlines['process.env.EXPO_DOM_BASE_URL'] = baseUrl;
+    }
     extraPlugins.push([require('./define-plugin'), inlines]);
     if (isProduction) {
         // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.

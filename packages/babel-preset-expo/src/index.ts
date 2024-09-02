@@ -248,6 +248,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['process.env.EXPO_BASE_URL'] = baseUrl;
   }
 
+  if (platform === 'web') {
+    inlines['process.env.EXPO_DOM_BASE_URL'] = baseUrl;
+  }
+
   extraPlugins.push([require('./define-plugin'), inlines]);
 
   if (isProduction) {
