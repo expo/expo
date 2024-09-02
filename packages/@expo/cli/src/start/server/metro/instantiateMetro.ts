@@ -39,22 +39,6 @@ type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
-function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
-  if (!exp.sdkVersion) {
-    return false;
-  }
-
-  if (exp.sdkVersion === 'UNVERSIONED') {
-    return true;
-  }
-
-  try {
-    return semver.gte(exp.sdkVersion, sdkVersion);
-  } catch {
-    throw new Error(`${exp.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
-  }
-}
-
 // Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
 class LogRespectingTerminal extends Terminal {
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
@@ -118,27 +102,15 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  if (
-    // Requires SDK 50 for expo-assets hashAssetPlugin change.
-    !exp.sdkVersion ||
-    gteSdkVersion(exp, '50.0.0')
-  ) {
-    if (isExporting) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = `/assets?export_path=${
-        (exp.experiments?.baseUrl ?? '') + '/assets'
-      }`;
-    } else {
-      // @ts-expect-error: typed as readonly
-      config.transformer.publicPath = '/assets/?unstable_path=.';
-    }
+  if (isExporting) {
+    // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+    // @ts-expect-error: typed as readonly.
+    config.transformer.publicPath = `/assets?export_path=${
+      (exp.experiments?.baseUrl ?? '') + '/assets'
+    }`;
   } else {
-    if (isExporting && exp.experiments?.baseUrl) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.experiments?.baseUrl;
-    }
+    // @ts-expect-error: typed as readonly
+    config.transformer.publicPath = '/assets/?unstable_path=.';
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
