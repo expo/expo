@@ -108,6 +108,13 @@ export function Code({ className, children }: CodeProps) {
     !isExpanded && !collapseHeight && EXPAND_SNIPPET_BOUND_CLASSNAME,
   ];
 
+  const customCollapseStyle =
+    !isExpanded && collapseHeight
+      ? {
+          maxHeight: collapseHeight,
+        }
+      : undefined;
+
   return codeBlockData?.title ? (
     <Snippet>
       <SnippetHeader title={codeBlockData.title} Icon={getIconForFile(codeBlockData.title)}>
@@ -118,6 +125,7 @@ export function Code({ className, children }: CodeProps) {
         <pre
           ref={contentRef}
           css={STYLES_CODE_CONTAINER}
+          style={customCollapseStyle}
           className={mergeClasses('relative', ...commonClasses)}
           {...attributes}>
           <code
@@ -132,6 +140,7 @@ export function Code({ className, children }: CodeProps) {
     <pre
       ref={contentRef}
       css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]}
+      style={customCollapseStyle}
       className={mergeClasses(
         'relative',
         preferredTheme === Themes.DARK && 'dark-theme',
