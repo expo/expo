@@ -18,6 +18,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.shell.MainReactPackage
+import com.swmansion.reanimated.ReanimatedPackage
 import expo.modules.jsonutils.getNullable
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
@@ -198,7 +199,7 @@ object VersionedUtils {
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
       .addPackage(MainReactPackage())
-      .addPackage(ExpoReanimatedPackage())
+      .addPackage(ReanimatedPackage())
       .addPackage(
         ExponentPackage(
           instanceManagerBuilderProperties.experienceProperties,
