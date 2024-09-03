@@ -87,6 +87,7 @@ export type TypePropertyDataFlags = {
   isOptional?: boolean;
   isStatic?: boolean;
   isRest?: boolean;
+  isReadonly?: boolean;
 };
 
 // Constants section

@@ -16,6 +16,7 @@ import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
   CommentContentData,
   CommentData,
+  DefaultPropsDefinitionData,
   MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
@@ -873,6 +874,19 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
 export function getPossibleComponentPropsNames(name?: string, children: PropData[] = []) {
   const componentName = getComponentName(name, children);
   return [`${componentName}Props`, `${componentName.replace('View', '')}Props`];
+}
+
+export function extractDefaultPropValue(
+  { comment, name }: PropData,
+  defaultProps?: DefaultPropsDefinitionData
+) {
+  const annotationDefault = getTagData('default', comment);
+  if (annotationDefault) {
+    return getCommentContent(annotationDefault.content);
+  }
+  return defaultProps?.type?.declaration?.children?.filter(
+    (defaultProp: PropData) => defaultProp.name === name
+  )[0]?.defaultValue;
 }
 
 export const STYLES_APIBOX = css({
