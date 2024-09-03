@@ -11,12 +11,21 @@ import { withGeneratedIosScheme } from './withGeneratedIosScheme';
 
 const pkg = require('expo-dev-client/package.json');
 
-function withDevClient(config: ExpoConfig, props: PluginConfigType) {
+type DevClientPluginConfigType = PluginConfigType & {
+  addGeneratedScheme?: boolean;
+};
+
+function withDevClient(config: ExpoConfig, props: DevClientPluginConfigType) {
   config = withDevMenu(config);
   config = withDevLauncher(config, props);
-  config = withGeneratedAndroidScheme(config);
-  config = withGeneratedIosScheme(config);
+
+  const mySchemeProps = { addGeneratedScheme: true, ...props };
+
+  if (mySchemeProps.addGeneratedScheme) {
+    config = withGeneratedAndroidScheme(config);
+    config = withGeneratedIosScheme(config);
+  }
   return config;
 }
 
-export default createRunOncePlugin<PluginConfigType>(withDevClient, pkg.name, pkg.version);
+export default createRunOncePlugin<DevClientPluginConfigType>(withDevClient, pkg.name, pkg.version);

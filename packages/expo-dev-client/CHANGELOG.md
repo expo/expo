@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Add `addGeneratedScheme` config plugin option to disable automatic adding of dev client app scheme. ([#31147](https://github.com/expo/expo/pull/31147) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
