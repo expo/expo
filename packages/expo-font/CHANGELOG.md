@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 12.0.10 — 2024-09-03
+
+### 🐛 Bug fixes
+
+- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 12.0.9 — 2024-07-16
 
