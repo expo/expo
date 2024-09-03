@@ -83,7 +83,7 @@ android {
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
-    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false")
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
     // WHEN_VERSIONING_REMOVE_TO_HERE
   }
 

@@ -6,14 +6,20 @@ import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.react.ReactInstanceManager
+import com.facebook.react.ReactInstanceManagerBuilder
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.interfaces.fabric.ReactSurface
+import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.runtime.ReactSurfaceView
 import de.greenrobot.event.EventBus
 import host.exp.exponent.utils.ShakeDetector
 import host.exp.exponent.Constants
@@ -86,7 +92,7 @@ class DevMenuManager {
 
         // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
         // Otherwise, touches and other gestures may not work correctly.
-        kernel.reactInstanceManager?.onHostResume(activity)
+        kernel.reactHost?.onHostResume(activity)
       } catch (exception: Exception) {
         Log.e("ExpoDevMenu", exception.message ?: "No error message.")
       }
@@ -221,7 +227,7 @@ class DevMenuManager {
    * Onboarding is a screen that shows the dev menu to the user that opens any experience for the first time.
    */
   fun isOnboardingFinished(): Boolean {
-    return exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY) ?: false
+    return exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY)
   }
 
   /**
@@ -237,7 +243,7 @@ class DevMenuManager {
    */
   fun maybeResumeHostWithActivity(activity: ExperienceActivity) {
     if (isShownInActivity(activity)) {
-      kernel.reactInstanceManager?.onHostResume(activity)
+      kernel.reactHost?.onHostResume(activity)
     }
   }
 
@@ -269,7 +275,7 @@ class DevMenuManager {
       // @tsapeta: We need a small delay to allow the experience to be fully rendered.
       // Without the delay we were having some weird issues with style props being set on nonexistent shadow views.
       // From the other side, it's good that we don't show it immediately so the user can see his app first.
-      Handler().postDelayed({ showInActivity(activity) }, 2000)
+      Handler(Looper.getMainLooper()).postDelayed({ showInActivity(activity) }, 2000)
     }
   }
 
@@ -290,16 +296,16 @@ class DevMenuManager {
    * Also sets initialProps, layout settings and initial animation values.
    */
   @Throws(Exception::class)
-  private fun prepareRootView(initialProps: Bundle): ReactRootView {
+  private fun prepareRootView(initialProps: Bundle): ViewGroup {
     // Throw an exception in case the kernel is not initialized yet.
-    if (kernel.reactInstanceManager == null) {
-      throw Exception("Kernel's React instance manager is not initialized yet.")
+    if (kernel.surface == null) {
+      throw Exception("Kernel's surface is not initialized yet.")
     }
 
     reactRootView?.unmountReactApplication()
 
     reactRootView = ReactUnthemedRootView(kernel.activityContext)
-    reactRootView?.startReactApplication(kernel.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
+//    reactRootView?.startReactApplication(kernel.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
 
     val rootView = reactRootView!!
 
@@ -313,7 +319,7 @@ class DevMenuManager {
    * Loses view focus in given activity. It makes sure that system's keyboard is hidden when presenting dev menu view.
    */
   private fun loseFocusInActivity(activity: ExperienceActivity) {
-    activity.getCurrentFocus()?.clearFocus()
+    activity.currentFocus?.clearFocus()
   }
 
   /**
@@ -352,7 +358,7 @@ class DevMenuManager {
 
   private fun tryToPauseHostActivity(activity: ExperienceActivity) {
     try {
-      kernel.reactInstanceManager?.onHostPause(activity)
+      kernel.reactHost?.onHostPause(activity)
     } catch (e: AssertionError) {
       // nothing
     }

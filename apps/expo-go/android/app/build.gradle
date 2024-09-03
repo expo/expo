@@ -203,7 +203,7 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:${safeExtGet('kotlinVersion', '1.9.22')}"
 
   // Our dependencies
-  implementation ('androidx.appcompat:appcompat:1.4.1')
+  implementation ('androidx.appcompat:appcompat:1.6.1')
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.

@@ -58,7 +58,6 @@ public class Constants {
   public static final boolean DEBUG_COLD_START_METHOD_TRACING = false;
   public static final boolean DEBUG_MANIFEST_METHOD_TRACING = false;
   public static final boolean DEBUG_METHOD_TRACING = DEBUG_COLD_START_METHOD_TRACING || DEBUG_MANIFEST_METHOD_TRACING;
-  public static final boolean ENABLE_LEAK_CANARY = false;
   public static final boolean WRITE_BUNDLE_TO_LOG = false;
   public static final boolean WAIT_FOR_DEBUGGER = false;
 

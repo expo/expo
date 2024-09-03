@@ -15,6 +15,8 @@ import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
+import com.facebook.react.ReactInstanceManagerBuilder
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
@@ -365,36 +367,26 @@ class Exponent private constructor(val context: Context, val application: Applic
     @JvmStatic fun enableDeveloperSupport(
       debuggerHost: String,
       mainModuleName: String,
-      builder: RNObject
+      builder: ReactInstanceManagerBuilder? = null
     ) {
       if (debuggerHost.isEmpty() || mainModuleName.isEmpty()) {
         return
       }
 
       try {
-        val fieldObject = RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers")
-        fieldObject.loadVersion(builder.version())
-
         val debuggerHostHostname = getHostname(debuggerHost)
         val debuggerHostPort = getPort(debuggerHost)
 
-        val deviceField = fieldObject.rnClass()!!.getDeclaredField("DEVICE_LOCALHOST")
-        deviceField.isAccessible = true
-        deviceField[null] = debuggerHostHostname
+        AndroidInfoHelpers.DEVICE_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.GENYMOTION_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.EMULATOR_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.setDevServerPort(debuggerHostPort)
+        AndroidInfoHelpers.setInspectorProxyPort(debuggerHostPort)
 
-        val genymotionField = fieldObject.rnClass()!!.getDeclaredField("GENYMOTION_LOCALHOST")
-        genymotionField.isAccessible = true
-        genymotionField[null] = debuggerHostHostname
-
-        val emulatorField = fieldObject.rnClass()!!.getDeclaredField("EMULATOR_LOCALHOST")
-        emulatorField.isAccessible = true
-        emulatorField[null] = debuggerHostHostname
-
-        fieldObject.callStatic("setDevServerPort", debuggerHostPort)
-        fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort)
-
-        builder.callRecursive("setUseDeveloperSupport", true)
-        builder.callRecursive("setJSMainModulePath", mainModuleName)
+        builder?.let {
+          it.setUseDeveloperSupport(true)
+          it.setJSMainModulePath(mainModuleName)
+        }
       } catch (e: IllegalAccessException) {
         e.printStackTrace()
       } catch (e: NoSuchFieldException) {

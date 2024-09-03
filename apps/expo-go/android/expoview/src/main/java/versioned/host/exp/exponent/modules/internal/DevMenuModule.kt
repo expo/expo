@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.internal
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import com.facebook.react.bridge.LifecycleEventListener
@@ -10,8 +9,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
-import com.facebook.react.devsupport.BridgeDevSupportManager
 import com.facebook.react.devsupport.HMRClient
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -23,7 +22,7 @@ import host.exp.expoview.Exponent
 import host.exp.expoview.R
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any?>, val manifest: Manifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
@@ -91,10 +90,6 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
 
     if (devSettings != null && devSupportManager.devSupportEnabled && isJsExecutorInspectable) {
       debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
-      debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
-      items.putBundle("dev-remote-debug", debuggerMap)
-    } else if (devSettings != null && devSupportManager.devSupportEnabled && manifest?.getExpoGoSDKVersion() ?: "" < "49.0.0") {
-      debuggerMap.putString("label", getString(if (devSettings.isRemoteJSDebugEnabled) R.string.devmenu_stop_remote_debugging else R.string.devmenu_start_remote_debugging))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
     }
@@ -194,12 +189,12 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
   //region internals
 
   /**
-   * Returns versioned instance of [BridgeDevSupportManager],
+   * Returns instance of [DevSupportManager],
    * or null if no activity is currently attached to react context.
    */
-  private fun getDevSupportManager(): BridgeDevSupportManager? {
+  private fun getDevSupportManager(): DevSupportManager? {
     val activity = currentActivity as? ReactNativeActivity?
-    return activity?.devSupportManager?.get() as? BridgeDevSupportManager?
+    return activity?.devSupportManager
   }
 
   /**
@@ -208,18 +203,15 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   private fun requestOverlaysPermission() {
     val context = currentActivity ?: return
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      // Get permission to show debug overlay in dev builds.
-      if (!Settings.canDrawOverlays(context)) {
-        val intent = Intent(
-          Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-          Uri.parse("package:" + context.packageName)
-        )
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        if (intent.resolveActivity(context.packageManager) != null) {
-          context.startActivity(intent)
-        }
+    // Get permission to show debug overlay in dev builds.
+    if (!Settings.canDrawOverlays(context)) {
+      val intent = Intent(
+        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+        Uri.parse("package:" + context.packageName)
+      )
+      intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+      if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
       }
     }
   }
@@ -238,7 +230,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   private val isJsExecutorInspectable: Boolean by lazy {
     val activity = currentActivity as? ReactNativeActivity
-    activity?.jsExecutorName == "JSIExecutor+HermesRuntime"
+    activity?.jsExecutorName == "Hermes"
   }
 
   /**
