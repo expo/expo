@@ -43,6 +43,7 @@ import host.exp.exponent.experience.BaseExperienceActivity
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
+import host.exp.exponent.experience.KernelData
 import host.exp.exponent.experience.KernelReactNativeHost
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.headless.InternalHeadlessAppLoader
@@ -227,10 +228,13 @@ class Kernel : KernelInterface() {
                     val host = KernelReactNativeHost(
                         applicationContext,
                         exponentManifest,
-                        kernelInitialURL,
-                        localBundlePath
+                        KernelData(
+                            kernelInitialURL,
+                            localBundlePath,
+                            kernelMainModuleName
+                        )
                     )
-                    if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()) {
+                    if (host.devSupportEnabled) {
                         Exponent.enableDeveloperSupport(
                             kernelDebuggerHost,
                             kernelMainModuleName

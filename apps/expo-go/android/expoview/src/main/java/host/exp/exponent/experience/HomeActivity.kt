@@ -96,11 +96,14 @@ open class HomeActivity : BaseExperienceActivity() {
    */
   override fun destroyReactHost() {}
 
+  override fun onDoneLoading() {
+    this.setContentView(reactSurface?.view)
+  }
+
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
     reactHost = kernel.reactHost as ReactHostImpl
     reactHost?.onHostResume(this, this)
     reactSurface = kernel.surface?.also {
-      this.setContentView(it.view)
       it.start()
     }
     finishLoading()

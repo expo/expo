@@ -136,11 +136,6 @@ abstract class ReactNativeActivity :
     containerView = FrameLayout(this)
     setContentView(containerView)
 
-    val callback = this.onBackPressedDispatcher.addCallback {
-      reactHost?.onBackPressed()
-    }
-    callback.isEnabled = true
-
     reactContainerView = FrameLayout(this)
     containerView.addView(reactContainerView)
 

@@ -307,11 +307,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
      */
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         if (currentActivity === this && devMenuManager.isShownInActivity(this)) {
             devMenuManager.requestToClose(this)
             return
         }
-        super.onBackPressed()
     }
 
     fun onEventMainThread(event: KernelStartedRunningEvent?) {

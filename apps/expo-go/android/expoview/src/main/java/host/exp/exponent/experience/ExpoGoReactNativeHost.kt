@@ -3,10 +3,10 @@ package host.exp.exponent.experience
 import android.app.Application
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.shell.MainReactPackage
 import com.swmansion.reanimated.ReanimatedPackage
 import host.exp.exponent.ExponentManifest
+import host.exp.exponent.kernel.KernelConfig
 import host.exp.expoview.Exponent
 import versioned.host.exp.exponent.ExpoTurboPackage
 import versioned.host.exp.exponent.ExponentPackage
@@ -19,7 +19,7 @@ class ExpoGoReactNativeHost(
     private val localBundlePath: String?,
 ) : DefaultReactNativeHost(application) {
     override fun getUseDeveloperSupport(): Boolean {
-        return true
+        return exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
     }
 
     override fun getJSBundleFile(): String? {
@@ -51,14 +51,24 @@ class ExpoGoReactNativeHost(
     }
 }
 
+data class KernelData(
+    val initialURL: String? = null,
+    val localBundlePath: String? = null,
+    val mainModuleName: String? = null
+)
+
 class KernelReactNativeHost(
     application: Application,
     private val exponentManifest: ExponentManifest,
-    private val initialURL: String?,
-    private val localBundlePath: String?,
+    private val data: KernelData?,
 ) : DefaultReactNativeHost(application) {
+    val devSupportEnabled
+        get() =
+            !KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
+                    exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+
     override fun getUseDeveloperSupport(): Boolean {
-        return exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+        return devSupportEnabled
     }
 
     override val isHermesEnabled = true
@@ -66,7 +76,15 @@ class KernelReactNativeHost(
     override val isNewArchEnabled = true
 
     override fun getJSBundleFile(): String? {
-        return localBundlePath
+        return data?.localBundlePath
+    }
+
+    override fun getJSMainModuleName(): String {
+      return if(devSupportEnabled) {
+           data?.mainModuleName ?: "main"
+       } else {
+           super.getJSMainModuleName()
+       }
     }
 
     override fun getPackages(): MutableList<ReactPackage> {
@@ -78,11 +96,11 @@ class KernelReactNativeHost(
                 exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
                 HomeActivity.homeExpoPackages(),
                 HomeActivity.Companion,
-                initialURL
+                data?.initialURL
             ),
             ExpoTurboPackage.kernelExpoTurboPackage(
                 exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
-                initialURL
+                data?.initialURL
             )
         )
     }
