@@ -122,12 +122,8 @@ The text displayed on the app's screen above can be found in the **index.tsx** f
 Let's modify the `<Text>` and add the background color of `#25292e` to `<View>`. We will also use `StyleSheet` to define the styles.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
-import {
-  Text,
-  View,
-  /* @info Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet /* @end */,
-} from 'react-native';
+```tsx app/index.tsx|collapseHeight=340
+import { Text, View, /* @info Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet/* @end */ } from 'react-native';
 
 export default function Index() {
   return (
