@@ -48,7 +48,7 @@ export declare class Directory {
     move(destination: Directory | File): any;
     /**
      * @hidden
-     * Lists the contents of a directory. Should not be used directly, as it retuns a list of paths.
+     * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
      */
     listAsRecords(): {
         isDirectory: string;

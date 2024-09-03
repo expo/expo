@@ -28,7 +28,8 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     return file.listFiles()?.map {
         mapOf(
           "isDirectory" to it.isDirectory,
-          "path" to it.path)
+          "path" to it.path
+        )
     } ?: emptyList()
   }
 
