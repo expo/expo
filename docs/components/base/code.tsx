@@ -77,7 +77,7 @@ export function Code({ className, children }: CodeProps) {
 
   const commonClasses = [
     wordWrap && '!whitespace-pre-wrap !break-words',
-    !isExpanded && `!overflow-hidden`,
+    showExpand && !isExpanded && `!overflow-hidden`,
   ];
 
   return codeBlockData?.title ? (
@@ -111,7 +111,7 @@ export function Code({ className, children }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'relative border border-secondary p-4 px-4 bg-subtle',
+        'relative border border-secondary p-4 my-4 bg-subtle',
         preferredTheme === Themes.DARK && 'dark-theme',
         ...commonClasses,
         'last:mb-0'
