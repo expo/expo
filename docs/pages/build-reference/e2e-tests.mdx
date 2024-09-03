@@ -52,11 +52,11 @@ The following command creates a new project on Expo servers for your app and cre
 
 <Step label="3">
 
-## Ensure new Android Build Infrastructure is disabled
+## Disable Android Build Infrastructure
 
-Go to [**Project Settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Build Infrastructure**.
+Go to [**Project settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Build Infrastructure**.
 
-Unfortunately, the new build infrastructure is not compatible with E2E tests, it lacks support for virtualization which is required to start an Android emulator. We are working on better solutions for running various tests on EAS.
+Unfortunately, the new build infrastructure is incompatible with E2E tests due to the lack of virtualization support required to start Android Emulator. We are working on better solutions for running various tests on EAS.
 
 </Step>
 
@@ -174,7 +174,7 @@ To learn more about Maestro flows and how to write them, see the [Maestro docume
 
 ## Troubleshooting
 
-If you encounter the following error message when trying to start an Android emulator for E2E tests on EAS Build:
+If you encounter the following error message when starting an Android Emulator for E2E tests on EAS Build:
 
 ```
 Failed to configure emulator: emulator with required ID not found.
