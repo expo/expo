@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.experience
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,31 +9,47 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Process
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.addCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.facebook.infer.annotation.Assertions
+import com.facebook.react.ReactHost
+import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
+import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
+import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import de.greenrobot.event.EventBus
+import expo.modules.ReactNativeHostWrapper
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
-import host.exp.exponent.RNObject
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.BaseExperienceActivity.ExperienceContentLoaded
 import host.exp.exponent.experience.splashscreen.LoadingView
-import host.exp.exponent.kernel.*
+import host.exp.exponent.factories.ReactHostFactory
+import host.exp.exponent.kernel.ExperienceKey
+import host.exp.exponent.kernel.ExponentError
+import host.exp.exponent.kernel.ExponentErrorMessage
+import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.AddedExperienceEventEvent
+import host.exp.exponent.kernel.KernelNetworkInterceptor
+import host.exp.exponent.kernel.KernelProvider
 import host.exp.exponent.kernel.services.ErrorRecoveryManager
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.exponent.notifications.ExponentNotification
@@ -46,8 +63,11 @@ import host.exp.expoview.Exponent.StartReactInstanceDelegate
 import host.exp.expoview.R
 import org.json.JSONException
 import org.json.JSONObject
+import versioned.host.exp.exponent.ExponentDevBundleDownloadListener
 import versioned.host.exp.exponent.ExponentPackage
-import java.util.*
+import versioned.host.exp.exponent.VersionedUtils
+import java.util.LinkedList
+import java.util.Queue
 import javax.inject.Inject
 
 abstract class ReactNativeActivity :
@@ -61,13 +81,14 @@ abstract class ReactNativeActivity :
     return expBundle
   }
 
-  protected open fun onDoneLoading() {}
+  protected open fun onDoneLoading() {
+  }
 
   // Will be called after waitForDrawOverOtherAppPermission
   protected open fun startReactInstance() {}
 
-  protected var reactInstanceManager: RNObject =
-    RNObject("com.facebook.react.ReactInstanceManager")
+  var reactHost: ReactHost? = null
+  protected var reactSurface: ReactSurface? = null
   protected var isCrashed = false
 
   protected var manifestUrl: String? = null
@@ -75,11 +96,6 @@ abstract class ReactNativeActivity :
   protected var sdkVersion: String? = null
   protected var activityId = 0
 
-  // In detach we want UNVERSIONED most places. We still need the numbered sdk version
-  // when creating cache keys.
-  protected var detachSdkVersion: String? = null
-
-  protected lateinit var reactRootView: RNObject
   private lateinit var doubleTapReloadRecognizer: DoubleTapReloadRecognizer
   var isLoading = true
     protected set
@@ -95,6 +111,9 @@ abstract class ReactNativeActivity :
   @Inject
   lateinit var expoKernelServiceRegistry: ExpoKernelServiceRegistry
 
+  @Inject
+  lateinit var exponentManifest: ExponentManifest
+
   private lateinit var containerView: FrameLayout
 
   /**
@@ -102,20 +121,25 @@ abstract class ReactNativeActivity :
    */
   private var loadingView: LoadingView? = null
   private lateinit var reactContainerView: FrameLayout
-  private val handler = Handler()
+  private val handler = Handler(Looper.getMainLooper())
 
   protected open fun shouldCreateLoadingView(): Boolean {
     return true
   }
 
   val rootView: View?
-    get() = reactRootView.get() as View?
+    get() = reactSurface?.view
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
 
     containerView = FrameLayout(this)
     setContentView(containerView)
+
+    val callback = this.onBackPressedDispatcher.addCallback {
+      reactHost?.onBackPressed()
+    }
+    callback.isEnabled = true
 
     reactContainerView = FrameLayout(this)
     containerView.addView(reactContainerView)
@@ -147,14 +171,11 @@ abstract class ReactNativeActivity :
   }
 
   fun addReactViewToContentContainer(reactView: View) {
-    if (reactView.parent != null) {
-      (reactView.parent as ViewGroup).removeView(reactView)
-    }
-    reactContainerView.addView(reactView)
+    reactSurface?.view?.addView(reactView)
   }
 
   fun hasReactView(reactView: View): Boolean {
-    return reactView.parent === reactContainerView
+    return reactView.parent === reactSurface?.view
   }
 
   protected fun hideLoadingView() {
@@ -188,11 +209,11 @@ abstract class ReactNativeActivity :
 
   // Loop until a view is added to the ReactRootView and once it happens run callback
   private fun waitForReactRootViewToHaveChildrenAndRunCallback(callback: Runnable) {
-    if (reactRootView.isNull) {
+    if (reactSurface == null) {
       return
     }
 
-    if (reactRootView.call("getChildCount") as Int > 0) {
+    if ((reactSurface?.view?.childCount ?: 0) > 0) {
       callback.run()
     } else {
       handler.postDelayed(
@@ -209,7 +230,7 @@ abstract class ReactNativeActivity :
     try {
       // NOTE(evanbacon): Use the same view as the `expo-system-ui` module.
       // Set before the application code runs to ensure immediate SystemUI calls overwrite the app.json value.
-      var rootView = this.window.decorView
+      val rootView = this.window.decorView
       ExperienceActivityUtils.setRootViewBackgroundColor(manifest!!, rootView)
     } catch (e: Exception) {
       EXL.e(TAG, e)
@@ -222,7 +243,7 @@ abstract class ReactNativeActivity :
         // window.decorView > [4 other views] > containerView > reactContainerView > rootView > [RN App]
         // This can be inspected using Android Studio: View > Tool Windows > Layout Inspector.
         // Container background color is set for "loading" view state, we need to set it to transparent to prevent obstructing the root view.
-        containerView!!.setBackgroundColor(Color.TRANSPARENT)
+        containerView.setBackgroundColor(Color.TRANSPARENT)
       } catch (e: Exception) {
         EXL.e(TAG, e)
       }
@@ -233,32 +254,16 @@ abstract class ReactNativeActivity :
     }
   }
   // endregion
-  // region SplashScreen
-  /**
-   * Get what version (among versioned classes) of ReactRootView.class SplashScreen module should be looking for.
-   */
-  protected fun getRootViewClass(manifest: Manifest): Class<out ViewGroup> {
-    val reactRootViewRNClass = reactRootView.rnClass()
-    if (reactRootViewRNClass != null) {
-      return reactRootViewRNClass as Class<out ViewGroup>
-    }
-    var sdkVersion = manifest.getExpoGoSDKVersion()
-    if (Constants.SDK_VERSION == sdkVersion) {
-      sdkVersion = RNObject.UNVERSIONED
-    }
-    return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion!!).rnClass() as Class<out ViewGroup>
-  }
 
-  // endregion
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     devSupportManager?.let { devSupportManager ->
-      if (!isCrashed && devSupportManager.call("getDevSupportEnabled") as Boolean) {
+      if (!isCrashed && devSupportManager.devSupportEnabled) {
         val didDoubleTapR = currentFocus?.let {
           Assertions.assertNotNull(doubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, it)
         }
         if (didDoubleTapR == true) {
-          devSupportManager.call("reloadExpoApp")
+          devSupportManager.reloadExpoApp()
           return true
         }
       }
@@ -268,8 +273,8 @@ abstract class ReactNativeActivity :
   }
 
   override fun onBackPressed() {
-    if (reactInstanceManager.isNotNull && !isCrashed) {
-      reactInstanceManager.call("onBackPressed")
+    if (!isCrashed) {
+      reactHost?.onBackPressed()
     } else {
       super.onBackPressed()
     }
@@ -281,47 +286,47 @@ abstract class ReactNativeActivity :
 
   override fun onPause() {
     super.onPause()
-    if (reactInstanceManager.isNotNull && !isCrashed) {
+    if (!isCrashed) {
       KernelNetworkInterceptor.onPause()
-      reactInstanceManager.onHostPause()
+      reactHost?.onHostPause()
       // TODO: use onHostPause(activity)
     }
   }
 
   override fun onResume() {
     super.onResume()
-    if (reactInstanceManager.isNotNull && !isCrashed) {
-      reactInstanceManager.onHostResume(this, this)
-      KernelNetworkInterceptor.onResume(reactInstanceManager.get())
+    if (!isCrashed) {
+      reactHost?.onHostResume(this, this)
+      KernelNetworkInterceptor.onResume(reactHost)
     }
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    destroyReactInstanceManager()
+    destroyReactHost()
     handler.removeCallbacksAndMessages(null)
     EventBus.getDefault().unregister(this)
   }
 
+  @SuppressLint("MissingSuperCall")
   public override fun onNewIntent(intent: Intent) {
-    if (reactInstanceManager.isNotNull && !isCrashed) {
+    if (!isCrashed) {
       try {
-        reactInstanceManager.call("onNewIntent", intent)
+        reactHost?.onNewIntent(intent)
       } catch (e: Throwable) {
         EXL.e(TAG, e.toString())
         super.onNewIntent(intent)
       }
-    } else {
-      super.onNewIntent(intent)
     }
+    super.onNewIntent(intent)
   }
 
   open val isDebugModeEnabled: Boolean
     get() = manifest?.isDevelopmentMode() ?: false
 
-  protected open fun destroyReactInstanceManager() {
-    if (reactInstanceManager.isNotNull && !isCrashed) {
-      reactInstanceManager.call("destroy")
+  protected open fun destroyReactHost() {
+    if (!isCrashed) {
+      reactHost?.onHostDestroy()
     }
   }
 
@@ -330,8 +335,8 @@ abstract class ReactNativeActivity :
 
     Exponent.instance.onActivityResult(requestCode, resultCode, data)
 
-    if (reactInstanceManager.isNotNull && !isCrashed) {
-      reactInstanceManager.call("onActivityResult", this, requestCode, resultCode, data)
+    if (!isCrashed) {
+      reactHost?.onActivityResult(this, requestCode, resultCode, data)
     }
 
     // Have permission to draw over other apps. Resume loading.
@@ -346,16 +351,15 @@ abstract class ReactNativeActivity :
   fun startReactInstance(
     delegate: StartReactInstanceDelegate,
     intentUri: String?,
-    sdkVersion: String?,
     notification: ExponentNotification?,
     extraNativeModules: List<Any>?,
     extraExpoPackages: List<Package>?,
     progressListener: DevBundleDownloadProgressListener
-  ): RNObject {
+  ): ReactHost? {
     if (isCrashed || !delegate.isInForeground) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit
       // a null pointer at mReactRootView.startReactApplication
-      return RNObject("com.facebook.react.ReactInstanceManager")
+      return null
     }
 
     val experienceProperties = mapOf<String, Any?>(
@@ -375,40 +379,23 @@ abstract class ReactNativeActivity :
       singletonModules = ExponentPackage.getOrCreateSingletonModules(applicationContext, manifest, extraExpoPackages)
     )
 
-    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(sdkVersion!!)
-    val builder = versionedUtils.callRecursive(
-      "getReactInstanceManagerBuilder",
-      instanceManagerBuilderProperties
-    )!!
-
-    builder.call("setCurrentActivity", this)
-
-    // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
-    builder.call(
-      "setInitialLifecycleState",
-      RNObject.versionedEnum(sdkVersion, "com.facebook.react.common.LifecycleState", "RESUMED")
+    val host = ExpoGoReactNativeHost(
+      application,
+      exponentManifest,
+      instanceManagerBuilderProperties,
+      jsBundlePath,
     )
+    val wrapper = ReactNativeHostWrapper(application, host)
+    val reactHost = ReactHostFactory.createFromReactNativeHost(this, wrapper)
 
-    if (extraNativeModules != null) {
-      for (nativeModule in extraNativeModules) {
-        builder.call("addPackage", nativeModule)
-      }
-    }
+    val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
+    setDevSettings(reactHost, devBundleDownloadListener)
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
       val mainModuleName = manifest!!.getMainModuleName()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, builder)
-
-      val devLoadingView =
-        RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(sdkVersion)
-      devLoadingView.callRecursive("setDevLoadingEnabled", false)
-
-      val devBundleDownloadListener =
-        RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-          .loadVersion(sdkVersion)
-          .construct(progressListener)
-      builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get())
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName)
+      DefaultDevLoadingViewImplementation.setDevLoadingEnabled(false)
     } else {
       waitForReactAndFinishLoading()
     }
@@ -457,46 +444,49 @@ abstract class ReactNativeActivity :
     }
 
     if (!delegate.isInForeground) {
-      return RNObject("com.facebook.react.ReactInstanceManager")
+      return null
     }
 
-    val mReactInstanceManager = builder.callRecursive("build")!!
-    val devSettings =
-      mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
+    val devSettings = reactHost.devSupportManager?.devSettings as? DevInternalSettings
     if (devSettings != null) {
-      if (sdkVersion.startsWith("49.")) {
-        devSettings.setField("exponentActivityId", activityId)
-      } else {
-        devSettings.call("setExponentActivityId", activityId)
-      }
-      if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
+      devSettings.setExponentActivityId(activityId)
+      if (devSettings.isRemoteJSDebugEnabled) {
         if (manifest?.jsEngine == "hermes") {
           // Disable remote debugging when running on Hermes
-          devSettings.call("setRemoteJSDebugEnabled", false)
+          devSettings.isRemoteJSDebugEnabled = false
         }
         waitForReactAndFinishLoading()
       }
     }
 
-    mReactInstanceManager.onHostResume(this, this)
+    reactHost.onHostResume(this, this)
     val appKey = manifest!!.getAppKey()
-    reactRootView.call(
-      "startReactApplication",
-      mReactInstanceManager.get(),
+    reactSurface = reactHost.createSurface(
+      this,
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
+    reactSurface?.start()
+    KernelNetworkInterceptor.start(manifest!!, reactHost)
 
-    KernelNetworkInterceptor.start(manifest!!, mReactInstanceManager.get())
+    return reactHost
+  }
 
-    // Requesting layout to make sure {@link ReactRootView} attached to {@link ReactInstanceManager}
-    // Otherwise, {@link ReactRootView} will hang in {@link waitForReactRootViewToHaveChildrenAndRunCallback}.
-    // Originally react-native will automatically attach after `startReactApplication`.
-    // After https://github.com/facebook/react-native/commit/2c896d35782cd04c8,
-    // the only remaining path is by `onMeasure`.
-    reactRootView.call("requestLayout")
+  private fun setDevSettings(
+      reactHost: ReactHost,
+      devBundleDownloadListener: ExponentDevBundleDownloadListener
+  ) {
+    val hostField = reactHost::class.java.getDeclaredField("mDevSupportManager")
+    hostField.isAccessible = true
+    val devSupportManager = hostField.get(reactHost)
 
-    return mReactInstanceManager
+    val bundleDownloadListenerField =
+      devSupportManager::class.java.getField("mBundleDownloadListener")
+    val handlers = devSupportManager::class.java.getField("mCustomPackagerCommandHandlers")
+    bundleDownloadListenerField.isAccessible = true
+    handlers.isAccessible = true
+    bundleDownloadListenerField.set(devSupportManager, devBundleDownloadListener)
+    handlers.set(devSupportManager, VersionedUtils.createPackagerCommandHelpers())
   }
 
   protected fun shouldShowErrorScreen(errorMessage: ExponentErrorMessage): Boolean {
@@ -538,15 +528,11 @@ abstract class ReactNativeActivity :
     }
 
     try {
-      val rctDeviceEventEmitter =
-        RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-      rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
-      val existingEmitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
-        .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+      val existingEmitter = reactHost?.currentReactContext?.getJSModule(RCTDeviceEventEmitter::class.java)
       if (existingEmitter != null) {
         val events = KernelProvider.instance.consumeExperienceEvents(manifestUrl!!)
         for ((eventName, eventPayload) in events) {
-          existingEmitter.call("emit", eventName, eventPayload)
+          existingEmitter.emit(eventName, eventPayload)
         }
       }
     } catch (e: Throwable) {
@@ -559,12 +545,8 @@ abstract class ReactNativeActivity :
    */
   fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
     try {
-      val nativeAppEventEmitter =
-        RNObject("com.facebook.react.modules.core.RCTNativeAppEventEmitter")
-      nativeAppEventEmitter.loadVersion(detachSdkVersion!!)
-      val emitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
-        .callRecursive("getJSModule", nativeAppEventEmitter.rnClass())
-      emitter?.call("emit", eventName, eventArgs)
+      val emitter = reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
+      emitter?.emit(eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }
@@ -625,11 +607,11 @@ abstract class ReactNativeActivity :
     )
   }
 
-  val devSupportManager: RNObject?
-    get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getDevSupportManager")
+  val devSupportManager: DevSupportManager?
+    get() = reactHost?.devSupportManager
 
   val jsExecutorName: String?
-    get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getJsExecutorName")?.get() as? String
+    get() = reactHost?.jsEngineResolutionAlgorithm?.name
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
