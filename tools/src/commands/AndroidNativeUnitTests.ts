@@ -11,7 +11,6 @@ const BARE_EXPO_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'android'
 const excludedInTests = [
   'expo-module-template',
   'expo-module-template-local',
-  'expo-notifications',
   'expo-splash-screen',
   'expo-modules-test-core',
   'expo-dev-client',
