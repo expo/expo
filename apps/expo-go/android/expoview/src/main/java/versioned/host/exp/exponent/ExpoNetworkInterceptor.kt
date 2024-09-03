@@ -2,6 +2,7 @@
 
 package versioned.host.exp.exponent
 
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.Inspector
 import com.facebook.react.devsupport.DevServerHelper
@@ -15,31 +16,31 @@ import java.io.Closeable
 class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
   private var isStarted = false
   private val inspectorPackagerConnection = InspectorPackagerConnectionWrapper()
-  private var reactInstanceManager: ReactInstanceManager? = null
+  private var reactHost: ReactHost? = null
 
-  fun start(manifest: Manifest, reactInstanceManager: ReactInstanceManager) {
-    val buildProps = (manifest?.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
+  fun start(manifest: Manifest, reactHost: ReactHost) {
+    val buildProps = (manifest.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
       ?.mapKeys { it.key.toString() }
     val enableNetworkInspector = buildProps?.get("networkInspector") as? Boolean ?: true
     isStarted = enableNetworkInspector
 
-    this.onResume(reactInstanceManager)
+    this.onResume(reactHost)
   }
 
-  private fun onResume(reactInstanceManager: ReactInstanceManager) {
-    if (!isStarted || !reactInstanceManager.devSupportManager.devSupportEnabled) {
+  fun onResume(reactHost: ReactHost) {
+    if (!isStarted || reactHost.devSupportManager?.devSupportEnabled == true) {
       return
     }
-    this.reactInstanceManager = reactInstanceManager
+    this.reactHost = reactHost
     ExpoRequestCdpInterceptor.setDelegate(this)
   }
 
-  private fun onPause() {
+  fun onPause() {
     if (!isStarted) {
       return
     }
     ExpoRequestCdpInterceptor.setDelegate(null)
-    this.reactInstanceManager = null
+    this.reactHost = null
   }
 
   override fun close() {
@@ -47,7 +48,7 @@ class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
   }
 
   override fun dispatch(event: String) {
-    reactInstanceManager?.let {
+    reactHost?.let {
       inspectorPackagerConnection.sendWrappedEventToAllPages(it, event)
     }
   }
@@ -67,8 +68,8 @@ internal class InspectorPackagerConnectionWrapper {
     sendWrappedEventMethod.isAccessible = true
   }
 
-  fun sendWrappedEventToAllPages(reactInstanceManager: ReactInstanceManager, event: String) {
-    val devServerHelper = devServerHelperField[reactInstanceManager.devSupportManager]
+  fun sendWrappedEventToAllPages(reactHost: ReactHost, event: String) {
+    val devServerHelper = devServerHelperField[reactHost.devSupportManager]
     val inspectorPackagerConnection = inspectorPackagerConnectionField[devServerHelper] as? InspectorPackagerConnection ?: return
     for (page in Inspector.getPages()) {
       if (!page.title.contains("Reanimated")) {
