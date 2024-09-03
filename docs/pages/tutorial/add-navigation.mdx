@@ -32,7 +32,7 @@ Expo Router is a routing framework for React Native and web applications. It all
 
 Let's create a new file called **about.tsx** inside the **app** directory. It displays the screen name when the user navigates to `/about` route.
 
-```tsx app/about.tsx
+```tsx app/about.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
 
 export default function AboutScreen() {
@@ -96,7 +96,7 @@ To navigate from `/index` route to `/about` route, we will use Expo Router's bui
 3. Add a style of `fontSize`, `textDecorationLine`, and `color` to the `Link` component. It takes the same props as `<Text>` component.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/index.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
 /* @info Import <CODE>Link</CODE> component from <CODE>expo-router</CODE>. */ import { Link } from 'expo-router'; /* @end */
 
@@ -152,7 +152,6 @@ When a route doesn't exist, we can use a `+not-found` route to display a fallbac
 {/* prettier-ignore */}
 ```tsx app/+not-found.tsx
 import { View, StyleSheet } from 'react-native';
-
 import { Link, Stack } from 'expo-router';
 
 export default function NotFoundScreen() {
