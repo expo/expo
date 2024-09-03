@@ -9,7 +9,7 @@ internal final class FileSystemDirectory: FileSystemPath {
   func validateType() throws {
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-      if(!isDirectory.boolValue) {
+      if !isDirectory.boolValue {
         throw InvalidTypeFolderException()
       }
     }
