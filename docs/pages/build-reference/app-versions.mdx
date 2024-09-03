@@ -38,7 +38,7 @@ EAS Build can help manage developer-facing build versions automatically by incre
 
 ## Remote version source
 
-> **warning** The `remote` version source is the default behavior from EAS CLI version `11.0.0`. If you are using an older version of the EAS CLI, `local` is the default.
+> **warning** The `remote` version source is the default behavior from EAS CLI version `12.0.0`. If you are using an older version of the EAS CLI, `local` is the default.
 
 EAS servers can store and manage your app's developer-facing build version (`android.versionCode` and `ios.buildNumber`) remotely by default. To enable it, you need to set `cli.appVersionSource` to `remote` in **eas.json**. Then, under the `production` build profile, you can set the `autoIncrement` property to `true`.
 
@@ -110,7 +110,7 @@ To build your project locally in Android Studio or Xcode using the same version 
 
 ## Local version source
 
-> **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `11.0.0`. If you are using an older version of the CLI, you **don't need to specify the version source explicitly to `local`**.
+> **warning** The `remote` version source as a default behavior has been introduced in `eas-cli` version `12.0.0`. If you are using an older version of the CLI, you **don't need to specify the version source explicitly to `local`**.
 
 You can configure your project so that the source of truth for project versions is the local project source code itself. To do this, set `cli.appVersionSource` to `local` in your **eas.json**.
 
