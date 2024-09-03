@@ -95,7 +95,11 @@ export async function reconcileTransformSerializerPlugin(
     value: Module<MixedOutput>,
     outputItem: ExpoJsOutput
   ): Promise<ExpoJsOutput> {
-    if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
+    if (
+      outputItem.type !== 'js/module' ||
+      value.path.endsWith('.json') ||
+      value.path.match(/\.(s?css|sass)$/)
+    ) {
       debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
     }
@@ -103,6 +107,7 @@ export async function reconcileTransformSerializerPlugin(
     // This should be cached by the transform worker for use here to ensure close to consistent
     // results between the tree-shake and the final transform.
     const reconcile = outputItem.data.reconcile;
+
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
     let ast = outputItem.data.ast;
