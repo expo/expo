@@ -9,6 +9,7 @@ public func Function<R>(
     name,
     firstArgType: Void.self,
     dynamicArgumentTypes: [],
+    returnType: ~R.self,
     closure
   )
 }
@@ -24,6 +25,7 @@ public func Function<R, A0: AnyArgument>(
     name,
     firstArgType: A0.self,
     dynamicArgumentTypes: [~A0.self],
+    returnType: ~R.self,
     closure
   )
 }
@@ -39,6 +41,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument>(
     name,
     firstArgType: A0.self,
     dynamicArgumentTypes: [~A0.self, ~A1.self],
+    returnType: ~R.self,
     closure
   )
 }
@@ -58,6 +61,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
       ~A1.self,
       ~A2.self
     ],
+    returnType: ~R.self,
     closure
   )
 }
@@ -78,6 +82,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A2.self,
       ~A3.self
     ],
+    returnType: ~R.self,
     closure
   )
 }
@@ -99,6 +104,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A3.self,
       ~A4.self
     ],
+    returnType: ~R.self,
     closure
   )
 }
@@ -121,6 +127,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A4.self,
       ~A5.self
     ],
+    returnType: ~R.self,
     closure
   )
 }
@@ -144,6 +151,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A5.self,
       ~A6.self
     ],
+    returnType: ~R.self,
     closure
   )
 }
@@ -168,6 +176,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A6.self,
       ~A7.self
     ],
+    returnType: ~R.self,
     closure
   )
 }

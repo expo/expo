@@ -65,9 +65,7 @@ class AudioModule : Module() {
       audioInterruptionMode = mode.interruptionMode
       staysActiveInBackground = mode.shouldPlayInBackground
       shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
-      if (shouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(true)
-      }
+      updatePlaySoundThroughEarpiece(shouldRouteThroughEarpiece)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -173,6 +171,10 @@ class AudioModule : Module() {
         }
       }
 
+      Property("isAudioSamplingSupported") { _ ->
+        true
+      }
+
       Property("loop") { ref ->
         runOnMain {
           ref.player.repeatMode == Player.REPEAT_MODE_ONE
@@ -259,6 +261,10 @@ class AudioModule : Module() {
         }
       }
 
+      Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
+        ref.setSamplingEnabled(enabled)
+      }
+
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
         ref.player.seekTo(seekTime.toLong())
       }.runOnQueue(Queues.MAIN)
@@ -272,8 +278,7 @@ class AudioModule : Module() {
       }
 
       Function("remove") { ref: AudioPlayer ->
-        val id = ref.id
-        players.remove(id)
+        players.remove(ref.id)
       }
     }
 

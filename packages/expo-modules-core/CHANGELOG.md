@@ -4,8 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [Web] Modules are now registered in global. ([#29870](https://github.com/expo/expo/pull/29870) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add support for passing SharedObjects as a function parameter. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
 - Added support for `startObserving` and `stopObserving` on the web. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
 - Switched exported `EventEmitter` to the C++ implementation. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
@@ -14,6 +18,13 @@
 - [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Added support for primitive arrays in functions. ([#30657](https://github.com/expo/expo/pull/30657) by [@lukmccall](https://github.com/lukmccall))
 - Implemented `toJSON` function on shared objects that includes dynamic properties defined in their prototype chain. ([#30813](https://github.com/expo/expo/pull/30813) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added experimental support for rendering SwiftUI views. ([#19888](https://github.com/expo/expo/pull/19888) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Introduced experimental converter to support a broader range of types that can be passed to the JS. ([#30944](https://github.com/expo/expo/pull/30944) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Add functions that are called before and after a shared object is removed from the registry. ([#30949](https://github.com/expo/expo/pull/30949) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Rewrite map converter to support a broader range of types that can be passed to the JS. ([#31016](https://github.com/expo/expo/pull/31016) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `EitherTypeConverter` now can work with the `Dynamic` class. ([#31074](https://github.com/expo/expo/pull/31074) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta))
+- [Android] The single parameter now can be auto-cast to the list. ([#31290](https://github.com/expo/expo/pull/31290) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -34,9 +45,13 @@
 - [Android] Fixed not throwing when setting read-only properties. ([#30428](https://github.com/expo/expo/pull/30428) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed `expo.modules.kotlin.jni.tests.RuntimeHolder` class not found crash when R8 is enabled. ([#30572](https://github.com/expo/expo/pull/30572) by [@kudo](https://github.com/kudo))
 - [Android] Fixed `Class declares 0 type parameters, but X were provided` on Android when R8 is enabled. ([#30659](https://github.com/expo/expo/pull/30659) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed SharedObject class names are obfuscated when R8 is enabled. ([#30948](https://github.com/expo/expo/pull/30948) by [@lukmccall](https://github.com/lukmccall))
+- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
+- Remove web hydration `process.env` type. ([#31267](https://github.com/expo/expo/pull/31267) by [@EvanBacon](https://github.com/EvanBacon))
+- Added an `async` extension for OkHttp requests. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
 - Change `sideEffects` to use `src` folder. ([#29964](https://github.com/expo/expo/pull/29964) by [@EvanBacon](https://github.com/EvanBacon))
 - [web] Use global `crypto` object for UUID. ([#29828](https://github.com/expo/expo/pull/29828) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Send open url event to all matching subscribers. ([#29645](https://github.com/expo/expo/pull/29645) by [@aleqsio](https://github.com/aleqsio))
@@ -56,6 +71,11 @@
 - [Android] Limit the number of "Current Activity is of incorrect class" log entries. ([#30427](https://github.com/expo/expo/pull/30427) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Refactor and expose `URLSessionSessionDelegateProxy` class. ([#30173](https://github.com/expo/expo/pull/30173) by [@kudo](https://github.com/kudo))
 - [Android] Supports passing `Accept: text/event-stream` header to bypass streaming requests from `ExpoNetworkInspectOkHttpInterceptors`. ([#30219](https://github.com/expo/expo/pull/30219) by [@kudo](https://github.com/kudo))
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+- Cleaned up the podspec and replaced `RN_FABRIC_ENABLED` flag with `RCT_NEW_ARCH_ENABLED`. ([#31044](https://github.com/expo/expo/pull/31044) by [@tsapeta](https://github.com/tsapeta))
+- JS values are now used directly instead of using shared pointers to improve the overall performance. ([#31219](https://github.com/expo/expo/pull/31219) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Use singletons for string and data dynamic types. ([#31220](https://github.com/expo/expo/pull/31220) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a bottleneck in the performance-critical code by getting away from `enumerated` function. ([#31226](https://github.com/expo/expo/pull/31226) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 

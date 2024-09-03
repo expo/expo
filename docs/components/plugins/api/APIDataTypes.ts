@@ -71,6 +71,7 @@ export type TypeDefinitionData = {
   qualifiedName?: string;
   head?: string;
   tail?: (TypeDefinitionData | string)[][];
+  target?: TypeDefinitionData;
 };
 
 export type MethodParamData = {
@@ -86,6 +87,7 @@ export type TypePropertyDataFlags = {
   isOptional?: boolean;
   isStatic?: boolean;
   isRest?: boolean;
+  isReadonly?: boolean;
 };
 
 // Constants section

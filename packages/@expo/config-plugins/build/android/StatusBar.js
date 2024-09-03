@@ -72,14 +72,14 @@ function setStatusBarStyles(config, styles) {
   const hexString = getStatusBarColor(config);
   const floatElement = getStatusBarTranslucent(config);
   styles = (0, _Styles().assignStylesValue)(styles, {
-    parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
+    parent: (0, _Styles().getAppThemeGroup)(),
     name: WINDOW_LIGHT_STATUS_BAR,
     value: 'true',
     // Default is light-content, don't need to do anything to set it
     add: getStatusBarStyle(config) === 'dark-content'
   });
   styles = (0, _Styles().assignStylesValue)(styles, {
-    parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
+    parent: (0, _Styles().getAppThemeGroup)(),
     name: STATUS_BAR_COLOR,
     value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
     // Remove the color if translucent is used

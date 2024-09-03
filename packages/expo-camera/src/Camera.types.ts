@@ -16,7 +16,7 @@ export type ImageType = 'png' | 'jpg';
 
 export type CameraMode = 'picture' | 'video';
 
-export type CameraRatio = '4:3' | '16:9';
+export type CameraRatio = '4:3' | '16:9' | '1:1';
 
 /**
  * This option specifies the mode of focus on the device.
@@ -173,6 +173,11 @@ export type CameraPictureOptions = {
    * @hidden
    */
   maxDownsampling?: number;
+  /**
+   * To programmatically disable the camera shutter sound
+   * @default true
+   */
+  shutterSound?: boolean;
 };
 
 // @needsAudit
@@ -394,7 +399,8 @@ export type CameraProps = ViewProps & {
   responsiveOrientationWhenOrientationLocked?: boolean;
   /**
    * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
-   * @default 4:3
+   * Note: Setting the aspect ratio here will change the scaleType of the camera preview from `FILL` to `FIT`.
+   * Also, when using 1:1, devices only support certain sizes. If you specify an unsupported size, the closest supported ratio will be used.
    * @platform android
    */
   ratio?: CameraRatio;

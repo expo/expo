@@ -192,10 +192,8 @@ class CameraViewModule : Module() {
       }
 
       Prop("ratio") { view, ratio: CameraRatio? ->
-        ratio?.let {
-          if (view.ratio != ratio) {
-            view.ratio = it
-          }
+        if (view.ratio != ratio) {
+          view.ratio = ratio
         }
       }
 

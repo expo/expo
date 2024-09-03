@@ -16,13 +16,20 @@ jest.mock(`../tar`, () => ({
   extractAsync: jest.fn(),
 }));
 
+const originalEnv = process.env;
+
+beforeAll(() => {
+  // Disable fetch caching for now, as it conflicts with `memfs.vol.reset`
+  process.env.EXPO_NO_CACHE = 'true';
+});
+
+afterAll(() => {
+  process.env = originalEnv;
+});
+
 describe(getExpoGoVersionEntryAsync, () => {
-  beforeEach(() => {
-    vol.fromJSON({ tmp: '' }, '/tmp');
-  });
-  afterEach(() => {
-    vol.reset();
-  });
+  beforeEach(() => vol.fromJSON({ tmp: '' }, '/tmp'));
+  afterAll(() => vol.reset());
 
   it(`returns the entry for a version`, async () => {
     const scope = nock(getExpoApiBaseUrl())

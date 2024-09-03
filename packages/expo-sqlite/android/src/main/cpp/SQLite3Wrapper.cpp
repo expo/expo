@@ -29,19 +29,19 @@ SQLite3Wrapper::executeSql(const std::string &sql,
                            jni::alias_ref<jni::JList<jni::JObject>> args,
                            bool readOnly) {
   auto resultRows = jni::JArrayList<jni::JObject>::create();
-  sqlite3_stmt *statement = nullptr;
+  exsqlite3_stmt *statement = nullptr;
   int rowsAffected = 0;
   sqlite3_int64 insertId = 0;
   jni::local_ref<jni::JString> error;
 
-  if (sqlite3_prepare_v2(db, sql.c_str(), -1, &statement, nullptr) !=
+  if (exsqlite3_prepare_v2(db, sql.c_str(), -1, &statement, nullptr) !=
       SQLITE_OK) {
     auto results = jni::JArrayList<jni::JObject>::create();
     results->add(convertSqlLiteErrorToString(db));
     return results;
   }
 
-  bool queryIsReadOnly = sqlite3_stmt_readonly(statement) > 0;
+  bool queryIsReadOnly = exsqlite3_stmt_readonly(statement) > 0;
   if (readOnly && !queryIsReadOnly) {
     auto results = jni::JArrayList<jni::JObject>::create();
     std::string error("could not prepare ");
@@ -63,13 +63,13 @@ SQLite3Wrapper::executeSql(const std::string &sql,
   bool hasMore = true;
 
   while (hasMore) {
-    switch (sqlite3_step(statement)) {
+    switch (exsqlite3_step(statement)) {
     case SQLITE_ROW: {
       if (!fetchedColumns) {
-        columnCount = sqlite3_column_count(statement);
+        columnCount = exsqlite3_column_count(statement);
 
         for (int i = 0; i < columnCount; ++i) {
-          const char *columnName = sqlite3_column_name(statement, i);
+          const char *columnName = exsqlite3_column_name(statement, i);
           columnNames->add(jni::make_jstring(columnName));
         }
         fetchedColumns = true;
@@ -78,7 +78,7 @@ SQLite3Wrapper::executeSql(const std::string &sql,
       auto entry = jni::JArrayList<jni::JObject>::create();
 
       for (int i = 0; i < columnCount; ++i) {
-        columnType = sqlite3_column_type(statement, i);
+        columnType = exsqlite3_column_type(statement, i);
         value = getSqlValue(columnType, statement, i);
         entry->add(value);
       }
@@ -97,13 +97,13 @@ SQLite3Wrapper::executeSql(const std::string &sql,
   }
 
   if (!queryIsReadOnly) {
-    rowsAffected = sqlite3_changes(db);
+    rowsAffected = exsqlite3_changes(db);
     if (rowsAffected > 0) {
-      insertId = sqlite3_last_insert_rowid(db);
+      insertId = exsqlite3_last_insert_rowid(db);
     }
   }
 
-  sqlite3_finalize(statement);
+  exsqlite3_finalize(statement);
 
   if (error) {
     auto results = jni::JArrayList<jni::JObject>::create();
@@ -121,11 +121,11 @@ SQLite3Wrapper::executeSql(const std::string &sql,
 }
 
 int SQLite3Wrapper::sqlite3_open(const std::string &dbPath) {
-  return ::sqlite3_open(dbPath.c_str(), &db);
+  return ::exsqlite3_open(dbPath.c_str(), &db);
 }
 
 int SQLite3Wrapper::sqlite3_close() {
-  int ret = ::sqlite3_close(db);
+  int ret = ::exsqlite3_close(db);
   db = nullptr;
   return ret;
 }
@@ -139,8 +139,8 @@ SQLite3Wrapper::initHybrid(jni::alias_ref<jhybridobject> jThis) {
 // static
 jni::local_ref<jni::JString>
 SQLite3Wrapper::convertSqlLiteErrorToString(sqlite3 *db) {
-  int code = sqlite3_errcode(db);
-  const char *message = sqlite3_errmsg(db);
+  int code = exsqlite3_errcode(db);
+  const char *message = exsqlite3_errmsg(db);
   std::string result("Error code ");
   result += code;
   result += ": ";
@@ -149,7 +149,7 @@ SQLite3Wrapper::convertSqlLiteErrorToString(sqlite3 *db) {
 }
 
 // static
-void SQLite3Wrapper::bindStatement(sqlite3_stmt *statement,
+void SQLite3Wrapper::bindStatement(exsqlite3_stmt *statement,
                                    jni::alias_ref<jni::JObject> arg,
                                    int index) {
   static const auto integerClass = jni::JInteger::javaClassStatic();
@@ -158,15 +158,15 @@ void SQLite3Wrapper::bindStatement(sqlite3_stmt *statement,
   static const auto stringClass = jni::JString::javaClassStatic();
 
   if (arg == nullptr) {
-    sqlite3_bind_null(statement, index);
+    exsqlite3_bind_null(statement, index);
   } else if (arg->isInstanceOf(integerClass)) {
-    sqlite3_bind_int(statement, index,
+    exsqlite3_bind_int(statement, index,
                      jni::static_ref_cast<jni::JInteger>(arg)->value());
   } else if (arg->isInstanceOf(longClass)) {
-    sqlite3_bind_int64(statement, index,
+    exsqlite3_bind_int64(statement, index,
                        jni::static_ref_cast<jni::JLong>(arg)->value());
   } else if (arg->isInstanceOf(doubleClass)) {
-    sqlite3_bind_double(statement, index,
+    exsqlite3_bind_double(statement, index,
                         jni::static_ref_cast<jni::JDouble>(arg)->value());
   } else {
     std::string stringArg;
@@ -175,32 +175,32 @@ void SQLite3Wrapper::bindStatement(sqlite3_stmt *statement,
     } else {
       stringArg = arg->toString();
     }
-    sqlite3_bind_text(statement, index, stringArg.c_str(), stringArg.length(),
+    exsqlite3_bind_text(statement, index, stringArg.c_str(), stringArg.length(),
                       SQLITE_TRANSIENT);
   }
 }
 
 // static
 jni::local_ref<jni::JObject>
-SQLite3Wrapper::getSqlValue(int columnType, sqlite3_stmt *statement,
+SQLite3Wrapper::getSqlValue(int columnType, exsqlite3_stmt *statement,
                             int index) {
   switch (columnType) {
   case SQLITE_INTEGER: {
-    return jni::JLong::valueOf(sqlite3_column_int64(statement, index));
+    return jni::JLong::valueOf(exsqlite3_column_int64(statement, index));
   }
   case SQLITE_FLOAT: {
-    return jni::JDouble::valueOf(sqlite3_column_double(statement, index));
+    return jni::JDouble::valueOf(exsqlite3_column_double(statement, index));
   }
   case SQLITE_BLOB: {
     JNIEnv *env = jni::Environment::current();
     return jni::adopt_local(env->NewString(
-        reinterpret_cast<const jchar *>(sqlite3_column_blob(statement, index)),
-        static_cast<size_t>(sqlite3_column_bytes(statement, index))));
+        reinterpret_cast<const jchar *>(exsqlite3_column_blob(statement, index)),
+        static_cast<size_t>(exsqlite3_column_bytes(statement, index))));
   }
   case SQLITE_TEXT: {
     std::string text(
-        reinterpret_cast<const char *>(sqlite3_column_text(statement, index)),
-        static_cast<size_t>(sqlite3_column_bytes(statement, index)));
+        reinterpret_cast<const char *>(exsqlite3_column_text(statement, index)),
+        static_cast<size_t>(exsqlite3_column_bytes(statement, index)));
     return jni::make_jstring(text);
   }
   default: {

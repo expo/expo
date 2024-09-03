@@ -88,7 +88,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style'> {
   /** @hidden */
   style?: StyleProp<RNImageStyle>;
 
@@ -522,14 +522,16 @@ export declare class ImageRef extends SharedRef {
    */
   readonly height: number;
   /**
-   * If you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
-   * All other images are assumed to have a scale factor of **1.0**.
-   * If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+   * On iOS, if you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**. All other images are assumed to have a scale factor of **1.0**.
+   * On Android, it calculates the scale based on the bitmap density divided by screen density.
+   *
+   * On all platforms, if you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
    */
   readonly scale: number;
   /**
    * Media type (also known as MIME type) of the image, based on its format.
    * Returns `null` when the format is unknown or not supported.
+   * @platform ios
    */
   readonly mediaType: string | null;
   /**

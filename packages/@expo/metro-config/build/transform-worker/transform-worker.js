@@ -56,6 +56,15 @@ function getStringArray(value) {
     throw new Error('Expected an array of strings for the `clientBoundaries` option.');
 }
 async function transform(config, projectRoot, filename, data, options) {
+    const reactServer = options.customTransformOptions?.environment === 'react-server';
+    if (typeof options.customTransformOptions?.dom === 'string' &&
+        filename.match(/expo\/dom\/entry\.js/)) {
+        // TODO: Find some method to do this without invalidating the cache between different DOM components.
+        // Inject source for DOM component entry.
+        const relativeDomComponentEntry = JSON.stringify(decodeURI(options.customTransformOptions.dom));
+        const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
+        return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
+    }
     if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
@@ -134,6 +143,7 @@ async function transform(config, projectRoot, filename, data, options) {
             filename,
             src: code,
             options: {
+                reactServer,
                 projectRoot,
                 dev: options.dev,
                 minify: options.minify,
@@ -179,7 +189,9 @@ async function transform(config, projectRoot, filename, data, options) {
     // });
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
-    const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename })) : Buffer.from(''), options);
+    const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev
+        ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename, reactServer }))
+        : Buffer.from(''), options);
     const cssCode = cssResults.code.toString();
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later

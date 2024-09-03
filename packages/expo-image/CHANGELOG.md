@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30871](https://github.com/expo/expo/pull/30871) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [Android] Added `Image.loadAsync` API. ([#26824](https://github.com/expo/expo/pull/26824) by [@aleqsio](https://github.com/aleqsio))
 - Add basic React Server Component support. ([#29869](https://github.com/expo/expo/pull/29869) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Added `Image.loadAsync` API. ([#25079](https://github.com/expo/expo/pull/25079) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added support for rendering shared image refs. ([#30661](https://github.com/expo/expo/pull/30661) by [@tsapeta](https://github.com/tsapeta))
@@ -15,10 +18,13 @@
 - Fix props not being passed to parent container. ([#29416](https://github.com/expo/expo/pull/29416) by [@aleqsio](https://github.com/aleqsio))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30469](https://github.com/expo/expo/pull/30469) by [@byCedric](https://github.com/byCedric))
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+- [Web] Fix type incompatibility between style prop and `@types/react-native-web` ([#31150](https://github.com/expo/expo/pull/31150) by [@adamhari](https://github.com/adamhari))
+
 
 ### 💡 Others
 
 - Use the `src` folder as the Metro target. ([#30665](https://github.com/expo/expo/pull/30665) by [@tsapeta](https://github.com/tsapeta))
+- Provide image's memory footprint for better garbage collection. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 

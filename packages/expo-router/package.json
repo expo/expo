@@ -11,6 +11,7 @@
     "entry.js"
   ],
   "files": [
+    "link",
     "assets",
     "build",
     "ios",
@@ -58,6 +59,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -71,7 +73,6 @@
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
-    "expo-status-bar": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"

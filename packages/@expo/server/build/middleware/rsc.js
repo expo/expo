@@ -56,6 +56,9 @@ function getRscMiddleware(options) {
         let encodedInput = url.pathname.replace(
         // TODO: baseUrl support
         rscPathPrefix, '');
+        // First segment should be the target platform.
+        // This is used for aligning with production exports which are statically exported to a single location at build-time.
+        encodedInput = encodedInput.replace(new RegExp(`^${platform}/`), '');
         try {
             encodedInput = (0, exports.decodeInput)(encodedInput);
         }
@@ -77,6 +80,8 @@ function getRscMiddleware(options) {
                 method,
                 body: req.body,
                 contentType: req.headers.get('Content-Type') ?? '',
+                decodedBody: req.headers.get('x-expo-params'),
+                onError: options.onError,
             };
             const readable = await options.renderRsc(args);
             return new Response(readable, {

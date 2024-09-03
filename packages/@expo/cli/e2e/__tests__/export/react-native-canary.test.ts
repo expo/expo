@@ -26,7 +26,7 @@ describe('exports with react native canary', () => {
           env: {
             NODE_ENV: 'production',
             EXPO_USE_STATIC: 'static',
-            EXPO_E2E_RSC: '1',
+            E2E_CANARY_ENABLED: '1',
             E2E_ROUTER_JS_ENGINE: 'hermes',
             E2E_ROUTER_SRC: 'react-native-canary',
             E2E_ROUTER_ASYNC: 'development',

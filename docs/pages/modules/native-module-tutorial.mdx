@@ -308,13 +308,13 @@ export function setTheme(theme: string): void {
 
 ```tsx example/App.tsx
 import * as Settings from 'expo-settings';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
 export default function App() {
-  const [theme, setTheme] = React.useState<string>(Settings.getTheme());
+  const [theme, setTheme] = useState<string>(Settings.getTheme());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = Settings.addThemeListener(({ theme: newTheme }) => {
       setTheme(newTheme);
     });

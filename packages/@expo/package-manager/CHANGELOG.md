@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Update `npm-package-arg@^7` to `npm-package-arg@^11`. ([#30842](https://github.com/expo/expo/pull/30842) by [@kitten](https://github.com/kitten))
+- Simplify workspace root detection with `resolve-workspace-root`. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+
 ## 1.5.2 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

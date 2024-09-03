@@ -1,17 +1,19 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
+import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
-import semver from 'semver';
 import { URL } from 'url';
 
+import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
@@ -25,7 +27,6 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
@@ -36,22 +37,6 @@ import { getPlatformBundlers } from '../platformBundlers';
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
-
-function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
-  if (!exp.sdkVersion) {
-    return false;
-  }
-
-  if (exp.sdkVersion === 'UNVERSIONED') {
-    return true;
-  }
-
-  try {
-    return semver.gte(exp.sdkVersion, sdkVersion);
-  } catch {
-    throw new Error(`${exp.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
-  }
-}
 
 // Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
 class LogRespectingTerminal extends Terminal {
@@ -89,6 +74,13 @@ export async function loadMetroConfigAsync(
   }: { exp: ExpoConfig; isExporting: boolean; getMetroBundler: () => Bundler }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
+
+  // NOTE: Enable all the experimental Metro flags when RSC is enabled.
+  if (exp.experiments?.reactServerComponents) {
+    process.env.EXPO_USE_METRO_REQUIRE = '1';
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -109,27 +101,15 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  if (
-    // Requires SDK 50 for expo-assets hashAssetPlugin change.
-    !exp.sdkVersion ||
-    gteSdkVersion(exp, '50.0.0')
-  ) {
-    if (isExporting) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = `/assets?export_path=${
-        (exp.experiments?.baseUrl ?? '') + '/assets'
-      }`;
-    } else {
-      // @ts-expect-error: typed as readonly
-      config.transformer.publicPath = '/assets/?unstable_path=.';
-    }
+  if (isExporting) {
+    // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+    // @ts-expect-error: typed as readonly.
+    config.transformer.publicPath = `/assets?export_path=${
+      (exp.experiments?.baseUrl ?? '') + '/assets'
+    }`;
   } else {
-    if (isExporting && exp.experiments?.baseUrl) {
-      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-      // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.experiments?.baseUrl;
-    }
+    // @ts-expect-error: typed as readonly
+    config.transformer.publicPath = '/assets/?unstable_path=.';
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
@@ -159,7 +139,9 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled: exp.experiments?.reactCanary ?? false,
+    isReactCanaryEnabled:
+      (exp.experiments?.reactServerComponents || exp.experiments?.reactCanary) ?? false,
+    isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     getMetroBundler,
   });
 
@@ -271,6 +253,7 @@ export async function instantiateMetroAsync(
       websocketEndpoints: {
         ...websocketEndpoints,
         ...debugWebsocketEndpoints,
+        ...createDevToolsPluginWebsocketEndpoint(),
       },
       watch: !isExporting && isWatchEnabled(),
     },
@@ -278,6 +261,34 @@ export async function instantiateMetroAsync(
       mockServer: isExporting,
     }
   );
+
+  // Patch transform file to remove inconvenient customTransformOptions which are only used in single well-known files.
+  const originalTransformFile = metro
+    .getBundler()
+    .getBundler()
+    .transformFile.bind(metro.getBundler().getBundler());
+
+  metro.getBundler().getBundler().transformFile = async function (
+    filePath: string,
+    transformOptions: TransformOptions,
+    fileBuffer?: Buffer
+  ) {
+    return originalTransformFile(
+      filePath,
+      pruneCustomTransformOptions(
+        filePath,
+        // Clone the options so we don't mutate the original.
+        {
+          ...transformOptions,
+          customTransformOptions: {
+            __proto__: null,
+            ...transformOptions.customTransformOptions,
+          },
+        }
+      ),
+      fileBuffer
+    );
+  };
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
@@ -301,6 +312,51 @@ export async function instantiateMetroAsync(
     middleware,
     messageSocket: messageSocketEndpoint,
   };
+}
+
+// TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
+function pruneCustomTransformOptions(
+  filePath: string,
+  transformOptions: TransformOptions
+): TransformOptions {
+  if (
+    transformOptions.customTransformOptions?.dom &&
+    // The only generated file that needs the dom root is `expo/dom/entry.js`
+    !filePath.match(/expo\/dom\/entry\.js$/)
+  ) {
+    // Clear the dom root option if we aren't transforming the magic entry file, this ensures
+    // that cached artifacts from other DOM component bundles can be reused.
+    transformOptions.customTransformOptions.dom = 'true';
+  }
+
+  if (
+    transformOptions.customTransformOptions?.routerRoot &&
+    // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
+  ) {
+    // Set to the default value.
+    transformOptions.customTransformOptions.routerRoot = 'app';
+  }
+  if (
+    transformOptions.customTransformOptions?.asyncRoutes &&
+    // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
+    !(
+      filePath.match(/\/expo-router\/_ctx\.(ios|android|web)\.js$/) ||
+      filePath.match(/\/expo-router\/build\/import-mode\/index\.js$/)
+    )
+  ) {
+    delete transformOptions.customTransformOptions.asyncRoutes;
+  }
+
+  if (
+    transformOptions.customTransformOptions?.clientBoundaries &&
+    // The client boundaries are only used in `expo-router/virtual-client-boundaries.js` for production RSC exports.
+    !filePath.match(/\/expo-router\/virtual-client-boundaries\.js$/)
+  ) {
+    delete transformOptions.customTransformOptions.clientBoundaries;
+  }
+
+  return transformOptions;
 }
 
 /**

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add basic support for using DOM Components in React Server Components projects. ([#31080](https://github.com/expo/expo/pull/31080) by [@EvanBacon](https://github.com/EvanBacon))
+- Add initial version of DOM Components and expose `expoDomComponentReference` on metadata. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `hasCjsExports` metadata for tracking static exports. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `process.env.EXPO_SERVER` for detecting when the JS was bundled for a server or react server environment. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 - Update React Compiler version to latest. ([#29635](https://github.com/expo/expo/pull/29635) by [@reichhartd](https://github.com/reichhartd))
@@ -17,11 +19,16 @@
 
 ### 💡 Others
 
+- Remove web hydration flag injection. ([#31267](https://github.com/expo/expo/pull/31267) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `"use dom"` injection on web. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))
+- Inline the generated DOM component entry function for DOM bundles. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
+- Make `babel-plugin-react-compiler` an optional peer dependency. ([#30960](https://github.com/expo/expo/pull/30960) by [@EvanBacon](https://github.com/EvanBacon))
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed DOM components bundling issues for Android emulators and release builds. ([#30974](https://github.com/expo/expo/pull/30974) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
-- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 11.0.12 - 2024-07-03
 

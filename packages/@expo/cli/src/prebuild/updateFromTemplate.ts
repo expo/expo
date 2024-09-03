@@ -8,6 +8,7 @@ import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 import * as Log from '../log';
+import { createTempDirectoryPath } from '../utils/createTempPath';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -51,8 +52,7 @@ export async function updateFromTemplateAsync(
   } & DependenciesModificationResults
 > {
   if (!templateDirectory) {
-    const temporary = await import('tempy');
-    templateDirectory = temporary.directory();
+    templateDirectory = createTempDirectoryPath();
   }
 
   const { copiedPaths, templateChecksum } = await profile(cloneTemplateAndCopyToProjectAsync)({

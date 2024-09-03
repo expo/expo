@@ -45,7 +45,7 @@ public final class JavaScriptFunction<ReturnType>: AnyArgument, AnyJavaScriptVal
     let value = rawFunction.call(withArguments: arguments, thisObject: this, asConstructor: false)
     let dynamicType = ~ReturnType.self
 
-    guard let result = try dynamicType.cast(jsValue: value, appContext: appContext) as? ReturnType else {
+    guard let result = try appContext.converter.toNative(value, dynamicType) as? ReturnType else {
       throw UnexpectedReturnType(dynamicType.description)
     }
     return result

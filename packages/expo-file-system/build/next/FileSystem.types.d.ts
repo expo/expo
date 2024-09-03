@@ -38,6 +38,14 @@ export declare class Directory {
      * Creates a directory.
      */
     create(): void;
+    /**
+     * Copies a directory.
+     */
+    copy(destination: Directory | File): any;
+    /**
+     * Moves a directory.
+     */
+    move(destination: Directory | File): any;
 }
 /**
  * Represents a file on the file system.
@@ -81,5 +89,20 @@ export declare class File {
      * Creates a file.
      */
     create(): void;
+    /**
+     * Copies a file.
+     */
+    copy(destination: Directory | File): any;
+    /**
+     * Moves a directory.
+     */
+    move(destination: Directory | File): any;
+    /**
+     * Downloads a file from the network.
+     * @param url - The URL of the file to download.
+     * @param destination - The destination directory or file. If a destination is provided, the resulting filename will be determined based on the response headers.
+     * @returns A promise that resolves to the downloaded file.
+     */
+    static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
 }
 //# sourceMappingURL=FileSystem.types.d.ts.map

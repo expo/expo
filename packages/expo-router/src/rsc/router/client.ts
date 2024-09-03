@@ -13,16 +13,26 @@
 import { createElement, createContext, useState, Fragment } from 'react';
 import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 
-import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
+import { getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';
 import { Root, Slot, useRefetch } from './host.js';
 
-const parseRoute = (url: URL): RouteProps => {
-  const { pathname, searchParams } = url;
-  if (searchParams.has(PARAM_KEY_SKIP)) {
-    console.warn(`The search param "${PARAM_KEY_SKIP}" is reserved`);
+const normalizeRoutePath = (path: string) => {
+  for (const suffix of ['/', '/index.html']) {
+    if (path.endsWith(suffix)) {
+      return path.slice(0, -suffix.length) || '/';
+    }
   }
-  return { path: pathname, searchParams };
+  return path;
+};
+
+const parseRoute = (url: URL): RouteProps => {
+  const { pathname, searchParams, hash } = url;
+  return {
+    path: normalizeRoutePath(pathname),
+    query: searchParams.toString(),
+    hash,
+  };
 };
 
 const getHref = () =>
@@ -45,7 +55,7 @@ function InnerRouter() {
     const refetchRoute = () => {
       const loc = parseRoute(new URL(getHref()));
       const input = getInputString(loc.path);
-      refetch(input, loc.searchParams);
+      refetch(input, loc.query);
     };
     globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
     const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(
@@ -72,11 +82,13 @@ function InnerRouter() {
 export function Router() {
   const route = parseRoute(new URL(getHref()));
   const initialInput = getInputString(route.path);
-  const initialSearchParamsString = route.searchParams.toString();
-  const unstable_onFetchData = () => {};
+  const initialParams = JSON.stringify({ query: route.query });
+  const unstable_onFetchData = () => {
+    // TODO: add data fetching
+  };
   return createElement(
     Root as FunctionComponent<Omit<ComponentProps<typeof Root>, 'children'>>,
-    { initialInput, initialSearchParamsString, unstable_onFetchData },
+    { initialInput, initialParams, unstable_onFetchData },
     createElement(InnerRouter)
   );
 }

@@ -4,14 +4,20 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- The default value for `quality` option has been changed from `0.2` to `1.0` for better performance and to match the most common expectation. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+- [web] Return missing values from video selection. ([#30966](https://github.com/expo/expo/pull/30966) by [@entiendoNull](https://github.com/entiendoNull))
 
 ### 💡 Others
+
+- Refactored the code on iOS and made promise resolution faster. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.0.7 - 2024-07-03
 

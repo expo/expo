@@ -4,10 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- Change the `config` return type from `AppJSONConfig` to `ExpoConfig` in `modifyConfigAsync`. ([#30783](https://github.com/expo/expo/pull/30783) by [@byCedric](https://github.com/byCedric))
+
 ### 🎉 New features
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `resolveRelativeEntryPoint` that takes possible server root into account. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
+- Export `getMetroServerRoot` method for monorepo root detection with bun, npm, pnpm, and yarn. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+- Add support for static and extending dynamic config modifications. ([#30782](https://github.com/expo/expo/pull/30782) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
