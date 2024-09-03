@@ -845,11 +845,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Example
         </p>
         <span
-          class="[&_span]:!text-inherit emotion-74"
+          class="m-0 px-1 py-1.5 inline-flex !p-0 emotion-74"
           data-text="true"
         >
           <code
-            class="emotion-75"
+            class="!text-[85%] inline-flex w-full !p-1.5 emotion-75"
             data-text="true"
           >
             [
