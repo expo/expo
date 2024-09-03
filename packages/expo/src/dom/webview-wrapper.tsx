@@ -79,6 +79,12 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
       allowFileAccessFromFileURLs
       allowsAirPlayForMediaPlayback
       allowsFullscreenVideo
+      onContentProcessDidTerminate={() => {
+        webviewRef.current?.reload();
+      }}
+      onRenderProcessGone={() => {
+        webviewRef.current?.reload();
+      }}
       containerStyle={containerStyle}
       {...dom}
       injectedJavaScriptBeforeContentLoaded={[
