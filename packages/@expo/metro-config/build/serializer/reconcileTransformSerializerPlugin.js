@@ -91,7 +91,9 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
     }
     return [entryPoint, preModules, graph, options];
     async function transformDependencyOutput(value, outputItem) {
-        if (outputItem.type !== 'js/module' || value.path.endsWith('.json')) {
+        if (outputItem.type !== 'js/module' ||
+            value.path.endsWith('.json') ||
+            value.path.match(/\.(s?css|sass)$/)) {
             debug('Skipping post transform for non-js/module: ' + value.path);
             return outputItem;
         }

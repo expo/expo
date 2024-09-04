@@ -7169,7 +7169,7 @@ This uses both
         </span>
       </p>
       <pre
-        class="relative max-h-[unset] last:mb-0 emotion-77"
+        class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-77"
         data-text="true"
       >
         <code

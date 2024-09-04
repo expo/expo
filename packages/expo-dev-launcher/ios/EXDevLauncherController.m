@@ -41,7 +41,7 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
-#define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
+#define EX_DEV_LAUNCHER_PACKAGER_PATH @"packages/expo-dev-launcher/index.bundle?platform=ios&dev=true&minify=false"
 
 
 @interface EXDevLauncherController ()

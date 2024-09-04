@@ -78,5 +78,10 @@
     "getenv": "^1.0.0",
     "jest": "^29.3.1",
     "serve": "^11.3.0"
+  },
+  "codegenConfig": {
+    "name": "LocalModules",
+    "type": "all",
+    "jsSrcsDir": "./modules"
   }
 }
