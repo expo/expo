@@ -123,15 +123,16 @@ Once it is running on all platforms, the app should look like this:
 
 ## Edit the index screen
 
-Teh text displayed on the app's screen is defined in the **app/index.tsx** file. This file is the entry point of our app and is executed when the development server starts. It uses core React Native components such as `<Text>` and `<View>` to display a background and text.
+Teh text displayed on the app's screen is defined in the **app/index.tsx** file. This file is the entry point of our app and is executed when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display a background and text.
 
 Styles applied to these components are using JavaScript as compared to web, where CSS web. Most of the React Native components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/style).
 
-Let's modify this screen:
+Let's modify **app/index.tsx** screen:
 
-1. Open the **app/index.tsx** file in a code editor or IDE.
-2. Replace the default value of `<Text>` with "Home screen". Add a `color` property to the `<Text>` component with the value of `#fff`.
-3. Add a `backgroundColor` property to the `<View>` component with the value of `#25292e`.
+1. Import `StyleSheet` from the `react-native` and create a `styles` object to define our own styles.
+2. Add a `styles.container.backgroundColor` property to the `<View>` component with the value of `#25292e` to apply the background color.
+3. Replace the default value of `<Text>` with "Home screen".
+4. Add a `styles.text.color` property to the `<Text>` component with the value of `#fff` (white) to change the text color.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340
