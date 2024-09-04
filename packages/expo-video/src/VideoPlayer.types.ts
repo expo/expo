@@ -101,6 +101,10 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Boolean value determining whether the player should show the now playing notification.
+   *
+   * @default false
+   * @platrorm android
+   * @platform ios
    */
   showNowPlayingNotification: boolean;
 

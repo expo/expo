@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `showNowPlayingNotification` property of the player now defaults to `false`. ([#31261](https://github.com/expo/expo/pull/31261) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 - [Android][iOS] Add properties for more advanced live stream configuration. ([#30648](https://github.com/expo/expo/pull/30648) by [@justjoostnl](https://github.com/justjoostnl))

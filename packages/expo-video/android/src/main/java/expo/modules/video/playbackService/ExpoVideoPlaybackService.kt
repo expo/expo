@@ -20,6 +20,7 @@ import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
 import expo.modules.kotlin.AppContext
 import expo.modules.video.R
+import expo.modules.video.VideoPlayer
 
 class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 
@@ -51,7 +52,8 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     }
   }
 
-  fun registerPlayer(player: ExoPlayer) {
+  fun registerPlayer(videoPlayer: VideoPlayer) {
+    val player = videoPlayer.player
     if (mediaSessions[player] != null) {
       return
     }
@@ -64,6 +66,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
     mediaSessions[player] = mediaSession
     addSession(mediaSession)
+    setShowNotification(videoPlayer.showNowPlayingNotification, player)
   }
 
   fun unregisterPlayer(player: ExoPlayer) {
@@ -82,7 +85,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
-    if (session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, true)) {
+    if (session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false)) {
       createNotification(session)
     } else {
       (session.player as? ExoPlayer)?.let {
