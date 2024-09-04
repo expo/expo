@@ -52,7 +52,7 @@ object VideoManager {
     }
 
     if (videoPlayersToVideoViews[videoPlayer]?.size == 1) {
-      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer)
     }
   }
 
