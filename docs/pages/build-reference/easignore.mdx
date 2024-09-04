@@ -1,0 +1,48 @@
+---
+title: Ignoring files
+description: Learn how to configure EAS to ignore unnecessary files during the build process.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+A `.easignore` file specifies files that should be intentionally ignored by [EAS](https://expo.dev/eas) when uploading your project to the [EAS Build](/build/introduction) servers.
+
+> **info** Ignoring unnecessary files can help reduce your app's archive size and the time it takes to upload.
+
+By default, the [EAS CLI](/build/setup/#install-the-latest-eas-cli) uses the [`.gitignore`](https://git-scm.com/docs/gitignore) file (if present) to determine which files to ignore. However, if you create a `.easignore` file, the EAS CLI will prioritize it over the `.gitignore` file. When using a `.easignore` file, include all files from your `.gitignore` file in your `.easignore` file; from there, you can add additional files as needed.
+
+## Getting started with .easignore
+
+<Step label="1">
+
+Create a `.easignore` file in the root of your project.
+
+</Step>
+
+<Step label="2">
+
+Copy the content of the `.gitignore` file into the `.easignore` file and extend it with the files not neccessary for the build process.
+
+```bash .easignore
+# Copy everything from your .gitignore file here
+
+# Additional ignores specific to EAS builds
+
+# Ignore native folders (EAS handles these)
+/ios
+/android
+
+# Ignore test coverage reports
+/coverage
+```
+
+</Step>
+
+<Step label="3">
+
+Save the file and trigger a new build.
+
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+</Step>
