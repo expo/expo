@@ -1,4 +1,7 @@
 // @needsAudit
+/**
+ * @deprecated To set media types available in the image picker use an array of [`MediaType`](#mediatype) instead.
+ */
 export var MediaTypeOptions;
 (function (MediaTypeOptions) {
     /**
