@@ -334,12 +334,12 @@ export async function test({ describe, expect, it, ...t }) {
     describe('JS-only properties for path manipulation', () => {
       it('return parentDirectory for files', () => {
         const file = new File(testDirectory + 'image.jpeg');
-        expect(file.parentDirectory.path).toBe(new Directory(testDirectory).path);
+        expect(file.parentDirectory.uri).toBe(new Directory(testDirectory).uri);
       });
       it('return parentDirectory for directories', () => {
         const directory = new Directory(testDirectory + '/testdirectory/sampleDir');
-        expect(directory.parentDirectory.parentDirectory.path).toBe(
-          new Directory(testDirectory).path
+        expect(directory.parentDirectory.parentDirectory.uri).toBe(
+          new Directory(testDirectory).uri
         );
       });
       it('return extension for files', () => {
