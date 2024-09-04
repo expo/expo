@@ -1,5 +1,6 @@
 // A webview without babel to test faster.
 import React from 'react';
+import { AppState } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 import type { BridgeMessage, DOMProps, WebViewProps } from './dom.types';
@@ -83,7 +84,15 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
         webviewRef.current?.reload();
       }}
       onRenderProcessGone={() => {
-        webviewRef.current?.reload();
+        // Simulate iOS `onContentProcessDidTerminate` behavior to reload when the app is in foreground or back to foreground.
+        if (AppState.currentState === 'active') {
+          webviewRef.current?.reload();
+          return;
+        }
+        const subscription = AppState.addEventListener('focus', () => {
+          webviewRef.current?.reload();
+          subscription.remove();
+        });
       }}
       containerStyle={containerStyle}
       {...dom}
