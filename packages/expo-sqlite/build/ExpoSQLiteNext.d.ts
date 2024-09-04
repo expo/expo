@@ -2,6 +2,7 @@ import type { SQLiteOpenOptions } from './NativeDatabase';
 import type { DatabaseChangeEvent } from './SQLiteDatabase';
 declare const _default: {
     NativeDatabase(databasePath: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array): void;
+    readonly defaultDatabaseDirectory: string | null;
     ensureDatabasePathExistsAsync(databasePath: string): Promise<void>;
     ensureDatabasePathExistsSync(databasePath: string): void;
     NativeStatement(): void;

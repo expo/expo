@@ -27,6 +27,13 @@ class SQLiteModuleNext : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLiteNext")
 
+    Constants {
+      val defaultDatabaseDirectory = context.filesDir.canonicalPath + File.separator + "SQLite"
+      return@Constants mapOf(
+        "defaultDatabaseDirectory" to defaultDatabaseDirectory
+      )
+    }
+
     Events("onDatabaseChange")
 
     OnStartObserving {

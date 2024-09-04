@@ -2,6 +2,9 @@ export default {
     NativeDatabase(databasePath, options, serializedData) {
         throw new Error('Unimplemented');
     },
+    get defaultDatabaseDirectory() {
+        throw new Error('Unimplemented');
+    },
     async ensureDatabasePathExistsAsync(databasePath) {
         throw new Error('Unimplemented');
     },

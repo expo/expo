@@ -5,8 +5,8 @@ import ExpoSQLite from './ExpoSQLiteNext';
 import type { SQLiteOpenOptions } from './NativeDatabase';
 import {
   createDatabasePath,
-  defaultDatabaseDirectory,
   openDatabaseAsync,
+  resolveDbDirectory,
   type SQLiteDatabase,
 } from './SQLiteDatabase';
 
@@ -31,7 +31,7 @@ export interface SQLiteProviderProps {
 
   /**
    * The directory where the database file is located.
-   * @default FileSystem.documentDirectory/SQLite
+   * @default defaultDatabaseDirectory
    */
   directory?: string;
 
@@ -315,7 +315,7 @@ export async function importDatabaseFromAssetAsync(
   assetSource: SQLiteProviderAssetSource,
   directory?: string
 ) {
-  const resolvedDirectory = directory ?? defaultDatabaseDirectory;
+  const resolvedDirectory = resolveDbDirectory(directory);
   const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
   if (!asset.localUri) {
     throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);

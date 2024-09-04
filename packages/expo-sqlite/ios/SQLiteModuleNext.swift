@@ -20,6 +20,14 @@ public final class SQLiteModuleNext: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLiteNext")
 
+    Constants {
+      let defaultDatabaseDirectory =
+        appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      return [
+        "defaultDatabaseDirectory": defaultDatabaseDirectory
+      ]
+    }
+
     Events("onDatabaseChange")
 
     OnStartObserving {

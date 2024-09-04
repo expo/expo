@@ -222,7 +222,13 @@ export declare class SQLiteDatabase {
 /**
  * The default directory for SQLite databases.
  */
-export declare const defaultDatabaseDirectory: string;
+export declare const defaultDatabaseDirectory: string | null;
+/**
+ * Resolves the database directory from the given directory or the default directory.
+ *
+ * @hidden
+ */
+export declare function resolveDbDirectory(directory: string | undefined): string;
 /**
  * Creates a normalized database path by combining the directory and database name.
  *

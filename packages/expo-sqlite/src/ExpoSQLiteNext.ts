@@ -10,6 +10,10 @@ export default {
     throw new Error('Unimplemented');
   },
 
+  get defaultDatabaseDirectory(): string | null {
+    throw new Error('Unimplemented');
+  },
+
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {
     throw new Error('Unimplemented');
   },
