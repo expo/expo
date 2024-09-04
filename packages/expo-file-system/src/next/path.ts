@@ -168,7 +168,7 @@ export function join(...args: string[]) {
 
   if (path.length === 0) return '.';
 
-  return normalize([path, '/'].join(''));
+  return normalize(path.join('/'));
 }
 export function relative(from: string, to: string) {
   if (from === to) return '';
