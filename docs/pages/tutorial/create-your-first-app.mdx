@@ -117,9 +117,21 @@ Once it is running on all platforms, the app should look like this:
   className="max-w-[720px]"
 />
 
-The text displayed on the app's screen above can be found in the **index.tsx** file which is inside the **app** directory. This file is the entry point of the our app and is executed when the development server starts.
+</Step>
 
-Let's modify the `<Text>` and add the background color of `#25292e` to `<View>`. We will also use `StyleSheet` to define the styles.
+<Step label="5">
+
+## Edit the index screen
+
+Teh text displayed on the app's screen is defined in the **app/index.tsx** file. This file is the entry point of our app and is executed when the development server starts. It uses core React Native components such as `<Text>` and `<View>` to display a background and text.
+
+Styles applied to these components are using JavaScript as compared to web, where CSS web. Most of the React Native components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/style).
+
+Let's modify this screen:
+
+1. Open the **app/index.tsx** file in a code editor or IDE.
+2. Replace the default value of `<Text>` with "Home screen". Add a `color` property to the `<Text>` component with the value of `#fff`.
+3. Add a `backgroundColor` property to the `<View>` component with the value of `#25292e`.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340
@@ -150,6 +162,8 @@ const styles = StyleSheet.create({
 });
 ```
 
+> React Native uses the same color format as the web. It supports hex triplets (this is what `#fff` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, `peru`, and `papayawhip`. For more information, see [Colors in React Native](https://reactnative.dev/docs/colors).
+
 This change will reflect on all platforms automatically:
 
 <ContentSpotlight
@@ -162,7 +176,7 @@ This change will reflect on all platforms automatically:
 
 ## Next step
 
-We have created a new Expo project and are ready to develop our StickerSmash app.
+We have created a new Expo project, used React Native core components, and are ready to develop our StickerSmash app.
 
 <BoxLink
   title="Add navigation"
