@@ -6,8 +6,11 @@
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 - The default value for `quality` option has been changed from `0.2` to `1.0` for better performance and to match the most common expectation. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
+- `ImagePicker.MediaTypeOptions` have been deprecated. Use a single MediaType or an array of MediaTypes instead. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
+
+- [iOS] Add support for picking live photos from the library. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

@@ -41,9 +41,11 @@ final public class WebBrowserModule: Module {
     }
     .runOnQueue(.main)
 
-    AsyncFunction("dismissBrowser") {
-      currentWebBrowserSession?.dismiss()
-      currentWebBrowserSession = nil
+    AsyncFunction("dismissBrowser") { (promise: Promise) in
+      currentWebBrowserSession?.dismiss { type in
+        self.currentWebBrowserSession = nil
+        promise.resolve(["type": type])
+      }
     }
     .runOnQueue(.main)
 
