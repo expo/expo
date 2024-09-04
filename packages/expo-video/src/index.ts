@@ -9,6 +9,7 @@ export {
   VideoPlayerStatus,
   VideoSource,
   PlayerError,
+  ProgressUpdate,
   VolumeEvent,
   VideoMetadata,
   DRMType,

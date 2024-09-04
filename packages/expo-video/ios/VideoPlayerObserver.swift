@@ -21,6 +21,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?)
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool)
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status)
+  func onProgressUpdate(player: AVPlayer, progressUpdate: ProgressUpdate)
 }
 
 // Default implementations for the delegate
@@ -33,6 +34,7 @@ extension VideoPlayerObserverDelegate {
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {}
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool) {}
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {}
+  func onProgressUpdate(player: AVPlayer, progressUpdate: ProgressUpdate) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -58,9 +60,13 @@ final class WeakPlayerObserverDelegate: Hashable {
 }
 
 class VideoPlayerObserver {
-  weak var player: AVPlayer?
+  private weak var owner: VideoPlayer?
+  var player: AVPlayer? {
+    owner?.pointer
+  }
   var delegates = Set<WeakPlayerObserverDelegate>()
   private var currentItem: VideoPlayerItem?
+  private var periodicTimeObserver: Any?
 
   private var isPlaying: Bool = false {
     didSet {
@@ -97,8 +103,8 @@ class VideoPlayerObserver {
   private var playerItemStatusObserver: NSKeyValueObservation?
   private var playbackLikelyToKeepUpObserver: NSKeyValueObservation?
 
-  init(player: AVPlayer) {
-    self.player = player
+  init(owner: VideoPlayer) {
+    self.owner = owner
     initializePlayerObservers()
   }
 
@@ -183,6 +189,33 @@ class VideoPlayerObserver {
     playbackBufferEmptyObserver?.invalidate()
     playerItemStatusObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
+  }
+
+  func startOrUpdateProgressEvents(forInterval interval: Double) {
+    let interval = CMTimeMake(value: Int64(interval * 1000), timescale: CMTimeScale(1000))
+
+    stopProgressEvents()
+    self.periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] _ in
+      guard let self, let player, let owner else {
+        return
+      }
+      let update = ProgressUpdate(
+        currentTime: player.currentTime().seconds,
+        currentLiveTimestamp: owner.currentLiveTimestamp,
+        currentOffsetFromLive: owner.currentOffsetFromLive
+      )
+
+      delegates.forEach { delegate in
+        delegate.value?.onProgressUpdate(player: player, progressUpdate: update)
+      }
+    }
+  }
+
+  func stopProgressEvents() {
+    if let periodicTimeObserver {
+      player?.removeTimeObserver(periodicTimeObserver)
+      self.periodicTimeObserver = nil
+    }
   }
 
   // MARK: - VideoPlayerObserverDelegate

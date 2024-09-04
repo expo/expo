@@ -6,6 +6,7 @@ import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
+import expo.modules.video.records.ProgressUpdate
 
 @OptIn(UnstableApi::class)
 interface VideoPlayerListener {
@@ -14,5 +15,6 @@ interface VideoPlayerListener {
   fun onVolumeChanged(player: VideoPlayer, newValue: VolumeEvent, oldVolume: VolumeEvent?) {}
   fun onSourceChanged(player: VideoPlayer, source: VideoSource?, oldSource: VideoSource?) {}
   fun onPlaybackRateChanged(player: VideoPlayer, rate: Float, oldRate: Float?) {}
+  fun onProgressUpdate(player: VideoPlayer, progressUpdate: ProgressUpdate) {}
   fun onPlayedToEnd(player: VideoPlayer) {}
 }

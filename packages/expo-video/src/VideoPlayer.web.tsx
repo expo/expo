@@ -57,6 +57,8 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
+  _progressUpdateLoop: number | null = null;
+  _progressUpdateInterval: number = 0;
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
@@ -86,7 +88,7 @@ export default class VideoPlayerWeb
   }
 
   get isLive(): boolean {
-    return [...this._mountedVideos][0].duration === Infinity;
+    return [...this._mountedVideos][0]?.duration === Infinity;
   }
 
   set volume(value: number) {
@@ -113,7 +115,7 @@ export default class VideoPlayerWeb
 
   get currentTime(): number {
     // All videos should be synchronized, so we return the position of the first video.
-    return [...this._mountedVideos][0].currentTime;
+    return [...this._mountedVideos][0]?.currentTime ?? 0;
   }
 
   set currentTime(value: number) {
@@ -124,7 +126,7 @@ export default class VideoPlayerWeb
 
   get duration(): number {
     // All videos should have the same duration, so we return the duration of the first video.
-    return [...this._mountedVideos][0].duration;
+    return [...this._mountedVideos][0]?.duration ?? 0;
   }
 
   get preservesPitch(): boolean {
@@ -136,6 +138,24 @@ export default class VideoPlayerWeb
       video.preservesPitch = value;
     });
     this._preservesPitch = value;
+  }
+
+  get progressUpdateInterval(): number {
+    return this._progressUpdateInterval;
+  }
+  set progressUpdateInterval(value: number) {
+    this._progressUpdateInterval = value;
+    if (this._progressUpdateLoop) {
+      clearInterval(this._progressUpdateLoop);
+    }
+    if (value > 0) {
+      // Emit the first event immediately like on other platforms
+      this.emit('progressUpdate', { currentTime: this.currentTime });
+
+      this._progressUpdateLoop = setInterval(() => {
+        this.emit('progressUpdate', { currentTime: this.currentTime });
+      }, value * 1000);
+    }
   }
 
   get status(): VideoPlayerStatus {

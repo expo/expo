@@ -71,6 +71,13 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     preservesPitch: boolean;
     /**
+     * Float value indicating the interval in seconds at which the player will emit the [`progressUpdate`](#videoplayerevents) event.
+     * When the value is equal to 0, the event will not be emitted.
+     *
+     * @default 0
+     */
+    progressUpdateInterval: number;
+    /**
      * Float value between `0` and `16.0` indicating the current playback speed of the player.
      * @default 1.0
      */
@@ -148,6 +155,10 @@ export type VideoPlayerEvents = {
      * Handler for an event emitted when the player plays to the end of the current source.
      */
     playToEnd(): void;
+    /**
+     * Handler for an event emitted in a given interval specified by the `progressUpdateInterval`.
+     */
+    progressUpdate(progressUpdate: ProgressUpdate): void;
     /**
      * Handler for an event emitted when the current media source of the player changes.
      */
@@ -265,5 +276,25 @@ export type DRMOptions = {
      * @platform ios
      */
     base64CertificateData?: string;
+};
+/**
+ * Data delivered with the [`progressUpdate`](#videoplayerevents) event, contains information about the current playback progress.
+ */
+export type ProgressUpdate = {
+    /**
+     * Float value indicating the current playback time in seconds. Same as the [`currentTime`](#currenttime) property.
+     */
+    currentTime: number;
+    /**
+     * The exact timestamp when the currently displayed video frame was sent from the server,
+     * based on the `EXT-X-PROGRAM-DATE-TIME` tag in the livestream metadata.
+     * Same as the [`currentLiveTimestamp`](#currentlivetimestamp) property.
+     */
+    currentLiveTimestamp?: number;
+    /**
+     * Float value indicating the latency of the live stream in seconds.
+     * Same as the [`currentOffsetFromLive`](#currentoffsetfromlive) property.
+     */
+    currentOffsetFromLive?: number;
 };
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

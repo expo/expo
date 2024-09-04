@@ -161,20 +161,11 @@ public final class VideoModule: Module {
       }
 
       Property("currentLiveTimestamp") { player -> Double? in
-        guard let currentDate = player.pointer.currentItem?.currentDate() else {
-          return nil
-        }
-        let timeIntervalSince = currentDate.timeIntervalSince1970
-        return Double(timeIntervalSince * 1000)
+        return player.currentLiveTimestamp
       }
 
       Property("currentOffsetFromLive") { player -> Double? in
-        guard let currentDate = player.pointer.currentItem?.currentDate() else {
-          return nil
-        }
-        let timeIntervalSince = currentDate.timeIntervalSince1970
-        let unixTime = Date().timeIntervalSince1970
-        return unixTime - timeIntervalSince
+        return player.currentOffsetFromLive
       }
 
       Property("targetOffsetFromLive") { player -> Double in
@@ -206,6 +197,13 @@ public final class VideoModule: Module {
       }
       .set { (player, preservesPitch: Bool) in
         player.preservesPitch = preservesPitch
+      }
+
+      Property("progressUpdateInterval") { player -> Double in
+        return player.progressUpdateInterval
+      }
+      .set {(player, progressUpdateInterval: Double) in
+        player.progressUpdateInterval = progressUpdateInterval
       }
 
       Property("showNowPlayingNotification") { player -> Bool in
