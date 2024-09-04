@@ -62,11 +62,11 @@ internal struct ImagePickerOptions: Record {
 
     // For legacy picker selecting only livePhotos is not allowed
     if mediaTypes.contains(.livePhotos) && !mediaTypes.contains(.images) {
-      mediaTypesArray.append(kUTTypeImage as String)
+      mediaTypesArray.append(UTType.image.identifier)
     }
 
     if mediaTypesArray.isEmpty {
-      return [kUTTypeImage as String]
+      return [UTType.image.identifier]
     }
     return mediaTypesArray
   }
@@ -178,11 +178,11 @@ internal enum MediaType: String, Enumerable {
   func toUTTypeString() -> String {
     switch self {
     case .images:
-      return kUTTypeImage as String
+      return UTType.image.identifier
     case .videos:
-      return kUTTypeMovie as String
+      return UTType.movie.identifier
     case .livePhotos:
-      return kUTTypeLivePhoto as String
+      return UTType.livePhoto.identifier
     }
   }
 
