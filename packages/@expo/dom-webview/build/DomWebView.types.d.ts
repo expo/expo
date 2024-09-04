@@ -1,5 +1,5 @@
 import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
-export interface DomWebViewProps extends ViewProps, UnsupportedWebViewProps {
+export interface DomWebViewProps extends ViewProps, IosScrollViewProps, UnsupportedWebViewProps {
     /**
      * Loads static html or a uri (with optional headers) in the WebView.
      */
@@ -18,11 +18,23 @@ export interface DomWebViewProps extends ViewProps, UnsupportedWebViewProps {
      */
     webviewDebuggingEnabled?: boolean;
     /**
-     * Boolean value that determines whether scrolling is enabled in the
-     * `WebView`. The default value is `true`.
+     * Function that is invoked when the webview calls `window.ReactNativeWebView.postMessage`.
+     * Setting this property will inject this global into your webview.
+     *
+     * `window.ReactNativeWebView.postMessage` accepts one argument, `data`, which will be
+     * available on the event object, `event.nativeEvent.data`. `data` must be a string.
+     */
+    onMessage?: (event: {
+        nativeEvent: MessageEventData;
+    }) => void;
+}
+interface IosScrollViewProps {
+    /**
+     * Boolean value that determines whether the web view bounces
+     * when it reaches the edge of the content. The default value is `true`.
      * @platform ios
      */
-    scrollEnabled?: boolean;
+    bounces?: boolean;
     /**
      * A floating-point number that determines how quickly the scroll view
      * decelerates after the user lifts their finger. You may also use the
@@ -36,15 +48,53 @@ export interface DomWebViewProps extends ViewProps, UnsupportedWebViewProps {
      */
     decelerationRate?: 'normal' | 'fast' | number;
     /**
-     * Function that is invoked when the webview calls `window.ReactNativeWebView.postMessage`.
-     * Setting this property will inject this global into your webview.
-     *
-     * `window.ReactNativeWebView.postMessage` accepts one argument, `data`, which will be
-     * available on the event object, `event.nativeEvent.data`. `data` must be a string.
+     * Boolean value that determines whether scrolling is enabled in the
+     * `WebView`. The default value is `true`.
+     * @platform ios
      */
-    onMessage?: (event: {
-        nativeEvent: MessageEventData;
-    }) => void;
+    scrollEnabled?: boolean;
+    /**
+     * If the value of this property is true, the scroll view stops on multiples
+     * of the scroll view’s bounds when the user scrolls.
+     * The default value is false.
+     * @platform ios
+     */
+    pagingEnabled?: boolean;
+    /**
+     * Controls whether to adjust the scroll indicator inset for web views that are
+     * placed behind a navigation bar, tab bar, or toolbar. The default value
+     * is `false`. (iOS 13+)
+     * @platform ios
+     */
+    automaticallyAdjustsScrollIndicatorInsets?: boolean;
+    /**
+     * The amount by which the web view content is inset from the edges of
+     * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
+     * @platform ios
+     */
+    contentInset?: ContentInsetProp;
+    /**
+     * This property specifies how the safe area insets are used to modify the
+     * content area of the scroll view. The default value of this property is
+     * "never". Available on iOS 11 and later.
+     */
+    contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never' | 'always';
+    /**
+     * A Boolean value that determines whether scrolling is disabled in a particular direction.
+     * The default value is `true`.
+     * @platform ios
+     */
+    directionalLockEnabled?: boolean;
+    /**
+     * Boolean value that determines whether a horizontal scroll indicator is
+     * shown in the `WebView`. The default value is `true`.
+     */
+    showsHorizontalScrollIndicator?: boolean;
+    /**
+     * Boolean value that determines whether a vertical scroll indicator is
+     * shown in the `WebView`. The default value is `true`.
+     */
+    showsVerticalScrollIndicator?: boolean;
 }
 /**
  * Unsupported RNC WebView props that to suppress TypeScript errors.
@@ -55,6 +105,7 @@ interface UnsupportedWebViewProps {
     allowFileAccessFromFileURLs?: boolean;
     allowsAirPlayForMediaPlayback?: boolean;
     allowsFullscreenVideo?: boolean;
+    automaticallyAdjustContentInsets?: boolean;
 }
 export type DomWebViewRef = {
     injectJavaScript: (script: string) => void;
@@ -64,6 +115,12 @@ export interface DomWebViewSource {
      * The URI to load in the `WebView`. Can be a local or remote file.
      */
     uri: string;
+}
+export interface ContentInsetProp {
+    top?: number;
+    left?: number;
+    bottom?: number;
+    right?: number;
 }
 interface BaseEventData {
     url: string;

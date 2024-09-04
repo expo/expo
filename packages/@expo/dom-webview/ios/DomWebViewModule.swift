@@ -32,8 +32,10 @@ public final class DomWebViewModule: Module {
         view.webviewDebuggingEnabled = enabled
       }
 
-      Prop("scrollEnabled") { (view: DomWebView, enabled: Bool) in
-        view.setScrollEnabled(enabled)
+      // MARK: - IosScrollViewProps
+
+      Prop("bounces") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.bounces = enabled
       }
 
       Prop("decelerationRate") { (view: DomWebView, decelerationRate: Either<String, Double>) in
@@ -51,6 +53,40 @@ public final class DomWebViewModule: Module {
           view.decelerationRate = newDecelerationRate
         }
       }
+
+      Prop("scrollEnabled") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.isScrollEnabled = enabled
+      }
+
+      Prop("pagingEnabled") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.isPagingEnabled = enabled
+      }
+
+      Prop("automaticallyAdjustsScrollIndicatorInsets") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = enabled
+      }
+
+      Prop("contentInset") { (view: DomWebView, inset: ContentInset) in
+        view.webView.scrollView.contentInset = inset.toEdgeInsets()
+      }
+
+      Prop("contentInsetAdjustmentBehavior") { (view: DomWebView, value: ContentInsetAdjustmentBehavior) in
+        view.webView.scrollView.contentInsetAdjustmentBehavior = value.toContentInsetAdjustmentBehavior()
+      }
+
+      Prop("directionalLockEnabled") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.isDirectionalLockEnabled = enabled
+      }
+
+      Prop("showsHorizontalScrollIndicator") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.showsHorizontalScrollIndicator = enabled
+      }
+
+      Prop("showsVerticalScrollIndicator") { (view: DomWebView, enabled: Bool) in
+        view.webView.scrollView.showsVerticalScrollIndicator = enabled
+      }
+
+      // MARK: - Imperative methods
 
       AsyncFunction("injectJavaScript") { (view: DomWebView, script: String) in
         view.injectJavaScript(script)

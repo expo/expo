@@ -5,7 +5,7 @@ import WebKit
 
 internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, WKScriptMessageHandler {
   // swiftlint:disable implicitly_unwrapped_optional
-  private var webView: WKWebView!
+  private(set) var webView: WKWebView!
   private(set) var id: WebViewId!
   // swiftlint:enable implicitly_unwrapped_optional
 
@@ -91,10 +91,6 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       injectedJSBeforeContentLoaded = nil
     }
     needsResetupScripts = true
-  }
-
-  func setScrollEnabled(_ enabled: Bool) {
-    webView.scrollView.isScrollEnabled = enabled
   }
 
   // MARK: - UIScrollViewDelegate implementations
