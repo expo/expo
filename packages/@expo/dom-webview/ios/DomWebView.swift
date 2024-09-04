@@ -74,6 +74,10 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     }
   }
 
+  func scrollTo(offset: CGPoint, animated: Bool) {
+    webView.scrollView.setContentOffset(offset, animated: animated)
+  }
+
   func injectJavaScript(_ script: String) {
     DispatchQueue.main.async { [weak self] in
       self?.webView.evaluateJavaScript(script)

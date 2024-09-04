@@ -88,6 +88,10 @@ public final class DomWebViewModule: Module {
 
       // MARK: - Imperative methods
 
+      AsyncFunction("scrollTo") { (view: DomWebView, param: ScrollToParam) in
+        view.scrollTo(offset: CGPoint(x: param.x, y: param.y), animated: param.animated)
+      }
+
       AsyncFunction("injectJavaScript") { (view: DomWebView, script: String) in
         view.injectJavaScript(script)
       }

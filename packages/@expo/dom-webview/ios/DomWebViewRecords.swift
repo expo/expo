@@ -29,3 +29,14 @@ internal struct ContentInset: Record {
     return inset
   }
 }
+
+internal struct ScrollToParam: Record {
+  @Field
+  var x: Double = 0
+
+  @Field
+  var y: Double = 0
+
+  @Field
+  var animated: Bool = true
+}

@@ -123,6 +123,25 @@ interface UnsupportedWebViewProps {
 }
 
 export type DomWebViewRef = {
+  /**
+   * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   * Syntax:
+   *
+   * scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   */
+  scrollTo({
+    x,
+    y,
+    animated,
+  }: {
+    x?: number | undefined;
+    y?: number | undefined;
+    animated?: boolean | undefined;
+  }): void;
+
+  /**
+   * Injects a JavaScript string into the `WebView` and executes it.
+   */
   injectJavaScript: (script: string) => void;
 };
 

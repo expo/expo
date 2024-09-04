@@ -18,6 +18,7 @@ const WebView = React.forwardRef<DomWebViewRef, DomWebViewProps>(
     React.useImperativeHandle(
       ref,
       () => ({
+        scrollTo: (params) => viewRef.current?.scrollTo(params),
         injectJavaScript: (script: string) => viewRef.current?.injectJavaScript(script),
       }),
       []
