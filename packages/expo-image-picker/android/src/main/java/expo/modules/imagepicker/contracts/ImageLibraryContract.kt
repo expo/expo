@@ -39,7 +39,7 @@ internal class ImageLibraryContract(
 
     val request = PickVisualMediaRequest.Builder()
       .setMediaType(
-        when (input.options.mediaTypes) {
+        when (input.options.nativeMediaTypes) {
           MediaTypes.VIDEOS -> {
             PickVisualMedia.VideoOnly
           }
@@ -115,7 +115,7 @@ internal class ImageLibraryContract(
     .setType("*/*")
     .putExtra(
       Intent.EXTRA_MIME_TYPES,
-      when (options.mediaTypes) {
+      when (options.nativeMediaTypes) {
         MediaTypes.IMAGES -> arrayOf("image/*")
         MediaTypes.VIDEOS -> arrayOf("video/*")
         else -> arrayOf("image/*", "video/*")

@@ -15,6 +15,9 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
+/**
+ * @deprecated To set media types available in the image picker use an array of [`MediaType`](#mediatype) instead.
+ */
 export declare enum MediaTypeOptions {
     /**
      * Images and videos.
@@ -29,6 +32,20 @@ export declare enum MediaTypeOptions {
      */
     Images = "Images"
 }
+/**
+ * Media types that can be picked by the image picker.
+ * - `'images'` - for images.
+ * - `'videos'` - for videos.
+ * - `'livePhotos'` - for live photos (iOS only).
+ *
+ * > When the `livePhotos` type is added to the media types array and a live photo is selected,
+ * > the resulting `ImagePickerAsset` will contain an unaltered image and the `pairedVideoAsset` field will contain a
+ * > video asset paired with the image. This option will be ignored when the `allowsEditing` option is enabled. Due
+ * > to platform limitations live photos are returned at original quality, regardless of the `quality` option.
+ *
+ * > When on Android or Web `livePhotos` type passed as a media type will be ignored.
+ */
+export type MediaType = 'images' | 'videos' | 'livePhotos';
 export declare enum VideoExportPreset {
     /**
      * Resolution: __Unchanged__ •
@@ -229,8 +246,12 @@ export type ImagePickerAsset = {
     height: number;
     /**
      * The type of the asset.
+     * - `'image'` - for images.
+     * - `'video'` - for videos.
+     * - `'livePhoto'` - for live photos. (iOS only)
+     * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (iOS only)
      */
-    type?: 'image' | 'video';
+    type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
     /**
      * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
      * or user gave limited permission to access the media library.
@@ -268,6 +289,12 @@ export type ImagePickerAsset = {
      * The MIME type of the selected asset or `null` if could not be determined.
      */
     mimeType?: string;
+    /**
+     * Contains information about the video paired with the image file. This property is only set when `livePhotos` media type was present in the `mediaTypes` array when launching the picker and a live photo was selected.
+     *
+     * @platform ios
+     */
+    pairedVideoAsset?: ImagePickerAsset | null;
 };
 export type ImagePickerErrorResult = {
     /**
@@ -358,9 +385,9 @@ export type ImagePickerOptions = {
     quality?: number;
     /**
      * Choose what type of media to pick.
-     * @default ImagePicker.MediaTypeOptions.Images
+     * @default 'images'
      */
-    mediaTypes?: MediaTypeOptions;
+    mediaTypes?: MediaType | MediaType[] | MediaTypeOptions;
     /**
      * Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS
      * tags in the camera case.
@@ -458,9 +485,9 @@ export type ImagePickerOptions = {
 export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
-     * @default ImagePicker.MediaTypeOptions.Images
+     * @default 'images'
      */
-    mediaTypes: MediaTypeOptions;
+    mediaTypes: MediaType | MediaType[] | MediaTypeOptions;
     capture?: boolean;
     /**
      * Whether or not to allow selecting multiple media files at once.
