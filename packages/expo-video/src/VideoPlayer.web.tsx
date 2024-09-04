@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 import type {
   PlayerError,
@@ -22,9 +23,16 @@ export function useVideoPlayer(
 }
 
 export function getSourceUri(source: VideoSource): string | null {
-  if (typeof source == 'string') {
+  if (typeof source === 'string') {
     return source;
   }
+  if (typeof source === 'number') {
+    return resolveAssetSource(source)?.uri ?? null;
+  }
+  if (typeof source?.assetId === 'number' && !source?.uri) {
+    return resolveAssetSource(source.assetId)?.uri ?? null;
+  }
+
   return source?.uri ?? null;
 }
 
