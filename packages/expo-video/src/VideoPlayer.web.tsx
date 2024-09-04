@@ -51,6 +51,9 @@ export default class VideoPlayerWeb
   _error: PlayerError | null = null;
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
+  currentLiveTimestamp: number | null = null; // Not supported on web. Dummy to match the interface.
+  currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
+  targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
