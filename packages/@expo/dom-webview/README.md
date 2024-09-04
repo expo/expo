@@ -1,6 +1,6 @@
 # @expo/dom-webview
 
-Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.
+The `@expo/dom-webview` module is a WebView specifically designed for DOM components. It creates a bridge between native code and the WebView, allowing you to import and use Expo modules within DOM components. While this WebView does not have full feature parity with `react-native-webview`, additional features may be added based on internal requests and evolving needs.
 
 # API documentation
 
@@ -18,10 +18,8 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install @expo/dom-webview
+npx expo install @expo/dom-webview
 ```
-
-
 
 ### Configure for iOS
 
@@ -29,4 +27,4 @@ Run `npx pod-install` after installing the npm package.
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
