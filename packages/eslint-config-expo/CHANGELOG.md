@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Update deprecated `@typescript-eslint/ban-types` rule to `@typescript-eslint/no-restricted-types` rule. ([#31328](https://github.com/expo/expo/pull/31328) by [@kimGnab](https://github.com/kimGnab))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
