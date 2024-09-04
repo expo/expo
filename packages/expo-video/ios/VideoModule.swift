@@ -129,8 +129,11 @@ public final class VideoModule: Module {
         player.isMuted = muted
       }
 
-      Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
+      Property("allowsExternalPlayback") { player -> Bool in
+        return player.pointer.allowsExternalPlayback
+      }
+      .set { (player, allowsExternalPlayback: Bool) in
+        player.pointer.allowsExternalPlayback = allowsExternalPlayback
       }
 
       Property("staysActiveInBackground") { player -> Bool in
@@ -148,7 +151,8 @@ public final class VideoModule: Module {
       }
 
       Property("currentTime") { player -> Double in
-        return player.pointer.currentTime().seconds
+        let currentTime = player.pointer.currentTime().seconds
+        return currentTime.isNaN ? 0 : currentTime
       }
       .set { (player, time: Double) in
         // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
@@ -158,7 +162,8 @@ public final class VideoModule: Module {
       }
 
       Property("duration") { player -> Double in
-        return player.pointer.currentItem?.duration.seconds ?? 0
+        let duration = player.pointer.currentItem?.duration.seconds ?? 0
+        return duration.isNaN ? 0 : duration
       }
 
       Property("playbackRate") { player -> Float in
