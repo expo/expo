@@ -10,6 +10,7 @@ import Platforms from './features/platforms.mdx';
 import Themes from './features/themes.mdx';
 
 import { HEADLINE } from '~/ui/components/Text';
+import { mergeClasses } from '@expo/styleguide';
 
 export function TemplateFeatures() {
   const [selected, setSelected] = useState('navigation');
@@ -19,8 +20,11 @@ export function TemplateFeatures() {
       <div className="bg-subtle p-3 flex pl-4 border-b border-default">
         <HEADLINE>Default project</HEADLINE>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-[250px_minmax(0,_1fr)]">
-        <div className="p-3 flex flex-col gap-1 md:border-r md:border-b-0 border-default border-b">
+      <div className="grid grid-cols-[250px_minmax(0,_1fr)] max-md-gutters:grid-cols-1">
+        <div className={mergeClasses(
+          "p-3 flex flex-col gap-1 border-r border-default",
+          "max-md-gutters:border-r-0 max-md-gutters:border-b"
+        )}>
           <Tab
             title="File-based routing"
             onClick={() => setSelected('navigation')}
