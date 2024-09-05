@@ -1,5 +1,6 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
+import { Directory } from 'expo-file-system/next';
 import * as SQLite from 'expo-sqlite';
 import path from 'path';
 import { Platform } from 'react-native';
@@ -917,9 +918,8 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
     if (Platform.OS === 'ios') {
       describe('iOS App Group', () => {
         beforeAll(async () => {
-          const sharedContainerRoot =
-            await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
-          const sharedContainerDir = sharedContainerRoot + 'SQLite';
+          const sharedContainerRoot = Directory.getSharedContainerUri('group.dev.expo.Payments');
+          const sharedContainerDir = sharedContainerRoot.path + 'SQLite';
           await FS.deleteAsync(sharedContainerDir, { idempotent: true });
           await FS.makeDirectoryAsync(sharedContainerDir, { intermediates: true });
           await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
@@ -927,9 +927,8 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         });
 
         it('should create and delete a database in a shared container', async () => {
-          const sharedContainerRoot =
-            await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
-          const dbDirectory = sharedContainerRoot + 'SQLite';
+          const sharedContainerRoot = Directory.getSharedContainerUri('group.dev.expo.Payments');
+          const dbDirectory = sharedContainerRoot.path + 'SQLite';
           const dbUri = dbDirectory + '/test.db';
 
           const db = await SQLite.openDatabaseAsync('test.db', {}, dbDirectory);
@@ -951,9 +950,8 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         });
 
         it('should support internal importDatabaseFromAssetAsync without using expo-file-system', async () => {
-          const sharedContainerRoot =
-            await FS.getSharedContainerUriAsync('group.dev.expo.Payments');
-          const dbDirectory = sharedContainerRoot + 'SQLite';
+          const sharedContainerRoot = Directory.getSharedContainerUri('group.dev.expo.Payments');
+          const dbDirectory = sharedContainerRoot.path + 'SQLite';
           await SQLite.importDatabaseFromAssetAsync(
             'test.db',
             { assetId: require('../assets/asset-db.db') },
