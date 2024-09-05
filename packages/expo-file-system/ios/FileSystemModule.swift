@@ -47,14 +47,6 @@ public final class FileSystemModule: Module {
       }
     }
 
-    AsyncFunction("getSharedContainerUriAsync") { (appGroup: String) -> String? in
-      let fileManager = FileManager.default
-      guard let directory = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
-        throw CannotGetSharedContainer(appGroup)
-      }
-      return directory.standardizedFileURL.path
-    }
-
     AsyncFunction("readAsStringAsync") { (url: URL, options: ReadingOptions) -> String in
       try ensurePathPermission(appContext, path: url.path, flag: .read)
 
