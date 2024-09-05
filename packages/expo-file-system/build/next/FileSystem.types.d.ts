@@ -47,12 +47,12 @@ export declare class Directory {
      */
     move(destination: Directory | File): any;
     /**
-     * Get URI to iOS shared container.
+     * Gets the shared container directory for the given app group.
      * @param appGroup Name of the app group.
      * @return `Directory` pointing to the shared container.
      * @platform ios
      */
-    static getSharedContainerUri(appGroup: string): Directory | null;
+    static getSharedContainer(appGroup: string): Directory | null;
 }
 /**
  * Represents a file on the file system.

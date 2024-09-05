@@ -918,7 +918,7 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
     if (Platform.OS === 'ios') {
       describe('iOS App Group', () => {
         beforeAll(async () => {
-          const sharedContainerRoot = Directory.getSharedContainerUri('group.dev.expo.Payments');
+          const sharedContainerRoot = Directory.getSharedContainer('group.dev.expo.Payments');
           const sharedContainerDir = sharedContainerRoot.path + 'SQLite';
           await FS.deleteAsync(sharedContainerDir, { idempotent: true });
           await FS.makeDirectoryAsync(sharedContainerDir, { intermediates: true });
@@ -927,7 +927,7 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         });
 
         it('should create and delete a database in a shared container', async () => {
-          const sharedContainerRoot = Directory.getSharedContainerUri('group.dev.expo.Payments');
+          const sharedContainerRoot = Directory.getSharedContainer('group.dev.expo.Payments');
           const dbDirectory = sharedContainerRoot.path + 'SQLite';
           const dbUri = dbDirectory + '/test.db';
 
@@ -950,7 +950,7 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         });
 
         it('should support internal importDatabaseFromAssetAsync without using expo-file-system', async () => {
-          const sharedContainerRoot = Directory.getSharedContainerUri('group.dev.expo.Payments');
+          const sharedContainerRoot = Directory.getSharedContainer('group.dev.expo.Payments');
           const dbDirectory = sharedContainerRoot.path + 'SQLite';
           await SQLite.importDatabaseFromAssetAsync(
             'test.db',

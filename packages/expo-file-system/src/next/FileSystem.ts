@@ -24,14 +24,12 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
   }
 }
 
-Directory.getSharedContainerUri = function getSharedContainerUri(
-  appGroup: string
-): Directory | null {
+Directory.getSharedContainer = function getSharedContainer(appGroup: string): Directory | null {
   if (Platform.OS === 'ios') {
-    if (!ExpoFileSystem.getSharedContainerUri) {
-      throw new UnavailabilityError('expo-file-system', 'getSharedContainerUri');
+    if (!ExpoFileSystem.getSharedContainer) {
+      throw new UnavailabilityError('expo-file-system', 'getSharedContainer');
     }
-    return new Directory(ExpoFileSystem.getSharedContainerUri(appGroup));
+    return new Directory(ExpoFileSystem.getSharedContainer(appGroup));
   } else {
     return null;
   }

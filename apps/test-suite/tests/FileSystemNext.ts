@@ -287,7 +287,7 @@ export async function test({ describe, expect, it, ...t }) {
     if (Platform.OS === 'ios') {
       describe('App Group', () => {
         const sharedContainerTestDir =
-          Directory.getSharedContainerUri('group.dev.expo.Payments').path + 'test/';
+          Directory.getSharedContainer('group.dev.expo.Payments').path + 'test/';
 
         t.beforeEach(async () => {
           await FS.makeDirectoryAsync(sharedContainerTestDir, { intermediates: true });
@@ -331,7 +331,7 @@ export async function test({ describe, expect, it, ...t }) {
         it('should throw an error when trying to get a shared container of inaccessible app group', async () => {
           let error = null;
           try {
-            Directory.getSharedContainerUri('group.dev.expo.wrong');
+            Directory.getSharedContainer('group.dev.expo.wrong');
           } catch (e) {
             error = e;
           }
