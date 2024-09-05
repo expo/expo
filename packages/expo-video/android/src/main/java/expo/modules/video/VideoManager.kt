@@ -15,6 +15,8 @@ object VideoManager {
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
+  private var previouslyPlayingViews: MutableList<VideoView>? = null
+
   private lateinit var audioFocusManager: AudioFocusManager
 
   fun onModuleCreated(appContext: AppContext) {
@@ -69,16 +71,24 @@ object VideoManager {
     return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
   }
 
-  fun onAppForegrounded() = Unit
+  fun onAppForegrounded() {
+    val previouslyPlayingViews = this.previouslyPlayingViews ?: return
+    for (videoView in previouslyPlayingViews) {
+      val player = videoView.videoPlayer?.player ?: continue
+      player.play()
+    }
+    this.previouslyPlayingViews = null
+  }
 
   fun onAppBackgrounded() {
+    val previouslyPlayingViews = mutableListOf<VideoView>()
     for (videoView in videoViews.values) {
-      if (videoView.videoPlayer?.staysActiveInBackground == false &&
-        !videoView.willEnterPiP &&
-        !videoView.isInFullscreen
-      ) {
-        videoView.videoPlayer?.player?.pause()
+      val player = videoView.videoPlayer?.player ?: continue
+      if (player.isPlaying) {
+        player.pause()
+        previouslyPlayingViews.add(videoView)
       }
     }
+    this.previouslyPlayingViews = previouslyPlayingViews
   }
 }

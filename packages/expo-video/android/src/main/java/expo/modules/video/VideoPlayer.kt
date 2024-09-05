@@ -36,10 +36,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLooper(context.mainLooper)
     .build()
 
+  var progressTracker: ProgressTracker? = null
+
   val serviceConnection = PlaybackServiceConnection(WeakReference(this))
 
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
+    addOrRemoveProgressTracker()
   }
 
   var uncommittedSource: VideoSource? = source
@@ -144,6 +147,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   override fun close() {
+    this.progressTracker?.remove()
+    this.progressTracker = null
+
     appContext?.reactContext?.unbindService(serviceConnection)
     serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
@@ -231,10 +237,19 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     listeners.removeAll { it.get() == videoPlayerListener }
   }
 
-  private fun sendEvent(event: PlayerEvent) {
+  fun sendEvent(event: PlayerEvent) {
     // Emits to the native listeners
     event.emit(this, listeners.mapNotNull { it.get() })
     // Emits to the JS side
     emit(event.name, *event.arguments)
+  }
+
+  private fun addOrRemoveProgressTracker() {
+    this.progressTracker?.remove()
+    if (this.playing) {
+      this.progressTracker = ProgressTracker(this)
+    } else {
+      this.progressTracker = null
+    }
   }
 }

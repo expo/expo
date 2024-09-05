@@ -6,5 +6,8 @@ internal enum PlayerStatus: String, Enumerable {
   case idle
   case loading
   case readyToPlay
+  case waitingToPlayAtSpecifiedRate
+  case unlikelyToKeepUp
+  case playbackBufferEmpty
   case error
 }

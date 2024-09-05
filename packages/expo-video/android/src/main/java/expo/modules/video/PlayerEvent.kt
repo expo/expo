@@ -41,6 +41,11 @@ sealed class PlayerEvent {
     override val name = "playToEnd"
   }
 
+  data class PlayerTimeRemainingChanged(val timeRemaining: Double): PlayerEvent() {
+    override val name = "timeRemainingChanged"
+    override val arguments = arrayOf(timeRemaining)
+  }
+
   fun emit(player: VideoPlayer, listeners: List<VideoPlayerListener>) {
     when (this) {
       is StatusChanged -> listeners.forEach { it.onStatusChanged(player, status, oldStatus, error) }
@@ -49,6 +54,7 @@ sealed class PlayerEvent {
       is SourceChanged -> listeners.forEach { it.onSourceChanged(player, source, oldSource) }
       is PlaybackRateChanged -> listeners.forEach { it.onPlaybackRateChanged(player, rate, oldRate) }
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
+      is PlayerTimeRemainingChanged -> listeners.forEach { it.onPlayerTimeRemainingChanged(player, timeRemaining) }
     }
   }
 }

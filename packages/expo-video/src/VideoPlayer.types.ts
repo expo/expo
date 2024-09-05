@@ -182,6 +182,10 @@ export type VideoPlayerEvents = {
    * Handler for an event emitted when the current media source of the player changes.
    */
   sourceChange(newSource: VideoSource, previousSource: VideoSource): void;
+  /**
+   * Handler for time remaining change events
+   */
+  timeRemainingChange(secondsRemaining: number): void;
 };
 
 /**
@@ -191,7 +195,12 @@ export type VideoPlayerEvents = {
  * - `readyToPlay`: The player has loaded enough data to start playing or to continue playback.
  * - `error`: The player has encountered an error while loading or playing the video.
  */
-export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
+export type VideoPlayerStatus =
+  | 'idle'
+  | 'loading'
+  | 'readyToPlay'
+  | 'waitingToPlayAtSpecifiedRate'
+  | 'error';
 
 export type VideoSource =
   | string

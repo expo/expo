@@ -184,6 +184,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
     safeEmit(event: "sourceChange", arguments: newVideoPlayerItem?.videoSource, oldVideoPlayerItem?.videoSource)
   }
+  
+  func onPlayerTimeRemainingChanged(player: AVPlayer, timeRemaining: Double) {
+    safeEmit(event: "timeRemainingChange", arguments: timeRemaining)
+  }
 
   func safeEmit<each A: AnyArgument>(event: String, arguments: repeat each A) {
     if self.appContext != nil {

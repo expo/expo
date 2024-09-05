@@ -11,6 +11,7 @@ internal fun PlayerView.applyRequiresLinearPlayback(requireLinearPlayback: Boole
   setShowPreviousButton(!requireLinearPlayback)
   setShowNextButton(!requireLinearPlayback)
   setTimeBarInteractive(requireLinearPlayback)
+  setShowSubtitleButton(true)
 }
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)

@@ -21,6 +21,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?)
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool)
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status)
+  func onPlayerTimeRemainingChanged(player: AVPlayer, timeRemaining: Double)
 }
 
 // Default implementations for the delegate
@@ -33,6 +34,7 @@ extension VideoPlayerObserverDelegate {
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {}
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool) {}
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {}
+  func onPlayerTimeRemainingChanged(player: AVPlayer, timeRemaining: Double) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -91,6 +93,7 @@ class VideoPlayerObserver {
   private var playerVolumeObserver: NSKeyValueObservation?
   private var playerCurrentItemObserver: NSKeyValueObservation?
   private var playerIsMutedObserver: NSKeyValueObservation?
+  private var playerPeriodicTimeObserver: Any?
 
   // Current player item observers
   private var playbackBufferEmptyObserver: NSKeyValueObservation?
@@ -152,6 +155,9 @@ class VideoPlayerObserver {
     playerVolumeObserver?.invalidate()
     playerIsMutedObserver?.invalidate()
     playerCurrentItemObserver?.invalidate()
+    if let playerPeriodicTimeObserver = self.playerPeriodicTimeObserver {
+      player?.removeTimeObserver(playerPeriodicTimeObserver)
+    }
   }
 
   private func initializeCurrentPlayerItemObservers(player: AVPlayer, playerItem: AVPlayerItem) {
@@ -265,23 +271,24 @@ class VideoPlayerObserver {
     if player.timeControlStatus != .waitingToPlayAtSpecifiedRate && player.status == .readyToPlay && currentItem?.isPlaybackBufferEmpty != true {
       status = .readyToPlay
     } else if player.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      status = .loading
+      status = .waitingToPlayAtSpecifiedRate
     }
 
     if isPlaying != (player.timeControlStatus == .playing) {
       isPlaying = player.timeControlStatus == .playing
+      self.addPeriodicTimeObserverIfNeeded()
     }
   }
 
   private func onIsBufferEmptyChanged(_ playerItem: AVPlayerItem, _ change: NSKeyValueObservedChange<Bool>) {
     if playerItem.isPlaybackBufferEmpty {
-      status = .loading
+      status = .playbackBufferEmpty
     }
   }
 
   private func onPlayerLikelyToKeepUpChanged(_ playerItem: AVPlayerItem, _ change: NSKeyValueObservedChange<Bool>) {
     if !playerItem.isPlaybackLikelyToKeepUp && playerItem.isPlaybackBufferEmpty {
-      status = .loading
+      status = .unlikelyToKeepUp
     } else if playerItem.isPlaybackLikelyToKeepUp {
       status = .readyToPlay
     }
@@ -307,6 +314,30 @@ class VideoPlayerObserver {
     if let newIsMuted = change.newValue, change.oldValue != change.newValue {
       delegates.forEach { delegate in
         delegate.value?.onIsMutedChanged(player: player, oldIsMuted: change.oldValue, newIsMuted: newIsMuted)
+      }
+    }
+  }
+  
+  private func onPlayerTimeRemainingChanged(_ player: AVPlayer, _ timeRemaining: Double) {
+    delegates.forEach { delegate in
+      delegate.value?.onPlayerTimeRemainingChanged(player: player, timeRemaining: timeRemaining)
+    }
+  }
+  
+  private func addPeriodicTimeObserverIfNeeded() {
+    guard self.playerPeriodicTimeObserver == nil, let player = self.player else {
+      return
+    }
+    
+    if isPlaying {
+      self.playerPeriodicTimeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(1.0, preferredTimescale: Int32(NSEC_PER_SEC)),
+                                                                       queue: nil) { event in
+        guard let duration = player.currentItem?.duration else {
+          return
+        }
+        
+        let timeRemaining = (duration.seconds - event.seconds).rounded()
+        self.onPlayerTimeRemainingChanged(player, timeRemaining)
       }
     }
   }
