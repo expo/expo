@@ -9,7 +9,6 @@ export function join(...paths: string[]): string {
   return nodePath.join(...paths);
 }
 
-// relative
 export function relative(from: string, to: string): string {
   // If the first path is a file URL, convert it to a path
   if (isFileUrl(from)) {
