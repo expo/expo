@@ -37,5 +37,19 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "files": [
+    "android",
+    "build",
+    "ios",
+    "plugin",
+    "src",
+    "app.plugin.js",
+    "babel.config.js",
+    "package.json",
+    "tsconfig.json",
+    "README.md",
+    "CHANGELOG.md",
+    "expo-module.config.json"
+  ]
 }
