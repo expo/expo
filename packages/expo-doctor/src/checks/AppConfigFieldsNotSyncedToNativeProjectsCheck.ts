@@ -42,6 +42,7 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
       ? 'EAS Build will not sync the following properties:'
       : `if you don't run prebuild in your build pipeline, the following properties will not be synced:`;
     let advice;
+    const ignoreFile: string = fs.existsSync('.easignore') ? '.easignore' : '.gitignore';
 
     // iterate over all fields in app.json and add those that will not be synced to unsyncedFields array
     for (const field of appJsonFields) {
@@ -64,7 +65,7 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
         `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Prebuild. When the android/ios folders are present, ${prebuildMessage} ${unsyncedFields.join(', ')}. \n`
       );
 
-      advice = `Add '/android' and '/ios' to your .gitignore file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
+      advice = `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
     }
 
     return {
