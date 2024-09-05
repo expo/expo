@@ -15,13 +15,13 @@ public class StoreReviewModule: Module {
           guard let currentScene = getForegroundActiveScene() else {
             throw MissingCurrentWindowSceneException()
           }
-          
+
           AppStore.requestReview(in: currentScene)
         } else if #available(iOS 14.0, *) {
           guard let currentScene = getForegroundActiveScene() else {
             throw MissingCurrentWindowSceneException()
           }
-          
+
           SKStoreReviewController.requestReview(in: currentScene)
         } else {
           SKStoreReviewController.requestReview()
@@ -29,7 +29,7 @@ public class StoreReviewModule: Module {
       }
     }
   }
-  
+
   private func getForegroundActiveScene() -> UIWindowScene? {
     return UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
   }
