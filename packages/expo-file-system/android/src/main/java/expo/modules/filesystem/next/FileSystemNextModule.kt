@@ -11,6 +11,7 @@ import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.net.URI
 
@@ -98,11 +99,17 @@ class FileSystemNextModule : Module() {
       }
 
       Property("md5") { file ->
-        file.md5
+        try {
+          file.md5
+        } catch (e: FileNotFoundException) {
+          null
+        }
       }
 
       Property("size") { file ->
-        file.size
+        return@Property try { file.size } catch (e: FileNotFoundException) {
+          null
+        }
       }
     }
 

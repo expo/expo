@@ -296,6 +296,18 @@ export async function test({ describe, expect, it, ...t }) {
         file.write('Hello world');
         expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
       });
+
+      it('returns null size and md5 for nonexistant files', async () => {
+        const file = new File(testDirectory + 'file2.txt');
+        expect(file.size).toBe(null);
+        expect(file.md5).toBe(null);
+      });
+
+      it('computes md5', async () => {
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+      });
     });
   });
 }

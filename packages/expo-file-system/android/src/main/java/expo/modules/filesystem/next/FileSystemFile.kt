@@ -4,6 +4,7 @@ import android.net.Uri
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
@@ -67,7 +68,11 @@ class FileSystemFile(path: File) : FileSystemPath(path) {
     return digest.toHexString()
   }
 
-  val size: Long get() {
-    return path.length()
+  val size: Long? get() {
+    return if(path.exists()) {
+      path.length()
+    } else {
+      null
+    }
   }
 }
