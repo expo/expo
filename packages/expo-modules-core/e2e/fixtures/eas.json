@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 2.7.1"
+  },
+  "build": {
+    "base": {
+      "node": "20.14.0",
+      "ios": {
+        "image": "latest"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "testing_debug": {
+      "extends": "base",
+      "config": "build-preview.yml",
+      "ios": {
+        "applicationArchivePath": "eas.json",
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      },
+      "distribution": "internal",
+      "buildArtifactPaths": ["logs/*.log"]
+    },
+    "production": {
+      "extends": "base"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

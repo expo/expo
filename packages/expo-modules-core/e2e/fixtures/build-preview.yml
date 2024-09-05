@@ -1,0 +1,14 @@
+build:
+  name: Build expo-modules-core for macOS
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Install pods
+        working_directory: ./macos
+        command: pod install
+    - run:
+        name: Build App
+        working_directory: ./
+        command: |
+          npx react-native run-macos --no-packager --mode Release
