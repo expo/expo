@@ -10,16 +10,28 @@ public class StoreReviewModule: Module {
     }
 
     AsyncFunction("requestReview") {
-      if #available(iOS 14, *) {
-        guard let currentScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else {
-          throw MissingCurrentWindowSceneException()
+      Task { @MainActor in
+        if #available(iOS 16.0, *) {
+          guard let currentScene = getForegroundActiveScene() else {
+            throw MissingCurrentWindowSceneException()
+          }
+          
+          AppStore.requestReview(in: currentScene)
+        } else if #available(iOS 14.0, *) {
+          guard let currentScene = getForegroundActiveScene() else {
+            throw MissingCurrentWindowSceneException()
+          }
+          
+          SKStoreReviewController.requestReview(in: currentScene)
+        } else {
+          SKStoreReviewController.requestReview()
         }
-
-        SKStoreReviewController.requestReview(in: currentScene)
-      } else {
-        SKStoreReviewController.requestReview()
       }
-    }.runOnQueue(DispatchQueue.main)
+    }
+  }
+  
+  private func getForegroundActiveScene() -> UIWindowScene? {
+    return UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
   }
 
   private func isRunningFromTestFlight() -> Bool {
