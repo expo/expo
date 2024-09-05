@@ -56,7 +56,7 @@ export declare class Directory {
   /**
    * Get URI to iOS shared container.
    * @param appGroup Name of the app group.
-   * @return Returns `Directory` pointing to the shared container.
+   * @return `Directory` pointing to the shared container.
    * @platform ios
    */
   static getSharedContainerUri(appGroup: string): Directory | null;
