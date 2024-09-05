@@ -10,21 +10,14 @@ public class StoreReviewModule: Module {
     }
 
     AsyncFunction("requestReview") {
+      guard let currentScene = getForegroundActiveScene() else {
+        throw MissingCurrentWindowSceneException()
+      }
       Task { @MainActor in
         if #available(iOS 16.0, *) {
-          guard let currentScene = getForegroundActiveScene() else {
-            throw MissingCurrentWindowSceneException()
-          }
-
           AppStore.requestReview(in: currentScene)
-        } else if #available(iOS 14.0, *) {
-          guard let currentScene = getForegroundActiveScene() else {
-            throw MissingCurrentWindowSceneException()
-          }
-
-          SKStoreReviewController.requestReview(in: currentScene)
         } else {
-          SKStoreReviewController.requestReview()
+          SKStoreReviewController.requestReview(in: currentScene)
         }
       }
     }
