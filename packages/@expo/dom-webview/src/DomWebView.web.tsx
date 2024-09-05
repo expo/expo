@@ -13,7 +13,9 @@ const WebView = React.forwardRef<object, DomWebViewProps>(
 
     return (
       <View style={webViewContainerStyle}>
-        <View {...props} ref={viewRef} style={webViewStyles} />
+        <View {...props} ref={viewRef} style={webViewStyles}>
+          <iframe src={props.source.uri} />
+        </View>
       </View>
     );
   }
