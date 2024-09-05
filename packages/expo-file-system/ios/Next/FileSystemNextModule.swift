@@ -39,14 +39,13 @@ public final class FileSystemNextModule: Module {
       }
       downloadTask.resume()
     }
-    
+
     Function("getSharedContainerUri") { (appGroup: String) in
       let fileManager = FileManager.default
       guard let directory = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
         throw CannotGetSharedContainer(appGroup)
       }
       return directory.standardizedFileURL.path
-
     }
 
     Class(FileSystemFile.self) {
