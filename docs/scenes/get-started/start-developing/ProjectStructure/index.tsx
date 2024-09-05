@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { useState } from 'react';
 
 import { Tab } from './Tab';
@@ -13,7 +14,6 @@ import Scripts from './files/scripts.mdx';
 import TsconfigJson from './files/tsconfig-json.mdx';
 
 import { HEADLINE } from '~/ui/components/Text';
-import { mergeClasses } from '@expo/styleguide';
 
 export function ProjectStructure() {
   const [selected, setSelected] = useState('app');
@@ -24,10 +24,11 @@ export function ProjectStructure() {
         <HEADLINE>Files</HEADLINE>
       </div>
       <div className="grid grid-cols-[250px_minmax(0,_1fr)] max-md-gutters:grid-cols-1">
-        <div className={mergeClasses(
-          "p-3 flex flex-col gap-1 border-r border-default",
-          "max-md-gutters:border-r-0 max-md-gutters:border-b"
-        )}>
+        <div
+          className={mergeClasses(
+            'p-3 flex flex-col gap-1 border-r border-default',
+            'max-md-gutters:border-r-0 max-md-gutters:border-b'
+          )}>
           <Tab
             title="app"
             onClick={() => setSelected('app')}
