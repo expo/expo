@@ -27,12 +27,19 @@ export async function isFileIgnoredAsync(filePath: string): Promise<boolean> {
   const easIgnorePath = path.join(rootPath, EASIGNORE_FILENAME);
   const gitIgnorePath = path.join(rootPath, GITIGNORE_FILENAME);
 
-  if (fs.existsSync(easIgnorePath)) {
-    return isFileIgnoredByRules(filePath, easIgnorePath, rootPath);
-  } else if (fs.existsSync(gitIgnorePath)) {
-    return isFileIgnoredByRules(filePath, gitIgnorePath, rootPath);
-  } else {
-    // If neither .easignore nor .gitignore exists, the file is not ignored
+  try {
+    if (fs.existsSync(easIgnorePath)) {
+      return isFileIgnoredByRules(filePath, easIgnorePath, rootPath);
+    } else if (fs.existsSync(gitIgnorePath)) {
+      await spawnAsync('git', ['check-ignore', '-q', filePath], {
+        cwd: path.normalize(await getRootPathAsync()),
+      });
+      return true;
+    } else {
+      // If neither .easignore nor .gitignore exists, the file is not ignored
+      return false;
+    }
+  } catch {
     return false;
   }
 }
