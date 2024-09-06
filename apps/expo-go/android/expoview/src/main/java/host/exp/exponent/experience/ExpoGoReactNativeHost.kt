@@ -14,16 +14,15 @@ import versioned.host.exp.exponent.ExponentPackage
 
 class ExpoGoReactNativeHost(
   application: Application,
-  private val exponentManifest: ExponentManifest,
   private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties,
   private val localBundlePath: String?
 ) : DefaultReactNativeHost(application) {
   override fun getUseDeveloperSupport(): Boolean {
-    return exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+    return true
   }
 
   override fun getJSBundleFile(): String? {
-    return localBundlePath
+    return instanceManagerBuilderProperties.jsBundlePath
   }
 
   override val isHermesEnabled = true
@@ -65,7 +64,7 @@ class KernelReactNativeHost(
   val devSupportEnabled
     get() =
       !KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
 
   override fun getUseDeveloperSupport(): Boolean {
     return devSupportEnabled

@@ -28,6 +28,7 @@ import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.ExpoReactHostFactory
 import expo.modules.ReactNativeHostWrapper
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
@@ -122,20 +123,6 @@ class Kernel : KernelInterface() {
 
   private fun experienceActivityTaskForTaskId(taskId: Int): ExperienceActivityTask? {
     return manifestUrlToExperienceActivityTask.values.find { it.taskId == taskId }
-  }
-
-  fun createDevMenuHost(): ReactHost {
-    val host = KernelReactNativeHost(
-      applicationContext,
-      exponentManifest,
-      KernelData(
-        kernelInitialURL,
-        null,
-        kernelMainModuleName
-      )
-    )
-    val wrapper = ReactNativeHostWrapper(applicationContext, host)
-    return ReactHostFactory.createFromReactNativeHost(context, wrapper)
   }
 
   // Misc
@@ -258,8 +245,7 @@ class Kernel : KernelInterface() {
             )
           }
           val wrapper = ReactNativeHostWrapper(applicationContext, host)
-          reactHost =
-            ReactHostFactory.createFromReactNativeHost(context, wrapper)
+          reactHost = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, wrapper)
 
           reactNativeHost = host
           reactHost?.onHostResume(activityContext)

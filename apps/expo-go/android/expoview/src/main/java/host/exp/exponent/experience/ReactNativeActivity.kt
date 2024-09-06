@@ -379,7 +379,6 @@ abstract class ReactNativeActivity :
 
     val host = ExpoGoReactNativeHost(
       application,
-      exponentManifest,
       instanceManagerBuilderProperties,
       jsBundlePath
     )

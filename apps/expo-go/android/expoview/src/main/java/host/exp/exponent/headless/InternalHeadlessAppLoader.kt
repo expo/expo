@@ -236,7 +236,6 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
     val host = ExpoGoReactNativeHost(
       context,
-      manifest as ExponentManifest,
       instanceManagerBuilderProperties,
       jsBundlePath
     )
