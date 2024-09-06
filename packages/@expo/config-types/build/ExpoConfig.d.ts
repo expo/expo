@@ -243,10 +243,6 @@ export interface ExpoConfig {
          */
         supportsTVOnly?: boolean;
         /**
-         * If true, the window spans the entire display size by drawing behind transparent system bars.
-         */
-        edgeToEdge?: boolean;
-        /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
         tsconfigPaths?: boolean;
