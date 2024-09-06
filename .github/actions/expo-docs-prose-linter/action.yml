@@ -1,0 +1,12 @@
+name: 'Prose Linter'
+description: 'Lint Docs website content using Vale'
+
+runs:
+  steps:
+    - uses: actions/checkout@v4
+    - uses: errata-ai/vale-action@reviewdog
+      with:
+        reporter: github-pr-check
+        files: '["docs/pages]"'
+        vale_flags: '--config=./docs/vale.ini'
+        fail_on_error: true

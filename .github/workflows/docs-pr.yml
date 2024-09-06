@@ -52,7 +52,8 @@ jobs:
           NODE_ENV: production
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
-        run: yarn lint-prose
+        uses: ./.github/actions/expo-docs-prose-linter
+        timeout-minutes: 3
       - name: 🏗️ Build Docs website
         run: yarn export-preview
         timeout-minutes: 20
