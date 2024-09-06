@@ -58,6 +58,10 @@ ext.applyKotlinExpoModulesCorePlugin = {
 }
 
 ext.useExpoPublishing = {
+  if (!project.plugins.hasPlugin('maven-publish')) {
+    apply plugin: 'maven-publish'
+  }
+  
   afterEvaluate {
     publishing {
       publications {
