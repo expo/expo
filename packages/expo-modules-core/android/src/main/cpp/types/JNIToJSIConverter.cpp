@@ -47,7 +47,7 @@ jsi::Value convert(
   const jni::local_ref<jobject> &value
 ) {
   if (value == nullptr) {
-    return jsi::Value::undefined();
+    return jsi::Value::null();
   }
   auto unpackedValue = value.get();
   auto cache = JavaReferencesCache::instance();
