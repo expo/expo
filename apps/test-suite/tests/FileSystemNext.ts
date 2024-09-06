@@ -309,5 +309,13 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
       });
     });
+
+    describe('Returns base64', () => {
+      it('gets base64 of a file', async () => {
+        const src = new File(testDirectory + 'file.txt');
+        src.write('Hello world');
+        expect(src.base64()).toBe('SGVsbG8gd29ybGQ=');
+      });
+    });
   });
 }

@@ -83,6 +83,12 @@ export declare class File {
   text(): string;
 
   /**
+   * Retrieves content of the file as base64.
+   * @returns The contents of the file as a base64 string.
+   */
+  base64(): string;
+
+  /**
    * Writes content to the file.
    * @param content - The content to write into the file.
    */

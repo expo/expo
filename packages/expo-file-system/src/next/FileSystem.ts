@@ -15,8 +15,8 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
 };
 
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(path: Path) {
-    super(path);
+  constructor(uri: URI) {
+    super(uri);
     this.validatePath();
   }
 }

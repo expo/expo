@@ -1,6 +1,7 @@
 package expo.modules.filesystem.next
 
 import android.net.Uri
+import android.util.Base64
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
@@ -57,7 +58,12 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
 
   fun text(): String {
     validateType()
-    return path.readText()
+    return file.readText()
+  }
+
+  fun base64(): String {
+    validateType()
+    return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
   }
 
   @OptIn(ExperimentalStdlibApi::class)
