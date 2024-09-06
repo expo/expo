@@ -59,13 +59,13 @@ Now that we've broken down the UI into smaller chunks, we're ready to start codi
 
 We will use `expo-image` library to display the image in the app. This library provides a cross-platform `<Image>` component to load and render an image.
 
-Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `expo-image` library:
+Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install `expo-image` library:
 
 <Terminal cmd={['$ npx expo install expo-image']} />
 
 The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
 
-The `Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
+`Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
 
 <ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
@@ -73,10 +73,10 @@ The `Image` component takes the source of an image as its value. The source can 
   className="max-w-[250px]"
 />
 
-To use the `Image` component, in **app/index.tsx** file:
+To use `Image` component in **app/index.tsx** file:
 
-1. Import `Image` from the `expo-image` library.
-2. Create a `PlaceholderImage` variable to use **./assets/images/background-image.png** file as the `source` prop on the `<Image>` component.
+1. Import `Image` from `expo-image` library.
+2. Create a `PlaceholderImage` variable to use **./assets/images/background-image.png** file as the `source` prop on `<Image>` component.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=380
@@ -138,7 +138,6 @@ import { Image } from "expo-image";
 
 type Props = {
   imgSource: string;
-  selectedImage?: string;
 };
 
 export default function ImageViewer({ imgSource }: Props) {
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
 
 <Collapsible summary={<>What is the <CODE>@</CODE> in import statement?</>}>
 
-The `@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optional) that allows importing custom components and other modules instead of using relative paths. It is automatically configured by Expo CLI in **tsconfig.json**.
+`@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optional) that allows importing custom components and other modules instead of using relative paths. It is automatically configured by Expo CLI in **tsconfig.json**.
 
 </Collapsible>
 
@@ -251,7 +250,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-In the app, an alert will be displayed when the user taps any of the buttons on the screen. It happens because the `<Pressable>` calls an `alert()` on its `onPress` prop.
+In the app, an alert will be displayed when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls an `alert()` on its `onPress` prop.
 
 Let's import this component into **app/index.tsx** file and add styles for `<View>` component that encapsulates these buttons:
 
@@ -317,7 +316,7 @@ The second button with the label "Use this photo" resembles the actual button fr
 ## Enhance the reusable button component
 
 The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
-This button also has an icon before the label. We will use an icon from the `@expo/vector-icons` library.
+This button also has an icon before the label. We will use an icon from `@expo/vector-icons` library.
 
 To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **components/Button.tsx** to add the following code snippet:
 
@@ -391,8 +390,8 @@ const styles = StyleSheet.create({
 
 Let's learn what the above code does:
 
-- The primary theme button uses **inline styles** which overrides the styles defined in the `StyleSheet.create()` with an object directly passed in the `style` prop. Inline styles use JavaScript.
-- The `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, then the background color value will be set for both the primary theme and the unstyled one.
+- The primary theme button uses **inline styles** which overrides the styles defined in `StyleSheet.create()` with an object directly passed in the `style` prop. Inline styles use JavaScript.
+- `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, then the background color value will be set for both the primary theme and the unstyled one.
 - Using inline styles allows overriding the default styles for a specific value.
 
 Now, modify the **app/index.tsx** file to use the `theme="primary"` prop on the first button.

@@ -81,15 +81,15 @@ Throughout this tutorial, we will use VS Code for our examples.
 
 ## Run reset-project script
 
-In this tutorial, we will build our app from scratch. This means adding app's navigation and component files to understand the fundamentals of implementing file-based routing. Let's remove the boilerplate code that was created by the `create-expo-app` command.
+In this tutorial, we will build our app from scratch. This means adding app's navigation and component files to understand the fundamentals of implementing file-based routing. Let's remove the boilerplate code that was created by `create-expo-app` command.
 
 <Terminal cmd={['$ npm run reset-project']} />
 
-After running the `reset-project` script, the **app** directory is left with two files (**index.tsx**, and **\_layout.tsx**). Now, we can delete all other files inside the **components**, **constants**, and **hooks** directories since they contain boilerplate code and is not needed for this tutorial.
+After running `reset-project` script, the **app** directory is left with two files (**index.tsx**, and **\_layout.tsx**). Now, we can delete all other files inside the **components**, **constants**, and **hooks** directories since they contain boilerplate code and is not needed for this tutorial.
 
 <Collapsible summary={<>What does the <CODE>reset-project</CODE> script do?</>}>
 
-The `reset-project` script resets the **app** directory structure in a project and copies the previous files from **app** directory to another directory called **app-example**. We can delete it since it is not part of our main app's structure.
+`reset-project` script resets the **app** directory structure in a project and copies the previous files from **app** directory to another directory called **app-example**. We can delete it since it is not part of our main app's structure.
 
 </Collapsible>
 
@@ -129,10 +129,10 @@ Styles applied to these components are using JavaScript as compared to web, wher
 
 Let's modify **app/index.tsx** screen:
 
-1. Import `StyleSheet` from the `react-native` and create a `styles` object to define our own styles.
-2. Add a `styles.container.backgroundColor` property to the `<View>` component with the value of `#25292e` to apply the background color.
+1. Import `StyleSheet` from `react-native` and create a `styles` object to define our own styles.
+2. Add a `styles.container.backgroundColor` property to `<View>` component with the value of `#25292e` to apply the background color.
 3. Replace the default value of `<Text>` with "Home screen".
-4. Add a `styles.text.color` property to the `<Text>` component with the value of `#fff` (white) to change the text color.
+4. Add a `styles.text.color` property to `<Text>` component with the value of `#fff` (white) to change the text color.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340
