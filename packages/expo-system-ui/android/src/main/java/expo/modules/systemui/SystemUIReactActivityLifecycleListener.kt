@@ -9,10 +9,6 @@ import expo.modules.systemui.singletons.SystemUI
 class SystemUIReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
     SystemUI.setUserInterfaceStyle(getUserInterfaceStyle(activity))
-
-    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-      SystemUI.enableEdgeToEdge(activity)
-    }
   }
 
   private fun getUserInterfaceStyle(context: Context): String =
