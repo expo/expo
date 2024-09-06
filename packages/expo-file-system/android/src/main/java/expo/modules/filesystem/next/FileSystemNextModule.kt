@@ -107,9 +107,7 @@ class FileSystemNextModule : Module() {
       }
 
       Property("size") { file ->
-        return@Property try { file.size } catch (e: FileNotFoundException) {
-          null
-        }
+        file.size
       }
     }
 
