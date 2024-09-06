@@ -160,6 +160,97 @@ const player1 = useVideoPlayer(assetId); // You can use the `asset` directly as 
 const player2 = useVideoPlayer(videoSource);
 ```
 
+## Preloading videos
+
+While another video is playing, a video can be loaded before being shown in the view. This allows for quicker transitions between subsequent videos and better user experience.
+
+In order to preload a video, a `VideoPlayer` with a video source has to be created. Even when the player is not connected
+to a `VideoView`, it will fill the buffers, and once it is connected to a `VideoView` it will be able to start playing without buffering.
+
+In some cases, it is beneficial to preload a video later in the screen lifecycle. In that case, a `VideoPlayer` with a
+`null` source should be created. To start preloading, the player source has to be replaced with a video source using the `replace` function.
+
+When multiple videos are preloaded, it is a good idea to limit the buffer size of the players to avoid excessive memory usage. The buffer can be increased once the player starts playing.
+
+Here is an example of how to preload a video:
+
+<SnackInline label='Video' dependencies={['expo-video']}>
+
+```jsx
+import { useVideoPlayer, VideoView, VideoSource } from 'expo-video';
+import React, { useCallback } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+const bigBuckBunnySource: VideoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+const elephantsDreamSource: VideoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+
+export default function PreloadingVideoPlayerScreen() {
+  const player1 = useVideoPlayer(bigBuckBunnySource, (player) => {
+    player.play();
+  });
+
+  const player2 = useVideoPlayer(elephantsDreamSource, (player) => {
+    player.currentTime = 20;
+  });
+
+  const [currentPlayer, setCurrentPlayer] = React.useState(player1);
+
+  const replacePlayer = useCallback(async () => {
+    currentPlayer.pause();
+    if (currentPlayer === player1) {
+      setCurrentPlayer(player2);
+      player2.play();
+    } else {
+      setCurrentPlayer(player1);
+      player1.play();
+    }
+  }, [player1, currentPlayer]);
+
+  return (
+    <View style={styles.contentContainer}>
+      <VideoView player={currentPlayer} style={styles.video} nativeControls={false} />
+      <TouchableOpacity style={styles.button} onPress={replacePlayer}>
+        <Text style={styles.buttonText}>Replace Player</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#4630ec',
+  },
+  buttonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#eeeeee',
+    textAlign: 'center',
+  },
+  video: {
+    width: 300,
+    height: 168.75,
+    marginVertical: 20,
+  },
+});
+```
+
+</SnackInline>
+
 ## API
 
 ```js
