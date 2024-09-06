@@ -2,6 +2,7 @@ name: 'Prose Linter'
 description: 'Lint Docs website content using Vale'
 
 runs:
+  using: 'composite'
   steps:
     - uses: actions/checkout@v4
     - uses: errata-ai/vale-action@reviewdog
