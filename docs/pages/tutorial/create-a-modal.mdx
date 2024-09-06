@@ -7,7 +7,6 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { SnackInline } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the [second chapter](/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component),
@@ -181,18 +180,6 @@ const styles = StyleSheet.create({
 
 Import these buttons into **App.js** and replace the empty `<View>` component from the previous step to display them. Let's also create the `onPress` functions for these buttons to add the functionality later.
 
-<SnackInline
-label="Add Button options"
-templateId="tutorial/03-button-options/App"
-dependencies={['expo-image-picker', '@expo/vector-icons/FontAwesome', '@expo/vector-icons', 'expo-status-bar', '@expo/vector-icons/MaterialIcons']}
-files={{
-  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-  'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
-  'components/Button.js': 'tutorial/03-button-options/Button.js',
-  'components/CircleButton.js': 'tutorial/03-button-options/CircleButton.js',
-  'components/IconButton.js': 'tutorial/03-button-options/IconButton.js',
-}}>
-
 {/* prettier-ignore */}
 ```jsx
 // ... rest of the import statements
@@ -250,8 +237,6 @@ const styles = StyleSheet.create({
   /* @end */
 })
 ```
-
-</SnackInline>
 
 In the above snippet, the `onReset()` function is called when the user presses the reset button. When this button is pressed, we'll show the image picker button again.
 
@@ -344,19 +329,6 @@ Now, let's modify the **App.js** to:
 - Create a`onModalClose()` function to update the `isModalVisible` state variable.
 - Place the `<EmojiPicker>` component at the bottom of the `<App>` component, above the `<StatusBar>` component.
 
-<SnackInline
-label="Create a modal"
-templateId="tutorial/04-modal/App"
-dependencies={['expo-image-picker', '@expo/vector-icons/FontAwesome', '@expo/vector-icons', 'expo-status-bar', '@expo/vector-icons/MaterialIcons']}
-files={{
-  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-  'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
-  'components/Button.js': 'tutorial/03-button-options/Button.js',
-  'components/CircleButton.js': 'tutorial/03-button-options/CircleButton.js',
-  'components/IconButton.js': 'tutorial/03-button-options/IconButton.js',
-  'components/EmojiPicker.js': 'tutorial/04-modal/EmojiPicker.js',
-}}>
-
 {/* prettier-ignore */}
 ```jsx
 // ...rest of the import statements remain same
@@ -389,8 +361,6 @@ export default function App() {
   );
 }
 ```
-
-</SnackInline>
 
 Here is the result after this step:
 
@@ -536,27 +506,6 @@ This component receives two props:
 
 We'll import this component in the **App.js** file and update the `<App>` component to display the emoji sticker on the image conditionally. We'll do this by checking if the `pickedEmoji` state is not `null`.
 
-<SnackInline
-label="Display selected emoji sticker"
-templateId="tutorial/05-emoji-list/App"
-dependencies={['expo-image-picker', '@expo/vector-icons/FontAwesome', '@expo/vector-icons', 'expo-status-bar', '@expo/vector-icons/MaterialIcons']}
-files={{
-  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-  'assets/images/emoji1.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/be9751678c0b3f9c6bf55f60de815d30',
-  'assets/images/emoji2.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/7c0d14b79e134d528c5e0801699d6ccf',
-  'assets/images/emoji3.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/d713e2de164764c2ab3db0ab4e40c577',
-  'assets/images/emoji4.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ac2163b98a973cb50bfb716cc4438f9a',
-  'assets/images/emoji5.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/9cc0e2ff664bae3af766b9750331c3ad',
-  'assets/images/emoji6.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ce614cf0928157b3f7daa3cb8e7bd486',
-  'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
-  'components/Button.js': 'tutorial/03-button-options/Button.js',
-  'components/CircleButton.js': 'tutorial/03-button-options/CircleButton.js',
-  'components/IconButton.js': 'tutorial/03-button-options/IconButton.js',
-  'components/EmojiPicker.js': 'tutorial/04-modal/EmojiPicker.js',
-  'components/EmojiList.js': 'tutorial/05-emoji-list/EmojiList.js',
-  'components/EmojiSticker.js': 'tutorial/05-emoji-list/EmojiSticker.js',
-}}>
-
 {/* prettier-ignore */}
 ```jsx
 // ...rest of the import statements
@@ -576,8 +525,6 @@ export default function App() {
   );
 }
 ```
-
-</SnackInline>
 
 Let's take a look at our app on Android, iOS and the web:
 
