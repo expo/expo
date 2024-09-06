@@ -180,6 +180,7 @@ redirects[eas-update/custom-updates-server]=versions/latest/sdk/updates
 redirects[distribution/custom-updates-server]=versions/latest/sdk/updates
 redirects[bare/error-recovery]=eas-update/error-recovery
 redirects[deploy/instant-updates]=eas-update/send-over-the-air-updates
+redirects[eas-update/publish]=eas-update/get-started
 
 # Redirects for Expo Router docs
 redirects[routing/next-steps]=router/introduction

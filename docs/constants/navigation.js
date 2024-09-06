@@ -339,33 +339,35 @@ const general = [
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
-    makePage('eas-update/publish.mdx'),
-    makePage('eas-update/eas-cli.mdx'),
-    makePage('eas-update/develop-faster.mdx'),
-    makePage('eas-update/github-actions.mdx'),
-    makePage('eas-update/faq.mdx'),
-    makeGroup('Concepts', [
-      makePage('eas-update/how-it-works.mdx'),
-      makePage('eas-update/runtime-versions.mdx'),
+    makeGroup('Previews', [
+      makePage('eas-update/develop-faster.mdx'),
+      makePage('eas-update/github-actions.mdx'),
+    ]),
+    makeGroup('Deployment', [
+      makePage('eas-update/deployment.mdx'),
+      makePage('eas-update/continuous-deployment.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
-    makeGroup('Troubleshoot', [
+    makeGroup('Troubleshooting', [
       makePage('eas-update/debug.mdx'),
       makePage('eas-update/debug-advanced.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/build-locally.mdx'),
       makePage('eas-update/error-recovery.mdx'),
     ]),
-    makeGroup('Advanced', [
+    makeGroup('Concepts', [
+      makePage('eas-update/how-it-works.mdx'),
+      makePage('eas-update/eas-cli.mdx'),
+      makePage('eas-update/runtime-versions.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('eas-update/faq.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/environment-variables.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/asset-selection.mdx'),
-      makePage('eas-update/continuous-deployment.mdx'),
-    ]),
-    makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
