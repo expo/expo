@@ -21,6 +21,7 @@
 ### 💡 Others
 
 - Bump media3 version to 1.4.0. ([#31239](https://github.com/expo/expo/pull/31239) by [@behenate](https://github.com/behenate))
+- [Android] The media will now be buffered even when the player is unmounted to match iOS behavior. ([#30626](https://github.com/expo/expo/pull/30626) by [@behenate](https://github.com/behenate))
 
 ## 1.2.5 — 2024-08-20
 
