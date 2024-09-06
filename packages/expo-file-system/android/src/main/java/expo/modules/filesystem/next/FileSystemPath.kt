@@ -1,5 +1,6 @@
 package expo.modules.filesystem.next
 
+import android.os.Build
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
 import kotlin.io.path.moveTo
@@ -8,9 +9,9 @@ import kotlin.io.path.moveTo
 // The Path class might be better, but `java.nio.file.Path` class is not available in API 23.
 // The URL, URI classes seem like a less suitable choice.
 // https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
-abstract class FileSystemPath(var path: File) : SharedObject() {
+abstract class FileSystemPath(var file: File) : SharedObject() {
   fun delete() {
-    path.delete()
+    file.delete()
   }
 
   abstract fun validateType()
@@ -25,11 +26,11 @@ abstract class FileSystemPath(var path: File) : SharedObject() {
     // If the file's parent folder does not exist, we should throw an exception.
     // Does not allow copying a folder to a file.
 
-    if (to is FileSystemDirectory && !to.path.exists()) {
+    if (to is FileSystemDirectory && !to.file.exists()) {
       throw DestinationDoesNotExistException()
     }
 
-    if (to is FileSystemFile && to.path.parentFile?.exists() != true) {
+    if (to is FileSystemFile && to.file.parentFile?.exists() != true) {
       throw DestinationDoesNotExistException()
     }
     // The above guards can be conditional if we want to allow creating the destination folder(s).
@@ -39,10 +40,10 @@ abstract class FileSystemPath(var path: File) : SharedObject() {
     }
 
     // do the copying
-    if (to.path.isDirectory) {
-      path.copyRecursively(File(to.path.path, path.name))
+    if (to.file.isDirectory) {
+      file.copyRecursively(File(to.file.path, file.name))
     } else {
-      path.copyRecursively(to.path)
+      file.copyRecursively(to.file)
     }
   }
 
@@ -50,11 +51,11 @@ abstract class FileSystemPath(var path: File) : SharedObject() {
     validateType()
     to.validateType()
 
-    if (to is FileSystemDirectory && !to.path.exists()) {
+    if (to is FileSystemDirectory && !to.file.exists()) {
       throw DestinationDoesNotExistException()
     }
 
-    if (to is FileSystemFile && to.path.parentFile?.exists() != true) {
+    if (to is FileSystemFile && to.file.parentFile?.exists() != true) {
       throw DestinationDoesNotExistException()
     }
 
@@ -62,10 +63,19 @@ abstract class FileSystemPath(var path: File) : SharedObject() {
       throw MoveFolderToFileException()
     }
 
-    if (to is FileSystemDirectory) {
-      path.toPath().moveTo(File(to.path.path, path.name).toPath())
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (to is FileSystemDirectory) {
+        file.toPath().moveTo(File(to.file.path, file.name).toPath())
+      } else {
+        file.toPath().moveTo(to.file.toPath())
+      }
     } else {
-      path.toPath().moveTo(to.path.toPath())
+      if (to is FileSystemDirectory) {
+        file.copyTo(File(to.file.path, file.name))
+      } else {
+        file.copyTo(to.file)
+      }
+      file.delete()
     }
   }
 }

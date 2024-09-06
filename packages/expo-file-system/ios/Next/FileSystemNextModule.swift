@@ -92,7 +92,7 @@ public final class FileSystemNextModule: Module {
         try file.move(to: to)
       }
 
-      Property("path") { file in
+      Property("uri") { file in
         return file.url.absoluteString
       }
     }
@@ -127,7 +127,7 @@ public final class FileSystemNextModule: Module {
         try directory.move(to: to)
       }
 
-      Property("path") { directory in
+      Property("uri") { directory in
         return directory.url.absoluteString
       }
     }

@@ -21,31 +21,31 @@ export async function test({ describe, expect, it, ...t }) {
   describe('FileSystem (Next)', () => {
     it('Creates a lazy file reference', () => {
       const file = new File('file:///path/to/file');
-      expect(file.path).toBe('file:///path/to/file');
+      expect(file.uri).toBe('file:///path/to/file');
     });
 
     it('Supports different slash combinations', async () => {
-      expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
+      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
       // FirstDirectory is a host when url parsing.
-      expect(new File('file://firstDirectory/to/file').path).toBe('file:///to/file');
-      expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
+      expect(new File('file://firstDirectory/to/file').uri).toBe('file:///to/file');
+      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
     });
 
-    it('Accepts and correctly handles paths to files', () => {
-      expect(new File('file:/path/to/file').path).toBe('file:///path/to/file');
-      expect(new File('file:/path/to/file/').path).toBe('file:///path/to/file');
+    it('Accepts and correctly handles uris to files', () => {
+      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+      expect(new File('file:/path/to/file/').uri).toBe('file:///path/to/file');
     });
 
-    it('Accepts and correctly handles paths to directories', () => {
-      expect(new Directory('file:/path/to/file').path).toBe('file:///path/to/file/');
-      expect(new Directory('file:/path/to/file/').path).toBe('file:///path/to/file/');
+    it('Accepts and correctly handles uris to directories', () => {
+      expect(new Directory('file:/path/to/file').uri).toBe('file:///path/to/file/');
+      expect(new Directory('file:/path/to/file/').uri).toBe('file:///path/to/file/');
     });
 
-    it("Doesn't allow changing the path property", () => {
+    it("Doesn't allow changing the uri property", () => {
       const file = new File('file:///path/to/file');
       expect(() => {
         // @ts-expect-error
-        file.path = 'file:///new/path';
+        file.uri = 'file:///new/path';
       }).toThrow();
     });
 
@@ -264,23 +264,23 @@ export async function test({ describe, expect, it, ...t }) {
 
     describe('Downloads files', () => {
       it('downloads a file to a target file', async () => {
-        const url = 'https://httpbin.org/image/jpeg';
+        const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory + 'image.jpeg');
         const output = await File.downloadFileAsync(url, file);
         expect(file.exists()).toBe(true);
-        expect(output.path).toBe(file.path);
+        expect(output.uri).toBe(file.uri);
       });
 
       it('downloads a file to a target directory', async () => {
-        const url = 'https://httpbin.org/image/jpeg';
+        const url = 'https://picsum.photos/id/237/200/300';
         const directory = new Directory(testDirectory);
         const output = await File.downloadFileAsync(url, directory);
 
         const file = new File(
-          testDirectory + (Platform.OS === 'android' ? 'jpeg.jpg' : 'jpeg.jpeg')
+          testDirectory + (Platform.OS === 'android' ? '300.jpg' : '237-200x300.jpg')
         );
         expect(file.exists()).toBe(true);
-        expect(output.path).toBe(file.path);
+        expect(output.uri).toBe(file.uri);
       });
     });
 
