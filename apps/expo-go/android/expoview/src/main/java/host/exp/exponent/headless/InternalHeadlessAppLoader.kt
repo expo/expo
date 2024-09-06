@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.SparseArray
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
@@ -239,7 +238,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
       context,
       manifest as ExponentManifest,
       instanceManagerBuilderProperties,
-      jsBundlePath,
+      jsBundlePath
     )
     val wrapper = ReactNativeHostWrapper(context, host)
     val reactHost = ReactHostFactory.createFromReactNativeHost(context, wrapper)

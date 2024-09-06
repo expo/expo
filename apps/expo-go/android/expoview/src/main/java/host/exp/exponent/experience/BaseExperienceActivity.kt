@@ -5,9 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.core.os.bundleOf
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.react.ReactRootView
 import de.greenrobot.event.EventBus
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.*

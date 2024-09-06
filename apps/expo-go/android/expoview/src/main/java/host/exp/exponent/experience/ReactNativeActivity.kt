@@ -11,19 +11,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.window.OnBackInvokedDispatcher
-import androidx.activity.addCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactHost
+import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
+import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
@@ -87,8 +86,10 @@ abstract class ReactNativeActivity :
   // Will be called after waitForDrawOverOtherAppPermission
   protected open fun startReactInstance() {}
 
-  var reactHost: ReactHost? = null
+  var reactNativeHost: ReactNativeHost? = null
+  protected var reactHost: ReactHost? = null
   protected var reactSurface: ReactSurface? = null
+
   protected var isCrashed = false
 
   protected var manifestUrl: String? = null
@@ -127,9 +128,6 @@ abstract class ReactNativeActivity :
     return true
   }
 
-  val rootView: View?
-    get() = reactSurface?.view
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
 
@@ -166,11 +164,11 @@ abstract class ReactNativeActivity :
   }
 
   fun addReactViewToContentContainer(reactView: View) {
-    reactSurface?.view?.addView(reactView)
+    reactContainerView.addView(reactView)
   }
 
   fun hasReactView(reactView: View): Boolean {
-    return reactView.parent === reactSurface?.view
+    return reactView.parent === reactContainerView
   }
 
   protected fun hideLoadingView() {
@@ -321,6 +319,8 @@ abstract class ReactNativeActivity :
 
   protected open fun destroyReactHost() {
     if (!isCrashed) {
+      reactSurface?.stop()
+      reactSurface = null
       reactHost?.onHostDestroy()
     }
   }
@@ -347,7 +347,6 @@ abstract class ReactNativeActivity :
     delegate: StartReactInstanceDelegate,
     intentUri: String?,
     notification: ExponentNotification?,
-    extraNativeModules: List<Any>?,
     extraExpoPackages: List<Package>?,
     progressListener: DevBundleDownloadProgressListener
   ): ReactHost? {
@@ -371,18 +370,22 @@ abstract class ReactNativeActivity :
       expoPackages = extraExpoPackages,
       exponentPackageDelegate = delegate.exponentPackageDelegate,
       manifest = manifest!!,
-      singletonModules = ExponentPackage.getOrCreateSingletonModules(applicationContext, manifest, extraExpoPackages)
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(
+        applicationContext,
+        manifest,
+        extraExpoPackages
+      )
     )
 
     val host = ExpoGoReactNativeHost(
       application,
       exponentManifest,
       instanceManagerBuilderProperties,
-      jsBundlePath,
+      jsBundlePath
     )
     val wrapper = ReactNativeHostWrapper(application, host)
     val reactHost = ReactHostFactory.createFromReactNativeHost(this, wrapper)
-
+    reactNativeHost = host
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
     setDevSettings(reactHost, devBundleDownloadListener)
 
@@ -463,13 +466,12 @@ abstract class ReactNativeActivity :
     )
     reactSurface?.start()
     KernelNetworkInterceptor.start(manifest!!, reactHost)
-
     return reactHost
   }
 
   private fun setDevSettings(
-      reactHost: ReactHost,
-      devBundleDownloadListener: ExponentDevBundleDownloadListener
+    reactHost: ReactHost,
+    devBundleDownloadListener: ExponentDevBundleDownloadListener
   ) {
     val hostField = reactHost::class.java.getDeclaredField("mDevSupportManager")
     hostField.isAccessible = true
@@ -477,11 +479,20 @@ abstract class ReactNativeActivity :
 
     val bundleDownloadListenerField =
       devSupportManager::class.java.getField("mBundleDownloadListener")
-    val handlers = devSupportManager::class.java.getField("mCustomPackagerCommandHandlers")
     bundleDownloadListenerField.isAccessible = true
-    handlers.isAccessible = true
     bundleDownloadListenerField.set(devSupportManager, devBundleDownloadListener)
+
+    val handlers = devSupportManager::class.java.getField("mCustomPackagerCommandHandlers")
+    handlers.isAccessible = true
     handlers.set(devSupportManager, VersionedUtils.createPackagerCommandHelpers())
+
+    val shakeDetector = devSupportManager::class.java.getField("mShakeDetector")
+    shakeDetector.isAccessible = true
+    shakeDetector.set(
+      devSupportManager,
+      ShakeDetector({
+      }, 100)
+    )
   }
 
   protected fun shouldShowErrorScreen(errorMessage: ExponentErrorMessage): Boolean {
@@ -523,7 +534,8 @@ abstract class ReactNativeActivity :
     }
 
     try {
-      val existingEmitter = reactHost?.currentReactContext?.getJSModule(RCTDeviceEventEmitter::class.java)
+      val existingEmitter =
+        reactHost?.currentReactContext?.getJSModule(RCTDeviceEventEmitter::class.java)
       if (existingEmitter != null) {
         val events = KernelProvider.instance.consumeExperienceEvents(manifestUrl!!)
         for ((eventName, eventPayload) in events) {
@@ -540,7 +552,8 @@ abstract class ReactNativeActivity :
    */
   fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
     try {
-      val emitter = reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
+      val emitter =
+        reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
       emitter?.emit(eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
@@ -582,7 +595,11 @@ abstract class ReactNativeActivity :
   ) {
     if (requestCode == ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST) {
       if (permissions.isNotEmpty() && grantResults.size == permissions.size && scopedPermissionsRequester != null) {
-        if (scopedPermissionsRequester!!.onRequestPermissionsResult(permissions, grantResults)) {
+        if (scopedPermissionsRequester!!.onRequestPermissionsResult(
+            permissions,
+            grantResults
+          )
+        ) {
           scopedPermissionsRequester = null
         }
       }
@@ -616,7 +633,9 @@ abstract class ReactNativeActivity :
       val host = uri.host
       return if (host != null && (
           host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
+            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(
+              ".exp.direct"
+            ) || host.endsWith(
               ".expo.test"
             )
           )
@@ -641,6 +660,7 @@ abstract class ReactNativeActivity :
     private val TAG = ReactNativeActivity::class.java.simpleName
     private const val VIEW_TEST_INTERVAL_MS: Long = 20
 
-    @JvmStatic protected var errorQueue: Queue<ExponentError> = LinkedList()
+    @JvmStatic
+    protected var errorQueue: Queue<ExponentError> = LinkedList()
   }
 }

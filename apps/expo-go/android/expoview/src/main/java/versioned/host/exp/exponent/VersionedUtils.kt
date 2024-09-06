@@ -236,7 +236,8 @@ object VersionedUtils {
         null
       }
     } else {
-      null}
+      null
+    }
   }
 
   private fun createJSExecutorFactory(

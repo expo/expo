@@ -3,7 +3,6 @@
 package versioned.host.exp.exponent
 
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.Inspector
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase

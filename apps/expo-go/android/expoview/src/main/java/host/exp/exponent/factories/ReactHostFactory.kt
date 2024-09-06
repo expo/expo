@@ -1,7 +1,6 @@
 package host.exp.exponent.factories
 
 import android.content.Context
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactNativeHost
@@ -15,7 +14,6 @@ import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
@@ -25,96 +23,96 @@ import java.lang.ref.WeakReference
 
 object ReactHostFactory {
 
-    @UnstableReactNativeAPI
-    private class ExpoReactHostDelegate(
-        private val weakContext: WeakReference<Context>,
-        private val reactNativeHostWrapper: ReactNativeHostWrapper,
-        override val bindingsInstaller: BindingsInstaller? = null,
-        private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-        override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
-            DefaultTurboModuleManagerDelegate.Builder()
-    ) : ReactHostDelegate {
+  @UnstableReactNativeAPI
+  private class ExpoReactHostDelegate(
+    private val weakContext: WeakReference<Context>,
+    private val reactNativeHostWrapper: ReactNativeHostWrapper,
+    override val bindingsInstaller: BindingsInstaller? = null,
+    private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
+    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
+      DefaultTurboModuleManagerDelegate.Builder()
+  ) : ReactHostDelegate {
 
-        // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
-        private var _jsBundleLoader: JSBundleLoader? = null
-        override val jsBundleLoader: JSBundleLoader
-            get() {
-                val backingJSBundleLoader = _jsBundleLoader
-                if (backingJSBundleLoader != null) {
-                    return backingJSBundleLoader
-                }
-                val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
-                reactNativeHostWrapper.jsBundleFile?.let { jsBundleFile ->
-                    if (jsBundleFile.startsWith("assets://")) {
-                        return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
-                    }
-                    return JSBundleLoader.createFileLoader(jsBundleFile)
-                }
-                val jsBundleAssetPath = reactNativeHostWrapper.bundleAssetName
-                return JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-            }
-
-        override val jsMainModulePath: String
-            get() = reactNativeHostWrapper.jsMainModuleName
-
-        override val jsRuntimeFactory: JSRuntimeFactory
-            get() = HermesInstance()
-
-        override val reactPackages: List<ReactPackage>
-            get() = reactNativeHostWrapper.packages
-
-        override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
-
-        override fun handleInstanceException(error: Exception) {
-            val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport
-            reactNativeHostWrapper.reactNativeHostHandlers.forEach { handler ->
-                handler.onReactInstanceException(useDeveloperSupport, error)
-            }
+    // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
+    private var _jsBundleLoader: JSBundleLoader? = null
+    override val jsBundleLoader: JSBundleLoader
+      get() {
+        val backingJSBundleLoader = _jsBundleLoader
+        if (backingJSBundleLoader != null) {
+          return backingJSBundleLoader
         }
+        val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
+        reactNativeHostWrapper.jsBundleFile?.let { jsBundleFile ->
+          if (jsBundleFile.startsWith("assets://")) {
+            return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
+          }
+          return JSBundleLoader.createFileLoader(jsBundleFile)
+        }
+        val jsBundleAssetPath = reactNativeHostWrapper.bundleAssetName
+        return JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+      }
+
+    override val jsMainModulePath: String
+      get() = reactNativeHostWrapper.jsMainModuleName
+
+    override val jsRuntimeFactory: JSRuntimeFactory
+      get() = HermesInstance()
+
+    override val reactPackages: List<ReactPackage>
+      get() = reactNativeHostWrapper.packages
+
+    override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
+
+    override fun handleInstanceException(error: Exception) {
+      val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport
+      reactNativeHostWrapper.reactNativeHostHandlers.forEach { handler ->
+        handler.onReactInstanceException(useDeveloperSupport, error)
+      }
+    }
+  }
+
+  @OptIn(UnstableReactNativeAPI::class)
+  @JvmStatic
+  fun createFromReactNativeHost(
+    context: Context,
+    reactNativeHost: ReactNativeHost
+  ): ReactHost {
+    require(reactNativeHost is ReactNativeHostWrapper) {
+      "You can call createFromReactNativeHost only with instances of ReactNativeHostWrapper"
+    }
+    val useDeveloperSupport = reactNativeHost.useDeveloperSupport
+    val reactHostDelegate = ExpoReactHostDelegate(WeakReference(context), reactNativeHost)
+    val componentFactory = ComponentFactory()
+    DefaultComponentsRegistry.register(componentFactory)
+
+    reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+      handler.onWillCreateReactInstance(useDeveloperSupport)
     }
 
-    @OptIn(UnstableReactNativeAPI::class)
-    @JvmStatic
-    fun createFromReactNativeHost(
-        context: Context,
-        reactNativeHost: ReactNativeHost
-    ): ReactHost {
-        require(reactNativeHost is ReactNativeHostWrapper) {
-            "You can call createFromReactNativeHost only with instances of ReactNativeHostWrapper"
-        }
-        val useDeveloperSupport = reactNativeHost.useDeveloperSupport
-        val reactHostDelegate = ExpoReactHostDelegate(WeakReference(context), reactNativeHost)
-        val componentFactory = ComponentFactory()
-        DefaultComponentsRegistry.register(componentFactory)
-
-        reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-            handler.onWillCreateReactInstance(useDeveloperSupport)
+    val reactHostImpl =
+      ReactHostImpl(
+        context,
+        reactHostDelegate,
+        componentFactory,
+        true,
+        useDeveloperSupport
+      )
+        .apply {
+          jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
         }
 
-        val reactHostImpl =
-            ReactHostImpl(
-                context,
-                reactHostDelegate,
-                componentFactory,
-                true,
-                useDeveloperSupport
-            )
-                .apply {
-                    jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
-                }
-
-        reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-            handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
-        }
-
-        reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
-            override fun onReactContextInitialized(context: ReactContext) {
-                reactNativeHost.reactNativeHostHandlers.forEach { handler ->
-                    handler.onDidCreateReactInstance(useDeveloperSupport, context)
-                }
-            }
-        })
-
-        return reactHostImpl as ReactHost
+    reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+      handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
     }
+
+    reactHostImpl.addReactInstanceEventListener(object : ReactInstanceEventListener {
+      override fun onReactContextInitialized(context: ReactContext) {
+        reactNativeHost.reactNativeHostHandlers.forEach { handler ->
+          handler.onDidCreateReactInstance(useDeveloperSupport, context)
+        }
+      }
+    })
+
+    return reactHostImpl as ReactHost
+  }
 }

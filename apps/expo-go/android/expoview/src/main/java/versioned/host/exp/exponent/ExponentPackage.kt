@@ -2,8 +2,6 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
-import android.os.Looper
-import android.util.Log
 import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage
@@ -24,7 +22,6 @@ import com.shopify.reactnative.skia.RNSkiaPackage
 import com.rnmaps.maps.MapsPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
-import com.swmansion.reanimated.ReanimatedModule
 import com.swmansion.rnscreens.RNScreensPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package

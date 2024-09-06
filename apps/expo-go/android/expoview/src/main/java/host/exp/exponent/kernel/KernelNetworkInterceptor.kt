@@ -13,48 +13,48 @@ import versioned.host.exp.exponent.ExpoNetworkInterceptor
  * A singleton network interceptor proxy to forward okhttp requests to the versioned handlers.
  */
 object KernelNetworkInterceptor {
-    private var sdkVersion: String = RNObject.UNVERSIONED
-    private var appInterceptor: ExpoNetworkInspectOkHttpAppInterceptor? = null
-    private var networkInterceptor: ExpoNetworkInspectOkHttpNetworkInterceptor? =
-        null
-    private var expoNetworkInterceptor: ExpoNetworkInterceptor? = null
+  private var sdkVersion: String = RNObject.UNVERSIONED
+  private var appInterceptor: ExpoNetworkInspectOkHttpAppInterceptor? = null
+  private var networkInterceptor: ExpoNetworkInspectOkHttpNetworkInterceptor? =
+    null
+  private var expoNetworkInterceptor: ExpoNetworkInterceptor? = null
 
-    fun start(manifest: Manifest, reactHost: ReactHost?) {
-        sdkVersion =
-            manifest.getExpoGoSDKVersion() ?: throw IllegalArgumentException("Invalid SDK version")
-        // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
-        // to point to the unversioned code in ReactAndroid.
-        if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
-            sdkVersion = RNObject.UNVERSIONED
-        }
-
-        appInterceptor = ExpoNetworkInspectOkHttpAppInterceptor()
-        networkInterceptor = ExpoNetworkInspectOkHttpNetworkInterceptor()
-        expoNetworkInterceptor = ExpoNetworkInterceptor()
-        reactHost?.let {
-            expoNetworkInterceptor?.start(manifest, it)
-        }
+  fun start(manifest: Manifest, reactHost: ReactHost?) {
+    sdkVersion =
+      manifest.getExpoGoSDKVersion() ?: throw IllegalArgumentException("Invalid SDK version")
+    // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
+    // to point to the unversioned code in ReactAndroid.
+    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
+      sdkVersion = RNObject.UNVERSIONED
     }
 
-    val okhttpAppInterceptorProxy = Interceptor { chain ->
-        appInterceptor?.intercept(chain)
-            ?: chain.proceed(chain.request())
+    appInterceptor = ExpoNetworkInspectOkHttpAppInterceptor()
+    networkInterceptor = ExpoNetworkInspectOkHttpNetworkInterceptor()
+    expoNetworkInterceptor = ExpoNetworkInterceptor()
+    reactHost?.let {
+      expoNetworkInterceptor?.start(manifest, it)
     }
+  }
 
-    val okhttpNetworkInterceptorProxy = Interceptor { chain ->
-        networkInterceptor?.intercept(chain)
-            ?: chain.proceed(chain.request())
-    }
+  val okhttpAppInterceptorProxy = Interceptor { chain ->
+    appInterceptor?.intercept(chain)
+      ?: chain.proceed(chain.request())
+  }
 
-    fun onResume(reactHost: ReactHost?) {
-        reactHost?.let {
-            expoNetworkInterceptor?.onResume(it)
-        }
-    }
+  val okhttpNetworkInterceptorProxy = Interceptor { chain ->
+    networkInterceptor?.intercept(chain)
+      ?: chain.proceed(chain.request())
+  }
 
-    fun onPause() {
-        expoNetworkInterceptor?.onPause()
-        networkInterceptor = null
-        appInterceptor = null
+  fun onResume(reactHost: ReactHost?) {
+    reactHost?.let {
+      expoNetworkInterceptor?.onResume(it)
     }
+  }
+
+  fun onPause() {
+    expoNetworkInterceptor?.onPause()
+    networkInterceptor = null
+    appInterceptor = null
+  }
 }

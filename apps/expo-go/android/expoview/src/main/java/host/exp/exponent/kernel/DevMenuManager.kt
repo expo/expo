@@ -10,28 +10,23 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactInstanceManagerBuilder
-import com.facebook.react.ReactRootView
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
-import com.facebook.react.runtime.ReactSurfaceImpl
-import com.facebook.react.runtime.ReactSurfaceView
 import de.greenrobot.event.EventBus
-import host.exp.exponent.utils.ShakeDetector
 import host.exp.exponent.Constants
-import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
-import versioned.host.exp.exponent.ReactUnthemedRootView
-import java.util.*
-import javax.inject.Inject
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
+import host.exp.exponent.utils.ShakeDetector
+import versioned.host.exp.exponent.modules.internal.DevMenuModule
+import java.util.*
+import javax.inject.Inject
 
 private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 
@@ -43,7 +38,9 @@ private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
  */
 class DevMenuManager {
   private var shakeDetector: ShakeDetector? = null
-  private var reactRootView: ReactRootView? = null
+  private var reactHost: ReactHost? = null
+  private var reactSurface: ReactSurface? = null
+
   private var orientationBeforeShowingDevMenu: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
   private val devMenuModulesRegistry = WeakHashMap<ExperienceActivity, DevMenuModuleInterface>()
 
@@ -79,20 +76,26 @@ class DevMenuManager {
     UiThreadUtil.runOnUiThread {
       try {
         val devMenuModule = devMenuModulesRegistry[activity] ?: return@runOnUiThread
-        val devMenuView = prepareRootView(devMenuModule.getInitialProps())
-
+        val devMenuView = reactSurface?.view
+          ?: prepareSurface(devMenuModule.getInitialProps())
         loseFocusInActivity(activity)
+
+        if (reactSurface?.isRunning == false) {
+          reactSurface?.start()
+        }
 
         // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
         // However, when removing it, we should set it back to the orientation from before showing the dev menu.
         orientationBeforeShowingDevMenu = activity.requestedOrientation
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        activity.addReactViewToContentContainer(devMenuView)
+        devMenuView?.let {
+          activity.addReactViewToContentContainer(it)
+        }
 
         // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
         // Otherwise, touches and other gestures may not work correctly.
-        kernel.reactHost?.onHostResume(activity)
+        reactHost?.onHostResume(activity)
       } catch (exception: Exception) {
         Log.e("ExpoDevMenu", exception.message ?: "No error message.")
       }
@@ -104,14 +107,12 @@ class DevMenuManager {
    */
   fun hideInActivity(activity: ExperienceActivity) {
     UiThreadUtil.runOnUiThread {
-      reactRootView?.let {
-        val parentView = it.parent as ViewGroup?
+      reactSurface?.let {
+        val parentView = it.view?.parent as ViewGroup?
 
         // Restore the original orientation that had been set before the dev menu was displayed.
         activity.requestedOrientation = orientationBeforeShowingDevMenu
-
-        it.visibility = View.GONE
-        parentView?.removeView(it)
+        parentView?.removeView(it.view)
         tryToPauseHostActivity(activity)
       }
     }
@@ -132,7 +133,7 @@ class DevMenuManager {
    * Toggles dev menu visibility in given experience activity.
    */
   fun toggleInActivity(activity: ExperienceActivity) {
-    if (isDevMenuVisible() && reactRootView != null && activity.hasReactView(reactRootView!!)) {
+    if (isDevMenuVisible() && reactHost != null && activity.hasReactView(reactSurface?.view!!)) {
       requestToClose(activity)
     } else {
       showInActivity(activity)
@@ -219,7 +220,7 @@ class DevMenuManager {
    * Checks whether the dev menu is shown over given experience activity.
    */
   fun isShownInActivity(activity: ExperienceActivity): Boolean {
-    return reactRootView != null && activity.hasReactView(reactRootView!!)
+    return reactSurface != null && activity.hasReactView(reactSurface?.view!!)
   }
 
   /**
@@ -243,7 +244,7 @@ class DevMenuManager {
    */
   fun maybeResumeHostWithActivity(activity: ExperienceActivity) {
     if (isShownInActivity(activity)) {
-      kernel.reactHost?.onHostResume(activity)
+      reactHost?.onHostResume(activity)
     }
   }
 
@@ -296,23 +297,13 @@ class DevMenuManager {
    * Also sets initialProps, layout settings and initial animation values.
    */
   @Throws(Exception::class)
-  private fun prepareRootView(initialProps: Bundle): ViewGroup {
-    // Throw an exception in case the kernel is not initialized yet.
-    if (kernel.surface == null) {
-      throw Exception("Kernel's surface is not initialized yet.")
+  private fun prepareSurface(initialProps: Bundle): View? {
+    if (reactHost == null) {
+      reactHost = kernel.createDevMenuHost()
     }
-
-    reactRootView?.unmountReactApplication()
-
-    reactRootView = ReactUnthemedRootView(kernel.activityContext)
-//    reactRootView?.startReactApplication(kernel.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
-
-    val rootView = reactRootView!!
-
-    rootView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-    rootView.visibility = View.VISIBLE
-
-    return rootView
+    reactSurface = reactHost?.createSurface(kernel.applicationContext, DEV_MENU_JS_MODULE_NAME, initialProps)
+    reactSurface?.start()
+    return reactSurface?.view
   }
 
   /**
@@ -342,7 +333,7 @@ class DevMenuManager {
    * Checks whether the dev menu is visible anywhere.
    */
   private fun isDevMenuVisible(): Boolean {
-    return reactRootView?.parent != null
+    return reactSurface?.isRunning ?: false
   }
 
   /**
@@ -359,6 +350,8 @@ class DevMenuManager {
   private fun tryToPauseHostActivity(activity: ExperienceActivity) {
     try {
       kernel.reactHost?.onHostPause(activity)
+      reactHost?.onHostPause()
+      reactSurface?.stop()
     } catch (e: AssertionError) {
       // nothing
     }

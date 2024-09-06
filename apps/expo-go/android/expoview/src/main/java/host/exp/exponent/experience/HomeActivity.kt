@@ -4,7 +4,6 @@ package host.exp.exponent.experience
 import android.content.Intent
 import android.os.Bundle
 import android.os.Debug
-import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.ReactSurfaceView
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -101,7 +100,8 @@ open class HomeActivity : BaseExperienceActivity() {
   }
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
-    reactHost = kernel.reactHost as ReactHostImpl
+    reactHost = kernel.reactHost
+    reactNativeHost = kernel.reactNativeHost
     reactHost?.onHostResume(this, this)
     reactSurface = kernel.surface?.also {
       it.start()
