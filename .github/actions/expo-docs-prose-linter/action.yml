@@ -10,3 +10,4 @@ runs:
         reporter: github-pr-check
         files: 'docs/pages'
         vale_flags: '--config=./docs/.vale.ini'
+        fail_on_error: true
