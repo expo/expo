@@ -12,7 +12,6 @@ A **.easignore** file defines which files [EAS](https://expo.dev/eas) should ign
 
 By default, the [EAS CLI](/build/setup/#install-the-latest-eas-cli) refers to the [**.gitignore**](https://git-scm.com/docs/gitignore) file (if it exists) to determine which files to ignore. If you create a **.easignore** file, the EAS CLI prioritizes it over the **.gitignore** file. When creating a **.easignore** file, include all files and directories from your **.gitignore** file and add additional files you want to ignore.
 
-
 <Step label="1">
 
 Create a **.easignore** file in the root of your project.
@@ -28,7 +27,7 @@ Copy the content of the **.gitignore** file into the **.easignore** file. Then, 
 
 # Additional ignores specific to EAS builds
 
-# Ignore native folders (if you are using CNG)
+# Ignore native folders (if you are using EAS Build)
 /android
 /ios
 
@@ -36,7 +35,9 @@ Copy the content of the **.gitignore** file into the **.easignore** file. Then, 
 /coverage
 ```
 
-Learn more about [Continuous Native Generation (CNG)](/workflow/continuous-native-generation).
+If your project does not contain android and ios directories, EAS Build will run Prebuild to generate these native directories before compilation.
+
+Learn more about [EAS Build](/workflow/prebuild/#usage-with-eas-build).
 
 </Step>
 
