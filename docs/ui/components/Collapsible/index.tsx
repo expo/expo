@@ -155,7 +155,9 @@ const markerStyle = css({
   transform: 'rotate(-90deg)',
   transition: `transform 200ms`,
 
-  'details[open] &': { transform: 'rotate(0)' },
+  // Only rotate the icon when its direct parent 'details' is open
+  'details[open] > summary &': {
+    transform: 'rotate(0)',
 });
 
 const contentStyle = css({
