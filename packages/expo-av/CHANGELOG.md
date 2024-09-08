@@ -7,7 +7,7 @@
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
-
+- Added support for HLS Stream with ExoPlayer in favor of multi-variant playlist. ([#20537](https://github.com/expo/expo/pull/20537) by [@asharamseervi](https://github.com/asharamseervi))
 ### 🐛 Bug fixes
 
 - [iOS] `loadAsync()` promise never settled when given an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))

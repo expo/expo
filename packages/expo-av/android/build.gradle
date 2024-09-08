@@ -86,6 +86,9 @@ dependencies {
 
   api 'com.google.android.exoplayer:exoplayer:2.18.1'
   api 'com.google.android.exoplayer:extension-okhttp:2.18.1'
+  
+  // Enable support for HLS module for ExoPlayer
+  implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.1'
 
   api "com.squareup.okhttp3:okhttp:3.14.9"
   api "com.squareup.okhttp3:okhttp-urlconnection:3.14.9"
