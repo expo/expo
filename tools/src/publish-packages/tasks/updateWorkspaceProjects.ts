@@ -39,6 +39,8 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
       Object.entries(workspaceInfo).map(async ([projectName, projectInfo]) => {
         const projectDependencies = [
           ...projectInfo.workspaceDependencies,
+          ...projectInfo.workspacePeerDependencies,
+          ...projectInfo.workspaceOptionalDependencies,
           ...projectInfo.mismatchedWorkspaceDependencies,
         ]
           .map((dependencyName) => parcelsObject[dependencyName])
