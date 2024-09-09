@@ -54,7 +54,7 @@ public final class FileSystemNextModule: Module {
       Function("text") { file in
         return try file.text()
       }
-      
+
       Function("base64") { file in
         return try file.base64()
       }
