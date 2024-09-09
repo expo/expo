@@ -35,7 +35,8 @@
     "fetch.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
-    "tsconfig.base.json"
+    "tsconfig.base.json",
+    "types"
   ],
   "scripts": {
     "build": "expo-module build",

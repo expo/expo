@@ -39,7 +39,7 @@ if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';
 }
 /** An unstyled custom navigator. Good for basic web layouts */
-function Navigator({ initialRouteName, screenOptions, children, router }) {
+function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
     const { screens, children: otherSlot } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
@@ -51,14 +51,15 @@ function Navigator({ initialRouteName, screenOptions, children, router }) {
         console.warn(`Navigator at "${contextKey}" has no children.`);
         return null;
     }
-    return (<QualifiedNavigator initialRouteName={initialRouteName} screenOptions={screenOptions} screens={sorted} contextKey={contextKey} router={router}>
+    return (<QualifiedNavigator initialRouteName={initialRouteName} screenOptions={screenOptions} screens={sorted} contextKey={contextKey} router={router} routerOptions={routerOptions}>
       {otherSlot}
     </QualifiedNavigator>);
 }
 exports.Navigator = Navigator;
-function QualifiedNavigator({ initialRouteName, screenOptions, children, screens, contextKey, router = native_1.StackRouter, }) {
+function QualifiedNavigator({ initialRouteName, screenOptions, children, screens, contextKey, router = native_1.StackRouter, routerOptions, }) {
     const { state, navigation, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
+        ...routerOptions,
         id: contextKey,
         children: screens,
         screenOptions,

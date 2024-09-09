@@ -16,6 +16,7 @@
 - Added `client-only` and `server-only` dependencies. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `relativeToDirectory` option to `<Link />` and imperative navigation. ([#30675](https://github.com/expo/expo/pull/30675) by [@marklawlor](https://github.com/marklawlor))
 - Fix parsing URLs hash on the web after location update
+- Add `routerOptions` prop and improved types of `<Navigator />`. ([#31289](https://github.com/expo/expo/pull/31289) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
@@ -27,6 +28,8 @@
 - Fix Fash Refresh on \_layout files that export unstable_settings ([#29977](https://github.com/expo/expo/pull/29977) by [@marklawlor](https://github.com/marklawlor))
 - Fix creating/parsing URLs with array search params. ([#30268](https://github.com/expo/expo/pull/30268) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect routing sorting for static paths ([#30909](https://github.com/expo/expo/pull/30909) by [@marklawlor](https://github.com/marklawlor))
+- Fix hoisted index routes being incorrectly sorted. ([#31212](https://github.com/expo/expo/pull/31212) by [@marklawlor](https://github.com/marklawlor))
+- Fix Typed Routes crashing on folder rename. ([#31221](https://github.com/expo/expo/pull/31221) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect initialRouteName for nested groups. ([#31025](https://github.com/expo/expo/pull/31025) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others

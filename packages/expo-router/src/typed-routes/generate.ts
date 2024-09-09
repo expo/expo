@@ -13,18 +13,21 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
   const dynamicRoutes = new Set<string>();
   const dynamicRouteContextKeys = new Set<string>();
 
-  walkRouteNode(
-    getRoutes(ctx, {
+  let routeNode: RouteNode | null = null;
+
+  try {
+    routeNode = getRoutes(ctx, {
       platformRoutes: false, // We don't need to generate platform specific routes
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
       importMode: 'async',
-    }),
-    '',
-    staticRoutes,
-    dynamicRoutes,
-    dynamicRouteContextKeys
-  );
+    });
+  } catch {
+    // Ignore errors from `getRoutes`. This is also called inside the app, which has
+    // a nicer UX for showing error messages
+  }
+
+  walkRouteNode(routeNode, '', staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
 
   return `/* eslint-disable */
 import * as Router from 'expo-router';
