@@ -6,27 +6,47 @@ import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
 import expo.modules.kotlin.functions.SyncFunctionComponent
+import expo.modules.kotlin.objects.EventObservingDefinition
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
+import expo.modules.kotlin.objects.SyncEventObservingDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
 class ClassComponentBuilder<SharedObjectType : Any>(
   val name: String,
   private val ownerClass: KClass<SharedObjectType>,
-  val ownerType: KType
+  val ownerType: AnyType
 ) : ObjectDefinitionBuilder() {
   var constructor: SyncFunctionComponent? = null
 
+  private val syncEventObservers = mutableListOf<SyncEventObservingDefinition<SharedObjectType>>()
+
   fun buildClass(): ClassDefinitionData {
+    SyncEventObservingDefinition.Type.entries.forEach { type ->
+      if (!syncFunctions.containsKey(type.value)) {
+        SyncFunctionComponent(type.value, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
+          enforceType<String>(eventName)
+          @Suppress("UNCHECKED_CAST")
+          val self = self as SharedObjectType
+          syncEventObservers.forEach {
+            it.invokedIfNeed(self, type, eventName)
+          }
+        }.also { function ->
+          syncFunctions[type.value] = function
+        }
+      }
+    }
+
     val objectData = buildObject()
     objectData.functions.forEach {
-      it.ownerType = ownerType
+      it.ownerType = ownerType.kType
       it.canTakeOwner = true
     }
 
@@ -38,7 +58,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
     val constructor = constructor ?: SyncFunctionComponent("constructor", emptyArray(), toReturnType<Unit>()) {}
     constructor.canTakeOwner = true
-    constructor.ownerType = ownerType
+    constructor.ownerType = ownerType.kType
+
     return ClassDefinitionData(
       name,
       constructor,
@@ -148,15 +169,41 @@ class ClassComponentBuilder<SharedObjectType : Any>(
    * Creates the read-only property whose getter takes the caller as an argument.
    */
   inline fun <reified T> Property(name: String, crossinline body: (owner: SharedObjectType) -> T): PropertyComponentBuilderWithThis<SharedObjectType> {
-    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType, name).also {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
       it.get(body)
       properties[name] = it
     }
   }
 
   override fun Property(name: String): PropertyComponentBuilderWithThis<SharedObjectType> {
-    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType, name).also {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
       properties[name] = it
+    }
+  }
+
+  /**
+   * Creates object's lifecycle listener that is called right after the first event listener is added for given event.
+   */
+  fun OnStartObservingSync(eventName: String, body: (self: SharedObjectType) -> Unit) {
+    SyncEventObservingDefinition<SharedObjectType>(
+      SyncEventObservingDefinition.Type.StartObserving,
+      EventObservingDefinition.SelectedEventFiler(eventName),
+      body
+    ).also {
+      syncEventObservers.add(it)
+    }
+  }
+
+  /**
+   * Creates object's lifecycle listener that is called right after all event listeners are removed for given event.
+   */
+  fun OnStopObservingSync(eventName: String, body: (self: SharedObjectType) -> Unit) {
+    SyncEventObservingDefinition<SharedObjectType>(
+      SyncEventObservingDefinition.Type.StopObserving,
+      EventObservingDefinition.SelectedEventFiler(eventName),
+      body
+    ).also {
+      syncEventObservers.add(it)
     }
   }
 }

@@ -48,24 +48,23 @@ open class ObjectDefinitionBuilder {
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
 
-  private val eventObservers = mutableListOf<EventObservingDefinition>()
+  private val asyncEventObservers = mutableListOf<AsyncEventObservingDefinition>()
 
   fun buildObject(): ObjectDefinitionData {
-    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
-      .toMutableMap()
-
-    EventObservingDefinition.Type.entries.forEach { type ->
+    AsyncEventObservingDefinition.Type.entries.forEach { type ->
       // If the user exports a function that is called `startObserving` or `stopObserving`, we don't add the observer
       // In the long run, we probably want to add a warning here or make it impossible to export such functions.
       if (!asyncFunctions.containsKey(type.value)) {
-        val observerFunction = AsyncFunction(type.value) { eventName: String ->
-          eventObservers.forEach {
+        AsyncFunction(type.value) { eventName: String ->
+          asyncEventObservers.forEach {
             it.invokedIfNeed(type, eventName)
           }
         }
-        asyncFunctions[type.value] = observerFunction
       }
     }
+
+    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
+      .toMutableMap()
 
     return ObjectDefinitionData(
       constantsProvider,
@@ -465,12 +464,12 @@ open class ObjectDefinitionBuilder {
    * Creates module's lifecycle listener that is called right after the first event listener is added for given event.
    */
   fun OnStartObserving(eventName: String, body: () -> Unit) {
-    EventObservingDefinition(
-      EventObservingDefinition.Type.StartObserving,
+    AsyncEventObservingDefinition(
+      AsyncEventObservingDefinition.Type.StartObserving,
       EventObservingDefinition.SelectedEventFiler(eventName),
       body
     ).also {
-      eventObservers.add(it)
+      asyncEventObservers.add(it)
     }
   }
 
@@ -478,12 +477,12 @@ open class ObjectDefinitionBuilder {
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   fun OnStartObserving(body: () -> Unit) {
-    EventObservingDefinition(
-      EventObservingDefinition.Type.StartObserving,
+    AsyncEventObservingDefinition(
+      AsyncEventObservingDefinition.Type.StartObserving,
       EventObservingDefinition.AllEventsFilter,
       body
     ).also {
-      eventObservers.add(it)
+      asyncEventObservers.add(it)
     }
   }
 
@@ -491,12 +490,12 @@ open class ObjectDefinitionBuilder {
    * Creates module's lifecycle listener that is called right after all event listeners are removed for given event.
    */
   fun OnStopObserving(eventName: String, body: () -> Unit) {
-    EventObservingDefinition(
-      EventObservingDefinition.Type.StopObserving,
+    AsyncEventObservingDefinition(
+      AsyncEventObservingDefinition.Type.StopObserving,
       EventObservingDefinition.SelectedEventFiler(eventName),
       body
     ).also {
-      eventObservers.add(it)
+      asyncEventObservers.add(it)
     }
   }
 
@@ -504,12 +503,12 @@ open class ObjectDefinitionBuilder {
    * Creates module's lifecycle listener that is called right after all event listeners are removed.
    */
   fun OnStopObserving(body: () -> Unit) {
-    EventObservingDefinition(
-      EventObservingDefinition.Type.StopObserving,
+    AsyncEventObservingDefinition(
+      AsyncEventObservingDefinition.Type.StopObserving,
       EventObservingDefinition.AllEventsFilter,
       body
     ).also {
-      eventObservers.add(it)
+      asyncEventObservers.add(it)
     }
   }
 

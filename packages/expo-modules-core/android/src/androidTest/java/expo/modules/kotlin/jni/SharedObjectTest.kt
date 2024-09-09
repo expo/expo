@@ -156,7 +156,49 @@ class SharedObjectTest {
     Truth.assertThat(hasCorrectPrototype).isTrue()
   }
 
-  private class SharedObjectExampleClass : SharedObject()
+  @Test
+  fun should_call_start_observing_with_this() = withSingleModule({
+    Class<SharedObjectExampleClass> {
+      Constructor { SharedObjectExampleClass() }
+
+      Events("event")
+
+      Function("getData") { self: SharedObjectExampleClass ->
+        self.data
+      }
+
+      OnStartObservingSync("event") { self: SharedObjectExampleClass ->
+        self.data = 987
+      }
+
+      OnStopObservingSync("event") { self: SharedObjectExampleClass ->
+        self.data = 654
+      }
+    }
+  }) {
+    val afterStartObserving = evaluateScript(
+      """
+      const sharedObject = new $moduleRef.SharedObjectExampleClass();
+      global.listener = sharedObject.addListener('event', () => {});
+      global.sharedObject = sharedObject;
+      sharedObject.getData()
+      """.trimIndent()
+    ).getInt()
+
+    val afterOnStopObserving = evaluateScript(
+      """
+      global.listener.remove();
+      global.sharedObject.getData()
+      """.trimIndent()
+    ).getInt()
+
+    Truth.assertThat(afterStartObserving).isEqualTo(987)
+    Truth.assertThat(afterOnStopObserving).isEqualTo(654)
+  }
+
+  private class SharedObjectExampleClass : SharedObject() {
+    var data = 123
+  }
 
   private fun withExampleSharedClass(
     block: SingleTestContext.() -> Unit
