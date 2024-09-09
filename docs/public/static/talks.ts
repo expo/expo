@@ -149,6 +149,26 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to do React Native styling with Tamagui',
+    event: 'Expo Live Stream',
+    videoId: "5ubbsSD-iXg"
+  },
+  {
+    title: 'How to do React Native styling with NativeWind',
+    event: 'Expo Live Stream',
+    videoId: "TtmWw0NfsQk"
+  },
+  {
+    title: 'An introduction to built-in styling in React Native',
+    event: 'Expo Live Stream',
+    videoId: "M1ma6Y5Ih_c"
+  },
+  {
+    title: 'What React devs need to know about React Native',
+    event: 'Expo Live Stream',
+    videoId: "iB7sc-fzpWw"
+  },
+  {
     title: 'Expo SDK 51: New Architecture, Router 3.5, expo.new and more',
     event: 'Expo Live Stream',
     videoId: "k1ISWPgP4S4"
