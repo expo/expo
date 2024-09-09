@@ -169,6 +169,7 @@ export class TokenRequest<T extends TokenRequestConfig>
   readonly clientSecret?: string;
   readonly scopes?: string[];
   readonly extraParams?: Record<string, string>;
+  readonly extraHeaders?: Record<string, string>;
 
   constructor(
     request: T,
@@ -178,6 +179,7 @@ export class TokenRequest<T extends TokenRequestConfig>
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;
     this.extraParams = request.extraParams;
+    this.extraHeaders = request.extraHeaders;
     this.scopes = request.scopes;
   }
 
@@ -191,6 +193,14 @@ export class TokenRequest<T extends TokenRequestConfig>
       const credentials = `${encodedClientId}:${encodedClientSecret}`;
       const basicAuth = Base64.encodeNoWrap(credentials);
       headers.Authorization = `Basic ${basicAuth}`;
+    }
+
+    if (this.extraHeaders) {
+      for (const extra in this.extraHeaders) {
+        if (extra in this.extraHeaders && !(extra in headers)) {
+          headers[extra] = this.extraHeaders[extra];
+        }
+      }
     }
 
     return headers;
@@ -309,6 +319,7 @@ export class AccessTokenRequest
       code: this.code,
       redirectUri: this.redirectUri,
       extraParams: this.extraParams,
+      extraHeaders: this.extraHeaders,
       scopes: this.scopes,
     };
   }
@@ -348,6 +359,7 @@ export class RefreshTokenRequest
       grantType: this.grantType,
       refreshToken: this.refreshToken,
       extraParams: this.extraParams,
+      extraHeaders: this.extraHeaders,
       scopes: this.scopes,
     };
   }
