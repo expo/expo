@@ -64,10 +64,12 @@ export declare function openBrowserAsync(url: string, browserParams?: WebBrowser
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ * @return The promise that resolves with `{ type: 'dismiss' }` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
-export declare function dismissBrowser(): void;
+export declare function dismissBrowser(): Promise<{
+    type: WebBrowserResultType.DISMISS;
+}>;
 /**
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](https://reactnative.dev/docs/appstate),

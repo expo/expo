@@ -111,8 +111,10 @@
   return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
 }
 
+#if !TARGET_OS_OSX
 - (void)customizeRootView:(UIView *)rootView {
   [_expoAppDelegate customizeRootView:rootView];
 }
+#endif // !TARGET_OS_OSX
 
 @end

@@ -358,6 +358,14 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         if (!graphEntryForTargetImport) {
             throw new Error(`Failed to find graph key for re-export "${importModuleId}" while optimizing ${graphModule.path}. Options: ${[...graphModule.dependencies.values()].map((v) => v.data.name).join(', ')}`);
         }
+        //
+        if (graphEntryForTargetImport.path.match(/\.(s?css|sass)$/)) {
+            debug('Skip graph unlinking for CSS:');
+            debug('- Origin module:', graphModule.path);
+            debug('- Module ID:', importModuleId);
+            // Skip CSS imports.
+            return { path: importInstance.absolutePath, removed: false };
+        }
         const [authorMarkedSideEffect, trace] = (0, sideEffects_1.hasSideEffectWithDebugTrace)(options, graph, graphEntryForTargetImport);
         // If the package.json chain explicitly marks the module as side-effect-free, then we can remove imports that have no specifiers.
         const isFx = authorMarkedSideEffect ?? isSideEffectyImport;

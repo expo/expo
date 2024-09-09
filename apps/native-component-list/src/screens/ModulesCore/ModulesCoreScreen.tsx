@@ -1,3 +1,6 @@
+import { isRunningInExpoGo } from 'expo';
+import { Platform } from 'expo-modules-core';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -17,6 +20,16 @@ export const ModulesCoreScreens = [
     },
   },
 ];
+
+if (Platform.OS === 'ios' && !isRunningInExpoGo()) {
+  ModulesCoreScreens.push({
+    name: 'Benchmarks',
+    route: 'modulescore/benchmarks',
+    getComponent() {
+      return optionalRequire(() => require('./ModulesBenchmarksScreen'));
+    },
+  });
+}
 
 export default function ModulesCoreScreen() {
   const apis: ListElement[] = ModulesCoreScreens.map((screen) => {

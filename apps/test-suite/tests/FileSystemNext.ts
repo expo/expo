@@ -266,7 +266,7 @@ export async function test({ describe, expect, it, ...t }) {
       it('downloads a file to a target file', async () => {
         const url = 'https://httpbin.org/image/jpeg';
         const file = new File(testDirectory + 'image.jpeg');
-        const output = await File.download(url, file);
+        const output = await File.downloadFileAsync(url, file);
         expect(file.exists()).toBe(true);
         expect(output.path).toBe(file.path);
       });
@@ -274,7 +274,7 @@ export async function test({ describe, expect, it, ...t }) {
       it('downloads a file to a target directory', async () => {
         const url = 'https://httpbin.org/image/jpeg';
         const directory = new Directory(testDirectory);
-        const output = await File.download(url, directory);
+        const output = await File.downloadFileAsync(url, directory);
 
         const file = new File(
           testDirectory + (Platform.OS === 'android' ? 'jpeg.jpg' : 'jpeg.jpeg')

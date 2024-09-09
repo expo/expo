@@ -23,6 +23,7 @@ import {
   getCommentContent,
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
+  extractDefaultPropValue,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
@@ -163,10 +164,15 @@ const renderClass = (
           />
           <div>
             {properties.map(property =>
-              renderProp(property, sdkVersion, property?.defaultValue, {
-                exposeInSidebar: true,
-                baseNestingLevel: linksNestingLevel,
-              })
+              renderProp(
+                property,
+                sdkVersion,
+                extractDefaultPropValue(property) ?? property?.defaultValue,
+                {
+                  exposeInSidebar: true,
+                  baseNestingLevel: linksNestingLevel,
+                }
+              )
             )}
           </div>
         </>

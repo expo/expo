@@ -112,7 +112,7 @@ Setting this property automatically handles the compliance information prompt.
 <SnackInline label='SecureStore' dependencies={['expo-secure-store']} platforms={['ios', 'android']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
@@ -130,8 +130,8 @@ async function getValueFor(key) {
 }
 
 export default function App() {
-  const [key, onChangeKey] = React.useState('Your key here');
-  const [value, onChangeValue] = React.useState('Your value here');
+  const [key, onChangeKey] = useState('Your key here');
+  const [value, onChangeValue] = useState('Your value here');
 
   return (
     <View style={styles.container}>
