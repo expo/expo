@@ -74,7 +74,7 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             });
         if (duplicateTrigger) {
             const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })} and ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
-            throw new Error(`A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}`);
+            throw new Error(`A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}.\nBoth triggers map to route ${routeNode.route}.`);
         }
         configs.push({
             ...trigger,

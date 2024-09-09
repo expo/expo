@@ -79,11 +79,13 @@ function useTabTrigger({ name, reset, onPress, onLongPress }) {
     }, [navigation, triggerMap]);
     const handleOnPress = (0, react_1.useCallback)((event) => {
         onPress?.(event);
+        if (!trigger)
+            return;
         if (event?.isDefaultPrevented())
             return;
         navigation?.emit({
             type: 'tabPress',
-            target: trigger?.route.key,
+            target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
             canPreventDefault: true,
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
@@ -92,11 +94,13 @@ function useTabTrigger({ name, reset, onPress, onLongPress }) {
     }, [onPress, name, reset, trigger]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
         onPress?.(event);
+        if (!trigger)
+            return;
         if (event?.isDefaultPrevented())
             return;
         navigation?.emit({
             type: 'tabLongPress',
-            target: trigger?.route.key,
+            target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;

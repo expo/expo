@@ -7,7 +7,7 @@ export default function NewTabsLayout() {
   return (
     <Tabs style={styles.root}>
       <TabList style={styles.tabList}>
-        <TabTrigger asChild name="thumbs-up" href="./thumbs-up">
+        <TabTrigger asChild name="thumbs-up" href="./(one)/thumbs-up">
           <TabButton icon="thumbs-up">Up</TabButton>
         </TabTrigger>
         <TabTrigger

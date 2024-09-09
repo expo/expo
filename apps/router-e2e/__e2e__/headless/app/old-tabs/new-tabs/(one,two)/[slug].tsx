@@ -8,8 +8,7 @@ export default function NewOne() {
   return (
     <>
       <Text>{slug}</Text>
-      <Text>Links</Text>
-      <TabTrigger testID="a" name="movies">
+      <TabTrigger name="movies">
         <Text>Movies</Text>
       </TabTrigger>
     </>

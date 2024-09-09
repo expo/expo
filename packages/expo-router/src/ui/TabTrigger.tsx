@@ -136,11 +136,12 @@ export function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerP
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
       onPress?.(event);
+      if (!trigger) return;
       if (event?.isDefaultPrevented()) return;
 
       navigation?.emit({
         type: 'tabPress',
-        target: trigger?.route.key,
+        target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
         canPreventDefault: true,
       });
 
@@ -154,11 +155,12 @@ export function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerP
   const handleOnLongPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
       onPress?.(event);
+      if (!trigger) return;
       if (event?.isDefaultPrevented()) return;
 
       navigation?.emit({
         type: 'tabLongPress',
-        target: trigger?.route.key,
+        target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
       });
 
       if (!shouldHandleMouseEvent(event)) return;

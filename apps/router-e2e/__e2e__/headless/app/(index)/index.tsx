@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       <Text style={styles.header}>Home</Text>
-      <Text style={styles.subheader}>Test pages1111</Text>
+      <Text style={styles.subheader}>Test pages</Text>
       <Link href="/tab-functions" style={styles.link}>
         Go to Tab functions
       </Link>
