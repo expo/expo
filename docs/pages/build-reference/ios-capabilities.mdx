@@ -61,8 +61,10 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | Hotspot                                           | `com.apple.developer.networking.HotspotConfiguration`                                                            |
 | <YesIcon /> | Increased Memory Limit                            | `com.apple.developer.kernel.increased-memory-limit`                                                              |
 | <YesIcon /> | Inter-App Audio                                   | `inter-app-audio`                                                                                                |
+| <YesIcon /> | Journaling Suggestions                            | `com.apple.developer.journal.allow`                                                                              |
 | <YesIcon /> | Low Latency HLS                                   | `com.apple.developer.coremedia.hls.low-latency`                                                                  |
 | <YesIcon /> | MDM Managed Associated Domains                    | `com.apple.developer.associated-domains.mdm-managed`                                                             |
+| <YesIcon /> | Managed App Installation UI                       | `com.apple.developer.managed-app-distribution.install-ui`                                                        |
 | <YesIcon /> | Maps                                              | `com.apple.developer.maps`                                                                                       |
 | <YesIcon /> | Matter Allow Setup Payload                        | `com.apple.developer.matter.allow-setup-payload`                                                                 |
 | <YesIcon /> | Media Device Discovery                            | `com.apple.developer.media-device-discovery-extension`                                                           |
@@ -70,6 +72,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | Multipath                                         | `com.apple.developer.networking.multipath`                                                                       |
 | <YesIcon /> | NFC Tag Reading                                   | `com.apple.developer.nfc.readersession.formats`                                                                  |
 | <YesIcon /> | Network Extensions                                | `com.apple.developer.networking.networkextension`                                                                |
+| <YesIcon /> | 5G Network Slicing                                | `com.apple.developer.networking.slicing.appcategory` or `com.apple.developer.networking.slicing.trafficcategory` |
 | <YesIcon /> | On Demand Install Capable for App Clip Extensions | `com.apple.developer.on-demand-install-capable`                                                                  |
 | <YesIcon /> | Personal VPN                                      | `com.apple.developer.networking.vpn.api`                                                                         |
 | <YesIcon /> | Push Notifications                                | `aps-environment`                                                                                                |
@@ -89,9 +92,6 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | WeatherKit                                        | `com.apple.developer.weatherkit`                                                                                 |
 | <YesIcon /> | Wireless Accessory Configuration                  | `com.apple.external-accessory.wireless-configuration`                                                            |
 | <YesIcon /> | iCloud                                            | `com.apple.developer.icloud-container-identifiers`                                                               |
-| <YesIcon /> | Journaling Suggestions                            | `com.apple.developer.journal.allow`                                                                              |
-| <YesIcon /> | Managed App Installation UI                       | `com.apple.developer.managed-app-distribution.install-ui`                                                        |
-| <YesIcon /> | 5G Network Slicing                                | `com.apple.developer.networking.slicing.appcategory` or `com.apple.developer.networking.slicing.trafficcategory` |
 | <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                                                          |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value. Here is a list of all of the [official Apple capabilities](https://developer.apple.com/help/account/reference/supported-capabilities-ios).
