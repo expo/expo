@@ -62,6 +62,7 @@ export declare class TokenRequest<T extends TokenRequestConfig> extends Request<
     readonly clientSecret?: string;
     readonly scopes?: string[];
     readonly extraParams?: Record<string, string>;
+    readonly extraHeaders?: Record<string, string>;
     constructor(request: T, grantType: GrantType);
     getHeaders(): Headers;
     performAsync(discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
@@ -84,6 +85,7 @@ export declare class AccessTokenRequest extends TokenRequest<AccessTokenRequestC
         code: string;
         redirectUri: string;
         extraParams: Record<string, string> | undefined;
+        extraHeaders: Record<string, string> | undefined;
         scopes: string[] | undefined;
     };
 }
@@ -102,6 +104,7 @@ export declare class RefreshTokenRequest extends TokenRequest<RefreshTokenReques
         grantType: GrantType;
         refreshToken: string | undefined;
         extraParams: Record<string, string> | undefined;
+        extraHeaders: Record<string, string> | undefined;
         scopes: string[] | undefined;
     };
 }
