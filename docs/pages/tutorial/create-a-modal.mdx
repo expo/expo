@@ -745,7 +745,8 @@ Let's take a look at our app on Android, iOS and the web:
 Now we'll put the emoji sticker on the image. Create a new file in the **components** directory and call it **EmojiSticker.tsx**. Then, add the following code:
 
 ```tsx components/EmojiSticker.tsx|collapseHeight=300
-import { View, Image } from 'react-native';
+import { View } from 'react-native';
+import { Image } from 'expo-image';
 
 type Props = {
   imageSize: number;
@@ -755,11 +756,7 @@ type Props = {
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   return (
     <View style={{ top: -350 }}>
-      <Image
-        source={stickerSource}
-        resizeMode="contain"
-        style={{ width: imageSize, height: imageSize }}
-      />
+      <Image source={stickerSource} style={{ width: imageSize, height: imageSize }} />
     </View>
   );
 }
