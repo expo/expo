@@ -32,7 +32,7 @@ export type WorkspacesInfo = Record<string, WorkspaceProjectInfo>;
  * Returns an object containing info for all projects in the workspace.
  */
 export async function getInfoAsync(): Promise<WorkspacesInfo> {
-  // This ony lists workspace dependencies from `dependencies` and `devDependencies`.
+  // This only lists workspace dependencies from `dependencies` and `devDependencies`.
   const info = await spawnJSONCommandAsync<{ data: string }>('yarn', [
     '--json',
     'workspaces',
