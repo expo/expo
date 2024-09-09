@@ -1,2 +1,2 @@
-export { Directory, File, write } from './FileSystem';
+export { Directory, File } from './FileSystem';
 //# sourceMappingURL=index.d.ts.map
