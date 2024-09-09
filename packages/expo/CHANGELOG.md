@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 50.0.21 — 2024-09-09
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.20 — 2024-08-08
 
 _This version does not introduce any user-facing changes._
