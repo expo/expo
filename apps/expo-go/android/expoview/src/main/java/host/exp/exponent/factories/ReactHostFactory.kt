@@ -95,7 +95,7 @@ object ReactHostFactory {
         reactHostDelegate,
         componentFactory,
         true,
-        useDeveloperSupport
+        useDeveloperSupport,
       )
         .apply {
           jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
@@ -113,6 +113,6 @@ object ReactHostFactory {
       }
     })
 
-    return reactHostImpl as ReactHost
+    return reactHostImpl
   }
 }

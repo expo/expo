@@ -26,6 +26,8 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
+import com.facebook.react.runtime.ReactHostImpl
+import com.facebook.react.runtime.ReactSurfaceImpl
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.ExpoReactHostFactory
@@ -47,7 +49,6 @@ import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
 import host.exp.exponent.experience.KernelData
 import host.exp.exponent.experience.KernelReactNativeHost
-import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEventCallback
@@ -245,7 +246,7 @@ class Kernel : KernelInterface() {
             )
           }
           val wrapper = ReactNativeHostWrapper(applicationContext, host)
-          reactHost = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, wrapper)
+          reactHost = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, wrapper,)
 
           reactNativeHost = host
           reactHost?.onHostResume(activityContext)
@@ -320,13 +321,11 @@ class Kernel : KernelInterface() {
     get() = field && !hasError
     private set
 
-  val surface: ReactSurface?
+  val surface: ReactSurface
     get() {
-      val surface = reactHost?.createSurface(
-        context,
-        KernelConstants.HOME_MODULE_NAME,
-        kernelLaunchOptions
-      )
+      val surface = ReactSurfaceImpl.createWithView(context, KernelConstants.HOME_MODULE_NAME, kernelLaunchOptions)
+      surface.attach(reactHost as ReactHostImpl)
+      surface.start()
       return surface
     }
   private val kernelLaunchOptions: Bundle

@@ -15,17 +15,12 @@ import host.exp.exponent.analytics.EXL;
 public class ShakeModule extends ReactContextBaseJavaModule {
   private static final String TAG = ShakeModule.class.getSimpleName();
 
-  private ShakeDetector mShakeDetector;
+  private final ShakeDetector mShakeDetector;
 
   public ShakeModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
-    mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
-      @Override
-      public void onShake() {
-        ShakeModule.this.onShake();
-      }
-    });
+    mShakeDetector = new ShakeDetector(ShakeModule.this::onShake);
     mShakeDetector.start((SensorManager) reactContext.getSystemService(Context.SENSOR_SERVICE));
   }
 

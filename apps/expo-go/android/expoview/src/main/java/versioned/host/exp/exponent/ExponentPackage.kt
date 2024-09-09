@@ -4,7 +4,6 @@ package versioned.host.exp.exponent
 import android.content.Context
 import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
-import com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
@@ -17,12 +16,13 @@ import com.reactnativecommunity.webview.RNCWebViewModule
 import com.reactnativecommunity.webview.RNCWebViewPackage
 import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
+import com.rnmaps.maps.MapsPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
-import com.rnmaps.maps.MapsPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -38,7 +38,6 @@ import org.reactnative.maskedview.RNCMaskedViewPackage
 import versioned.host.exp.exponent.modules.api.KeyboardModule
 import versioned.host.exp.exponent.modules.api.PedometerModule
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule
-import versioned.host.exp.exponent.modules.api.ShakeModule
 import versioned.host.exp.exponent.modules.api.URLHandlerModule
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
@@ -103,10 +102,10 @@ class ExponentPackage : ReactPackage {
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    val isVerified = manifest.isVerified() ?: false
+    val isVerified = manifest.isVerified()
     val nativeModules: MutableList<NativeModule> = mutableListOf(
       URLHandlerModule(reactContext),
-      ShakeModule(reactContext),
+//      ShakeModule(reactContext),
       KeyboardModule(reactContext)
     )
     nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))

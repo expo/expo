@@ -632,7 +632,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
               notification,
               expoPackages(),
               devBundleDownloadProgressListener
-            ) as ReactHostImpl
+            )
           }
 
           override fun onFailure(errorMessage: String) {

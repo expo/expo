@@ -15,10 +15,14 @@ import versioned.host.exp.exponent.ExponentPackage
 class ExpoGoReactNativeHost(
   application: Application,
   private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties,
-  private val localBundlePath: String?
+  private val mainModuleName: String? = null
 ) : DefaultReactNativeHost(application) {
   override fun getUseDeveloperSupport(): Boolean {
     return true
+  }
+
+  override fun getJSMainModuleName(): String {
+    return mainModuleName ?: super.getJSMainModuleName()
   }
 
   override fun getJSBundleFile(): String? {

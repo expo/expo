@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import java.util.*
 import javax.inject.Inject
-import kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf.Visibility
 
 private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 
@@ -44,10 +43,9 @@ private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 class DevMenuManager {
   private var shakeDetector: ShakeDetector? = null
   private var reactSurface: ReactSurface? = null
-
   private var orientationBeforeShowingDevMenu: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
   private val devMenuModulesRegistry = WeakHashMap<ExperienceActivity, DevMenuModuleInterface>()
-  private val activeSurfaceRegistry = WeakHashMap<ExperienceActivity, ReactSurface>()
+
   val managerScope = CoroutineScope(Dispatchers.Main)
 
   @Inject

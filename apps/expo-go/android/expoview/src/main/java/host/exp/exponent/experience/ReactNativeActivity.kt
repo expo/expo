@@ -22,7 +22,6 @@ import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
-import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
@@ -32,6 +31,9 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
+import com.facebook.react.runtime.ExpoGoDevSupportManager
+import com.facebook.react.runtime.ReactHostImpl
+import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
 import expo.modules.ReactNativeHostWrapper
 import expo.modules.core.interfaces.Package
@@ -64,7 +66,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentDevBundleDownloadListener
 import versioned.host.exp.exponent.ExponentPackage
-import versioned.host.exp.exponent.VersionedUtils
 import java.util.LinkedList
 import java.util.Queue
 import javax.inject.Inject
@@ -87,8 +88,8 @@ abstract class ReactNativeActivity :
   protected open fun startReactInstance() {}
 
   var reactNativeHost: ReactNativeHost? = null
-  protected var reactHost: ReactHost? = null
-  protected var reactSurface: ReactSurface? = null
+  var reactHost: ReactHost? = null
+  var reactSurface: ReactSurface? = null
 
   protected var isCrashed = false
 
@@ -380,19 +381,26 @@ abstract class ReactNativeActivity :
     val host = ExpoGoReactNativeHost(
       application,
       instanceManagerBuilderProperties,
-      jsBundlePath
+      manifest!!.getMainModuleName()
     )
     val wrapper = ReactNativeHostWrapper(application, host)
     val reactHost = ReactHostFactory.createFromReactNativeHost(this, wrapper)
     reactNativeHost = host
+
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
-    setDevSettings(reactHost, devBundleDownloadListener)
+    val devSupportManager = ExpoGoDevSupportManager(
+      reactHost as ReactHostImpl,
+      this,
+      jsBundlePath,
+      devBundleDownloadListener
+    )
+    setDevSettings(reactHost, devSupportManager)
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
       val mainModuleName = manifest!!.getMainModuleName()
       Exponent.enableDeveloperSupport(debuggerHost, mainModuleName)
-      DefaultDevLoadingViewImplementation.setDevLoadingEnabled(false)
+      DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
     }
@@ -444,7 +452,7 @@ abstract class ReactNativeActivity :
       return null
     }
 
-    val devSettings = reactHost.devSupportManager?.devSettings as? DevInternalSettings
+    val devSettings = reactHost.devSupportManager.devSettings as? DevInternalSettings
     if (devSettings != null) {
       devSettings.setExponentActivityId(activityId)
       if (devSettings.isRemoteJSDebugEnabled) {
@@ -456,42 +464,27 @@ abstract class ReactNativeActivity :
       }
     }
 
-    reactHost.onHostResume(this, this)
     val appKey = manifest!!.getAppKey()
-    reactSurface = reactHost.createSurface(
+    val surface = ReactSurfaceImpl.createWithView(
       this,
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
-    reactSurface?.start()
+    surface.attach(reactHost)
+    surface.start()
+    reactSurface = surface
+    reactHost.onHostResume(this, this)
     KernelNetworkInterceptor.start(manifest!!, reactHost)
     return reactHost
   }
 
   private fun setDevSettings(
     reactHost: ReactHost,
-    devBundleDownloadListener: ExponentDevBundleDownloadListener
+    devSupportManager: DevSupportManager
   ) {
-    val hostField = reactHost::class.java.getDeclaredField("mDevSupportManager")
-    hostField.isAccessible = true
-    val devSupportManager = hostField.get(reactHost)
-
-    val bundleDownloadListenerField =
-      devSupportManager::class.java.getField("mBundleDownloadListener")
-    bundleDownloadListenerField.isAccessible = true
-    bundleDownloadListenerField.set(devSupportManager, devBundleDownloadListener)
-
-    val handlers = devSupportManager::class.java.getField("mCustomPackagerCommandHandlers")
-    handlers.isAccessible = true
-    handlers.set(devSupportManager, VersionedUtils.createPackagerCommandHelpers())
-
-    val shakeDetector = devSupportManager::class.java.getField("mShakeDetector")
-    shakeDetector.isAccessible = true
-    shakeDetector.set(
-      devSupportManager,
-      ShakeDetector({
-      }, 100)
-    )
+    val devSupportManagerField = ReactHostImpl::class.java.getDeclaredField("mDevSupportManager")
+    devSupportManagerField.isAccessible = true
+    devSupportManagerField[reactHost] = devSupportManager
   }
 
   protected fun shouldShowErrorScreen(errorMessage: ExponentErrorMessage): Boolean {
@@ -622,7 +615,7 @@ abstract class ReactNativeActivity :
     get() = reactHost?.devSupportManager
 
   val jsExecutorName: String?
-    get() = reactHost?.jsEngineResolutionAlgorithm?.name
+    get() = reactNativeHost?.reactInstanceManager?.jsExecutorName
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
@@ -631,13 +624,13 @@ abstract class ReactNativeActivity :
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       return if (host != null && (
-          host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(
-              ".exp.direct"
-            ) || host.endsWith(
-              ".expo.test"
-            )
-          )
+                host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
+                        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(
+                  ".exp.direct"
+                ) || host.endsWith(
+                  ".expo.test"
+                )
+                )
       ) {
         val pathSegments = uri.pathSegments
         val builder = uri.buildUpon()

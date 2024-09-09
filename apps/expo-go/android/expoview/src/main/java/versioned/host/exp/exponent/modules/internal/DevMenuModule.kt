@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -12,7 +11,6 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
@@ -22,7 +20,6 @@ import host.exp.exponent.kernel.DevMenuModuleInterface
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.Exponent
 import host.exp.expoview.R
-import kotlinx.coroutines.cancel
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
@@ -186,13 +183,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
 
   override fun onHostPause() {}
 
-  override fun onHostDestroy() {
-    try {
-      devMenuManager.managerScope.cancel(ModuleDestroyedException())
-    } catch (e: IllegalStateException) {
-      Log.e("DevMenuModule", "The scope does not have a job in it")
-    }
-  }
+  override fun onHostDestroy() {}
 
   //endregion LifecycleEventListener
   //region internals
@@ -239,7 +230,8 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   private val isJsExecutorInspectable: Boolean by lazy {
     val activity = currentActivity as? ReactNativeActivity
-    activity?.jsExecutorName == "Hermes"
+//    activity?.jsExecutorName == "JSIExecutor+HermesRuntime"
+    true
   }
 
   /**
