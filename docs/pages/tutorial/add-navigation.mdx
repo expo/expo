@@ -68,7 +68,7 @@ import { Stack } from 'expo-router';
 export default function RootLayout() {
   return (
     <Stack>
-      /* @info Add <CODE>options</CODE> prop to <CODE>/index</CODE> route. Add another <CODE>Stack.Screen</CODE> component to add <CODE>/about</CODE> route. */
+      /* @tutinfo Add <CODE>options</CODE> prop to <CODE>/index</CODE> route. Add another <CODE>Stack.Screen</CODE> component to add <CODE>/about</CODE> route. */
       <Stack.Screen name="index" options={{ title: 'Home' }} />
       <Stack.Screen name="about" options={{ title: 'About' }} />
       /* @end */
@@ -98,13 +98,13 @@ To navigate from `/index` route to `/about` route, we will use Expo Router's bui
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
-/* @info Import <CODE>Link</CODE> component from <CODE>expo-router</CODE>. */ import { Link } from 'expo-router'; /* @end */
+/* @tutinfo Import <CODE>Link</CODE> component from <CODE>expo-router</CODE>. */ import { Link } from 'expo-router'; /* @end */
 
 export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home screen</Text>
-      /* @info Add <CODE>Link</CODE> component after <CODE>Text</CODE> component and pass the <CODE>href</CODE> prop with <CODE>/about</CODE> route. */
+      /* @tutinfo Add <CODE>Link</CODE> component after <CODE>Text</CODE> component and pass the <CODE>href</CODE> prop with <CODE>/about</CODE> route. */
       <Link href="/about" style={styles.button}>
         Go to About screen
       </Link>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   text: {
     color: '#fff',
   },
-  /* @info Add the style of <CODE>fontSize</CODE>, <CODE>textDecorationLine</CODE>, and <CODE>color</CODE> to <CODE>Link</CODE> component. */
+  /* @tutinfo Add the style of <CODE>fontSize</CODE>, <CODE>textDecorationLine</CODE>, and <CODE>color</CODE> to <CODE>Link</CODE> component. */
   button: {
     fontSize: 20,
     textDecorationLine: 'underline',
@@ -157,11 +157,11 @@ import { Link, Stack } from 'expo-router';
 export default function NotFoundScreen() {
   return (
     <>
-      /* @info Add <CODE>Stack.Screen</CODE> component with <CODE>options</CODE> prop to update the title of <CODE>+not-found</CODE> route. */
+      /* @tutinfo Add <CODE>Stack.Screen</CODE> component with <CODE>options</CODE> prop to update the title of <CODE>+not-found</CODE> route. */
       <Stack.Screen options={{ title: 'Oops! Not Found' }} />
       /* @end */
       <View style={styles.container}>
-        /* @info Adding a fallback route allows the user to navigate to that screen. Here, the fallback route is Home screen. */
+        /* @tutinfo Adding a fallback route allows the user to navigate to that screen. Here, the fallback route is Home screen. */
         <Link href="/" style={styles.button}>
           Go back to Home screen!
         </Link>
@@ -198,7 +198,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: 'Home' }} />
       <Stack.Screen name="about" options={{ title: 'About' }} />
-      /* @info Adding <CODE>+not-found</CODE> route in <CODE>RootLayout</CODE> will display this fallback screen when a user navigates to a 404 route. */
+      /* @tutinfo Adding <CODE>+not-found</CODE> route in <CODE>RootLayout</CODE> will display this fallback screen when a user navigates to a 404 route. */
       <Stack.Screen name="+not-found" />
       /* @end */
     </Stack>
@@ -252,7 +252,7 @@ import { Stack } from 'expo-router';
 export default function RootLayout() {
   return (
     <Stack>
-      /* @info This is how a tab navigator is nested inside a stack navigator, especially when the Root layout is composed of a parent stack navigator. We're also setting the <CODE>headerShown</CODE> option to <CODE>false</CODE> to hide the header for the tab navigator. Otherwise, there will be two headers displayed on each screen. */
+      /* @tutinfo This is how a tab navigator is nested inside a stack navigator, especially when the Root layout is composed of a parent stack navigator. We're also setting the <CODE>headerShown</CODE> option to <CODE>false</CODE> to hide the header for the tab navigator. Otherwise, there will be two headers displayed on each screen. */
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       /* @end */
       <Stack.Screen name="+not-found" />
@@ -270,7 +270,7 @@ import { Tabs } from 'expo-router';
 export default function TabLayout() {
   return (
     <Tabs>
-      /* @info <CODE>Tabs.Screen</CODE> component works in a similar way and accepts same props as <CODE>Stack.Screen</CODE> component. The only difference is the navigation pattern on the device. */
+      /* @tutinfo <CODE>Tabs.Screen</CODE> component works in a similar way and accepts same props as <CODE>Stack.Screen</CODE> component. The only difference is the navigation pattern on the device. */
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="about" options={{ title: 'About' }} />
       /* @end */
@@ -305,7 +305,7 @@ Modify the **(tabs)/\_layout.tsx** file to add tab bar icons:
 ```tsx app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
-/* @info Import <CODEIonicons</CODE> icon set.*/
+/* @tutinfo Import <CODEIonicons</CODE> icon set.*/
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -314,7 +314,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 export default function TabLayout() {
   return (
     <Tabs
-      /* @info There are many <CODE>screenOptions</CODE> we can use to customize the tab bar. We're changing the active tab color here to custom value which we will also use later in our app. */
+      /* @tutinfo There are many <CODE>screenOptions</CODE> we can use to customize the tab bar. We're changing the active tab color here to custom value which we will also use later in our app. */
       screenOptions={{
         tabBarActiveTintColor: '#ffd33d',
       }}
@@ -325,7 +325,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            /* @info The <CODE>focused</CODE> param allows us to change a tab's icon and label behavior when it is active and inactive.*/
+            /* @tutinfo The <CODE>focused</CODE> param allows us to change a tab's icon and label behavior when it is active and inactive.*/
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
             /* @end */
           ),

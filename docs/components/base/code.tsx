@@ -62,6 +62,16 @@ export function Code({ className, children }: CodeProps) {
       appendTo: document.body,
     });
 
+    tippyFunc('.tutorial-code-annotation.with-tooltip', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: document.body,
+    });
+
     if (contentRef?.current?.clientHeight) {
       setBlockHeight(contentRef.current.clientHeight);
       if (contentRef.current.clientHeight > collapseHeight) {

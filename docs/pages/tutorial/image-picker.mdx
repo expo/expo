@@ -42,11 +42,11 @@ In **app/index.tsx**, import `expo-image-picker` library and create a `pickImage
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=440
 // ...rest of the import statements remain unchanged
-/* @info Import <CODE>ImagePicker</CODE>. */ import * as ImagePicker from 'expo-image-picker';/* @end */
+/* @tutinfo Import <CODE>ImagePicker</CODE>. */ import * as ImagePicker from 'expo-image-picker';/* @end */
 
 export default function Index() {
   const pickImageAsync = async () => {
-    /* @info Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
+    /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
@@ -54,11 +54,11 @@ export default function Index() {
     /* @end */
 
     if (!result.canceled) {
-      /* @info If the image is picked, print its information in terminal window. */
+      /* @tutinfo If the image is picked, print its information in terminal window. */
       console.log(result);
       /* @end */
     } else {
-      /* @info If the user does not pick an image, show an alert. */
+      /* @tutinfo If the user does not pick an image, show an alert. */
       alert('You did not select any image.');
       /* @end */
     }
@@ -89,12 +89,12 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 type Props = {
   label: string;
   theme?: 'primary';
-  /* @info Define the type for <CODE>onPress</CODE> prop. */
+  /* @tutinfo Define the type for <CODE>onPress</CODE> prop. */
   onPress?: () => void;
   /* @end */
 };
 
-export default function Button({ label, theme, /* @info Pass this prop to trigger the handler method from the parent component. */onPress/* @end */ }: Props) {
+export default function Button({ label, theme, /* @tutinfo Pass this prop to trigger the handler method from the parent component. */onPress/* @end */ }: Props) {
   if (theme === 'primary') {
     return (
       <View
@@ -102,7 +102,7 @@ export default function Button({ label, theme, /* @info Pass this prop to trigge
           styles.buttonContainer,
           { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
         ]}>
-        <Pressable style={[styles.button, { backgroundColor: '#fff' }]} onPress={/* @info */onPress/* @end */}>
+        <Pressable style={[styles.button, { backgroundColor: '#fff' }]} onPress={/* @tutinfo */onPress/* @end */}>
           <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
           <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
         </Pressable>
@@ -179,7 +179,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
       <View style={styles.footerContainer}>
-        <Button theme="primary" label="Choose a photo" onPress={/* @info Add this. */pickImageAsync/* @end */} />
+        <Button theme="primary" label="Choose a photo" onPress={/* @tutinfo Add this. */pickImageAsync/* @end */} />
         <Button label="Use this photo" />
       </View>
     </View>
@@ -297,7 +297,7 @@ Modify the **app/index.tsx** file in the following steps:
 ```tsx app/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-/* @info Import useState hook from React. */ import { useState } from 'react';/* @end */
+/* @tutinfo Import useState hook from React. */ import { useState } from 'react';/* @end */
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -305,7 +305,7 @@ import ImageViewer from '@/components/ImageViewer';
 const PlaceholderImage = require('../../assets/images/background-image.png');
 
 export default function Index() {
-  /* @info Create a state variable that will hold the value of selected image. */
+  /* @tutinfo Create a state variable that will hold the value of selected image. */
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   /* @end */
 
@@ -317,7 +317,7 @@ export default function Index() {
     });
 
     if (!result.canceled) {
-      /* @info Pick the first uri from the <CODE>assets</CODE> array. Also, there is only one image selected at a time so you don't have to change this. */
+      /* @tutinfo Pick the first uri from the <CODE>assets</CODE> array. Also, there is only one image selected at a time so you don't have to change this. */
       setSelectedImage(result.assets[0].uri);
       /* @end */
     } else {
@@ -328,7 +328,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @info Pass the selected image URI to the <CODE>ImageViewer</CODE> component. */
+        /* @tutinfo Pass the selected image URI to the <CODE>ImageViewer</CODE> component. */
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         /* @end */
       </View>
@@ -369,17 +369,17 @@ import { Image } from 'expo-image';
 
 type Props = {
   imgSource: string;
-  /* @info */
+  /* @tutinfo */
   selectedImage?: string;
   /* @end */
 };
 
-export default function ImageViewer({ imgSource, /* @info Pass the selectedImage prop.*/selectedImage/* @end */ }: Props) {
-  /* @info If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
+export default function ImageViewer({ imgSource, /* @tutinfo Pass the selectedImage prop.*/selectedImage/* @end */ }: Props) {
+  /* @tutinfo If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
   const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
   /* @end */
 
-  /* @info <CODE>imgSource</CODE> replaced by <CODE>imageSource</CODE>. */
+  /* @tutinfo <CODE>imgSource</CODE> replaced by <CODE>imageSource</CODE>. */
   return <Image source={imageSource} style={styles.image} />;
   /* @end */
 }

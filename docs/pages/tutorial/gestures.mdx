@@ -28,15 +28,15 @@ To get gesture interactions to work in the app, we'll render `<GestureHandlerRoo
 {/* prettier-ignore */}
 ```tsx app/index.tsx
 // ... rest of the import statements remain same
-/* @info Import GestureHandlerRootView from react-native-gesture-handler-library. */import { GestureHandlerRootView } from "react-native-gesture-handler";/* @end */
+/* @tutinfo Import GestureHandlerRootView from react-native-gesture-handler-library. */import { GestureHandlerRootView } from "react-native-gesture-handler";/* @end */
 
 export default function Index() {
   return (
-    /* @info Replace the root level <CODE>View</CODE> component with <CODE>GestureHandlerRootView</CODE>. */
+    /* @tutinfo Replace the root level <CODE>View</CODE> component with <CODE>GestureHandlerRootView</CODE>. */
     <GestureHandlerRootView style={styles.container}>
     /* @end */
       {/* ...rest of the code remains */}
-    /* @info */
+    /* @tutinfo */
     </GestureHandlerRootView>
     /* @end */
   )
@@ -67,7 +67,7 @@ type Props = {
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   return (
     <View style={{ top: -350 }}>
-      /* @info Replace the <CODE>Image</CODE> component with <CODE>Animated.Image</CODE>. */
+      /* @tutinfo Replace the <CODE>Image</CODE> component with <CODE>Animated.Image</CODE>. */
       <Animated.Image
         source={stickerSource}
         resizeMode="contain"
@@ -175,13 +175,13 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 
   return (
     <View style={{ top: -350 }}>
-      /* @info Wrap the Animated.Image component with GestureDetector. */<GestureDetector gesture={doubleTap}>/* @end */
+      /* @tutinfo Wrap the Animated.Image component with GestureDetector. */<GestureDetector gesture={doubleTap}>/* @end */
         <Animated.Image
           source={stickerSource}
           resizeMode="contain"
-          style={/* @info Modify the <CODE>style</CODE> prop on the <CODE>Animated.Image</CODE> to pass the <CODE>imageStyle</CODE>. */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
+          style={/* @tutinfo Modify the <CODE>style</CODE> prop on the <CODE>Animated.Image</CODE> to pass the <CODE>imageStyle</CODE>. */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
         />
-      /* @info */
+      /* @tutinfo */
       </GestureDetector>
       /* @end */
     </View>
@@ -218,11 +218,11 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   // ...rest of the code remains same
 
   return (
-    /* @info Replace the View component with Animated.View. */<Animated.View style={{ top: -350 }}>/* @end */
+    /* @tutinfo Replace the View component with Animated.View. */<Animated.View style={{ top: -350 }}>/* @end */
       <GestureDetector gesture={doubleTap}>
         {/* ...rest of the code remains same */}
       </GestureDetector>
-    /* @info */</Animated.View>/* @end */
+    /* @tutinfo */</Animated.View>/* @end */
   );
 }
 ```
@@ -312,8 +312,8 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   });
 
   return (
-    /* @info Wrap all components inside GestureDetector. */<GestureDetector gesture={drag}>/* @end */
-      <Animated.View style={/* @info Add containerStyle to the AnimatedView style prop. */[containerStyle, { top: -350 }]/* @end */}>
+    /* @tutinfo Wrap all components inside GestureDetector. */<GestureDetector gesture={drag}>/* @end */
+      <Animated.View style={/* @tutinfo Add containerStyle to the AnimatedView style prop. */[containerStyle, { top: -350 }]/* @end */}>
         <GestureDetector gesture={doubleTap}>
           <Animated.Image
             source={stickerSource}
@@ -322,7 +322,7 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
           />
         </GestureDetector>
       </Animated.View>
-    /* @info */</GestureDetector>/* @end */
+    /* @tutinfo */</GestureDetector>/* @end */
   );
 }
 ````

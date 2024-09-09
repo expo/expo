@@ -36,15 +36,15 @@ Add the following code snippet inside the `app/index.tsx`:
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
-/* @info Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
+/* @tutinfo Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @info Add this statement to import the permissions status and <CODE>requestPermission()</CODE> method from the hook. */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();/* @end */
+  /* @tutinfo Add this statement to import the permissions status and <CODE>requestPermission()</CODE> method from the hook. */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();/* @end */
   // ...rest of the code remains same
 
-  /* @info Add an if statement to check the status of permission. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
+  /* @tutinfo Add an if statement to check the status of permission. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
   if (permissionResponse.status !== 'granted') {
     await requestPermission();
   }
@@ -72,17 +72,17 @@ import { useState, useRef } from 'react';
 import { captureRef } from "react-native-view-shot";
 
 export default function Index() {
-  /* @info Create an imageRef variable. */ const imageRef = useRef();/* @end */
+  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef();/* @end */
 
   // ...rest of the code remains same
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @info Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
+        /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
           <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
-        /* @info */</View>/* @end */
+        /* @tutinfo */</View>/* @end */
       </View>
       {/* ...rest of the code remains same */}
     </GestureHandlerRootView>
@@ -162,7 +162,7 @@ export default function Index() {
     setIsModalVisible(false);
   };
 
-  /* @info Replace the comment with the code to capture the screenshot and save the image. */
+  /* @tutinfo Replace the comment with the code to capture the screenshot and save the image. */
   const onSaveImageAsync = async () => {
     try {
       const localUri = await captureRef(imageRef, {
