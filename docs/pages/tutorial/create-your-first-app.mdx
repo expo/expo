@@ -24,13 +24,13 @@ We'll need the following to get started:
 - Install Node.js (LTS)
 - Run the project locally either on a macOS, Windows (PowerShell and [WSL2](https://expo.fyi/wsl)), or Linux
 
-This tutorial assumes that you have a basic knowledge of TypeScript and React. If you have never written React code, go through [React's official tutorial](https://react.dev/learn) first and for TypeScript, check out the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html).
+The tutorial assumes that you've a basic knowledge of TypeScript and React. If you don't, go through [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html) and [React's official tutorial](https://react.dev/learn) first.
 
 <Step label="1">
 
 ## Initialize a new Expo app
 
-We will use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. It is a command line tool that allows us to create a new React Native project. Run the following command in your terminal:
+We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. It is a command line tool to create a new React Native project. Run the following command in your terminal:
 
 <Terminal
   cmd={[
@@ -43,7 +43,7 @@ We will use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app
   cmdCopy="npx create-expo-app StickerSmash --template blank && cd StickerSmash"
 />
 
-This command will create a new project directory with the name **StickerSmash** using the [`default` template](/more/create-expo/#--template). This template comes with essential boilerplate code and libraries such as Expo Router to start building our app. We'll continue to add more libraries throughout this tutorial when needed.
+This command will create a new project directory named StickerSmash using the [`default` template]. This template has essential boilerplate code and libraries like Expo Router to build our app. We'll continue to add more libraries throughout this tutorial when needed.
 
 <Collapsible summary={<>Benefits of using the <CODE>default</CODE> template</>}>
 
@@ -70,10 +70,10 @@ This command will create a new project directory with the name **StickerSmash** 
 
 After downloading the archive:
 
-1. Unzip the archive and replace the existing **your-project-name/assets/images** directory. This will override the default assets created when the new project was initialized.
+1. Unzip the archive and replace the default assets **your-project-name/assets/images** directory.
 2. Open the project directory in a code editor or IDE.
 
-Throughout this tutorial, we will use VS Code for our examples.
+Throughout this tutorial, we'll use VS Code for our examples.
 
 </Step>
 
@@ -81,11 +81,11 @@ Throughout this tutorial, we will use VS Code for our examples.
 
 ## Run reset-project script
 
-In this tutorial, we will build our app from scratch. This means adding app's navigation and component files to understand the fundamentals of implementing file-based routing. Let's remove the boilerplate code that was created by `create-expo-app` command.
+In this tutorial, we'll build our app from scratch and understand the fundamentals of adding a file-based navigation. Let's run the `reset-project` script to remove the boilerplate code:
 
 <Terminal cmd={['$ npm run reset-project']} />
 
-After running `reset-project` script, the **app** directory is left with two files (**index.tsx**, and **\_layout.tsx**). Now, we can delete all other files inside the **components**, **constants**, and **hooks** directories since they contain boilerplate code and is not needed for this tutorial.
+After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **app** directory. The other directories (**components**, **constants**, and **hooks**) also contain boilerplate code. We can delete all files inside these directories because we'll create our components.
 
 <Collapsible summary={<>What does the <CODE>reset-project</CODE> script do?</>}>
 
@@ -99,13 +99,13 @@ After running `reset-project` script, the **app** directory is left with two fil
 
 ## Run the app on mobile and web
 
-In the project directory, run the following command to start a [development server](/more/glossary-of-terms/#development-server) from the terminal:
+In the project directory, run the following command to start the [development server](/more/glossary-of-terms/#development-server) from the terminal:
 
 <Terminal cmd={['$ npx expo start']} />
 
 After running the above command:
 
-1. The developer server will start and you will see a QR code in the terminal
+1. The developer server will start, and you'll see a QR code inside the terminal window.
 2. Scan that QR code to open the app on the device. On Android, use the Expo Go > **Scan QR code** option. On iOS, use the default camera app.
 3. To run the web app, press <kbd>w</kbd> in the terminal. It will open the web app in the default web browser.
 
@@ -123,16 +123,16 @@ Once it is running on all platforms, the app should look like this:
 
 ## Edit the index screen
 
-Teh text displayed on the app's screen is defined in the **app/index.tsx** file. This file is the entry point of our app and is executed when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display a background and text.
+The **app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
 
-Styles applied to these components are using JavaScript as compared to web, where CSS web. Most of the React Native components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/style).
+Styles applied to these components use JavaScript compared to web, where CSS is used. Most React Native components accept a `style` prop that accepts a JavaScript object as its value. For more details, see [Styling in React Native](https://reactnative.dev/docs/style).
 
 Let's modify **app/index.tsx** screen:
 
-1. Import `StyleSheet` from `react-native` and create a `styles` object to define our own styles.
-2. Add a `styles.container.backgroundColor` property to `<View>` component with the value of `#25292e` to apply the background color.
+1. Import `StyleSheet` from `react-native` and create a `styles` object to define our custom styles.
+2. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
 3. Replace the default value of `<Text>` with "Home screen".
-4. Add a `styles.text.color` property to `<Text>` component with the value of `#fff` (white) to change the text color.
+4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340

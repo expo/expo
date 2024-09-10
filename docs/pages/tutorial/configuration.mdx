@@ -11,13 +11,13 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Before considering the app fully launchable, we have to configure the status bar, add a splash screen, and add an app icon. In this chapter, we will learn how to do all of that.
+We've to configure the status bar, add a splash screen, and an app icon to consider the app in a launchable state. In this chapter, we'll learn how to do all of this.
 
 <Step label="1">
 
 ## Configure the status bar
 
-The [`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `<StatusBar>` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `<StatusBar>` component to configure the app's status bar by changing the text color, background color, making it translucent, and so on.
 
 Inside **app/index.tsx**:
 
@@ -59,9 +59,9 @@ Let's take a look at our app now on Android, and iOS:
 
 ## Splash screen
 
-A splash screen is a screen that is visible before the contents of the app has had a chance to load. It hides once the app is ready for use and the content is ready to be displayed.
+A splash screen is visible before the app's contents have had a chance to load. It hides once the app's content is ready for display.
 
-The splash screen is configured by defining a path to the `"splash.image"` property in the [**app.json**](/workflow/configuration/) file. It has a current value of `"./assets/images/splash.png"` path. This is already done by default when a new Expo project is created. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
+Defining a path to the `"splash.image"` property in the [**app.json**](/workflow/configuration/) file configures a splash screen. By default, a new Expo project already defines the path. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
 
 <ContentSpotlight
   src="/static/images/tutorial/splash.png"
@@ -75,13 +75,11 @@ Let's take a look at our app now on Android, and iOS:
 
 <Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
 
-You can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
-
-Start by running the following command:
+You can display the splash screen for longer intervals. Run running the following command to install `expo-splash-screen`, a library that provides a `preventAutoHideAsync()` method to delay hiding the splash screen:
 
 <Terminal cmd={['$ npx expo install expo-splash-screen']} />
 
-Next, add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
+Add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
 
 ```tsx app/_layout.tsx
 import * as SplashScreen from 'expo-splash-screen';
@@ -90,11 +88,11 @@ SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
-Don't forget to remove this code when you are done testing your splash screen!
+Don't forget to remove this code when you are done testing your splash screen.
 
 </Collapsible>
 
-Notice that there is a white bar on the edges of the Android device in the above demo. Depending on the resolution of the device, there can be a visible white bar on the edges of an Android device's screen. To resolve this, set the `backgroundColor` for the splash screen in **app.json**:
+Depending on the device's resolution, a white bar is visible on the edges of an Android device's screen. To resolve this, set the `backgroundColor` for the splash screen in app.json:
 
 {/* prettier-ignore */}
 ```json app.json
@@ -120,7 +118,7 @@ Inside the project, there's an **icon.png** file inside **assets/images** direct
 
 <ContentSpotlight src="/static/images/tutorial/icon.png" className="max-w-[150px]" />
 
-Similar to splash screen image, the icon is configured by defining a path to the `"icon"` property in the **app.json** file. It has a current value of `"./assets/images/icon.png"`, so we don't have to change anything.
+Like the splash screen image, the `"icon"` property in the **app.json** file configures the app icon's path. By default, a new Expo project defines the correct path to `"./assets/images/icon.png"`. We don't have to change anything.
 
 > Eventually, when you'll build your app for the app stores, [Expo Application Services (EAS)](/eas/) will take this image and create optimized icon for every device.
 

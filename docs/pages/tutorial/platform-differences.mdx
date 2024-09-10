@@ -11,15 +11,15 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library, however, web browsers cannot.
+Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library. However, web browsers cannot.
 
-In this chapter, let's learn how to make an exception for web browsers to get the same functionality on all platforms.
+In this chapter, we'll learn how to handle capturing screenshots for web browsers so our app has the same functionality on all platforms.
 
 <Step label="1">
 
 ## Install and import dom-to-image
 
-To capture a screenshot on the web and save it as an image , we'll use a third-party library called [`dom-to-image`](https://github.com/tsayen/dom-to-image#readme). It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
+To capture a screenshot on the web and save it as an image, we'll use a third-party library called [`dom-to-image`](https://github.com/tsayen/dom-to-image#readme). It takes a screenshot of any DOM node and turns it into a vector (SVG) or raster (PNG or JPEG) image.
 
 Stop the development server and run the following command to install the library:
 
@@ -33,13 +33,11 @@ After installing it, make sure to restart the development server and press <kbd>
 
 ## Add platform-specific code
 
-React Native provides a `Platform` module that gives us access to information about the platform on which the app is currently running. We'll can use it to implement platform-specific behavior.
-
-Inside **app/index.tsx**:
+Using `Platform` module from React Native, we can implement platform-specific behavior. Inside **app/index.tsx**:
 
 1. Import the `Platform` module from `react-native`.
 2. Import the `domtoimage` library from `dom-to-image`.
-3. Update the `onSaveImageAsync()` function to check whether the current platform is `'web'` with the `Platform.OS` property. If it is not `'web'`, we'll run the logic added previously to take and save the screenshot. If it is `'web'`, we'll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image.
+3. Update the `onSaveImageAsync()` function to check whether the current platform is `'web'` with the `Platform.OS` property. If it is `'web'`, we'll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image. Otherwise, we'll keep using the same logic added for native platforms.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
@@ -192,7 +190,7 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Fix dom-to-image TypeScript module error">
 
-Since we're using TypeScript, after importing the `domtoimage` library, we need to add a type definition for it. We can do this by creating a file **types.d.ts** in the root of our project directory and adding the declaration statement:
+We need to add a type definition after importing the `domtoimage` library since we're using TypeScript. We can do this by creating a file types.d.ts in the root of our project directory and adding the declaration statement:
 
 ```tsx types.d.ts
 declare module 'dom-to-image';

@@ -12,7 +12,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
-In this chapter, we will create the first screen of the StickerSmash app.
+In this chapter, we'll create the first screen of the StickerSmash app.
 
 <ContentSpotlight
   alt="Initial layout."
@@ -22,7 +22,7 @@ In this chapter, we will create the first screen of the StickerSmash app.
 
 The screen above displays an image and two buttons. The app user can select an image using one of the two buttons. The first button allows the user to select an image from their device. The second button allows the user to continue with a default image provided by the app.
 
-Once the user selects an image, they'll be able to select and add a sticker to the image. So, let's start creating this screen.
+Once the user selects an image, they can add a sticker to it. So, let's start creating this screen.
 
 <Step label="1">
 
@@ -41,7 +41,7 @@ There are two essential elements:
 - There is a large image displayed at the center of the screen
 - There are two buttons in the bottom half of the screen
 
-The first button is composed of multiple components. The parent element provides a yellow border and contains an icon and text components inside a row.
+The first button contains multiple components. The parent element provides a yellow border, and contains an icon and text components inside a row.
 
 <ContentSpotlight
   alt="Break down of the button component with row."
@@ -57,15 +57,15 @@ Now that we've broken down the UI into smaller chunks, we're ready to start codi
 
 ## Display the image
 
-We will use `expo-image` library to display the image in the app. This library provides a cross-platform `<Image>` component to load and render an image.
+We'll use `expo-image` library to display the image in the app. It provides a cross-platform `<Image>` component to load and render an image.
 
-Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install `expo-image` library:
+Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `expo-image` library:
 
 <Terminal cmd={['$ npx expo install expo-image']} />
 
 The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
 
-`Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
+`Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **./assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
 
 <ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
@@ -73,10 +73,10 @@ The [`npx expo install`](/more/expo-cli/#installation) command will install the 
   className="max-w-[250px]"
 />
 
-To use `Image` component in **app/index.tsx** file:
+To use the `Image` component in app/index.tsx file:
 
-1. Import `Image` from `expo-image` library.
-2. Create a `PlaceholderImage` variable to use **./assets/images/background-image.png** file as the `source` prop on `<Image>` component.
+1. Import `Image` from the `expo-image` library.
+2. Create a `PlaceholderImage` variable to use ./assets/images/background-image.png file as the `source` prop on the `Image` component.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=380
@@ -126,9 +126,9 @@ const styles = StyleSheet.create({
 
 ## Divide components into files
 
-As we add more components to this screen, let's divide the code into multiple files. We'll use **components** directory from the root of our project to create custom components, throughout this tutorial.
+Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
 
-1. Inside **components** directory, create a new file called **ImageViewer.tsx**.
+1. Inside the **components** directory, create a **ImageViewer.tsx** file.
 2. Move the code to display the image in this file along with the `image` styles.
 
 {/* prettier-ignore */}
@@ -153,9 +153,9 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. This is recommended because every file inside **app** directory is either a layout file or a route file. For more information, see [Non-route files](/router/create-pages/#non-route-files).
+> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. Every file inside **app** directory is either a layout file or a route file. For more information, see [Non-route files](/router/create-pages/#non-route-files).
 
-Import this component and use it in the **app/index.tsx**:
+Import `ImageViewer` and use it in the **app/index.tsx**:
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=320
@@ -165,7 +165,7 @@ import { StyleSheet, View } from 'react-native';
 
 const PlaceholderImage = require('./assets/images/background-image.png');
 
-export default function App() {
+export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
 
 <Collapsible summary={<>What is the <CODE>@</CODE> in import statement?</>}>
 
-`@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optional) that allows importing custom components and other modules instead of using relative paths. It is automatically configured by Expo CLI in **tsconfig.json**.
+The `@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optional) for importing custom components and other modules instead of relative paths. Expo CLI automatically configures it in **tsconfig.json**.
 
 </Collapsible>
 
@@ -199,11 +199,11 @@ const styles = StyleSheet.create({
 
 <Step label="4">
 
-## Create buttons using `Pressable`
+## Create buttons using Pressable
 
-React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the [`<Pressable>`](https://reactnative.dev/docs/pressable). It is a core component wrapper that can detect various stages of interactions, from basic single-tap events to advanced events such as a long press.
+React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the [`<Pressable>`](https://reactnative.dev/docs/pressable). It can detect various stages of interactions, from basic single-tap events to advanced events such as long press.
 
-In the design, there are two buttons we need to implement. Each has different styles and labels. Let's start by creating a component that can be reused to create the two buttons. Create a new file called **Button.tsx** inside the **components** directory with the following code:
+In the design, there are two buttons we need to create. Each has different styles and labels. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the components directory with the following code:
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx|collapseHeight=280
@@ -250,9 +250,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-In the app, an alert will be displayed when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls an `alert()` on its `onPress` prop.
-
-Let's import this component into **app/index.tsx** file and add styles for `<View>` component that encapsulates these buttons:
+The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls an `alert()` on its `onPress` prop. Let's import this component into app/index.tsx file and add styles for `<View>` that encapsulates these buttons:
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
@@ -263,7 +261,7 @@ import ImageViewer from './components/ImageViewer';
 
 const PlaceholderImage = require("./assets/images/background-image.png");
 
-export default function App() {
+export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -315,8 +313,7 @@ The second button with the label "Use this photo" resembles the actual button fr
 
 ## Enhance the reusable button component
 
-The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
-This button also has an icon before the label. We will use an icon from `@expo/vector-icons` library.
+The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme. This button also has an icon before the label. We will use an icon from `@expo/vector-icons` library.
 
 To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **components/Button.tsx** to add the following code snippet:
 
@@ -390,9 +387,9 @@ const styles = StyleSheet.create({
 
 Let's learn what the above code does:
 
-- The primary theme button uses **inline styles** which overrides the styles defined in `StyleSheet.create()` with an object directly passed in the `style` prop. Inline styles use JavaScript.
-- `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, then the background color value will be set for both the primary theme and the unstyled one.
-- Using inline styles allows overriding the default styles for a specific value.
+- The primary theme button uses **inline styles**, which overrides the styles defined in `StyleSheet.create()` with an object directly passed in the `style` prop.
+- `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, the background color value will be set for both the primary theme and the unstyled one.
+- Inline styles use JavaScript and override the default styles for a specific value.
 
 Now, modify the **app/index.tsx** file to use the `theme="primary"` prop on the first button.
 

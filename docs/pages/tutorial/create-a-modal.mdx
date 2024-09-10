@@ -9,8 +9,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Step } from '~/ui/components/Step';
 
-React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the [second chapter](/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component),
-we used `alert()` to display a placeholder when a button is pressed. That's how a modal component displays an overlay.
+React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the [third chapter](/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component), after pressing the button, we used a modal to a placeholder text. That's how a modal component displays an overlay.
 
 In this chapter, we'll create a modal that shows an emoji picker list.
 
@@ -18,14 +17,13 @@ In this chapter, we'll create a modal that shows an emoji picker list.
 
 ## Declare a state variable to show buttons
 
-Before implementing the modal, we are going to add three new buttons. These buttons will only be visible when the user picks an image from the media library
-or decides to use the placeholder image. One of these buttons will trigger the emoji picker modal.
+Before implementing the modal, we are going to add three new buttons. These buttons are visible after the user picks an image from the media library or uses the placeholder image. One of these buttons will trigger the emoji picker modal.
 
 In **app/index.tsx**:
 
-1. Declare a state variable called `showAppOptions` to show or hide buttons that open the modal alongside a few other options. It is a boolean. When the app screen loads, we'll set it to `false` so that the options are not shown before picking an image. When the user picks an image or uses the placeholder image, we'll set it to `true`.
-2. Modify the `pickImageAsync()` function to set the value of `showAppOptions` to `true` after the user picks an image.
-3. Update the button with no theme by adding an `onPress` prop with the following value
+1. Declare a state variable, `showAppOptions`, to show or hide buttons that open the modal alongside a few other options. It is a boolean. When the app screen loads, we'll set it to `false` so the options are not shown before picking an image. When the user picks an image or uses the placeholder image, we'll set it to `true`.
+2. Update the `pickImageAsync()` function to set the value of `showAppOptions` to `true` after the user picks an image.
+3. Update the button with no theme by adding an `onPress` prop with the following value.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
@@ -98,9 +96,9 @@ const styles = StyleSheet.create({
 });
 ```
 
-In the above snippet, we're also conditionally rendering the `Button` component based on the value of `showAppOptions` and moving the buttons in the conditional operator block. When the value of `showAppOptions` is `true`, render an empty `<View>` component. We'll address this state in the next step.
+In the above snippet, we're rendering the `Button` component based on the value of `showAppOptions` and moving the buttons in the conditional operator block. When the value of `showAppOptions` is `true`, render an empty `<View>` component. We'll address this state in the next step.
 
-Now, we can remove the `alert` on the `Button` component and update the `onPress` prop when rendering the second button in **components/Button.tsx**:
+Now, we can remove the `alert` on the `Button` component and update the `onPress` prop when rendering the second button in the **components/Button.tsx**:
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx
@@ -113,7 +111,7 @@ Now, we can remove the `alert` on the `Button` component and update the `onPress
 
 ## Add buttons
 
-Let's break down the layout of the option buttons we will implement in this chapter. The design looks like this:
+Let's break down the layout of the option buttons we'll implement in this chapter. The design looks like this:
 
 <ContentSpotlight
   alt="Break down of the layout of the buttons row."
@@ -123,7 +121,7 @@ Let's break down the layout of the option buttons we will implement in this chap
 
 It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the modal and is styled differently than the other two buttons.
 
-Inside the **components** directory, create a new file called **CircleButton.tsx** with the following code:
+Inside the **components** directory, create a new **CircleButton.tsx** file with the following code:
 
 ```tsx components/CircleButton.tsx
 import { View, Pressable, StyleSheet } from 'react-native';
@@ -167,9 +165,9 @@ To render the plus icon, this button uses the `<MaterialIcons>` icon set from th
 
 The other two buttons also use `<MaterialIcons>` to display vertically aligned text labels and icons. Create a file named **IconButton.tsx** inside the **components** directory. This component accepts three props:
 
-- `icon`: the name that corresponds to the icon in the `MaterialIcons` library.
+- `icon`: the name corresponding to the `MaterialIcons` library icon.
 - `label`: the text label displayed on the button.
-- `onPress`: the function called when the button is pressed.
+- `onPress`: this function invokes when the user presses the button.
 
 ```tsx components/IconButton.tsx
 import { Pressable, StyleSheet, Text } from 'react-native';
@@ -205,7 +203,7 @@ const styles = StyleSheet.create({
 Inside **app/index.tsx**:
 
 1. Import `CircleButton` and `IconButton` components to display them.
-2. Add three placeholder functions for these buttons. The `onReset()` function is called when the user presses the reset button. When this button is pressed, we'll show the image picker button again. For the other two functions, we'll add the functionality later.
+2. Add three placeholder functions for these buttons. The `onReset()` function invokes when the user presses the reset button and we'll show the image picker button again. We'll add the functionality for the other two functions later.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
@@ -322,8 +320,8 @@ Let's take a look at our app on Android, iOS and the web:
 
 The modal allows the user to choose an emoji from a list of available emoji. Create an **EmojiPicker.tsx** file inside the **components** directory. This component accepts three props:
 
-- `isVisible`: a boolean that determines whether the modal is visible or not.
-- `onClose`: a function that closes the modal.
+- `isVisible`: a boolean determining the state of the modal's visibility.
+- `onClose`: a function to close the modal.
 - `children`: used later to display a list of emoji.
 
 {/* prettier-ignore */}
@@ -383,10 +381,10 @@ const styles = StyleSheet.create({
 Let's learn what the above code does:
 
 - The `<Modal>` component displays a title and a close button.
-- Its `visible` prop takes the value of `isVisible` and controls if the modal is open or closed.
-- Its `transparent` prop is a boolean value that determines whether the modal fills the entire view.
+- Its `visible` prop takes the value of `isVisible` and controls whether the modal is open or closed.
+- Its `transparent` prop is a boolean value, which determines whether the modal fills the entire view.
 - Its `animationType` prop determines how it enters and leaves the screen. In this case, it is sliding from the bottom of the screen.
-- Lastly, the `<EmojiPicker>` `onClose` prop is called when the user presses the close `<Pressable>`.
+- Lastly, the `<EmojiPicker>` invokes the `onClose` prop when the user presses the close `<Pressable>`.
 
 The next step is to add the corresponding styles for the `<EmojiPicker>` component:
 
@@ -422,9 +420,9 @@ const styles = StyleSheet.create({
 Now, let's modify the **app/index.tsx**:
 
 1. Import the `<EmojiPicker>` component.
-2. Create an `isModalVisible` state variable with the `useState` hook. It has a default value of `false` to ensure that the modal is hidden until the user presses the button to open it.
+2. Create an `isModalVisible` state variable with the `useState` hook. Its default value is `false`, which hides the modal until the user presses the button to open it.
 3. Replace the comment in the `onAddSticker()` function to update the `isModalVisible` variable to `true` when the user presses the button. This will open the emoji picker.
-4. Create a`onModalClose()` function to update the `isModalVisible` state variable.
+4. Create the `onModalClose()` function to update the `isModalVisible` state variable.
 5. Place the `<EmojiPicker>` component at the bottom of the `Index` component.
 
 {/* prettier-ignore */}
@@ -549,9 +547,9 @@ Here is the result after this step:
 
 ## Display a list of emoji
 
-Let's implement a horizontal list of emoji in the modal's content. We'll use the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
+Let's add a horizontal list of emoji in the modal's content. We'll use the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
 
-Create a file named **EmojiList.tsx** file in the **components** directory and add the following code:
+Create a **EmojiList.tsx** file inside the **components** directory and add the following code:
 
 {/* prettier-ignore */}
 ```tsx components/EmojiList.tsx
@@ -612,11 +610,11 @@ const styles = StyleSheet.create({
 
 Let's learn what the above code does:
 
-- The `<FlatList>` component above renders all the emoji images using a `<Image>` component wrapped with a `<Pressable>` component. Later, we will improve it so that the user can tap an emoji on the screen to make it appear as a sticker on the image.
-- The `<FlatList>` component takes an array of items, which in the above snippet is provided by the `emoji` array variable as the value of the `data` prop. Then, the `renderItem` prop takes the item from the `data` and returns the item in the list. Finally, we add `Image` and the `<Pressable>` components to display this item.
-- The `horizontal` prop renders the list horizontally instead of vertically. The `showsHorizontalScrollIndicator` checks the platform using `Platform` module from React Native and displays the horizontal scroll bar only on the web.
+- The `<FlatList>` component above renders all the emoji images using an `Image` component, wrapped by a `<Pressable>`. Later, we will improve it so that the user can tap an emoji on the screen to make it appear as a sticker on the image.
+- The `<FlatList>` component takes an array of items provided by the `emoji` array variable as the value of the `data` prop. The `renderItem` prop takes the item from the `data` and returns the item in the list. Finally, we added `Image` and the `<Pressable>` components to display this item.
+- The `horizontal` prop renders the list horizontally instead of vertically. The `showsHorizontalScrollIndicator` uses React Native's `Platform` module to check the value and display the horizontal scroll bar on web.
 
-Now, modify the `app/index.tsx` to import the `<EmojiList>` component and replace the comments where the `<EmojiPicker>` component is used with the following code snippet:
+Now, update the `app/index.tsx` to import the `<EmojiList>` component and replace the comments inside `<EmojiPicker>` component with the following code snippet:
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=440
@@ -726,7 +724,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-The `onSelect` prop on the `<EmojiList>` component selects the emoji and the `onCloseModal` prop closes the modal after emoji is selected.
+In the `EmojiList` component, the `onSelect` prop selects the emoji and after selecting it, the `onCloseModal` closes the modal.
 
 Let's take a look at our app on Android, iOS and the web:
 
@@ -742,7 +740,7 @@ Let's take a look at our app on Android, iOS and the web:
 
 ## Display the selected emoji
 
-Now we'll put the emoji sticker on the image. Create a new file in the **components** directory and call it **EmojiSticker.tsx**. Then, add the following code:
+Now, we'll put the emoji sticker on the image. Create a new file in the **components** directory and call it **EmojiSticker.tsx**. Then, add the following code:
 
 ```tsx components/EmojiSticker.tsx|collapseHeight=300
 import { View } from 'react-native';
@@ -767,7 +765,7 @@ This component receives two props:
 - `imageSize`: a value defined inside the `Index` component. We will use this value in the next chapter to scale the image's size when tapped.
 - `stickerSource`: the source of the selected emoji image.
 
-Import this component in the **app/index.tsx** file and update the `Index` component to display the emoji sticker on the image conditionally. We'll do this by checking if the `pickedEmoji` state is not `undefined`.
+Import this component in the app/index.tsx file and update the `Index` component to display the emoji sticker on the image. We'll check if the `pickedEmoji` state is not `undefined`:
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx

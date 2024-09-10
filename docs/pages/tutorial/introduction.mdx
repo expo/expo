@@ -15,8 +15,8 @@ We're about to embark on a journey of building universal apps. In this tutorial,
 
 The objective of this tutorial is to get started with Expo and become familiar with the Expo SDK. It'll cover the following topics:
 
-- Create Expo app using the `default` template and TypeScript enabled
-- Implement a two screen tabs layout with Expo Router
+- Create an app using the `default` template with TypeScript enabled
+- Implement a two-screen bottom tabs layout with Expo Router
 - Break down the app layout and implement it with flexbox
 - Use each platform's system UI to select an image from the media library
 - Create a sticker modal using the `<Modal>` and `<FlatList>` components from React Native
@@ -25,23 +25,23 @@ The objective of this tutorial is to get started with Expo and become familiar w
 - Handle platform differences between Android, iOS, and web
 - Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
 
-These topics will provide a good foundation for learning the fundamentals of building a mobile app. The tutorial is self-paced and can take two to three hours to complete.
+These topics provide a foundation to learn the fundamentals of building a universal app. The tutorial is self-paced and can take two to three hours to complete.
 
-To keep it beginner friendly, we divided the tutorial into eight chapters so that you can follow along or put it down and come back to it later. Each chapter also contains all the necessary code so that you can follow along by creating an app from scratch or use them to copy and paste the code if you get lost.
+To keep it beginner friendly, we divided the tutorial into eight chapters so that you can follow along or put it down and come back to it later. Each chapter contains the necessary code, so you can follow along by creating an app from scratch or copy and paste it.
 
 Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and the web:
 
 <ContentSpotlight file="tutorial/final.mp4" />
 
-{/* TODO: @aman: To host a repository on GitHub and add that link here. */}
+{/* TODO: @aman: To host a repository on GitHub and add that link here. Potentially after https://github.com/expo/examples/pull/504 gets merged. */}
 
 > **info** The complete source code for this tutorial is available on [GitHub]().
 
 ## How to use this tutorial
 
-We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing) so this tutorial emphasizes doing over explaining. You can follow along the journey of building the app by creating the app from scratch.
+We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing) so this tutorial emphasizes doing over explaining. You can follow along the journey of building an app by creating the app from scratch.
 
-Throughout the tutorial, any important code or code that has changed between examples will be <span className="tutorial-code-annotation">highlighted in green</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to see more context on the change. For example, the code highlighted in the snippet below explains what it does:
+Throughout the tutorial, any important code or code that has changed between examples will be <span className="tutorial-code-annotation">highlighted in green</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to learn more about the change. For example, the code highlighted in the snippet below explains what it does:
 
 {/* prettier-ignore */}
 ```tsx Hello World|collapseHeight=300
@@ -50,7 +50,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say, "Edit app/index.tsx to edit this screen.". Now it's "Hello world!". */<Text>Hello world!</Text>/* @end */
+      /* @tutinfo This used to say: "Edit app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
     </View>
   );
 }
