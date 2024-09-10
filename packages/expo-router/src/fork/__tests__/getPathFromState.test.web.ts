@@ -108,6 +108,6 @@ describe('basePath support', () => {
   });
 
   it('does not appends baseUrl to the paths without schemes', () => {
-    expect(appendBaseUrl('http://www.example.com/home')).toBe('/test/home');
+    expect(appendBaseUrl('http://www.example.com/home')).toBe('http://www.example.com/home');
   });
 });
