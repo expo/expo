@@ -9,6 +9,8 @@ import { Step } from '~/ui/components/Step';
 
 This guide explains how to transition a React Native project that uses CodePush to use EAS Update which offers [many advantages](/eas-update/introduction/#pitch). It assumes that you're using the default React Native project structure. For assistance with migrating brownfield native apps to EAS Update, [reach out to us directly](https://expo.dev/contact).
 
+To learn more about the differences between CodePush and EAS Update, see [consi
+
 ## Prerequisites
 
 <Collapsible summary="An Expo user account">
@@ -110,3 +112,22 @@ Please follow the respective store guidelines for submitting a new build of your
 After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration. If your app is not updating as expected, [validate your configuration](/eas-update/debug).
 
 </Step>
+
+## Conceptual differences and incompatibilities between CodePush and EAS Update
+
+CodePush and EAS Update are both services that allow you to send hotfixes to the JavaScript code of your app, but they have some
+
+### Mental model
+
+CodePush has single streams of updates for deployments. How CodePush determines which update to serve is based on rollouts. 
+
+EAS Update has streams of updates that correspond to your source control branches, and additionally, it provides channels that point to those branches. Builds are not directly associated with branches, but rather with channels. Each build points to a single channel, which is set at build time and cannot be modified at runtime. For example (). The reason for this is that it ensures that certain branches (eg: development, staging) don't automatically go out to production -- your preview updates don't go to your production users. This helps you separate the two main uses of EAS Update: previews and production hotfixes.
+
+This is done to organize updates safely.
+
+
+### Workflow differences
+
+- channel surfing (a different name for this that is more clear, this is our internal name)
+- rollouts (? addressed this?)
+- dashboard

@@ -65,7 +65,7 @@ To configure your project, run the following commands in the order they are spec
 
 After running these commands, **eas.json** file will be created in the root directory of your project.
 
-Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
+Inside the `preview` and `production` build profiles in **eas.json**, add a channel property for each:
 
 ```json eas.json
 {
@@ -82,7 +82,7 @@ Inside the `preview` and `production` build profiles in **eas.json**, add a `cha
 }
 ```
 
-The `channel` allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
+The channel allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
 
 > **Optional**: If your project is a bare React Native project, see the [bare React Native updates guide](/bare/installing-updates/) for any additional configuration needed.
 
@@ -116,21 +116,15 @@ Publishing an update allows:
 - Fixing bugs and quickly updating non-native parts of a project instead of creating a new build
 - [Sharing a preview version of an app](/review/overview/) using internal distribution
 
-To publish an update with changes from your project, you can use the `eas update` command, and specify a name for the `branch` and a `message` to describe the update:
+To publish an update with changes from your project, you can use the `eas update` command, and specify a name for the channel and a `message` to describe the update:
 
-<Terminal cmd={['$ eas update --branch [branch-name] --message "[message]"']} />
+<Terminal cmd={['$ eas update --channel [channel-name] --message "[message]"']} />
 
 <Collapsible summary="How does publishing an update work?">
 
-When you publish an update with the `eas update` command, it generates a new update bundle and uploads it to the EAS servers. The `branch` name is used to identify which bucket of updates to put the new one in. It is similar to how Git commit works, where every commit is associated with a Git branch.
+When you publish an update with the `eas update` command, it generates a new update bundle and uploads it to the EAS servers. The channel name is used to locate the branch of updates in which to publish the new update. It is similar to how Git commit works, where every commit is on a Git branch.
 
-For example, you want to publish an update for the [`development` build profile](/build/eas-json/#build-profiles). You can use it as the channel name to associate the update with its build profile. When the app requests an update, it will download the update associated with the `development` channel.
-
-For this example, the command to publish an update with the `development` channel and a message is:
-
-<Terminal cmd={['$ eas update --channel development --message "Fixes typo"']} />
-
-The above command runs `npx expo export` behind the scenes to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS Update servers.
+For example, when an app is set to pull updates from the `preview` channel, you can publish an update for that build with `eas update --channel preview`. This will create a branch (called `preview` by default) on the `preview` channel. Behind the scenes, this command runs `npx expo export` to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS Update servers.
 
 <BoxLink
   title="In-depth guide on how EAS Update works"
