@@ -694,11 +694,13 @@ const createNormalizedConfigs = (
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
 
+const schemeCheck = /^[a-zA-Z\d+.-]+:/;
+
 export function appendBaseUrl(
   path: string,
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV !== 'development' && !schemeCheck.test(path)) {
     if (baseUrl) {
       return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
     }
