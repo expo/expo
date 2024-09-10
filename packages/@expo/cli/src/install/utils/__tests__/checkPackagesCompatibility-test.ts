@@ -59,4 +59,14 @@ describe(checkPackagesCompatibility, () => {
 
     expect(Log.warn).toBeCalledTimes(0);
   });
+
+  it(`does not fail for non-listed package`, async () => {
+    jest.mocked(fetch).mockResolvedValueOnce({
+      json: () => Promise.resolve({}),
+    } as any);
+
+    await checkPackagesCompatibility(['package-which-do-not-exist']);
+
+    expect(Log.warn).toBeCalledTimes(0);
+  });
 });

@@ -29,7 +29,7 @@ export async function checkPackagesCompatibility(otherPackages: string[]) {
     >;
 
     const incompatiblePackages = otherPackages.filter(
-      (packageName) => packageMetadata[packageName].newArchitecture === 'unsupported'
+      (packageName) => packageMetadata[packageName]?.newArchitecture === 'unsupported'
     );
 
     if (incompatiblePackages.length) {
