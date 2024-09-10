@@ -4,9 +4,7 @@ sidebar_title: Design considerations
 description: An overview of the design considerations behind the Expo Modules API.
 ---
 
-The Expo team maintains a large set of libraries, and maintaining native modules over time and in a constantly changing environment is quite expensive.
-We found out that the existing React Native API for native modules is not scaling very well and is giving us some additional overhead on many levels, from onboarding new contributors (lack of good documentation) to writing a lot of boilerplate code.
-To make the maintenance easier and let the community iterate faster, we decided to create a module system that reduces the costs and technical debt to a minimum.
+The Expo team maintains a large set of libraries, and maintaining native modules over time and in a constantly changing environment can be challenging. With the Expo Modules API, we set out to build powerful tooling that would make it easier to both build and maintain these libraries.
 
 ### Take advantage of modern langauge features
 
@@ -20,10 +18,21 @@ This is one of the reasons why the Expo Modules ecosystem was designed from the 
 
 ### Make it easy to pass data between runtimes
 
-Another big pain point we have encountered is the validation of arguments passed from JavaScript to native functions.
-This is especially error-prone, time-consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
-A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](/modules/module-api/#records).
+The Expo Modules API has full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you, and dictionaries can be represented as native structs that we call [Records](/modules/module-api/#records).
+
+One big pain point we aimed to solve with the API is validation of arguments passed from JavaScript to native functions. This is especially error-prone, time-consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
+
 Knowing the argument types, it is also possible to [automatically convert arguments](/modules/module-api/#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
+
+In summary, Expo Modules has powerful built-in and extensible type conversion and type safety. It supports automatic of primitive values (eg: `Bool`/`Int`/`UInt`/`Float32`/`Double`/`Pair`/`String`), complex built-in types (eg: `URL`, `CGPoint`, `UIColor`, `Data`, `java.net.URL`, `android.graphics.Color`, `kotlin.ByteArray`), records (user defined types, like a `struct`/`Object`), and enums.
+
+### Support expressive object-oriented APIs
+
+Keep the source of truth for the state of your native module in one place, rather than spreading it across JavaScript and native and doing the associated book-keeping yourself. We call this feature "Shared Objects". For an example, [expo-sqlite database instances are backed by Shared Objects](https://github.com/expo/expo/blob/718a9ac107231475ca4b2e6427317ade9d1e70fa/packages/expo-sqlite/src/SQLiteDatabase.ts#L421). Detailed documentation for Shared Objects is coming soon.
+
+### Provide a safe and composable mechanism to hook into app lifecycle events
+
+[iOS AppDelegate subscribers](/modules/appdelegate-subscribers/) and [Android lifecycle listeners](/modules/android-lifecycle-listeners/) are a powerful feature that allows you to hook into the lifecycle of your app, without needing to spread the code out for your module across your AppDelegate and MainActivity classes or require that users of yur library do the same. This is particularly useful for smooth integration with [Continuous Native Generation](/workflow/continuous-native-generation/), because it provides libraries with a mechanism to hook into app lifecycle events in a composable way, without having to be concerned about what other libraries might be doing.
 
 ### Support the New Architecture while remaining backwards compatible
 

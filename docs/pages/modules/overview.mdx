@@ -62,9 +62,11 @@ Adding the Expo Modules API to your app has a neglible impact on your app size, 
 
 <Collapsible summary="What impact does using the Expo Modules API have on my app's performance?">
 
-The Expo Modules API has similar performance characteristics to React Native's Turbo Modules API. Both APIs leverage React Native's JavaScript Interface (JSI), which "allows JavaScript to hold a reference to a C++ object and vice-versa" and as a result, "with a memory reference, you can directly invoke methods without serialization costs."
+The Expo Modules API has similar performance characteristics to React Native's Turbo Modules API. Both APIs leverage React Native's JavaScript Interface (JSI), rather than the legacy approach of using a JSON message queue ("bridge") ([learn more about JSI](https://reactnative.dev/docs/the-new-architecture/landing-page#fast-javascriptnative-interfacing)).
 
 Neither Expo Modules nor Turbo Modules are designed to be as fast as technically possible, but rather they are fast where it matters. For example, the Expo Modules API could leverage code generation and the new native Swift / C++ interop to reduce the overhead of individual method calls. However, this imposes some developer experience challenges and overhead, and we have not yet encountered any use cases where such an optimization would provide any meaningful real-world performance improvements. In reality, the time spent executing the body of a native method is often orders of magnitude greater than the overhead of the method invocation. Both Expo Modules and Turbo Modules can easily execute in the order of 1 million native method calls per second, which is well in excess of what you would find in any app, and the JavaScript runtime would likely be unable to keep up.
+
+If you encounter any performance bottlenecks with the Expo Modules API, please [file an issue](https://github.com/expo/expo/issues/new/choose) and we'd be happy to discuss it with you.
 
 </Collapsible>
 
