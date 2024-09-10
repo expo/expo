@@ -134,7 +134,7 @@ class ExpoImageModule : Module() {
         }
         false
       }
-      Property("mediaType") { ->
+      Property<Any?>("mediaType") { ->
         null // not easily supported on Android https://github.com/bumptech/glide/issues/1378#issuecomment-236879983
       }
     }
