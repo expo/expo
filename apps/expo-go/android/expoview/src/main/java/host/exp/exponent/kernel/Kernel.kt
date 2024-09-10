@@ -230,7 +230,7 @@ class Kernel : KernelInterface() {
           )
         }
         kernelScope.launch {
-          val host = KernelReactNativeHost(
+          val nativeHost = KernelReactNativeHost(
             applicationContext,
             exponentManifest,
             KernelData(
@@ -239,16 +239,17 @@ class Kernel : KernelInterface() {
               kernelMainModuleName
             )
           )
-          if (host.devSupportEnabled) {
+          val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
+          reactHost = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
+
+          if (nativeHost.devSupportEnabled) {
             Exponent.enableDeveloperSupport(
               kernelDebuggerHost,
               kernelMainModuleName
             )
           }
-          val wrapper = ReactNativeHostWrapper(applicationContext, host)
-          reactHost = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, wrapper,)
 
-          reactNativeHost = host
+          reactNativeHost = nativeHost
           reactHost?.onHostResume(activityContext)
           isRunning = true
           EventBus.getDefault().postSticky(KernelStartedRunningEvent())

@@ -378,14 +378,14 @@ abstract class ReactNativeActivity :
       )
     )
 
-    val host = ExpoGoReactNativeHost(
+    val nativeHost = ExpoGoReactNativeHost(
       application,
       instanceManagerBuilderProperties,
       manifest!!.getMainModuleName()
     )
-    val wrapper = ReactNativeHostWrapper(application, host)
-    val reactHost = ReactHostFactory.createFromReactNativeHost(this, wrapper)
-    reactNativeHost = host
+    val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
+    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper)
+    reactNativeHost = nativeHost
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
     val devSupportManager = ExpoGoDevSupportManager(

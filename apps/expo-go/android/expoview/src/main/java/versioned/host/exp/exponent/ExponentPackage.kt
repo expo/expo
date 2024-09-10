@@ -248,10 +248,6 @@ class ExponentPackage : ReactPackage {
       manifest: Manifest?,
       providedExpoPackages: List<Package>?
     ): List<SingletonModule> {
-//      if (Looper.getMainLooper() != Looper.myLooper()) {
-//        throw RuntimeException("Singleton modules must be created on the main thread.")
-//      }
-
       val expoPackages = providedExpoPackages ?: ExperiencePackagePicker.packages(manifest)
 
       for (expoPackage in expoPackages) {
