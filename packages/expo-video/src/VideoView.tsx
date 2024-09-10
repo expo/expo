@@ -5,34 +5,6 @@ import NativeVideoView from './NativeVideoView';
 import type { VideoPlayer } from './VideoPlayer.types';
 import type { VideoViewProps } from './VideoView.types';
 
-/**
- * Returns whether the current device supports Picture in Picture (PiP) mode.
- * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
- * @platform android
- * @platform ios
- */
-export function isPictureInPictureSupported(): boolean {
-  return NativeVideoModule.isPictureInPictureSupported();
-}
-
-/**
- * Cleans the video cache according to the cache policy.
- *
- * @platform ios
- */
-export function cleanVideoCache(): void {
-  return NativeVideoModule.cleanVideoCache();
-}
-
-/**
- * Cleans all video caches, regardless of the cache policy.
- *
- * @platform ios
- */
-export function cleanAllVideoCache(): void {
-  return NativeVideoModule.cleanAllVideoCache();
-}
-
 export class VideoView extends PureComponent<VideoViewProps> {
   nativeRef = createRef<any>();
 

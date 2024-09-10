@@ -1,31 +1,6 @@
 import { PureComponent, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-/**
- * Returns whether the current device supports Picture in Picture (PiP) mode.
- * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
- * @platform android
- * @platform ios
- */
-export function isPictureInPictureSupported() {
-    return NativeVideoModule.isPictureInPictureSupported();
-}
-/**
- * Cleans the video cache according to the cache policy.
- *
- * @platform ios
- */
-export function cleanVideoCache() {
-    return NativeVideoModule.cleanVideoCache();
-}
-/**
- * Cleans all video caches, regardless of the cache policy.
- *
- * @platform ios
- */
-export function cleanAllVideoCache() {
-    return NativeVideoModule.cleanAllVideoCache();
-}
 export class VideoView extends PureComponent {
     nativeRef = createRef();
     /**

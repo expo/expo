@@ -15,6 +15,7 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
@@ -22,6 +23,7 @@ import expo.modules.video.enums.ContentFit
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -30,16 +32,30 @@ import kotlinx.coroutines.runBlocking
 class VideoModule : Module() {
   private val activity: Activity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+  private val reactContext
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
     OnCreate {
-      VideoManager.onModuleCreated(appContext)
+      VideoManager.onModuleCreated(appContext, reactContext)
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(activity)
+      VideoView.isPictureInPictureSupported(activity)
+    }
+
+    Function("getCurrentVideoCacheSize") {
+      VideoManager.cache.getCurrentCacheSize()
+    }
+
+    AsyncFunction("setVideoCacheSizeAsync") { size: Long ->
+      VideoManager.cache.setMaxCacheSize(size)
+    }
+
+    AsyncFunction("cleanVideoCacheAsync") {
+      VideoManager.cache.clear()
     }
 
     View(VideoView::class) {

@@ -15,7 +15,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.video.UnsupportedDRMTypeException
-import expo.modules.video.buildMediaSourceWithHeaders
+import expo.modules.video.buildExpoVideoMediaSource
 import java.io.Serializable
 
 @OptIn(UnstableApi::class)
@@ -37,15 +37,14 @@ class VideoSource(
       "NotificationDataSecondaryText:${this.metadata?.artist}"
   }
 
-  fun toMediaSource(context: Context): MediaSource {
-    return buildMediaSourceWithHeaders(context, this)
+  fun toMediaSource(context: Context, useCache: Boolean): MediaSource {
+    return buildExpoVideoMediaSource(context, this, useCache)
   }
 
   fun toMediaItem(context: Context) = MediaItem
     .Builder()
     .apply {
       setUri(parseLocalAssetId(uri, context))
-      setMediaId(toMediaId())
       drm?.let {
         if (it.type.isSupported()) {
           setDrmConfiguration(it.toDRMConfiguration())

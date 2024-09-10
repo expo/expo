@@ -2,8 +2,9 @@ import type { VideoPlayer } from './VideoPlayer.types';
 type ExpoVideoModule = {
     VideoPlayer: typeof VideoPlayer;
     isPictureInPictureSupported(): boolean;
-    cleanVideoCache(): void;
-    cleanAllVideoCache(): void;
+    setVideoCacheSizeAsync(sizeBytes: number): Promise<void>;
+    cleanVideoCacheAsync(): Promise<void>;
+    getCurrentVideoCacheSize(): number;
 };
 declare const _default: ExpoVideoModule;
 export default _default;

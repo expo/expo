@@ -1,9 +1,10 @@
 export {
-  VideoView,
   isPictureInPictureSupported,
-  cleanVideoCache,
-  cleanAllVideoCache,
-} from './VideoView';
+  cleanVideoCacheAsync,
+  setVideoCacheSizeAsync,
+  getCurrentVideoCacheSize,
+} from './VideoModule';
+export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
 export { VideoContentFit, VideoViewProps } from './VideoView.types';

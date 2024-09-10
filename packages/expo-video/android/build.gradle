@@ -21,6 +21,8 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
 
+  implementation "androidx.datastore:datastore-preferences:1.1.1"
+
   // Remember to keep this in sync with the version in `expo-audio`
   def androidxMedia3Version = "1.4.0"
   implementation "androidx.media3:media3-session:${androidxMedia3Version}"

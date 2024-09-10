@@ -2,7 +2,15 @@ import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Platform } from 'expo-modules-core';
-import { useVideoPlayer, VideoView, VideoSource, VideoPlayerEvents } from 'expo-video';
+import {
+  useVideoPlayer,
+  VideoView,
+  VideoSource,
+  VideoPlayerEvents,
+  cleanVideoCacheAsync,
+  setVideoCacheSizeAsync,
+  getCurrentVideoCacheSize,
+} from 'expo-video';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -69,11 +77,12 @@ export default function VideoScreen() {
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
   const [preservePitch, setPreservePitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
-  const [currentSource, setCurrentSource] = React.useState(videoSources[0]);
+  const [currentSource, setCurrentSource] = React.useState(videoSources[2]);
   const [logEvents, setLogEvents] = React.useState(false);
   const [showNowPlayingNotification, setShowNowPlayingNotification] = React.useState(true);
 
   const player = useVideoPlayer(currentSource, (player) => {
+    player.muted = true;
     player.volume = volume;
     player.loop = loop;
     player.preservesPitch = preservePitch;
@@ -89,22 +98,33 @@ export default function VideoScreen() {
 
   const togglePlayer = useCallback(() => {
     if (player.playing) {
-      player.pause();
+      player.release();
+      cleanVideoCacheAsync().then(() => {
+        setCurrentSource(videoSources[0]);
+      });
+
+      // player.pause();
     } else {
-      player.play();
+      // player.play();
     }
   }, [player]);
 
   const seekBy = useCallback(() => {
-    player.seekBy(10);
+    player.release();
+    setVideoCacheSizeAsync(20 * 1024 * 1024).then(() => {
+      setCurrentSource(videoSources[0]);
+    });
   }, [player]);
 
   const replay = useCallback(() => {
-    player.replay();
+    console.log(getCurrentVideoCacheSize());
   }, [player]);
 
   const toggleMute = useCallback(() => {
-    player.muted = !player.muted;
+    player.release();
+    setVideoCacheSizeAsync(1024 * 1024 * 1024).then(() => {
+      setCurrentSource(videoSources[0]);
+    });
   }, [player]);
 
   const togglePictureInPicture = useCallback(() => {
@@ -211,9 +231,9 @@ export default function VideoScreen() {
           ))}
         </Picker>
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
-        <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
-        <Button style={styles.button} title="Replay" onPress={replay} />
-        <Button style={styles.button} title="Toggle mute" onPress={toggleMute} />
+        <Button style={styles.button} title="Set size to 100mb" onPress={seekBy} />
+        <Button style={styles.button} title="Print current cache size" onPress={replay} />
+        <Button style={styles.button} title="Set size to 1GB" onPress={toggleMute} />
         <Button style={styles.button} title="Enter fullscreen" onPress={enterFullscreen} />
         <Button
           style={styles.button}

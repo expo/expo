@@ -150,7 +150,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     safeEmit(event: "playingChange", arguments: newIsPlaying, oldIsPlaying)
     isPlaying = newIsPlaying
 
-    print(getBufferedPosition())
     VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 

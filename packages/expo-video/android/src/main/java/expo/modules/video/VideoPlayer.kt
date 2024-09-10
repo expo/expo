@@ -87,6 +87,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   }
 
+  var useCache: Boolean = true
+
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
@@ -169,7 +171,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   fun prepare() {
     uncommittedSource?.let { videoSource ->
-      val mediaSource = videoSource.toMediaSource(context)
+      val mediaSource = videoSource.toMediaSource(context, useCache)
       player.setMediaSource(mediaSource)
       player.prepare()
       lastLoadedSource = videoSource
