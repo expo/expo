@@ -27,6 +27,7 @@ open class CodedException(
   // the javaClass property in the constructor.
   private var providedCode: String? = null
 
+  @get:DoNotStrip
   val code
     get() = providedCode ?: inferCode(javaClass)
 
