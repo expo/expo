@@ -9,12 +9,14 @@ import expo.modules.kotlin.jni.JNIFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.ReturnType
 
 class SyncFunctionComponent(
   name: String,
-  desiredArgsTypes: Array<AnyType>,
+  argTypes: Array<AnyType>,
+  private val returnType: ReturnType,
   private val body: (args: Array<out Any?>) -> Any?
-) : AnyFunction(name, desiredArgsTypes) {
+) : AnyFunction(name, argTypes) {
   private var shouldUseExperimentalConverter = false
 
   @Suppress("FunctionName")
@@ -37,7 +39,11 @@ class SyncFunctionComponent(
         FunctionCallException(name, moduleName, it)
       }) {
         val result = call(args, appContext)
-        return@exceptionDecorator JSTypeConverter.convertToJSValue(result, useExperimentalConverter = shouldUseExperimentalConverter)
+        if (shouldUseExperimentalConverter) {
+          return@exceptionDecorator returnType.convertToJS(result)
+        } else {
+          return@exceptionDecorator JSTypeConverter.convertToJSValue(result)
+        }
       }
     }
   }
