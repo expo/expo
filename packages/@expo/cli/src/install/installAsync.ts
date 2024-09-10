@@ -66,8 +66,8 @@ export async function installAsync(
     });
   }
 
-  // note(simek): check out the packages New Architecture compatibility against RND API
-  if (!options.skipCompatibilityCheck) {
+  // note(simek): check out the packages compatibility with New Architecture against RND API
+  if (!process.env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
     await checkPackagesCompatibility(otherPackages);
   }
 

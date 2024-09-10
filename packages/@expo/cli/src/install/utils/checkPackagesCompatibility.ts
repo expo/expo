@@ -2,6 +2,7 @@
 import chalk from 'chalk';
 
 import { Log } from '../../log';
+import { learnMore } from '../../utils/link';
 
 export type ReactNativeDirectoryCheckResult = {
   unmaintained: boolean;
@@ -27,16 +28,27 @@ export async function checkPackagesCompatibility(otherPackages: string[]) {
       ReactNativeDirectoryCheckResult
     >;
 
-    otherPackages.forEach((packageName) => {
-      if (packageMetadata[packageName].newArchitecture === 'unsupported') {
-        Log.warn(
-          chalk.yellow(
-            `${chalk.bold('Warning')}: "${packageName}" does not support New Architecture`
-          )
-        );
-      }
-    });
+    const incompatiblePackages = otherPackages.filter(
+      (packageName) => packageMetadata[packageName].newArchitecture === 'unsupported'
+    );
+
+    if (incompatiblePackages.length) {
+      Log.warn(
+        chalk.yellow(
+          `${chalk.bold('Warning')}: ${formatPackageNames(incompatiblePackages)} do not support the New Architecture. ${learnMore('https://docs.expo.dev/guides/new-architecture/')}`
+        )
+      );
+    }
   } catch {
     Log.log(chalk.gray('Unable to fetch compatibility data from React Native Directory!'));
   }
+}
+
+function formatPackageNames(incompatiblePackages: string[]) {
+  if (incompatiblePackages.length === 1) {
+    return incompatiblePackages.join();
+  }
+
+  const lastPackage = incompatiblePackages.pop();
+  return `${incompatiblePackages.join(', ')} and ${lastPackage}`;
 }

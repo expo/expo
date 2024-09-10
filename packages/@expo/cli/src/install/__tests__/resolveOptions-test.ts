@@ -33,7 +33,6 @@ describe(resolveArgsAsync, () => {
         pnpm: false,
         bun: false,
         fix: false,
-        skipCompatibilityCheck: false,
       },
       extras: ['--npm', '-g', 'not-a-plugin'],
     });
@@ -49,7 +48,6 @@ describe(resolveArgsAsync, () => {
         pnpm: false,
         bun: false,
         fix: false,
-        skipCompatibilityCheck: false,
       },
       extras: [],
     });

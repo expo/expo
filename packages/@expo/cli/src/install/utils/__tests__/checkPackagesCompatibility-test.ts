@@ -9,7 +9,7 @@ describe(checkPackagesCompatibility, () => {
 
     expect(Log.warn).toBeCalledTimes(1);
     expect(Log.warn).toHaveBeenLastCalledWith(
-      expect.stringMatching(/"react-native-code-push" does not support New Architecture/)
+      expect.stringMatching(/react-native-code-push do not support the New Architecture/)
     );
   });
 });
