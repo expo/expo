@@ -122,13 +122,13 @@ To publish an update with changes from your project, you can use the `eas update
 
 <Collapsible summary="How does publishing an update work?">
 
-When you publish an update with the `eas update` command, it generates a new update bundle and uploads it to the EAS servers. The `branch` name is used to identify the update and is associated with the uploaded bundle. It is similar to how Git commit works, where every commit is associated with a Git branch.
+When you publish an update with the `eas update` command, it generates a new update bundle and uploads it to the EAS servers. The `branch` name is used to identify which bucket of updates to put the new one in. It is similar to how Git commit works, where every commit is associated with a Git branch.
 
-For example, you want to publish an update for the [`development` build profile](/build/eas-json/#build-profiles). You can use it as the branch name to associate the update with its build profile. When the app requests an update, it will download the update associated with the `development` branch.
+For example, you want to publish an update for the [`development` build profile](/build/eas-json/#build-profiles). You can use it as the channel name to associate the update with its build profile. When the app requests an update, it will download the update associated with the `development` channel.
 
-For this example, the command to publish an update with the `development` branch and a message is:
+For this example, the command to publish an update with the `development` channel and a message is:
 
-<Terminal cmd={['$ eas update --branch development --message "Fixes typo"']} />
+<Terminal cmd={['$ eas update --channel development --message "Fixes typo"']} />
 
 The above command runs `npx expo export` behind the scenes to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS Update servers.
 
