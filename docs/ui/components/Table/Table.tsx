@@ -18,6 +18,7 @@ export const Table = ({ children, headers = [], headersAlign, className }: Table
         '[&_p]:text-xs',
         '[&_li]:text-xs',
         '[&_span]:text-xs',
+        '[&_code_span]:text-inherit',
         '[&_strong]:text-xs',
         '[&_blockquote_div]:text-xs',
         '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
