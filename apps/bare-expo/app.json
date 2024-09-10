@@ -80,6 +80,14 @@
           "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig"
     ]
   }
