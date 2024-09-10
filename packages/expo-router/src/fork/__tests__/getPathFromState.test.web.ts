@@ -1,4 +1,4 @@
-import getPathFromState from '../getPathFromState';
+import getPathFromState, { appendBaseUrl } from '../getPathFromState';
 
 describe('hash support', () => {
   it('appends hash to the path', () => {
@@ -90,4 +90,24 @@ it(`handles url search params params`, () => {
   };
 
   expect(getPathFromState(state, config)).toBe('/?test=true&hello=world&array=1&array=2');
+});
+
+describe('basePath support', () => {
+  const oldBaseUrl = process.env.EXPO_BASE_URL;
+
+  beforeAll(() => {
+    process.env.EXPO_BASE_URL = '/test';
+  });
+
+  afterAll(() => {
+    process.env.EXPO_BASE_URL = oldBaseUrl;
+  });
+
+  it('appends baseUrl to the paths without schemes', () => {
+    expect(appendBaseUrl('/home')).toBe('/test/home');
+  });
+
+  it('does not appends baseUrl to the paths without schemes', () => {
+    expect(appendBaseUrl('http://www.example.com/home')).toBe('/test/home');
+  });
 });
