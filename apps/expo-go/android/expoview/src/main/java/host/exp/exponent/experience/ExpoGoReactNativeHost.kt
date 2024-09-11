@@ -68,7 +68,7 @@ class KernelReactNativeHost(
   val devSupportEnabled
     get() =
       !KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
-              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
 
   override fun getUseDeveloperSupport(): Boolean {
     return devSupportEnabled

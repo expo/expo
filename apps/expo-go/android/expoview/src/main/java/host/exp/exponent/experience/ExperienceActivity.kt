@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
-import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.ReactSurfaceView
 import com.facebook.soloader.SoLoader
 import com.google.firebase.crashlytics.FirebaseCrashlytics

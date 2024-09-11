@@ -255,7 +255,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     }
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()
-//    appRecord!!.setReactHost(reactInstanceManager)
+    appRecord!!.setReactHost(reactHost)
     callback!!.onComplete(true, null)
 
     return reactHost

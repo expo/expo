@@ -354,7 +354,7 @@ abstract class ReactNativeActivity :
     if (isCrashed || !delegate.isInForeground) {
       // Can sometimes get here after an error has occurred. Return early or else we'll hit
       // a null pointer at mReactRootView.startReactApplication
-      return null
+      return reactHost
     }
 
     val experienceProperties = mapOf<String, Any?>(
@@ -449,7 +449,7 @@ abstract class ReactNativeActivity :
     }
 
     if (!delegate.isInForeground) {
-      return null
+      return reactHost
     }
 
     val devSettings = reactHost.devSupportManager.devSettings as? DevInternalSettings
@@ -624,13 +624,13 @@ abstract class ReactNativeActivity :
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       return if (host != null && (
-                host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-                        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(
-                  ".exp.direct"
-                ) || host.endsWith(
-                  ".expo.test"
-                )
-                )
+          host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
+            host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(
+              ".exp.direct"
+            ) || host.endsWith(
+              ".expo.test"
+            )
+          )
       ) {
         val pathSegments = uri.pathSegments
         val builder = uri.buildUpon()

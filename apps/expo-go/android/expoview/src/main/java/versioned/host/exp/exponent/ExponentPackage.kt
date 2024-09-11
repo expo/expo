@@ -105,7 +105,6 @@ class ExponentPackage : ReactPackage {
     val isVerified = manifest.isVerified()
     val nativeModules: MutableList<NativeModule> = mutableListOf(
       URLHandlerModule(reactContext),
-//      ShakeModule(reactContext),
       KeyboardModule(reactContext)
     )
     nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))

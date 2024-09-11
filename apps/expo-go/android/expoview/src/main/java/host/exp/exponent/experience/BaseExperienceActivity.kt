@@ -193,8 +193,9 @@ abstract class BaseExperienceActivity : ReactNativeActivity() {
 
     fun addError(error: ExponentError) {
       errorQueue.add(error)
-      if (visibleActivity != null) {
-        visibleActivity?.consumeErrorQueue()
+      val activity = visibleActivity
+      if (activity != null) {
+        activity.consumeErrorQueue()
       } else if (ErrorActivity.visibleActivity != null) {
         // If ErrorActivity is already started and we get another error from RN.
         sendErrorsToErrorActivity()

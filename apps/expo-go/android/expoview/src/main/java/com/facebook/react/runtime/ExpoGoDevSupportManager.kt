@@ -15,35 +15,16 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.JavaJSExecutor
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
-import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback
-import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
-import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.runtime.internal.bolts.Task
 import versioned.host.exp.exponent.VersionedUtils
 import java.lang.ref.WeakReference
 
-//
-// Expo: This is a copy of react-native's {@link com.facebook.react.runtime.BridgelessDevSupportManager}
-// just removing the "final" modifier that we can inherit and reuse.
-// From time to time for react-native upgrade, just follow the steps to update the code
-//   1. Copy the contents from BridgelessDevSupportManager to this file.
-//   2. Rename the class to NonFinalBridgelessDevSupportManager.
-//   3. Add "public" modifier
-//   4. Revert the comment
-//
-/**
- * An implementation of [com.facebook.react.devsupport.interfaces.DevSupportManager] that
- * extends the functionality in [DevSupportManagerBase] with some additional, more flexible
- * APIs for asynchronously loading the JS bundle.
- */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class ExpoGoDevSupportManager(
   private val reactHost: ReactHostImpl,
@@ -75,7 +56,8 @@ class ExpoGoDevSupportManager(
   }
 
   override fun loadSplitBundleFromServer(
-    bundlePath: String, callback: DevSplitBundleCallback
+    bundlePath: String,
+    callback: DevSplitBundleCallback
   ) {
     fetchSplitBundleAndCreateBundleLoader(
       bundlePath,
@@ -98,9 +80,9 @@ class ExpoGoDevSupportManager(
         override fun onError(url: String, cause: Throwable) {
           callback.onError(url, cause)
         }
-      })
+      }
+    )
   }
-
 
   override fun handleReloadJS() {
     UiThreadUtil.assertOnUiThread()

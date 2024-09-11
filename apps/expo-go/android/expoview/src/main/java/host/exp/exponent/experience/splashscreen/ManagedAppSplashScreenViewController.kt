@@ -28,20 +28,18 @@ class ManagedAppSplashScreenViewController(
         // this causes the whole app to remount, I suspect this is why the timer isn't cleaned up
         // TODO: cancel runnable when app is unmounted / reloaded
         if (splashScreenView.parent != null) {
-          mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
-          mSnackbar?.setAction(
-            "Info"
-          ) { v ->
-            val url = "https://expo.fyi/splash-screen-hanging"
-            val webpage = Uri.parse(url)
-            val intent = Intent(Intent.ACTION_VIEW, webpage)
-            v.context.startActivity(intent)
-            mSnackbar?.dismiss()
+          mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG).also { snackbar ->
+            snackbar.setAction("Info") { v ->
+              val url = "https://expo.fyi/splash-screen-hanging"
+              val webpage = Uri.parse(url)
+              val intent = Intent(Intent.ACTION_VIEW, webpage)
+              v.context.startActivity(intent)
+              snackbar.dismiss()
+            }
+            snackbar.show()
           }
-          mSnackbar?.show()
         }
       }
-
       mWarningHandler.postDelayed(mRunnable!!, 20000)
     }
   }
