@@ -6,6 +6,7 @@ const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
 const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
 const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
+const url_1 = require("../utils/url");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -25,25 +26,6 @@ function eventShouldPreventDefault(e) {
     }
     return false;
 }
-/**
- * Checks if base url should be appended to the given href.
- * @param href the href to check
- * @returns false if `href` contains an authority or a scheme, otherwise true
- */
-function shouldAppendBaseUrl(href) {
-    // See rfc2396 appendix b for regex used. Capture group 2 identifies the scheme, capture group 4 identifies the authority.
-    // If either is present, base url should not be appended because the href is not relative to the app.
-    const uriRegex = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/;
-    const hrefMatches = href.match(uriRegex);
-    if (!hrefMatches) {
-        return true;
-    }
-    else {
-        const scheme = hrefMatches[2];
-        const authority = hrefMatches[4];
-        return !scheme && !authority;
-    }
-}
 function useLinkToPathProps({ href, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
@@ -56,7 +38,7 @@ function useLinkToPathProps({ href, ...options }) {
     };
     let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
     // Append base url only if needed.
-    if (shouldAppendBaseUrl(strippedHref)) {
+    if ((0, url_1.shouldLinkExternally)(strippedHref)) {
         strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
     }
     return {

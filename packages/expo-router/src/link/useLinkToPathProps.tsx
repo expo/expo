@@ -6,6 +6,7 @@ import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import { emitDomLinkEvent } from './useDomComponentNavigation';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
+import { shouldLinkExternally } from '../utils/url';
 
 function eventShouldPreventDefault(
   e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
@@ -31,25 +32,6 @@ function eventShouldPreventDefault(
   return false;
 }
 
-/**
- * Checks if base url should be appended to the given href.
- * @param href the href to check
- * @returns false if `href` contains an authority or a scheme, otherwise true
- */
-function shouldAppendBaseUrl(href: string): boolean {
-  // See rfc2396 appendix b for regex used. Capture group 2 identifies the scheme, capture group 4 identifies the authority.
-  // If either is present, base url should not be appended because the href is not relative to the app.
-  const uriRegex = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/;
-  const hrefMatches = href.match(uriRegex);
-  if (!hrefMatches) {
-    return true;
-  } else {
-    const scheme = hrefMatches[2];
-    const authority = hrefMatches[4];
-    return !scheme && !authority;
-  }
-}
-
 type UseLinkToPathPropsOptions = LinkToOptions & {
   href: string;
 };
@@ -69,7 +51,7 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
   let strippedHref = stripGroupSegmentsFromPath(href) || '/';
 
   // Append base url only if needed.
-  if (shouldAppendBaseUrl(strippedHref)) {
+  if (shouldLinkExternally(strippedHref)) {
     strippedHref = appendBaseUrl(strippedHref);
   }
 
