@@ -68,7 +68,7 @@ describe('runAsync', () => {
 
     expect(result.isSuccessful).toBeTruthy();
     expect(glob).toHaveBeenCalledWith(`${projectRoot}/modules/**/ios/*.podspec`);
-    expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything(), expect.anything());
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything());
   });
 
   it('returns result with isSuccessful = true if local module with android folder and android folder is not gitignored', async () => {
@@ -98,11 +98,7 @@ describe('runAsync', () => {
 
     expect(result.isSuccessful).toBeTruthy();
     expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/android/build.gradle`);
-    expect(isFileIgnoredAsync).toHaveBeenCalledWith(
-      androidPath,
-      expect.anything(),
-      expect.anything()
-    );
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
   });
 
   it('returns result with isSuccessful = false if local module with ios folder and ios folder is gitignored', async () => {
@@ -129,7 +125,7 @@ describe('runAsync', () => {
 
     expect(result.isSuccessful).toBeFalsy();
     expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/ios/*.podspec`);
-    expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything(), expect.anything());
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything());
   });
 
   it('returns result with isSuccessful = false if local module with android folder and android folder is gitignored', async () => {
@@ -159,11 +155,7 @@ describe('runAsync', () => {
 
     expect(result.isSuccessful).toBeFalsy();
     expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/android/build.gradle`);
-    expect(isFileIgnoredAsync).toHaveBeenCalledWith(
-      androidPath,
-      expect.anything(),
-      expect.anything()
-    );
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
   });
 
   // multiple lock files
