@@ -10,10 +10,7 @@ sealed class GlideModelProvider {
   abstract val glideModel: Any
 
   override fun equals(other: Any?): Boolean {
-    if (this === other) {
-      return true
-    }
-    return other is GlideModelProvider && glideModel == other.glideModel
+    return this === other || (other is GlideModelProvider && glideModel == other.glideModel)
   }
 
   override fun hashCode(): Int = glideModel.hashCode()
@@ -49,11 +46,7 @@ class BlurhashModelProvider(
   override val glideModel: BlurhashModelProvider = this
 
   override fun equals(other: Any?): Boolean {
-    if (this === other) {
-      return true
-    }
-
-    return other is BlurhashModelProvider && uri == other.uri && width == other.width && height == other.height
+    return this === other || (other is BlurhashModelProvider && uri == other.uri && width == other.width && height == other.height)
   }
 
   override fun hashCode(): Int {
@@ -70,7 +63,7 @@ class ThumbhashModelProvider(
   override val glideModel: ThumbhashModelProvider = this
 
   override fun equals(other: Any?): Boolean {
-    return (this === other) || other is ThumbhashModelProvider && uri == other.uri
+    return this === other || (other is ThumbhashModelProvider && uri == other.uri)
   }
 
   override fun hashCode(): Int {
