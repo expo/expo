@@ -518,8 +518,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       val bestSource = bestSource
       val bestPlaceholder = bestPlaceholder
 
-      val sourceToLoad = bestSource?.createGlideModel(context)
-      val placeholder = bestPlaceholder?.createGlideModel(context)
+      val sourceToLoad = bestSource?.createGlideModelProvider(context)
+      val placeholder = bestPlaceholder?.createGlideModelProvider(context)
 
       if (cleanIfNeeded(bestSource, sourceToLoad, placeholder)) {
         // the view was cleaned
@@ -550,7 +550,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       val options = bestSource?.createGlideOptions(context)
       val propOptions = createPropOptions()
 
-      val model = sourceToLoad?.glideModel
+      val model = sourceToLoad?.getGlideModel()
       if (model is GlideUrlWrapper) {
         model.progressListener = progressListener
       }
@@ -576,7 +576,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
           newTarget.placeholderContentFit = newPlaceholderContentFit
 
-          thumbnail(requestManager.load(placeholderModel.glideModel))
+          thumbnail(requestManager.load(placeholderModel.getGlideModel()))
             .apply(placeholderSource.createGlideOptions(context))
         }
         .downsample(downsampleStrategy)
