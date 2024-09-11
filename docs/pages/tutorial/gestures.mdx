@@ -3,10 +3,8 @@ title: Add gestures
 description: In this tutorial, learn how to implement gestures from React Native Gesture Handler and Reanimated libraries.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 
 Gestures are a great way to provide an intuitive user experience in an app. The [React Native Gesture Handler library](https://docs.swmansion.com/react-native-gesture-handler/docs/) provides built-in native components that can handle gestures. It recognizes pan, tap, rotation, and other gestures using the platform's native touch handling system. In this chapter, we'll to add two different gestures using this library:
@@ -330,13 +328,13 @@ Let's take a look at our app on Android, iOS and the web:
 
 </Step>
 
-## Next step
+## Summary
 
-We successfully implemented pan and tap gestures.
-
-<BoxLink
-  title="Take a screenshot"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll learn how to take a screenshot of the image and the sticker, and save it on the device's library."
-  href="/tutorial/screenshot"
+<ProgressTracker
+  currentChapterIndex={5}
+  name="GET_STARTED"
+  summary="We've successfully implemented pan and tap gestures."
+  nextChapterDescription="In the next chapter, we'll learn how to take a screenshot of the image and the sticker, and save it on the device's library."
+  nextChapterTitle="Take a screenshot"
+  nextChapterLink="/tutorial/screenshot"
 />

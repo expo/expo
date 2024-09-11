@@ -3,11 +3,9 @@ title: Configure status bar, splash screen and app icon
 description: In this tutorial, learn the basics of how to configure a status bar, splash screen and app icon.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -132,13 +130,13 @@ You can see the icon in various places in Expo Go. Here is an example of the app
 
 </Step>
 
-## We have completed the app!
+## Summary
 
-Well done! We built an app that runs on Android, iOS, and the web from the same codebase.
-
-<BoxLink
-  title="Learn more"
-  Icon={BookOpen02Icon}
-  description="The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly."
-  href="/tutorial/follow-up"
+<ProgressTracker
+  currentChapterIndex={8}
+  name="GET_STARTED"
+  summary="Well done! We built an app that runs on Android, iOS, and the web from the same codebase."
+  nextChapterDescription="The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly."
+  nextChapterTitle="Learning resources"
+  nextChapterLink="/tutorial/follow-up"
 />

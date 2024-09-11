@@ -3,10 +3,8 @@ title: Use an image picker
 description: In this tutorial, learn how to use Expo Image Picker.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -401,13 +399,13 @@ Let's take a look at our app now:
 
 </Step>
 
-## Next step
+## Summary
 
-We added the functionality to pick an image from the device's media library.
-
-<BoxLink
-  title="Create an emoji picker modal"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll learn how to create an emoji picker modal component."
-  href="/tutorial/create-a-modal"
+<ProgressTracker
+  currentChapterIndex={3}
+  name="GET_STARTED"
+  summary="We've successfully added the functionality to pick an image from the device's media library."
+  nextChapterDescription="In the next chapter, we'll learn how to create an emoji picker modal component."
+  nextChapterTitle="Create an emoji picker modal"
+  nextChapterLink="/tutorial/create-a-modal"
 />

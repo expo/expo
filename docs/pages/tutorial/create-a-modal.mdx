@@ -3,10 +3,8 @@ title: Create a modal
 description: In this tutorial, learn how to create a modal from React Native to select an image.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 
 React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the [third chapter](/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component), after pressing the button, we used a modal to a placeholder text. That's how a modal component displays an overlay.
@@ -881,13 +879,13 @@ Let's take a look at our app on Android, iOS and the web:
 
 </Step>
 
-## Next step
+## Summary
 
-We successfully created the emoji picker modal and implemented the logic to select an emoji and display it over the image.
-
-<BoxLink
-  title="Add gestures"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, let's add user interactions with gestures to drag the emoji and scale the size by tapping it."
-  href="/tutorial/gestures"
+<ProgressTracker
+  currentChapterIndex={4}
+  name="GET_STARTED"
+  summary="We've successfully created the emoji picker modal and implemented the logic to select an emoji and display it over the image."
+  nextChapterDescription="In the next chapter, let's add user interactions with gestures to drag the emoji and scale the size by tapping it."
+  nextChapterTitle="Add gestures"
+  nextChapterLink="/tutorial/gestures"
 />

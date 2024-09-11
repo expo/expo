@@ -3,11 +3,9 @@ title: Build a screen
 description: In this tutorial, learn how to use components such as React Native's Pressable and Expo Image to build a screen.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
@@ -440,13 +438,13 @@ Let's take a look at our app on Android, iOS and the web:
 
 </Step>
 
-## Next step
+## Summary
 
-We implemented the initial design.
-
-<BoxLink
-  title="Use an image picker"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll add the functionality to pick an image from the device's media library."
-  href="/tutorial/image-picker"
+<ProgressTracker
+  currentChapterIndex={2}
+  name="GET_STARTED"
+  summary="We've successfully implemented the initial design to start building our app's first screen."
+  nextChapterDescription="In the next chapter, we'll add the functionality to pick an image from the device's media library."
+  nextChapterTitle="Use an image picker"
+  nextChapterLink="/tutorial/image-picker"
 />

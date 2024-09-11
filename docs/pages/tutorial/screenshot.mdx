@@ -3,10 +3,8 @@ title: Take a screenshot
 description: In this tutorial, learn how to capture a screenshot using a third-party library and Expo Media Library.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -239,13 +237,13 @@ Now, choose a photo and add a sticker in the app. Then tap the "Save" button. We
 
 </Step>
 
-## Next step
+## Summary
 
-The `react-native-view-shot` and `expo-media-library` work only on Android and iOS. However, we'd like our app to work on the web as well.
-
-<BoxLink
-  title="Handle platform differences"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, let's learn how to handle the differences between mobile and web platforms."
-  href="/tutorial/platform-differences"
+<ProgressTracker
+  currentChapterIndex={6}
+  name="GET_STARTED"
+  summary="We've successfully used react-native-view-shot and expo-media-library to capture a screenshot and save it on the device's library."
+  nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web platforms to implement the same functionality on web."
+  nextChapterTitle="Handle platform differences"
+  nextChapterLink="/tutorial/platform-differences"
 />

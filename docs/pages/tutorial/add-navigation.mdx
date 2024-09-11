@@ -3,12 +3,10 @@ title: Add navigation
 description: In this chapter, learn how to add navigation to the Expo app.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
@@ -378,13 +376,13 @@ Our app now has a custom bottom tabs navigator:
 
 </Step>
 
-## Next step
+## Summary
 
-We have added a stack and a tab navigator to our app.
-
-<BoxLink
-  title="Build your app's first screen"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll learn how to build the app's first screen."
-  href="/tutorial/build-a-screen"
+<ProgressTracker
+  currentChapterIndex={1}
+  name="GET_STARTED"
+  summary="We've successfully added a stack and a tab navigator to our app."
+  nextChapterDescription="In the next chapter, we'll learn how to build the app's first screen."
+  nextChapterTitle="Build your app's first screen"
+  nextChapterLink="/tutorial/build-a-screen"
 />

@@ -3,11 +3,9 @@ title: Handle platform differences
 description: In this tutorial, learn how to handle platform differences between native and web when creating a universal app.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -204,13 +202,13 @@ On running the app in a web browser, we can now save a screenshot:
 
 </Step>
 
-## Next step
+## Summary
 
-The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic.
-
-<BoxLink
-  title="Configure status bar, splash screen and app icon"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we will customize the app's status bar, splash screen, and app icon."
-  href="/tutorial/configuration"
+<ProgressTracker
+  currentChapterIndex={7}
+  name="GET_STARTED"
+  summary="The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic.."
+  nextChapterDescription="In the next chapter, we will customize the app's status bar, splash screen, and app icon."
+  nextChapterTitle="Configure status bar, splash screen and app icon"
+  nextChapterLink="/tutorial/configuration"
 />

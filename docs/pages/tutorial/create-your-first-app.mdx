@@ -4,12 +4,12 @@ title: Create your first app
 description: In this chapter, learn how to create a new Expo project.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Download03Icon } from '@expo/styleguide-icons/outline/Download03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
@@ -175,13 +175,13 @@ This change will reflect on all platforms automatically:
 
 </Step>
 
-## Next step
+## Summary
 
-We have created a new Expo project, used React Native core components, and are ready to develop our StickerSmash app.
-
-<BoxLink
-  title="Add navigation"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we will learn how to add a stack and a tab navigator to our app."
-  href="/tutorial/add-navigation/"
+<ProgressTracker
+  currentChapterIndex={0}
+  name="GET_STARTED"
+  summary="We've successfully created a new Expo project, used React Native core components, and are ready to develop our StickerSmash app."
+  nextChapterDescription="In the next chapter, we will learn how to add a stack and a tab navigator to our app."
+  nextChapterTitle="Add navigation"
+  nextChapterLink="/tutorial/add-navigation/"
 />
