@@ -29,7 +29,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.taskManager.TaskManagerInterface
