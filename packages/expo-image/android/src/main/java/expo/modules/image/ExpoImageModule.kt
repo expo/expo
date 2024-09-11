@@ -1,3 +1,5 @@
+@file:OptIn(EitherType::class)
+
 package expo.modules.image
 
 import android.graphics.drawable.Drawable
@@ -10,7 +12,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
-import com.github.penfeizhou.animation.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
@@ -18,18 +19,24 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import com.github.penfeizhou.animation.apng.APNGDrawable
+import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.DecodeFormat
+import expo.modules.image.records.DecodedSource
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.toKClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -176,8 +183,19 @@ class ExpoImageModule : Module() {
         "onLoad"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap>? ->
-        view.sources = sources ?: emptyList()
+      Prop("source") { view: ExpoImageViewWrapper, sources: Either<List<SourceMap>, SharedRef<Drawable>>? ->
+        if (sources == null) {
+          view.sources = emptyList()
+          return@Prop
+        }
+
+        if (sources.`is`(toKClass<List<SourceMap>>())) {
+          view.sources = sources.get(toKClass<List<SourceMap>>())
+          return@Prop
+        }
+
+        val drawable = sources.get(toKClass<SharedRef<Drawable>>()).ref
+        view.sources = listOf(DecodedSource(drawable))
       }
 
       Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
