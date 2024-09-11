@@ -20,8 +20,8 @@ class SMSModule : Module(), LifecycleEventListener {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val currentActivity
-    get() = appContext.activityProvider?.currentActivity
-      ?: throw MissingCurrentActivityException()
+    get() = appContext.currentActivity
+      ?: throw Exceptions.MissingActivity()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSMS")

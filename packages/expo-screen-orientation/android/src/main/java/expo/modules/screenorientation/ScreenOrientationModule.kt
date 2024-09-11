@@ -18,7 +18,7 @@ import expo.modules.screenorientation.enums.OrientationLock
 
 class ScreenOrientationModule : Module(), LifecycleEventListener {
   private val weakCurrentActivity
-    get() = appContext.activityProvider?.currentActivity
+    get() = appContext.currentActivity
 
   private val currentActivity
     get() = weakCurrentActivity ?: throw Exceptions.MissingActivity()

@@ -114,7 +114,7 @@ class ImagePickerModule : Module() {
     get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
 
   private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw MissingCurrentActivityException()
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   private val mediaHandler = MediaHandler(this)
 

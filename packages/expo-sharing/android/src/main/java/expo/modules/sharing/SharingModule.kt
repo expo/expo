@@ -18,7 +18,7 @@ class SharingModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val currentActivity
-    get() = appContext.currentActivity ?: throw MissingCurrentActivityException()
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var pendingPromise: Promise? = null
 
   override fun definition() = ModuleDefinition {

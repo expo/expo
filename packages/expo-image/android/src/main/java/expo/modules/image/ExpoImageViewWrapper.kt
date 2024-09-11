@@ -34,6 +34,7 @@ import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.Source
 import expo.modules.image.svg.SVGPictureDrawable
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.tracing.beginAsyncTraceBlock
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -46,7 +47,7 @@ import kotlin.math.min
 @SuppressLint("ViewConstructor")
 class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private val activity: Activity
-    get() = appContext.currentActivity ?: throw MissingActivity()
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   internal val requestManager = getOrCreateRequestManager(appContext, activity)
   private val progressListener = OkHttpProgressListener(WeakReference(this))

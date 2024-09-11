@@ -48,7 +48,7 @@ class PrintModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   private suspend fun print(options: PrintOptions) {
     withContext(Dispatchers.Main) {

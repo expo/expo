@@ -41,7 +41,7 @@ import kotlin.math.min
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
   private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()

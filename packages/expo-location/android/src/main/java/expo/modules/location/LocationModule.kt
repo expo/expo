@@ -71,7 +71,8 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private lateinit var mSensorManager: SensorManager
   private lateinit var mUIManager: UIManager
   private lateinit var mLocationProvider: FusedLocationProviderClient
-  private lateinit var mActivityProvider: ActivityProvider
+  private val currentActivity
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   private var mGravity: FloatArray = FloatArray(9)
   private var mGeomagnetic: FloatArray = FloatArray(9)
@@ -92,8 +93,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       mUIManager = appContext.legacyModule<UIManager>() ?: throw MissingUIManagerException()
-      mActivityProvider = appContext.legacyModule<ActivityProvider>()
-        ?: throw MissingActivityManagerException()
       mLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
       mSensorManager = mContext.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         ?: throw SensorManagerUnavailable()
@@ -470,12 +469,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
    * Triggers system's dialog to ask the user to enable settings required for given location request.
    */
   private fun resolveUserSettingsForRequest(locationRequest: LocationRequest) {
-    val activity = mActivityProvider.currentActivity
-    if (activity == null) {
-      // Activity not found. It could have been called in a headless mode.
-      executePendingRequests(Activity.RESULT_CANCELED)
-      return
-    }
     val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
     val client = LocationServices.getSettingsClient(mContext)
     val task = client.checkLocationSettings(builder.build())
@@ -491,7 +484,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         try {
           val resolvable = e as ResolvableApiException
           mUIManager.registerActivityEventListener(this@LocationModule)
-          resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE)
+          resolvable.startResolutionForResult(currentActivity, CHECK_SETTINGS_REQUEST_CODE)
         } catch (e: SendIntentException) {
           // Ignore the error.
           executePendingRequests(Activity.RESULT_CANCELED)
