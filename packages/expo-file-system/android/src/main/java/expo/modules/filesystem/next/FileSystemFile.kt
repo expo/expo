@@ -5,6 +5,7 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
 import java.io.FileOutputStream
+import java.security.MessageDigest
 
 @OptIn(EitherType::class)
 class FileSystemFile(path: File) : FileSystemPath(path) {
@@ -57,5 +58,20 @@ class FileSystemFile(path: File) : FileSystemPath(path) {
   fun text(): String {
     validateType()
     return path.readText()
+  }
+
+  @OptIn(ExperimentalStdlibApi::class)
+  val md5: String get() {
+    val md = MessageDigest.getInstance("MD5")
+    val digest = md.digest(path.readBytes())
+    return digest.toHexString()
+  }
+
+  val size: Long? get() {
+    return if (path.exists()) {
+      path.length()
+    } else {
+      null
+    }
   }
 }

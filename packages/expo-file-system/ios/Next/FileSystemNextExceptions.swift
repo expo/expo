@@ -18,3 +18,9 @@ internal class UnableToDownloadException: GenericException<String> {
     "Unable to download a file: \(param)"
   }
 }
+
+internal class UnableToGetFileSizeException: GenericException<String> {
+  override var reason: String {
+    "Unable to get file size: \(param)"
+  }
+}
