@@ -5,6 +5,7 @@ import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
 import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
+import { shouldLinkExternally } from '../utils/url';
 
 function eventShouldPreventDefault(
   e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
@@ -28,27 +29,6 @@ function eventShouldPreventDefault(
   }
 
   return false;
-}
-
-/**
- * Checks if base url should be appended to the given href.
- * @param href the href to check
- * @returns false if `href` contains an authority or a scheme, otherwise true
- */
-function shouldAppendBaseUrl(href: string): boolean {
-  // See rfc2396 appendix b for regex used. Capture group 2 identifies the scheme, capture group 4 identifies the authority.
-  // If either is present, base url should not be appended because the href is not relative to the app.
-  const uriRegex = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/;
-  const hrefMatches = href.match(uriRegex);
-  if (!hrefMatches) {
-    return true;
-  } else {
-    const scheme = hrefMatches[2];
-    const authority = hrefMatches[4];
-    return !scheme && !authority;
-  }
-  
-
 }
 
 type UseLinkToPathPropsOptions = LinkToOptions & {
@@ -80,11 +60,11 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
       return appendBaseUrl('/');
     }
 
-    // Append base url only if needed.
-    if (shouldAppendBaseUrl(strippedHref)) {
-      return appendBaseUrl(strippedHref);
-    } else {
+    // Append base url only if needed (for non-external URLs)
+    if (shouldLinkExternally(strippedHref)) {
       return strippedHref;
+    } else {
+      return appendBaseUrl(strippedHref);
     }
   }, [href]);
 
