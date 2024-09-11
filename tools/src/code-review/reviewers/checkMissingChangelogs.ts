@@ -87,7 +87,7 @@ function generateChangelogStub(pullRequest: PullRequest) {
   const userLink = markdownLink('@' + pullRequest.user!.login, pullRequest.user!.html_url);
   const suggestedTitle = filterBracketContent(pullRequest.title);
 
-  return `- ${suggestedTitle} (${prLink} by ${userLink})`;
+  return `\`- ${suggestedTitle} (${prLink} by ${userLink})\``;
 }
 
 function filterBracketContent(input: string): string {
