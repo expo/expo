@@ -146,3 +146,46 @@ it('uses web-only href attributes', () => {
     </a>
   `);
 });
+
+describe('base url relative links', () => {
+  let old_base_url: string | undefined = undefined;
+
+  beforeAll(() => {
+    old_base_url = process.env.EXPO_BASE_URL;
+    process.env.EXPO_BASE_URL = '/base_url';
+  });
+
+  afterAll(() => {
+    process.env.EXPO_BASE_URL = old_base_url;
+  });
+
+  it('appends base url to paths uris', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="/foo">
+        Foo
+      </Link>
+    );
+    const node = getByTestId('link');
+    expect(node.getAttribute('href')).toBe('/base_url/foo');
+  });
+
+  it('does not append base url to absolute network', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="//www.example.com/foo">
+        Foo
+      </Link>
+    );
+    const node = getByTestId('link');
+    expect(node.getAttribute('href')).toBe('//www.example.com/foo');
+  });
+
+  it('does not append base url to absolute uris', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="https://www.example.com/foo">
+        Foo
+      </Link>
+    );
+    const node = getByTestId('link');
+    expect(node.getAttribute('href')).toBe('https://www.example.com/foo');
+  });
+});
