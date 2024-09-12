@@ -1,6 +1,8 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 internal struct DynamicStringType: AnyDynamicType {
+  static let shared = DynamicStringType()
+
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return type == String.self
   }

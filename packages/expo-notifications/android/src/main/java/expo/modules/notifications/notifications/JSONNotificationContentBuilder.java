@@ -100,7 +100,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       // do nothing
     }
 
-    // do not play a default sound only if the value is a valid Uri
+    // play a default sound only if the value is NOT a valid Uri
     return getSound(payload) == null;
   }
 

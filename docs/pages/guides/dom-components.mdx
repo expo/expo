@@ -192,7 +192,31 @@ export default function App() {
 
 ## Measuring DOM components
 
-You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a native action:
+You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `autoSize` prop or a manual native action:
+
+### Automatically with `autoSize` prop
+
+You need to use the `dom={{ autoSize: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function Route() {
+  return <DOMComponent dom={{ autoSize: true }} />;
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent(_: { dom?: import('expo/dom').DOMProps }) {
+  return <div style={{ width: 500, height: 500, backgroundColor: 'blue' }} />;
+}
+```
+
+### Manually by resizing native action
+
+You can also manually measure the size of a DOM component and report it back to the native side using a native action:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
@@ -201,7 +225,7 @@ import { useState } from 'react';
 export default function Route() {
   const [height, setHeight] = useState(270);
   return (
-    <MyComponent
+    <DOMComponent
       updateSize={async size => {
         if (size[1] !== height) {
           setHeight(size[1]);
@@ -243,7 +267,7 @@ function useSize(callback: (size: [number, number]) => void) {
 export default function DOMComponent({
   onLayout,
 }: {
-  dom: import('expo/dom').DOMProps;
+  dom?: import('expo/dom').DOMProps;
   onLayout(size: [number, number]);
 }) {
   useSize(onLayout);

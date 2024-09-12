@@ -1,6 +1,7 @@
 'use strict';
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
+import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
 
@@ -258,6 +259,54 @@ export async function test({ describe, expect, it, ...t }) {
         const dst = new File(testDirectory + 'file2.txt');
         dst.create();
         expect(() => src.move(dst)).toThrow();
+      });
+    });
+
+    describe('Downloads files', () => {
+      it('downloads a file to a target file', async () => {
+        const url = 'https://httpbin.org/image/jpeg';
+        const file = new File(testDirectory + 'image.jpeg');
+        const output = await File.downloadFileAsync(url, file);
+        expect(file.exists()).toBe(true);
+        expect(output.path).toBe(file.path);
+      });
+
+      it('downloads a file to a target directory', async () => {
+        const url = 'https://httpbin.org/image/jpeg';
+        const directory = new Directory(testDirectory);
+        const output = await File.downloadFileAsync(url, directory);
+
+        const file = new File(
+          testDirectory + (Platform.OS === 'android' ? 'jpeg.jpg' : 'jpeg.jpeg')
+        );
+        expect(file.exists()).toBe(true);
+        expect(output.path).toBe(file.path);
+      });
+    });
+
+    describe('Computes file properties', () => {
+      it('computes size', async () => {
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        expect(file.size).toBe(11);
+      });
+
+      it('computes md5', async () => {
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+      });
+
+      it('returns null size and md5 for nonexistent files', async () => {
+        const file = new File(testDirectory + 'file2.txt');
+        expect(file.size).toBe(null);
+        expect(file.md5).toBe(null);
+      });
+
+      it('computes md5', async () => {
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
       });
     });
   });

@@ -1,11 +1,18 @@
 package expo.modules.filesystem.next
 
+import android.webkit.URLUtil
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.devtools.await
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.net.URI
 
 class FileSystemNextModule : Module() {
@@ -13,6 +20,34 @@ class FileSystemNextModule : Module() {
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
+
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
+      val request = Request.Builder().url(url.toURL()).build()
+      val client = OkHttpClient()
+      val response = request.await(client)
+
+      if (!response.isSuccessful) {
+        throw UnableToDownloadException("response has status: ${response.code}")
+      }
+
+      val contentDisposition = response.headers["content-disposition"]
+      val contentType = response.headers["content-type"]
+      val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
+
+      val destination = if (to is FileSystemDirectory) {
+        File(to.path, fileName)
+      } else {
+        to.path
+      }
+
+      val body = response.body ?: throw UnableToDownloadException("response body is null")
+      body.byteStream().use { input ->
+        FileOutputStream(destination).use { output ->
+          input.copyTo(output)
+        }
+      }
+      return@Coroutine destination.path
+    }
 
     Class(FileSystemFile::class) {
       Constructor { path: URI ->
@@ -61,6 +96,18 @@ class FileSystemNextModule : Module() {
 
       Property("path") { file ->
         file.asString()
+      }
+
+      Property("md5") { file ->
+        try {
+          file.md5
+        } catch (e: FileNotFoundException) {
+          null
+        }
+      }
+
+      Property("size") { file ->
+        file.size
       }
     }
 

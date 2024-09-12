@@ -33,6 +33,14 @@ class UnconvertedValue(
 
 data class ConvertedValue(val convertedValue: Any) : DeferredValue()
 
+/**
+ * Converts the type T to KClass. It preserves all parameters of type T if it's a generic.
+ * For instance, `toKClass<List<String>>() == KClass<List<String>>`
+ * Getting `KClass<List<String>>` isn't possible without a helper function because
+ * `List<String>::class` isn't a valid syntax.
+ */
+inline fun <reified T : Any> toKClass(): KClass<T> = T::class
+
 @EitherType
 @DoNotStrip
 // We can't strip this class because typeOf<Either<T,P>> won't work in the release builds.

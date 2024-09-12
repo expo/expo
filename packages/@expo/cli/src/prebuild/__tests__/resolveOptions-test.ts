@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import path from 'path';
 
 import {
   ensureValidPlatforms,
@@ -72,24 +73,99 @@ describe(resolveSkipDependencyUpdate, () => {
 });
 
 describe(resolveTemplateOption, () => {
-  beforeAll(() => {
-    vol.fromJSON({
-      '/foo': '',
-    });
-  });
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
+
   it('resolves a URL template', () => {
-    expect(resolveTemplateOption('http://foo')).toEqual('http://foo');
+    expect(resolveTemplateOption('http://foo')).toEqual({
+      type: 'repository',
+      uri: 'http://foo',
+    });
   });
   it('asserts a missing file path template', () => {
-    expect(() => resolveTemplateOption('bacon/bar')).toThrowError(
+    expect(() => resolveTemplateOption('./bacon/bar')).toThrowError(
       /template file does not exist: .*bacon\/bar/
     );
   });
   it('resolves a file path template', () => {
-    expect(resolveTemplateOption('/foo')).toEqual('/foo');
+    vol.fromJSON({
+      '/foo': '',
+    });
+
+    expect(resolveTemplateOption('/foo')).toEqual({
+      type: 'file',
+      uri: '/foo',
+    });
+  });
+
+  it('should return type "repository" for HTTP URLs', () => {
+    const template = 'https://github.com/user/repo';
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'repository', uri: template });
+  });
+
+  it('should return type "repository" for HTTPS URLs', () => {
+    const template = 'http://github.com/user/repo';
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'repository', uri: template });
+  });
+
+  it('should return type "file" for file URLs', () => {
+    const template = 'file:./path/to/template.tgz';
+    const resolvedPath = path.resolve('./path/to/template.tgz');
+    vol.fromJSON({
+      './path/to/template.tgz': '',
+    });
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'file', uri: resolvedPath });
+  });
+
+  it('should return type "file" for relative paths', () => {
+    const template = './path/to/template.tgz';
+    const resolvedPath = path.resolve(template);
+    vol.fromJSON({
+      './path/to/template.tgz': '',
+    });
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'file', uri: resolvedPath });
+  });
+
+  it('should return type "file" for absolute paths', () => {
+    const template = path.sep + 'path' + path.sep + 'to' + path.sep + 'template.tgz';
+    const resolvedPath = path.resolve(template);
+    vol.fromJSON({
+      '/path/to/template.tgz': '',
+    });
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'file', uri: resolvedPath });
+  });
+
+  it('should throw an error if the file does not exist', () => {
+    const template = './path/to/nonexistent/template.tgz';
+    expect(() => resolveTemplateOption(template)).toThrow(/^template file does not exist:/);
+  });
+
+  it('should return type "npm" for other strings', () => {
+    const template = 'some-npm-package';
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'npm', uri: template });
+  });
+
+  it('should return type "file" for ambiguous arg and matching local file', () => {
+    const template = 'template.tgz';
+    const resolvedPath = path.resolve(template);
+    vol.fromJSON({
+      'template.tgz': '',
+    });
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'file', uri: resolvedPath });
+  });
+
+  it('should return type "npm" for ambiguous arg and not matching local file', () => {
+    const template = 'nonexistent';
+    const result = resolveTemplateOption(template);
+    expect(result).toEqual({ type: 'npm', uri: template });
   });
 });
 

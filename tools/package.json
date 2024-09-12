@@ -35,7 +35,7 @@
     "@expo/xdl": "^59.2.1",
     "@linear/sdk": "^2.6.0",
     "@octokit/rest": "^19.0.7",
-    "body-parser": "^1.20.0",
+    "body-parser": "^1.20.3",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.2",
     "cwait": "^1.1.2",

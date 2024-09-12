@@ -38,10 +38,12 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
     _ name: String,
     firstArgType: FirstArgType.Type,
     dynamicArgumentTypes: [AnyDynamicType],
+    returnType: AnyDynamicType = ~ReturnType.self,
     _ body: @escaping ClosureType
   ) {
     self.name = name
     self.dynamicArgumentTypes = dynamicArgumentTypes
+    self.returnType = returnType
     self.body = body
   }
 
@@ -50,6 +52,8 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
   let name: String
 
   let dynamicArgumentTypes: [AnyDynamicType]
+
+  let returnType: AnyDynamicType
 
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
@@ -128,7 +132,7 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
       }
       let result = try body(argumentsTuple)
 
-      return try appContext.converter.toJS(result, ~ReturnType.self)
+      return try appContext.converter.toJS(result, returnType)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {

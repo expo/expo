@@ -55,7 +55,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     #if DEBUG
     if let packagerHost = jsPackagerHost(),
       let url = RCTBundleURLProvider.jsBundleURL(
-        forBundleRoot: "index",
+        forBundleRoot: "packages/expo-dev-menu/index",
         packagerHost: packagerHost,
         enableDev: true,
         enableMinification: false,
@@ -76,9 +76,9 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     }
     // Return `nil` if the content is not a valid URL.
     guard let content = try? String(contentsOfFile: packagerHostPath, encoding: String.Encoding.utf8).trimmingCharacters(in: CharacterSet.newlines),
-      let url = URL(string: content) else {
+      let url = URL(string: "http://\(content)") else {
       return nil
     }
-    return url.absoluteString
+    return "\(url.host ?? ""):\(url.port ?? 8081)"
   }
 }

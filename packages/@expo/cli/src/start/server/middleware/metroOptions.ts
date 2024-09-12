@@ -30,8 +30,8 @@ export type ExpoMetroOptions = {
   reactCompiler: boolean;
   baseUrl?: string;
   isExporting: boolean;
-  /** Is bundling a DOM Component ("use dom"). */
-  isDOM?: boolean;
+  /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
+  domRoot?: string;
   inlineSourceMap?: boolean;
   clientBoundaries?: string[];
   splitChunks?: boolean;
@@ -157,7 +157,7 @@ export function getMetroDirectBundleOptions(
     usedExports,
     reactCompiler,
     optimize,
-    isDOM,
+    domRoot,
     clientBoundaries,
   } = withDefaults(options);
 
@@ -183,6 +183,29 @@ export function getMetroDirectBundleOptions(
     }
   }
 
+  const customTransformOptions: ExpoMetroBundleOptions['customTransformOptions'] = {
+    __proto__: null,
+    optimize: optimize || undefined,
+    engine,
+    clientBoundaries,
+    preserveEnvVars: preserveEnvVars || undefined,
+    // Use string to match the query param behavior.
+    asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
+    environment,
+    baseUrl: baseUrl || undefined,
+    routerRoot,
+    bytecode: bytecode || undefined,
+    reactCompiler: reactCompiler || undefined,
+    dom: domRoot,
+  };
+
+  // Iterate and delete undefined values
+  for (const key in customTransformOptions) {
+    if (customTransformOptions[key] === undefined) {
+      delete customTransformOptions[key];
+    }
+  }
+
   const bundleOptions: Partial<ExpoMetroBundleOptions> = {
     platform,
     entryFile: mainModuleName,
@@ -191,21 +214,7 @@ export function getMetroDirectBundleOptions(
     inlineSourceMap: inlineSourceMap ?? false,
     lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
-    customTransformOptions: {
-      __proto__: null,
-      optimize: optimize || undefined,
-      engine,
-      clientBoundaries,
-      preserveEnvVars: preserveEnvVars || undefined,
-      // Use string to match the query param behavior.
-      asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
-      environment,
-      baseUrl: baseUrl || undefined,
-      routerRoot,
-      bytecode: bytecode || undefined,
-      reactCompiler: reactCompiler || undefined,
-      dom: isDOM ? 'true' : undefined,
-    },
+    customTransformOptions,
     customResolverOptions: {
       __proto__: null,
       environment,
@@ -264,7 +273,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     splitChunks,
     usedExports,
     optimize,
-    isDOM,
+    domRoot,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -315,8 +324,8 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (reactCompiler) {
     queryParams.append('transform.reactCompiler', String(reactCompiler));
   }
-  if (isDOM) {
-    queryParams.append('transform.dom', 'true');
+  if (domRoot) {
+    queryParams.append('transform.dom', domRoot);
   }
 
   if (environment) {

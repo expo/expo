@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add size and md5 properties to the new file system module. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
+- Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
 - Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
 - Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
 
@@ -19,6 +21,7 @@
 
 ### 💡 Others
 
+- Use the `src` folder as the Metro target. ([#31234](https://github.com/expo/expo/pull/31234) by [@aleqsio](https://github.com/aleqsio))
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 
 ## 17.0.1 — 2024-04-23

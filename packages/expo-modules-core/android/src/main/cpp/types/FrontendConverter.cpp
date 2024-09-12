@@ -407,7 +407,16 @@ jobject ListFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto jsArray = value.asObject(rt).asArray(rt);
+  if (!value.isObject()) {
+    return convertSingleValue(rt, env, value);
+  }
+
+  auto valueObject = value.asObject(rt);
+  if (!valueObject.isArray(rt)) {
+    return convertSingleValue(rt, env, value);
+  }
+
+  auto jsArray = valueObject.asArray(rt);
   size_t size = jsArray.size(rt);
 
   auto arrayList = java::ArrayList<jobject>::create(size);
@@ -430,8 +439,19 @@ jobject ListFrontendConverter::convert(
   return arrayList.release();
 }
 
+jobject ListFrontendConverter::convertSingleValue(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  auto result = java::ArrayList<jobject>::create(1);
+  result->add(parameterConverter->convert(rt, env, value));
+  return result.release();
+}
+
 bool ListFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  return value.isObject() && value.getObject(rt).isArray(rt);
+  return (value.isObject() && value.getObject(rt).isArray(rt)) ||
+         parameterConverter->canConvert(rt, value);
 }
 
 MapFrontendConverter::MapFrontendConverter(

@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add log formatting for DOM components. ([#31265](https://github.com/expo/expo/pull/31265) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for CSS in server components. ([#31073](https://github.com/expo/expo/pull/31073) by [@EvanBacon](https://github.com/EvanBacon))
 - Added production exports for experimental server renderer. ([#30850](https://github.com/expo/expo/pull/30850) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and support for iOS production exports. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
@@ -26,10 +27,13 @@
 - Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
 - Enable `EXPO_USE_METRO_WORKSPACE_ROOT` by default and replace with `EXPO_NO_METRO_WORKSPACE_ROOT`. ([#30621](https://github.com/expo/expo/pull/30621) by [@byCedric](https://github.com/byCedric))
 - Remove `node-fetch` in favor of `undici` for improved Node 22+ support. ([#29511](https://github.com/expo/expo/pull/29511) by [@byCedric](https://github.com/byCedric))
+- Added support to download template from npm when running prebuild. ([#31195](https://github.com/expo/expo/pull/31195) by [@kudo](https://github.com/kudo))
 - Add an optional New Architecture compatibility check for dependencies added via `install` command. ([#31222](https://github.com/expo/expo/pull/31222) by [@Simek](https://github.com/Simek))
 
 ### 🐛 Bug fixes
 
+- Force DOM components to be minified in production exports. ([#31271](https://github.com/expo/expo/pull/31271) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix DOM component re-renders in dev. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix DOM component exports in CI. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
 - prevent RSC errors from crashing server. ([#31019](https://github.com/expo/expo/pull/31019) by [@EvanBacon](https://github.com/EvanBacon))
 - prevent exporting RSC endpoint by default. ([#31102](https://github.com/expo/expo/pull/31102) by [@EvanBacon](https://github.com/EvanBacon))
@@ -44,6 +48,8 @@
 
 ### 💡 Others
 
+- Reduce scope of custom transform options in Metro cache. ([#31262](https://github.com/expo/expo/pull/31262) by [@EvanBacon](https://github.com/EvanBacon))
+- Refactor web hydration to use `globalThis.__EXPO_ROUTER_HYDRATE__` instead of `process.env.EXPO_PUBLIC_USE_STATIC`. ([#31267](https://github.com/expo/expo/pull/31267) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable experimental features for RSC when `experiments.reactServerComponents` is enabled. ([#30967](https://github.com/expo/expo/pull/30967) by [@EvanBacon](https://github.com/EvanBacon))
 - Only enable RSC when `experiments.reactServerComponents` is true. ([#30875](https://github.com/expo/expo/pull/30875) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))

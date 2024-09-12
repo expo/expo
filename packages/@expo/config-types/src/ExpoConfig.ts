@@ -247,10 +247,6 @@ export interface ExpoConfig {
      */
     supportsTVOnly?: boolean;
     /**
-     * If true, the window spans the entire display size by drawing behind transparent system bars.
-     */
-    edgeToEdge?: boolean;
-    /**
      * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
      */
     tsconfigPaths?: boolean;
@@ -310,6 +306,10 @@ export interface Splash {
  * Configuration that is specific to the iOS platform.
  */
 export interface IOS {
+  /**
+   * The Apple development team ID to use for all build configurations.
+   */
+  appleTeamId?: string;
   /**
    * The manifest for the iOS version of your app will be written to this path during publish.
    */

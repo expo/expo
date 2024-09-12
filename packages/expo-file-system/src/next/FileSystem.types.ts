@@ -113,4 +113,20 @@ export declare class File {
    * Moves a directory.
    */
   move(destination: Directory | File);
+
+  /**
+   * Downloads a file from the network.
+   * @param url - The URL of the file to download.
+   * @param destination - The destination directory or file. If a destination is provided, the resulting filename will be determined based on the response headers.
+   * @returns A promise that resolves to the downloaded file.
+   */
+  static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
+  /**
+   * A size of the file in bytes. Returns null if the file does not exist or it cannot be read.
+   */
+  size: number | null;
+  /**
+   * An md5 hash of the file. Returns null if the file does not exist or it cannot be read.
+   */
+  md5: string | null;
 }
