@@ -16,7 +16,7 @@ const val brightnessChangeEvent = "Expo.brightnessDidChange"
 
 class BrightnessModule : Module() {
   private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = appContext.activity
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBrightness")

@@ -21,7 +21,6 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
@@ -43,8 +42,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   var isInFullscreen: Boolean = false
     private set
 
-  private val currentActivity = appContext.currentActivity
-    ?: throw Exceptions.MissingActivity()
+  private val currentActivity = appContext.activity
   private val decorView = currentActivity.window.decorView
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 

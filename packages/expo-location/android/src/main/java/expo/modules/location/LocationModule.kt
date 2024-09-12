@@ -70,8 +70,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private lateinit var mSensorManager: SensorManager
   private lateinit var mUIManager: UIManager
   private lateinit var mLocationProvider: FusedLocationProviderClient
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   private var mGravity: FloatArray = FloatArray(9)
   private var mGeomagnetic: FloatArray = FloatArray(9)
@@ -483,7 +481,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         try {
           val resolvable = e as ResolvableApiException
           mUIManager.registerActivityEventListener(this@LocationModule)
-          resolvable.startResolutionForResult(currentActivity, CHECK_SETTINGS_REQUEST_CODE)
+          resolvable.startResolutionForResult(appContext.activity, CHECK_SETTINGS_REQUEST_CODE)
         } catch (e: SendIntentException) {
           // Ignore the error.
           executePendingRequests(Activity.RESULT_CANCELED)

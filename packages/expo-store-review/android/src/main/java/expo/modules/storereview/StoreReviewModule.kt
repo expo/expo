@@ -14,10 +14,6 @@ class StoreReviewModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private val currentActivity
-    get() = appContext.currentActivity
-      ?: throw Exceptions.MissingActivity()
-
   override fun definition() = ModuleDefinition {
     Name("ExpoStoreReview")
 
@@ -38,7 +34,7 @@ class StoreReviewModule : Module() {
       if (task.isSuccessful) {
         val reviewInfo = task.result
         reviewInfo?.let {
-          val flow = manager.launchReviewFlow(currentActivity, it)
+          val flow = manager.launchReviewFlow(appContext.activity, it)
           flow.addOnCompleteListener { result ->
             if (result.isSuccessful) {
               promise.resolve(null)

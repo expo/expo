@@ -19,9 +19,6 @@ class SMSModule : Module(), LifecycleEventListener {
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity
-      ?: throw Exceptions.MissingActivity()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSMS")
@@ -76,7 +73,7 @@ class SMSModule : Module(), LifecycleEventListener {
     }
 
     pendingPromise = promise
-    currentActivity.startActivity(smsIntent)
+    appContext.activity.startActivity(smsIntent)
     smsComposerOpened = true
   }
 
