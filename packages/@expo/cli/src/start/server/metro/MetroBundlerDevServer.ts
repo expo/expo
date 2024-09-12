@@ -888,6 +888,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const domComponentRenderer = createDomComponentsMiddleware(
         {
           metroRoot: serverRoot,
+          projectRoot: this.projectRoot,
         },
         instanceMetroOptions
       );
