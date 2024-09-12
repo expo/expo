@@ -1,7 +1,14 @@
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
 import 'react-native/Libraries/Core/InitializeCore';
 
+// Ensure fetch is installed before adding our fetch polyfill to ensure Headers and Request are available globally.
+import 'whatwg-fetch';
+// This MUST be imported to ensure URL is installed.
+import 'expo';
+// This file configures the runtime environment to increase compatibility with WinterCG.
+// https://wintercg.org/
 import Constants from 'expo-constants';
+import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
 import { install, setLocationHref } from './Location';
 import getDevServer from '../getDevServer';
@@ -44,8 +51,10 @@ function getBaseUrl() {
   return productionBaseUrl?.replace(/\/$/, '');
 }
 
-function wrapFetchWithWindowLocation(fetch: Function & { __EXPO_BASE_URL_POLYFILLED?: boolean }) {
-  if (fetch.__EXPO_BASE_URL_POLYFILLED) {
+const polyfillSymbol = Symbol.for('expo.polyfillFetchWithWindowLocation');
+
+export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]?: boolean }) {
+  if (fetch[polyfillSymbol]) {
     return fetch;
   }
 
@@ -68,10 +77,37 @@ function wrapFetchWithWindowLocation(fetch: Function & { __EXPO_BASE_URL_POLYFIL
     return fetch(...props);
   };
 
-  _fetch.__EXPO_BASE_URL_POLYFILLED = true;
+  _fetch[polyfillSymbol] = true;
 
   return _fetch;
 }
+
+// Add a well-known shared symbol that doesn't show up in iteration or inspection
+// this can be used to detect if the global object abides by the Expo team's documented
+// built-in requirements.
+const BUILTIN_SYMBOL = Symbol.for('expo.builtin');
+
+function addBuiltinSymbol(obj: object) {
+  Object.defineProperty(obj, BUILTIN_SYMBOL, {
+    value: true,
+    enumerable: false,
+    configurable: false,
+  });
+  return obj;
+}
+
+function installBuiltin(name: string, getValue: () => any) {
+  installGlobal(name, () => addBuiltinSymbol(getValue()));
+}
+
+try {
+  require('web-streams-polyfill');
+  // NOTE: Fetch is polyfilled in expo/metro-runtime
+  installBuiltin(
+    'ReadableStream',
+    () => require('web-streams-polyfill/ponyfill/es6').ReadableStream
+  );
+} catch {}
 
 if (manifest?.extra?.router?.origin !== false) {
   // Polyfill window.location in native runtimes.
@@ -82,8 +118,15 @@ if (manifest?.extra?.router?.origin !== false) {
       install();
     }
   }
+
   // Polyfill native fetch to support relative URLs
   Object.defineProperty(global, 'fetch', {
+    // value: fetch,
     value: wrapFetchWithWindowLocation(fetch),
+  });
+} else {
+  // Polyfill native fetch to support relative URLs
+  Object.defineProperty(global, 'fetch', {
+    value: fetch,
   });
 }

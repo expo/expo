@@ -14,11 +14,13 @@ export type Bundle = {
     modules: ModuleMap;
     post: string;
     pre: string;
+    paths: Record<string, Record<string, string>>;
 };
 export type ExpoSerializerOptions = SerializerOptions & {
     serializerOptions?: {
         baseUrl?: string;
         skipWrapping?: boolean;
+        usedExports?: boolean;
         splitChunks?: boolean;
         output?: string;
         includeSourceMaps?: boolean;

@@ -3,9 +3,12 @@
 package expo.modules.video
 
 import android.app.Activity
+import android.net.Uri
+import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
+import androidx.media3.common.Timeline
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
@@ -15,7 +18,10 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.video.enums.ContentFit
 import expo.modules.video.records.VideoSource
+import expo.modules.video.utils.ifYogaDefinedUse
+import expo.modules.video.utils.makeYogaUndefinedIfNegative
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -28,6 +34,10 @@ class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
+    OnCreate {
+      VideoManager.onModuleCreated(appContext)
+    }
+
     Function("isPictureInPictureSupported") {
       return@Function VideoView.isPictureInPictureSupported(activity)
     }
@@ -35,12 +45,13 @@ class VideoModule : Module() {
     View(VideoView::class) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenEnter",
+        "onFullscreenExit"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
         view.videoPlayer = player
-        player.prepare()
       }
 
       Prop("nativeControls") { view: VideoView, useNativeControls: Boolean ->
@@ -125,7 +136,9 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        view.enterPictureInPicture()
+        view.runWithPiPMisconfigurationSoftHandling(true) {
+          view.enterPictureInPicture()
+        }
       }
 
       AsyncFunction("stopPictureInPicture") {
@@ -138,8 +151,12 @@ class VideoModule : Module() {
     }
 
     Class(VideoPlayer::class) {
-      Constructor { source: VideoSource ->
-        VideoPlayer(activity.applicationContext, appContext, source)
+      Constructor { source: VideoSource? ->
+        val player = VideoPlayer(activity.applicationContext, appContext, source)
+        appContext.mainQueue.launch {
+          player.prepare()
+        }
+        return@Constructor player
       }
 
       Property("playing")
@@ -183,6 +200,39 @@ class VideoModule : Module() {
           }
         }
 
+      Property("currentLiveTimestamp")
+        .get { ref: VideoPlayer ->
+          // TODO: same as `currentTime`
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            val window = Timeline.Window()
+            if (!ref.player.currentTimeline.isEmpty) {
+              ref.player.currentTimeline.getWindow(ref.player.currentMediaItemIndex, window)
+            }
+            if (window.windowStartTimeMs == C.TIME_UNSET) {
+              null
+            } else {
+              window.windowStartTimeMs + ref.player.currentPosition
+            }
+          }
+        }
+
+      Property("currentOffsetFromLive")
+        .get { ref: VideoPlayer ->
+          // TODO: same as `currentTime`
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            if (ref.player.currentLiveOffset == C.TIME_UNSET) {
+              null
+            } else {
+              ref.player.currentLiveOffset / 1000f
+            }
+          }
+        }
+
+      Property("duration")
+        .get { ref: VideoPlayer ->
+          ref.duration
+        }
+
       Property("playbackRate")
         .get { ref: VideoPlayer ->
           ref.playbackParameters.speed
@@ -192,6 +242,11 @@ class VideoModule : Module() {
             val pitch = if (ref.preservesPitch) 1f else playbackRate
             ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
           }
+        }
+
+      Property("isLive")
+        .get { ref: VideoPlayer ->
+          ref.isLive
         }
 
       Property("preservesPitch")
@@ -253,18 +308,18 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") { ref: VideoPlayer, source: Either<String, VideoSource> ->
-        val videoSource = if (source.`is`(VideoSource::class)) {
-          source.get(VideoSource::class)
-        } else {
-          VideoSource(source.get(String::class))
+      Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
+        val videoSource = source?.let {
+          if (it.`is`(VideoSource::class)) {
+            it.get(VideoSource::class)
+          } else {
+            VideoSource(it.get(Uri::class))
+          }
         }
-        val mediaItem = videoSource.toMediaItem()
-        VideoManager.registerVideoSourceToMediaItem(mediaItem, videoSource)
 
         appContext.mainQueue.launch {
-          ref.videoSource = videoSource
-          ref.player.setMediaItem(mediaItem)
+          ref.uncommittedSource = videoSource
+          ref.prepare()
         }
       }
 

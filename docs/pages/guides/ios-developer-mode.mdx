@@ -3,7 +3,7 @@ title: iOS Developer Mode
 description: Learn how to enable iOS developer mode on iOS 16 and above to run internal distribution builds and local development builds.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Step } from '~/ui/components/Step';
 
 > This does not apply to builds signed using enterprise provisioning or to any builds installed on an iOS Simulator.
@@ -29,10 +29,10 @@ To follow the steps below, **install your development build on your device befor
 
 Once the build is installed on your device, press the app icon. This will open an alert asking you to enable Developer Mode. Press **OK**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Navigating to Developer Mode setting"
   src="/static/images/ios-dev-mode/ios-16-developer-mode-0.jpg"
-  style={{ maxWidth: 240 }}
+  className="max-w-[240px]"
 />
 
 </Step>
@@ -41,10 +41,10 @@ Once the build is installed on your device, press the app icon. This will open a
 
 Go to the Settings app, and navigate to **Privacy & Security** > **Developer Mode**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Navigating to Developer Mode setting"
   src="/static/images/ios-dev-mode/ios-16-developer-mode-1.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 </Step>
@@ -53,10 +53,10 @@ Go to the Settings app, and navigate to **Privacy & Security** > **Developer Mod
 
 Enable the toggle. You will receive a prompt from iOS to restart your device. Press **Restart**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Developer Mode restart prompt"
   src="/static/images/ios-dev-mode/ios-16-developer-mode-2.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 </Step>
@@ -65,10 +65,10 @@ Enable the toggle. You will receive a prompt from iOS to restart your device. Pr
 
 After the device restarts, unlock your device. A system alert should appear. Press **Turn On** and then, when prompted, enter your device's passcode.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Alert and passcode prompt"
   src="/static/images/ios-dev-mode/ios-16-developer-mode-3.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 </Step>
@@ -95,10 +95,10 @@ Open Xcode, and from the menu bar, navigate to **Window** > **Devices and Simula
 
 Under **Devices**, you'll see a warning "Previous preparation error: Developer Mode disabled" with instructions on enabling Developer Mode on the iOS device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode Devices and Simulators window with Developer Mode warning"
   src="/static/images/ios-dev-mode/with-xcode-01.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 </Step>
@@ -109,10 +109,10 @@ On the iOS device, open **Settings** > **Privacy & Security** > **Developer Mode
 
 Enable the toggle. You will receive a prompt from iOS to restart your device. Press **Restart**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Developer Mode restart prompt"
   src="/static/images/ios-dev-mode/with-xcode-02.png"
-  style={{ maxWidth: 560 }}
+  className="max-w-[560px]"
 />
 
 </Step>
@@ -121,10 +121,10 @@ Enable the toggle. You will receive a prompt from iOS to restart your device. Pr
 
 After the device restarts, unlock your device. A system alert should appear. Press **Turn On**, and enter your device's passcode when prompted.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Developer Mode restart prompt"
   src="/static/images/ios-dev-mode/with-xcode-03.jpg"
-  style={{ maxWidth: 360 }}
+  className="max-w-[360px]"
 />
 
 </Step>

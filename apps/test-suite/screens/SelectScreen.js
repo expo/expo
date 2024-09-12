@@ -1,25 +1,24 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Checkbox } from 'expo-checkbox';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
-import Colors from '../constants/Colors';
 
 function ListItem({ title, onPressItem, selected, id }) {
+  const { theme } = useTheme();
   const onPress = () => onPressItem(id);
 
   return (
     <PlatformTouchable onPress={onPress}>
-      <View style={styles.listItem}>
+      <View style={[styles.listItem, { borderBottomColor: theme.border.secondary }]}>
         <Text style={styles.label}>{title}</Text>
-        <MaterialCommunityIcons
-          color={selected ? Colors.tintColor : 'black'}
-          name={selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
-          size={24}
-        />
+        <View style={{ pointerEvents: 'none' }}>
+          <Checkbox color={theme.icon.info} value={selected} />
+        </View>
       </View>
     </PlatformTouchable>
   );
@@ -166,10 +165,10 @@ export default class SelectScreen extends React.PureComponent {
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
 
     return (
-      // eslint-disable-next-line react/jsx-fragments
       <>
         <FlatList
           data={this.state.modules}
+          contentContainerStyle={{ backgroundColor: '#fff' }}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
@@ -188,16 +187,22 @@ export default class SelectScreen extends React.PureComponent {
 
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
+  const { theme } = useTheme();
 
-  const isRunningInBareExpo =
-    Constants.__unsafeNoWarnManifest && Constants.__unsafeNoWarnManifest.slug === 'bare-expo';
+  const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
   const paddingVertical = 16;
 
   return (
     <View
       style={[
         styles.buttonRow,
-        { paddingBottom: isRunningInBareExpo ? 0 : bottom, paddingLeft: left, paddingRight: right },
+        {
+          paddingBottom: isRunningInBareExpo ? 0 : bottom,
+          paddingLeft: left,
+          paddingRight: right,
+          borderColor: theme.border.default,
+          backgroundColor: theme.background.default,
+        },
       ]}>
       <FooterButton
         style={{ paddingVertical, alignItems: 'flex-start' }}
@@ -215,24 +220,24 @@ function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
 }
 
 function FooterButton({ title, style, ...props }) {
+  const { theme } = useTheme();
   return (
     <TouchableOpacity
       style={[styles.footerButton, { opacity: props.disabled ? 0.4 : 1 }, style]}
       {...props}>
-      <Text style={styles.footerButtonTitle}>{title}</Text>
+      <Text style={[styles.footerButtonTitle, { color: theme.text.info }]}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
-const HORIZONTAL_MARGIN = 24;
+const HORIZONTAL_MARGIN = 20;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
   footerButtonTitle: {
-    fontSize: 18,
-    color: Colors.tintColor,
+    fontSize: 16,
   },
   footerButton: {
     flex: 1,
@@ -246,18 +251,16 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: HORIZONTAL_MARGIN,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#dddddd',
   },
   label: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 16,
   },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#dddddd',
     backgroundColor: 'white',
   },
   contentContainerStyle: {

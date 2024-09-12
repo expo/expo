@@ -2,8 +2,8 @@ import { CellularGeneration, PermissionResponse } from './Cellular.types';
 export { CellularGeneration };
 /**
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
- * the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
- * to view more information.
+ * the system supports SIP-based VoIP API. See the [Android documentation](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
+ * for more information.
  *
  * On iOS, if you configure a device for a carrier and then remove the SIM card, this property
  * retains the `boolean` value indicating the carrier’s policy regarding VoIP. If you then install
@@ -15,7 +15,7 @@ export { CellularGeneration };
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
- * @deprecated Use [`allowsVoipAsync()`](#cellularallowsvoip) instead.
+ * @deprecated Use [`allowsVoipAsync()`](#cellularallowsvoipasync) instead.
  *
  */
 export declare const allowsVoip: boolean | null;

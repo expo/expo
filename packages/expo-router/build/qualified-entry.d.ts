@@ -1,3 +1,4 @@
-/// <reference types="react" />
-export declare function App(): JSX.Element;
+import React from 'react';
+import './fast-refresh';
+export declare function App(): React.JSX.Element;
 //# sourceMappingURL=qualified-entry.d.ts.map

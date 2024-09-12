@@ -179,15 +179,21 @@ export async function createFromFixtureAsync(
 // Set this to true to enable caching and prevent rerunning yarn installs
 const testingLocally = !process.env.CI;
 
-export async function setupTestProjectAsync(
+export async function setupTestProjectWithOptionsAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '49.0.0'
+  {
+    reuseExisting = testingLocally,
+    sdkVersion = '51.0.0',
+  }: {
+    sdkVersion?: string;
+    reuseExisting?: boolean;
+  } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
     dirName: name,
-    reuseExisting: testingLocally,
+    reuseExisting,
     fixtureName,
   });
 
@@ -243,11 +249,15 @@ export function getRouterE2ERoot(): string {
 
 export function getHtmlHelpers(outputDir: string) {
   async function getScriptTagsAsync(name: string) {
-    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
-      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+    const tags = (await getPageHtml(outputDir, name))
+      .querySelectorAll('script')
+      // Remove scripts without a src attribute
+      .filter((script) => !!script.attributes.src)
+      .map((script) => {
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
 
-      return script.attributes.src;
-    });
+        return script.attributes.src;
+      });
 
     ensureEntryChunk(tags[0]);
 

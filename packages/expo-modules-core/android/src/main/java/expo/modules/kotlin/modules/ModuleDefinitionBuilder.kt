@@ -132,7 +132,17 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   inline fun <reified SharedObjectType : SharedObject> Class(
-    sharedObjectClass: KClass<SharedObjectType>,
+    name: String,
+    sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
+    body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
+  ) {
+    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, typeOf<SharedObjectType>())
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
+  }
+
+  inline fun <reified SharedObjectType : SharedObject> Class(
+    sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
     val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())

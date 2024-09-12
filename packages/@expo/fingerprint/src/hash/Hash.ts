@@ -3,7 +3,9 @@ import { createReadStream } from 'fs';
 import fs from 'fs/promises';
 import pLimit from 'p-limit';
 import path from 'path';
+import { pipeline, type Readable } from 'stream';
 
+import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 import type {
   DebugInfoDir,
   DebugInfoFile,
@@ -17,7 +19,7 @@ import type {
   HashSourceContents,
   NormalizedOptions,
 } from '../Fingerprint.types';
-import { isIgnoredPath } from '../utils/Path';
+import { isIgnoredPathWithMatchObjects } from '../utils/Path';
 import { nonNullish } from '../utils/Predicates';
 import { profile } from '../utils/Profile';
 
@@ -97,7 +99,7 @@ export async function createFileHashResultsAsync(
   // Backup code for faster hashing
   /*
   return limiter(async () => {
-    if (isIgnoredPath(filePath, options.ignorePaths)) {
+    if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
       return null;
     }
 
@@ -118,13 +120,27 @@ export async function createFileHashResultsAsync(
 
   return limiter(() => {
     return new Promise<HashResultFile | null>((resolve, reject) => {
-      if (isIgnoredPath(filePath, options.ignorePaths)) {
+      if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
         return resolve(null);
       }
 
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
-      const stream = createReadStream(path.join(projectRoot, filePath));
+      let stream: Readable = createReadStream(path.join(projectRoot, filePath), {
+        highWaterMark: 1024,
+      });
+      if (
+        options.enableReactImportsPatcher &&
+        options.platforms.includes('ios') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))
+      ) {
+        const transform = new ReactImportsPatchTransform();
+        stream = pipeline(stream, transform, (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+      }
       stream.on('close', () => {
         if (!resolved) {
           const hex = hasher.digest('hex');
@@ -158,7 +174,7 @@ export async function createDirHashResultsAsync(
   options: NormalizedOptions,
   depth: number = 0
 ): Promise<HashResultDir | null> {
-  if (isIgnoredPath(dirPath, options.ignorePaths)) {
+  if (isIgnoredPathWithMatchObjects(dirPath, options.ignorePathMatchObjects)) {
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(

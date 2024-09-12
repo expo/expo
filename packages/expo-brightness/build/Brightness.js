@@ -1,7 +1,6 @@
-import { createPermissionHook, PermissionStatus, UnavailabilityError, EventEmitter, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
-const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 // @needsAudit
 export var BrightnessMode;
 (function (BrightnessMode) {
@@ -76,8 +75,7 @@ export async function getSystemBrightnessAsync() {
 }
 // @needsAudit
 /**
- * > __WARNING:__ This method is experimental.
- *
+ * @experimental
  * Sets the global system screen brightness and changes the brightness mode to
  * `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
  * @param brightnessValue A number between `0` and `1`, inclusive, representing the desired screen
@@ -198,6 +196,6 @@ export const usePermissions = createPermissionHook({
  * @platform ios
  */
 export function addBrightnessListener(listener) {
-    return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+    return ExpoBrightness.addListener('Expo.brightnessDidChange', listener);
 }
 //# sourceMappingURL=Brightness.js.map

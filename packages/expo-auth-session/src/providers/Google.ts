@@ -4,19 +4,18 @@ import { Platform } from 'react-native';
 
 import { ProviderAuthRequestConfig } from './Provider.types';
 import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
-import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
+import { AuthRequest } from '../AuthRequest';
 import {
-  AuthRequest,
   AuthRequestConfig,
   AuthRequestPromptOptions,
-  AuthSessionRedirectUriOptions,
-  AuthSessionResult,
-  DiscoveryDocument,
-  generateHexStringAsync,
-  makeRedirectUri,
   Prompt,
   ResponseType,
-} from '../AuthSession';
+} from '../AuthRequest.types';
+import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
+import { makeRedirectUri } from '../AuthSession';
+import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import { DiscoveryDocument } from '../Discovery';
+import { generateHexStringAsync } from '../PKCE';
 import { AccessTokenRequest } from '../TokenRequest';
 
 const settings = {
@@ -39,7 +38,7 @@ export const discovery: DiscoveryDocument = {
 /**
  * @deprecated See [Google authentication](/guides/google-authentication/).
  */
-export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
+export type GoogleAuthRequestConfig = ProviderAuthRequestConfig & {
   /**
    * If the user's email address is known ahead of time, it can be supplied to be the default option.
    * If the user has approved access for this app in the past then auth may return without any further interaction.
@@ -72,7 +71,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    * Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
    */
   language?: string;
-}
+};
 
 // @needsAudit
 /**

@@ -39,6 +39,7 @@ describe('openAsync', () => {
       ensureExpoGoAsync: jest.fn(),
       activateWindowAsync: jest.fn(),
       openUrlAsync: jest.fn(),
+      getExpoGoAppId: jest.fn(() => 'host.exp.exponent'),
       isAppInstalledAndIfSoReturnContainerPathForIOSAsync: jest.fn(async () => isAppInstalled),
     } as unknown as DeviceManager<unknown>;
     const resolveDeviceAsync = jest.fn(async () => device);
@@ -96,7 +97,7 @@ describe('openAsync', () => {
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -129,7 +130,7 @@ describe('openAsync', () => {
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -163,7 +164,7 @@ describe('openAsync', () => {
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -191,7 +192,7 @@ describe('openAsync', () => {
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -248,7 +249,7 @@ describe('openAsync', () => {
     );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'dev.bacon.app' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -317,7 +318,7 @@ describe('openAsync', () => {
     );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'dev.bacon.app' });
 
     expect(manager._resolveAlternativeLaunchUrl).toBeCalledTimes(1);
 

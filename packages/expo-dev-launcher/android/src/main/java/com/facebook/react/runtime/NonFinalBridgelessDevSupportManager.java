@@ -64,7 +64,8 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
                 2 /* minNumShakes */,
                 null /* customPackagerCommandHandlers */,
                 null /* surfaceDelegateFactory */,
-                null /* devLoadingViewManager */);
+                null /* devLoadingViewManager */,
+                null);
         mReactHost = host;
     }
 
@@ -84,21 +85,18 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
                         mReactHost
                                 .loadBundle(bundleLoader)
                                 .onSuccess(
-                                        new Continuation<Boolean, Void>() {
-                                            @Override
-                                            public Void then(Task<Boolean> task) {
-                                                if (task.getResult().equals(Boolean.TRUE)) {
-                                                    String bundleURL =
-                                                            getDevServerHelper().getDevServerSplitBundleURL(bundlePath);
-                                                    ReactContext reactContext = mReactHost.getCurrentReactContext();
-                                                    if (reactContext != null) {
-                                                        reactContext.getJSModule(HMRClient.class).registerBundle(bundleURL);
-                                                    }
-                                                    callback.onSuccess();
-                                                }
-                                                return null;
-                                            }
-                                        });
+                                  (Continuation<Boolean, Void>) task -> {
+                                      if (task.getResult().equals(Boolean.TRUE)) {
+                                          String bundleURL =
+                                                  getDevServerHelper().getDevServerSplitBundleURL(bundlePath);
+                                          ReactContext reactContext = mReactHost.getCurrentReactContext();
+                                          if (reactContext != null) {
+                                              reactContext.getJSModule(HMRClient.class).registerBundle(bundleURL);
+                                          }
+                                          callback.onSuccess();
+                                      }
+                                      return null;
+                                  });
                     }
 
                     @Override
@@ -116,11 +114,15 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
         hideRedboxDialog();
         mReactHost.reload("BridgelessDevSupportManager.handleReloadJS()");
 
-        PrinterHolder.getPrinter()
-                .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
-        String bundleURL =
-                getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-        reloadJSFromServer(bundleURL);
+        // 0.74 workaround for https://github.com/facebook/react-native/commit/524e3eec3e73f56746ace8bef569f36802a7a62e
+        isPackagerRunning(isMetroRunning -> {
+          if (!isMetroRunning) {
+            String bundleURL = getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
+            reloadJSFromServer(bundleURL, () -> {
+              UiThreadUtil.runOnUiThread(getReactInstanceDevHelper()::onJSBundleLoadedFromServer);
+            });
+          }
+        });
     }
 
     private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {

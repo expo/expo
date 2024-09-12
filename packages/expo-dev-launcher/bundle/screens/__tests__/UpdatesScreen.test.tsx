@@ -7,7 +7,7 @@ import { UpdatesScreen } from '../UpdatesScreen';
 
 jest.mock('graphql-request', () => {
   return {
-    GraphQLClient(apiUrl: string) {
+    GraphQLClient() {
       return {
         request: jest.fn(),
       };
@@ -62,7 +62,9 @@ describe('<UpdatesScreen />', () => {
       manifestPermalink: '123',
     };
 
-    mockUpdatesResponse([testUpdate]);
+    act(() => {
+      mockUpdatesResponse([testUpdate]);
+    });
 
     const { queryByText, getByText } = render(
       <UpdatesScreen
@@ -85,7 +87,9 @@ describe('<UpdatesScreen />', () => {
       navigate: jest.fn(),
     };
 
-    mockUpdatesResponse([]);
+    act(() => {
+      mockUpdatesResponse([]);
+    });
 
     const { queryByText, getByText } = render(
       <UpdatesScreen

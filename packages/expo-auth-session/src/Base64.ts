@@ -1,4 +1,4 @@
-const keyset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+const KEYSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
 export function encodeNoWrap(input: string): string {
   let output = '';
@@ -22,10 +22,10 @@ export function encodeNoWrap(input: string): string {
 
     output =
       output +
-      keyset.charAt(enc1) +
-      keyset.charAt(enc2) +
-      keyset.charAt(enc3) +
-      keyset.charAt(enc4);
+      KEYSET.charAt(enc1) +
+      KEYSET.charAt(enc2) +
+      KEYSET.charAt(enc3) +
+      KEYSET.charAt(enc4);
   } while (i < input.length);
 
   return output;

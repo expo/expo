@@ -19,14 +19,15 @@ export EX_UPDATES_NATIVE_DEBUG=1
 rm -rf $WORKING_DIR_ROOT
 mkdir $WORKING_DIR_ROOT
 ```
+- Run `source <scriptname>` to run it and set up the environment variables
 
-- From the Expo repo root directory, execute
+- From the Expo repo root directory, execute one of the `create-*` scripts to set up the test project. For example:
 
 ```bash
 ./packages/expo-updates/e2e/setup/create-eas-project.ts
 ```
 
-- Change to the `TEST_PROJECT_ROOT` location above.
+- Change directory to the `TEST_PROJECT_ROOT` location with `cd $TEST_PROJECT_ROOT`.
 
 - Execute
 
@@ -40,7 +41,7 @@ yarn generate-test-update-bundles
   - Execute these commands:
 
 ```bash
-npx pod install
+npx pod-install
 yarn detox:ios:debug:build
 yarn detox:ios:debug:test
 ```
@@ -76,9 +77,8 @@ eas build --profile=updates_testing_debug --platform=<android|ios>
 @@ -15,7 +15,8 @@
      "updates_testing_debug": {
        "env": {
-         "EX_UPDATES_NATIVE_DEBUG": "1",
--        "NO_FLIPPER": "1"
-+        "NO_FLIPPER": "1",
+-        "EX_UPDATES_NATIVE_DEBUG": "1"
++        "EX_UPDATES_NATIVE_DEBUG": "1",
 +        "LOCAL_TESTING": "1"
        },
        "android": {
@@ -101,7 +101,7 @@ export EAS_LOCAL_BUILD_ARTIFACTS_DIR=$TMPDIR/eas-build-workingdir/results
 rm -rf $EAS_LOCAL_BUILD_WORKINGDIR
 ```
 
-  - Execute
+- Execute
 
 ```bash
 eas init

@@ -4,40 +4,14 @@ sidebar_title: Install expo-updates
 description: Learn how to install and configure expo-updates in bare React Native projects.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { DiffBlock } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
-The `expo-updates` library fetches and manages updates to an app's JavaScript and assets that are received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates and provides a variety of tools for managing them. It can also be configured to work with a [custom server](/eas-update/custom-updates-server/). This guide explains how to set it up for use with EAS Update.
-
-<Collapsible summary="Do you need to create a new project?">
-
-If you are creating a new project, we recommend using the following command:
-
-<Tabs>
-
-<Tab label="npm">
-
-<Terminal cmd={['$ npx create-expo-app --template bare-minimum']} />
-
-</Tab>
-
-<Tab label="yarn">
-
-<Terminal cmd={['$ yarn create expo-app --template bare-minimum']} />
-
-</Tab>
-
-</Tabs>
-
-Running this command will create a new project from the `bare-minimum` template that will handle configuring the `expo-updates` [config plugin](/config-plugins/introduction/) and the installation steps described in the following sections of this guide.
-
-</Collapsible>
+`expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates. This guide explains how to set up a bare React Native project for use with [EAS Update](/eas-update/introduction), a hosted remote update service that includes tools to simplify installation and configuration of the `expo-updates` library.
 
 <Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
 
-You may be reading the wrong guide then. To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), see [EAS Update "Get started"](/eas-update/getting-started/).
+You may be reading the wrong guide. To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), see [EAS Update "Get started"](/eas-update/getting-started/).
 
 </Collapsible>
 
@@ -60,6 +34,10 @@ Then, install pods for iOS:
 Apply the changes from the diffs from the following sections to configure `expo-updates` in your project.
 
 ### JavaScript and JSON
+
+Run `eas update:configure` to set the `updates` URL and `projectId` in **app.json**.
+
+<Terminal cmd={['$ eas update:configure']} />
 
 Modify the `expo` section of **app.json**. (If you created your project using `npx react-native init`, you will need to add this section.)
 
@@ -94,11 +72,7 @@ The changes below add the [`updates` URL](/versions/latest/config/app/#url) to t
  }
 ```
 
-Run `eas update:configure` to set the `updates` URL and `projectId` in **app.json**.
-
-<Terminal cmd={['$ eas update:configure']} />
-
-If you want to set up a [custom server](/eas-update/custom-updates-server) instead, add your URL to `updates.url` in **app.json**.
+If you want to set up a [custom expo-updates server](https://github.com/expo/custom-expo-updates-server) instead, add your URL to `updates.url` in **app.json**.
 
 ```diff app.json
  {

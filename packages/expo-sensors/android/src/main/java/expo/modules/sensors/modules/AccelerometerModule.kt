@@ -4,7 +4,6 @@ package expo.modules.sensors.modules
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
-import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
@@ -14,11 +13,12 @@ private const val EventName = "accelerometerDidUpdate"
 
 class AccelerometerModule : Module() {
   private val sensorProxy by lazy {
-    createSensorProxy<AccelerometerServiceInterface>(EventName) { sensorEvent ->
+    createSensorProxy(EventName, Sensor.TYPE_ACCELEROMETER, appContext) { sensorEvent ->
       Bundle().apply {
         putDouble("x", (sensorEvent.values[0] / SensorManager.GRAVITY_EARTH).toDouble())
         putDouble("y", (sensorEvent.values[1] / SensorManager.GRAVITY_EARTH).toDouble())
         putDouble("z", (sensorEvent.values[2] / SensorManager.GRAVITY_EARTH).toDouble())
+        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
       }
     }
   }

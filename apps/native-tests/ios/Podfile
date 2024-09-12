@@ -1,17 +1,41 @@
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
-require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
+ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] = '1'
+
+use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
+origin_autolinking_method = self.method(use_autolinking_method_symbol)
+self.define_singleton_method(use_autolinking_method_symbol) do |*args|
+  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+    origin_autolinking_method.call(config_command)
+  else
+    origin_autolinking_method.call()
+  end
+end
+
 prepare_react_native_project!
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
   :deterministic_uuids => false
 
 target 'NativeTests' do
+  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface/ios'
+
   # add this manually, because it has UITests too
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 

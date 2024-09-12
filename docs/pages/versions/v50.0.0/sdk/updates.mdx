@@ -6,13 +6,14 @@ packageName: 'expo-updates'
 iconUrl: '/static/images/packages/expo-updates.png'
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { ConfigReactNative, ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 The `expo-updates` library allows you to programmatically control and respond to new updates made available to your app.
 
@@ -20,7 +21,7 @@ The `expo-updates` library allows you to programmatically control and respond to
 
 ## Installation
 
-<APIInstallSection hideBareInstructions={true} />
+<APIInstallSection hideBareInstructions />
 
 If you're installing this in a [bare React Native app](/bare/overview/), you should also follow these [additional installation instructions](/bare/installing-updates/).
 

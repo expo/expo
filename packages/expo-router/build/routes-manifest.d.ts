@@ -1,4 +1,4 @@
-import { Options } from './getRoutes';
+import { Options } from './getRoutesSSR';
 export { Options } from './getRoutes';
 export type RouteInfo<TRegex = string> = {
     file: string;

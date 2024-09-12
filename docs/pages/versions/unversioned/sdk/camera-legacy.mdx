@@ -9,13 +9,13 @@ platforms: ['android*', 'ios*', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 > **warning** This is the legacy version of the `expo-camera` package which will no longer be receiving updates. If you are starting a new project, we recommend using [the latest version of `expo-camera`](/versions/v51.0.0/sdk/camera).
 

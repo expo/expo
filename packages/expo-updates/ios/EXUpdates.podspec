@@ -1,6 +1,7 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
 use_dev_client = false
 begin
@@ -17,7 +18,10 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platforms      = { :ios => '13.4', :tvos => '13.4' }
+  s.platforms      = {
+    :ios => '15.1',
+    :tvos => '15.1'
+  }
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -28,7 +32,9 @@ Pod::Spec.new do |s|
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
   s.dependency 'ReachabilitySwift'
-  s.dependency 'sqlite3', '~> 3.45.3+1'
+  if podfile_properties['expo.updates.useThirdPartySQLitePod'] === 'true'
+    s.dependency 'sqlite3'
+  end
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.
@@ -55,8 +61,8 @@ Pod::Spec.new do |s|
     'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'OTHER_CFLAGS[config=Debug]' => other_c_flags,
-    'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags
+    'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
+    'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags
   }
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/Swift Compatibility Header"',

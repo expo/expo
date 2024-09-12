@@ -76,7 +76,7 @@ const tabsWrapperStyle = css({
 const tabsPanelStyle = css({
   padding: `${spacing[4]}px ${spacing[5]}px`,
 
-  'pre:first-child': {
+  'pre:first-of-type': {
     marginTop: spacing[1],
   },
 

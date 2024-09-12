@@ -358,7 +358,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
       ];
     }
     
-    fixInstructions = [instructions stringByAppendingFormat:@"[%@](Learn how to install Expo Go for SDK %d in an OS Simulator.)",
+    fixInstructions = [instructions stringByAppendingFormat:@"[%@](Learn how to install Expo Go for SDK %d in an iOS Simulator.)",
                        expoDevLink,
                        requiredVersionNum];
 #endif

@@ -1,10 +1,11 @@
-import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NotificationsEmitterModule);
+const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
@@ -39,8 +40,14 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
  */
 export function addNotificationReceivedListener(
   listener: (event: Notification) => void
-): Subscription {
-  return emitter.addListener<Notification>(didReceiveNotificationEventName, listener);
+): EventSubscription {
+  return emitter.addListener<Notification>(
+    didReceiveNotificationEventName,
+    (notification: Notification) => {
+      const mappedNotification = mapNotification(notification);
+      listener(mappedNotification);
+    }
+  );
 }
 
 /**
@@ -51,7 +58,7 @@ export function addNotificationReceivedListener(
  * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
  * @header listen
  */
-export function addNotificationsDroppedListener(listener: () => void): Subscription {
+export function addNotificationsDroppedListener(listener: () => void): EventSubscription {
   return emitter.addListener<void>(didDropNotificationsEventName, listener);
 }
 
@@ -83,10 +90,13 @@ export function addNotificationsDroppedListener(listener: () => void): Subscript
  */
 export function addNotificationResponseReceivedListener(
   listener: (event: NotificationResponse) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<NotificationResponse>(
     didReceiveNotificationResponseEventName,
-    listener
+    (response: NotificationResponse) => {
+      const mappedResponse = mapNotificationResponse(response);
+      listener(mappedResponse);
+    }
   );
 }
 
@@ -95,8 +105,8 @@ export function addNotificationResponseReceivedListener(
  * @param subscription A subscription returned by `addNotificationListener` method.
  * @header listen
  */
-export function removeNotificationSubscription(subscription: Subscription) {
-  emitter.removeSubscription(subscription);
+export function removeNotificationSubscription(subscription: EventSubscription) {
+  subscription.remove();
 }
 
 // @docsMissing
@@ -107,5 +117,7 @@ export async function getLastNotificationResponseAsync(): Promise<NotificationRe
   if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
   }
-  return await NotificationsEmitterModule.getLastNotificationResponseAsync();
+  const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
+  const mappedResponse = response ? mapNotificationResponse(response) : response;
+  return mappedResponse;
 }

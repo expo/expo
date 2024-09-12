@@ -11,8 +11,8 @@ A component that renders a native blur view on iOS and falls back to a semi-tran
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/blur-view.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/blur-view/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/blur-view/)
 
 # Installation in managed Expo projects
 
@@ -28,13 +28,14 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-blur
 ```
 
+### Configure for Android
+
+> [!note]
+> This package only supports iOS. On Android, a plain `View` with a translucent background will be rendered.
+
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-This package only supports iOS. On Android, a plain `View` with a translucent background will be rendered.
 
 # Contributing
 

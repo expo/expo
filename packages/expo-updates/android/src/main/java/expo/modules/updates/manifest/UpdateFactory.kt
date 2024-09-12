@@ -10,8 +10,6 @@ import org.json.JSONObject
  * Utility methods for parsing a JSON manifest using the correct [Update] implementation.
  */
 object UpdateFactory {
-  private val TAG = UpdateFactory::class.java.simpleName
-
   @Throws(Exception::class)
   fun getUpdate(manifestJson: JSONObject, responseHeaderData: ResponseHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration): Update {
     return when (val expoProtocolVersion = responseHeaderData.protocolVersion) {

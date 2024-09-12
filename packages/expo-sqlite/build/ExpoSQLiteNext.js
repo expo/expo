@@ -15,7 +15,7 @@ export default {
         throw new Error('Unimplemented');
     },
     //#region EventEmitter implementations
-    addListener() {
+    addListener(eventName, listener) {
         throw new Error('Unimplemented');
     },
     removeListeners() {

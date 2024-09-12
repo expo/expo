@@ -29,7 +29,7 @@ struct AuthSessionOptions: Record {
   var preferEphemeralSession: Bool = false
 }
 
-enum DismissButtonStyle: String, EnumArgument {
+enum DismissButtonStyle: String, Enumerable {
   case done
   case close
   case cancel
@@ -46,7 +46,7 @@ enum DismissButtonStyle: String, EnumArgument {
   }
 }
 
-internal enum PresentationStyle: String, EnumArgument {
+internal enum PresentationStyle: String, Enumerable {
   case fullScreen
   case pageSheet
   case formSheet
@@ -76,11 +76,7 @@ internal enum PresentationStyle: String, EnumArgument {
     case .none:
       return .none
     case .automatic:
-      if #available(iOS 13.0, *) {
-        return .automatic
-      }
-      // default prior iOS 13
-      return .fullScreen
+      return .automatic
     }
   }
 }

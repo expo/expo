@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoHaptics.js","sourceRoot":"","sources":["../src/ExpoHaptics.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AAExD,eAAe,mBAAmB,CAAC,aAAa,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\n\nexport default requireNativeModule('ExpoHaptics');\n"]}

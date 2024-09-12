@@ -18,6 +18,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.SharedRefTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -73,7 +75,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCachedConverters(false)
   private val nullableCachedConverters = createCachedConverters(true)
 
-  private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
+  private val cachedRecordConverters = mutableMapOf<KType, TypeConverter<*>>()
 
   private fun getCachedConverter(inputType: KType): TypeConverter<*>? {
     return if (inputType.isMarkedNullable) {
@@ -116,19 +118,23 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
-    val cachedConverter = cachedRecordConverters[kClass]
+    val cachedConverter = cachedRecordConverters[type]
     if (cachedConverter != null) {
       return cachedConverter
     }
 
     if (Record::class.java.isAssignableFrom(jClass)) {
       val converter = RecordTypeConverter<Record>(this, type)
-      cachedRecordConverters[kClass] = converter
+      cachedRecordConverters[type] = converter
       return converter
     }
 
     if (View::class.java.isAssignableFrom(jClass)) {
       return ViewTypeConverter<View>(type)
+    }
+
+    if (SharedRef::class.java.isAssignableFrom(jClass)) {
+      return SharedRefTypeConverter<SharedRef<*>>(type)
     }
 
     if (SharedObject::class.java.isAssignableFrom(jClass)) {
@@ -213,6 +219,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
         val jsArray = it.asArray()
         IntArray(jsArray.size()) { index ->
           jsArray.getInt(index)
+        }
+      },
+      LongArray::class to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.LONG)
+      ) {
+        val jsArray = it.asArray()
+        LongArray(jsArray.size()) { index ->
+          jsArray.getDouble(index).toLong()
         }
       },
       DoubleArray::class to createTrivialTypeConverter(

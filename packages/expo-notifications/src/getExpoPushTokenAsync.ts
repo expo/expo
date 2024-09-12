@@ -55,15 +55,9 @@ export default async function getExpoPushTokenAsync(
   const projectId = options.projectId || Constants.easConfig?.projectId;
 
   if (!projectId) {
-    console.warn(
-      'Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+'
-    );
-  }
-
-  if (!projectId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_EXPERIENCE_ID',
-      "No 'projectId' found. If 'projectId' can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself."
+      `No "projectId" found. If "projectId" can't be inferred from the manifest (for instance, in bare workflow), you have to pass it in yourself.`
     );
   }
 
@@ -71,7 +65,7 @@ export default async function getExpoPushTokenAsync(
   if (!applicationId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_APPLICATION_ID',
-      "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself."
+      `No "applicationId" found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.`
     );
   }
   const type = options.type || getTypeOfToken(devicePushToken);

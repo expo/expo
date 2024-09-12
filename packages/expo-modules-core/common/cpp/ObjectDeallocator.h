@@ -2,6 +2,8 @@
 
 #ifdef __cplusplus
 
+#pragma once
+
 #import <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
@@ -12,9 +14,9 @@ class JSI_EXPORT ObjectDeallocator : public jsi::NativeState {
 public:
   typedef std::function<void()> Block;
 
-  ObjectDeallocator(const Block deallocator) : deallocator(deallocator) {};
+  ObjectDeallocator(Block deallocator) : deallocator(std::move(deallocator)) {};
 
-  virtual ~ObjectDeallocator() {
+  ~ObjectDeallocator() override {
     deallocator();
   }
 

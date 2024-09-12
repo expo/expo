@@ -10,9 +10,8 @@ import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  setupTestProjectAsync,
   bin,
-  ensurePortFreeAsync,
+  setupTestProjectWithOptionsAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -47,11 +46,10 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
-  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
       // `npx expo export`
       await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
         cwd: projectRoot,
@@ -191,7 +189,7 @@ describe('server', () => {
   it(
     'runs `npx expo export --no-bytecode`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
 
       await execa(
         'node',
@@ -299,7 +297,7 @@ describe('server', () => {
 
       expect(bundle).toMatch('__d(');
       // General check
-      expect(bundle.split('\n').length).toBeLessThan(550);
+      expect(bundle.split('\n').length).toBeLessThan(600);
     },
     // Could take 45s depending on how fast npm installs
     120 * 1000

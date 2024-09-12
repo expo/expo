@@ -4,17 +4,12 @@ import pick from 'lodash/pick';
 import npmPacklist from 'npm-packlist';
 import semver from 'semver';
 
-import {
-  BACKUPABLE_OPTIONS_FIELDS,
-  NATIVE_DIRECTORIES,
-  RELEASE_TYPES_ASC_ORDER,
-} from './constants';
+import { BACKUPABLE_OPTIONS_FIELDS, RELEASE_TYPES_ASC_ORDER } from './constants';
 import { BackupableOptions, CommandOptions, PackageGitLogs, Parcel, ReleaseType } from './types';
 import * as Changelogs from '../Changelogs';
 import * as Formatter from '../Formatter';
-import { GitDirectory, GitFileLog, GitFileStatus } from '../Git';
+import { GitDirectory, GitFileStatus } from '../Git';
 import logger from '../Logger';
-import { Package } from '../Packages';
 
 const { green, cyan, magenta, gray, red } = chalk;
 
@@ -179,11 +174,7 @@ export async function getPackageGitLogsAsync(
   };
 }
 
-export async function getMinReleaseTypeAsync(
-  pkg: Package,
-  logs: PackageGitLogs,
-  changelogChanges: any
-): Promise<ReleaseType> {
+export function getMinReleaseType(changelogChanges: any): ReleaseType {
   const unpublishedChanges = changelogChanges?.versions[Changelogs.UNPUBLISHED_VERSION_NAME];
   const hasBreakingChanges = unpublishedChanges?.[Changelogs.ChangeType.BREAKING_CHANGES]?.length;
   const hasNewFeatures = unpublishedChanges?.[Changelogs.ChangeType.NEW_FEATURES]?.length;
@@ -194,12 +185,6 @@ export async function getMinReleaseTypeAsync(
   }
   if (hasNewFeatures) {
     return ReleaseType.MINOR;
-  }
-
-  // If the package is a native module, then we have to check whether there are any native changes.
-  if (await pkg.isNativeModuleAsync()) {
-    const hasNativeChanges = logs && fileLogsContainNativeChanges(logs.files);
-    return hasNativeChanges ? ReleaseType.MINOR : ReleaseType.PATCH;
   }
   return ReleaseType.PATCH;
 }
@@ -287,15 +272,6 @@ export function recursivelyAccumulateReleaseTypes(
     recursivelyAccumulateReleaseTypes(dependency, set);
   }
   return set;
-}
-
-/**
- * Determines whether git file logs contain any changes in directories with native code.
- */
-function fileLogsContainNativeChanges(fileLogs: GitFileLog[]): boolean {
-  return fileLogs.some((fileLog) => {
-    return NATIVE_DIRECTORIES.some((dir) => fileLog.relativePath.startsWith(`${dir}/`));
-  });
 }
 
 export function isParcelUnpublished(parcel: Parcel): boolean {

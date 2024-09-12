@@ -23,7 +23,13 @@ object JSTypeConverter {
     override fun createArray(): WritableArray = Arguments.createArray()
   }
 
-  fun convertToJSValue(value: Any?, containerProvider: ContainerProvider = DefaultContainerProvider): Any? {
+  /**
+   * To support WritableArray and WritableMap, we must refrain from using types that are not supported by folly::dynamic.
+   * Therefore, we need two separate methods for converting values to JSValue.
+   * The legacy method is fully compatible with folly::dynamic, and in the new method,
+   * we are beginning to transition to custom converters.
+   */
+  fun legacyConvertToJSValue(value: Any?, containerProvider: ContainerProvider = DefaultContainerProvider): Any? {
     return when (value) {
       null, is Unit -> null
       is Bundle -> value.toJSValue(containerProvider)
@@ -43,7 +49,41 @@ object JSTypeConverter {
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
       is RawTypedArrayHolder -> value.rawArray
-      is Iterable<*> -> value.toJSValue(containerProvider)
+      is Collection<*> -> value.toJSValue(containerProvider)
+      else -> value
+    }
+  }
+
+  fun convertToJSValue(
+    value: Any?,
+    containerProvider: ContainerProvider = DefaultContainerProvider,
+    useExperimentalConverter: Boolean = false
+  ): Any? {
+    return when (value) {
+      null, is Unit -> null
+      is Bundle -> value.toJSValue(containerProvider)
+      is Array<*> -> value.toJSValue(containerProvider)
+      is IntArray, is FloatArray, is DoubleArray, is BooleanArray, is LongArray -> value
+      is ByteArray -> FollyDynamicExtensionConverter.put(value)
+      is Map<*, *> -> if (useExperimentalConverter) {
+        value.toJSValueExperimental()
+      } else {
+        value.toJSValue(containerProvider)
+      }
+      is Enum<*> -> value.toJSValue()
+      is Record -> value.toJSValue(containerProvider)
+      is URI -> value.toJSValue()
+      is URL -> value.toJSValue()
+      is Uri -> value.toJSValue()
+      is File -> value.toJSValue()
+      is Pair<*, *> -> value.toJSValue(containerProvider)
+      is Long -> value.toDouble()
+      is RawTypedArrayHolder -> value.rawArray
+      is Collection<*> -> if (useExperimentalConverter) {
+        value.toJSValueExperimental()
+      } else {
+        value.toJSValue(containerProvider)
+      }
       else -> value
     }
   }

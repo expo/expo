@@ -8,13 +8,13 @@ packageName: 'expo-calendar'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -75,7 +75,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <SnackInline label='Basic Calendar usage' dependencies={['expo-calendar']}>
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 

@@ -15,6 +15,7 @@ import {
   STYLES_APIBOX,
   getTagNamesList,
   H3Code,
+  getPossibleComponentPropsNames,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
@@ -57,8 +58,8 @@ const renderComponent = (
   const resolvedName = getComponentName(name, children);
   const extractedComment = getComponentComment(comment, signatures);
   return (
-    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
-      <APISectionDeprecationNote comment={extractedComment} />
+    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX} className="!shadow-none">
+      <APISectionDeprecationNote comment={extractedComment} sticky />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
           {resolvedName}
@@ -83,7 +84,7 @@ const renderComponent = (
         <APISectionProps
           sdkVersion={sdkVersion}
           data={componentsProps}
-          header={componentsProps.length === 1 ? 'Props' : `${resolvedName}Props`}
+          header={`${resolvedName}Props`}
         />
       ) : null}
     </div>
@@ -99,7 +100,7 @@ const APISectionComponents = ({ data, sdkVersion, componentsProps }: APISectionC
           component,
           sdkVersion,
           componentsProps.filter(cp =>
-            cp.name.includes(getComponentName(component.name, component.children))
+            getPossibleComponentPropsNames(component.name, component.children).includes(cp.name)
           )
         )
       )}

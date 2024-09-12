@@ -1,0 +1,360 @@
+---
+title: Use URL parameters
+description: Learn how to access and modify route and search parameters in your app.
+sidebar_title: URL parameters
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+URL parameters include both **route parameters** and **search parameters**. Expo Router provides hooks for accessing and modifying these parameters.
+
+## Difference between route and search parameters
+
+Route parameters are dynamic segments defined in a URL path, such as `/profile/[user]`, where `user` is a route parameter. They are used to match a route.
+
+Search parameters (also known as query params) are serializable fields that can be appended to a URL, such as `/profile?extra=info`, where `extra` is a search parameter. They are commonly used to pass data between pages.
+
+## Local versus global URL parameters
+
+In nested apps, you'll often have **multiple pages mounted** at the same time. For example, a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing URL parameters:
+
+- **useLocalSearchParams**: Returns the URL parameters for the current component. It only updates when the global URL conforms to the route.
+- **useGlobalSearchParams**: Returns the global URL regardless of the component. It updates on every URL param change and might cause components to update extraneously in the background.
+
+The hooks `useGlobalSearchParams` and `useLocalSearchParams` allow you to access these parameters within your components, enabling you to retrieve and utilize both types of URL parameters.
+
+Both hooks are typed and accessed the same way. However, the only difference is how frequently they update.
+
+The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
+
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/[user].tsx']} />
+
+<Step label="1">
+
+    The Root Layout is a stack navigator:
+
+    ```tsx app/_layout.tsx
+    import { Stack } from 'expo-router';
+
+    export default function Layout() {
+      return <Stack />;
+    }
+    ```
+
+</Step>
+
+<Step label="2">
+
+    The initial route redirects to the dynamic route **app/[user].tsx**, with **user=evanbacon**:
+
+    ```tsx app/index.tsx
+    import { Redirect } from 'expo-router';
+
+    export default function Route() {
+      return <Redirect href="/evanbacon" />;
+    }
+    ```
+
+</Step>
+
+<Step label="3">
+
+    The dynamic route **app/[user]** prints out the global and local URL parameters (route parameters, in this case). It also allows for pushing new instances of the same route with different **route parameters**:
+
+    ```tsx app/[user].tsx
+    import { Text, View } from 'react-native';
+    import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
+
+    const friends = ['charlie', 'james']
+
+    export default function Route() {
+      const glob = useGlobalSearchParams();
+      const local = useLocalSearchParams();
+
+      console.log("Local:", local.user, "Global:", glob.user);
+
+      return (
+        <View>
+          <Text>User: {local.user}</Text>
+          {friends.map(friend => (
+            <Link key={friend} href={`/${friend}`}>
+              Visit {friend}
+            </Link>
+          ))}
+        </View>
+      );
+    }
+    ```
+
+</Step>
+
+<Step label="4">
+
+When the app starts, the following log is printed:
+
+<Terminal cmd={['Local: evanbacon Global: evanbacon']} />
+
+Pressing "Visit charlie" pushes a new instance of `/[user]` with **user=charlie**, and logs the following:
+
+<Terminal
+  cmd={[
+    '# This log came from the new screen',
+    'Local: charlie Global: charlie',
+    '# This log came from the first screen',
+    'Local: evanbacon Global: charlie',
+  ]}
+/>
+
+Pressing "Visit james" has a similar effect:
+
+<Terminal
+  cmd={[
+    '# This log came from the new, "/james" screen',
+    'Local: james Global: james',
+    '# This log came from the "/evanbacon" screen',
+    'Local: evanbacon Global: james',
+    '# This log came from the "/charlie" screen',
+    'Local: charlie Global: james',
+  ]}
+/>
+
+    **Results:**
+
+    - `useGlobalSearchParams` made the background screens re-render when the URL **route parameters** changed. It can cause performance issues if overused.
+    - Global re-renders are executed in order of the stack, so the first screen is re-rendered first, then the **user=charlie** screen is re-rendered after.
+    - `useLocalSearchParams` remained the same, even when the global URL **route parameters** changed. You can leverage this behavior for data fetching to ensure the previous screen's data is still available when you navigate back.
+
+</Step>
+
+## Statically-typed URL parameters
+
+Both the `useLocalSearchParams` and `useGlobalSearchParams` can be statically typed using a generic. The following is an example for the `user` route parameter:
+
+```tsx app/[user].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  const { user } = useLocalSearchParams<{ user: string }>();
+
+  return <Text>User: {user}</Text>;
+}
+
+// Given the URL: `/evanbacon`
+// The following is returned: { user: "evanbacon" }
+```
+
+Any search parameters (for example, `?query=...`) can be typed optionally:
+
+```tsx app/[user].tsx
+const { user, query } = useLocalSearchParams<{ user: string; query?: string }>();
+
+// Given the URL: `/evanbacon?query=hello`
+// The following is returned: { user: "evanbacon", query: "hello" }
+```
+
+When used with the rest syntax (`...`), route parameters are returned as a string array:
+
+```tsx app/[...everything].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  const { everything } = useLocalSearchParams<{
+    /* @info <b>everything</b> will be an array of path segments, even if there's only one */
+    everything: string[];
+    /* @end */
+  }>();
+  const user = everything[0];
+
+  return <Text>User: {user}</Text>;
+}
+
+// Given the URL: `/evanbacon/123`
+// The following is returned: { everything: ["evanbacon", "123"] }
+```
+
+Any search parameters will continue to be returned as individual strings:
+
+{/* prettier-ignore */}
+```tsx app/[...everything].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  const { everything } = useLocalSearchParams<{
+    /* @info <b>everything</b> will be an array of path segments, even if there's only one */
+    everything: string[];
+    /* @info <b>query</b> is an optional search parameter */
+    query?: string;
+    /* @info <b>query2</b> is an optional search parameter */
+    query2?: string;
+    /* @end */
+  }>();
+  const user = everything[0];
+
+  return <Text>User: {user}</Text>;
+}
+
+// Given the URL: `/evanbacon/123?query=hello&query2=world`
+// The following is returned: { everything: ["evanbacon", "123"], query: "hello", query2: "world" }
+```
+
+## Updating URL parameters
+
+URL parameters can be updated using the **router.setParams** function from the imperative API. Updating a URL parameter will not push anything new to the history stack.
+
+The following example uses a `<TextInput>` to update the search parameter **q**:
+
+```tsx app/search.tsx
+import { useLocalSearchParams, router } from 'expo-router';
+import { useState } from 'react';
+import { TextInput, View } from 'react-native';
+
+export default function Page() {
+  const params = useLocalSearchParams<{ query?: string }>();
+  const [search, setSearch] = useState(params.query);
+
+  return (
+    <TextInput
+      value={search}
+      onChangeText={search => {
+        setSearch(search);
+        /* @info Set the search parameter <b>query</b> to the text input <b>search</b> */
+        router.setParams({ query: search });
+        /* @end */
+      }}
+      placeholderTextColor="#A0A0A0"
+      placeholder="Search"
+      style={{
+        borderRadius: 12,
+        backgroundColor: '#fff',
+        fontSize: 24,
+        color: '#000',
+        margin: 12,
+        padding: 16,
+      }}
+    />
+  );
+}
+```
+
+Here is an example using an `onPress` event to update the route parameter **user**:
+
+```tsx app/[user].tsx
+import { useLocalSearchParams, router } from 'expo-router';
+import { Text } from 'react-native';
+
+export default function User() {
+  const params = useLocalSearchParams<{ user: string }>();
+
+  return (
+    <>
+      <Text>User: {params.user}</Text>
+      <Text onPress={() => router.setParams({ user: 'evan' })}>Go to Evan</Text>
+    </>
+  );
+}
+```
+
+## Route parameters versus search parameters
+
+Route parameters are used to match a route, while search parameters are used to pass data between routes. Consider the following structure, where a route parameter is used to match the _user_ route:
+
+<FileTree
+  files={[
+    'app/index.tsx',
+    [
+      'app/[user].tsx',
+      <>
+        <code>user</code> is a <b>route parameter</b>
+      </>,
+    ],
+  ]}
+/>
+
+When the `app/[user]` route is matched, the `user` parameter is passed to the component and never a nullish value. Both search and route parameters can be used together and are accessible with the `useLocalSearchParams` and `useGlobalSearchParams` hooks:
+
+```tsx app/[user].tsx
+import { useLocalSearchParams } from 'expo-router';
+
+export default function User() {
+  const {
+    // The route parameter
+    user,
+    // An optional search parameter.
+    tab,
+  } = useLocalSearchParams<{ user: string; tab?: string }>();
+
+  console.log({ user, tab });
+
+  // Given the URL: `/bacon?tab=projects`, the following is printed:
+  // { user: 'bacon', tab: 'projects' }
+
+  // Given the URL: `/expo`, the following is printed:
+  // { user: 'expo', tab: undefined }
+}
+```
+
+Whenever a route parameter is changed, the component will re-mount.
+
+```tsx app/[user].tsx
+import { Text } from 'react-native';
+import { router, useLocalSearchParams, Link } from 'expo-router';
+
+export default function User() {
+  // All three of these will change the route parameter `user`, and add a new user page.
+  return (
+    <>
+      <Text onPress={() => router.setParams({ user: 'evan' })}>Go to Evan</Text>
+      <Text onPress={() => router.push('/mark')}>Go to Mark</Text>
+      <Link href="/charlie">Go to Charlie</Link>
+    </>
+  );
+}
+```
+
+{/* prettier-ignore */}
+{/*
+TODO: REMOVE COMMENT WHEN https://github.com/expo/expo/pull/30268 IS PUBLISHED
+
+## Array support
+
+URL parameters that are present multiple times will be grouped together as an array.
+
+```tsx app/hash.tsx
+import { router, useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  // If the current URL is `/route?myParam=1&myParam=2
+  const { myParam } = useLocalSearchParams();
+  // myParam === ["1", "2"]
+}
+```
+
+\*/}
+
+## Hash support
+
+The URL [hash](https://developer.mozilla.org/en-US/docs/Web/API/URL/hash) is a string that follows the `#` symbol in a URL. It is commonly used on websites to link to a specific section of a page, but it can also be used to store data. Expo Router treats the hash as a special search parameter using the name `#`. It can be accessed and modified using the same hooks and APIs from [search parameters](#local-versus-global-search-parameters).
+
+{/* prettier-ignore */}
+```tsx app/hash.tsx
+import { Text } from 'react-native';
+import { router, useLocalSearchParams, Link } from 'expo-router';
+
+export default function User() {
+  // Access the hash
+  const { '#': hash } = useLocalSearchParams<{ '#': string }>();
+
+  return (
+    <>
+      <Text onPress={() => router.setParams({ '#': 'my-hash' })}>Set a new hash</Text>
+      <Text onPress={() => router.push('/#my-hash')}>Push with a new hash</Text>
+      <Link href="/#my-hash">Link with a hash</Link>
+    </>
+  );
+}
+```

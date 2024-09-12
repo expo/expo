@@ -1,27 +1,65 @@
 import ExpoModulesCore
 
-enum AudioCategory: String, Enumerable {
-  case ambient
-  case multiRoute
-  case playAndRecord
-  case playback
-  case record
-  case soloAmbient
+struct AudioMode: Record {
+  @Field var playsInSilentMode: Bool = false
+  @Field var interruptionMode: InterruptionMode = .mixWithOthers
+  @Field var allowsRecording: Bool = true
+  @Field var shouldPlayInBackground: Bool = true
+}
 
-  func toAVCategory() -> AVAudioSession.Category {
+enum InterruptionMode: String, Enumerable {
+  case mixWithOthers
+  case doNotMix
+  case duckOthers
+}
+
+enum PitchCorrectionQuality: String, Enumerable {
+  case low
+  case medium
+  case high
+
+  func toPitchAlgorithm() -> AVAudioTimePitchAlgorithm {
     switch self {
-    case .ambient:
-      return .ambient
-    case .multiRoute:
-      return .multiRoute
-    case .playAndRecord:
-      return .playAndRecord
-    case .playback:
-      return .playback
-    case .record:
-      return .record
-    case .soloAmbient:
-      return .soloAmbient
+    case .low:
+      return .timeDomain
+    case .medium:
+      return .varispeed
+    case .high:
+      return .spectral
+    }
+  }
+}
+
+struct RecordingOptions: Record {
+  @Field var `extension`: String
+  @Field var outputFormat: String?
+  @Field var audioQuality: Int
+  @Field var sampleRate: Double
+  @Field var numberOfChannels: Double
+  @Field var bitRate: Double
+  @Field var bitRateStrategy: BitRateStrategy?
+  @Field var bitDepthHint: Double?
+  @Field var linearPCMBitDepth: Double?
+  @Field var linearPCMIsBigEndian: Bool?
+  @Field var linearPCMIsFloat: Bool?
+}
+
+enum BitRateStrategy: String, Enumerable {
+  case constant
+  case longTermAverage
+  case variableConstrained
+  case variable
+
+  func toAVBitRateStrategy() -> String {
+    switch self {
+    case .constant:
+      return AVAudioBitRateStrategy_Constant
+    case .longTermAverage:
+      return AVAudioBitRateStrategy_LongTermAverage
+    case .variableConstrained:
+      return AVAudioBitRateStrategy_VariableConstrained
+    case .variable:
+      return AVAudioBitRateStrategy_Variable
     }
   }
 }

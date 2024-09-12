@@ -7,7 +7,7 @@
   </a>
 </p>
 
-The `expo-updates` module allows your app to download and manage remote updates to your application code.
+The `expo-updates` module enables your app to manage remote updates to your application code.
 
 This module works with a server that implements the [Expo Update protocol](https://docs.expo.dev/technical-specs/expo-updates-1/).
 

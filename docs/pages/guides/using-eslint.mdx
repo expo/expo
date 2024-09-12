@@ -3,13 +3,11 @@ title: Use ESLint and Prettier
 description: A guide on configuring ESLint and Prettier to format Expo apps.
 ---
 
-import { GithubIcon } from '@expo/styleguide-icons';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { CODE } from '~/ui/components/Text';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
-import { Terminal } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
 
 <TabsGroup>
 
@@ -94,16 +92,20 @@ You can lint your code manually from the command line with the `expo lint` scrip
 
 Running the above command will run the `lint` script from **package.json**.
 
-```sh
-# Example output for npx expo lint command
-> npm run eslint .
-$ /app/node_modules/.bin/eslint .
-
-/app/components/HelloWave.tsx
-  22:6 warning React Hook useEffect has a missing dependency: 'rotateAnimation'. Either include it or remove the dependency array react-hooks/exhaustive-deps
-
-✖ 1 problem (0 errors, 1 warning)
-```
+<Terminal
+  cmd={[
+    '# Example output for npx expo lint command',
+    '',
+    '$ npm run eslint .',
+    '/app/node_modules/.bin/eslint .',
+    '',
+    '/app/components/HelloWave.tsx',
+    '  22:6 warning React Hook useEffect has a missing dependency: "rotateAnimation".',
+    '       Either include it or remove the dependency array react-hooks/exhaustive-deps',
+    '',
+    '✖ 1 problem (0 errors, 1 warning)',
+  ]}
+/>
 
 </Tab>
 
@@ -155,10 +157,10 @@ To integrate Prettier with ESlint, update your **.eslintrc.js**:
 
 ```js .eslintrc.js
 module.exports = {
-  extends: ["expo", "prettier"],
-  plugins: ["prettier"],
+  extends: ['expo', 'prettier'],
+  plugins: ['prettier'],
   rules: {
-    "prettier/prettier": "error",
+    'prettier/prettier': 'error',
   },
 };
 ```

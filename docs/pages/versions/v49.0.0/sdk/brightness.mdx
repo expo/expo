@@ -9,9 +9,9 @@ iconUrl: '/static/images/packages/expo-brightness.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 An API to get and set screen brightness.
 
@@ -36,7 +36,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <SnackInline label='Basic Brightness Usage' dependencies={['expo-brightness']}>
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import * as Brightness from 'expo-brightness';
 

@@ -3,7 +3,7 @@ import { withAndroidColors, withAndroidStyles } from '../../plugins/android-plug
 import { parseXMLAsync } from '../../utils/XML';
 import { getColorsAsObject, getObjectAsColorsXml } from '../Colors';
 import { getPrimaryColor, withPrimaryColorColors, withPrimaryColorStyles } from '../PrimaryColor';
-import { getAppThemeLightNoActionBarGroup, getStylesGroupAsObject } from '../Styles';
+import { getAppThemeGroup, getStylesGroupAsObject } from '../Styles';
 
 jest.mock('../../plugins/android-plugins');
 
@@ -56,7 +56,7 @@ describe(withPrimaryColorStyles, () => {
         modResults: { resources: {} },
       }
     );
-    expect(getStylesGroupAsObject(modResults, getAppThemeLightNoActionBarGroup())).toStrictEqual({
+    expect(getStylesGroupAsObject(modResults, getAppThemeGroup())).toStrictEqual({
       colorPrimary: '@color/colorPrimary',
     });
   });
@@ -82,7 +82,7 @@ describe(withPrimaryColorStyles, () => {
       }
     );
     // Extract the styles group items given the group
-    expect(getStylesGroupAsObject(modResults, getAppThemeLightNoActionBarGroup())).toStrictEqual(
+    expect(getStylesGroupAsObject(modResults, getAppThemeGroup())).toStrictEqual(
       // Should be an empty k/v pair
       {}
     );

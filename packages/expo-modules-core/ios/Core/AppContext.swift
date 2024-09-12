@@ -87,6 +87,8 @@ public final class AppContext: NSObject {
    */
   internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule)
 
+  internal private(set) lazy var converter = MainValueConverter(appContext: self)
+
   /**
    Designated initializer without modules provider.
    */
@@ -123,14 +125,7 @@ public final class AppContext: NSObject {
   // MARK: - UI
 
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    let view: UIView? = reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag))
-
-    #if RN_FABRIC_ENABLED
-    if let view = view as? ExpoFabricViewObjC {
-      return view.contentView as? ViewType
-    }
-    #endif
-    return view as? ViewType
+    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
   }
 
   // MARK: - Running on specific queues

@@ -1,4 +1,5 @@
-import { DeviceEventEmitter, Platform } from 'expo-modules-core';
+import { Platform } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, } from './ScreenOrientation.types';
 const OrientationLockAPIToWeb = {

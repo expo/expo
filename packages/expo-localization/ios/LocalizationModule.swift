@@ -203,7 +203,7 @@ public class LocalizationModule: Module {
   }
 
   static func getCalendars() -> [[String: Any?]] {
-    var calendar = Locale.current.calendar
+    let calendar = Locale.current.calendar
     return [
       [
         "calendar": getUnicodeCalendarIdentifier(calendar: calendar),

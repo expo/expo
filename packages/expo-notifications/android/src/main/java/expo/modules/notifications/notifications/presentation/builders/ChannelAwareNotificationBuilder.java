@@ -53,19 +53,18 @@ public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBu
       return getFallbackNotificationChannel().getId();
     }
 
-    String channelId = trigger.getNotificationChannel();
-    if (channelId == null) {
+    String requestedChannelId = trigger.getNotificationChannel();
+    if (requestedChannelId == null) {
       return getFallbackNotificationChannel().getId();
     }
 
-    NotificationsChannelManager manager = getNotificationsChannelManager();
-    NotificationChannel channel = manager.getNotificationChannel(channelId);
-    if (channel == null) {
-      Log.e("notifications", String.format("Channel '%s' doesn't exists. Fallback to '%s' channel", channelId, FALLBACK_CHANNEL_ID));
+    NotificationChannel channelForRequestedId = getNotificationsChannelManager().getNotificationChannel(requestedChannelId);
+    if (channelForRequestedId == null) {
+      Log.e("notifications", String.format("Channel '%s' doesn't exists. Fallback to '%s' channel", requestedChannelId, FALLBACK_CHANNEL_ID));
       return getFallbackNotificationChannel().getId();
     }
 
-    return channel.getId();
+    return channelForRequestedId.getId();
   }
 
   @NonNull

@@ -37,7 +37,7 @@ export default [
     description: [
       'The EAS Update channel where this build will look for updates. [Learn more](../../eas-update/how-it-works). Standalone builds will check for and download updates matching platform, native runtime, and channel.',
       '',
-      'This field has no effect when [developmentClient](#developmentclient) is set to `true`, as development builds can run updates from any channnel.',
+      'This field has no effect when [`developmentClient`](#developmentclient) is set to `true`, as development builds can run updates from any channel.',
       '',
       'If you have not yet migrated from Classic Updates to EAS Update, then continue to use the [`releaseChannel`](#releasechannel) field instead.',
     ],

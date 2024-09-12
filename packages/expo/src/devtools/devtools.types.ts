@@ -31,3 +31,18 @@ export interface HandshakeMessageParams {
   browserClientId: string;
   pluginName: string;
 }
+
+/**
+ * Options for the devtools plugin client.
+ */
+export interface DevToolsPluginClientOptions {
+  /**
+   * The underlying WebSocket [`binaryType`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType).
+   */
+  websocketBinaryType?: 'arraybuffer' | 'blob';
+
+  /**
+   * Whether to use the new transportation protocol.
+   */
+  useTransportationNext?: boolean;
+}

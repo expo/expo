@@ -95,7 +95,6 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -111,10 +110,9 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
     }
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.3'
+        classpath 'com.google.gms:google-services:4.4.1'
         classpath 'com.android.tools.build:gradle:3.5.3'
 
     }

@@ -7,18 +7,18 @@ iconUrl: '/static/images/packages/expo-document-picker.png'
 platforms: ['android', 'ios', 'web']
 ---
 
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import Video from '~/components/plugins/Video';
+} from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 `expo-document-picker` provides access to the system's UI for selecting documents from the available providers on the user's device.
 
-<Video file={'sdk/documentpicker.mp4'} loop={false} />
+<ContentSpotlight file="sdk/documentpicker.mp4" loop={false} />
 
 ## Installation
 

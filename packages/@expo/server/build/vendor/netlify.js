@@ -96,7 +96,6 @@ function convertRequest(event) {
                 ? Buffer.from(event.body, 'base64')
                 : Buffer.from(event.body, 'base64').toString()
             : event.body;
-        // @ts-expect-error
         init.duplex = 'half';
     }
     return new Request(url.href, init);

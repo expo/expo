@@ -34,13 +34,12 @@ func decodeSocialProfiles(_ input: [SocialProfile]?) -> [CNLabeledValue<CNSocial
   var output = [CNLabeledValue<CNSocialProfile>]()
   for item in input {
     let label = decodeLabel(label: item.label)
-    if let urlString = item.url,
-    let username = item.username,
-    let userId = item.userId,
-    let service = item.service {
-      let profile = CNSocialProfile(urlString: urlString.path, username: username, userIdentifier: userId, service: service)
-      output.append(CNLabeledValue(label: label, value: profile))
-    }
+    let urlString = item.url
+    let username = item.username
+    let userId = item.userId
+    let service = item.service
+    let profile = CNSocialProfile(urlString: urlString?.path, username: username, userIdentifier: userId, service: service)
+    output.append(CNLabeledValue(label: label, value: profile))
   }
   return output
 }
@@ -69,7 +68,7 @@ func decodeUrlAddresses(_ input: [UrlAddress]?) -> [CNLabeledValue<NSString>]? {
   var output = [CNLabeledValue<NSString>]()
   for item in input {
     let label = decodeUrlAddressLabel(item.label)
-    if let urlString = item.url?.path {
+    if let urlString = item.url?.absoluteString {
       output.append(CNLabeledValue(label: label, value: urlString as NSString))
     }
   }
@@ -99,7 +98,7 @@ func decodeDates(_ input: [ContactDate]?) -> [CNLabeledValue<NSDateComponents>]?
       continue
     }
 
-    var val = NSDateComponents()
+    let val = NSDateComponents()
     if let day = item.day {
       val.day = day
     }

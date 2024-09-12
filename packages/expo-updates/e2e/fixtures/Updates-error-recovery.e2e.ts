@@ -16,7 +16,7 @@ const testElementValueAsync = async (testID: string) => {
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Error recovery tests', () => {

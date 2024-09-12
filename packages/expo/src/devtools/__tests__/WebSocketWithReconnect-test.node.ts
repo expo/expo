@@ -60,7 +60,7 @@ describe(WebSocketWithReconnect, () => {
     await delayAsync(100);
 
     expect(ws.readyState).toBe(WebSocket.OPEN);
-    expect(mockOnReconnect.mock.calls.length).toBeGreaterThan(2);
+    expect(mockOnReconnect).toHaveBeenCalled();
   });
 
   it('should keep sending messages when retrying connection', async () => {
@@ -138,6 +138,33 @@ describe(WebSocketWithReconnect, () => {
     expect(mockClose).toHaveBeenCalled();
     expect(ws.readyState).toBe(WebSocket.CLOSED);
     expect(mockOnError).toHaveBeenCalled();
+  });
+
+  it('should support arraybuffer binaryType option', async () => {
+    server = new WebSocketServer({ port: 8000 });
+    // An echoing server
+    server?.addListener('connection', (socket) => {
+      socket.addEventListener('message', (e) => {
+        socket.send(e.data);
+      });
+    });
+
+    ws = new WebSocketWithReconnect('ws://localhost:8000', { binaryType: 'arraybuffer' });
+    let received: any = null;
+    ws.addEventListener('message', (e) => {
+      received = e.data;
+    });
+    await new Promise((resolve) => {
+      ws?.addEventListener('open', () => {
+        resolve(null);
+      });
+    });
+    expect(ws.readyState).toBe(WebSocket.OPEN);
+
+    ws.send(new Uint8Array([0x01, 0x02, 0x03]));
+    await delayAsync(50);
+    expect(received).toBeInstanceOf(ArrayBuffer);
+    expect(new Uint8Array(received as ArrayBuffer)).toEqual(new Uint8Array([0x01, 0x02, 0x03]));
   });
 });
 

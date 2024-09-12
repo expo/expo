@@ -197,6 +197,7 @@ describe(getAttachedDevicesAsync, () => {
         name: 'Device FA8251A00719',
         pid: 'FA8251A00719',
         type: 'device',
+        connectionType: 'USB',
       },
       {
         isAuthorized: true,
@@ -204,6 +205,66 @@ describe(getAttachedDevicesAsync, () => {
         name: 'Pixel_2',
         pid: 'FA8251A00720',
         type: 'device',
+        connectionType: 'USB',
+      },
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_4_XL_API_30',
+        pid: 'emulator-5554',
+        type: 'emulator',
+      },
+    ]);
+  });
+
+  it(`gets network connected devices`, async () => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce(
+        [
+          'List of devices attached',
+          // unauthorized
+          'adb-00000XXX000XXX-YzYyyy._adb-tls-connect._tcp. offline transport_id:1',
+          // authorized & online
+          'adb-00000XXX000XXX-YzXxxx._adb-tls-connect._tcp. device product:cheetah model:Pixel_7_Pro device:cheetah transport_id:2',
+          // authorized & offline
+          'adb-00000XXX000XXX-YzZzzz._adb-tls-connect._tcp. offline product:cheetah model:Pixel_7_Pro device:cheetah transport_id:2',
+          // Emulator
+          'emulator-5554          device product:sdk_gphone_x86_arm model:sdk_gphone_x86_arm device:generic_x86_arm transport_id:1',
+          '',
+        ].join('\n')
+      )
+      .mockResolvedValueOnce(
+        // Return the emulator name
+        ['Pixel_4_XL_API_30', 'OK'].join('\n')
+      );
+
+    const devices = await getAttachedDevicesAsync();
+
+    expect(devices).toEqual([
+      {
+        isAuthorized: false,
+        isBooted: false,
+        name: 'Device adb-00000XXX000XXX-YzYyyy._adb-tls-connect._tcp.',
+        pid: 'adb-00000XXX000XXX-YzYyyy._adb-tls-connect._tcp.',
+        type: 'device',
+        connectionType: 'Network',
+      },
+      {
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_7_Pro',
+        pid: 'adb-00000XXX000XXX-YzXxxx._adb-tls-connect._tcp.',
+        type: 'device',
+        connectionType: 'Network',
+      },
+      {
+        isAuthorized: true,
+        isBooted: false,
+        name: 'Pixel_7_Pro',
+        pid: 'adb-00000XXX000XXX-YzZzzz._adb-tls-connect._tcp.',
+        type: 'device',
+        connectionType: 'Network',
       },
       {
         isAuthorized: true,

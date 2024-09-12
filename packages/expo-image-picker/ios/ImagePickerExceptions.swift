@@ -26,6 +26,12 @@ internal class MissingCameraPermissionException: Exception {
   }
 }
 
+internal class MissingMicrophonePermissionException: Exception {
+  override var reason: String {
+    "Missing microphone permission. Please enable it with the `expo-image-picker` config plugin"
+  }
+}
+
 internal class MissingPhotoLibraryPermissionException: Exception {
   override var reason: String {
     "Missing photo library permission"
@@ -125,5 +131,11 @@ internal class FailedToPickVideoException: Exception {
 internal class FailedToReadImageDataForBase64Exception: Exception {
   override var reason: String {
     "Failed to read image data to perform base64 encoding"
+  }
+}
+
+internal class FailedToPickLivePhotoException: Exception {
+  override var reason: String {
+    "Failed to read the selected item as a live photo"
   }
 }

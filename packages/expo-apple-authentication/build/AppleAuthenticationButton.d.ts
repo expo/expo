@@ -22,5 +22,5 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): JSX.Element | null;
+export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): import("react").JSX.Element | null;
 //# sourceMappingURL=AppleAuthenticationButton.d.ts.map

@@ -1,12 +1,9 @@
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
-import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-
-import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
 import AndroidStudioEnvironmentInstructions from './_androidStudioEnvironmentInstructions.mdx';
 import AndroidStudioInstructions from './_androidStudioInstructions.mdx';
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 ## Set up an Android device with a development build
 
@@ -45,11 +42,7 @@ Plug in your Android device via USB to your computer.
 
 Check that your device is properly connecting to ADB, the Android Debug Bridge, by running `adb devices` in your terminal. You should see your device listed with `device` listed next to it. For example:
 
-```bash
-$ adb devices
-List of devices attached
-8AHX0T32K	device
-```
+<Terminal cmd={['$ adb devices', '', 'List of devices attached', '8AHX0T32K	device']} />
 
 </Step>
 

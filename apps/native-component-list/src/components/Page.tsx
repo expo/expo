@@ -3,11 +3,11 @@ import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 
-const Page = ({ children }: PropsWithChildren<object>) => (
-  <View style={styles.page}>{children}</View>
-);
+export function Page({ children }: PropsWithChildren) {
+  return <View style={styles.page}>{children}</View>;
+}
 
-const ScrollPage = ({ children }: PropsWithChildren<object>) => (
+const ScrollPage = ({ children }: PropsWithChildren) => (
   <ScrollView style={[styles.page, styles.scrollPage]}>{children}</ScrollView>
 );
 
@@ -38,4 +38,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Page, ScrollPage, Section };
+export { ScrollPage, Section };

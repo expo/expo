@@ -4,12 +4,12 @@ description: An API reference of Expo modules API.
 sidebar_title: Module API
 ---
 
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { APIMethod } from '~/components/plugins/api/APIMethod';
+import { FileTree } from '~/ui/components/FileTree';
 import { PlatformTags, StatusTag } from '~/ui/components/Tag';
 import { A, CALLOUT } from '~/ui/components/Text';
-import { APIMethod } from '~/components/plugins/api/APISectionMethods';
-import { FileTree } from '~/ui/components/FileTree';
 
 The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
@@ -146,6 +146,7 @@ AsyncFunction("asyncFunction") { message: String ->
 
 // or
 
+// Make sure to import `Promise` class from `expo.modules.kotlin` instead of `expo.modules.core`.
 AsyncFunction("asyncFunction") { message: String, promise: Promise ->
   promise.resolve(message)
 }
@@ -550,7 +551,7 @@ All functions and view prop setters accept all common primitive types in Swift a
 | Language | Supported primitive types                                                                                                      |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Swift    | `Bool`, `Int`, `Int8`, `Int16`, `Int32`, `Int64`, `UInt`, `UInt8`, `UInt16`, `UInt32`, `UInt64`, `Float32`, `Double`, `String` |
-| Kotlin   | `Boolean`, `Int`, `Long`, `Float`, `Double`, `String`, `Pair`                                                          |
+| Kotlin   | `Boolean`, `Int`, `Long`, `Float`, `Double`, `String`, `Pair`                                                                  |
 
 </APIBox>
 <APIBox header="Convertibles">
@@ -703,8 +704,6 @@ The implementation for three Either types is currently provided out of the box, 
 - `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
-> **Info** Either types are available as of SDK 47.
-
 </APIBox>
 <APIBox header="JavaScript values">
 
@@ -765,8 +764,8 @@ A base class for a native module.
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
-  isProperty={true}
-  isReturnTypeReference={true}
+  isProperty
+  isReturnTypeReference
 />
 
 #### Methods
@@ -801,28 +800,28 @@ The app context is an interface to a single Expo app.
   name="constants"
   comment="Provides access to app's constants from legacy module registry."
   returnTypeName="Android: ConstantsInterface? iOS: EXConstantsInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="permissions"
   comment="Provides access to the permissions manager from legacy module registry."
   returnTypeName="Android: Permissions? iOS: EXPermissionsInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="imageLoader"
   comment="Provides access to the image loader from the legacy module registry."
   returnTypeName="Android: ImageLoaderInterface? iOS: EXImageLoaderInterface?"
-  isProperty={true}
+  isProperty
 />
 
 <APIMethod
   name="barcodeScanner"
   comment="Provides access to the bar code scanner manager from the legacy module registry."
   returnTypeName="ImageLoaderInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -830,7 +829,7 @@ The app context is an interface to a single Expo app.
   name="camera"
   comment="Provides access to the camera view manager from the legacy module registry."
   returnTypeName="CameraViewInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -838,7 +837,7 @@ The app context is an interface to a single Expo app.
   name="font"
   comment="Provides access to the font manager from the legacy module registry."
   returnTypeName="FontManagerInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -846,7 +845,7 @@ The app context is an interface to a single Expo app.
   name="sensor"
   comment="Provides access to the sensor manager from the legacy module registry."
   returnTypeName="SensorServiceInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -854,7 +853,7 @@ The app context is an interface to a single Expo app.
   name="taskManager"
   comment="Provides access to the task manager from the legacy module registry."
   returnTypeName="TaskManagerInterface?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -862,7 +861,7 @@ The app context is an interface to a single Expo app.
   name="activityProvider"
   comment="Provides access to the activity provider from the legacy module registry."
   returnTypeName="ActivityProvider?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -870,7 +869,7 @@ The app context is an interface to a single Expo app.
   name="reactContext"
   comment="Provides access to the react application context."
   returnTypeName="Context?"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -878,7 +877,7 @@ The app context is an interface to a single Expo app.
   name="hasActiveReactInstance"
   comment="Checks if there is an not-null, alive react native instance."
   returnTypeName="Boolean"
-  isProperty={true}
+  isProperty
   platforms={['Android']}
 />
 
@@ -886,7 +885,7 @@ The app context is an interface to a single Expo app.
   name="utilities"
   comment="Provides access to the utilities from legacy module registry."
   returnTypeName="EXUtilitiesInterface?"
-  isProperty={true}
+  isProperty
   platforms={['iOS']}
 />
 
@@ -904,8 +903,8 @@ On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example,
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
-  isProperty={true}
-  isReturnTypeReference={true}
+  isProperty
+  isReturnTypeReference
 />
 
 #### Extending `ExpoView`
@@ -1157,61 +1156,101 @@ For more examples from real modules, you can refer to Expo modules that already 
 
 <FileTree
   files={[
-    ['expo-battery', <A href="https://github.com/expo/expo/tree/main/packages/expo-battery/ios">Swift</A>],
+    [
+      'expo-battery',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-battery/ios">Swift</A>,
+    ],
     [
       'expo-cellular',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular">Kotlin</A>,{' '}
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/ios">Swift</A>
-      </CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular">
+          Kotlin
+        </A>
+        , <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/ios">Swift</A>
+      </CALLOUT>,
     ],
     [
       'expo-clipboard',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard">Kotlin</A>,{' '}
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios">Swift</A>
-      </CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard">
+          Kotlin
+        </A>
+        , <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios">Swift</A>
+      </CALLOUT>,
     ],
     [
       'expo-crypto',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto">Kotlin</A>,{' '}
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/ios">Swift</A>
-      </CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto">
+          Kotlin
+        </A>
+        , <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/ios">Swift</A>
+      </CALLOUT>,
     ],
-    ['expo-device', <A href="https://github.com/expo/expo/tree/main/packages/expo-device/ios">Swift</A>],
-    ['expo-haptics', <A href="https://github.com/expo/expo/tree/main/packages/expo-haptics/ios">Swift</A>],
-    ['expo-image-manipulator', <A href="https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios">Swift</A>],
+    [
+      'expo-device',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-device/ios">Swift</A>,
+    ],
+    [
+      'expo-haptics',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-haptics/ios">Swift</A>,
+    ],
+    [
+      'expo-image-manipulator',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios">
+        Swift
+      </A>,
+    ],
     [
       'expo-image-picker',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker">Kotlin</A>,{' '}
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios">Swift</A>
-      </CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker">
+          Kotlin
+        </A>
+        , <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios">Swift</A>
+      </CALLOUT>,
     ],
     [
       'expo-linear-gradient',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient">
+          Kotlin
+        </A>
+        ,{' '}
         <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios">Swift</A>
-      </CALLOUT>
+      </CALLOUT>,
     ],
     [
       'expo-localization',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization">Kotlin</A>,{' '}
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/ios">Swift</A>
-      </CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization">
+          Kotlin
+        </A>
+        , <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/ios">Swift</A>
+      </CALLOUT>,
     ],
-    ['expo-store-review', <A href="https://github.com/expo/expo/tree/main/packages/expo-store-review/ios">Swift</A>],
-    ['expo-system-ui', <A href="https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI">Swift</A>],
-    ['expo-video-thumbnails', <A href="https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios">Swift</A>],
+    [
+      'expo-store-review',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-store-review/ios">Swift</A>,
+    ],
+    [
+      'expo-system-ui',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI">
+        Swift
+      </A>,
+    ],
+    [
+      'expo-video-thumbnails',
+      <A href="https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios">Swift</A>,
+    ],
     [
       'expo-web-browser',
       <CALLOUT>
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser">Kotlin</A>,{' '}
-        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/ios">Swift</A>
-      </CALLOUT>
-    ]
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser">
+          Kotlin
+        </A>
+        , <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/ios">Swift</A>
+      </CALLOUT>,
+    ],
   ]}
 />

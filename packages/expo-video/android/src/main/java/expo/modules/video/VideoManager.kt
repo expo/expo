@@ -1,10 +1,8 @@
 package expo.modules.video
 
 import androidx.annotation.OptIn
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import expo.modules.video.records.VideoSource
-import java.lang.ref.WeakReference
+import expo.modules.kotlin.AppContext
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
 @OptIn(UnstableApi::class)
@@ -17,8 +15,11 @@ object VideoManager {
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
-  // Keeps track of all existing MediaItems and their corresponding VideoSources. Used for recognizing source of MediaItems.
-  private var mediaItemsToVideoSources = mutableMapOf<String, WeakReference<VideoSource>>()
+  private lateinit var audioFocusManager: AudioFocusManager
+
+  fun onModuleCreated(appContext: AppContext) {
+    audioFocusManager = AudioFocusManager(appContext)
+  }
 
   fun registerVideoView(videoView: VideoView) {
     videoViews[videoView.id] = videoView
@@ -34,21 +35,12 @@ object VideoManager {
 
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: mutableListOf()
+    audioFocusManager.registerPlayer(videoPlayer)
   }
 
   fun unregisterVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews.remove(videoPlayer)
-  }
-
-  fun registerVideoSourceToMediaItem(mediaItem: MediaItem, videoSource: VideoSource) {
-    mediaItemsToVideoSources[mediaItem.mediaId] = WeakReference(videoSource)
-  }
-
-  fun getVideoSourceFromMediaItem(mediaItem: MediaItem?): VideoSource? {
-    if (mediaItem == null) {
-      return null
-    }
-    return mediaItemsToVideoSources[mediaItem.mediaId]?.get()
+    audioFocusManager.unregisterPlayer(videoPlayer)
   }
 
   fun onVideoPlayerAttachedToView(videoPlayer: VideoPlayer, videoView: VideoView) {
@@ -60,7 +52,7 @@ object VideoManager {
     }
 
     if (videoPlayersToVideoViews[videoPlayer]?.size == 1) {
-      videoPlayer.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer)
     }
   }
 
@@ -69,8 +61,12 @@ object VideoManager {
 
     // Unregister disconnected VideoPlayers from the playback service
     if (videoPlayersToVideoViews[videoPlayer] == null || videoPlayersToVideoViews[videoPlayer]?.size == 0) {
-      videoPlayer.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
     }
+  }
+
+  fun isVideoPlayerAttachedToView(videoPlayer: VideoPlayer): Boolean {
+    return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
   }
 
   fun onAppForegrounded() = Unit

@@ -138,40 +138,47 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   private func updateNowPlayingInfo() {
-    guard let player = mostRecentInteractionPlayer, let currentItem = mostRecentInteractionPlayer?.currentItem else {
+    guard let player = mostRecentInteractionPlayer, let currentItem = player.currentItem else {
       return
     }
     let videoPlayerItem = currentItem as? VideoPlayerItem
 
-    // Metadata explicily specified by the user
+    // Metadata explicitly specified by the user
     let userMetadata = videoPlayerItem?.videoSource.metadata
 
-    // Metadata fetched with the video
-    let assetMetadata = currentItem.asset.commonMetadata
+    Task {
+      // Metadata fetched with the video
+      let assetMetadata = try? await loadMetadata(for: currentItem)
 
-    let title = assetMetadata.first(where: {
-      $0.commonKey == .commonKeyTitle
-    })
+      let title = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyTitle
+      })
 
-    let artist = assetMetadata.first(where: {
-      $0.commonKey == .commonKeyArtist
-    })
+      let artist = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyArtist
+      })
 
-    let artwork = assetMetadata.first(where: {
-      $0.commonKey == .commonKeyArtwork
-    })
+      let artwork = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyArtwork
+      })
 
-    var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+      var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
 
-    nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
-    nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
-    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
-    nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
-    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
-    nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
-    nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
+      nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
+      nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
+      nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
+      nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
+      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
 
-    MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+      MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+  }
+
+  private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
+    return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress

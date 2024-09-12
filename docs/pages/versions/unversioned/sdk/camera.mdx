@@ -9,12 +9,13 @@ platforms: ['android*', 'ios*', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, torch, and flash mode are adjustable. Using `CameraView`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
 
@@ -81,13 +82,15 @@ Learn how to configure the native projects in the [installation instructions in 
 
 > **warning** Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
-```jsx
-import { CameraView, useCameraPermissions } from 'expo-camera';
+<SnackInline label='Basic Camera Usage' dependencies={['expo-camera']}>
+
+```tsx
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
-  const [facing, setFacing] = useState('back');
+  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
 
   if (!permission) {
@@ -99,7 +102,7 @@ export default function App() {
     // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
         <Button onPress={requestPermission} title="grant permission" />
       </View>
     );
@@ -127,6 +130,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  message: {
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
   camera: {
     flex: 1,
   },
@@ -149,6 +156,8 @@ const styles = StyleSheet.create({
 });
 ```
 
+</SnackInline>
+
 ## Web support
 
 Most browsers support a version of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream). Image URIs are always returned as base64 strings because local file system paths are unavailable in the browser.
@@ -169,7 +178,7 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 import { CameraView } from 'expo-camera';
 ```
 
-<APISection packageName="expo-camera" apiName="Camera" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-camera" apiName="Camera" exposeAllClassPropsInSidebar />
 
 ## Permissions
 

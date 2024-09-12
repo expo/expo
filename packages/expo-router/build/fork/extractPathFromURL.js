@@ -5,7 +5,7 @@ function parsePathAndParamsFromExpoGoLink(url) {
     // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
     // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
     const href = parsePathFromExpoGoLink(url);
-    const results = href.match(/(.*?)(\?.*)/);
+    const results = href.match(/([^?]*)(\?.*)?/);
     return {
         pathname: results?.[1] ?? '',
         queryString: results?.[2] ?? '',
@@ -24,7 +24,12 @@ function extractExactPathFromURL(url) {
     // If a universal link / app link / web URL is used, we should use the path
     // from the URL, while stripping the origin.
     url.match(/^https?:\/\//)) {
-        const { origin, href } = new URL(url);
+        const { origin, href, hostname } = new URL(url);
+        if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
+            // These are QR code generate deep-link that always like to the '/' path
+            // TODO: In the future, QR code may link to a specific path and this logic will need to be udpated
+            return '';
+        }
         return href.replace(origin, '');
     }
     const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;

@@ -35,9 +35,7 @@ public:
   jni::local_ref<jni::JArrayList<jni::JObject>> getColumnValues();
 
 private:
-  explicit NativeStatementBinding(
-      jni::alias_ref<NativeStatementBinding::jhybridobject> jThis)
-      : javaPart_(jni::make_global(jThis)) {}
+  explicit NativeStatementBinding(jni::alias_ref<NativeStatementBinding::jhybridobject> jThis) {}
 
   jni::local_ref<jni::JObject> getColumnValue(int index);
 
@@ -49,8 +47,7 @@ private:
   friend HybridBase;
   friend NativeDatabaseBinding;
 
-  jni::global_ref<NativeStatementBinding::javaobject> javaPart_;
-  sqlite3_stmt *stmt;
+  exsqlite3_stmt *stmt;
 };
 
 /**

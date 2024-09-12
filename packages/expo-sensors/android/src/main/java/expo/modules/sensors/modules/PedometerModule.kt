@@ -6,7 +6,6 @@ import android.hardware.Sensor
 import android.os.Build
 import android.os.Bundle
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.interfaces.sensors.services.PedometerServiceInterface
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
@@ -22,7 +21,7 @@ class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
 
   private val sensorProxy by lazy {
-    createSensorProxy<PedometerServiceInterface>(EventName) { sensorEvent ->
+    createSensorProxy(EventName, Sensor.TYPE_STEP_COUNTER, appContext) { sensorEvent ->
       if (stepsAtTheBeginning == null) {
         stepsAtTheBeginning = sensorEvent.values[0].toInt() - 1
       }

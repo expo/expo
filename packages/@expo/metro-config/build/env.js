@@ -15,13 +15,13 @@ class Env {
     get RCT_METRO_PORT() {
         return (0, getenv_1.int)('RCT_METRO_PORT', 8081);
     }
-    /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
-    get EXPO_USE_METRO_WORKSPACE_ROOT() {
-        return (0, getenv_1.boolish)('EXPO_USE_METRO_WORKSPACE_ROOT', false);
-    }
     /** Disable Environment Variable injection in client bundles. */
     get EXPO_NO_CLIENT_ENV_VARS() {
         return (0, getenv_1.boolish)('EXPO_NO_CLIENT_ENV_VARS', false);
+    }
+    /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
+    get EXPO_USE_METRO_REQUIRE() {
+        return (0, getenv_1.boolish)('EXPO_USE_METRO_REQUIRE', false);
     }
 }
 exports.env = new Env();

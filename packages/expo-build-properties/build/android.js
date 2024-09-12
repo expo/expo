@@ -60,6 +60,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
     },
     {
+        propName: 'android.enablePngCrunchInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
+    },
+    {
         propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
         propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },
@@ -191,15 +195,14 @@ const withAndroidQueries = (config, props) => {
         const { manifestQueries } = props.android;
         // Default template adds a single intent to the `queries` tag
         const defaultIntents = config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
-        const additionalQueries = {
-            package: (0, androidQueryUtils_1.renderQueryPackages)(manifestQueries.package),
+        const defaultPackages = config.modResults.manifest.queries.map((q) => q.package ?? []).flat() ?? [];
+        const defaultProviders = config.modResults.manifest.queries.map((q) => q.provider ?? []).flat() ?? [];
+        const newQueries = {
+            package: [...defaultPackages, ...(0, androidQueryUtils_1.renderQueryPackages)(manifestQueries.package)],
             intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(manifestQueries.intent)],
+            provider: [...defaultProviders, ...(0, androidQueryUtils_1.renderQueryProviders)(manifestQueries.provider)],
         };
-        const provider = (0, androidQueryUtils_1.renderQueryProviders)(manifestQueries.provider);
-        if (provider != null) {
-            additionalQueries.provider = provider;
-        }
-        config.modResults.manifest.queries = [additionalQueries];
+        config.modResults.manifest.queries = [newQueries];
         return config;
     });
 };

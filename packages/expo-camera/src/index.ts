@@ -1,8 +1,7 @@
-import { createPermissionHook } from 'expo-modules-core';
+import { createPermissionHook, PermissionResponse } from 'expo-modules-core';
 
 import { BarcodeScanningResult, BarcodeType } from './Camera.types';
 import CameraManager from './ExpoCameraManager';
-import { PermissionResponse } from './legacy/Camera.types';
 
 export { default as CameraView } from './CameraView';
 
@@ -87,7 +86,7 @@ export const useMicrophonePermissions = createPermissionHook({
 export async function scanFromURLAsync(
   url: string,
   barcodeTypes: BarcodeType[] = ['qr']
-): Promise<BarcodeScanningResult> {
+): Promise<BarcodeScanningResult[]> {
   return CameraManager.scanFromURLAsync(url, barcodeTypes);
 }
 

@@ -4,7 +4,7 @@ import CoreMotion
 
 // swiftlint:disable:next type_body_length
 public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
@@ -335,7 +335,7 @@ public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListen
 
   private func addErrorNotification() {
     if self.errorNotification != nil {
-      NotificationCenter.default.removeObserver(self.errorNotification)
+      NotificationCenter.default.removeObserver(self.errorNotification as Any)
     }
 
     self.errorNotification = NotificationCenter.default.addObserver(
@@ -544,9 +544,9 @@ public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListen
       guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
         return
       }
-      var updatedExif = ExpoCameraUtils.updateExif(
+      let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
-        with: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
+        with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
       updatedExif[kCGImagePropertyExifPixelYDimension] = width
@@ -581,7 +581,7 @@ public class CameraViewLegacy: ExpoView, EXCameraInterface, EXAppLifecycleListen
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
         } else {
-          if var metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
+          if let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
             metadataGpsDict.addEntries(from: gpsDict)
           }
         }

@@ -4,13 +4,14 @@ sidebar_title: Get started
 description: Learn how to extend EAS Build with custom build workflows.
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
 
-Custom builds allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process, so that you're not limited to just generating Android and iOS applications and you can do anything that you might want to do in a CI environment.
+Custom builds allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process so that you're not limited to generating Android and iOS applications. You can also do anything that you might want to do in a CI environment.
 
 This guide shows how to create and use a custom build config with EAS. It follows a scenario where you create a custom workflow to run tests on EAS Build. You can also use the defined steps in other scenarios.
 
@@ -55,7 +56,7 @@ describe('<App />', () => {
 });
 ```
 
-> See [Testing with Jest](/develop/unit-testing/) for more information about configuring the `jest-expo` package and additional configuration options such as `transformIgnorePatterns`.
+> See [Unit testing with Jest](/develop/unit-testing/) for more information about configuring the `jest-expo` package and additional configuration options such as `transformIgnorePatterns`.
 
 </Step>
 
@@ -82,7 +83,7 @@ build:
     - run:
         name: Run tests
         command: |
-          echo "Running tests…"
+          echo "Running tests..."
           npm test
 ```
 
@@ -139,7 +140,7 @@ To test the workflow, run the following command:
 
 After the build is complete, you can verify that the `npm test` script was executed by checking the logs on the **build details** page.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a build config running tests on EAS Build."
   src="/static/images/eas-build/custom-build.png"
 />

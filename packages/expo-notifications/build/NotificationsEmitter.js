@@ -1,7 +1,8 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NotificationsEmitterModule);
+const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
@@ -32,7 +33,10 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
  * @header listen
  */
 export function addNotificationReceivedListener(listener) {
-    return emitter.addListener(didReceiveNotificationEventName, listener);
+    return emitter.addListener(didReceiveNotificationEventName, (notification) => {
+        const mappedNotification = mapNotification(notification);
+        listener(mappedNotification);
+    });
 }
 /**
  * Listeners registered by this method will be called whenever some notifications have been dropped by the server.
@@ -72,7 +76,10 @@ export function addNotificationsDroppedListener(listener) {
  * @header listen
  */
 export function addNotificationResponseReceivedListener(listener) {
-    return emitter.addListener(didReceiveNotificationResponseEventName, listener);
+    return emitter.addListener(didReceiveNotificationResponseEventName, (response) => {
+        const mappedResponse = mapNotificationResponse(response);
+        listener(mappedResponse);
+    });
 }
 /**
  * Removes a notification subscription returned by an `addNotificationListener` call.
@@ -80,7 +87,7 @@ export function addNotificationResponseReceivedListener(listener) {
  * @header listen
  */
 export function removeNotificationSubscription(subscription) {
-    emitter.removeSubscription(subscription);
+    subscription.remove();
 }
 // @docsMissing
 /**
@@ -90,6 +97,8 @@ export async function getLastNotificationResponseAsync() {
     if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
     }
-    return await NotificationsEmitterModule.getLastNotificationResponseAsync();
+    const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
+    const mappedResponse = response ? mapNotificationResponse(response) : response;
+    return mappedResponse;
 }
 //# sourceMappingURL=NotificationsEmitter.js.map

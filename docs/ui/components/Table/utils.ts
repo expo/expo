@@ -1,10 +1,15 @@
 import { TextAlign } from './types';
 
-export const convertAlign = (align: TextAlign | 'char'): TextAlign => {
+export function convertAlignToClass(align: TextAlign | 'char'): string {
   switch (align) {
+    case 'left':
     case 'char':
-      return 'left';
-    default:
-      return align;
+      return 'text-left';
+    case 'center':
+      return 'text-center';
+    case 'right':
+      return 'text-right';
+    case 'justify':
+      return 'text-justify';
   }
-};
+}

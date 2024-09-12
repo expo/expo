@@ -31,6 +31,15 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(F)V"}
   });
 
+  loadJClass(env, "[D", {});
+  loadJClass(env, "[Z", {});
+  loadJClass(env, "[I", {});
+  loadJClass(env, "[J", {});
+  loadJClass(env, "[F", {});
+
+  loadJClass(env, "java/util/Collection", {});
+  loadJClass(env, "java/util/Map", {});
+
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });
@@ -50,6 +59,7 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
 
   loadJClass(env, "expo/modules/kotlin/sharedobjects/SharedObject", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptModuleObject", {});
 }
 
 void JavaReferencesCache::loadJClass(

@@ -4,9 +4,11 @@ import { createRequire } from 'node:module';
 
 import APISection from './APISection';
 
-import { renderWithHeadings } from '~/common/test-utilities';
+import { attachEmotionSerializer, renderWithHeadings } from '~/common/test-utilities';
 
 const require = createRequire(import.meta.url);
+
+attachEmotionSerializer(expect);
 
 describe('APISection', () => {
   test('no data', () => {
@@ -30,8 +32,8 @@ describe('APISection', () => {
       />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(25);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(24);
     expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
@@ -58,8 +60,8 @@ describe('APISection', () => {
       />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(7);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(19);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
 
     expect(screen.queryByText('Components'));
     expect(screen.queryByText('Hooks'));

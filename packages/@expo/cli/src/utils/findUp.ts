@@ -13,13 +13,13 @@ export function findUpProjectRootOrAssert(cwd: string): string {
 }
 
 function findUpProjectRoot(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
-
   const found = resolveFrom.silent(cwd, './package.json');
-  if (found) {
-    return path.dirname(found);
-  }
-  return findUpProjectRoot(path.dirname(cwd));
+  if (found) return path.dirname(found);
+
+  const parent = path.dirname(cwd);
+  if (parent === cwd) return null;
+
+  return findUpProjectRoot(parent);
 }
 
 /**
@@ -27,10 +27,11 @@ function findUpProjectRoot(cwd: string): string | null {
  * This will recursively look for the file, until the root directory is reached.
  */
 export function findFileInParents(cwd: string, fileName: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
-
   const found = resolveFrom.silent(cwd, `./${fileName}`);
   if (found) return found;
 
-  return findFileInParents(path.dirname(cwd), fileName);
+  const parent = path.dirname(cwd);
+  if (parent === cwd) return null;
+
+  return findFileInParents(parent, fileName);
 }

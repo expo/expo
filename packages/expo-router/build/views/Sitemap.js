@@ -14,6 +14,7 @@ const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 const Link_1 = require("../link/Link");
 const matchers_1 = require("../matchers");
+const statusbar_1 = require("../utils/statusbar");
 const INDENT = 24;
 function getNavOptions() {
     return {
@@ -41,7 +42,7 @@ function Sitemap() {
     const { top, bottom } = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
     const { width } = (0, react_native_1.useWindowDimensions)();
     return (<react_native_1.View style={styles.container}>
-      <react_native_1.StatusBar barStyle="light-content"/>
+      {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.View style={[
             styles.main,
             {

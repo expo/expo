@@ -1,4 +1,5 @@
-import { SQLiteOpenOptions } from './NativeDatabase';
+import type { SQLiteOpenOptions } from './NativeDatabase';
+import type { DatabaseChangeEvent } from './SQLiteDatabase';
 
 export default {
   NativeDatabase(
@@ -31,7 +32,7 @@ export default {
 
   //#region EventEmitter implementations
 
-  addListener() {
+  addListener(eventName: string, listener: (event: DatabaseChangeEvent) => void) {
     throw new Error('Unimplemented');
   },
   removeListeners() {

@@ -4,9 +4,10 @@ sidebar_title: Setup
 description: Learn how to setup push notifications, get credentials for development and production, and test sending push notifications.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
@@ -15,6 +16,13 @@ To get the client-side ready for push notifications, the following things are re
 
 - The user's permission to send them push notifications.
 - The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken).
+
+<br />
+<Collapsible summary="Do you want to use FCMv1/APNs directly, instead of through the Expo push notification service?">
+
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCMv1 and APNs"](/push-notifications/sending-notifications-custom/).
+
+</Collapsible>
 
 ## Prerequisites
 
@@ -95,8 +103,7 @@ async function registerForPushNotificationsAsync() {
   }
 
   if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -107,19 +114,18 @@ async function registerForPushNotificationsAsync() {
       return;
     }
     const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ??
-      Constants?.easConfig?.projectId;
+      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
     if (!projectId) {
       handleRegistrationError('Project ID not found');
     }
     try {
-    /* @info This fetches the Expo push token (if not previously fetched), which is unique to this device and projectID. */
+      /* @info This fetches the Expo push token (if not previously fetched), which is unique to this device and projectID. */
       const pushTokenString = (
         await Notifications.getExpoPushTokenAsync({
           projectId,
         })
       ).data;
-    /* @end */
+      /* @end */
       console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
@@ -132,53 +138,42 @@ async function registerForPushNotificationsAsync() {
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
-  >(undefined);
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
     /* @info Gets the push token and displays it in the UI, or in case of an error, displays the error message. */
     registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ''))
+      .then(token => setExpoPushToken(token ?? ''))
       .catch((error: any) => setExpoPushToken(`${error}`));
     /* @end */
 
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
 
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
 
     return () => {
       notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current,
-        );
+        Notifications.removeNotificationSubscription(notificationListener.current);
       responseListener.current &&
         Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
   return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}
-    >
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
       <Text>Your Expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Text>
-          Title: {notification && notification.request.content.title}{' '}
-        </Text>
+        <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>
-          Data:{' '}
-          {notification && JSON.stringify(notification.request.content.data)}
-        </Text>
+        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
       </View>
       <Button
         title="Press to Send Notification"
@@ -254,17 +249,17 @@ After creating and installing the development build, you can use [Expo's push no
 
 4. Click on the **Send a Notification** button.
 
-   <ImageSpotlight
+   <ContentSpotlight
      alt="Expo push notifications tool overview."
      src="/static/images/notifications/push-notifications-tool-overview.png"
-     style={{ maxWidth: 1200 }}
+     className="max-w-screen-xl"
    />
 
 After sending the notification from the tool, you should see the notification on your device. Below is an example of an Android device receiving a push notification.
 
-  <ImageSpotlight
+  <ContentSpotlight
     alt="An Android device receiving a push notification."
     src="/static/images/notifications/notification-on-android.png"
-    style={{ maxWidth: 280 }}
+    className="max-w-[280px]"
   />
 </Step>

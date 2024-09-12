@@ -7,15 +7,15 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
 
-inline fun <reified T> createAsyncFunctionComponent(
+inline fun <reified ReturnType> createAsyncFunctionComponent(
   name: String,
   desiredArgsTypes: Array<AnyType>,
-  noinline body: (args: Array<out Any?>) -> T
+  noinline body: (args: Array<out Any?>) -> ReturnType
 ): AsyncFunction {
-  if (null is T) {
+  if (null is ReturnType) {
     return AsyncFunctionComponent<Any?>(name, desiredArgsTypes, body)
   }
-  return when (T::class.java) {
+  return when (ReturnType::class.java) {
     Int::class.java -> {
       enforceType<(Array<out Any?>) -> Int>(body)
       IntAsyncFunctionComponent(name, desiredArgsTypes, body)

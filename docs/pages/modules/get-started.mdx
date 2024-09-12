@@ -4,10 +4,12 @@ sidebar_title: Get started
 description: Learn about getting started with Expo modules API.
 ---
 
-import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 **There are two ways to get started with the Expo Modules API:** you can either initialize a new module from scratch or add the Expo Modules API to an existing module. This guide will walk you through creating a new module from scratch, and the [Integrating in an existing library guide](/modules/existing-library) covers the latter case.
 
@@ -81,7 +83,7 @@ If you have an **android** directory in your project that you created using `npx
 
 You can always just edit the files in the `modules/my-module/android/src/main/java/expo/modules/mymodule/` directory directly in your favorite text editor.
 
-Change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
+Change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🤖".
 
 Rebuild the app or build a new development client and you should see your change.
 
@@ -95,7 +97,7 @@ Rebuild the app or build a new development client and you should see your change
 
 </Step>
 
-> **Note**: There are also other flows for working on an Expo module in parallel with your application. For example, you can use a monorepo or publish to npm, as described in the [How to use a standalone Expo module in your project](/modules/use-standalone-expo-module-in-your-project) guide.
+> **Note**: There are also other flows for working on an Expo module in parallel with your application. For example, you can use a monorepo or publish to npm, as described in the [How to use a standalone Expo module](/modules/use-standalone-expo-module-in-your-project) guide.
 
 ## Creating a new module with an example project
 

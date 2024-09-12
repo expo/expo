@@ -4,16 +4,12 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ],
+    "types": ["jest", "jest-require", "node"]
   },
   "include": [
-    "./types/expo-router.d.ts",
     "./src",
     "./types/expect.d.ts",
+    "../@expo/cli/ts-declarations",
     "../expo/src/ts-declarations"
   ],
   "exclude": [
@@ -21,6 +17,7 @@
     "**/.expo/*",
     "./build/*",
     "**/__tests__/*",
+    "**/__rsc_tests__/*",
     "./node",
     "./entry.js",
     "./_ctx.d.ts"

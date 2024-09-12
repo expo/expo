@@ -7,8 +7,8 @@ namespace expo::SharedObject {
 
 #pragma mark - NativeState
 
-NativeState::NativeState(const ObjectId objectId, const ObjectReleaser releaser)
-: EventEmitter::NativeState(), objectId(objectId), releaser(releaser) {}
+NativeState::NativeState(ObjectId objectId, ObjectReleaser releaser)
+: EventEmitter::NativeState(), objectId(objectId), releaser(std::move(releaser)) {}
 
 NativeState::~NativeState() {
   releaser(objectId);
@@ -16,7 +16,7 @@ NativeState::~NativeState() {
 
 #pragma mark - Utils
 
-void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
+void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser) {
   jsi::Function baseClass = EventEmitter::getClass(runtime);
   jsi::Function klass = expo::common::createInheritingClass(runtime, "SharedObject", baseClass);
   jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
@@ -39,7 +39,30 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
       return jsi::Value::undefined();
     });
 
+  // Implements a JSON serializer for shared objects, whose properties are defined in the prototype instead of the instance itself.
+  // By default `JSON.stringify` visits only enumerable own properties.
+  jsi::Function toJSONFunction = jsi::Function::createFromHostFunction(
+    runtime,
+    jsi::PropNameID::forAscii(runtime, "toJSON"),
+    0,
+    [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+      jsi::Object thisObject = thisValue.getObject(runtime);
+      jsi::Object json = jsi::Object(runtime);
+      jsi::Array propertyNames = thisObject.getPropertyNames(runtime);
+
+      for (size_t i = 0, size = propertyNames.size(runtime); i < size; i++) {
+        jsi::String propertyName = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
+        jsi::Value value = thisObject.getProperty(runtime, propertyName);
+
+        if (!value.isObject() || !value.getObject(runtime).isFunction(runtime)) {
+          json.setProperty(runtime, propertyName, value);
+        }
+      }
+      return jsi::Value(runtime, json);
+    });
+
   prototype.setProperty(runtime, "release", releaseFunction);
+  prototype.setProperty(runtime, "toJSON", toJSONFunction);
 
   // This property should be deprecated, but it's still used when passing as a view prop.
   defineProperty(runtime, &prototype, "__expo_shared_object_id__", common::PropertyDescriptor {
@@ -63,7 +86,7 @@ jsi::Function getBaseClass(jsi::Runtime &runtime) {
 
 jsi::Function createClass(jsi::Runtime &runtime, const char *className, common::ClassConstructor constructor) {
   jsi::Function baseSharedObjectClass = getBaseClass(runtime);
-  return common::createInheritingClass(runtime, className, baseSharedObjectClass, constructor);
+  return common::createInheritingClass(runtime, className, baseSharedObjectClass, std::move(constructor));
 }
 
 } // namespace expo::SharedObject

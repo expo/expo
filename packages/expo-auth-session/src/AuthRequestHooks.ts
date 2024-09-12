@@ -78,7 +78,7 @@ export function useLoadedAuthRequest(
   return request;
 }
 
-type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+export type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
 
 export function useAuthRequestResult(
   request: AuthRequest | null,

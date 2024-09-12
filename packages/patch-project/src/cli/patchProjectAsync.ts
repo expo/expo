@@ -1,10 +1,9 @@
-import { getConfig, type ExpoConfig } from '@expo/config';
-import { type ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
+import { getConfig, type ExpoConfig } from 'expo/config';
+import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
-import glob from 'glob';
+import { glob as globAsync } from 'glob';
 import path from 'path';
-import { promisify } from 'util';
 
 import { moveAsync } from './dir';
 import { generateNativeProjectsAsync, platformSanityCheckAsync } from './generateNativeProjects';
@@ -18,7 +17,6 @@ import { createWorkingDirectoriesAsync, type WorkingDirectories } from './workin
 import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
 
 const debug = require('debug')('patch-project') as typeof console.log;
-const globAsync = promisify(glob);
 
 /**
  * Entry point into the patch-project process.

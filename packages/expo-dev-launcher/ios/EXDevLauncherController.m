@@ -12,12 +12,13 @@
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
-#import <EXDevLauncher/EXDevLauncherLoadingView.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
 #import <EXDevLauncher/EXDevLauncherAppDelegate.h>
+
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
@@ -40,7 +41,7 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
-#define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
+#define EX_DEV_LAUNCHER_PACKAGER_PATH @"packages/expo-dev-launcher/index.bundle?platform=ios&dev=true&minify=false"
 
 
 @interface EXDevLauncherController ()
@@ -107,7 +108,7 @@
 #ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
 #endif
-  [modules addObject:[EXDevLauncherLoadingView new]];
+  [modules addObject:[DevClientNoOpLoadingView new]];
 
   return modules;
 }
@@ -330,14 +331,26 @@
   [self _removeInitModuleObserver];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
-  UIView *rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
-                                                     initialProperties:nil
-                                                     launchOptions:_launchOptions];
 
+#if RCT_DEV
+  NSURL *url = [self devLauncherURL];
+  if (url != nil) {
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  }
+
+  [self _addInitModuleObserver];
+#endif
+
+  UIView *rootView;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
                                              object:rootView];
+
+  rootView = [[_appDelegate rootViewFactory] viewWithModuleName:@"main"
+                                                     initialProperties:nil
+                                                     launchOptions:_launchOptions];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -345,15 +358,6 @@
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
-#if RCT_DEV
-  NSURL *url = [self devLauncherURL];
-  if (url != nil) {
-    // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
-  } else {
-    [self _addInitModuleObserver];
-  }
-#endif
 
   [_window makeKeyAndVisible];
 }
@@ -573,8 +577,10 @@
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
-    // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+    // Connect to the websocket, ignore downloaded update bundles
+    if (![bundleUrl.scheme isEqualToString:@"file"]) {
+      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+    }
 #endif
 
     if (@available(iOS 12, *)) {

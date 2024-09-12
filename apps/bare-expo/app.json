@@ -15,6 +15,7 @@
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
+    "userInterfaceStyle": "automatic",
     "android": {
       "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {
@@ -31,6 +32,9 @@
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
       "requireFullScreen": false
+    },
+    "web": {
+      "bundler": "metro"
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
@@ -74,6 +78,14 @@
         "expo-tracking-transparency",
         {
           "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
         }
       ],
       "./plugins/withAndroidNetworkSecurityConfig"

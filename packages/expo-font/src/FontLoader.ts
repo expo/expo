@@ -1,21 +1,8 @@
 import { Asset } from 'expo-asset';
-import Constants from 'expo-constants';
-import { CodedError, Platform } from 'expo-modules-core';
+import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontResource, FontSource } from './Font.types';
-
-const isInExpoGo = Constants.appOwnership === 'expo';
-
-export function fontFamilyNeedsScoping(name: string): boolean {
-  return (
-    isInExpoGo &&
-    Platform.OS !== 'ios' &&
-    !Constants.systemFonts.includes(name) &&
-    name !== 'System' &&
-    !name.includes(Constants.sessionId)
-  );
-}
 
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   if (source instanceof Asset) {
@@ -52,13 +39,5 @@ export async function loadSingleFontAsync(
   if (!asset.downloaded) {
     throw new CodedError(`ERR_DOWNLOAD`, `Failed to download asset for font "${name}"`);
   }
-  await ExpoFontLoader.loadAsync(getNativeFontName(name), asset.localUri);
-}
-
-export function getNativeFontName(name: string): string {
-  if (fontFamilyNeedsScoping(name)) {
-    return `${Constants.sessionId}-${name}`;
-  } else {
-    return name;
-  }
+  await ExpoFontLoader.loadAsync(name, asset.localUri);
 }

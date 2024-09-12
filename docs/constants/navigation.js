@@ -58,13 +58,23 @@ const home = [
     makePage('get-started/next-steps.mdx'),
   ]),
   makeSection('Develop', [
+    makePage('develop/tools.mdx'),
+    makeGroup(
+      'Navigation',
+      [
+        makePage('develop/file-based-routing.mdx'),
+        makePage('develop/dynamic-routes.mdx'),
+        makePage('develop/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
     makeGroup(
       'User interface',
       [
-        makePage('develop/user-interface/splash-screen.mdx'),
-        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
+        makePage('develop/user-interface/assets.mdx'),
         makePage('develop/user-interface/color-themes.mdx'),
         makePage('develop/user-interface/animation.mdx'),
         makePage('develop/user-interface/store-data.mdx'),
@@ -107,12 +117,16 @@ const home = [
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
-  makeSection('Review', [makePage('review/overview.mdx'), makePage('review/with-orbit.mdx')]),
+  makeSection('Review', [
+    makePage('review/overview.mdx'),
+    makePage('review/share-previews-with-your-team.mdx'),
+    makePage('review/with-orbit.mdx'),
+  ]),
   makeSection('Deploy', [
     makePage('deploy/build-project.mdx'),
     makePage('deploy/submit-to-app-stores.mdx'),
     makePage('deploy/app-stores-metadata.mdx'),
-    makePage('deploy/instant-updates.mdx'),
+    makePage('deploy/send-over-the-air-updates.mdx'),
   ]),
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
@@ -190,7 +204,6 @@ const general = [
     makePage('router/create-pages.mdx'),
     makePage('router/navigating-pages.mdx'),
     makePage('router/layouts.mdx'),
-    makePage('router/appearance.mdx'),
     makePage('router/error-handling.mdx'),
     makeGroup('Navigation patterns', [
       makePage('router/advanced/root-layout.mdx'),
@@ -203,12 +216,13 @@ const general = [
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/reference/hooks.mdx'),
-      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
@@ -249,6 +263,7 @@ const general = [
         makePage('modules/autolinking.mdx'),
         makePage('modules/module-config.mdx'),
         makePage('modules/mocking.mdx'),
+        makePage('modules/design.mdx'),
       ]),
     ],
     { expanded: false }
@@ -273,6 +288,7 @@ const general = [
         makePage('app-signing/existing-credentials.mdx'),
         makePage('app-signing/syncing-credentials.mdx'),
         makePage('app-signing/security.mdx'),
+        makePage('app-signing/apple-developer-program-roles-and-permissions.mdx'),
       ],
       { expanded: false }
     ),
@@ -308,6 +324,7 @@ const general = [
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/e2e-tests.mdx'),
+        makePage('build-reference/easignore.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
       { expanded: false }
@@ -350,10 +367,8 @@ const general = [
     ]),
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
-      makePage('eas-update/custom-updates-server.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/known-issues.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
@@ -379,7 +394,9 @@ const general = [
     makeGroup(
       'Reference',
       [
+        makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
@@ -398,7 +415,6 @@ const general = [
       makePage('eas/webhooks.mdx'),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
-        makePage('guides/troubleshooting-proxies.mdx'),
         makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
@@ -408,13 +424,14 @@ const general = [
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
+        makePage('guides/local-first.mdx'),
+        makePage('guides/keyboard-handling.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
         makePage('guides/facebook-authentication.mdx'),
         makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
-        makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
@@ -437,6 +454,14 @@ const general = [
         makePage('billing/invoices-and-receipts.mdx'),
         makePage('billing/usage-based-pricing.mdx'),
         makePage('billing/faq.mdx'),
+      ]),
+      makeSection('Troubleshooting', [
+        makePage('troubleshooting/overview.mdx'),
+        makePage('troubleshooting/application-has-not-been-registered.mdx'),
+        makePage('troubleshooting/clear-cache-macos-linux.mdx'),
+        makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/react-native-version-mismatch.mdx'),
+        makePage('troubleshooting/proxies.mdx'),
       ]),
     ],
     { expanded: true }
@@ -505,7 +530,7 @@ const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
-    makePage('preview/support.mdx'),
+    makePage('preview/react-compiler.mdx'),
     { expanded: true },
   ]),
 ];
@@ -540,6 +565,8 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
+    makePage('archive/using-flipper.mdx'),
+    makePage('archive/e2e-tests.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
 ];
@@ -553,7 +580,11 @@ const versionsReference = VERSIONS.reduce(
       makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), {
         expanded: true,
       }),
-      makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
+      makeSection(
+        'Expo SDK',
+        shiftEntryToFront(pagesFromDir(`versions/${version}/sdk`), entry => entry.name === 'Expo'),
+        { expanded: true }
+      ),
       makeSection('Technical specs', [
         makePage('technical-specs/expo-updates-1.mdx'),
         makePage('technical-specs/expo-sfv-0.mdx'),
@@ -562,6 +593,7 @@ const versionsReference = VERSIONS.reduce(
         'More',
         [
           makePage('more/expo-cli.mdx'),
+          makePage('more/create-expo.mdx'),
           makePage('more/qr-codes.mdx'),
           makePage('more/glossary-of-terms.mdx'),
         ],
@@ -673,4 +705,8 @@ function pageUrl(file) {
   return pathname
     .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
     .replace(/\/$/, '');
+}
+
+function shiftEntryToFront(array, findFunction) {
+  return [...array.filter(findFunction), ...array.filter(item => !findFunction(item))];
 }

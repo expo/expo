@@ -44,9 +44,9 @@ buildCommand('add', ['com.app', 'myapp'])
     try {
       const options = await parseArgsAsync(uri, args);
       await URIScheme.addAsync(options);
-      shouldUpdate();
+      await shouldUpdate();
     } catch (error) {
-      commandDidThrowAsync(error);
+      await commandDidThrowAsync(error);
     }
   });
 
@@ -62,9 +62,9 @@ buildCommand('remove', ['com.app', 'myapp'])
     try {
       const options = await parseArgsAsync(uri, args);
       await URIScheme.removeAsync(options);
-      shouldUpdate();
+      await shouldUpdate();
     } catch (error) {
-      commandDidThrowAsync(error);
+      await commandDidThrowAsync(error);
     }
   });
 
@@ -82,9 +82,9 @@ buildCommand('open', ['com.app://oauth', 'http://expo.dev'])
         androidPackage: args['package'],
         uri,
       });
-      shouldUpdate();
+      await shouldUpdate();
     } catch (error) {
-      commandDidThrowAsync(error);
+      await commandDidThrowAsync(error);
     }
   });
 
@@ -99,9 +99,9 @@ buildCommand('list')
     try {
       const options = await parseArgsAsync(uri, args);
       await URIScheme.listAsync(options);
-      shouldUpdate();
+      await shouldUpdate();
     } catch (error) {
-      commandDidThrowAsync(error);
+      await commandDidThrowAsync(error);
     }
   });
 

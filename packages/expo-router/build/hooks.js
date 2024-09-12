@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
-const native_1 = require("@react-navigation/native");
+exports.useSearchParams = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useNavigationContainerRef = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
 const react_1 = __importDefault(require("react"));
+const Route_1 = require("./Route");
 const router_store_1 = require("./global-state/router-store");
 function useRootNavigationState() {
     return (0, router_store_1.useStoreRootState)();
@@ -108,70 +108,12 @@ function usePathname() {
     return (0, router_store_1.useStoreRouteInfo)().pathname;
 }
 exports.usePathname = usePathname;
-/**
- * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
- * Useful for analytics or other background operations that don't draw to the screen.
- *
- * When querying search params in a stack, opt-towards using [`useLocalSearchParams`](#uselocalsearchparams) as these will only
- * update when the route is focused.
- *
- * Route URL example: `acme://profile/baconbrix?extra=info`.
- *
- * > **Note:** See [local versus global search parameters](/router/reference/search-parameters/#local-versus-global-search-parameters) for usage
- * > information.
- *
- *
- * @example
- * ```tsx app/profile/[user].tsx
- * import { Text } from 'react-native';
- * import { useGlobalSearchParams } from 'expo-router';
- *
- * export default function Route() {
- *
- *  // user=baconbrix & extra=info
- *  const { user, extra } = useGlobalSearchParams();
- *  return <Text>User: {user}</Text>;
- * }
- * ```
- *
- */
 function useGlobalSearchParams() {
     return (0, router_store_1.useStoreRouteInfo)().params;
 }
 exports.useGlobalSearchParams = useGlobalSearchParams;
-/**
- * Get the URL search parameters for the contextually focused route. For example, `/acme?foo=bar` -> `{ foo: "bar" }`.
- * This is useful for stacks where you may push a new screen that changes the query parameters.
- *
- * To observe updates even when the invoking route is not focused, use [`useGlobalSearchParams`](#useglobalsearchparams).
- *
- * When `/abc/home` pushes `/123/shop`, `useGlobalSearchParams` returns `{ first: undefined, second: '123' }` on `app/[first]/home.tsx`
- * because the global URL has changed.
- *
- * However, you may want the params to remain `{ first: 'abc' }` to reflect the context of the screen. In this
- * case, you can use `useLocalSearchParams` to ensure the params `{ first: 'abc' }` are still returned in `app/[first]/home.tsx`
- *
- * > **Note:** See [local versus global search parameters](/router/reference/search-parameters/#local-versus-global-search-parameters) for usage
- * > information.
- *
- * Route URL example: `acme://profile/baconbrix?extra=info`.
- *
- * @example
- * ```ts app/profile/[user].tsx
- * import { Text } from 'react-native';
- * import { useLocalSearchParams } from 'expo-router';
- *
- * export default function Route() {
- *  const { user, extra } = useLocalSearchParams();
- *
- *  return <Text>User: {user}</Text>;
- * }
- * ```
- *
- *
- */
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(native_1.NavigationRouteContext)?.params ?? {};
+    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
         if (Array.isArray(value)) {
             return [
@@ -197,4 +139,36 @@ function useLocalSearchParams() {
     }));
 }
 exports.useLocalSearchParams = useLocalSearchParams;
+function useSearchParams({ global = false } = {}) {
+    const globalRef = react_1.default.useRef(global);
+    if (process.env.NODE_ENV !== 'production') {
+        if (global !== globalRef.current) {
+            console.warn(`Detected change in 'global' option of useSearchParams. This value cannot change between renders`);
+        }
+    }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const params = global ? useGlobalSearchParams() : useLocalSearchParams();
+    const entries = Object.entries(params).flatMap(([key, value]) => {
+        if (global) {
+            if (key === 'params')
+                return [];
+            if (key === 'screen')
+                return [];
+        }
+        return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]];
+    });
+    return new ReadOnlyURLSearchParams(entries);
+}
+exports.useSearchParams = useSearchParams;
+class ReadOnlyURLSearchParams extends URLSearchParams {
+    set() {
+        throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+    }
+    append() {
+        throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+    }
+    delete() {
+        throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+    }
+}
 //# sourceMappingURL=hooks.js.map

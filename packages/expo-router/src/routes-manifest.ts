@@ -1,6 +1,6 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { Options, getRoutes } from './getRoutes';
+import { Options, getRoutes } from './getRoutesSSR';
 import { getServerManifest } from './getServerManifest';
 import { RequireContext } from './types';
 

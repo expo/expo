@@ -18,11 +18,10 @@ public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
     var systemStatus: AVAuthorizationStatus
     var status: EXPermissionStatus
     let cameraUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCameraUsageDescription")
-    let microphoneUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription")
-    if cameraUsageDescription == nil || microphoneUsageDescription == nil {
+    if cameraUsageDescription == nil {
       EXFatal(EXErrorWithMessage("""
-      This app is missing either 'NSCameraUsageDescription' or 'NSMicrophoneUsageDescription', so audio/video services will fail. \
-      Ensure both of these keys exist in app's Info.plist.
+      This app is missing 'NSCameraUsageDescription', video services will fail. \
+      Ensure this key exists in the app's Info.plist
       """))
       systemStatus = AVAuthorizationStatus.denied
     } else {
@@ -60,7 +59,6 @@ public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermis
     return "mediaLibraryWriteOnly"
   }
 
-  @available(iOS 14, *)
   override internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.addOnly
   }
@@ -84,25 +82,14 @@ public class DefaultMediaLibraryPermissionRequester: NSObject {}
 extension DefaultMediaLibraryPermissionRequester {
   @objc
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    let authorizationHandler = { [weak self] (_: PHAuthorizationStatus) in
+    PHPhotoLibrary.requestAuthorization(for: self.accessLevel()) { [weak self] (_: PHAuthorizationStatus) in
       resolve(self?.getPermissions())
-    }
-    if #available(iOS 14.0, *) {
-      PHPhotoLibrary.requestAuthorization(for: self.accessLevel(), handler: authorizationHandler)
-    } else {
-      PHPhotoLibrary.requestAuthorization(authorizationHandler)
     }
   }
 
   @objc
   public func getPermissions() -> [AnyHashable: Any] {
-    var authorizationStatus: PHAuthorizationStatus
-    if #available(iOS 14.0, *) {
-      authorizationStatus = PHPhotoLibrary.authorizationStatus(for: self.accessLevel())
-    } else {
-      authorizationStatus = PHPhotoLibrary.authorizationStatus()
-    }
-
+    let authorizationStatus = PHPhotoLibrary.authorizationStatus(for: self.accessLevel())
     var status: EXPermissionStatus
     var scope: String
 
@@ -129,7 +116,6 @@ extension DefaultMediaLibraryPermissionRequester {
     ]
   }
 
-  @available(iOS 14, *)
   @objc
   internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.readWrite

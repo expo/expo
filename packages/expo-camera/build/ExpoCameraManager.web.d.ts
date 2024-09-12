@@ -1,5 +1,5 @@
-import { CameraCapturedPicture, CameraPictureOptions, PermissionResponse } from './legacy/Camera.types';
-import { ExponentCameraRef } from './legacy/ExpoCamera.web';
+import { CameraCapturedPicture, CameraPictureOptions, PermissionResponse } from './Camera.types';
+import { ExponentCameraRef } from './ExpoCamera.web';
 declare const _default: {
     readonly Type: {
         back: string;

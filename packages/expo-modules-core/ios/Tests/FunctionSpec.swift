@@ -251,6 +251,10 @@ class FunctionSpec: ExpoSpec {
             return nil
           }
 
+          Function("returnUndefined") { () -> JavaScriptValue in
+            return .undefined
+          }
+
           Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
@@ -279,6 +283,7 @@ class FunctionSpec: ExpoSpec {
       it("returns values") {
         expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
         expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull()) == true
+        expect(try runtime.eval("expo.modules.TestModule.returnUndefined()").isUndefined()) == true
       }
 
       it("accepts optional arguments") {

@@ -1,13 +1,8 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.NativeMap
-import com.facebook.react.bridge.ReadableNativeMap
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.objects.ObjectDefinitionData
-import expo.modules.kotlin.tracing.trace
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.
@@ -32,62 +27,10 @@ class JavaScriptModuleObject(
     jniDeallocator.addReference(this)
   }
 
-  fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {
-    val constants = definition.constantsProvider()
-    val convertedConstants = Arguments.makeNativeMap(constants)
-    trace("Exporting constants") {
-      exportConstants(convertedConstants)
-    }
+  val isValid: Boolean
+    get() = mHybridData.isValid
 
-    trace("Attaching functions") {
-      definition
-        .functions
-        .forEach { function ->
-          function.attachToJSObject(appContext, this)
-        }
-    }
-
-    trace("Attaching properties") {
-      definition
-        .properties
-        .forEach { (_, prop) ->
-          prop.attachToJSObject(appContext, this)
-        }
-    }
-  }
-
-  /**
-   * Exports constants
-   */
-  external fun exportConstants(constants: NativeMap)
-
-  /**
-   * Register a promise-less function on the CPP module representation.
-   * After calling this function, user can access the exported function in the JS code.
-   */
-  external fun registerSyncFunction(name: String, takesOwner: Boolean, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
-
-  /**
-   * Register a promise function on the CPP module representation.
-   * After calling this function, user can access the exported function in the JS code.
-   */
-  external fun registerAsyncFunction(name: String, takesOwner: Boolean, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
-
-  external fun registerProperty(
-    name: String,
-    getterTakesOwner: Boolean,
-    getterExpectedType: Array<ExpectedType>,
-    getter: JNIFunctionBody?,
-    setterTakesOwner: Boolean,
-    setterExpectedType: Array<ExpectedType>,
-    setter: JNIFunctionBody?
-  )
-
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, ownerClass: Class<*>?, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
-
-  external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
-
-  external fun emitEvent(jsiContext: JSIContext, eventName: String, eventBody: ReadableNativeMap?)
+  external fun decorate(decorator: JSDecoratorsBridgingObject)
 
   @Throws(Throwable::class)
   protected fun finalize() {

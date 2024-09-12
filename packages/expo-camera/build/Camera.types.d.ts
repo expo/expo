@@ -1,10 +1,11 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
-import { Ref } from 'react';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
+import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 export type CameraType = 'front' | 'back';
 export type FlashMode = 'off' | 'on' | 'auto';
 export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
+export type CameraRatio = '4:3' | '16:9' | '1:1';
 /**
  * This option specifies the mode of focus on the device.
  * - `on` - Indicates that the device should autofocus once and then lock the focus.
@@ -123,6 +124,14 @@ export type CameraPictureOptions = {
      */
     isImageMirror?: boolean;
     /**
+     * When set to `true`, the output image will be flipped along the vertical axis when using the front camera.
+     * @default false
+     * @platform ios
+     * @platform android
+     * @deprecated Use `mirror` prop on `CameraView` instead.
+     */
+    mirror?: boolean;
+    /**
      * @hidden
      */
     id?: number;
@@ -134,6 +143,11 @@ export type CameraPictureOptions = {
      * @hidden
      */
     maxDownsampling?: number;
+    /**
+     * To programmatically disable the camera shutter sound
+     * @default true
+     */
+    shutterSound?: boolean;
 };
 export type CameraRecordingOptions = {
     /**
@@ -147,7 +161,7 @@ export type CameraRecordingOptions = {
     /**
      * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
      * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
-     * @platform ios
+     * @deprecated Use `mirror` prop on `CameraView` instead.
      */
     mirror?: boolean;
     /**
@@ -276,11 +290,23 @@ export type CameraProps = ViewProps & {
      */
     mute?: boolean;
     /**
+     * A boolean that determines whether the camera should mirror the image when using the front camera.
+     * @default false
+     */
+    mirror?: boolean;
+    /**
      * Indicates the focus mode to use.
      * @default off
      * @platform ios
      */
     autofocus?: FocusMode;
+    /**
+     * A boolean that determines whether the camera should be active.
+     * Useful in situations where the camera may not have unmounted but you still want to stop the camera session.
+     * @default true
+     * @platform ios
+     */
+    active?: boolean;
     /**
      * Specify the quality of the recorded video. Use one of `VideoQuality` possible values:
      * for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
@@ -293,8 +319,9 @@ export type CameraProps = ViewProps & {
      */
     animateShutter?: boolean;
     /**
-     * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
-     * Available sizes can be fetched with [`getAvailablePictureSizes`](#getavailablepicturesizes).
+     * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
+     * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasync).
+     * Setting this prop will cause the `ratio` prop to be ignored as the aspect ratio is determined by the selected size.
      */
     pictureSize?: string;
     /**
@@ -303,20 +330,11 @@ export type CameraProps = ViewProps & {
      */
     enableTorch?: boolean;
     /**
-     * Callback invoked when camera preview has been set.
-     */
-    onCameraReady?: () => void;
-    /**
      * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
      * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
      * @platform ios
      */
     videoStabilizationMode?: VideoStabilization;
-    /**
-     * Callback invoked when camera preview could not been started.
-     * @param event Error object that contains a `message`.
-     */
-    onMountError?: (event: CameraMountError) => void;
     /**
      * @example
      * ```tsx
@@ -329,15 +347,6 @@ export type CameraProps = ViewProps & {
      */
     barcodeScannerSettings?: BarcodeSettings;
     /**
-     * Callback that is invoked when a barcode has been successfully scanned. The callback is provided with
-     * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
-     * refers to the barcode type that was scanned and the `data` is the information encoded in the barcode
-     * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
-     * for supported values.
-     * @param scanningResult
-     */
-    onBarcodeScanned?: (scanningResult: BarcodeScanningResult) => void;
-    /**
      * A URL for an image to be shown while the camera is loading.
      * @platform web
      */
@@ -348,6 +357,31 @@ export type CameraProps = ViewProps & {
      * @platform ios
      */
     responsiveOrientationWhenOrientationLocked?: boolean;
+    /**
+     * A string representing the aspect ratio of the preview. For example, `4:3` and `16:9`.
+     * Note: Setting the aspect ratio here will change the scaleType of the camera preview from `FILL` to `FIT`.
+     * Also, when using 1:1, devices only support certain sizes. If you specify an unsupported size, the closest supported ratio will be used.
+     * @platform android
+     */
+    ratio?: CameraRatio;
+    /**
+     * Callback invoked when camera preview has been set.
+     */
+    onCameraReady?: () => void;
+    /**
+     * Callback invoked when camera preview could not start.
+     * @param event Error object that contains a `message`.
+     */
+    onMountError?: (event: CameraMountError) => void;
+    /**
+     * Callback that is invoked when a barcode has been successfully scanned. The callback is provided with
+     * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
+     * refers to the barcode type that was scanned, and the `data` is the information encoded in the barcode
+     * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
+     * for supported values.
+     * @param scanningResult
+     */
+    onBarcodeScanned?: (scanningResult: BarcodeScanningResult) => void;
     /**
      * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
      * @param event result object that contains updated orientation of camera
@@ -366,6 +400,8 @@ export interface CameraViewRef {
     }>;
     readonly stopRecording: () => Promise<void>;
     readonly launchModernScanner: () => Promise<void>;
+    readonly resumePreview: () => Promise<void>;
+    readonly pausePreview: () => Promise<void>;
 }
 /**
  * @hidden
@@ -388,6 +424,7 @@ export type CameraNativeProps = {
     autoFocus?: FocusMode;
     mute?: boolean;
     zoom?: number;
+    ratio?: CameraRatio;
     barcodeScannerSettings?: BarcodeSettings;
     barcodeScannerEnabled?: boolean;
     poster?: string;
@@ -395,7 +432,6 @@ export type CameraNativeProps = {
 };
 export type BarcodeSettings = {
     barcodeTypes: BarcodeType[];
-    interval?: number;
 };
 /**
  * @platform ios
@@ -425,5 +461,5 @@ export type ScanningOptions = {
  * The available barcode types that can be scanned.
  */
 export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription as Subscription, };
 //# sourceMappingURL=Camera.types.d.ts.map

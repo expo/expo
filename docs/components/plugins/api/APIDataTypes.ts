@@ -17,6 +17,7 @@ export type CommentData = {
   summary: CommentContentData[];
   returns?: string;
   blockTags?: CommentTagData[];
+  modifierTags?: string[];
 };
 
 export type CommentTagData = {
@@ -63,12 +64,14 @@ export type TypeDefinitionData = {
     type: string;
   };
   indexType?: {
-    type: string;
+    name?: string;
+    type?: string;
     value: string;
   };
   qualifiedName?: string;
   head?: string;
   tail?: (TypeDefinitionData | string)[][];
+  target?: TypeDefinitionData;
 };
 
 export type MethodParamData = {
@@ -83,6 +86,8 @@ export type TypePropertyDataFlags = {
   isExternal?: boolean;
   isOptional?: boolean;
   isStatic?: boolean;
+  isRest?: boolean;
+  isReadonly?: boolean;
 };
 
 // Constants section
@@ -144,7 +149,7 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
-  getSignature?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
 
@@ -153,6 +158,8 @@ export type MethodSignatureData = {
   parameters: MethodParamData[];
   comment: CommentData;
   type: TypeDefinitionData;
+  kind?: TypeDocKind;
+  typeParameter?: TypeParameterData[];
 };
 
 // Properties section
@@ -176,7 +183,7 @@ export type PropData = {
   signatures?: MethodSignatureData[];
   overwrites?: TypeDefinitionData;
   implementationOf?: TypeDefinitionData;
-  inheritedFrom?: TypeGeneralData;
+  inheritedFrom?: InheritedFromData;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -206,10 +213,15 @@ export type TypeDeclarationContentData = {
   comment?: CommentData;
 };
 
-export type TypeSignaturesData = {
-  name?: string;
-  comment?: CommentData;
-  parameters?: MethodParamData[];
-  type: TypeDefinitionData;
-  kind?: TypeDocKind;
+export type TypeSignaturesData = Partial<MethodSignatureData>;
+
+export type TypeParameterData = {
+  name: string;
+  kind: TypeDocKind;
+  variant: string;
+};
+
+export type InheritedFromData = {
+  type: 'reference';
+  name: string;
 };

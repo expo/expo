@@ -1,4 +1,4 @@
-platform :ios, '13.4'
+platform :ios, '15.1'
 
 # Disable expo-updates auto create updates resources in podspec script_phase
 $expo_updates_create_updates_resources = false

@@ -155,7 +155,7 @@ const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[2],
   marginBottom: spacing[2],
   ...codeInHeaderStyle,
@@ -163,7 +163,7 @@ const h1Style = {
 
 const h2Style = {
   ...h2,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
   '& a:focus-visible': { outlineOffset: spacing[1] },
@@ -173,8 +173,8 @@ const h2Style = {
 const h3Style = {
   ...h3,
   fontWeight: 600,
-  marginTop: spacing[6],
-  marginBottom: spacing[2.5],
+  marginTop: spacing[7],
+  marginBottom: spacing[3],
   '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
@@ -183,7 +183,7 @@ const h4Style = {
   ...h4,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1.5],
+  marginBottom: spacing[2],
   ...codeInHeaderStyle,
 };
 
@@ -198,6 +198,13 @@ const h5Style = {
 const paragraphStyle = {
   strong: {
     wordBreak: 'break-word',
+  },
+};
+
+const delStyle = {
+  textDecoration: 'line-through',
+  '& code': {
+    textDecoration: 'line-through',
   },
 };
 
@@ -225,6 +232,8 @@ export const CAPTION = createTextComponent(TextElement.P, css(typography.body.ca
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
+export const SPAN = createTextComponent(TextElement.SPAN, css(typography.body.callout));
+
 export const UL = createTextComponent(
   TextElement.UL,
   css([typography.body.ul, { listStyle: 'disc' }])
@@ -239,6 +248,7 @@ export const KBD = createTextComponent(
   css([typography.utility.pre as CSSObject, kbdStyle])
 );
 export const MONOSPACE = createTextComponent(TextElement.CODE);
+export const DEL = createTextComponent(TextElement.DEL, css(delStyle));
 
 const isExternalLink = (href?: string) => href?.includes('://');
 

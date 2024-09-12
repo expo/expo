@@ -3,12 +3,12 @@ title: Add gestures
 description: In this tutorial, learn how to implement gestures from React Native Gesture Handler and Reanimated libraries.
 ---
 
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
-import { A } from '~/ui/components/Text';
-import { Step } from '~/ui/components/Step';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Gestures are a great way to provide an intuitive user experience in an app. The [React Native Gesture Handler library](https://docs.swmansion.com/react-native-gesture-handler/docs/) provides built-in native components that can handle gestures.
 It uses the platform's native touch handling system to recognize pan, tap, rotation, and other gestures.
@@ -194,7 +194,7 @@ In the above snippet, the `gesture` prop takes the value of the `doubleTap` whic
 
 Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/tap-gesture.mp4" />
+<ContentSpotlight file="tutorial/tap-gesture.mp4" />
 
 > For a complete reference on the tap gesture API, refer to the [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/api/gestures/tap-gesture) documentation.
 
@@ -321,7 +321,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
 Let's take a look at our app on Android, iOS and the web:
 
-<Video file="tutorial/pan-gesture.mp4" />
+<ContentSpotlight file="tutorial/pan-gesture.mp4" />
 
 </Step>
 

@@ -1,9 +1,12 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo-modules-core';
 import { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, UpdateCheckResultRollBack, UpdateFetchResultRollBackToEmbedded, UpdateFetchResultFailure, UpdateFetchResultSuccess, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
+type UpdatesEvents = {
+    'Expo.nativeUpdatesStateChangeEvent'(params: any): any;
+};
 /**
  * @internal
  */
-export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener' | 'removeListeners'> {
+export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> {
     isEmergencyLaunch: boolean;
     emergencyLaunchReason: string | null;
     isEmbeddedLaunch: boolean;
@@ -55,4 +58,5 @@ export interface ExpoUpdatesModule extends Pick<ProxyNativeModule, 'addListener'
         rollbackString?: string;
     }>;
 }
+export {};
 //# sourceMappingURL=ExpoUpdatesModule.types.d.ts.map

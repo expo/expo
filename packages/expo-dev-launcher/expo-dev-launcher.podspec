@@ -19,7 +19,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.4'
+  s.platforms      = {
+    :ios => '15.1'
+  }
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.static_framework = true
@@ -72,8 +74,8 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'OTHER_CFLAGS[config=Debug]' => other_c_flags,
-    'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
+    'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
+    'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags,
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     'FRAMEWORK_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/RNReanimated"',
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",

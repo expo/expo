@@ -4,8 +4,9 @@ sidebar_title: Mocking native calls
 description: Learn about mocking native calls in Expo modules.
 ---
 
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Grid01Icon } from '@expo/styleguide-icons';
 import { Terminal } from '~/ui/components/Snippet';
 
 The recommended way to write unit tests for an Expo project is to use [Jest](https://jestjs.io/) and the `jest-expo` preset.
@@ -51,8 +52,8 @@ The command above generates **ExpoModuleName.ts** in the **mocks** directory of 
 ## More
 
 <BoxLink
-  title="Unit testing"
-  description="Learn how to set up and configure the jest-expo package to write unit tests and snapshot tests for a project."
+  title="Unit testing with Jest"
+  description="Learn how to set up and configure the jest-expo package to write unit and snapshot tests for a project."
   href="/develop/unit-testing/"
   Icon={Grid01Icon}
 />

@@ -11,7 +11,6 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
-import expo.modules.devlauncher.helpers.findPackagesWithDevMenuExtension
 import expo.modules.devlauncher.helpers.injectDebugServerHost
 import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
@@ -31,13 +30,8 @@ class DevLauncherReactNativeHost(
   override fun getUseDeveloperSupport() = launcherIp != null
 
   override fun getPackages(): List<ReactPackage> {
-    val devMenuPackage = findDevMenuPackage()
     val devMenuRelatedPackages: List<ReactPackage> =
-      if (devMenuPackage != null) {
-        findPackagesWithDevMenuExtension(application) + devMenuPackage
-      } else {
-        emptyList()
-      }
+      findDevMenuPackage()?.let { listOf(it) } ?: emptyList()
 
     val additionalPackages = (DevLauncherController.sAdditionalPackages ?: emptyList())
 
@@ -59,7 +53,7 @@ class DevLauncherReactNativeHost(
       additionalPackages
   }
 
-  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory {
     return createNonDebuggableJavaScriptExecutorFactory(application)
   }
 

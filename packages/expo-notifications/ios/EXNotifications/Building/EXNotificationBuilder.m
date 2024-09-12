@@ -30,11 +30,7 @@ EX_REGISTER_MODULE();
     if ([@"default" isEqualToString:soundName]) {
       [content setSound:[UNNotificationSound defaultSound]];
     } else if ([@"defaultCritical" isEqualToString:soundName]) {
-      if (@available(iOS 12.0, *)) {
-        [content setSound:[UNNotificationSound defaultCriticalSound]];
-      } else {
-        [content setSound:[UNNotificationSound defaultSound]];
-      }
+      [content setSound:[UNNotificationSound defaultCriticalSound]];
     } else {
       [content setSound:[UNNotificationSound soundNamed:soundName]];
     }
@@ -47,7 +43,25 @@ EX_REGISTER_MODULE();
     }
   }];
   [content setAttachments:attachments];
+  NSString *interruptionLevel = [request objectForKey:@"interruptionLevel" verifyingClass:[NSString class]];
+  if (interruptionLevel) {
+    content.interruptionLevel = [EXNotificationBuilder deserializeInterruptionLevel:interruptionLevel];
+  }
   return content;
+}
+
++ (UNNotificationInterruptionLevel)deserializeInterruptionLevel:(NSString *)interruptionLevel API_AVAILABLE(ios(15.0)) {
+  static NSDictionary *interruptionLevelMap;
+  if (!interruptionLevelMap) {
+    interruptionLevelMap = @{
+      @"passive": @(UNNotificationInterruptionLevelPassive),
+      @"active": @(UNNotificationInterruptionLevelActive),
+      @"timeSensitive": @(UNNotificationInterruptionLevelTimeSensitive),
+      @"critical": @(UNNotificationInterruptionLevelCritical)
+    };
+  }
+  
+  return [interruptionLevelMap[interruptionLevel] integerValue];
 }
 
 - (UNNotificationAttachment *)attachmentFromRequest:(NSDictionary *)request

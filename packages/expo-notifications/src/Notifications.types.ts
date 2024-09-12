@@ -2,15 +2,14 @@ import type {
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-  Subscription,
+  EventSubscription,
 } from 'expo-modules-core';
 
 /**
  * An object represents a notification delivered by a push notification system.
  *
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
- * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
- * On web there is no extra data.
+ * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html).
  */
 export type PushNotificationTrigger = {
   type: 'push';
@@ -423,6 +422,16 @@ export type NotificationContentIos = {
    * The value your app uses to determine which scene to display to handle the notification.
    */
   targetContentIdentifier?: string;
+  /*
+   * The notification’s importance and required delivery timing.
+   * Posible values:
+   * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
+   * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
+   * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
+   * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
+   * @platform ios
+   */
+  interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 
 // @docsMissing
@@ -553,6 +562,16 @@ export type NotificationContentInput = {
    * @platform ios
    */
   attachments?: NotificationContentAttachmentIos[];
+  /*
+   * The notification’s importance and required delivery timing.
+   * Posible values:
+   * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
+   * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
+   * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
+   * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
+   * @platform ios
+   */
+  interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
 
 /**
@@ -697,4 +716,9 @@ export type NotificationCategoryOptions = {
   allowAnnouncement?: boolean;
 };
 
-export type { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
+export type {
+  EventSubscription as Subscription,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+};

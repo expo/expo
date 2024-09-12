@@ -26,7 +26,7 @@ typedef std::function<void(const ObjectId)> ObjectReleaser;
 /**
  Installs a base JavaScript class for all shared object with a shared release block.
  */
-void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser);
+void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser);
 
 /**
  Returns the base JavaScript class for all shared objects, i.e. `global.expo.SharedObject`.
@@ -49,9 +49,9 @@ public:
   /**
    The default constructor that initializes a native state for the shared object with given ID.
    */
-  NativeState(const ObjectId objectId, const ObjectReleaser releaser);
+  NativeState(ObjectId objectId, ObjectReleaser releaser);
 
-  virtual ~NativeState();
+  ~NativeState() override;
 }; // class NativeState
 
 } // namespace expo::SharedObject

@@ -3,7 +3,7 @@ import { CodeChallengeMethod } from './AuthRequest.types';
  * URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
  */
 export type Issuer = string;
-type ProviderMetadataEndpoints = {
+export type ProviderMetadataEndpoints = {
     issuer?: Issuer;
     /**
      * URL of the OP's OAuth 2.0 Authorization Endpoint.
@@ -137,7 +137,7 @@ export type ProviderMetadata = Record<string, string | boolean | string[]> & Pro
     frontchannel_logout_supported?: boolean;
     frontchannel_logout_session_supported?: boolean;
 };
-export interface DiscoveryDocument {
+export type DiscoveryDocument = {
     /**
      * Used to interact with the resource owner and obtain an authorization grant.
      *
@@ -179,7 +179,7 @@ export interface DiscoveryDocument {
      * All metadata about the provider.
      */
     discoveryDocument?: ProviderMetadata;
-}
+};
 export type IssuerOrDiscovery = Issuer | DiscoveryDocument;
 /**
  * Append the well known resources path and OpenID connect discovery document path to a URL
@@ -198,5 +198,4 @@ export declare function fetchDiscoveryAsync(issuer: Issuer): Promise<DiscoveryDo
  * @param issuerOrDiscovery
  */
 export declare function resolveDiscoveryAsync(issuerOrDiscovery: IssuerOrDiscovery): Promise<DiscoveryDocument>;
-export {};
 //# sourceMappingURL=Discovery.d.ts.map

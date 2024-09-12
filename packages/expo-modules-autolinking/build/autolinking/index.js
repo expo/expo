@@ -14,10 +14,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryAutolinkingModulesFromProjectAsync = exports.verifySearchResults = exports.generatePackageListAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.findModulesAsync = void 0;
+exports.queryAutolinkingModulesFromProjectAsync = exports.verifySearchResults = exports.generatePackageListAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
 const findModules_1 = require("./findModules");
 Object.defineProperty(exports, "findModulesAsync", { enumerable: true, get: function () { return findModules_1.findModulesAsync; } });
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
+Object.defineProperty(exports, "getProjectPackageJsonPathAsync", { enumerable: true, get: function () { return mergeLinkingOptions_1.getProjectPackageJsonPathAsync; } });
 Object.defineProperty(exports, "mergeLinkingOptionsAsync", { enumerable: true, get: function () { return mergeLinkingOptions_1.mergeLinkingOptionsAsync; } });
 Object.defineProperty(exports, "resolveSearchPathsAsync", { enumerable: true, get: function () { return mergeLinkingOptions_1.resolveSearchPathsAsync; } });
 const resolveModules_1 = require("./resolveModules");

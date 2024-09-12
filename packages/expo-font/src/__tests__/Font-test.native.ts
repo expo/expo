@@ -1,14 +1,10 @@
-import { Platform } from 'expo-modules-core';
-
-import { loaded, loadPromises } from '../memory';
+import { loadPromises, purgeCache } from '../memory';
 
 let Font;
 let NativeModulesProxy;
 
 function clearMemory() {
-  for (const key of Object.keys(loaded)) {
-    delete loaded[key];
-  }
+  purgeCache();
   for (const key of Object.keys(loadPromises)) {
     delete loadPromises[key];
   }
@@ -34,6 +30,7 @@ function _createMockAsset({
 beforeEach(() => {
   ({ NativeModulesProxy } = require('expo-modules-core'));
   NativeModulesProxy.ExpoFontLoader.loadAsync.mockImplementation(async () => {});
+  NativeModulesProxy.ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
   Font = require('expo-font');
 });
 
@@ -47,25 +44,8 @@ afterEach(async () => {
 // We should rewrite them once we stop scoping font names in Expo Go on Android.
 // Then it is no longer necessary to have separate tests cases for Expo Go/standalone/bare workflow.
 xdescribe('within Expo Go', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        appOwnership: Constants.AppOwnership.Expo,
-        manifest: {},
-        sessionId: 'testsession',
-        systemFonts: ['Helvetica', 'Helvetica Neue'],
-      };
-    });
-  });
-
   afterEach(async () => {
     clearMemory();
-  });
-
-  afterAll(() => {
-    jest.unmock('expo-constants');
   });
 
   describe('loadAsync', () => {
@@ -269,99 +249,9 @@ xdescribe('within Expo Go', () => {
       expect(Font.isLoading('test-font-2')).toBe(false);
     });
   });
-
-  describe('processFontFamily', () => {
-    let originalConsole;
-
-    beforeEach(() => {
-      originalConsole = console;
-    });
-
-    afterEach(() => {
-      clearMemory();
-      console = originalConsole; // eslint-disable-line no-global-assign
-    });
-
-    it(`handles empty values`, () => {
-      expect(Font.processFontFamily(null)).toBeNull();
-      expect(Font.processFontFamily(undefined as any)).toBeUndefined();
-    });
-
-    it(`handles the system font`, () => {
-      expect(Font.processFontFamily('System')).toBe('System');
-    });
-
-    it(`handles built-in fonts`, () => {
-      expect(Font.processFontFamily('Helvetica')).toBe('Helvetica');
-    });
-
-    // Fonts are scoped only on Android
-    if (Platform.OS === 'android') {
-      it(`defaults missing fonts to the system font`, () => {
-        console.warn = jest.fn();
-
-        const fontName = 'not-loaded';
-        expect(Font.isLoaded(fontName)).toBe(false);
-        expect(Font.processFontFamily(fontName)).toBe('ExpoFont-testsession-not-loaded');
-        expect(console.warn).toHaveBeenCalled();
-        expect((console.warn as jest.Mock).mock.calls[0]).toMatchSnapshot();
-      });
-
-      it(`defaults still-loading fonts to the system font`, () => {
-        console.warn = jest.fn();
-
-        const fontName = 'loading';
-        const mockAsset = _createMockAsset();
-        Font.loadAsync(fontName, mockAsset);
-        expect(Font.isLoaded(fontName)).toBe(false);
-        expect(Font.isLoading(fontName)).toBe(true);
-
-        expect(Font.processFontFamily(fontName)).toBe('ExpoFont-testsession-loading');
-        expect(console.warn).toHaveBeenCalled();
-        expect((console.warn as jest.Mock).mock.calls[0]).toMatchSnapshot();
-      });
-    }
-
-    it(`scopes loaded names of loaded fonts`, async () => {
-      const fontName = 'test-font';
-      const mockAsset = _createMockAsset();
-      await Font.loadAsync(fontName, mockAsset);
-      expect(Font.isLoaded(fontName)).toBe(true);
-
-      const processedFontFamily = Font.processFontFamily(fontName);
-      expect(processedFontFamily).toContain(fontName);
-      expect(processedFontFamily).toMatchSnapshot();
-    });
-
-    it(`doesn't re-process Expo fonts`, async () => {
-      const fontName = 'test-font';
-      const mockAsset = _createMockAsset();
-      await Font.loadAsync(fontName, mockAsset);
-      expect(Font.isLoaded(fontName)).toBe(true);
-
-      const processedFontFamily = Font.processFontFamily(fontName);
-      expect(Font.processFontFamily(processedFontFamily)).toBe(processedFontFamily);
-    });
-  });
 });
 
 describe('in standalone app', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        manifest: {},
-        sessionId: 'testsession',
-        systemFonts: ['Helvetica', 'Helvetica Neue'],
-        appOwnership: null,
-      };
-    });
-  });
-
-  afterAll(() => {
-    jest.unmock('expo-constants');
-  });
   afterEach(() => {
     clearMemory();
   });
@@ -380,17 +270,6 @@ describe('in standalone app', () => {
 });
 
 describe('in bare workflow', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        manifest: {},
-        sessionId: 'testsession',
-        systemFonts: ['Helvetica', 'Helvetica Neue'],
-      };
-    });
-  });
   afterEach(() => {
     clearMemory();
   });
@@ -398,10 +277,16 @@ describe('in bare workflow', () => {
   it(`does not scope font names`, async () => {
     const fontName = 'test-font';
     const mockAsset = _createMockAsset();
+    expect(Font.isLoaded(fontName)).toBe(false);
     await Font.loadAsync(fontName, mockAsset);
     expect(Font.isLoaded(fontName)).toBe(true);
 
     const processedFontFamily = Font.processFontFamily(fontName);
     expect(processedFontFamily).toEqual(fontName);
+  });
+
+  it('getLoadedFonts is available', () => {
+    expect(Font.getLoadedFonts()).toHaveLength(0);
+    expect(NativeModulesProxy.ExpoFontLoader.getLoadedFonts).toHaveBeenCalledTimes(1);
   });
 });

@@ -9,22 +9,6 @@ import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.ref.WeakReference
 
-private const val ERROR_STACK_FRAME_LIMIT = 50
-
-private const val ERROR_DEFAULT_MESSAGE = "Error not specified."
-
-// Keys for reject WritableMap
-private const val ERROR_MAP_KEY_CODE = "code"
-private const val ERROR_MAP_KEY_MESSAGE = "message"
-private const val ERROR_MAP_KEY_USER_INFO = "userInfo"
-private const val ERROR_MAP_KEY_NATIVE_STACK = "nativeStackAndroid"
-
-// Keys for ERROR_MAP_KEY_NATIVE_STACK's StackFrame maps
-private const val STACK_FRAME_KEY_CLASS = "class"
-private const val STACK_FRAME_KEY_FILE = "file"
-private const val STACK_FRAME_KEY_LINE_NUMBER = "lineNumber"
-private const val STACK_FRAME_KEY_METHOD_NAME = "methodName"
-
 @DoNotStrip
 class PromiseImpl @DoNotStrip internal constructor(
   @DoNotStrip internal val callback: JavaCallback
@@ -38,6 +22,10 @@ class PromiseImpl @DoNotStrip internal constructor(
     callback.invoke(
       JSTypeConverter.convertToJSValue(value)
     )
+  }
+
+  override fun resolve() = checkIfWasSettled {
+    callback.invoke()
   }
 
   override fun resolve(result: Int) = checkIfWasSettled {

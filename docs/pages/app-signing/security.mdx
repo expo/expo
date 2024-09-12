@@ -5,9 +5,55 @@ description: Learn how credentials and other sensitive data are handled when usi
 
 Before you enter outside credentials or provide other sensitive data to third-party software you should ask yourself whether you trust the software to use it responsibly and protect it. Due to the nature of what goes into building an app binary for distribution on app stores, the Expo standalone app build service requires various pieces of information with varying degrees of sensitivity. This document explains what those are, how we store them, and what could go wrong if they were to be compromised.
 
-Most data stored by Expo servers — credentials or otherwise — is encrypted at rest by our cloud provider, Google Cloud. Credentials are additionally encrypted using [KMS](https://cloud.google.com/kms/). Credentials are only unencrypted for as long as we need them in memory in the standalone app builders or push notification services. Credentials are always encrypted in our databases, message queues, and other less transient parts of the system.
+Most data stored by Expo servers (credentials or otherwise) is encrypted at rest by our cloud provider, Google Cloud. Credentials are additionally encrypted using [KMS](https://cloud.google.com/security/products/security-key-management). Credentials are only unencrypted for as long as we need them in memory in the standalone app builders or push notification services. Credentials are always encrypted in our databases, message queues, and other less transient parts of the system.
 
 All of the data related to the information explained below can be downloaded and removed from Expo servers (if it is stored there at all in the first place), and some of it may be available through other locations such as the Apple Developer Portal.
+
+## Android Push Notification credentials
+
+Android uses Firebase Cloud Messaging (FCM) for push notifications. If you build a standalone app with Expo we store your FCM server key for you.
+
+### Consequences if compromised
+
+Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens to send a notification.
+
+You can create and delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
+
+### Consequences if lost
+
+None. You can access it through the Firebase console.
+
+## Android build credentials
+
+A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn't let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
+
+### Consequences if compromised
+
+Provided that your Google Play Developer account is secure, a malicious actor will not be able to update your app with your keystore and keystore password. You cannot change your keystore.
+
+### Consequences if lost
+
+You will not be able to update your app on Google Play. You may want to download and backup the keystore and keystore password in a secure location of your choosing or in Google Play with the App Signing feature.
+
+## Google Developer credentials
+
+Expo tools never ask you to provide your Google account credentials.
+
+## Android submit credentials
+
+### Google Service Account Key
+
+Google Service Account Key is the authentication method used to submit an Android app to the Google Play Store with EAS Submit. This key is stored on Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
+
+#### Consequences if compromised
+
+If a malicious actor somehow gains access to your Google Service Account Key, they would be able to perform actions in the Google Play Console on your behalf. The actions they could perform would be limited to the permissions granted to the service account key.
+
+If the attacker has additionally gained access to your upload keystore, they would be able to submit a new version of an existing app. The actor would not be able to submit a new app to the Google Play Store in your name, as the first Google Play submission needs to be done through the web console.
+
+#### Consequences if lost
+
+None. If you lose the Google Service Account Key, you can revoke it using the Google Cloud Console and create a new one.
 
 ## iOS Push Notification credentials
 
@@ -66,35 +112,41 @@ For ad-hoc builds, if a user were to gain access to your session token it would 
 
 None. They are available through the Apple Developer console.
 
-## Android Push Notification credentials
+## iOS submit credentials
 
-Android uses Firebase Cloud Messaging (FCM) for push notifications. If you build a standalone app with Expo we store your FCM server key for you.
+### Apple App Store Connect (ASC) API key
 
-### Consequences if compromised
+Apple App Store Connect (ASC) API key is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service. This key is stored on the Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
 
-Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens to send a notification.
+The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using EAS Submit.
 
-You can create and delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
+#### Consequences if compromised
 
-### Consequences if lost
+If a malicious actor somehow gains access to the ASC API key, they would be able to perform actions in the App Store Connect on your behalf. The actions they could perform would be limited to the permissions granted to the API key.
 
-None. You can access it through the Firebase console.
+If the attacker has additionally gained access to your build credentials, they would be able to submit a new version of an existing app. They would only be able to submit the app signed with those build credentials, and they can't submit any arbitrary app to the App Store in your name.
 
-## Android build credentials
+#### Consequences if lost
 
-A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn't let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
+None. If you lose the ASC API key, you can revoke it using the App Store Connect portal and create a new one.
 
-### Consequences if compromised
+### Apple app-specific password
 
-Provided that your Google Play Developer account is secure, a malicious actor will not be able to update your app with your keystore and keystore password. You cannot change your keystore.
+Apple app-specific password is another authentication method that can be used to submit an iOS app to Apple's App Store using the EAS Submit. Unlike other credentials, the app-specific password is not stored in the Expo servers between submissions, it must be provided each time it is to be used.
 
-### Consequences if lost
+The password is encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) and stored only for the period required to submit the app to the App Store plus 24 hours, to allow for retries during that time. Once this period is over, the password is deleted from the Expo servers.
 
-You will not be able to update your app on Google Play. You may want to download and backup the keystore and keystore password in a secure location of your choosing or in Google Play with the App Signing feature.
+This authentication method is **not recommended**. We recommend using the Apple Store Connect (ASC) API key for submitting your apps to the App Store instead. Expo won't use the Apple app-specific password in any way other than to submit your app to the App Store.
 
-## Google Developer credentials
+#### Consequences if compromised
 
-Expo tools never ask you to provide your Google account credentials.
+If a malicious actor somehow gains access to the app-specific password, they would be able to access information like mail, contacts, and calendars that you store in iCloud (check [Apple's documentation](https://support.apple.com/en-us/102654) for more details).
+
+If the attacker has additionally gained access to your build credentials, they would be able to submit a new version of an existing app. They would only be able to submit the app signed with those build credentials, and they can't submit any arbitrary app to the App Store in your name.
+
+#### Consequences if lost
+
+None. If you lose the app-specific password, you can revoke it and create a new one in the Apple account settings.
 
 ## Device tokens for Android and iOS push notifications
 

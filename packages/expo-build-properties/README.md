@@ -4,8 +4,8 @@
 
 ## API documentation
 
-- [Documentation for the main branch][docs-main]
-- [Documentation for the latest stable release][docs-stable]
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/build-properties/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/build-properties/)
 
 ### Installation
 
@@ -39,9 +39,4 @@ Add plugin to `app.json`. For example:
 
 ## Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide][../../contributing.md].
-
-[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/build-properties.mdx
-[docs-stable]: https://docs.expo.dev/versions/latest/sdk/build-properties/
-[contributing]: https://github.com/expo/expo#contributing
-[config-plugins]: https://docs.expo.dev/config-plugins/introduction
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide][https://github.com/expo/expo#contributing].

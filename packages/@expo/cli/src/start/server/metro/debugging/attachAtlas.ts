@@ -92,3 +92,25 @@ function importAtlasForExport(projectRoot: string): null | typeof import('expo-a
     return null;
   }
 }
+
+/**
+ * Wait until the Atlas file has all data written.
+ * Note, this is a workaround whenever `process.exit` is required, avoid if possible.
+ * @internal
+ */
+export async function waitUntilAtlasExportIsReadyAsync(projectRoot: string) {
+  if (!env.EXPO_UNSTABLE_ATLAS) return;
+
+  const atlas = importAtlasForExport(projectRoot);
+
+  if (!atlas) {
+    return debug('Atlas is not loaded, cannot wait for export to finish');
+  }
+  if (typeof atlas.waitUntilAtlasFileReady !== 'function') {
+    return debug('Atlas is outdated, cannot wait for export to finish');
+  }
+
+  debug('Waiting for Atlas to finish exporting...');
+  await atlas.waitUntilAtlasFileReady();
+  debug('Atlas export is ready');
+}

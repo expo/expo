@@ -6,6 +6,7 @@ description: Learn how to submit your app to the Apple App Store from your compu
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 This guide outlines how to submit your app to the Apple App Store from your own computer and from CI.
 
@@ -15,15 +16,20 @@ This guide outlines how to submit your app to the Apple App Store from your own 
 - You will also need to have EAS CLI installed and authenticated with your Expo account:
   <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
-## 1. Build a standalone app
+<Step label="1">
+## Build a standalone app
 
-You'll need a native app binary signed for store submission. You can either use [EAS Build](/build/introduction.mdx) or do it on your own.
+You'll need a native app binary signed for store submission. You can either use [EAS Build](/build/introduction/) or do it on your own.
 
-## 2. Start the submission
+</Step>
 
-To submit the binary to the App Store, run `eas submit -p ios` from inside your project directory. The command will lead you step by step through the process of submitting the app. See the [Configuration with eas.json](./eas-json.mdx) page to learn how to pre-configure your submission.
+<Step label="2">
 
-> Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory - that's where your [app configuration](../workflow/configuration.mdx) is defined.
+## Start the submission
+
+To submit the binary to the App Store, run `eas submit -p ios` from inside your project directory. The command will lead you step by step through the process of submitting the app. See the [Configuration with eas.json](/build/eas-json/) page to learn how to pre-configure your submission.
+
+> Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory because [app config](/workflow/configuration) is defined inside that directory.
 
 If you have not generated an App Store Connect API Key yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts. You can also upload your own [API Key](https://expo.fyi/creating-asc-api-key) or pass in an [Apple app-specific password](https://expo.fyi/apple-app-specific-password).
 
@@ -64,6 +70,8 @@ The command will perform the following steps:
 - A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
 
+</Step>
+
 ## Submitting your app using CI
 
 The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables.
@@ -71,7 +79,7 @@ The `eas submit` command is able to perform submissions from a CI environment. A
 You must do the following:
 
 - Provide the archive source (`--latest`, `--id`, `--path`, or `--url`).
-- Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.mdx).
+- Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration/).
 - Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple Developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
 

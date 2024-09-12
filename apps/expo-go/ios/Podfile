@@ -5,7 +5,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '13.4'
+platform :ios, '15.1'
 inhibit_all_warnings!
 
 # Disable expo-updates auto create updates resources in podspec script_phase
@@ -94,7 +94,7 @@ target 'Expo Go' do
       end
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
       end
 
       if pod_name == 'Branch'

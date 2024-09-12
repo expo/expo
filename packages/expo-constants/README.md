@@ -4,8 +4,8 @@ Provides system information that remains constant throughout the lifetime of you
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/constants.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/constants/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/constants/)
 
 # Installation in managed Expo projects
 

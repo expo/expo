@@ -18,7 +18,6 @@ import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
-import java.util.*
 
 /**
  * Implementation of [Launcher] that uses the SQLite database and expo-updates file store as the
@@ -30,7 +29,7 @@ import java.util.*
  *
  * This class also includes failsafe code to attempt to re-download any assets unexpectedly missing
  * from disk (since it isn't necessarily safe to just revert to an older update in this case).
- * Distinct from the [Loader] classes, though, this class does *not* make any major modifications to
+ * Distinct from the Loader classes, though, this class does *not* make any major modifications to
  * the database; its role is mostly to read the database and ensure integrity with the file system.
  *
  * It's important that the update to launch is selected *before* any other checks, e.g. the above
@@ -190,7 +189,7 @@ class DatabaseLauncher(
         if (matchingEmbeddedAsset != null) {
           try {
             val hash = loaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context)
-            if (Arrays.equals(hash, asset.hash)) {
+            if (hash.contentEquals(asset.hash)) {
               assetFileExists = true
             }
           } catch (e: Exception) {

@@ -31,15 +31,7 @@ export async function startBundlerAsync(
     },
   };
 
-  const devServerManager = new DevServerManager(projectRoot, options);
-
-  await devServerManager.startAsync([
-    {
-      // TODO: Allow swapping this value for another bundler.
-      type: 'metro',
-      options,
-    },
-  ]);
+  const devServerManager = await DevServerManager.startMetroAsync(projectRoot, options);
 
   // Present the Terminal UI.
   if (!headless && isInteractive()) {

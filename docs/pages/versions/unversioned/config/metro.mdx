@@ -3,10 +3,10 @@ title: metro.config.js
 description: A reference of available configurations in Metro.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -485,7 +485,7 @@ This can be used to emulate `externals` with custom imports. For example, if you
 
 ## Custom transforming
 
-> Transformations are heavily caches in Metro. If you update something, use the `--clear` flag to see updates. For example, `npx expo start --clear`.
+> Transformations are heavily cached in Metro. If you update something, use the `--clear` flag to see updates. For example, `npx expo start --clear`.
 
 Metro doesn't have a very expressive plugin system for transforming files, instead opt to use the `babel.config.js` and caller object to customize the transformation.
 
@@ -589,13 +589,21 @@ The `debugId` is a deterministic hash of the bundle's contents without the exter
 
 `@expo/metro-config` injects `debugId` during `npx expo export` and `npx expo export:embed`. Any additional optimization steps in `npx expo export:embed` like Hermes bytecode generation will need to have the `debugId` injected manually.
 
+## Metro require runtime
+
+You can optionally enable a custom Metro `require` implementation with the environment variable `EXPO_USE_METRO_REQUIRE=1`. This runtime has the following features:
+
+- String module IDs that are human-readable and make missing module errors easier to follow.
+- Deterministic IDs that are the same between runs and across modules (required for React Server Components in development).
+- Removed support for legacy RAM bundles.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
 
-{/* If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work. */}
+{/* If this isn't done, then features like [aliases](/guides/typescript/#path-aliases-optional), [absolute imports](/guides/typescript/#absolute-imports-optional), asset hashing, and more will not work. */}
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start` respectively.
 
@@ -703,7 +711,7 @@ By default, React Native only supports using a root `index.js` file as the entry
 
 #### Development
 
-Development mode entry files can be enabled by using the [`expo-dev-client`](/clients/introduction.mdx) package. Alternatively you can add the following configuration:
+Development mode entry files can be enabled by using the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. Alternatively you can add the following configuration:
 
 In the `ios/[project]/AppDelegate.mm` file:
 
