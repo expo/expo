@@ -3,9 +3,9 @@ import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types
 type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
-/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
+/** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
 export declare function useRootNavigation(): import("@react-navigation/core").NavigationContainerRef<ReactNavigation.RootParamList> | null;
-/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+/** @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
 export declare function useNavigationContainerRef(): import("@react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
 export declare function useRouter(): Router;
 /**
@@ -48,7 +48,24 @@ export declare function useUnstableGlobalHref(): string;
  * ```
  */
 export declare function useSegments<TSegments extends Routes | RouteSegments<Routes> = Routes>(): TSegments extends string ? RouteSegments<TSegments> : TSegments;
-/** @returns global selected pathname without query parameters. */
+/**
+ * Global selected route location without search parameters. For example, `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`.
+ *
+ * @example
+ * ```tsx app/profile/[user].tsx
+ * import { Text } from 'react-native';
+ * import { useSegments } from 'expo-router';
+ *
+ * export default function Route() {
+ *   // segments = ["profile", "[user]"]</b>
+ *   const segments = useSegments();
+ *
+ *   return <Text>Hello</Text>;
+ *
+ * }
+ * ```
+ *
+ */
 export declare function usePathname(): string;
 /**
  * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
