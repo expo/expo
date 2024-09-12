@@ -73,7 +73,6 @@
     "@apidevtools/json-schema-ref-parser": "^11.6.4",
     "@emotion/jest": "^11.13.0",
     "@expo/spawn-async": "^1.7.2",
-    "@ocular-d/vale-bin": "^2.29.6",
     "@tailwindcss/typography": "^0.5.12",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.4.2",
