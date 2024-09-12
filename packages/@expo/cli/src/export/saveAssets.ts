@@ -12,6 +12,7 @@ import path from 'path';
 import prettyBytes from 'pretty-bytes';
 
 import { Log } from '../log';
+import { env } from '../utils/env';
 
 export type BundleOptions = {
   entryPoint: string;
@@ -112,6 +113,14 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     }
   }
 
+  // TODO: If any Expo Router is used, then use a new style which is more simple:
+  // `chalk.gray(/path/to/) + chalk.cyan('route')`
+  // | index.html (1.2kb)
+  // | /path
+  //   | other.html (1.2kb)
+
+  const isExpoRouter = routeEntries.length;
+
   if (routeEntries.length) {
     const plural = routeEntries.length === 1 ? '' : 's';
 
@@ -151,32 +160,37 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     }
   }
 
-  const assetGroups = [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0])) as [
-    string,
-    [string, ExportAssetDescriptor][],
-  ][];
+  // Phase out printing all the assets as users can simply check the file system for more info.
+  const showAdditionalInfo = !isExpoRouter || env.EXPO_DEBUG;
 
-  if (assetGroups.length) {
-    const totalAssets = assetGroups.reduce((sum, [, assets]) => sum + assets.length, 0);
-    const plural = totalAssets === 1 ? '' : 's';
+  if (showAdditionalInfo) {
+    const assetGroups = [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0])) as [
+      string,
+      [string, ExportAssetDescriptor][],
+    ][];
 
-    Log.log('');
-    Log.log(chalk.bold`Exporting ${totalAssets} asset${plural}:`);
+    if (assetGroups.length) {
+      const totalAssets = assetGroups.reduce((sum, [, assets]) => sum + assets.length, 0);
+      const plural = totalAssets === 1 ? '' : 's';
 
-    for (const [assetId, assets] of assetGroups) {
-      const averageContentSize =
-        assets.reduce((sum, [, { contents }]) => sum + contentSize(contents), 0) / assets.length;
-      Log.log(
-        assetId,
-        chalk.gray(
-          `(${[
-            assets.length > 1 ? `${assets.length} variations` : '',
-            `${prettyBytes(averageContentSize)}`,
-          ]
-            .filter(Boolean)
-            .join(' | ')})`
-        )
-      );
+      Log.log('');
+      Log.log(chalk.bold`Exporting ${totalAssets} asset${plural}:`);
+
+      for (const [assetId, assets] of assetGroups) {
+        const averageContentSize =
+          assets.reduce((sum, [, { contents }]) => sum + contentSize(contents), 0) / assets.length;
+        Log.log(
+          assetId,
+          chalk.gray(
+            `(${[
+              assets.length > 1 ? `${assets.length} variations` : '',
+              `${prettyBytes(averageContentSize)}`,
+            ]
+              .filter(Boolean)
+              .join(' | ')})`
+          )
+        );
+      }
     }
   }
 
@@ -214,7 +228,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     }
   });
 
-  if (other.length) {
+  if (showAdditionalInfo && other.length) {
     Log.log('');
     const plural = other.length === 1 ? '' : 's';
     Log.log(chalk.bold`Exporting ${other.length} file${plural}:`);
