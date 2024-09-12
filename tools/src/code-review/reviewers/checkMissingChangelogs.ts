@@ -92,7 +92,7 @@ function generateChangelogStub(pullRequest: PullRequest) {
 
 function filterBracketContent(input: string): string {
   // many PR titles start with package name (e.g. [video]). We don't want that in a package-specific changelog.
-  return input.replace(/\[.*?\]/g, '').trim();
+  return input.replace(/\[.*?\]/, '').trim();
 }
 
 function globalChangelogEntriesOutput(changelogLinks: string): ReviewOutput {
