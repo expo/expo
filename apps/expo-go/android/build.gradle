@@ -102,6 +102,7 @@ subprojects { project ->
 
   plugins.apply("com.diffplug.spotless")
   spotless {
+    // note that spotless config is currently duplicated in bare-expo too
     format 'gradle', {
       target '*.gradle'
       trimTrailingWhitespace()
