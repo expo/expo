@@ -44,6 +44,7 @@
 - Upgrade minimum required Atlas version to `0.3.11` fixing HMR reloads. ([#30424](https://github.com/expo/expo/pull/30424) by [@byCedric](https://github.com/byCedric))
 - Fixed the `CorsMiddleware` is a not registered since react-native 0.75. ([#30752](https://github.com/expo/expo/pull/30752) by [@kudo](https://github.com/kudo))
 - Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+- Resolve dom components entry relative to workspace root instead of project root. ([#31433](https://github.com/expo/expo/pull/31433) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
