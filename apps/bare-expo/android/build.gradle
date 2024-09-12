@@ -73,12 +73,6 @@ subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
     // note that spotless config is currently duplicated in expo-go too
-    format 'gradle', {
-      target '*.gradle'
-      trimTrailingWhitespace()
-      indentWithSpaces()
-      endWithNewline()
-    }
     kotlin {
       target '**/*.kt'
       ktlint("1.0.1")

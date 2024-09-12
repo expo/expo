@@ -103,12 +103,6 @@ subprojects { project ->
   plugins.apply("com.diffplug.spotless")
   spotless {
     // note that spotless config is currently duplicated in bare-expo too
-    format 'gradle', {
-      target '*.gradle'
-      trimTrailingWhitespace()
-      indentWithSpaces()
-      endWithNewline()
-    }
     kotlin {
       target(ktlintTarget)
       // TODO: (barthap) Replace this with raw string when dropped shell app macros
