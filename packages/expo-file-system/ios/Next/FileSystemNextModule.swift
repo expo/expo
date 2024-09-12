@@ -64,6 +64,14 @@ public final class FileSystemNextModule: Module {
         }
       }
 
+      Property("size") { file in
+        try? file.size
+      }
+
+      Property("md5") { file in
+        try? file.md5
+      }
+
       Function("delete") { file in
         try file.delete()
       }

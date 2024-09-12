@@ -104,5 +104,13 @@ export declare class File {
      * @returns A promise that resolves to the downloaded file.
      */
     static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
+    /**
+     * A size of the file in bytes. Returns null if the file does not exist or it cannot be read.
+     */
+    size: number | null;
+    /**
+     * An md5 hash of the file. Returns null if the file does not exist or it cannot be read.
+     */
+    md5: string | null;
 }
 //# sourceMappingURL=FileSystem.types.d.ts.map

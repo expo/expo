@@ -968,7 +968,7 @@ properties.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -1388,7 +1388,7 @@ value depending on the state of the credential.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -1629,7 +1629,7 @@ refresh operation.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -1917,7 +1917,7 @@ sign-in operation.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -2232,7 +2232,7 @@ sign-out operation.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -2521,7 +2521,7 @@ for more details.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -2976,7 +2976,7 @@ may be
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -3382,7 +3382,7 @@ for more details.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -3689,7 +3689,7 @@ for more details.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -4013,7 +4013,7 @@ for more details.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -4184,7 +4184,7 @@ OAuth 2.0 protocol
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -6933,7 +6933,7 @@ Same as
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -7644,7 +7644,7 @@ This uses both
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -8001,7 +8001,7 @@ code.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -8268,7 +8268,7 @@ in order to enable/disable the permission.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -8458,7 +8458,7 @@ in order to enable/disable the permission.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -8578,7 +8578,7 @@ in order to enable/disable the permission.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -8704,7 +8704,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -8868,7 +8868,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
       >
         <table
-          class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+          class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
             class="bg-subtle border-b border-b-default"
@@ -8974,7 +8974,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -9246,7 +9246,7 @@ you don't get this value.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -9990,7 +9990,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -10575,7 +10575,7 @@ available on this device.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -10913,7 +10913,7 @@ On iOS, the
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -11180,7 +11180,7 @@ in order to enable/disable the permission.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"
@@ -11303,7 +11303,7 @@ in order to enable/disable the permission.
         class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
       >
         <table
-          class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+          class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
             class="bg-subtle border-b border-b-default"
@@ -11517,7 +11517,7 @@ in order to enable/disable the permission.
       class="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs"
     >
       <table
-        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="w-full border-0 rounded-none text-xs text-default [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="bg-subtle border-b border-b-default"

@@ -72,7 +72,7 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(cacheDirectory, options.nativeMediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri.toString())
 
@@ -265,7 +265,7 @@ class ImagePickerModule : Module() {
     }
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
-    val cameraIntent = Intent(options.mediaTypes.toCameraIntentAction())
+    val cameraIntent = Intent(options.nativeMediaTypes.toCameraIntentAction())
     if (cameraIntent.resolveActivity(currentActivity.application.packageManager) == null) {
       throw MissingActivityToHandleIntent(cameraIntent.type)
     }
@@ -276,7 +276,7 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
             continuation.resume(Unit)
           } else {
@@ -292,7 +292,7 @@ class ImagePickerModule : Module() {
         }
       },
       *listOfNotNull(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.Q },
         Manifest.permission.CAMERA
       ).toTypedArray()
     )

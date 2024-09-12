@@ -51,6 +51,7 @@ function getExpoDependencyChunks({
             'expo-localization',
             'expo-crypto',
             'expo-network',
+            'expo-secure-store',
             'expo-video',
           ],
         ]
@@ -355,7 +356,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.3-0',
+        'react-native': 'npm:react-native-tvos@~0.75.2-0',
         '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {

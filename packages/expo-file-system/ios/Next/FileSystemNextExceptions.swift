@@ -30,3 +30,9 @@ internal class InvalidTypeFolderException: Exception {
     "A file with the same name already exists in the folder location"
   }
 }
+
+internal class UnableToGetFileSizeException: GenericException<String> {
+  override var reason: String {
+    "Unable to get file size: \(param)"
+  }
+}

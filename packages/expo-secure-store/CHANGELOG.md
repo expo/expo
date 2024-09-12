@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - [Android] Add a config plugin for configuring the Android backup system. ([#29944](https://github.com/expo/expo/pull/29944) by [@behenate](https://github.com/behenate))
+- Add Apple TV support. ([#31374](https://github.com/expo/expo/pull/31374) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
