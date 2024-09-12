@@ -1,9 +1,9 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { Path } from './FileSystem.types';
+import { URI } from './FileSystem.types';
 
 export class File extends ExpoFileSystem.FileSystemFile {
-  constructor(path: Path) {
-    super(path);
+  constructor(url: URI) {
+    super(url);
     this.validatePath();
   }
 }
@@ -15,13 +15,8 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
 };
 
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(path: Path) {
-    super(path);
+  constructor(uri: URI) {
+    super(uri);
     this.validatePath();
   }
-}
-
-// consider module functions as API alternative
-export async function write(file: File, contents: string) {
-  return file.write(contents);
 }

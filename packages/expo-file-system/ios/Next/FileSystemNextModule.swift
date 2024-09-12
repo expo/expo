@@ -55,6 +55,10 @@ public final class FileSystemNextModule: Module {
         return try file.text()
       }
 
+      Function("base64") { file in
+        return try file.base64()
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -92,7 +96,7 @@ public final class FileSystemNextModule: Module {
         try file.move(to: to)
       }
 
-      Property("path") { file in
+      Property("uri") { file in
         return file.url.absoluteString
       }
     }
@@ -127,7 +131,7 @@ public final class FileSystemNextModule: Module {
         try directory.move(to: to)
       }
 
-      Property("path") { directory in
+      Property("uri") { directory in
         return directory.url.absoluteString
       }
     }

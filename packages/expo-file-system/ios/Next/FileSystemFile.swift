@@ -55,4 +55,8 @@ internal final class FileSystemFile: FileSystemPath {
   func text() throws -> String {
     return try String(contentsOf: url)
   }
+
+  func base64() throws -> String {
+    return try Data(contentsOf: url).base64EncodedString()
+  }
 }

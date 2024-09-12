@@ -1,24 +1,24 @@
 /**
- * A string representing a file or directory path.
+ * A string representing a file or directory url.
  */
-export type Path = string;
+export type URI = string;
 /**
  * Represents a directory on the file system.
  */
 export declare class Directory {
     /**
      * Creates an instance of a directory.
-     * @param path -  A string representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+     * @param uri -  A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
      * @example
      * ```ts
      * const directory = new Directory("file:///path/to/directory");
      * ```
      */
-    constructor(path: Path);
+    constructor(uri: string);
     /**
-     * Represents the directory path.
+     * Represents the directory URI.
      */
-    readonly path: Path;
+    readonly uri: URI;
     /**
      * Validates a directory path.
      * @hidden This method is not meant to be used directly. It is called by the JS constructor.
@@ -54,13 +54,13 @@ export declare class File {
     /**
      * Creates an instance of File.
      *
-     * @param path - A string representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+     * @param uri - A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
      */
-    constructor(path: Path);
+    constructor(uri: URI);
     /**
-     * Represents the file path.
+     * Represents the file URI.
      */
-    readonly path: string;
+    readonly uri: string;
     /**
      * Validates a directory path.
      * @hidden This method is not meant to be used directly. It is called by the JS constructor.
@@ -71,6 +71,11 @@ export declare class File {
      * @returns The contents of the file as string.
      */
     text(): string;
+    /**
+     * Retrieves content of the file as base64.
+     * @returns The contents of the file as a base64 string.
+     */
+    base64(): string;
     /**
      * Writes content to the file.
      * @param content - The content to write into the file.
