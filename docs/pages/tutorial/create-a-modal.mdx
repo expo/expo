@@ -17,14 +17,14 @@ In this chapter, we'll create a modal that shows an emoji picker list.
 
 Before implementing the modal, we are going to add three new buttons. These buttons are visible after the user picks an image from the media library or uses the placeholder image. One of these buttons will trigger the emoji picker modal.
 
-In **app/index.tsx**:
+In **app/(tabs)/index.tsx**:
 
 1. Declare a state variable, `showAppOptions`, to show or hide buttons that open the modal alongside a few other options. It is a boolean. When the app screen loads, we'll set it to `false` so the options are not shown before picking an image. When the user picks an image or uses the placeholder image, we'll set it to `true`.
 2. Update the `pickImageAsync()` function to set the value of `showAppOptions` to `true` after the user picks an image.
 3. Update the button with no theme by adding an `onPress` prop with the following value.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -198,13 +198,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-Inside **app/index.tsx**:
+Inside **app/(tabs)/index.tsx**:
 
 1. Import `CircleButton` and `IconButton` components to display them.
 2. Add three placeholder functions for these buttons. The `onReset()` function invokes when the user presses the reset button and we'll show the image picker button again. We'll add the functionality for the other two functions later.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Now, let's modify the **app/index.tsx**:
+Now, let's modify the **app/(tabs)/index.tsx**:
 
 1. Import the `<EmojiPicker>` component.
 2. Create an `isModalVisible` state variable with the `useState` hook. Its default value is `false`, which hides the modal until the user presses the button to open it.
@@ -424,7 +424,7 @@ Now, let's modify the **app/index.tsx**:
 5. Place the `<EmojiPicker>` component at the bottom of the `Index` component.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -612,10 +612,10 @@ Let's learn what the above code does:
 - The `<FlatList>` component takes an array of items provided by the `emoji` array variable as the value of the `data` prop. The `renderItem` prop takes the item from the `data` and returns the item in the list. Finally, we added `Image` and the `<Pressable>` components to display this item.
 - The `horizontal` prop renders the list horizontally instead of vertically. The `showsHorizontalScrollIndicator` uses React Native's `Platform` module to check the value and display the horizontal scroll bar on web.
 
-Now, update the `app/index.tsx` to import the `<EmojiList>` component and replace the comments inside `<EmojiPicker>` component with the following code snippet:
+Now, update the **app/(tabs)/index.tsx** to import the `<EmojiList>` component and replace the comments inside `<EmojiPicker>` component with the following code snippet:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=440
+```tsx app/(tabs)/index.tsx|collapseHeight=440
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -763,10 +763,10 @@ This component receives two props:
 - `imageSize`: a value defined inside the `Index` component. We will use this value in the next chapter to scale the image's size when tapped.
 - `stickerSource`: the source of the selected emoji image.
 
-Import this component in the app/index.tsx file and update the `Index` component to display the emoji sticker on the image. We'll check if the `pickedEmoji` state is not `undefined`:
+Import this component in the **app/(tabs)/index.tsx** file and update the `Index` component to display the emoji sticker on the image. We'll check if the `pickedEmoji` state is not `undefined`:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';

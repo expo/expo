@@ -71,13 +71,13 @@ The [`npx expo install`](/more/expo-cli/#installation) command will install the 
   className="max-w-[250px]"
 />
 
-To use the `Image` component in app/index.tsx file:
+To use the `Image` component in **app/(tabs)/index.tsx** file:
 
 1. Import `Image` from the `expo-image` library.
 2. Create a `PlaceholderImage` variable to use ./assets/images/background-image.png file as the `source` prop on the `Image` component.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=380
+```tsx app/(tabs)/index.tsx|collapseHeight=380
 import { View, StyleSheet } from 'react-native';
 /* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
 
@@ -153,10 +153,10 @@ const styles = StyleSheet.create({
 
 > **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. Every file inside **app** directory is either a layout file or a route file. For more information, see [Non-route files](/router/create-pages/#non-route-files).
 
-Import `ImageViewer` and use it in the **app/index.tsx**:
+Import `ImageViewer` and use it in the **app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=320
+```tsx app/(tabs)/index.tsx|collapseHeight=320
 import { StyleSheet, View } from 'react-native';
 
 /* @tutinfo */import ImageViewer from "@/components/ImageViewer"; /* @end */
@@ -248,10 +248,10 @@ const styles = StyleSheet.create({
 });
 ```
 
-The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls an `alert()` on its `onPress` prop. Let's import this component into app/index.tsx file and add styles for `<View>` that encapsulates these buttons:
+The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls an `alert()` on its `onPress` prop. Let's import this component into **app/(tabs)/index.tsx** file and add styles for `<View>` that encapsulates these buttons:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from "react-native";
 
 /* @tutinfo */import Button from '@/components/Button'; /* @end */
@@ -389,10 +389,10 @@ Let's learn what the above code does:
 - `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, the background color value will be set for both the primary theme and the unstyled one.
 - Inline styles use JavaScript and override the default styles for a specific value.
 
-Now, modify the **app/index.tsx** file to use the `theme="primary"` prop on the first button.
+Now, modify the **app/(tabs)/index.tsx** file to use the `theme="primary"` prop on the first button.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 
 import Button from '@/components/Button';

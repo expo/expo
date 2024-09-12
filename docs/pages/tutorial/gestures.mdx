@@ -18,10 +18,10 @@ We'll also use the [Reanimated](https://docs.swmansion.com/react-native-reanimat
 
 ## Add GestureHandlerRootView
 
-To get gesture interactions to work in the app, we'll render `<GestureHandlerRootView>` from `react-native-gesture-handler` at the top of `Index` component. Replace the root level `<View>` component in the **app/index.tsx** with `<GestureHandlerRootView>`.
+To get gesture interactions to work in the app, we'll render `<GestureHandlerRootView>` from `react-native-gesture-handler` at the top of `Index` component. Replace the root level `<View>` component in the **app/(tabs)/index.tsx** with `<GestureHandlerRootView>`.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 // ... rest of the import statements remain same
 /* @tutinfo Import GestureHandlerRootView from react-native-gesture-handler-library. */import { GestureHandlerRootView } from "react-native-gesture-handler";/* @end */
 

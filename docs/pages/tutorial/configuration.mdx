@@ -17,13 +17,13 @@ We've to configure the status bar, add a splash screen, and an app icon to consi
 
 [`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `<StatusBar>` component to configure the app's status bar by changing the text color, background color, making it translucent, and so on.
 
-Inside **app/index.tsx**:
+Inside **app/(tabs)/index.tsx**:
 
 1. Import `StatusBar` from `expo-status-bar`.
 2. Mount the `<StatusBar>` component inside the `Index` component.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx app/(tabs)/index.tsx
 // ...rest of the import statements remain same
 import { StatusBar } from 'expo-status-bar';
 
