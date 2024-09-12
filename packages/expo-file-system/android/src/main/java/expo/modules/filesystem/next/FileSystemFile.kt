@@ -69,13 +69,13 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
     val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(path.readBytes())
+    val digest = md.digest(file.readBytes())
     return digest.toHexString()
   }
 
   val size: Long? get() {
-    return if (path.exists()) {
-      path.length()
+    return if (file.exists()) {
+      file.length()
     } else {
       null
     }
