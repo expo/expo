@@ -85,7 +85,7 @@ public final class FileSystemNextModule: Module {
       }
 
       Function("create") { file in
-        file.create()
+        try file.create()
       }
 
       Function("copy") { (file, to: FileSystemPath) in

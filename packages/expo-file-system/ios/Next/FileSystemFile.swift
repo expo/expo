@@ -6,9 +6,21 @@ internal final class FileSystemFile: FileSystemPath {
   init(url: URL) {
     super.init(url: url, isDirectory: false)
   }
-  func create() {
+
+  func validateType() throws {
+    var isDirectory: ObjCBool = false
+    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+      if isDirectory.boolValue {
+        throw InvalidTypeFileException()
+      }
+    }
+  }
+
+  func create() throws {
+    try validateType()
     FileManager.default.createFile(atPath: url.path, contents: nil)
   }
+
   func exists() -> Bool {
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
@@ -16,6 +28,7 @@ internal final class FileSystemFile: FileSystemPath {
     }
     return false
   }
+
   // TODO: Move to the constructor once error is rethrowed
   func validatePath() throws {
     guard url.isFileURL && !url.hasDirectoryPath else {
@@ -45,6 +58,7 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func write(_ content: String) throws {
+    try validateType()
     try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
   }
 
@@ -53,6 +67,7 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func text() throws -> String {
+    try validateType()
     return try String(contentsOf: url)
   }
 
