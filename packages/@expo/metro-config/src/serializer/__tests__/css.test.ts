@@ -24,24 +24,30 @@ it(`supports global CSS files`, async () => {
 });
 
 it(`supports global CSS files with imports`, async () => {
-  const [, artifacts] = await serializeOptimizeAsync({
-    'index.js': `
+  const [, artifacts] = await serializeOptimizeAsync(
+    {
+      'index.js': `
           import './styles.css';
         `,
-    'styles.css': `
+      'styles.css': `
         @import './other.css';
     .container {
-    color: blue;
+    color: dodgerblue;
     }
         `,
-    'other.css': `
+      'other.css': `
 
     .second {
     color: red;
     }
         `,
-  });
-  console.log(artifacts);
+    },
+    {
+      minify: true,
+    }
+  );
+  expect(artifacts.length).toBe(2);
 
-  //   expect(artifacts[2].source).toBe('.second {\n  color: #00f;\n}\n');
+  expect(artifacts[1].source).toMatch('red');
+  expect(artifacts[1].source).toMatch('#1e90ff');
 });

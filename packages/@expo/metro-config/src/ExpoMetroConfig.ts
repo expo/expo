@@ -103,64 +103,6 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
-function patchMetroTransformToSupportCSS() {
-  const Transformer = require('metro/src/DeltaBundler/Transformer');
-
-  const original_transformFile = Transformer.prototype.transformFile;
-  if (!original_transformFile.__patched) {
-    original_transformFile.__patched = true;
-
-    Transformer.prototype.transformFile = function (
-      filePath: string,
-      transformOptions: TransformOptions,
-      fileBuffer?: Buffer
-    ) {
-      this.dependencies.forEach((dependency: JSModule) => {
-        // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
-        // `skipCache` is set when a CSS module is found by PostCSS.
-        if (
-          dependency.output.find((file) => file.data.css?.skipCache) &&
-          !paths.includes(dependency.path)
-        ) {
-          // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
-          // the Graph._processModule method.
-          dependency.unstable_transformResultKey = dependency.unstable_transformResultKey + '.';
-
-          // Add the path to the list of modified paths so it gets run through the transformer again,
-          // this will ensure it is passed to PostCSS -> Tailwind.
-          paths.push(dependency.path);
-        }
-      });
-      // Invoke the original method with the new paths to ensure the standard behavior is preserved.
-      return original_transformFile.call(this, paths, options);
-    };
-    // Ensure we don't patch the method twice.
-    Transformer.prototype.transformFile.__patched = true;
-  }
-
-  metro.getBundler().getBundler().transformFile = async function (
-    filePath: string,
-    transformOptions: TransformOptions,
-    fileBuffer?: Buffer
-  ) {
-    return originalTransformFile(
-      filePath,
-      pruneCustomTransformOptions(
-        filePath,
-        // Clone the options so we don't mutate the original.
-        {
-          ...transformOptions,
-          customTransformOptions: {
-            __proto__: null,
-            ...transformOptions.customTransformOptions,
-          },
-        }
-      ),
-      fileBuffer
-    );
-  };
-}
-
 function createNumericModuleIdFactory(): (path: string) => number {
   const fileToIdMap = new Map();
   let nextId = 0;

@@ -182,6 +182,9 @@ async function transform(config, projectRoot, filename, data, options) {
         cssModules: false,
         projectRoot,
         minify: options.minify,
+        analyzeDependencies: true,
+        // @ts-expect-error: Added for testing against virtual file system.
+        resolver: options._test_resolveCss,
     });
     // TODO: Warnings:
     // cssResults.warnings.forEach((warning) => {
@@ -191,72 +194,6 @@ async function transform(config, projectRoot, filename, data, options) {
     const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev
         ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename, reactServer }))
         : Buffer.from(''), options);
-    // TODO: Handle references for CSS modules.
-    const cssModuleDeps = [];
-    if (cssResults.dependencies) {
-        for (let dep of cssResults.dependencies) {
-            console.log(dep);
-            // let loc = convertLoc(dep.loc);
-            // if (originalMap) {
-            //   loc = remapSourceLocation(loc, originalMap);
-            // }
-            if (dep.type === 'import' && !cssResults.exports) {
-                // asset.addDependency({
-                //   specifier: dep.url,
-                //   specifierType: 'url',
-                //   loc,
-                //   packageConditions: ['style'],
-                //   meta: {
-                //     // For the glob resolver to distinguish between `@import` and other URL dependencies.
-                //     isCSSImport: true,
-                //     media: dep.media,
-                //     placeholder: dep.placeholder,
-                //   },
-                // });
-                cssModuleDeps.push({
-                    name: dep.url,
-                    data: {
-                        asyncType: null,
-                        isOptional: false,
-                        locs: [
-                            {
-                                start: {
-                                    line: dep.loc.start.line,
-                                    column: dep.loc.start.column,
-                                    index: -1, //dep.loc.start.index,
-                                },
-                                end: {
-                                    line: dep.loc.end.line,
-                                    column: dep.loc.end.column,
-                                    index: -1, //dep.loc.end.index,
-                                },
-                                filename: filename,
-                                identifierName: undefined,
-                            },
-                        ],
-                        exportNames: [],
-                        key: dep.placeholder || dep.url,
-                    },
-                    // asyncType: null,
-                    // optional: false,
-                    // exportNames: getExportNamesFromPath(path),
-                    // data: {
-                    //   key: string;
-                    //   asyncType: AsyncDependencyType | null;
-                    //   isOptional?: boolean;
-                    //   locs: readonly t.SourceLocation[];
-                    //   contextParams?: RequireContextParams;
-                    //   exportNames: string[];
-                    // },
-                    // name: string;
-                });
-            }
-            else if (dep.type === 'url') {
-                throw new Error(`URL dependencies are not supported in global CSS files yet (url: ${dep.url}, loc: ${loc})`);
-            }
-        }
-    }
-    console.log(cssResults);
     const cssCode = cssResults.code.toString();
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later
@@ -280,7 +217,7 @@ async function transform(config, projectRoot, filename, data, options) {
         },
     ];
     return {
-        dependencies: jsModuleResults.dependencies.concat(cssModuleDeps),
+        dependencies: jsModuleResults.dependencies,
         output,
     };
 }
