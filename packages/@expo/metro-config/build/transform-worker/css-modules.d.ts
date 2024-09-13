@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare function transformCssModuleWeb(props: {
     filename: string;
     src: string;
@@ -10,8 +11,8 @@ export declare function transformCssModuleWeb(props: {
     };
 }): Promise<{
     output: string;
-    css: Uint8Array;
-    map: void | Uint8Array;
+    css: Buffer;
+    map: void | Buffer;
 }>;
 export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
     styles: Record<string, string>;

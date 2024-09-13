@@ -207,12 +207,13 @@ export async function transform(
 
   // Global CSS:
 
-  const { bundleAsync } = require('lightningcss') as typeof import('lightningcss');
+  const { transform } = require('lightningcss') as typeof import('lightningcss');
 
   // Here we delegate bundling to lightningcss to resolve all CSS imports together.
   // TODO: Add full CSS bundling support to Metro.
-  const cssResults = await bundleAsync({
+  const cssResults = transform({
     filename,
+    code: Buffer.from(code),
     sourceMap: false,
     cssModules: false,
     projectRoot,
@@ -221,6 +222,76 @@ export async function transform(
     // @ts-expect-error: Added for testing against virtual file system.
     resolver: options._test_resolveCss,
   });
+
+  // TODO: Handle references for CSS modules.
+  const cssModuleDeps: NotReadonly<CollectedDependencies['dependencies']> = [];
+  if (cssResults.dependencies) {
+    for (let dep of cssResults.dependencies) {
+      console.log(dep);
+      // let loc = convertLoc(dep.loc);
+      // if (originalMap) {
+      //   loc = remapSourceLocation(loc, originalMap);
+      // }
+
+      if (dep.type === 'import' && !cssResults.exports) {
+        // asset.addDependency({
+        //   specifier: dep.url,
+        //   specifierType: 'url',
+        //   loc,
+        //   packageConditions: ['style'],
+        //   meta: {
+        //     // For the glob resolver to distinguish between `@import` and other URL dependencies.
+        //     isCSSImport: true,
+        //     media: dep.media,
+        //     placeholder: dep.placeholder,
+        //   },
+        // });
+
+        cssModuleDeps.push({
+          name: dep.url,
+          data: {
+            asyncType: null,
+            isOptional: false,
+            locs: [
+              {
+                start: {
+                  line: dep.loc.start.line,
+                  column: dep.loc.start.column,
+                  index: -1, //dep.loc.start.index,
+                },
+                end: {
+                  line: dep.loc.end.line,
+                  column: dep.loc.end.column,
+                  index: -1, //dep.loc.end.index,
+                },
+                filename: filename,
+                identifierName: undefined,
+              },
+            ],
+            exportNames: [],
+            key: dep.placeholder || dep.url,
+          },
+          // asyncType: null,
+          // optional: false,
+          // exportNames: getExportNamesFromPath(path),
+
+          // data: {
+          //   key: string;
+          //   asyncType: AsyncDependencyType | null;
+          //   isOptional?: boolean;
+          //   locs: readonly t.SourceLocation[];
+          //   contextParams?: RequireContextParams;
+          //   exportNames: string[];
+          // },
+          // name: string;
+        });
+      } else if (dep.type === 'url') {
+        throw new Error(
+          `URL dependencies are not supported in global CSS files yet (url: ${dep.url})`
+        );
+      }
+    }
+  }
 
   // TODO: Warnings:
   // cssResults.warnings.forEach((warning) => {
@@ -233,7 +304,7 @@ export async function transform(
     projectRoot,
     filename,
     options.dev
-      ? Buffer.from(wrapDevelopmentCSS({ src: code, filename, reactServer }))
+      ? Buffer.from(wrapDevelopmentCSS({ src: cssResults.code.toString(), filename, reactServer }))
       : Buffer.from(''),
     options
   );
@@ -264,7 +335,7 @@ export async function transform(
   ];
 
   return {
-    dependencies: jsModuleResults.dependencies,
+    dependencies: jsModuleResults.dependencies.concat(cssModuleDeps),
     output,
   };
 }
@@ -279,4 +350,8 @@ module.exports = {
   // Use defaults for everything that's not custom.
   ...worker,
   transform,
+};
+
+type NotReadonly<T> = {
+  -readonly [P in keyof T]: T[P];
 };

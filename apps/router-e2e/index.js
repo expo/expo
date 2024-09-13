@@ -1,3 +1,3 @@
-// require('expo-router/entry');
+require('expo-router/entry');
 
-import './one.css';
+// import './one.css';

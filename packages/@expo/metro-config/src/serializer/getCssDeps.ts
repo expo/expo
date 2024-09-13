@@ -42,36 +42,19 @@ export type JSModule = Module<{
   unstable_transformResultKey?: string;
 };
 
-export function filterJsModules(
-  dependencies: ReadOnlyDependencies,
-  type: 'js/script' | 'js/module' | 'js/module/asset',
-  { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>
-) {
-  const assets: JSModule[] = [];
-
-  for (const module of dependencies.values()) {
-    if (
-      isJsModule(module) &&
-      processModuleFilter(module) &&
-      getJsOutput(module).type === type &&
-      path.relative(projectRoot, module.path) !== 'package.json'
-    ) {
-      assets.push(module as JSModule);
-    }
-  }
-  return assets;
+function isTypeJSModule(module: Module<any>): module is JSModule {
+  return isJsModule(module);
 }
 
 export function getCssSerialAssets<T extends any>(
   dependencies: ReadOnlyDependencies<T>,
-  { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>
+  { projectRoot, entryFile }: Pick<Options, 'projectRoot'> & { entryFile: string }
 ): SerialAsset[] {
   const assets: SerialAsset[] = [];
 
-  for (const module of filterJsModules(dependencies, 'js/module', {
-    processModuleFilter,
-    projectRoot,
-  })) {
+  const visited = new Set<string>();
+
+  function pushCssModule(module: JSModule) {
     const cssMetadata = getCssMetadata(module);
     if (cssMetadata) {
       const contents = cssMetadata.code;
@@ -99,10 +82,35 @@ export function getCssSerialAssets<T extends any>(
     }
   }
 
+  function traverseDeps(absolutePath: string) {
+    const entry = dependencies.get(absolutePath);
+
+    entry?.dependencies.forEach((dep) => {
+      if (visited.has(dep.absolutePath)) {
+        return;
+      }
+      visited.add(dep.absolutePath);
+      const next = dependencies.get(dep.absolutePath);
+      if (!next || !isTypeJSModule(next)) {
+        return;
+      }
+
+      // Traverse the deps next to ensure the CSS is pushed in the correct order.
+      traverseDeps(next.path);
+
+      // Then push the JS after the siblings.
+      if (getCssMetadata(next)) {
+        pushCssModule(next);
+      }
+    });
+  }
+
+  traverseDeps(entryFile);
+
   return assets;
 }
 
-function getCssMetadata(module: JSModule): MetroModuleCSSMetadata | null {
+function getCssMetadata(module: Module<any>): MetroModuleCSSMetadata | null {
   const data = module.output[0]?.data;
   if (data && typeof data === 'object' && 'css' in data) {
     if (typeof data.css !== 'object' || !('code' in (data as any).css)) {
