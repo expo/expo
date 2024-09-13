@@ -130,15 +130,11 @@ class AudioModule : Module() {
     OnDestroy {
       for (player in players.values) {
         player.player.stop()
-        player.deallocate()
       }
 
       for (recorder in recorders.values) {
         recorder.stopRecording()
-        recorder.deallocate()
       }
-      players.clear()
-      recorders.clear()
     }
 
     Class(AudioPlayer::class) {
