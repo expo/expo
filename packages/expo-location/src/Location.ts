@@ -1,3 +1,4 @@
+import { isRunningInExpoGo } from 'expo';
 import { PermissionResponse, createPermissionHook, Platform } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
@@ -18,6 +19,9 @@ import {
   LocationTaskOptions,
 } from './Location.types';
 import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';
+
+// Flag for warning about background services not being available in Expo Go
+let warnAboutExpoGoDisplayed = false;
 
 // @needsAudit
 /**
@@ -316,6 +320,17 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
 function _validateTaskName(taskName: string) {
   if (!taskName || typeof taskName !== 'string') {
     throw new Error(`\`taskName\` must be a non-empty string. Got ${taskName} instead.`);
+  }
+  if (isRunningInExpoGo()) {
+    if (!warnAboutExpoGoDisplayed) {
+      const message =
+        '`Background location` functionality is limited in Expo Go:\n' +
+        'On Android, it is not available at all.\n' +
+        'On iOS, it works when running in the Simulator.\n' +
+        'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+      console.warn(message);
+      warnAboutExpoGoDisplayed = true;
+    }
   }
 }
 
