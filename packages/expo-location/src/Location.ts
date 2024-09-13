@@ -317,7 +317,7 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
 
 // --- Background location updates
 
-function _validateTaskName(taskName: string) {
+function _validate(taskName: string) {
   if (!taskName || typeof taskName !== 'string') {
     throw new Error(`\`taskName\` must be a non-empty string. Got ${taskName} instead.`);
   }
@@ -371,7 +371,7 @@ export async function startLocationUpdatesAsync(
   taskName: string,
   options: LocationTaskOptions = { accuracy: LocationAccuracy.Balanced }
 ): Promise<void> {
-  _validateTaskName(taskName);
+  _validate(taskName);
   await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
 
@@ -382,7 +382,7 @@ export async function startLocationUpdatesAsync(
  * @return A promise resolving as soon as the task is unregistered.
  */
 export async function stopLocationUpdatesAsync(taskName: string): Promise<void> {
-  _validateTaskName(taskName);
+  _validate(taskName);
   await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
 
@@ -393,7 +393,7 @@ export async function stopLocationUpdatesAsync(taskName: string): Promise<void> 
  * started or not.
  */
 export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean> {
-  _validateTaskName(taskName);
+  _validate(taskName);
   return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
 
@@ -461,7 +461,7 @@ export async function startGeofencingAsync(
   taskName: string,
   regions: LocationRegion[] = []
 ): Promise<void> {
-  _validateTaskName(taskName);
+  _validate(taskName);
   _validateRegions(regions);
   await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
@@ -474,7 +474,7 @@ export async function startGeofencingAsync(
  * @return A promise resolving as soon as the task is unregistered.
  */
 export async function stopGeofencingAsync(taskName: string): Promise<void> {
-  _validateTaskName(taskName);
+  _validate(taskName);
   await ExpoLocation.stopGeofencingAsync(taskName);
 }
 
@@ -485,6 +485,6 @@ export async function stopGeofencingAsync(taskName: string): Promise<void> {
  * started or not.
  */
 export async function hasStartedGeofencingAsync(taskName: string): Promise<boolean> {
-  _validateTaskName(taskName);
+  _validate(taskName);
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
