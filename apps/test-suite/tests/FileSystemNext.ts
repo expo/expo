@@ -317,5 +317,17 @@ export async function test({ describe, expect, it, ...t }) {
         expect(src.base64()).toBe('SGVsbG8gd29ybGQ=');
       });
     });
+
+    describe('Lists directory contents', () => {
+      it('for newly created directories', () => {
+        new File(testDirectory + 'file.txt').create();
+        new Directory(testDirectory + 'directory').create();
+        expect(new Directory(testDirectory).list()).toEqual([
+          new File(testDirectory + 'file.txt'),
+          new Directory(testDirectory + 'directory'),
+        ]);
+        expect(new Directory(testDirectory).list()[0] instanceof File).toBe(true);
+      });
+    });
   });
 }

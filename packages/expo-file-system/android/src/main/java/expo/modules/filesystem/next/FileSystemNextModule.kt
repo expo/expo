@@ -147,6 +147,11 @@ class FileSystemNextModule : Module() {
       Property("uri") { directory ->
         directory.asString()
       }
+
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+      Function("listAsRecords") { directory: FileSystemDirectory ->
+        directory.listAsRecords()
+      }
     }
   }
 }

@@ -23,6 +23,17 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     file.mkdir()
   }
 
+  // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+  fun listAsRecords(): List<Map<String, Any>> {
+    validateType()
+    return file.listFiles()?.map {
+      mapOf(
+        "isDirectory" to it.isDirectory,
+        "path" to it.path
+      )
+    } ?: emptyList()
+  }
+
   fun asString(): String {
     val uriString = Uri.fromFile(file).toString()
     return if (uriString.endsWith("/")) uriString else "$uriString/"

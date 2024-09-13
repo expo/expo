@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add listing directory contents to the new file system module. ([#31121](https://github.com/expo/expo/pull/31121) by [@aleqsio](https://github.com/aleqsio))
 - Add `base64()` new file system module. ([#31357](https://github.com/expo/expo/pull/31357) by [@aleqsio](https://github.com/aleqsio))
 - Add size and md5 properties to the new file system module. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))

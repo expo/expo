@@ -5,5 +5,6 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
 }
 export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     constructor(uri: URI);
+    list(): (File | Directory)[];
 }
 //# sourceMappingURL=FileSystem.d.ts.map

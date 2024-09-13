@@ -30,7 +30,7 @@ public final class FileSystemNextModule: Module {
             promise.resolve(FileSystemFile(url: destination).url.absoluteString)
           } else {
             try FileManager.default.moveItem(at: fileURL, to: to.url)
-            // TODO: Remove .url once returning shared objects works
+            // TODO: Remove .url.absoluteString once returning shared objects works
             promise.resolve(to.url.absoluteString)
           }
         } catch {
@@ -129,6 +129,11 @@ public final class FileSystemNextModule: Module {
 
       Function("move") { (directory, to: FileSystemPath) in
         try directory.move(to: to)
+      }
+
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+      Function("listAsRecords") { directory in
+        try directory.listAsRecords()
       }
 
       Property("uri") { directory in
