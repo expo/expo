@@ -4,7 +4,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 
-class ProgressUpdate(
+class TimeUpdate(
   @Field var currentTime: Double = .0,
   @Field var currentOffsetFromLive: Float? = null,
   @Field var currentLiveTimestamp: Long? = null

@@ -37,8 +37,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     _preservesPitch = true;
     _status = 'idle';
     _error = null;
-    _progressUpdateLoop = null;
-    _progressUpdateInterval = 0;
+    _timeUpdateLoop = null;
+    _timeUpdateEventInterval = 0;
     allowsExternalPlayback = false; // Not supported on web. Dummy to match the interface.
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.
@@ -105,19 +105,19 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         });
         this._preservesPitch = value;
     }
-    get progressUpdateInterval() {
-        return this._progressUpdateInterval;
+    get timeUpdateEventInterval() {
+        return this._timeUpdateEventInterval;
     }
-    set progressUpdateInterval(value) {
-        this._progressUpdateInterval = value;
-        if (this._progressUpdateLoop) {
-            clearInterval(this._progressUpdateLoop);
+    set timeUpdateEventInterval(value) {
+        this._timeUpdateEventInterval = value;
+        if (this._timeUpdateLoop) {
+            clearInterval(this._timeUpdateLoop);
         }
         if (value > 0) {
             // Emit the first event immediately like on other platforms
-            this.emit('progressUpdate', { currentTime: this.currentTime });
-            this._progressUpdateLoop = setInterval(() => {
-                this.emit('progressUpdate', { currentTime: this.currentTime });
+            this.emit('timeUpdate', { currentTime: this.currentTime });
+            this._timeUpdateLoop = setInterval(() => {
+                this.emit('timeUpdate', { currentTime: this.currentTime });
             }, value * 1000);
         }
     }

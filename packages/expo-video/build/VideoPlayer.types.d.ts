@@ -71,12 +71,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     preservesPitch: boolean;
     /**
-     * Float value indicating the interval in seconds at which the player will emit the [`progressUpdate`](#videoplayerevents) event.
+     * Float value indicating the interval in seconds at which the player will emit the [`timeUpdate`](#videoplayerevents) event.
      * When the value is equal to 0, the event will not be emitted.
      *
      * @default 0
      */
-    progressUpdateInterval: number;
+    timeUpdateEventInterval: number;
     /**
      * Float value between `0` and `16.0` indicating the current playback speed of the player.
      * @default 1.0
@@ -156,9 +156,9 @@ export type VideoPlayerEvents = {
      */
     playToEnd(): void;
     /**
-     * Handler for an event emitted in a given interval specified by the `progressUpdateInterval`.
+     * Handler for an event emitted in a given interval specified by the `timeUpdateEventInterval`.
      */
-    progressUpdate(progressUpdate: ProgressUpdate): void;
+    timeUpdate(timeUpdate: TimeUpdate): void;
     /**
      * Handler for an event emitted when the current media source of the player changes.
      */
@@ -278,9 +278,9 @@ export type DRMOptions = {
     base64CertificateData?: string;
 };
 /**
- * Data delivered with the [`progressUpdate`](#videoplayerevents) event, contains information about the current playback progress.
+ * Data delivered with the [`timeUpdate`](#videoplayerevents) event, contains information about the current playback progress.
  */
-export type ProgressUpdate = {
+export type TimeUpdate = {
     /**
      * Float value indicating the current playback time in seconds. Same as the [`currentTime`](#currenttime) property.
      */

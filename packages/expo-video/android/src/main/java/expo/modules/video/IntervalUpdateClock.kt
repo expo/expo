@@ -5,8 +5,8 @@ import android.os.Looper
 import expo.modules.video.delegates.IgnoreSameSet
 import java.lang.ref.WeakReference
 
-interface IntervalUpdateEmitter {
-  fun emitProgressUpdate()
+fun interface IntervalUpdateEmitter {
+  fun emitTimeUpdate()
 }
 
 class IntervalUpdateClock(emitter: IntervalUpdateEmitter) {
@@ -31,7 +31,7 @@ class IntervalUpdateClock(emitter: IntervalUpdateEmitter) {
 
   private fun startOrUpdate() {
     if (!isRunning) {
-      emitter.get()?.emitProgressUpdate()
+      emitter.get()?.emitTimeUpdate()
     } else {
       handler.removeCallbacksAndMessages(null)
     }
@@ -45,7 +45,7 @@ class IntervalUpdateClock(emitter: IntervalUpdateEmitter) {
     }
 
     val update = {
-      emitter.get()?.emitProgressUpdate()
+      emitter.get()?.emitTimeUpdate()
       scheduleNextUpdate()
     }
 

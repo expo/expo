@@ -199,17 +199,17 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
-      Property("progressUpdateInterval") { player -> Double in
-        return player.progressUpdateInterval
+      Property("timeUpdateEventInterval") { player -> Double in
+        return player.timeUpdateEventInterval
       }
-      .set {(player, progressUpdateInterval: Double) in
-        player.progressUpdateInterval = progressUpdateInterval
+      .set { (player, timeUpdateEventInterval: Double) in
+        player.timeUpdateEventInterval = timeUpdateEventInterval
       }
 
       Property("showNowPlayingNotification") { player -> Bool in
         return player.showNowPlayingNotification
       }
-      .set {(player, showNowPlayingNotification: Bool) in
+      .set { (player, showNowPlayingNotification: Bool) in
         player.showNowPlayingNotification = showNowPlayingNotification
       }
 

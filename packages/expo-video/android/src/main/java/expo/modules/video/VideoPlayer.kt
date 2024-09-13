@@ -20,7 +20,7 @@ import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.PlaybackError
-import expo.modules.video.records.ProgressUpdate
+import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
@@ -265,10 +265,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   // MARK: IntervalUpdateEmitter
 
-  override fun emitProgressUpdate() {
+  override fun emitTimeUpdate() {
     appContext?.mainQueue?.launch {
-      val updatePayload = ProgressUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp)
-      sendEvent(PlayerEvent.ProgressUpdated(updatePayload))
+      val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp)
+      sendEvent(PlayerEvent.TimeUpdated(updatePayload))
     }
   }
 }

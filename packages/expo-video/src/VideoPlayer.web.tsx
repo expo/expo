@@ -57,8 +57,8 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
-  _progressUpdateLoop: number | null = null;
-  _progressUpdateInterval: number = 0;
+  _timeUpdateLoop: number | null = null;
+  _timeUpdateEventInterval: number = 0;
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
@@ -140,20 +140,20 @@ export default class VideoPlayerWeb
     this._preservesPitch = value;
   }
 
-  get progressUpdateInterval(): number {
-    return this._progressUpdateInterval;
+  get timeUpdateEventInterval(): number {
+    return this._timeUpdateEventInterval;
   }
-  set progressUpdateInterval(value: number) {
-    this._progressUpdateInterval = value;
-    if (this._progressUpdateLoop) {
-      clearInterval(this._progressUpdateLoop);
+  set timeUpdateEventInterval(value: number) {
+    this._timeUpdateEventInterval = value;
+    if (this._timeUpdateLoop) {
+      clearInterval(this._timeUpdateLoop);
     }
     if (value > 0) {
       // Emit the first event immediately like on other platforms
-      this.emit('progressUpdate', { currentTime: this.currentTime });
+      this.emit('timeUpdate', { currentTime: this.currentTime });
 
-      this._progressUpdateLoop = setInterval(() => {
-        this.emit('progressUpdate', { currentTime: this.currentTime });
+      this._timeUpdateLoop = setInterval(() => {
+        this.emit('timeUpdate', { currentTime: this.currentTime });
       }, value * 1000);
     }
   }

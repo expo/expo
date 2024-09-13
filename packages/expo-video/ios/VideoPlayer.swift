@@ -76,13 +76,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   // TODO: @behenate - Once the Player instance is available in OnStartObserving we can automatically start/stop the interval.
-  var progressUpdateInterval: Double = 0 {
+  var timeUpdateEventInterval: Double = 0 {
     didSet {
-      if progressUpdateInterval <= 0 {
-        observer?.stopProgressEvents()
+      if timeUpdateEventInterval <= 0 {
+        observer?.stopTimeUpdates()
         return
       }
-      observer?.startOrUpdateProgressEvents(forInterval: progressUpdateInterval)
+      observer?.startOrUpdateTimeUpdates(forInterval: timeUpdateEventInterval)
     }
   }
 
@@ -213,8 +213,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     safeEmit(event: "sourceChange", arguments: newVideoPlayerItem?.videoSource, oldVideoPlayerItem?.videoSource)
   }
 
-  func onProgressUpdate(player: AVPlayer, progressUpdate: ProgressUpdate) {
-    safeEmit(event: "progressUpdate", arguments: progressUpdate)
+  func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
+    safeEmit(event: "timeUpdate", arguments: timeUpdate)
   }
 
   func safeEmit<each A: AnyArgument>(event: String, arguments: repeat each A) {
