@@ -27,10 +27,10 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
   fun listAsRecords(): List<Map<String, Any>> {
     validateType()
     return file.listFiles()?.map {
-        mapOf(
-          "isDirectory" to it.isDirectory,
-          "path" to it.path
-        )
+      mapOf(
+        "isDirectory" to it.isDirectory,
+        "path" to it.path
+      )
     } ?: emptyList()
   }
 
