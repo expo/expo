@@ -27,9 +27,8 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Supports different slash combinations', async () => {
       expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
-      // FirstDirectory is a host when url parsing.
-      expect(new File('file://firstDirectory/to/file').uri).toBe('file:///to/file');
-      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+      expect(new File('file://path/to/file').uri).toBe('file:///path/to/file');
+      expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
     });
 
     it('Accepts and correctly handles uris to files', () => {
@@ -353,6 +352,13 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('joins paths', () => {
         expect(Paths.join('file:///path', 'to', '..', 'file')).toBe('file:///path/file');
+      });
+
+      it('joins paths in the File and Directory constructors', () => {
+        expect(new File('file:///path', 'to', '..', 'file').uri).toBe('file:///path/file');
+        expect(new Directory('file:///path', 'to', '..', 'directory').uri).toBe(
+          'file:///path/directory/'
+        );
       });
     });
   });

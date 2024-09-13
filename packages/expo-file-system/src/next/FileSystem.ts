@@ -3,8 +3,8 @@ import { URI } from './FileSystem.types';
 import { dirname, extname, join } from './pathUtilities/path';
 
 export class File extends ExpoFileSystem.FileSystemFile {
-  constructor(uri: URI) {
-    super(uri);
+  constructor(...uris: URI[]) {
+    super(join(...uris));
     this.validatePath();
   }
   /*
@@ -28,8 +28,8 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
 };
 
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(uri: URI) {
-    super(uri);
+  constructor(...uris: URI[]) {
+    super(join(...uris));
     this.validatePath();
   }
   /*
