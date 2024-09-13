@@ -319,7 +319,7 @@ class AudioModule : Module() {
         ref.uptime
       }
 
-      AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions?  ->
+      AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
         ref.prepareRecording(options)
       }
 
