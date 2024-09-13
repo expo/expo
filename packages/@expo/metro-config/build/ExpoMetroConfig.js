@@ -49,7 +49,7 @@ const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
 const debug = require('debug')('expo:metro:config');
-let warnMemoCache = new Set();
+const warnMemoCache = new Set();
 function memoWarn(message) {
     if (!warnMemoCache.has(message)) {
         warnMemoCache.add(message);

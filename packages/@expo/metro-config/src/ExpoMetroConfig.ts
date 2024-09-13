@@ -57,7 +57,7 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-let warnMemoCache: Set<string> = new Set();
+const warnMemoCache: Set<string> = new Set();
 function memoWarn(message: string) {
   if (!warnMemoCache.has(message)) {
     warnMemoCache.add(message);
