@@ -324,7 +324,7 @@ function _validate(taskName: string) {
   if (isRunningInExpoGo()) {
     if (!warnAboutExpoGoDisplayed) {
       const message =
-        '`Background location` is limited in Expo Go:\n' +
+        'Background location is limited in Expo Go:\n' +
         'On Android, it is not available at all.\n' +
         'On iOS, it works when running in the Simulator.\n' +
         'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
