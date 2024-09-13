@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.2.6 — 2024-09-13
+
+### 🛠 Breaking changes
+
 - `showNowPlayingNotification` property of the player now defaults to `false`. ([#31261](https://github.com/expo/expo/pull/31261) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features

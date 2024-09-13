@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, getAssets crashed when result was empty ([#29969](https://github.com/expo/expo/pull/29969) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 16.0.5 — 2024-09-13
+
+### 🐛 Bug fixes
+
+- On `iOS`, getAssets crashed when result was empty ([#29969](https://github.com/expo/expo/pull/29969) by [@vonovak](https://github.com/vonovak))
 
 ## 16.0.4 — 2024-06-20
 
