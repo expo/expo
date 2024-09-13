@@ -109,7 +109,9 @@ export default React.forwardRef((props, ref) => {
         // Clear the body
         path.node.body = [];
         path.node.directives = [];
+
         path.pushContainer('body', template.ast(proxyModule.join('\n')));
+
         assertExpoMetadata(state.file.metadata);
 
         // Save the client reference in the metadata.
