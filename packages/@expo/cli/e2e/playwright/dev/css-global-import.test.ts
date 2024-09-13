@@ -24,14 +24,14 @@ test.describe(inputDir, () => {
     testInfo.setTimeout(testInfo.timeout + 30000);
 
     console.time('expo export');
-    // await execa('node', [bin, 'export', '-p', 'web', '--output-dir', inputDir], {
-    //   cwd: projectRoot,
-    //   env: {
-    //     NODE_ENV: 'production',
-    //     EXPO_USE_STATIC: 'static',
-    //     E2E_ROUTER_SRC: 'css-global-import',
-    //   },
-    // });
+    await execa('node', [bin, 'export', '-p', 'web', '--output-dir', inputDir], {
+      cwd: projectRoot,
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_SRC: 'css-global-import',
+      },
+    });
     console.timeEnd('expo export');
 
     serveCmd = new ServeStaticCommand(projectRoot, {
@@ -75,10 +75,16 @@ test.describe(inputDir, () => {
     await page.waitForSelector('[data-testid="index-text"]');
 
     // Ensure the text color is blue
+    const indexText = await page.$('[data-testid="index-text"]');
+    expect(indexText).not.toBeNull();
+    expect(await indexText?.evaluate((node) => getComputedStyle(node).color)).toBe(
+      'rgb(0, 0, 255)'
+    );
+
+    // Ensure the text color is blue
     const betaText = await page.$('[data-testid="beta-text"]');
     expect(betaText).not.toBeNull();
-    const color = await betaText?.evaluate((node) => getComputedStyle(node).color);
-    expect(color).toBe('rgb(0, 0, 255)');
+    expect(await betaText?.evaluate((node) => getComputedStyle(node).color)).toBe('rgb(255, 0, 0)');
 
     expect(errorLogs).toEqual([]);
     expect(errors).toEqual([]);
