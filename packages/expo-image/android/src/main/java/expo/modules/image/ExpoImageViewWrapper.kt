@@ -46,7 +46,7 @@ import kotlin.math.min
 @SuppressLint("ViewConstructor")
 class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private val activity: Activity
-    get() = appContext.currentActivity ?: throw MissingActivity()
+    get() = appContext.throwingActivity
 
   internal val requestManager = getOrCreateRequestManager(appContext, activity)
   private val progressListener = OkHttpProgressListener(WeakReference(this))

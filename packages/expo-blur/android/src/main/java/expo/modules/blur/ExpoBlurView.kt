@@ -23,7 +23,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
-    val decorView = (appContext.currentActivity ?: throw Exceptions.MissingActivity()).window?.decorView
+    val decorView = appContext.throwingActivity.window?.decorView
     val rootView = decorView?.findViewById<ViewGroup>(android.R.id.content) ?: throw Exceptions.MissingRootView()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       it.setupWith(rootView, RenderEffectBlur())

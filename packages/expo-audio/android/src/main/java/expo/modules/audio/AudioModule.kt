@@ -1,7 +1,6 @@
 package expo.modules.audio
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
@@ -40,8 +39,6 @@ import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -285,7 +282,7 @@ class AudioModule : Module() {
     Class(AudioRecorder::class) {
       Constructor { options: RecordingOptions ->
         AudioRecorder(
-          activity.applicationContext,
+          appContext.throwingActivity.applicationContext,
           appContext,
           options
         )
@@ -383,7 +380,7 @@ class AudioModule : Module() {
     runBlocking(appContext.mainQueue.coroutineContext) { block() }
 
   private fun checkRecordingPermission() {
-    val permission = ContextCompat.checkSelfPermission(activity.applicationContext, Manifest.permission.RECORD_AUDIO)
+    val permission = ContextCompat.checkSelfPermission(appContext.throwingActivity.applicationContext, Manifest.permission.RECORD_AUDIO)
     if (permission != PackageManager.PERMISSION_GRANTED) {
       throw AudioPermissionsException()
     }
