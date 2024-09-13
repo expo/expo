@@ -23,6 +23,10 @@ class Env {
     get EXPO_USE_METRO_REQUIRE() {
         return (0, getenv_1.boolish)('EXPO_USE_METRO_REQUIRE', false);
     }
+    /** Enable the deprecated `serializer.getModulesRunBeforeMainModule` system which injects polyfill modules before running the main module. This has been removed in favor of simply importing the required polyfills in the `expo` module. */
+    get EXPO_USE_DEPRECATED_POLYFILL_SORTING() {
+        return (0, getenv_1.boolish)('EXPO_USE_DEPRECATED_POLYFILL_SORTING', false);
+    }
 }
 exports.env = new Env();
 //# sourceMappingURL=env.js.map

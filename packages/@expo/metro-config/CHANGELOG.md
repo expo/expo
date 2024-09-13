@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Stop using `serializer.getModulesRunBeforeMainModule` (in favor of simply importing `expo`) and move previous behavior behind `process.env.EXPO_USE_DEPRECATED_POLYFILL_SORTING`.
+
 ### 🎉 New features
 
 - Add virtual entry generation for DOM components on web. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))
