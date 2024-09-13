@@ -66,18 +66,14 @@ class AudioRecorder(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       if (isPaused) {
         recorder.resume()
-        isPaused = false
-        isRecording = true
       } else {
-        isRecording = true
-        isPaused = false
         recorder.start()
       }
     } else {
-      isRecording = true
-      isPaused = false
       recorder.start()
     }
+    isRecording = true
+    isPaused = false
     uptime = SystemClock.uptimeMillis()
   }
 
