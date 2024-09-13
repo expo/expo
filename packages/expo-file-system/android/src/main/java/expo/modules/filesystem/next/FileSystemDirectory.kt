@@ -23,6 +23,7 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     file.mkdir()
   }
 
+  // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
   fun listAsRecords(): List<Map<String, Any>> {
     validateType()
     return file.listFiles()?.map {

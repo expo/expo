@@ -131,6 +131,7 @@ public final class FileSystemNextModule: Module {
         try directory.move(to: to)
       }
 
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
       Function("listAsRecords") { directory in
         try directory.listAsRecords()
       }

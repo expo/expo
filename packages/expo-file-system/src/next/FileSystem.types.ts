@@ -55,6 +55,7 @@ export declare class Directory {
   /**
    * @hidden
    * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
+   * This function is internal and will be removed in the future (when returning arrays of shared objects is supported).
    */
   listAsRecords(): { isDirectory: string; path: string }[];
   /**
