@@ -26,7 +26,7 @@ export class EventEmitterProxy {
       const listener = (...args) => {
         const serializeArgs = args.map((arg) => JSON.stringify(arg)).join(',');
         const script = 'window.ExpoDomWebView.eventEmitterProxy.${this.moduleName}.emit("${eventName}", ' + serializeArgs + ')';
-        globalThis.expo.modules.ExpoDomWebViewModule.evalJsForWebViewAsync(%%WEBVIEW_ID%%, script);
+        globalThis.expo.modules.ExpoDomWebViewModule.evalJsForWebViewAsync("%%WEBVIEW_ID%%", script);
       };
       globalThis.expo.$$DomWebViewEventListenerMap['${eventName}'].set(${nativeListenerId}, listener);
       globalThis.expo.modules.${this.moduleName}.addListener('${eventName}', listener);
