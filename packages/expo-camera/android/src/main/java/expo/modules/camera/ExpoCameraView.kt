@@ -94,10 +94,10 @@ class ExpoCameraView(
 ) : ExpoView(context, appContext),
   CameraViewInterface {
   private val currentActivity
-    get() = appContext.activity as AppCompatActivity
+    get() = appContext.throwingActivity as AppCompatActivity
 
   val orientationEventListener by lazy {
-    object : OrientationEventListener(appContext.activity) {
+    object : OrientationEventListener(appContext.throwingActivity) {
       override fun onOrientationChanged(orientation: Int) {
         if (orientation == ORIENTATION_UNKNOWN) {
           return
@@ -530,7 +530,7 @@ class ExpoCameraView(
   }
 
   private fun getDeviceOrientation() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    appContext.activity.display?.rotation ?: 0
+    appContext.throwingActivity.display?.rotation ?: 0
   } else {
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
   }

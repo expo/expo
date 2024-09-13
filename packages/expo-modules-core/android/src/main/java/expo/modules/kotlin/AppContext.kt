@@ -355,7 +355,7 @@ class AppContext(
         ?: (reactContext as? ReactApplicationContext)?.currentActivity
     }
 
-  val activity: Activity
+  val throwingActivity: Activity
     get() {
       val current = activityProvider?.currentActivity
         ?: (reactContext as? ReactApplicationContext)?.currentActivity

@@ -49,7 +49,7 @@ class SharingModule : Module() {
           context.grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         pendingPromise = promise
-        appContext.activity.startActivityForResult(intent, REQUEST_CODE)
+        appContext.throwingActivity.startActivityForResult(intent, REQUEST_CODE)
       } catch (e: InvalidArgumentException) {
         throw SharingInvalidArgsException(e.message, e)
       } catch (e: Exception) {

@@ -63,7 +63,7 @@ class IntentLauncherModule : Module() {
       params.category?.let { intent.addCategory(it) }
 
       try {
-        appContext.activity.startActivityForResult(intent, REQUEST_CODE)
+        appContext.throwingActivity.startActivityForResult(intent, REQUEST_CODE)
         pendingPromise = promise
       } catch (e: Throwable) {
         promise.reject(e.toCodedException())

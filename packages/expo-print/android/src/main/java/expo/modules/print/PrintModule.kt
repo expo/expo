@@ -146,7 +146,7 @@ class PrintModule : Module() {
   }
 
   private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: PrintOptions) {
-    (appContext.activity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
+    (appContext.throwingActivity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
       val attributes = getAttributesFromOptions(options)
       it.print(jobName, document, attributes.build())
     } ?: throw PrintManagerNotAvailableException()

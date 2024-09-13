@@ -75,7 +75,7 @@ class LocalAuthenticationModule : Module() {
     }
 
     AsyncFunction("authenticateAsync") { options: AuthOptions, promise: Promise ->
-      val fragmentActivity = appContext.activity as? FragmentActivity
+      val fragmentActivity = appContext.throwingActivity as? FragmentActivity
       if (fragmentActivity == null) {
         promise.reject(Exceptions.MissingActivity())
         return@AsyncFunction
@@ -236,7 +236,7 @@ class LocalAuthenticationModule : Module() {
   }
 
   private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: Promise) {
-    val fragmentActivity = appContext.activity as FragmentActivity?
+    val fragmentActivity = appContext.throwingActivity as FragmentActivity?
     if (fragmentActivity == null) {
       promise.resolve(
         createResponse(

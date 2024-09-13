@@ -14,7 +14,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.navigationbar.singletons.NavigationBar
 
 class NavigationBarModule : Module() {
-  private val currentActivity get() = appContext.activity
+  private val currentActivity get() = appContext.throwingActivity
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNavigationBar")

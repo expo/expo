@@ -49,7 +49,7 @@ class SystemUIModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<String?>("getBackgroundColorAsync") {
-      val background = appContext.activity.window.decorView.background
+      val background = appContext.throwingActivity.window.decorView.background
       return@AsyncFunction if (background is ColorDrawable) {
         colorToHex((background.mutate() as ColorDrawable).color)
       } else {
@@ -59,7 +59,7 @@ class SystemUIModule : Module() {
   }
 
   private fun setBackgroundColor(color: Int) {
-    val rootView = appContext.activity.window?.decorView
+    val rootView = appContext.throwingActivity.window?.decorView
     val colorInt = Color.parseColor(colorToHex(color))
     rootView?.setBackgroundColor(colorInt)
   }

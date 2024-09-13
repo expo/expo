@@ -43,7 +43,7 @@ class DocumentPickerModule : Module() {
           options.type[0]
         }
       }
-      appContext.activity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
+      appContext.throwingActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
     }
 
     OnActivityResult { _, (requestCode, resultCode, intent) ->

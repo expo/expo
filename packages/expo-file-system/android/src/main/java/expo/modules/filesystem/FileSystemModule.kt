@@ -462,7 +462,7 @@ open class FileSystemModule : Module() {
       }
 
       dirPermissionsRequest = promise
-      appContext.activity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE)
+      appContext.throwingActivity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE)
     }
 
     AsyncFunction("uploadAsync") { url: String, fileUriString: String, options: FileSystemUploadOptions, promise: Promise ->
@@ -705,7 +705,7 @@ open class FileSystemModule : Module() {
               and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             )
           treeUri?.let {
-            appContext.activity.contentResolver.takePersistableUriPermission(it, takeFlags)
+            appContext.throwingActivity.contentResolver.takePersistableUriPermission(it, takeFlags)
           }
           result.putBoolean("granted", true)
           result.putString("directoryUri", treeUri.toString())
@@ -859,8 +859,8 @@ open class FileSystemModule : Module() {
 
   private fun contentUriFromFile(file: File): Uri {
     return FileProvider.getUriForFile(
-      appContext.activity.application,
-      "${appContext.activity.application.packageName}.FileSystemFileProvider",
+      appContext.throwingActivity.application,
+      "${appContext.throwingActivity.application.packageName}.FileSystemFileProvider",
       file
     )
   }

@@ -73,7 +73,7 @@ class SMSModule : Module(), LifecycleEventListener {
     }
 
     pendingPromise = promise
-    appContext.activity.startActivity(smsIntent)
+    appContext.throwingActivity.startActivity(smsIntent)
     smsComposerOpened = true
   }
 

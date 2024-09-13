@@ -438,7 +438,7 @@ class MediaLibraryModule : Module() {
 
         try {
           awaitingAction = action
-          appContext.activity.startIntentSenderForResult(
+          appContext.throwingActivity.startIntentSenderForResult(
             deleteRequest.intentSender,
             WRITE_REQUEST_CODE,
             null,

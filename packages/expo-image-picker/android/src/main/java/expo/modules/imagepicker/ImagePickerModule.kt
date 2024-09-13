@@ -263,7 +263,7 @@ class ImagePickerModule : Module() {
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
     val cameraIntent = Intent(options.nativeMediaTypes.toCameraIntentAction())
-    if (cameraIntent.resolveActivity(appContext.activity.application.packageManager) == null) {
+    if (cameraIntent.resolveActivity(appContext.throwingActivity.application.packageManager) == null) {
       throw MissingActivityToHandleIntent(cameraIntent.type)
     }
   }

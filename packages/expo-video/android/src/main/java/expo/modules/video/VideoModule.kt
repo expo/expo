@@ -34,7 +34,7 @@ class VideoModule : Module() {
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(appContext.activity)
+      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
     }
 
     View(VideoView::class) {
@@ -147,7 +147,7 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource? ->
-        val player = VideoPlayer(appContext.activity.applicationContext, appContext, source)
+        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source)
         appContext.mainQueue.launch {
           player.prepare()
         }

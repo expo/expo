@@ -42,7 +42,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   var isInFullscreen: Boolean = false
     private set
 
-  private val currentActivity = appContext.activity
+  private val currentActivity = appContext.throwingActivity
   private val decorView = currentActivity.window.decorView
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 

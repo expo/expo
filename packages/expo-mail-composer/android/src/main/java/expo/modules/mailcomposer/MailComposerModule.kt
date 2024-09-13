@@ -24,7 +24,7 @@ class MailComposerModule : Module() {
 
     AsyncFunction("composeAsync") { options: MailComposerOptions, promise: Promise ->
       val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
-      val application = appContext.activity.application
+      val application = appContext.throwingActivity.application
       val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
 
       val mailIntents = resolveInfo.map { info ->
@@ -57,7 +57,7 @@ class MailComposerModule : Module() {
       }
 
       pendingPromise = promise
-      appContext.activity.startActivityForResult(chooser, REQUEST_CODE)
+      appContext.throwingActivity.startActivityForResult(chooser, REQUEST_CODE)
       composerOpened = true
     }
 

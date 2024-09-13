@@ -282,7 +282,7 @@ class AudioModule : Module() {
     Class(AudioRecorder::class) {
       Constructor { options: RecordingOptions ->
         AudioRecorder(
-          appContext.activity.applicationContext,
+          appContext.throwingActivity.applicationContext,
           appContext,
           options
         )
@@ -380,7 +380,7 @@ class AudioModule : Module() {
     runBlocking(appContext.mainQueue.coroutineContext) { block() }
 
   private fun checkRecordingPermission() {
-    val permission = ContextCompat.checkSelfPermission(appContext.activity.applicationContext, Manifest.permission.RECORD_AUDIO)
+    val permission = ContextCompat.checkSelfPermission(appContext.throwingActivity.applicationContext, Manifest.permission.RECORD_AUDIO)
     if (permission != PackageManager.PERMISSION_GRANTED) {
       throw AudioPermissionsException()
     }
