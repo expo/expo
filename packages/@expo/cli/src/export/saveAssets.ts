@@ -14,6 +14,8 @@ import prettyBytes from 'pretty-bytes';
 import { Log } from '../log';
 import { env } from '../utils/env';
 
+const BLT = '\u203A';
+
 export type BundleOptions = {
   entryPoint: string;
   platform: 'android' | 'ios' | 'web';
@@ -97,22 +99,6 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     return size;
   };
 
-  if (rscEntries.length) {
-    const plural = rscEntries.length === 1 ? '' : 's';
-
-    Log.log('');
-    Log.log(chalk.bold`Exporting ${rscEntries.length} React Server Component${plural}:`);
-
-    for (const [filePath, assets] of rscEntries.sort((a, b) => a[0].length - b[0].length)) {
-      const id = assets.rscId!;
-      Log.log(
-        '/' + (id === '' ? chalk.gray(' (index)') : id),
-        sizeStr(assets.contents),
-        chalk.gray(filePath)
-      );
-    }
-  }
-
   // TODO: If any Expo Router is used, then use a new style which is more simple:
   // `chalk.gray(/path/to/) + chalk.cyan('route')`
   // | index.html (1.2kb)
@@ -121,60 +107,20 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   const isExpoRouter = routeEntries.length;
 
-  if (routeEntries.length) {
-    const plural = routeEntries.length === 1 ? '' : 's';
-
-    Log.log('');
-    Log.log(chalk.bold`Exporting ${routeEntries.length} static route${plural}:`);
-
-    for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
-      const id = assets.routeId!;
-      Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
-    }
-  }
-
-  if (apiRouteEntries.length) {
-    const apiRoutesWithoutSourcemaps = apiRouteEntries.filter(
-      (route) => !route[0].endsWith('.map')
-    );
-    const plural = apiRoutesWithoutSourcemaps.length === 1 ? '' : 's';
-
-    Log.log('');
-    Log.log(chalk.bold`Exporting ${apiRoutesWithoutSourcemaps.length} API route${plural}:`);
-
-    for (const [apiRouteFilename, assets] of apiRoutesWithoutSourcemaps.sort(
-      (a, b) => a[0].length - b[0].length
-    )) {
-      const id = assets.apiRouteId!;
-      const hasSourceMap = apiRouteEntries.find(
-        ([filename, route]) =>
-          filename !== apiRouteFilename &&
-          route.apiRouteId === assets.apiRouteId &&
-          filename.endsWith('.map')
-      );
-      Log.log(
-        id === '' ? chalk.gray(' (index)') : id,
-        sizeStr(assets.contents),
-        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
-      );
-    }
-  }
-
   // Phase out printing all the assets as users can simply check the file system for more info.
   const showAdditionalInfo = !isExpoRouter || env.EXPO_DEBUG;
 
-  if (showAdditionalInfo) {
-    const assetGroups = [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0])) as [
-      string,
-      [string, ExportAssetDescriptor][],
-    ][];
+  const assetGroups = [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0])) as [
+    string,
+    [string, ExportAssetDescriptor][],
+  ][];
 
+  if (showAdditionalInfo) {
     if (assetGroups.length) {
       const totalAssets = assetGroups.reduce((sum, [, assets]) => sum + assets.length, 0);
-      const plural = totalAssets === 1 ? '' : 's';
 
       Log.log('');
-      Log.log(chalk.bold`Exporting ${totalAssets} asset${plural}:`);
+      Log.log(chalk.bold`${BLT} Assets (${totalAssets}):`);
 
       for (const [assetId, assets] of assetGroups) {
         const averageContentSize =
@@ -210,8 +156,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   [...bundles.entries()].forEach(([platform, assets]) => {
     Log.log('');
-    const plural = assets.length === 1 ? '' : 's';
-    Log.log(chalk.bold`Exporting ${assets.length} bundle${plural} for ${platform}:`);
+    Log.log(chalk.bold`${BLT} ${platform} bundles (${assets.length}):`);
 
     const allAssets = assets.sort((a, b) => a[0].localeCompare(b[0]));
     while (allAssets.length) {
@@ -230,11 +175,59 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   if (showAdditionalInfo && other.length) {
     Log.log('');
-    const plural = other.length === 1 ? '' : 's';
-    Log.log(chalk.bold`Exporting ${other.length} file${plural}:`);
+    Log.log(chalk.bold`${BLT} Files (${other.length}):`);
 
     for (const [filePath, asset] of other.sort((a, b) => a[0].localeCompare(b[0]))) {
       Log.log(filePath, sizeStr(asset.contents));
+    }
+  }
+
+  if (rscEntries.length) {
+    Log.log('');
+    Log.log(chalk.bold`${BLT} React Server Components (${rscEntries.length}):`);
+
+    for (const [filePath, assets] of rscEntries.sort((a, b) => a[0].length - b[0].length)) {
+      const id = assets.rscId!;
+      Log.log(
+        '/' + (id === '' ? chalk.gray(' (index)') : id),
+        sizeStr(assets.contents),
+        chalk.gray(filePath)
+      );
+    }
+  }
+
+  if (routeEntries.length) {
+    Log.log('');
+    Log.log(chalk.bold`${BLT} Static routes (${routeEntries.length}):`);
+
+    for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
+      const id = assets.routeId!;
+      Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
+    }
+  }
+
+  if (apiRouteEntries.length) {
+    const apiRoutesWithoutSourcemaps = apiRouteEntries.filter(
+      (route) => !route[0].endsWith('.map')
+    );
+    Log.log('');
+    Log.log(chalk.bold`${BLT} API routes (${apiRoutesWithoutSourcemaps.length}):`);
+
+    for (const [apiRouteFilename, assets] of apiRoutesWithoutSourcemaps.sort(
+      (a, b) => a[0].length - b[0].length
+    )) {
+      const id = assets.apiRouteId!;
+      const hasSourceMap = apiRouteEntries.find(
+        ([filename, route]) =>
+          filename !== apiRouteFilename &&
+          route.apiRouteId === assets.apiRouteId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id === '' ? chalk.gray(' (index)') : id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
     }
   }
 
