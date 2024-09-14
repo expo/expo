@@ -2,6 +2,7 @@ import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
+import fs from 'fs';
 import path from 'path';
 
 import { createMetadataJson } from './createMetadataJson';
@@ -272,6 +273,16 @@ export async function exportAppAsync(
           platform: 'web',
           environment: 'node',
         });
+
+        // Output a placeholder index.html if one doesn't exist in the public directory.
+        // This ensures native + API routes have some content at the root URL.
+        const placeholderIndex = path.resolve(outputPath, 'client/index.html');
+        if (!fs.existsSync(placeholderIndex)) {
+          files.set('index.html', {
+            contents: `<html><body></body></html>`,
+            targetDomain: 'client',
+          });
+        }
       } else {
         await exportFromServerAsync(projectRoot, devServer, {
           mode,
