@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove `debug.html` from `npx expo export --source-maps`.
+- Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
