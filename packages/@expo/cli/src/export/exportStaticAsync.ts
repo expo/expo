@@ -401,6 +401,9 @@ export async function exportApiRoutesStandaloneAsync(
 ) {
   const { serverManifest } = await devServer.getServerManifestAsync({ environment });
 
+  // Clear HTML routes during standalone API route export.
+  serverManifest.htmlRoutes = [];
+
   const apiRoutes = await exportApiRoutesAsync({
     outputDir,
     server: devServer,
