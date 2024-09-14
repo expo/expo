@@ -36,6 +36,7 @@
 
 ### 💡 Others
 
+- Import `react-native/Libraries/Core/InitializeCore` in winter to ensure loading order. ([#31460](https://github.com/expo/expo/pull/31460) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove back-compat asset helper from SDK 50. ([#31296](https://github.com/expo/expo/pull/31296) by [@EvanBacon](https://github.com/EvanBacon))
 - Refactor web hydration to use `globalThis.__EXPO_ROUTER_HYDRATE__` instead of `process.env.EXPO_PUBLIC_USE_STATIC`. ([#31267](https://github.com/expo/expo/pull/31267) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove nested loading for DOM components. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
