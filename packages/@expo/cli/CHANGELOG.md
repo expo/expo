@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `debug.html` from `npx expo export --source-maps`.
+
 ### 🎉 New features
 
 - Add log formatting for DOM components. ([#31265](https://github.com/expo/expo/pull/31265) by [@EvanBacon](https://github.com/EvanBacon))
