@@ -37,7 +37,6 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
         entryFile,
         projectRoot: options.projectRoot,
-        processModuleFilter: options.processModuleFilter,
     });
     // Create chunks for splitting.
     const chunks = new Set();

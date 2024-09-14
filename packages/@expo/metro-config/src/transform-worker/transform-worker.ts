@@ -218,73 +218,93 @@ export async function transform(
     cssModules: false,
     projectRoot,
     minify: options.minify,
-    analyzeDependencies: true,
+    analyzeDependencies: {
+      preserveImports: true,
+    },
     // @ts-expect-error: Added for testing against virtual file system.
     resolver: options._test_resolveCss,
   });
 
+  let cssCode = cssResults.code.toString();
+
+  if (cssResults.dependencies) {
+    const lines = cssCode.split('\n');
+    for (const dep of cssResults.dependencies) {
+      if (dep.type === 'import' && !cssResults.exports) {
+        if (!dep.url.match(/^[\w+]:\/\//)) {
+          console.log(dep.loc);
+          lines[dep.loc.start.line - 1] = lines[dep.loc.start.line - 1].slice(
+            dep.loc.start.column,
+            dep.loc.end.column
+          );
+        }
+      }
+    }
+    cssCode = lines.join('\n');
+    for (const dep of cssResults.dependencies) {
+      if (dep.type === 'import' && !cssResults.exports) {
+        cssCode.replace(dep.placeholder, dep.url);
+      }
+    }
+  }
+
+  // Append additional css metadata for static extraction.
+  const cssOutput: Required<ExpoJsOutput['data']['css']> = {
+    code: cssCode,
+    lineCount: countLines(cssCode),
+    map: [],
+    functionMap: null,
+    // Disable caching for CSS files when postcss is enabled and has been run on the file.
+    // This ensures that things like tailwind can update on every change.
+    skipCache: postcssResults.hasPostcss,
+    externalImports: [],
+  };
+
   // TODO: Handle references for CSS modules.
   const cssModuleDeps: NotReadonly<CollectedDependencies['dependencies']> = [];
   if (cssResults.dependencies) {
-    for (let dep of cssResults.dependencies) {
-      console.log(dep);
-      // let loc = convertLoc(dep.loc);
-      // if (originalMap) {
-      //   loc = remapSourceLocation(loc, originalMap);
-      // }
-
+    for (const dep of cssResults.dependencies) {
       if (dep.type === 'import' && !cssResults.exports) {
-        // asset.addDependency({
-        //   specifier: dep.url,
-        //   specifierType: 'url',
-        //   loc,
-        //   packageConditions: ['style'],
-        //   meta: {
-        //     // For the glob resolver to distinguish between `@import` and other URL dependencies.
-        //     isCSSImport: true,
-        //     media: dep.media,
-        //     placeholder: dep.placeholder,
-        //   },
-        // });
-
-        cssModuleDeps.push({
-          name: dep.url,
-          data: {
-            asyncType: null,
-            isOptional: false,
-            locs: [
-              {
-                start: {
-                  line: dep.loc.start.line,
-                  column: dep.loc.start.column,
-                  index: -1, //dep.loc.start.index,
+        if (dep.url.match(/^[\w+]:\/\//)) {
+          cssOutput.externalImports.push({
+            url: dep.url,
+            supports: dep.supports,
+            media: dep.media,
+          });
+        } else {
+          cssModuleDeps.push({
+            name: dep.url,
+            data: {
+              asyncType: null,
+              // Make external URL dependencies optional.
+              isOptional: true,
+              // isOptional: !!dep.url.match(/^[\w+]:\/\//),
+              locs: [
+                {
+                  start: {
+                    line: dep.loc.start.line,
+                    column: dep.loc.start.column,
+                    index: -1, //dep.loc.start.index,
+                  },
+                  end: {
+                    line: dep.loc.end.line,
+                    column: dep.loc.end.column,
+                    index: -1, //dep.loc.end.index,
+                  },
+                  filename,
+                  identifierName: undefined,
                 },
-                end: {
-                  line: dep.loc.end.line,
-                  column: dep.loc.end.column,
-                  index: -1, //dep.loc.end.index,
-                },
-                filename: filename,
-                identifierName: undefined,
+              ],
+              css: {
+                url: dep.url,
+                media: dep.media,
+                supports: dep.supports,
               },
-            ],
-            exportNames: [],
-            key: dep.placeholder || dep.url,
-          },
-          // asyncType: null,
-          // optional: false,
-          // exportNames: getExportNamesFromPath(path),
-
-          // data: {
-          //   key: string;
-          //   asyncType: AsyncDependencyType | null;
-          //   isOptional?: boolean;
-          //   locs: readonly t.SourceLocation[];
-          //   contextParams?: RequireContextParams;
-          //   exportNames: string[];
-          // },
-          // name: string;
-        });
+              exportNames: [],
+              key: dep.placeholder || dep.url,
+            },
+          });
+        }
       } else if (dep.type === 'url') {
         throw new Error(
           `URL dependencies are not supported in global CSS files yet (url: ${dep.url})`
@@ -292,6 +312,8 @@ export async function transform(
       }
     }
   }
+
+  console.log('CSS Res:', cssResults.code.toString(), cssModuleDeps, cssResults);
 
   // TODO: Warnings:
   // cssResults.warnings.forEach((warning) => {
@@ -304,12 +326,10 @@ export async function transform(
     projectRoot,
     filename,
     options.dev
-      ? Buffer.from(wrapDevelopmentCSS({ src: cssResults.code.toString(), filename, reactServer }))
+      ? Buffer.from(wrapDevelopmentCSS({ src: cssCode, filename, reactServer }))
       : Buffer.from(''),
     options
   );
-
-  const cssCode = cssResults.code.toString();
 
   // In production, we export the CSS as a string and use a special type to prevent
   // it from being included in the JS bundle. We'll extract the CSS like an asset later
@@ -320,16 +340,7 @@ export async function transform(
       data: {
         ...(jsModuleResults.output[0] as ExpoJsOutput).data,
 
-        // Append additional css metadata for static extraction.
-        css: {
-          code: cssCode,
-          lineCount: countLines(cssCode),
-          map: [],
-          functionMap: null,
-          // Disable caching for CSS files when postcss is enabled and has been run on the file.
-          // This ensures that things like tailwind can update on every change.
-          skipCache: postcssResults.hasPostcss,
-        },
+        css: cssOutput,
       },
     },
   ];

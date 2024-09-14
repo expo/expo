@@ -1,10 +1,11 @@
 import type { Module } from 'metro';
-import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
+import { isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
 import path from 'path';
 
 import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { hashString } from '../utils/hash';
+import { CSSMetadata } from './jsOutput';
 
 export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 
@@ -14,12 +15,6 @@ type Options = {
   platform?: string | null;
   projectRoot: string;
   publicPath: string;
-};
-
-type MetroModuleCSSMetadata = {
-  code: string;
-  lineCount: number;
-  map: any[];
 };
 
 // s = static
@@ -57,7 +52,9 @@ export function getCssSerialAssets<T extends any>(
   function pushCssModule(module: JSModule) {
     const cssMetadata = getCssMetadata(module);
     if (cssMetadata) {
+      console.log('>>>>', cssMetadata);
       const contents = cssMetadata.code;
+      console.log('push css module:', module, contents);
       const originFilename = path.relative(projectRoot, module.path);
 
       const filename = path.join(
@@ -110,7 +107,7 @@ export function getCssSerialAssets<T extends any>(
   return assets;
 }
 
-function getCssMetadata(module: Module<any>): MetroModuleCSSMetadata | null {
+function getCssMetadata(module: Module<any>): CSSMetadata | null {
   const data = module.output[0]?.data;
   if (data && typeof data === 'object' && 'css' in data) {
     if (typeof data.css !== 'object' || !('code' in (data as any).css)) {
@@ -118,7 +115,7 @@ function getCssMetadata(module: Module<any>): MetroModuleCSSMetadata | null {
         `Unexpected CSS metadata in Metro module (${module.path}): ${JSON.stringify(data.css)}`
       );
     }
-    return data.css as MetroModuleCSSMetadata;
+    return data.css as CSSMetadata;
   }
   return null;
 }

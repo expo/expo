@@ -19,7 +19,9 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
     function pushCssModule(module) {
         const cssMetadata = getCssMetadata(module);
         if (cssMetadata) {
+            console.log('>>>>', cssMetadata);
             const contents = cssMetadata.code;
+            console.log('push css module:', module, contents);
             const originFilename = path_1.default.relative(projectRoot, module.path);
             const filename = path_1.default.join(
             // Consistent location
