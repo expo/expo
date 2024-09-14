@@ -1,0 +1,73 @@
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java
+index 6664b6f..8b4c390 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java
+@@ -16,7 +16,7 @@ import android.webkit.WebViewClient;
+ 
+ import androidx.annotation.Nullable;
+ 
+-import com.facebook.common.logging.FLog;
++//import com.facebook.common.logging.FLog;
+ import com.facebook.react.bridge.Arguments;
+ import com.facebook.react.bridge.CatalystInstance;
+ import com.facebook.react.bridge.JavaScriptModule;
+@@ -418,7 +418,7 @@ public class RNCWebView extends WebView implements LifecycleEventListener {
+             if (mWebView.getMessagingEnabled()) {
+                 mWebView.onMessage(message);
+             } else {
+-                FLog.w(TAG, "ReactNativeWebView.postMessage method was called but messaging is disabled. Pass an onMessage handler to the WebView.");
++//                FLog.w(TAG, "ReactNativeWebView.postMessage method was called but messaging is disabled. Pass an onMessage handler to the WebView.");
+             }
+         }
+ 
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java
+index d59e19c..926787b 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java
+@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
+ import androidx.annotation.RequiresApi;
+ import androidx.core.util.Pair;
+ 
+-import com.facebook.common.logging.FLog;
+ import com.facebook.react.bridge.Arguments;
+ import com.facebook.react.bridge.ReactContext;
+ import com.facebook.react.bridge.ReadableArray;
+@@ -104,7 +103,7 @@ public class RNCWebViewClient extends WebViewClient {
+                     final long startTime = SystemClock.elapsedRealtime();
+                     while (lockObject.get() == RNCWebViewModuleImpl.ShouldOverrideUrlLoadingLock.ShouldOverrideCallbackState.UNDECIDED) {
+                         if (SystemClock.elapsedRealtime() - startTime > SHOULD_OVERRIDE_URL_LOADING_TIMEOUT) {
+-                            FLog.w(TAG, "Did not receive response to shouldOverrideUrlLoading in time, defaulting to allow loading.");
++//                            FLog.w(TAG, "Did not receive response to shouldOverrideUrlLoading in time, defaulting to allow loading.");
+                             RNCWebViewModuleImpl.shouldOverrideUrlLoadingLock.removeLock(lockIdentifier);
+                             return false;
+                         }
+@@ -112,7 +111,7 @@ public class RNCWebViewClient extends WebViewClient {
+                     }
+                 }
+             } catch (InterruptedException e) {
+-                FLog.e(TAG, "shouldOverrideUrlLoading was interrupted while waiting for result.", e);
++//                FLog.e(TAG, "shouldOverrideUrlLoading was interrupted while waiting for result.", e);
+                 RNCWebViewModuleImpl.shouldOverrideUrlLoadingLock.removeLock(lockIdentifier);
+                 return false;
+             }
+@@ -122,7 +121,7 @@ public class RNCWebViewClient extends WebViewClient {
+ 
+             return shouldOverride;
+         } else {
+-            FLog.w(TAG, "Couldn't use blocking synchronous call for onShouldStartLoadWithRequest due to debugging or missing Catalyst instance, falling back to old event-and-load.");
++//            FLog.w(TAG, "Couldn't use blocking synchronous call for onShouldStartLoadWithRequest due to debugging or missing Catalyst instance, falling back to old event-and-load.");
+             progressChangedFilter.setWaitingForCommandLoadUrl(true);
+ 
+             int reactTag = RNCWebViewWrapper.getReactTagFromWebView(view);
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewModuleImpl.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewModuleImpl.java
+index d5f3533..cf587f8 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewModuleImpl.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewModuleImpl.java
+@@ -24,7 +24,6 @@ import android.webkit.ValueCallback;
+ import android.webkit.WebChromeClient;
+ import android.widget.Toast;
+  
+-import com.facebook.common.activitylistener.ActivityListenerManager;
+ import com.facebook.react.bridge.ActivityEventListener;
+ import com.facebook.react.bridge.Promise;
+ import com.facebook.react.bridge.ReactApplicationContext;
