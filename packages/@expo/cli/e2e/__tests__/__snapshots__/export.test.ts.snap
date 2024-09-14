@@ -16,6 +16,7 @@ exports[`runs \`npx expo export --help\` 1`] = `
     --no-bytecode              Prevent generating Hermes bytecode
     --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
     --dump-assetmap            Emit an asset map for further processing
+    --no-ssg                   Skip exporting static HTML files for web routes
     -p, --platform <platform>  Options: android, ios, web, all. Default: all
     -s, --source-maps          Emit JavaScript source maps
     -c, --clear                Clear the bundler cache
