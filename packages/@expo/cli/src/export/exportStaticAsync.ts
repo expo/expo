@@ -403,6 +403,7 @@ export async function exportApiRoutesStandaloneAsync(
 
   // Clear HTML routes during standalone API route export.
   serverManifest.htmlRoutes = [];
+  serverManifest.notFoundRoutes = [];
 
   const apiRoutes = await exportApiRoutesAsync({
     outputDir,
