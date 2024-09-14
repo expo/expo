@@ -24,6 +24,7 @@ import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterMan
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import { MetroEnvironment } from '../start/server/middleware/metroOptions';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -390,13 +391,15 @@ export async function exportApiRoutesStandaloneAsync(
     outputDir,
     files = new Map(),
     platform,
+    environment,
   }: {
     outputDir: string;
     files?: ExportAssetMap;
     platform: string;
+    environment?: MetroEnvironment;
   }
 ) {
-  const { serverManifest } = await devServer.getServerManifestAsync();
+  const { serverManifest } = await devServer.getServerManifestAsync({ environment });
 
   const apiRoutes = await exportApiRoutesAsync({
     outputDir,

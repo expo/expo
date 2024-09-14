@@ -29,6 +29,7 @@ import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddl
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
@@ -43,6 +44,7 @@ export async function exportAppAsync(
     minify,
     bytecode,
     maxWorkers,
+    skipSSG,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -54,6 +56,7 @@ export async function exportAppAsync(
     | 'minify'
     | 'bytecode'
     | 'maxWorkers'
+    | 'skipSSG'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -70,6 +73,11 @@ export async function exportAppAsync(
   }
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+
+  if (skipSSG && exp.web?.output !== 'server') {
+    throw new CommandError('--no-ssg can only be used with `web.output: server`');
+  }
+
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
@@ -256,21 +264,31 @@ export async function exportAppAsync(
         await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
       }
 
-      await exportFromServerAsync(projectRoot, devServer, {
-        mode,
-        files,
-        clear: !!clear,
-        outputDir: outputPath,
-        minify,
-        baseUrl,
-        includeSourceMaps: sourceMaps,
-        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-        reactCompiler: !!exp.experiments?.reactCompiler,
-        exportServer,
-        maxWorkers,
-        isExporting: true,
-        exp: projectConfig.exp,
-      });
+      if (skipSSG) {
+        Log.log('Skipping static site generation');
+        await exportApiRoutesStandaloneAsync(devServer, {
+          outputDir: outputPath,
+          files,
+          platform: 'web',
+          environment: 'node',
+        });
+      } else {
+        await exportFromServerAsync(projectRoot, devServer, {
+          mode,
+          files,
+          clear: !!clear,
+          outputDir: outputPath,
+          minify,
+          baseUrl,
+          includeSourceMaps: sourceMaps,
+          routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+          reactCompiler: !!exp.experiments?.reactCompiler,
+          exportServer,
+          maxWorkers,
+          isExporting: true,
+          exp: projectConfig.exp,
+        });
+      }
     }
   } finally {
     await devServerManager.stopAsync();
