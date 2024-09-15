@@ -171,12 +171,40 @@ export const callServerRSC = async (
 
 const prefetchedParams = new WeakMap<Promise<unknown>, unknown>();
 
+// These are needed for iOS + Prod to get updates.
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-cache',
+  Pragma: 'no-cache',
+  Expires: '0',
+};
+
 const fetchRSCInternal = (url: string, params: unknown) =>
   params === undefined
-    ? fetch(url)
+    ? fetch(url, {
+        // Disable caching
+        headers: {
+          'expo-platform': process.env.EXPO_OS!,
+          ...NO_CACHE_HEADERS,
+        },
+      })
     : typeof params === 'string'
-      ? fetch(url, { headers: { 'expo-platform': process.env.EXPO_OS!, 'X-Expo-Params': params } })
-      : encodeReply(params).then((body) => fetch(url, { method: 'POST', body }));
+      ? fetch(url, {
+          headers: {
+            'expo-platform': process.env.EXPO_OS!,
+            ...NO_CACHE_HEADERS,
+            'X-Expo-Params': params,
+          },
+        })
+      : encodeReply(params).then((body) =>
+          fetch(url, {
+            headers: {
+              'expo-platform': process.env.EXPO_OS!,
+              ...NO_CACHE_HEADERS,
+            },
+            method: 'POST',
+            body,
+          })
+        );
 
 export const fetchRSC = (
   input: string,
