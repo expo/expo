@@ -212,7 +212,7 @@ export function createRequestHandler(
           logApiRouteExecutionError(error);
         }
 
-        return handleApiRouteError(error);
+        return handleApiRouteError(error as Error);
       }
     }
 
