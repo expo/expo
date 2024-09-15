@@ -244,15 +244,15 @@ function getAdjustedFilePath(path: string): string {
     return getAdjustedRemoteFilePath(path);
   }
 
-  if (getDevServer().bundleLoadedFromServer) {
-    return getAdjustedRemoteFilePath(path);
-  }
+  // if (getDevServer().bundleLoadedFromServer) {
+  return getAdjustedRemoteFilePath(path);
+  // }
 
-  if (process.env.EXPO_OS === 'android') {
-    return 'file:///android_asset' + path;
-  }
+  // if (process.env.EXPO_OS === 'android') {
+  //   return 'file:///android_asset' + path;
+  // }
 
-  return 'file://' + FS.bundleDirectory + path;
+  // return 'file://' + FS.bundleDirectory + path;
 }
 
 export const prefetchRSC = (input: string, params?: unknown): void => {

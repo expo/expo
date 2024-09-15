@@ -169,6 +169,14 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
+    [...files.entries()].forEach(([key, value]) => {
+      if (value.targetDomain === 'server') {
+        // Delete server resources to prevent them from being exposed in the binary.
+        files.delete(key);
+        return;
+      }
+    });
+
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
       .map((artifact) =>
