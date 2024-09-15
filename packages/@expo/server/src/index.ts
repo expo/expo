@@ -85,11 +85,21 @@ export function createRequestHandler(
     logApiRouteExecutionError = (error: Error) => {
       console.error(error);
     },
+    handleApiRouteError = async (error: Error) => {
+      console.error(error);
+      return new Response('Internal server error', {
+        status: 500,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    },
   }: {
     getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;
     getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
     getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
+    handleApiRouteError?: (error: Error) => Promise<Response>;
   } = {}
 ) {
   let routesManifest: ExpoRoutesManifestV1<RegExp> | undefined;
@@ -202,12 +212,7 @@ export function createRequestHandler(
           logApiRouteExecutionError(error);
         }
 
-        return new Response('Internal server error', {
-          status: 500,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-        });
+        return handleApiRouteError(error);
       }
     }
 
