@@ -56,7 +56,8 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     '/react-native-web/dist/.+\\.js$',
     // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
     'node_modules/react-server-dom-webpack/.+\\.js$',
-    /node_modules\/.+/,
+    // Block all node modules.
+    'node_modules/.+/',
 ].join('|'));
 function isUrl(value) {
     try {

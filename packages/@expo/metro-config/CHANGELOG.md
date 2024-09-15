@@ -40,6 +40,7 @@
 
 ### 💡 Others
 
+- Block all `node_modules` stacks in LogBox ([#31485](https://github.com/expo/expo/pull/31485) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix tree shaking error. ([#30585](https://github.com/expo/expo/pull/30585) by [@EvanBacon](https://github.com/EvanBacon))
 - Fork collectDependencies to support customizations for tree shaking and RSC. ([#30140](https://github.com/expo/expo/pull/30140) by [@EvanBacon](https://github.com/EvanBacon))
 - Rework mini-metro tests to support full transformation. ([#29980](https://github.com/expo/expo/pull/29980) by [@EvanBacon](https://github.com/EvanBacon))
