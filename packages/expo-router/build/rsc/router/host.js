@@ -15,6 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
+// import * as FS from 'expo-file-system';
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");
@@ -173,6 +174,7 @@ function getAdjustedRemoteFilePath(path) {
     if (process.env.EXPO_OS === 'web') {
         return path;
     }
+    alert('adjusted: ' + new URL(path, window.location.href).toString());
     return new URL(path, window.location.href).toString();
 }
 function getAdjustedFilePath(path) {
@@ -183,13 +185,7 @@ function getAdjustedFilePath(path) {
     if (path.match(/[0-9a-z]{40}#/i)) {
         return getAdjustedRemoteFilePath(path);
     }
-    // if (getDevServer().bundleLoadedFromServer) {
     return getAdjustedRemoteFilePath(path);
-    // }
-    // if (process.env.EXPO_OS === 'android') {
-    //   return 'file:///android_asset' + path;
-    // }
-    // return 'file://' + FS.bundleDirectory + path;
 }
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign

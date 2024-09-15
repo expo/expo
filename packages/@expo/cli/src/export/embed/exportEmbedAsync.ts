@@ -149,7 +149,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   try {
     const bundles = await devServer.nativeExportBundleAsync(
       {
-        splitChunks: false,
+        splitChunks: devServer.isReactServerComponentsEnabled,
         mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,

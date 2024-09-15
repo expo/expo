@@ -68,7 +68,7 @@ config.transformer.getTransformOptions = () => ({
   },
 });
 
-const isRSC = boolish('E2E_RSC_ENABLED', false);
+const isRSC = boolish('E2E_RSC_ENABLED', true);
 
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (isRSC && moduleName === 'expo-router/entry') {

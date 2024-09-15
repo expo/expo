@@ -1161,7 +1161,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
-          isExporting: true,
+          isExporting: this.instanceMetroOptions.isExporting,
           platform,
         });
       } catch (error: any) {
@@ -1425,6 +1425,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           serializerOptions,
         }
       );
+
+      console.log('bundle', bundle, serializerOptions);
 
       this.metro._reporter.update({
         buildID: getBuildID(buildNumber),

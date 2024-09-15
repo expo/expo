@@ -11,7 +11,7 @@
 //// <reference types="react/canary" />
 'use client';
 
-import * as FS from 'expo-file-system';
+// import * as FS from 'expo-file-system';
 import {
   createContext,
   createElement,
@@ -231,6 +231,8 @@ function getAdjustedRemoteFilePath(path: string): string {
     return path;
   }
 
+  alert('adjusted: ' + new URL(path, window.location.href).toString());
+
   return new URL(path, window.location.href).toString();
 }
 
@@ -244,15 +246,7 @@ function getAdjustedFilePath(path: string): string {
     return getAdjustedRemoteFilePath(path);
   }
 
-  // if (getDevServer().bundleLoadedFromServer) {
   return getAdjustedRemoteFilePath(path);
-  // }
-
-  // if (process.env.EXPO_OS === 'android') {
-  //   return 'file:///android_asset' + path;
-  // }
-
-  // return 'file://' + FS.bundleDirectory + path;
 }
 
 export const prefetchRSC = (input: string, params?: unknown): void => {

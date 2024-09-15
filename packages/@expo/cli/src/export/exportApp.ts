@@ -137,7 +137,9 @@ export async function exportAppAsync(
           const bundle = await devServer.nativeExportBundleAsync(
             {
               platform,
-              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+              splitChunks:
+                !env.EXPO_NO_BUNDLE_SPLITTING &&
+                (devServer.isReactServerComponentsEnabled || platform === 'web'),
               mainModuleName: getEntryWithServerRoot(projectRoot, {
                 platform,
                 pkg: projectConfig.pkg,
