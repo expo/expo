@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-- Enabled support on web on iOS 15 and above. ([#31479](https://github.com/expo/expo/pull/31479) by [@fobos531](https://github.com/fobos531))
+- Enabled support on web on iOS. ([#31479](https://github.com/expo/expo/pull/31479) by [@fobos531](https://github.com/fobos531))
 
 ### ⚠️ Notices
 
