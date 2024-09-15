@@ -66,24 +66,8 @@ function ensureContext(
     );
   }
 
-  // Apple disables WebGL 2.0 and doesn't provide any way to detect if it's disabled on iOS 14 and below
-  const isUnsupportedIOS = (() => {
-    const platform = navigator.platform;
-    const userAgent = navigator.userAgent;
-
-    if (!!platform && /iPad|iPhone|iPod/.test(platform)) {
-      const match = userAgent.match(/OS (\d+)_/);
-      if (match && match[1]) {
-        const version = parseInt(match[1], 10);
-
-        return version < 15;
-      }
-    }
-    return false;
-  })();
-
   const context =
-    (!isUnsupportedIOS && canvas.getContext('webgl2', contextAttributes)) ||
+    canvas.getContext('webgl2', contextAttributes) ||
     canvas.getContext('webgl', contextAttributes) ||
     canvas.getContext('webgl-experimental', contextAttributes) ||
     canvas.getContext('experimental-webgl', contextAttributes);
