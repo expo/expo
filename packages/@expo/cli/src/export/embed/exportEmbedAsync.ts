@@ -169,6 +169,9 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
+    const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
+    await persistMetroFilesAsync(files, serverOutput);
+
     [...files.entries()].forEach(([key, value]) => {
       if (value.targetDomain === 'server') {
         // Delete server resources to prevent them from being exposed in the binary.
@@ -176,9 +179,6 @@ export async function exportEmbedBundleAndAssetsAsync(
         return;
       }
     });
-
-    const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
-    await persistMetroFilesAsync(files, serverOutput);
 
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
