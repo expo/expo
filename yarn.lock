@@ -3456,12 +3456,12 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@remix-run/node@^2.10.0":
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.10.0.tgz#16adb0dd4175d21ff08d5e2cb21dd8be6ea397db"
-  integrity sha512-hFBt431leCEoN84kVj6BExv60+3KHFORTU2t24igJNtXPNCHH/pujMMKYaSrS3a5oKDTwwqbCmSztTyyr7uFLA==
+"@remix-run/node@^2.12.0":
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.12.0.tgz#f971872e783c7f5f097139461317c59e46415b0a"
+  integrity sha512-83Jaoc6gpSuD4e6rCk7N5ZHAXNmDw4fJC+kPeDCsd6+wLtTLSi7u9Zo9/Q7moLZ3oyH+aR+LGdkxLULYv+Q6Og==
   dependencies:
-    "@remix-run/server-runtime" "2.10.0"
+    "@remix-run/server-runtime" "2.12.0"
     "@remix-run/web-fetch" "^4.4.2"
     "@web3-storage/multipart-parser" "^1.0.0"
     cookie-signature "^1.1.0"
@@ -3469,23 +3469,23 @@
     stream-slice "^0.1.2"
     undici "^6.11.1"
 
-"@remix-run/router@1.17.0":
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.17.0.tgz#fbb0add487478ef42247d5942e7a5d8a2e20095f"
-  integrity sha512-2D6XaHEVvkCn682XBnipbJjgZUU7xjLtA4dGJRBVUKpEaDYOZMENZoZjAOSb7qirxt5RupjzZxz4fK2FO+EFPw==
+"@remix-run/router@1.19.2":
+  version "1.19.2"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.19.2.tgz#0c896535473291cb41f152c180bedd5680a3b273"
+  integrity sha512-baiMx18+IMuD1yyvOGaHM9QrVUPGGG0jC+z+IPHnRJWUAUvaKuWKyE8gjDj2rzv3sz9zOGoRSPgeBVHRhZnBlA==
 
-"@remix-run/server-runtime@2.10.0":
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-2.10.0.tgz#bebb88b447ef186bd9eadc1a3116a4c3f6888f91"
-  integrity sha512-lwgMq3m8U+oz0ZmgOrQeAE3tf6g1LPf2+ff3lgb5xb4bx7bV5VGGwKkzRK4+0fDguHXcW+YcppvdYdnKzQn1YQ==
+"@remix-run/server-runtime@2.12.0":
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/server-runtime/-/server-runtime-2.12.0.tgz#92a7d6c94e44e79a32db7ea13a91d41f547bb88a"
+  integrity sha512-o9ukOr3XKmyY8UufTrDdkgD3fiy+z+f4qEzvCQnvC0+EasCyN9hb1Vbui6Koo/5HKvahC4Ga8RcWyvhykKrG3g==
   dependencies:
-    "@remix-run/router" "1.17.0"
+    "@remix-run/router" "1.19.2"
     "@types/cookie" "^0.6.0"
     "@web3-storage/multipart-parser" "^1.0.0"
     cookie "^0.6.0"
     set-cookie-parser "^2.4.8"
     source-map "^0.7.3"
-    turbo-stream "2.2.0"
+    turbo-stream "2.4.0"
 
 "@remix-run/web-blob@^3.1.0":
   version "3.1.0"
@@ -16331,10 +16331,10 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-turbo-stream@2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/turbo-stream/-/turbo-stream-2.2.0.tgz#67c14d297a82b9cb128e4adf1c517dd29373c37a"
-  integrity sha512-FKFg7A0To1VU4CH9YmSMON5QphK0BXjSoiC7D9yMh+mEEbXLUP9qJ4hEt1qcjKtzncs1OpcnjZO8NgrlVbZH+g==
+turbo-stream@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/turbo-stream/-/turbo-stream-2.4.0.tgz#1e4fca6725e90fa14ac4adb782f2d3759a5695f0"
+  integrity sha512-FHncC10WpBd2eOmGwpmQsWLDoK4cqsA/UT/GqNoaKOQnT8uzhtCbg3EoUDMvqpOSAI0S26mr0rkjzbOO6S3v1g==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
