@@ -19,6 +19,8 @@ import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput, JsOutput } from '../serializer/jsOutput';
 
+const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
+
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;
   if (typeof value === 'string') {
@@ -60,7 +62,7 @@ export async function transform(
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
       // Inject client boundaries into the root client bundle for production bundling.
       if (clientBoundaries) {
-        console.log('Parsed client boundaries:', clientBoundaries);
+        debug('Parsed client boundaries:', clientBoundaries);
 
         // Inject source
         const src =

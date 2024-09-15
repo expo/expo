@@ -144,8 +144,10 @@ export async function exportEmbedBundleAndAssetsAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
+  const files: ExportAssetMap = new Map();
+
   try {
-    const bundles = await devServer.legacySinglePageExportBundleAsync(
+    const bundles = await devServer.nativeExportBundleAsync(
       {
         splitChunks: false,
         mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
@@ -159,14 +161,13 @@ export async function exportEmbedBundleAndAssetsAsync(
         // source map inline
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
+      files,
       {
         sourceMapUrl,
         unstable_transformProfile: (options.unstableTransformProfile ||
           (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
       }
     );
-
-    const files: ExportAssetMap = new Map();
 
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
