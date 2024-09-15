@@ -177,6 +177,9 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     });
 
+    const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
+    await persistMetroFilesAsync(files, serverOutput);
+
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
       .map((artifact) =>
