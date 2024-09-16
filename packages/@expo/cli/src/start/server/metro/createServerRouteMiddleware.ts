@@ -113,7 +113,7 @@ export function createRouteHandlerMiddleware(
       async handleApiRouteError(error) {
         const htmlServerError = await getErrorOverlayHtmlAsync({
           error,
-          projectRoot: projectRoot,
+          projectRoot,
           routerRoot: options.routerRoot!,
         });
 
