@@ -259,8 +259,6 @@ function getAdjustedRemoteFilePath(path: string): string {
     return path;
   }
 
-  alert('adjusted: ' + new URL(path, window.location.href).toString());
-
   return new URL(path, window.location.href).toString();
 }
 

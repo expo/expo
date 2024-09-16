@@ -199,7 +199,6 @@ function getAdjustedRemoteFilePath(path) {
     if (process.env.EXPO_OS === 'web') {
         return path;
     }
-    alert('adjusted: ' + new URL(path, window.location.href).toString());
     return new URL(path, window.location.href).toString();
 }
 function getAdjustedFilePath(path) {
