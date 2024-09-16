@@ -40,12 +40,12 @@ function InnerRouter() {
     const [route] = (0, react_1.useState)(() => parseRoute(new URL(getHref())));
     const componentIds = (0, common_js_1.getComponentIds)(route.path);
     // TODO: strip when "is exporting".
+    const refetchRoute = () => {
+        const loc = parseRoute(new URL(getHref()));
+        const input = (0, common_js_1.getInputString)(loc.path);
+        refetch(input, loc.query);
+    };
     if (process.env.NODE_ENV === 'development') {
-        const refetchRoute = () => {
-            const loc = parseRoute(new URL(getHref()));
-            const input = (0, common_js_1.getInputString)(loc.path);
-            refetch(input, loc.query);
-        };
         globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
         const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_ROUTE__);
         if (index !== -1) {
@@ -56,6 +56,7 @@ function InnerRouter() {
         }
         globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
     }
+    globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__ = refetchRoute;
     return (0, react_1.createElement)(RouterContext.Provider, { value: { route } }, componentIds.reduceRight((acc, id) => (0, react_1.createElement)(host_js_1.Slot, { id, fallback: acc }, acc), null));
 }
 function Router() {
