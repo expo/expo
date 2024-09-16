@@ -1,6 +1,7 @@
 'use strict';
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
+import { Paths } from 'expo-file-system/src/next';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
@@ -327,6 +328,27 @@ export async function test({ describe, expect, it, ...t }) {
           new Directory(testDirectory + 'directory'),
         ]);
         expect(new Directory(testDirectory).list()[0] instanceof File).toBe(true);
+      });
+    });
+
+    describe('JS-only properties for path manipulation', () => {
+      it('return parentDirectory for files', () => {
+        const file = new File(testDirectory + 'image.jpeg');
+        expect(file.parentDirectory.uri).toBe(new Directory(testDirectory).uri);
+      });
+      it('return parentDirectory for directories', () => {
+        const directory = new Directory(testDirectory + '/testdirectory/sampleDir');
+        expect(directory.parentDirectory.parentDirectory.uri).toBe(
+          new Directory(testDirectory).uri
+        );
+      });
+      it('return extension for files', () => {
+        expect(new File(testDirectory + 'image.jpeg').extension).toBe('.jpeg');
+        expect(new File(testDirectory + 'image.pdf.jpeg').extension).toBe('.jpeg');
+      });
+
+      it('joins paths', () => {
+        expect(Paths.join('file:///path', 'to', '..', 'file')).toBe('file:///path/file');
       });
     });
   });
