@@ -38,7 +38,8 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
     const issues: string[] = [];
     const appJsonFields: string[] = Object.keys(exp);
     const unsyncedFields: string[] = [];
-    const prebuildMessage: string = fs.existsSync('eas.json')
+    const isBuildingOnEAS: boolean = fs.existsSync('eas.json');
+    const prebuildMessage: string = isBuildingOnEAS
       ? 'EAS Build will not sync the following properties:'
       : `if you don't run prebuild in your build pipeline, the following properties will not be synced:`;
     let advice;
@@ -54,8 +55,12 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
     if (
       unsyncedFields.length &&
       // git check-ignore needs a specific file to check gitignore, we choose Podfile or build.gradle
-      ((await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'ios', 'Podfile'))) ||
-        (await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'android', 'build.gradle'))))
+      ((await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'ios', 'Podfile')),
+      isBuildingOnEAS) ||
+        (await existsAndIsNotIgnoredAsync(
+          path.join(projectRoot, 'android', 'build.gradle'),
+          isBuildingOnEAS
+        )))
     ) {
       // get the name of the config file
       const configFilePath = dynamicConfigPath ?? staticConfigPath;
