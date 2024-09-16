@@ -19,8 +19,8 @@ export default createPages(async ({ createPage, createLayout, unstable_setBuildD
     const normal = getContextKey(route.contextKey).replace(/\/index$/, '');
     createLayout({
       // NOTE(EvanBacon): Support routes with top-level "use client"
-      component: route.loadRoute().default!,
-      path: normal,
+      component: route.loadRoute().default! as any,
+      path: normal as any,
       // staticPaths
       render: 'static',
       ...route.loadRoute().unstable_settings,
@@ -33,8 +33,8 @@ export default createPages(async ({ createPage, createLayout, unstable_setBuildD
         const normal = getContextKey(child.contextKey).replace(/\/index$/, '');
         createPage({
           // NOTE(EvanBacon): Support routes with top-level "use client"
-          component: child.loadRoute().default,
-          path: normal,
+          component: child.loadRoute().default as any,
+          path: normal as any,
           render: 'dynamic',
           ...child.loadRoute().unstable_settings,
         });

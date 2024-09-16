@@ -12,7 +12,6 @@
 
 import { Slot as ReactSlot } from '@radix-ui/react-slot';
 import {
-  Component,
   startTransition,
   useCallback,
   useContext,
@@ -198,6 +197,7 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
         window.removeEventListener('popstate', callback);
       };
     }
+    return () => {};
   }, [changeRoute]);
 
   useEffect(() => {
@@ -216,6 +216,7 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
       );
       changeRoute(parseRoute(url), { skipRefetch: true });
     };
+    // eslint-disable-next-line no-multi-assign
     const listeners = (routerData[1] ||= new Set());
     listeners.add(callback);
     return () => {
@@ -376,17 +377,17 @@ const getSkipList = (
 
 // TODO revisit shouldSkip API
 type ShouldSkip = (readonly [
-  componentId: string,
+  string,
   readonly [
-    path?: boolean, // if we compare path
-    keys?: string[], // searchParams keys to compare
+    boolean, // if we compare path
+    string[], // searchParams keys to compare
   ],
 ])[];
 
 // Note: The router data must be a stable mutable object (array).
 type RouterData = [
   shouldSkip?: ShouldSkip,
-  locationListners?: Set<(path: string, query: string) => void>,
+  locationListeners?: Set<(path: string, query: string) => void>,
 ];
 
 const DEFAULT_ROUTER_DATA: RouterData = [];
@@ -485,6 +486,7 @@ export function Link({
         observer.disconnect();
       };
     }
+    return () => {};
   }, [unstable_prefetchOnView, router, to]);
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

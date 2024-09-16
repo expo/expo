@@ -137,6 +137,7 @@ const InnerRouter = ({ routerData }) => {
                 window.removeEventListener('popstate', callback);
             };
         }
+        return () => { };
     }, [changeRoute]);
     (0, react_1.useEffect)(() => {
         const callback = (pathname, searchParamsString) => {
@@ -150,6 +151,7 @@ const InnerRouter = ({ routerData }) => {
             }, '', url);
             changeRoute(parseRoute(url), { skipRefetch: true });
         };
+        // eslint-disable-next-line no-multi-assign
         const listeners = (routerData[1] ||= new Set());
         listeners.add(callback);
         return () => {
@@ -320,6 +322,7 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
                 observer.disconnect();
             };
         }
+        return () => { };
     }, [unstable_prefetchOnView, router, to]);
     const onClick = (event) => {
         event.preventDefault();

@@ -68,13 +68,13 @@ function unstable_defineRouter(getPathConfig, getComponent) {
         const shouldSkipObj = {};
         const parsedParams = safeJsonParse(params);
         const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-        const skip = Array.isArray(parsedParams?.skip) ? parsedParams.skip : [];
+        const skip = Array.isArray(parsedParams?.skip) ? parsedParams?.skip : [];
         const componentIds = (0, common_1.getComponentIds)(pathname);
         const entries = (await Promise.all(componentIds.map(async (id) => {
             if (skip?.includes(id)) {
                 return [];
             }
-            const setShoudSkip = (val) => {
+            const setShouldSkip = (val) => {
                 if (val) {
                     shouldSkipObj[id] = val;
                 }
@@ -83,7 +83,7 @@ function unstable_defineRouter(getPathConfig, getComponent) {
                 }
             };
             const component = await getComponent(id, {
-                unstable_setShouldSkip: setShoudSkip,
+                unstable_setShouldSkip: setShouldSkip,
                 unstable_buildConfig: buildConfig,
             });
             if (!component) {

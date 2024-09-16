@@ -117,7 +117,7 @@ export function unstable_defineRouter(
     const parsedParams = safeJsonParse(params);
 
     const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams.skip as unknown[]) : [];
+    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams?.skip as unknown[]) : [];
     const componentIds = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
@@ -125,7 +125,7 @@ export function unstable_defineRouter(
           if (skip?.includes(id)) {
             return [];
           }
-          const setShoudSkip = (val?: ShouldSkipValue) => {
+          const setShouldSkip = (val?: ShouldSkipValue) => {
             if (val) {
               shouldSkipObj[id] = val;
             } else {
@@ -133,7 +133,7 @@ export function unstable_defineRouter(
             }
           };
           const component = await getComponent(id, {
-            unstable_setShouldSkip: setShoudSkip,
+            unstable_setShouldSkip: setShouldSkip,
             unstable_buildConfig: buildConfig,
           });
           if (!component) {

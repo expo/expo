@@ -21,15 +21,15 @@ export declare function useRouter_UNSTABLE(): {
     hash: string;
 };
 type ShouldSkip = (readonly [
-    componentId: string,
+    string,
     readonly [
-        path?: boolean,
-        keys?: string[]
+        boolean,
+        string[]
     ]
 ])[];
 type RouterData = [
     shouldSkip?: ShouldSkip,
-    locationListners?: Set<(path: string, query: string) => void>
+    locationListeners?: Set<(path: string, query: string) => void>
 ];
 export declare function Router({ routerData }: {
     routerData?: RouterData | undefined;
