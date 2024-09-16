@@ -1,8 +1,16 @@
 package expo.modules.notifications.notifications.model;
 
+import static expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder.META_DATA_LARGE_ICON_KEY;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,15 +19,21 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import expo.modules.notifications.notifications.enums.NotificationPriority;
+import expo.modules.notifications.notifications.interfaces.INotificationContent;
+import kotlin.coroutines.Continuation;
 
 /**
- * A POJO representing a notification content: title, message, body, etc. Instances
+ * A POJO representing a local notification content: title, message, body, etc. Instances
  * should be created using {@link NotificationContent.Builder}.
+ *
+ * Note that it implements {@link Serializable} interfaces to store the object in the SharedPreferences.
+ * Refactoring this class may require a migration strategy for the data stored in SharedPreferences.
  */
-public class NotificationContent implements Parcelable, Serializable {
+public class NotificationContent implements Parcelable, Serializable, INotificationContent {
   private String mTitle;
   private String mText;
   private String mSubtitle;
@@ -70,17 +84,39 @@ public class NotificationContent implements Parcelable, Serializable {
     return mBadgeCount;
   }
 
-  public boolean shouldPlayDefaultSound() {
+  @Override
+  public boolean getShouldPlayDefaultSound() {
     return mShouldPlayDefaultSound;
   }
 
-  @Nullable
-  public Uri getSound() {
-    return mSound;
+  @Override
+  public boolean getShouldUseDefaultVibrationPattern() {
+    return mShouldUseDefaultVibrationPattern;
   }
 
-  public boolean shouldUseDefaultVibrationPattern() {
-    return mShouldUseDefaultVibrationPattern;
+  @Nullable
+  public String getSoundName() {
+    return mSound != null ? mSound.getLastPathSegment() : null;
+  }
+
+  @Nullable
+  @Override
+  public Object getImage(@NonNull Context context, @NonNull Continuation<? super Bitmap> $completion) {
+    try {
+      ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
+        int resourceId = ai.metaData.getInt(META_DATA_LARGE_ICON_KEY);
+        return BitmapFactory.decodeResource(context.getResources(), resourceId);
+      }
+    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched large notification icon.", e);
+    }
+    return null;
+  }
+
+  @Override
+  public boolean containsImage() {
+    return true;
   }
 
   @Nullable
