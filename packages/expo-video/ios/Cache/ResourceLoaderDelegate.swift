@@ -160,7 +160,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   }
 
   private func fillInContentInformationRequest(_ contentInformationRequest: AVAssetResourceLoadingContentInformationRequest?) {
-    // Do we have response from the server?
     guard let response = response else {
       return
     }
@@ -179,13 +178,10 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     let currentOffset = Int(dataRequest.currentOffset)
     let bytesCached = fileHandle.fileSize
 
-    // Is there enough data cached to fulfill the request?
     guard bytesCached > currentOffset else { return false }
 
-    // Data length to be loaded into memory with maximum size of readDataLimit.
     let bytesToRespond = min(bytesCached - currentOffset, requestedLength, readDataLimit)
 
-    // Read data from disk and pass it to the dataRequest
     guard let data = fileHandle.readData(withOffset: currentOffset, forLength: bytesToRespond) else { return false }
     dataRequest.respond(with: data)
 
@@ -211,7 +207,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       saveMimeType(forUrl: url, mimeType: mimeType)
     }
 
-    VideoCacheManager.shared.maybeAutoCleanCache()
+    VideoCacheManager.shared.maybeRemoveOldCache()
   }
 
   private func verifyResponse() -> NSError? {

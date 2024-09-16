@@ -10,12 +10,8 @@ public final class VideoModule: Module {
       return AVPictureInPictureController.isPictureInPictureSupported()
     }
 
-    Function("cleanVideoCache") {
-      return VideoCacheManager.shared.cleanCache()
-    }
-
-    Function("cleanAllVideoCache") {
-      return VideoCacheManager.shared.cleanAllCache()
+    AsyncFunction("cleanAllVideoCache") {
+      return try await VideoCacheManager.shared.cleanAllCache()
     }
 
     View(VideoView.self) {

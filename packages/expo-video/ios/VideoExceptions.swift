@@ -39,3 +39,9 @@ internal class CachingAssetInitializationException: GenericException<URL?> {
     "Failed to initialize a caching asset. The provided url: \(param?.absoluteString ?? "nil") doesn't have a valid scheme for caching"
   }
 }
+
+internal class CacheClearingException: GenericException<String?> {
+  override var reason: String {
+    "Failed to clear cache: \(param ?? defaultCause)"
+  }
+}
