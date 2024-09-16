@@ -492,11 +492,9 @@ export function Link({
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     const url = new URL(to, getHref());
-    console.log('TO', url.toString(), getHref());
     // TODO: Use in-memory route for native platforms.
     // if (url.href !== getHref()) {
     const route = parseRoute(url);
-    console.log('ROUTE', route);
     prefetchRoute(route);
     startTransition(() => {
       getHistory().pushState(
