@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.notifications.notifications.enums.NotificationPriority
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
@@ -15,6 +16,7 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -25,15 +27,25 @@ import org.junit.Test
 class ExpoNotificationBuilderTest {
 
   private lateinit var context: Context
-  private lateinit var notificationBuilder: ExpoNotificationBuilder
-  private lateinit var notificationContent: NotificationContent
-  private lateinit var notificationRequest: NotificationRequest
 
   @Before
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
+  }
 
-    notificationContent = NotificationContent.Builder()
+  private fun createTestNotificationBuilder(notificationContent: INotificationContent): ExpoNotificationBuilder {
+    val notificationRequest = NotificationRequest("test-1", notificationContent, null)
+    val exNotification =
+      expo.modules.notifications.notifications.model.Notification(notificationRequest)
+
+    val notificationBuilder = ExpoNotificationBuilder(context)
+    notificationBuilder.setNotification(exNotification)
+    return notificationBuilder
+  }
+
+  @Test
+  fun buildMethodCreatesNotificationWithCorrectProperties() = runBlocking {
+    val notificationContent = NotificationContent.Builder()
       .setTitle("Test Title")
       .setSubtitle("Test Subtitle")
       .setText("Test Text")
@@ -45,18 +57,7 @@ class ExpoNotificationBuilderTest {
       .setPriority(NotificationPriority.HIGH)
       .setVibrationPattern(longArrayOf(100, 200, 300, 400))
       .build()
-
-    notificationRequest = NotificationRequest("test-1", notificationContent, null)
-    val exNotification =
-      expo.modules.notifications.notifications.model.Notification(notificationRequest)
-
-    notificationBuilder = ExpoNotificationBuilder(context)
-    notificationBuilder.setNotification(exNotification)
-  }
-
-  @Test
-  fun buildMethodCreatesNotificationWithCorrectProperties() = runBlocking {
-    val androidNotification = notificationBuilder.build()
+    val androidNotification = createTestNotificationBuilder(notificationContent).build()
 
     // Verify the notification properties
     assertNotNull(androidNotification)
@@ -76,8 +77,7 @@ class ExpoNotificationBuilderTest {
     val extras = androidNotification.extras
     assertEquals("{\"key\":\"value\"}", extras.getString(ExpoNotificationBuilder.EXTRAS_BODY_KEY))
 
-    // TODO cover channel later, it should be taken from NotificationTrigger, and override the deprecated fields
-    assertNotNull(androidNotification.channelId)
+    assertEquals(androidNotification.channelId, "expo_notifications_fallback_notification_channel")
     // deprecated fields, should be taken from channel when available
     assertEquals(NotificationCompat.PRIORITY_HIGH, androidNotification.priority)
 
@@ -85,5 +85,21 @@ class ExpoNotificationBuilderTest {
     if (androidNotification.vibrate != null) {
       assertArrayEquals(longArrayOf(100, 200, 300, 400), androidNotification.vibrate)
     }
+  }
+
+  @Test
+  fun buildMethodCreatesEmptyNotification() = runBlocking {
+    val notificationContent = NotificationContent.Builder().build()
+    val androidNotification = createTestNotificationBuilder(notificationContent).build()
+
+    // Verify the notification properties
+    assertNotNull(androidNotification)
+    assertNull(NotificationCompat.getContentTitle(androidNotification))
+    assertNull(NotificationCompat.getContentText(androidNotification))
+    assertNull(NotificationCompat.getSubText(androidNotification))
+    assertEquals(NotificationCompat.getColor(androidNotification), 0)
+    assertFalse(NotificationCompat.getAutoCancel(androidNotification))
+    assertNull(androidNotification.getLargeIcon())
+    assertEquals(androidNotification.channelId, "expo_notifications_fallback_notification_channel")
   }
 }
