@@ -52,6 +52,7 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       takesOwner,
+      isEnumerable,
       getCppRequiredTypes().toTypedArray(),
       getJNIFunctionBody(moduleName, appContext)
     )

@@ -30,6 +30,8 @@ abstract class AnyFunction(
   @PublishedApi
   internal var ownerType: KType? = null
 
+  internal var isEnumerable: Boolean = true
+
   internal val takesOwner: Boolean
     get() {
       if (canTakeOwner) {
@@ -121,5 +123,10 @@ abstract class AnyFunction(
 
   fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }
+  }
+
+  @Suppress("FunctionName")
+  fun Enumerable(isEnumerable: Boolean = true) = apply {
+    this.isEnumerable = isEnumerable
   }
 }

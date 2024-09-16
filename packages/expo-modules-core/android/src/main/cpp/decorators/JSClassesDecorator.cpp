@@ -7,6 +7,7 @@
 #include "../JavaReferencesCache.h"
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
+#include "JSFunctionsDecorator.h"
 
 namespace expo {
 
@@ -19,12 +20,16 @@ void JSClassesDecorator::registerClass(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
+  MethodMetadata::Info info{
+    .name = "constructor",
+    // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
+    .takesOwner = static_cast<bool>(takesOwner & 0x1),
+    .isAsync = false,
+    .enumerable = false,
+    .argTypes = JSFunctionsDecorator::mapConverters(expectedArgTypes)
+  };
   auto constructor = std::make_shared<MethodMetadata>(
-    "constructor",
-    takesOwner &
-    0x1, // We're unsure if takesOwner can be greater than 1, so we're using bitwise AND to ensure it's 0 or 1.
-    false,
-    jni::make_local(expectedArgTypes),
+    std::move(info),
     jni::make_global(body)
   );
 
@@ -82,7 +87,7 @@ void JSClassesDecorator::decorate(
             count
           );
           if (result == nullptr) {
-            return { runtime, thisValue };
+            return {runtime, thisValue};
           }
           jobject unpackedResult = result.get();
           jclass resultClass = env->GetObjectClass(unpackedResult);
@@ -99,7 +104,7 @@ void JSClassesDecorator::decorate(
             );
             jsiContext->registerSharedObject(result, jsThisObject);
           }
-          return { runtime, thisValue };
+          return {runtime, thisValue};
         } catch (jni::JniException &jniException) {
           rethrowAsCodedError(runtime, jniException);
         }
