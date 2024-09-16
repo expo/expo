@@ -86,7 +86,6 @@ export function createRequestHandler(
       console.error(error);
     },
     handleApiRouteError = async (error: Error) => {
-      console.error(error);
       return new Response('Internal server error', {
         status: 500,
         headers: {
