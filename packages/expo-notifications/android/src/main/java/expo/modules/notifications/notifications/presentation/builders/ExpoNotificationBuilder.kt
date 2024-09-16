@@ -128,9 +128,9 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
       // The request is only used to extract source request when fetching displayed notifications.
       Log.e(
         "expo-notifications",
-        String.format("Could not marshalled notification request: %s.", request.identifier)
+        "Could not marshalled notification request: ${request.identifier}.",
+        e
       )
-      e.printStackTrace()
       return null
     }
   }
@@ -253,7 +253,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
           return BitmapFactory.decodeResource(context.resources, resourceId)
         }
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched large notification icon.")
+        Log.e("expo-notifications", "Could not have fetched large notification icon.", e)
       }
       return null
     }
@@ -275,7 +275,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
           return ai.metaData.getInt(META_DATA_DEFAULT_ICON_KEY)
         }
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched default notification icon.")
+        Log.e("expo-notifications", "Could not have fetched default notification icon.", e)
       }
       return context.applicationInfo.icon
     }
@@ -306,7 +306,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
           )
         }
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched default notification color.")
+        Log.e("expo-notifications", "Could not have fetched default notification color.", e)
       }
 
       // No custom color
