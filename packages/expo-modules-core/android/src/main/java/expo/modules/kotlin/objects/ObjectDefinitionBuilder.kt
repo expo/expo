@@ -48,7 +48,7 @@ open class ObjectDefinitionBuilder {
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
 
-  private val asyncEventObservers = mutableListOf<EventObservingDefinition>()
+  private val eventObservers = mutableListOf<EventObservingDefinition>()
 
   fun buildObject(): ObjectDefinitionData {
     EventObservingDefinition.Type.entries.forEach { type ->
@@ -56,7 +56,7 @@ open class ObjectDefinitionBuilder {
       // In the long run, we probably want to add a warning here or make it impossible to export such functions.
       if (!asyncFunctions.containsKey(type.value)) {
         AsyncFunction(type.value) { eventName: String ->
-          asyncEventObservers.forEach {
+          eventObservers.forEach {
             it.invokedIfNeed(type, eventName)
           }
         }
@@ -469,7 +469,7 @@ open class ObjectDefinitionBuilder {
       EventObservingDefinition.SelectedEventFiler(eventName),
       body
     ).also {
-      asyncEventObservers.add(it)
+      eventObservers.add(it)
     }
   }
 
@@ -482,7 +482,7 @@ open class ObjectDefinitionBuilder {
       EventObservingDefinition.AllEventsFilter,
       body
     ).also {
-      asyncEventObservers.add(it)
+      eventObservers.add(it)
     }
   }
 
@@ -495,7 +495,7 @@ open class ObjectDefinitionBuilder {
       EventObservingDefinition.SelectedEventFiler(eventName),
       body
     ).also {
-      asyncEventObservers.add(it)
+      eventObservers.add(it)
     }
   }
 
@@ -508,7 +508,7 @@ open class ObjectDefinitionBuilder {
       EventObservingDefinition.AllEventsFilter,
       body
     ).also {
-      asyncEventObservers.add(it)
+      eventObservers.add(it)
     }
   }
 
