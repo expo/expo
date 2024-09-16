@@ -122,10 +122,7 @@ const InnerRouter = ({ routerData }) => {
         }
         const input = (0, common_js_1.getInputString)(route.path);
         if (!skipRefetch) {
-            refetch(input, new URLSearchParams([
-                ...Array.from(new URLSearchParams(route.query).entries()),
-                ...skip.map((id) => [common_js_1.PARAM_KEY_SKIP, id]),
-            ]));
+            refetch(input, JSON.stringify({ query: route.query, skip }));
         }
         (0, react_1.startTransition)(() => {
             setCached((prev) => ({
@@ -142,11 +139,7 @@ const InnerRouter = ({ routerData }) => {
             return; // everything is cached
         }
         const input = (0, common_js_1.getInputString)(route.path);
-        const searchParamsString = new URLSearchParams([
-            ...Array.from(new URLSearchParams(route.query).entries()),
-            ...skip.map((id) => [common_js_1.PARAM_KEY_SKIP, id]),
-        ]).toString();
-        (0, host_js_1.prefetchRSC)(input, searchParamsString);
+        (0, host_js_1.prefetchRSC)(input, JSON.stringify({ query: route.query, skip }));
         globalThis.__EXPO_ROUTER_PREFETCH__?.(route.path);
     }, [routerData]);
     (0, react_1.useEffect)(() => {

@@ -178,13 +178,7 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
       }
       const input = getInputString(route.path);
       if (!skipRefetch) {
-        refetch(
-          input,
-          new URLSearchParams([
-            ...Array.from(new URLSearchParams(route.query).entries()),
-            ...skip.map((id) => [PARAM_KEY_SKIP, id]),
-          ])
-        );
+        refetch(input, JSON.stringify({ query: route.query, skip }));
       }
       startTransition(() => {
         setCached((prev) => ({
@@ -207,11 +201,7 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
         return; // everything is cached
       }
       const input = getInputString(route.path);
-      const searchParamsString = new URLSearchParams([
-        ...Array.from(new URLSearchParams(route.query).entries()),
-        ...skip.map((id) => [PARAM_KEY_SKIP, id]),
-      ]).toString();
-      prefetchRSC(input, searchParamsString);
+      prefetchRSC(input, JSON.stringify({ query: route.query, skip }));
       (globalThis as any).__EXPO_ROUTER_PREFETCH__?.(route.path);
     },
     [routerData]
