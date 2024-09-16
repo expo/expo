@@ -5,12 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ErrorBoundary = void 0;
+const react_native_1 = require("react-native");
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
-const Link_1 = require("../link/Link");
+const errors_1 = require("../rsc/router/errors");
+// import { promptChangeServer } from '../remote-origin';
+// import { Link } from '../link/Link';
 let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {
     const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
@@ -48,7 +50,24 @@ else {
     };
 }
 let StackTrace;
+let ErrorMessageText;
 if (process.env.NODE_ENV === 'development') {
+    const { Ansi } = require('@expo/metro-runtime/src/error-overlay/UI/AnsiHighlight');
+    ErrorMessageText = function ({ text, style }) {
+        return (<Ansi style={[
+                {
+                    fontSize: 12,
+                    includeFontPadding: false,
+                    lineHeight: 20,
+                    fontFamily: react_native_1.Platform.select({
+                        default: 'Courier',
+                        ios: 'Courier New',
+                        android: 'monospace',
+                    }),
+                },
+                style,
+            ]} text={text}/>);
+    };
     const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
     const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
     StackTrace = function ({ logData }) {
@@ -67,59 +86,131 @@ if (process.env.NODE_ENV === 'development') {
     };
 }
 else {
+    ErrorMessageText = function ({ text, style }) {
+        return (<react_native_1.Text role="heading" aria-level={2} children={text} style={[{ flexWrap: 'wrap', maxWidth: '100%' }, style]}/>);
+    };
     StackTrace = function () {
         return <react_native_1.View style={{ flex: 1 }}/>;
     };
 }
+const useWrapper = react_native_1.Platform.OS === 'web'
+    ? () => react_native_1.View
+    : function useWrapper() {
+        const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
+        const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
+        return Wrapper;
+    };
+function isNetworkError(error) {
+    return !!error.message.match(/Network request failed: (The network connection was lost|Could not connect to the server)/);
+}
 function ErrorBoundary({ error, retry }) {
+    // TODO: Add digest support for RSC errors
+    // https://github.com/vercel/next.js/blob/f82445b01c885c2dce65c99043666f4a3efdbd9d/packages/next/src/client/components/error-boundary.tsx#L132-L151
+    // console.log('E>', error, { digest: error?.digest });
     const logBoxLog = useMetroSymbolication(error);
-    const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
-    const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
-    return (<react_native_1.View style={styles.container}>
-      <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
+    console.log('INSPECT>ERR:', error);
+    console.log('-- Keys: ', Object.keys(error));
+    console.log('-- Entries: ', Object.entries(error));
+    if (error instanceof errors_1.NetworkError) {
+        return (<Container>
         <react_native_1.View style={{
-            marginBottom: 12,
-            gap: 4,
-            flexWrap: 'wrap',
-        }}>
-          <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-            Something went wrong
+                marginBottom: 12,
+                gap: 4,
+                flexWrap: 'wrap',
+            }}>
+          <react_native_1.Text selectable role="heading" aria-level={1} style={styles.title} numberOfLines={4}>
+            Failed to connect to server
           </react_native_1.Text>
-          <react_native_1.Text role="heading" aria-level={2} style={styles.errorMessage}>
-            Error: {error.message}
+          <react_native_1.Text selectable role="heading" aria-level={3} style={[
+                styles.title,
+                {
+                    padding: 8,
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    borderRadius: 8,
+                    fontSize: 16,
+                    fontWeight: 'normal',
+                },
+            ]} numberOfLines={4}>
+            {error.url}
           </react_native_1.Text>
+          <ErrorMessageText style={styles.errorMessage} text={`Error: ${error.message}`}/>
         </react_native_1.View>
 
         <StackTrace logData={logBoxLog}/>
-        {process.env.NODE_ENV === 'development' && (<Link_1.Link href="/_sitemap" style={styles.link}>
-            Sitemap
-          </Link_1.Link>)}
-        <Pressable_1.Pressable onPress={retry}>
-          {({ hovered, pressed }) => (<react_native_1.View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
-              <react_native_1.Text style={[
+
+        <CustomButton onPress={() => {
+                // promptChangeServer();
+            }}>
+          Change server origin
+        </CustomButton>
+        <RetryButton onPress={retry}/>
+      </Container>);
+    }
+    return (<Container>
+      <react_native_1.View style={{
+            marginBottom: 12,
+            gap: 4,
+            flexDirection: 'column',
+        }}>
+        <react_native_1.Text selectable role="heading" aria-level={1} style={styles.title} numberOfLines={4}>
+          Something went wrong
+        </react_native_1.Text>
+        <ErrorMessageText style={styles.errorMessage} text={`Error: ${error.message}`}/>
+      </react_native_1.View>
+
+      <StackTrace logData={logBoxLog}/>
+
+      <RetryButton onPress={retry}/>
+    </Container>);
+}
+exports.ErrorBoundary = ErrorBoundary;
+function Container({ children }) {
+    const Wrapper = useWrapper();
+    return (<Wrapper style={{ flex: 1 }}>
+      <react_native_1.View style={styles.container}>
+        <react_native_1.View style={{
+            flex: 1,
+            gap: 8,
+            maxWidth: 720,
+            marginHorizontal: process.env.EXPO_OS === 'web' ? 'auto' : undefined,
+        }}>
+          {children}
+        </react_native_1.View>
+      </react_native_1.View>
+    </Wrapper>);
+}
+function RetryButton({ onPress }) {
+    return <CustomButton onPress={onPress}>Retry</CustomButton>;
+}
+function CustomButton({ onPress, children }) {
+    return (<Pressable_1.Pressable onPress={onPress}>
+      {({ hovered, pressed }) => (<react_native_1.View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
+          <react_native_1.Text style={[
                 styles.buttonText,
                 {
                     color: hovered || pressed ? 'black' : 'white',
                 },
             ]}>
-                Retry
-              </react_native_1.Text>
-            </react_native_1.View>)}
-        </Pressable_1.Pressable>
-      </Wrapper>
-    </react_native_1.View>);
+            {children}
+          </react_native_1.Text>
+        </react_native_1.View>)}
+    </Pressable_1.Pressable>);
 }
-exports.ErrorBoundary = ErrorBoundary;
 const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,
+        maxWidth: '100%',
+        maxHeight: '100%',
         backgroundColor: 'black',
         padding: 24,
         alignItems: 'stretch',
         justifyContent: 'center',
+        overflow: 'hidden',
     },
     title: {
         color: 'white',
+        textAlign: 'left',
+        maxWidth: '100%',
         fontSize: react_native_1.Platform.select({ web: 32, default: 24 }),
         fontWeight: 'bold',
     },
@@ -158,6 +249,7 @@ const styles = react_native_1.StyleSheet.create({
     errorMessage: {
         color: 'white',
         fontSize: 16,
+        maxWidth: '100%',
     },
     subtitle: {
         color: 'white',

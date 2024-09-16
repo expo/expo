@@ -1,13 +1,15 @@
 'use client';
+import { StyleSheet, Text, View, TextStyle, Platform, ScrollView } from 'react-native';
 import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
-import { Link } from '../link/Link';
+import { NetworkError } from '../rsc/router/errors';
+// import { promptChangeServer } from '../remote-origin';
+// import { Link } from '../link/Link';
 
 let useMetroSymbolication: (error: Error) => LogBoxLog | null;
 
@@ -53,8 +55,33 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 let StackTrace: React.ComponentType<{ logData: LogBoxLog | null }>;
+let ErrorMessageText: React.ComponentType<{ text: string; style: TextStyle }>;
 
 if (process.env.NODE_ENV === 'development') {
+  const { Ansi } =
+    require('@expo/metro-runtime/src/error-overlay/UI/AnsiHighlight') as typeof import('@expo/metro-runtime/build/error-overlay/UI/AnsiHighlight');
+
+  ErrorMessageText = function ({ text, style }) {
+    return (
+      <Ansi
+        style={[
+          {
+            fontSize: 12,
+            includeFontPadding: false,
+            lineHeight: 20,
+            fontFamily: Platform.select({
+              default: 'Courier',
+              ios: 'Courier New',
+              android: 'monospace',
+            }),
+          },
+          style,
+        ]}
+        text={text}
+      />
+    );
+  };
+
   const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
   const {
     LogBoxInspectorStackFrames,
@@ -78,70 +105,176 @@ if (process.env.NODE_ENV === 'development') {
     );
   };
 } else {
+  ErrorMessageText = function ({ text, style }) {
+    return (
+      <Text
+        role="heading"
+        aria-level={2}
+        children={text}
+        style={[{ flexWrap: 'wrap', maxWidth: '100%' }, style]}
+      />
+    );
+  };
+
   StackTrace = function () {
     return <View style={{ flex: 1 }} />;
   };
 }
 
-export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  const logBoxLog = useMetroSymbolication(error);
-  const inTabBar = React.useContext(BottomTabBarHeightContext);
-  const Wrapper = inTabBar ? View : SafeAreaView;
+const useWrapper =
+  Platform.OS === 'web'
+    ? () => View
+    : function useWrapper() {
+        const inTabBar = React.useContext(BottomTabBarHeightContext);
 
-  return (
-    <View style={styles.container}>
-      <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
+        const Wrapper = inTabBar ? View : SafeAreaView;
+
+        return Wrapper;
+      };
+
+function isNetworkError(error: Error): boolean {
+  return !!error.message.match(
+    /Network request failed: (The network connection was lost|Could not connect to the server)/
+  );
+}
+
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  // TODO: Add digest support for RSC errors
+  // https://github.com/vercel/next.js/blob/f82445b01c885c2dce65c99043666f4a3efdbd9d/packages/next/src/client/components/error-boundary.tsx#L132-L151
+  // console.log('E>', error, { digest: error?.digest });
+  const logBoxLog = useMetroSymbolication(error);
+
+  console.log('INSPECT>ERR:', error);
+  console.log('-- Keys: ', Object.keys(error));
+  console.log('-- Entries: ', Object.entries(error));
+
+  if (error instanceof NetworkError) {
+    return (
+      <Container>
         <View
           style={{
             marginBottom: 12,
             gap: 4,
             flexWrap: 'wrap',
           }}>
-          <Text role="heading" aria-level={1} style={styles.title}>
-            Something went wrong
+          <Text selectable role="heading" aria-level={1} style={styles.title} numberOfLines={4}>
+            Failed to connect to server
           </Text>
-          <Text role="heading" aria-level={2} style={styles.errorMessage}>
-            Error: {error.message}
+          <Text
+            selectable
+            role="heading"
+            aria-level={3}
+            style={[
+              styles.title,
+              {
+                padding: 8,
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                borderRadius: 8,
+                fontSize: 16,
+                fontWeight: 'normal',
+              },
+            ]}
+            numberOfLines={4}>
+            {error.url}
           </Text>
+          <ErrorMessageText style={styles.errorMessage} text={`Error: ${error.message}`} />
         </View>
 
         <StackTrace logData={logBoxLog} />
-        {process.env.NODE_ENV === 'development' && (
-          <Link href="/_sitemap" style={styles.link}>
-            Sitemap
-          </Link>
-        )}
-        <Pressable onPress={retry}>
-          {({ hovered, pressed }) => (
-            <View
-              style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
-              <Text
-                style={[
-                  styles.buttonText,
-                  {
-                    color: hovered || pressed ? 'black' : 'white',
-                  },
-                ]}>
-                Retry
-              </Text>
-            </View>
-          )}
-        </Pressable>
-      </Wrapper>
-    </View>
+
+        <CustomButton
+          onPress={() => {
+            // promptChangeServer();
+          }}>
+          Change server origin
+        </CustomButton>
+        <RetryButton onPress={retry} />
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <View
+        style={{
+          marginBottom: 12,
+          gap: 4,
+
+          flexDirection: 'column',
+        }}>
+        <Text selectable role="heading" aria-level={1} style={styles.title} numberOfLines={4}>
+          Something went wrong
+        </Text>
+        <ErrorMessageText style={styles.errorMessage} text={`Error: ${error.message}`} />
+      </View>
+
+      <StackTrace logData={logBoxLog} />
+
+      <RetryButton onPress={retry} />
+    </Container>
+  );
+}
+
+function Container({ children }) {
+  const Wrapper = useWrapper();
+
+  return (
+    <Wrapper style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View
+          style={{
+            flex: 1,
+            gap: 8,
+            maxWidth: 720,
+            marginHorizontal: process.env.EXPO_OS === 'web' ? 'auto' : undefined,
+          }}>
+          {children}
+        </View>
+      </View>
+    </Wrapper>
+  );
+}
+
+function RetryButton({ onPress }) {
+  return <CustomButton onPress={onPress}>Retry</CustomButton>;
+}
+
+function CustomButton({ onPress, children }) {
+  return (
+    <Pressable onPress={onPress}>
+      {({ hovered, pressed }) => (
+        <View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
+          <Text
+            style={[
+              styles.buttonText,
+              {
+                color: hovered || pressed ? 'black' : 'white',
+              },
+            ]}>
+            {children}
+          </Text>
+        </View>
+      )}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxWidth: '100%',
+    maxHeight: '100%',
     backgroundColor: 'black',
     padding: 24,
     alignItems: 'stretch',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   title: {
     color: 'white',
+    textAlign: 'left',
+
+    maxWidth: '100%',
     fontSize: Platform.select({ web: 32, default: 24 }),
     fontWeight: 'bold',
   },
@@ -180,6 +313,7 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: 'white',
     fontSize: 16,
+    maxWidth: '100%',
   },
   subtitle: {
     color: 'white',

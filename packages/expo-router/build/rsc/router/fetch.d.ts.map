@@ -1,1 +1,1 @@
-{"version":3,"file":"fetch.d.ts","sourceRoot":"","sources":["../../../src/rsc/router/fetch.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,YAAY,CAAC"}
+{"version":3,"file":"fetch.d.ts","sourceRoot":"","sources":["../../../src/rsc/router/fetch.ts"],"names":[],"mappings":"AAGA,wBAAsB,KAAK,CAAC,KAAK,EAAE,GAAG,GAAG,WAAW,EAAE,IAAI,CAAC,EAAE,WAAW,+CAoBvE"}
