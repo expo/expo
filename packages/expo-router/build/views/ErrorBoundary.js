@@ -11,7 +11,7 @@ const react_1 = __importDefault(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
 const errors_1 = require("../rsc/router/errors");
-// import { promptChangeServer } from '../remote-origin';
+const remote_origin_1 = require("../remote-origin");
 // import { Link } from '../link/Link';
 let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {
@@ -139,7 +139,7 @@ function ErrorBoundary({ error, retry }) {
         <StackTrace logData={logBoxLog}/>
 
         <CustomButton onPress={() => {
-                // promptChangeServer();
+                (0, remote_origin_1.promptChangeServer)();
             }}>
           Change server origin
         </CustomButton>

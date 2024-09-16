@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
 import { NetworkError } from '../rsc/router/errors';
-// import { promptChangeServer } from '../remote-origin';
+import { promptChangeServer } from '../remote-origin';
 // import { Link } from '../link/Link';
 
 let useMetroSymbolication: (error: Error) => LogBoxLog | null;
@@ -184,7 +184,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 
         <CustomButton
           onPress={() => {
-            // promptChangeServer();
+            promptChangeServer();
           }}>
           Change server origin
         </CustomButton>

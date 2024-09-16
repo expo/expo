@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import './localstorage/install';
 import './location/install';
 // IMPORT POSITION MATTERS FOR FAST REFRESH ON WEB
 import './effects';

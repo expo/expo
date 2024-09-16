@@ -7,7 +7,10 @@ import 'whatwg-fetch';
 import 'expo';
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
+import '../localstorage/install';
+
 import Constants from 'expo-constants';
+import { Alert } from 'react-native';
 import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
 import { install, setLocationHref } from './Location';
@@ -35,9 +38,69 @@ function warnProductionOriginNotConfigured(requestUrl: string) {
 // TODO: This would be better if native and tied as close to the JS engine as possible, i.e. it should
 // reflect the exact location of the JS file that was executed.
 function getBaseUrl() {
-  if (process.env.NODE_ENV !== 'production') {
+  let customOrigin = localStorage.getItem('expo_remote_origin');
+
+  try {
+    if (customOrigin) {
+      customOrigin = new URL(customOrigin).toString();
+      console.log('[expo/metro-runtime]: Using custom value as remote origin:', customOrigin);
+    }
+  } catch {
+    customOrigin = null;
+    setTimeout(() => {
+      alert(
+        `Custom remote origin is invalid: ${customOrigin}. Removing and using default origin: ${getDefaultBaseUrl()}`
+      );
+    }, 500);
+    localStorage.removeItem('expo_remote_origin');
+  }
+
+  const adjusted = adjustUrl(customOrigin ?? getDefaultBaseUrl());
+
+  if (customOrigin) {
+    if (!__DEV__) {
+      setTimeout(() => {
+        Alert.alert(`Server: ${adjusted}`, undefined, [
+          {
+            text: 'Change',
+            onPress(value) {
+              const { promptChangeServer } = require('expo-router/build/remote-origin');
+              promptChangeServer(adjusted);
+            },
+          },
+          { text: 'OK', isPreferred: true },
+        ]);
+        // alert(`Server: ${adjusted}`);
+      }, 500);
+    }
+  }
+
+  return adjusted;
+}
+
+function adjustUrl(url: string): string {
+  // Add additional formatting:
+
+  // Ensure the URL has a valid remote protocol, such as http or https
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    if (__DEV__) {
+      url = `http://${url}`;
+    } else {
+      url = `https://${url}`;
+    }
+  }
+
+  // Ensure no trailing slash
+  url = url.replace(/\/$/, '');
+
+  return url;
+}
+
+function getDefaultBaseUrl() {
+  if (getDevServer().bundleLoadedFromServer) {
+    // if (process.env.NODE_ENV !== 'production') {
     // e.g. http://localhost:19006
-    return getDevServer().url?.replace(/\/$/, '');
+    return getDevServer().url;
   }
 
   // TODO: Make it official by moving out of `extra`
@@ -118,7 +181,6 @@ if (manifest?.extra?.router?.origin !== false) {
       install();
     }
   }
-
   // Polyfill native fetch to support relative URLs
   Object.defineProperty(global, 'fetch', {
     // value: fetch,
