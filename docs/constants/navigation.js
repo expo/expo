@@ -475,7 +475,7 @@ const general = [
 const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
-    'Get started',
+    'Universal app',
     [
       makePage('tutorial/introduction.mdx'),
       makePage('tutorial/create-your-first-app.mdx'),
