@@ -163,41 +163,46 @@ class SharedObjectTest {
 
       Events("event")
 
-      Function("getData") { self: SharedObjectExampleClass ->
-        self.data
+      Function("lastOnStartObserving") { self: SharedObjectExampleClass ->
+        self.lastOnStartObserving
       }
 
-      OnStartObservingSync("event") { self: SharedObjectExampleClass ->
-        self.data = 987
-      }
-
-      OnStopObservingSync("event") { self: SharedObjectExampleClass ->
-        self.data = 654
+      Function("lastOnStopObserving") { self: SharedObjectExampleClass ->
+        self.lastOnStopObserving
       }
     }
   }) {
-    val afterStartObserving = evaluateScript(
+    val lastStartObserving = evaluateScript(
       """
       const sharedObject = new $moduleRef.SharedObjectExampleClass();
       global.listener = sharedObject.addListener('event', () => {});
       global.sharedObject = sharedObject;
-      sharedObject.getData()
+      sharedObject.lastOnStartObserving()
       """.trimIndent()
-    ).getInt()
+    ).getString()
 
-    val afterOnStopObserving = evaluateScript(
+    val lastOnStopObserving = evaluateScript(
       """
       global.listener.remove();
-      global.sharedObject.getData()
+      global.sharedObject.lastOnStopObserving()
       """.trimIndent()
-    ).getInt()
+    ).getString()
 
-    Truth.assertThat(afterStartObserving).isEqualTo(987)
-    Truth.assertThat(afterOnStopObserving).isEqualTo(654)
+    Truth.assertThat(lastStartObserving).isEqualTo("event")
+    Truth.assertThat(lastOnStopObserving).isEqualTo("event")
   }
 
   private class SharedObjectExampleClass : SharedObject() {
-    var data = 123
+    var lastOnStartObserving = ""
+    var lastOnStopObserving = ""
+
+    override fun startObserving(eventName: String) {
+      lastOnStartObserving = eventName
+    }
+
+    override fun stopObserving(eventName: String) {
+      lastOnStopObserving = eventName
+    }
   }
 
   private fun withExampleSharedClass(

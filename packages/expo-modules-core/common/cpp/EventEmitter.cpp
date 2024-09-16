@@ -131,7 +131,7 @@ void addListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::s
     state->listeners.add(runtime, eventName, listener);
 
     if (state->listeners.listenersCount(eventName) == 1) {
-      callObservingFunction(runtime, emitter, "startObservingSync", eventName);
+      callObservingFunction(runtime, emitter, "__expo__startObserving", eventName);
       callObservingFunction(runtime, emitter, "startObserving", eventName);
     }
   }
@@ -144,7 +144,7 @@ void removeListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std
     state->listeners.remove(runtime, eventName, listener);
 
     if (listenersCountBefore >= 1 && state->listeners.listenersCount(eventName) == 0) {
-      callObservingFunction(runtime, emitter, "stopObservingSync", eventName);
+      callObservingFunction(runtime, emitter, "__expo__stopObserving", eventName);
       callObservingFunction(runtime, emitter, "stopObserving", eventName);
     }
   }

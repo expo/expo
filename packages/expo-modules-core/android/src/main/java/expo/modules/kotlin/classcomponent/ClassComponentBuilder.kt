@@ -6,10 +6,9 @@ import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
 import expo.modules.kotlin.functions.SyncFunctionComponent
-import expo.modules.kotlin.objects.EventObservingDefinition
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
-import expo.modules.kotlin.objects.SyncEventObservingDefinition
+import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
@@ -26,22 +25,17 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 ) : ObjectDefinitionBuilder() {
   var constructor: SyncFunctionComponent? = null
 
-  private val syncEventObservers = mutableListOf<SyncEventObservingDefinition<SharedObjectType>>()
-
   fun buildClass(): ClassDefinitionData {
-    SyncEventObservingDefinition.Type.entries.forEach { type ->
-      if (!syncFunctions.containsKey(type.value)) {
-        SyncFunctionComponent(type.value, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
-          enforceType<String>(eventName)
-          @Suppress("UNCHECKED_CAST")
-          val self = self as SharedObjectType
-          syncEventObservers.forEach {
-            it.invokedIfNeed(self, type, eventName)
+    if (eventsDefinition != null && ownerClass.isSubclassOf(SharedObject::class)) {
+      listOf("__expo__startObserving" to SharedObject::startObserving, "__expo__stopObserving" to SharedObject::stopObserving)
+        .forEach { (name, function) ->
+          SyncFunctionComponent(name, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
+            enforceType<SharedObject, String>(self, eventName)
+            function.invoke(self, eventName)
+          }.also { function ->
+            syncFunctions[name] = function
           }
-        }.also { function ->
-          syncFunctions[type.value] = function
         }
-      }
     }
 
     val objectData = buildObject()
@@ -56,7 +50,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
       throw IllegalArgumentException("constructor cannot be null")
     }
 
-    val constructor = constructor ?: SyncFunctionComponent("constructor", emptyArray(), toReturnType<Unit>()) {}
+    val constructor = constructor
+                      ?: SyncFunctionComponent("constructor", emptyArray(), toReturnType<Unit>()) {}
     constructor.canTakeOwner = true
     constructor.ownerType = ownerType.kType
 
@@ -178,32 +173,6 @@ class ClassComponentBuilder<SharedObjectType : Any>(
   override fun Property(name: String): PropertyComponentBuilderWithThis<SharedObjectType> {
     return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
       properties[name] = it
-    }
-  }
-
-  /**
-   * Creates object's lifecycle listener that is called right after the first event listener is added for given event.
-   */
-  fun OnStartObservingSync(eventName: String, body: (self: SharedObjectType) -> Unit) {
-    SyncEventObservingDefinition<SharedObjectType>(
-      SyncEventObservingDefinition.Type.StartObserving,
-      EventObservingDefinition.SelectedEventFiler(eventName),
-      body
-    ).also {
-      syncEventObservers.add(it)
-    }
-  }
-
-  /**
-   * Creates object's lifecycle listener that is called right after all event listeners are removed for given event.
-   */
-  fun OnStopObservingSync(eventName: String, body: (self: SharedObjectType) -> Unit) {
-    SyncEventObservingDefinition<SharedObjectType>(
-      SyncEventObservingDefinition.Type.StopObserving,
-      EventObservingDefinition.SelectedEventFiler(eventName),
-      body
-    ).also {
-      syncEventObservers.add(it)
     }
   }
 }
