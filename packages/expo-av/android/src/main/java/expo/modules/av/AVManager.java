@@ -192,7 +192,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private void installBindings() {
     final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
     final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
-    if (jsContextRef <= 0) {
+    if (jsContextRef != 0) {
       Log.e("AVManager", "Cannot install JSI bindings for AV module because JS context is not available");
       return;
     }
