@@ -227,7 +227,7 @@ export async function exportAppAsync(
 
       // build source maps
       if (sourceMaps) {
-        Log.log('Preparing additional debugging files');
+        // TODO: Remove this
         // If we output source maps, then add a debug HTML file which the user can open in
         // the web browser to inspect the output like web.
         files.set('debug.html', {

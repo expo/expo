@@ -433,8 +433,6 @@ async function exportApiRoutesAsync({
     platform,
   });
 
-  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
-
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),
     targetDomain: 'server',
