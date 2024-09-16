@@ -524,6 +524,7 @@ export function Link({
   //   : props.onMouseEnter;
 
   const ele = createElement(
+    // @ts-expect-error
     asChild ? ReactSlot : Text,
     {
       ...props,

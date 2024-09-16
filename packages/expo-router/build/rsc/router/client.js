@@ -350,7 +350,9 @@ function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnte
     //       props.onMouseEnter?.(event);
     //     }
     //   : props.onMouseEnter;
-    const ele = (0, react_1.createElement)(asChild ? react_slot_1.Slot : react_native_1.Text, {
+    const ele = (0, react_1.createElement)(
+    // @ts-expect-error
+    asChild ? react_slot_1.Slot : react_native_1.Text, {
         ...props,
         href: to,
         onPress: onClick,
