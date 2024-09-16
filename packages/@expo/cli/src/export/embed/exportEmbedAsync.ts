@@ -43,6 +43,7 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
+import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -171,6 +172,12 @@ export async function exportEmbedBundleAndAssetsAsync(
     );
 
     if (devServer.isReactServerComponentsEnabled) {
+      // Export the API routes for server rendering the React Server Components.
+      await exportApiRoutesStandaloneAsync(devServer, {
+        files,
+        platform: 'web',
+      });
+
       // Store the server output in the project's .expo directory.
       const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
       await persistMetroFilesAsync(files, serverOutput);

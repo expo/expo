@@ -1,14 +1,12 @@
 /* eslint-env jest */
-import JsonFile from '@expo/json-file';
 import execa from 'execa';
-import klawSync from 'klaw-sync';
 import path from 'path';
 import * as fs from 'fs';
-import { sync as globSync } from 'glob';
 
 import { runExportSideEffects } from './export-side-effects';
 import { bin, getRouterE2ERoot } from '../utils';
 import { remove } from 'fs-extra';
+import { ServeLocalCommand } from '../../utils/command-instance';
 
 runExportSideEffects();
 
@@ -69,23 +67,6 @@ describe('export embed for RSC iOS', () => {
   );
 
   it('has expected files', async () => {
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-    console.log(files);
-
-    expect(
-      await fs.promises.readFile(path.resolve(outputDir, '_flight/ios/index.txt'), 'utf8')
-    ).toMatchSnapshot();
-
     // Ensure the standard files are included.
     expect(fs.existsSync(path.resolve(outputDir, 'index.js'))).toBe(true);
     expect(fs.existsSync(path.resolve(outputDir, 'assets'))).toBe(true);
@@ -99,5 +80,58 @@ describe('export embed for RSC iOS', () => {
 
     // Check the server project location
     expect(fs.existsSync(path.resolve(projectRoot, '.expo/server/ios'))).toBe(true);
+  });
+
+  describe('server', () => {
+    let serveCmd: ServeLocalCommand;
+    const inputDir = '.expo/server/ios';
+
+    const serverOutput = path.resolve(projectRoot, '.expo/server/ios');
+    const staticLocation = path.join(serverOutput, 'client/_flight/ios/index.txt');
+    const tempStaticLocation = path.join(serverOutput, 'client/_flight/ios/other.txt');
+
+    beforeAll(async () => {
+      serveCmd = new ServeLocalCommand(projectRoot, {
+        NODE_ENV: 'production',
+        TEST_SECRET_VALUE: 'test-secret-dynamic',
+      });
+
+      console.time('npx serve');
+      await serveCmd.startAsync([
+        '__e2e__/01-rsc/server.js',
+        '--port=' + 3035,
+        '--dist=' + inputDir,
+      ]);
+
+      // Move the static file to a temporary location so we can test both static and dynamic RSC payloads.
+      if (fs.existsSync(staticLocation)) {
+        fs.renameSync(staticLocation, tempStaticLocation);
+      }
+    });
+
+    it('fetches static RSC payload from server', async () => {
+      const payload = await fetch('http://localhost:3035/_flight/ios/other.txt').then((response) =>
+        response.text()
+      );
+      expect(payload).toMatch('test-secret');
+    });
+
+    it('server renders RSC payload from server', async () => {
+      const payload = await fetch('http://localhost:3035/_flight/ios/index.txt', {
+        headers: {
+          accept: 'text/x-component',
+          'expo-platform': 'ios',
+        },
+      }).then((response) => response.text());
+      expect(payload).toMatch('test-secret');
+    });
+
+    afterAll(async () => {
+      if (fs.existsSync(tempStaticLocation)) {
+        fs.renameSync(tempStaticLocation, staticLocation);
+      }
+
+      await serveCmd.stopAsync();
+    });
   });
 });
