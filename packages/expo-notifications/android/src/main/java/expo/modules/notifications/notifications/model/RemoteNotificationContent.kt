@@ -50,7 +50,7 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
 
   override val body: JSONObject?
     get() = try {
-      JSONObject(remoteMessage.data["body"] ?: "{}")
+      remoteMessage.data["body"]?.let { JSONObject(it) }
     } catch (e: Exception) {
       null
     }
