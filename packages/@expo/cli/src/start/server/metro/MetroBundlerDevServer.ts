@@ -1426,8 +1426,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       );
 
-      console.log('bundle', bundle, serializerOptions);
-
       this.metro._reporter.update({
         buildID: getBuildID(buildNumber),
         type: 'bundle_build_done',

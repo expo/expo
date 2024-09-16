@@ -9,7 +9,6 @@ import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
 import { NetworkError } from '../rsc/router/errors';
 import { promptChangeServer } from '../remote-origin';
-// import { Link } from '../link/Link';
 
 let useMetroSymbolication: (error: Error) => LogBoxLog | null;
 

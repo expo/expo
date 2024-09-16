@@ -171,12 +171,15 @@ export const callServerRSC = async (
 
 const prefetchedParams = new WeakMap<Promise<unknown>, unknown>();
 
-// These are needed for iOS + Prod to get updates.
-const NO_CACHE_HEADERS = {
-  'Cache-Control': 'no-cache',
-  Pragma: 'no-cache',
-  Expires: '0',
-};
+const NO_CACHE_HEADERS: Record<string, string> =
+  process.env.EXPO_OS === 'web'
+    ? {}
+    : // These are needed for iOS + Prod to get updates after the first request.
+      {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      };
 
 const fetchRSCInternal = (url: string, params: unknown) =>
   params === undefined

@@ -1,9 +1,7 @@
 import { Settings } from 'react-native';
 
-console.log('Installing localStorage polyfill');
 // localStorage polyfill. Life's too short to not have some storage API.
 if (typeof localStorage === 'undefined') {
-  console.log('Installing localStorage polyfill.2');
   const getKeys = () => {
     const value = Settings.get('__local_storage_keys');
     if (value) {

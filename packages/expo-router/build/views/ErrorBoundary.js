@@ -12,7 +12,6 @@ const react_native_safe_area_context_1 = require("react-native-safe-area-context
 const Pressable_1 = require("./Pressable");
 const errors_1 = require("../rsc/router/errors");
 const remote_origin_1 = require("../remote-origin");
-// import { Link } from '../link/Link';
 let useMetroSymbolication;
 if (process.env.NODE_ENV === 'development') {
     const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
