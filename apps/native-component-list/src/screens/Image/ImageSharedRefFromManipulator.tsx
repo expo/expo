@@ -10,7 +10,7 @@ import HeadingText from '../../components/HeadingText';
 const DEFAULT_IMAGE = Asset.fromModule(require('../../../assets/images/example2.jpg'));
 
 export default function ImageSharedRefFromManipulator() {
-  const [imageRef, setImageRef] = useState<ImageRef | null>(null);
+  const [image, setImage] = useState<ImageRef | null>(null);
   const context = useImageManipulator(DEFAULT_IMAGE.uri);
 
   const transformImage = useCallback(async () => {
@@ -26,8 +26,9 @@ export default function ImageSharedRefFromManipulator() {
       .renderAsync();
     context.reset();
 
+    // TODO(@lukmccall): Figure out a way to fix types
     //@ts-ignore
-    setImageRef(image);
+    setImage(image);
   }, [context]);
 
   return (
@@ -42,7 +43,7 @@ export default function ImageSharedRefFromManipulator() {
 
       <Button style={styles.buttons} onPress={transformImage} title="Transform" />
 
-      <Image style={styles.image} source={imageRef} />
+      <Image style={styles.image} source={image} />
     </View>
   );
 }
