@@ -92,7 +92,7 @@ class ResolveTakenPicture(
           ExifInterface.TAG_ORIENTATION,
           ExifInterface.ORIENTATION_NORMAL
         )
-        if (options.mirror) {
+        if (mirror) {
           exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, getMirroredOrientation(orientation).toString())
         }
 

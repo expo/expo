@@ -30,7 +30,7 @@ public final class FileSystemNextModule: Module {
             promise.resolve(FileSystemFile(url: destination).url.absoluteString)
           } else {
             try FileManager.default.moveItem(at: fileURL, to: to.url)
-            // TODO: Remove .url once returning shared objects works
+            // TODO: Remove .url.absoluteString once returning shared objects works
             promise.resolve(to.url.absoluteString)
           }
         } catch {
@@ -55,6 +55,10 @@ public final class FileSystemNextModule: Module {
         return try file.text()
       }
 
+      Function("base64") { file in
+        return try file.base64()
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -62,6 +66,14 @@ public final class FileSystemNextModule: Module {
         if let content: TypedArray = content.get() {
           try file.write(content)
         }
+      }
+
+      Property("size") { file in
+        try? file.size
+      }
+
+      Property("md5") { file in
+        try? file.md5
       }
 
       Function("delete") { file in
@@ -73,7 +85,7 @@ public final class FileSystemNextModule: Module {
       }
 
       Function("create") { file in
-        file.create()
+        try file.create()
       }
 
       Function("copy") { (file, to: FileSystemPath) in
@@ -84,7 +96,7 @@ public final class FileSystemNextModule: Module {
         try file.move(to: to)
       }
 
-      Property("path") { file in
+      Property("uri") { file in
         return file.url.absoluteString
       }
     }
@@ -119,7 +131,12 @@ public final class FileSystemNextModule: Module {
         try directory.move(to: to)
       }
 
-      Property("path") { directory in
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+      Function("listAsRecords") { directory in
+        try directory.listAsRecords()
+      }
+
+      Property("uri") { directory in
         return directory.url.absoluteString
       }
     }

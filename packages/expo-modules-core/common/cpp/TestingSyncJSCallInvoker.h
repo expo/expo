@@ -9,6 +9,7 @@
 #include <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
+namespace react = facebook::react;
 
 namespace expo {
 
@@ -16,9 +17,9 @@ namespace expo {
  * Dummy CallInvoker that invokes everything immediately.
  * Used in the test environment to check the async flow.
  */
-class TestingSyncJSCallInvoker : public facebook::react::CallInvoker {
+class TestingSyncJSCallInvoker : public react::CallInvoker {
 public:
-  TestingSyncJSCallInvoker(std::shared_ptr<jsi::Runtime> runtime) : runtime(runtime) {}
+  explicit TestingSyncJSCallInvoker(const std::shared_ptr<jsi::Runtime>& runtime) : runtime(runtime) {}
 
 #if REACT_NATIVE_TARGET_VERSION >= 75
   void invokeAsync(react::CallFunc &&func) noexcept override {
