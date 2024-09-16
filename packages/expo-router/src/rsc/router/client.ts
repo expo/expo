@@ -10,6 +10,7 @@
 
 'use client';
 
+import { Slot as ReactSlot } from '@radix-ui/react-slot';
 import {
   Component,
   startTransition,
@@ -23,7 +24,6 @@ import {
   useState,
   Fragment,
 } from 'react';
-
 import type {
   ComponentProps,
   FunctionComponent,
@@ -33,7 +33,6 @@ import type {
   ReactElement,
   MouseEvent,
 } from 'react';
-
 import { Text } from 'react-native';
 
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
@@ -428,8 +427,6 @@ export function ServerRouter({ children, route }: { children: ReactNode; route: 
     )
   );
 }
-
-import { Slot as ReactSlot } from '@radix-ui/react-slot';
 
 export type LinkProps = {
   href: string;

@@ -11,6 +11,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = exports.ServerRouter = exports.Router = exports.useRouter_UNSTABLE = void 0;
+const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const common_js_1 = require("./common.js");
@@ -287,7 +288,6 @@ function ServerRouter({ children, route }) {
     }, children));
 }
 exports.ServerRouter = ServerRouter;
-const react_slot_1 = require("@radix-ui/react-slot");
 function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, asChild, ...props }) {
     const router = (0, react_1.useContext)(RouterContext);
     const changeRoute = router
