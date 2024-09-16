@@ -139,7 +139,7 @@ export async function exportAppAsync(
               platform,
               splitChunks:
                 !env.EXPO_NO_BUNDLE_SPLITTING &&
-                (devServer.isReactServerComponentsEnabled || platform === 'web'),
+                ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
               mainModuleName: getEntryWithServerRoot(projectRoot, {
                 platform,
                 pkg: projectConfig.pkg,
