@@ -21,7 +21,7 @@ We believe that using the Expo Modules API makes building and maintaining nearly
 
 <Collapsible summary="Do I need to know the Expo Modules API to build an Expo / React Native app?">
 
-Most of the time, Expo and React Native developers don't need to write any native code — libraries are already available for a wide range of use cases, from camera to video to maps to haptics and much more.
+Most of the time, Expo and React Native developers don't need to write any native code &mdash; libraries are already available for a wide range of use cases, from camera to video to maps to haptics and much more.
 
 But sometimes there is nothing that does exactly what you need. Maybe you want to integrate an analytics service that your company mandates but that doesn't yet have a React Native library yet, so you need to build a module around their SDK. Or maybe you want to access a system feature that your app requires but that isn't commonly used, so nobody maintains a library for it.
 
@@ -55,7 +55,7 @@ The following libraries are some of our favorites from the community:
 
 <Collapsible summary="What impact does using the Expo Modules API have on my app size?">
 
-Adding the Expo Modules API to your app has a neglible impact on your app size, it may increase the size by a few hundred kilobytes. [Learn more](https://blog.expo.dev/embracing-expo-modules-in-your-react-native-projects-cd8ed4cbec3).
+Adding the Expo Modules API to your app has a negligible impact on your app size, it may increase the size by a few hundred kilobytes. [Learn more in this blog post](https://blog.expo.dev/embracing-expo-modules-in-your-react-native-projects-cd8ed4cbec3).
 
 </Collapsible>
 
@@ -65,13 +65,13 @@ The Expo Modules API has similar performance characteristics to React Native's T
 
 Neither Expo Modules nor Turbo Modules are designed to be as fast as technically possible, but rather they are fast where it matters. For example, the Expo Modules API could leverage code generation and the new native Swift / C++ interop to reduce the overhead of individual method calls. However, this imposes some developer experience challenges and overhead, and we have not yet encountered any use cases where such an optimization would provide any meaningful real-world performance improvements. In reality, the time spent executing the body of a native method is often orders of magnitude greater than the overhead of the method invocation. Both Expo Modules and Turbo Modules can easily execute hundreds of thousands of native method calls per second, which is well in excess of what you are likely to find in any app, and the overhead of the method calls is unlikely to be the bottleneck.
 
-If you encounter any performance bottlenecks with the Expo Modules API, please [file an issue](https://github.com/expo/expo/issues/new/choose) and we'd be happy to discuss it with you.
+If you encounter any performance bottlenecks with the Expo Modules API, [file an issue](https://github.com/expo/expo/issues/new/choose) and we'd be happy to discuss it with you.
 
 </Collapsible>
 
-<Collapsible summary="Does the Expo Modules API support any platforms other than iOS, Android, and web?">
+<Collapsible summary="Does the Expo Modules API support any platforms other than Android, iOS, and web?">
 
-The Expo Modules API has experimental suport for macOS and tvOS [Learn more](/modules/additional-platform-support/).
+The Expo Modules API has experimental support for macOS and tvOS. See [Additional platform support](/modules/additional-platform-support/) tutorial for more information.
 
 </Collapsible>
 
