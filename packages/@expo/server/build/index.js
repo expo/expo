@@ -69,8 +69,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     return import(filePath);
 }, logApiRouteExecutionError = (error) => {
     console.error(error);
-}, handleApiRouteError = async (error) => {
-    console.error(error);
+}, handleApiRouteError = async () => {
     return new Response('Internal server error', {
         status: 500,
         headers: {

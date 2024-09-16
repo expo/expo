@@ -85,7 +85,7 @@ export function createRequestHandler(
     logApiRouteExecutionError = (error: Error) => {
       console.error(error);
     },
-    handleApiRouteError = async (error: Error) => {
+    handleApiRouteError = async () => {
       return new Response('Internal server error', {
         status: 500,
         headers: {
