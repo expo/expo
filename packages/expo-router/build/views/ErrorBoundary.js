@@ -100,9 +100,6 @@ const useWrapper = react_native_1.Platform.OS === 'web'
         const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
         return Wrapper;
     };
-function isNetworkError(error) {
-    return !!error.message.match(/Network request failed: (The network connection was lost|Could not connect to the server)/);
-}
 function ErrorBoundary({ error, retry }) {
     // TODO: Add digest support for RSC errors
     // https://github.com/vercel/next.js/blob/f82445b01c885c2dce65c99043666f4a3efdbd9d/packages/next/src/client/components/error-boundary.tsx#L132-L151

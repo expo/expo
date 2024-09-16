@@ -132,12 +132,6 @@ const useWrapper =
         return Wrapper;
       };
 
-function isNetworkError(error: Error): boolean {
-  return !!error.message.match(
-    /Network request failed: (The network connection was lost|Could not connect to the server)/
-  );
-}
-
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   // TODO: Add digest support for RSC errors
   // https://github.com/vercel/next.js/blob/f82445b01c885c2dce65c99043666f4a3efdbd9d/packages/next/src/client/components/error-boundary.tsx#L132-L151

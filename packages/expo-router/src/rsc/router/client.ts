@@ -51,12 +51,12 @@ function InnerRouter() {
   const componentIds = getComponentIds(route.path);
 
   // TODO: strip when "is exporting".
+  const refetchRoute = () => {
+    const loc = parseRoute(new URL(getHref()));
+    const input = getInputString(loc.path);
+    refetch(input, loc.query);
+  };
   if (process.env.NODE_ENV === 'development') {
-    const refetchRoute = () => {
-      const loc = parseRoute(new URL(getHref()));
-      const input = getInputString(loc.path);
-      refetch(input, loc.query);
-    };
     globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
     const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(
       globalThis.__EXPO_REFETCH_ROUTE__
@@ -68,6 +68,7 @@ function InnerRouter() {
     }
     globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
   }
+  globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__ = refetchRoute;
 
   return createElement(
     RouterContext.Provider,
