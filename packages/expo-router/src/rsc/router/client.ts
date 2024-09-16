@@ -521,37 +521,46 @@ export function Link({
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     const url = new URL(to, getHref());
-    if (url.href !== getHref()) {
-      const route = parseRoute(url);
-      prefetchRoute(route);
-      startTransition(() => {
-        getHistory().pushState(
-          {
-            ...getHistory().state,
-            expo_new_path: url.pathname !== window.location.pathname,
-          },
-          '',
-          url
-        );
-        changeRoute(route);
-      });
-    }
+    console.log('TO', url.toString(), getHref());
+    // TODO: Use in-memory route for native platforms.
+    // if (url.href !== getHref()) {
+    const route = parseRoute(url);
+    console.log('ROUTE', route);
+    prefetchRoute(route);
+    startTransition(() => {
+      getHistory().pushState(
+        {
+          ...getHistory().state,
+          expo_new_path: url.pathname !== window.location.pathname,
+        },
+        '',
+        url
+      );
+      changeRoute(route);
+    });
+    // }
     props.onClick?.(event);
   };
-  const onMouseEnter = unstable_prefetchOnEnter
-    ? (event: MouseEvent<HTMLAnchorElement>) => {
-        const url = new URL(to, getHref());
-        if (url.href !== getHref()) {
-          const route = parseRoute(url);
-          prefetchRoute(route);
-        }
-        props.onMouseEnter?.(event);
-      }
-    : props.onMouseEnter;
+  // const onMouseEnter = unstable_prefetchOnEnter
+  //   ? (event: MouseEvent<HTMLAnchorElement>) => {
+  //       const url = new URL(to, getHref());
+  //       if (url.href !== getHref()) {
+  //         const route = parseRoute(url);
+  //         prefetchRoute(route);
+  //       }
+  //       props.onMouseEnter?.(event);
+  //     }
+  //   : props.onMouseEnter;
 
   const ele = createElement(
     asChild ? ReactSlot : Text,
-    { ...props, href: to, onPress: onClick, onMouseEnter, ref },
+    {
+      ...props,
+      href: to,
+      onPress: onClick,
+      // onMouseEnter,
+      ref,
+    },
     children
   );
   if (isPending && pending !== undefined) {

@@ -150,7 +150,7 @@ const fetchRSCInternal = (url, params) => params === undefined
     ? (0, fetch_1.fetch)(url)
     : typeof params === 'string'
         ? (0, fetch_1.fetch)(url, { headers: { 'expo-platform': process.env.EXPO_OS, 'X-Expo-Params': params } })
-        : encodeReply(params).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', body }));
+        : encodeReply(params).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', headers: ACTION_HEADERS, body }));
 const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     // TODO: strip when "is exporting".
     if (process.env.NODE_ENV === 'development') {
@@ -218,7 +218,7 @@ function getAdjustedFilePath(path) {
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = BASE_PATH + (0, utils_1.encodeInput)(input);
+    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     if (!(url in prefetched)) {
         prefetched[url] = fetchRSCInternal(url, params);
         prefetchedParams.set(prefetched[url], params);

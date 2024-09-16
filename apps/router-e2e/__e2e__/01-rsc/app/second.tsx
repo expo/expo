@@ -6,8 +6,8 @@ import { Link } from 'expo-router/build/rsc/exports';
 export default function IndexRoute({ path, query }) {
   return (
     <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
-      <Text testID="index-text">Hello World</Text>
-      <Link href="/second">Go to index</Link>
+      <Text testID="index-text">Second</Text>
+      <Link href="/">Go to index</Link>
       <Text testID="index-path">{path}</Text>
       <Text testID="index-query">{query}</Text>
       <Text>Platform: {process.env.EXPO_OS}</Text>
