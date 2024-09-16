@@ -38,6 +38,12 @@ test.beforeAll('bundle and serve', async () => {
   });
   console.timeEnd('expo export');
 
+  // Duplicate the index.html file for an SPA-style export.
+  fs.copyFileSync(
+    path.join(projectRoot, inputDir, 'client/index.html'),
+    path.join(projectRoot, inputDir, 'client/second.html')
+  );
+
   serveCmd = new ServeLocalCommand(projectRoot, {
     NODE_ENV: 'production',
     TEST_SECRET_VALUE: 'test-secret-dynamic',
