@@ -50,6 +50,7 @@
 
 ### 💡 Others
 
+- improve export log format ([#31476](https://github.com/expo/expo/pull/31476) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce scope of custom transform options in Metro cache. ([#31262](https://github.com/expo/expo/pull/31262) by [@EvanBacon](https://github.com/EvanBacon))
 - Refactor web hydration to use `globalThis.__EXPO_ROUTER_HYDRATE__` instead of `process.env.EXPO_PUBLIC_USE_STATIC`. ([#31267](https://github.com/expo/expo/pull/31267) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable experimental features for RSC when `experiments.reactServerComponents` is enabled. ([#30967](https://github.com/expo/expo/pull/30967) by [@EvanBacon](https://github.com/EvanBacon))
