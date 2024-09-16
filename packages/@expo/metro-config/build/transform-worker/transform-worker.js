@@ -40,6 +40,7 @@ const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const debug = require('debug')('expo:metro-config:transform-worker');
 function getStringArray(value) {
     if (!value)
         return undefined;
@@ -72,7 +73,7 @@ async function transform(config, projectRoot, filename, data, options) {
             const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
             // Inject client boundaries into the root client bundle for production bundling.
             if (clientBoundaries) {
-                console.log('Parsed client boundaries:', clientBoundaries);
+                debug('Parsed client boundaries:', clientBoundaries);
                 // Inject source
                 const src = 'module.exports = {\n' +
                     clientBoundaries
