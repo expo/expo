@@ -16,7 +16,7 @@ import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
-import expo.modules.notifications.notifications.model.NotificationContent
+import expo.modules.notifications.notifications.model.LocalNotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
@@ -183,7 +183,7 @@ open class ExpoPresentationDelegate(
     // We weren't able to reconstruct the notification from our data, which means
     // it's either not our notification or we couldn't have unmarshaled it from
     // the byte array. Let's do what we can.
-    val content = NotificationContent.Builder()
+    val content = LocalNotificationContent.Builder()
       .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
       .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
       .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT)) // using deprecated field

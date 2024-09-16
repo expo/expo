@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import expo.modules.notifications.notifications.NotificationManager
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationContent
+import expo.modules.notifications.notifications.model.LocalNotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.service.NotificationsService
 import io.mockk.every
@@ -98,7 +98,7 @@ class ExpoHandlingDelegateTest {
     return Notification(
       NotificationRequest(
         "identifier",
-        NotificationContent.Builder().setTitle(title).setText(text).setBody(body).build(),
+        LocalNotificationContent.Builder().setTitle(title).setText(text).setBody(body).build(),
         object : NotificationTrigger {
           override fun describeContents(): Int = -1
           override fun writeToParcel(dest: Parcel, flags: Int) {}

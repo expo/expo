@@ -28,12 +28,12 @@ import kotlin.coroutines.Continuation;
 
 /**
  * A POJO representing a local notification content: title, message, body, etc. Instances
- * should be created using {@link NotificationContent.Builder}.
+ * should be created using {@link LocalNotificationContent.Builder}.
  *
  * Note that it implements {@link Serializable} interfaces to store the object in the SharedPreferences.
  * Refactoring this class may require a migration strategy for the data stored in SharedPreferences.
  */
-public class NotificationContent implements Parcelable, Serializable, INotificationContent {
+public class LocalNotificationContent implements Parcelable, Serializable, INotificationContent {
   private String mTitle;
   private String mText;
   private String mSubtitle;
@@ -49,18 +49,18 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   private String mCategoryId;
   private boolean mSticky;
 
-  protected NotificationContent() {
+  protected LocalNotificationContent() {
   }
 
-  public static final Creator<NotificationContent> CREATOR = new Creator<NotificationContent>() {
+  public static final Creator<LocalNotificationContent> CREATOR = new Creator<LocalNotificationContent>() {
     @Override
-    public NotificationContent createFromParcel(Parcel in) {
-      return new NotificationContent(in);
+    public LocalNotificationContent createFromParcel(Parcel in) {
+      return new LocalNotificationContent(in);
     }
 
     @Override
-    public NotificationContent[] newArray(int size) {
-      return new NotificationContent[size];
+    public LocalNotificationContent[] newArray(int size) {
+      return new LocalNotificationContent[size];
     }
   };
 
@@ -156,7 +156,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     return 0;
   }
 
-  protected NotificationContent(Parcel in) {
+  protected LocalNotificationContent(Parcel in) {
     mTitle = in.readString();
     mText = in.readString();
     mSubtitle = in.readString();
@@ -370,8 +370,8 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
       return this;
     }
 
-    public NotificationContent build() {
-      NotificationContent content = new NotificationContent();
+    public LocalNotificationContent build() {
+      LocalNotificationContent content = new LocalNotificationContent();
       content.mTitle = mTitle;
       content.mSubtitle = mSubtitle;
       content.mText = mText;

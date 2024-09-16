@@ -9,7 +9,7 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
-import expo.modules.notifications.notifications.model.NotificationContent
+import expo.modules.notifications.notifications.model.LocalNotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import kotlinx.coroutines.runBlocking
@@ -45,7 +45,7 @@ class ExpoNotificationBuilderTest {
 
   @Test
   fun buildMethodCreatesNotificationWithCorrectProperties() = runBlocking {
-    val notificationContent = NotificationContent.Builder()
+    val localNotificationContent = LocalNotificationContent.Builder()
       .setTitle("Test Title")
       .setSubtitle("Test Subtitle")
       .setText("Test Text")
@@ -57,7 +57,7 @@ class ExpoNotificationBuilderTest {
       .setPriority(NotificationPriority.HIGH)
       .setVibrationPattern(longArrayOf(100, 200, 300, 400))
       .build()
-    val androidNotification = createTestNotificationBuilder(notificationContent).build()
+    val androidNotification = createTestNotificationBuilder(localNotificationContent).build()
 
     // Verify the notification properties
     assertNotNull(androidNotification)
@@ -89,8 +89,8 @@ class ExpoNotificationBuilderTest {
 
   @Test
   fun buildMethodCreatesEmptyNotification() = runBlocking {
-    val notificationContent = NotificationContent.Builder().build()
-    val androidNotification = createTestNotificationBuilder(notificationContent).build()
+    val localNotificationContent = LocalNotificationContent.Builder().build()
+    val androidNotification = createTestNotificationBuilder(localNotificationContent).build()
 
     // Verify the notification properties
     assertNotNull(androidNotification)

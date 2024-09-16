@@ -14,9 +14,9 @@ import java.util.Map;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.channels.InvalidVibrationPatternException;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
-import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.LocalNotificationContent;
 
-public class ArgumentsNotificationContentBuilder extends NotificationContent.Builder {
+public class ArgumentsNotificationContentBuilder extends LocalNotificationContent.Builder {
   private static final String TITLE_KEY = "title";
   private static final String SUBTITLE_KEY = "subtitle";
   private static final String TEXT_KEY = "body";
@@ -36,7 +36,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
     mSoundResolver = new SoundResolver(context);
   }
 
-  public NotificationContent.Builder setPayload(ReadableArguments payload) {
+  public LocalNotificationContent.Builder setPayload(ReadableArguments payload) {
     this.setTitle(payload.getString(TITLE_KEY))
       .setSubtitle(payload.getString(SUBTITLE_KEY))
       .setText(payload.getString(TEXT_KEY))

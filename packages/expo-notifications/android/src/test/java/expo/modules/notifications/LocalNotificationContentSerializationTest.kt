@@ -6,7 +6,7 @@ import org.junit.Test
 import java.io.*
 import org.json.JSONObject
 import expo.modules.notifications.notifications.enums.NotificationPriority
-import expo.modules.notifications.notifications.model.NotificationContent
+import expo.modules.notifications.notifications.model.LocalNotificationContent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -15,7 +15,7 @@ import org.junit.Before
 
 const val mockData = "{\"key\":\"value\"}"
 
-class NotificationContentSerializationTest {
+class LocalNotificationContentSerializationTest {
 
   @Before
   fun setup() {
@@ -29,7 +29,7 @@ class NotificationContentSerializationTest {
 
   @Test
   fun testSerializationWithNullValues() {
-    val originalContent = NotificationContent.Builder()
+    val originalContent = LocalNotificationContent.Builder()
       .setTitle(null)
       .setText(null)
       .setSubtitle(null)
@@ -53,7 +53,7 @@ class NotificationContentSerializationTest {
     val base64EncodedSerialized = "rO0ABXNyAEJleHBvLm1vZHVsZXMubm90aWZpY2F0aW9ucy5ub3RpZmljYXRpb25zLm1vZGVsLk5vdGlmaWNhdGlvbkNvbnRlbnQFhMvjE97pQgMADloADG1BdXRvRGlzbWlzc1oAF21TaG91bGRQbGF5RGVmYXVsdFNvdW5kWgAhbVNob3VsZFVzZURlZmF1bHRWaWJyYXRpb25QYXR0ZXJuWgAHbVN0aWNreUwAC21CYWRnZUNvdW50dAASTGphdmEvbGFuZy9OdW1iZXI7TAAFbUJvZHl0ABVMb3JnL2pzb24vSlNPTk9iamVjdDtMAAttQ2F0ZWdvcnlJZHQAEkxqYXZhL2xhbmcvU3RyaW5nO0wABm1Db2xvcnEAfgABTAAJbVByaW9yaXR5dABFTGV4cG8vbW9kdWxlcy9ub3RpZmljYXRpb25zL25vdGlmaWNhdGlvbnMvZW51bXMvTm90aWZpY2F0aW9uUHJpb3JpdHk7TAAGbVNvdW5kdAARTGFuZHJvaWQvbmV0L1VyaTtMAAltU3VidGl0bGVxAH4AA0wABW1UZXh0cQB+AANMAAZtVGl0bGVxAH4AA1sAEW1WaWJyYXRpb25QYXR0ZXJudAACW0p4cHQAClRlc3QgVGl0bGV0AAlUZXN0IFRleHR0AA1UZXN0IFN1YnRpdGxlc3IAEWphdmEubGFuZy5JbnRlZ2VyEuKgpPeBhzgCAAFJAAV2YWx1ZXhyABBqYXZhLmxhbmcuTnVtYmVyhqyVHQuU4IsCAAB4cAAAAAV3AQB0AAdVcmkoIzIpdyUAAAAABAAAAAAAAAAAAAAAAAAAAMgAAAAAAAAAyAAAAAAAAADIdAAPeyJrZXkiOiJ2YWx1ZSJ9c3EAfgALAAAAAXNxAH4ACwD/AAB3AQF0AA10ZXN0X2NhdGVnb3J5dwEAeA=="
     val serializedContent = java.util.Base64.getDecoder().decode(base64EncodedSerialized)
     val deserializedContent = ObjectInputStream(ByteArrayInputStream(serializedContent)).use {
-      it.readObject() as NotificationContent
+      it.readObject() as LocalNotificationContent
     }
 
     assertNotificationContentEquals(createSampleNotificationContent(), deserializedContent)
@@ -70,8 +70,8 @@ class NotificationContentSerializationTest {
     assertNotificationContentEquals(originalContent, deserializedContent)
   }
 
-  private fun createSampleNotificationContent(): NotificationContent {
-    return NotificationContent.Builder()
+  private fun createSampleNotificationContent(): LocalNotificationContent {
+    return LocalNotificationContent.Builder()
       .setTitle("Test Title")
       .setText("Test Text")
       .setSubtitle("Test Subtitle")
@@ -87,15 +87,15 @@ class NotificationContentSerializationTest {
       .build()
   }
 
-  private fun serializeAndDeserialize(content: NotificationContent): NotificationContent {
+  private fun serializeAndDeserialize(content: LocalNotificationContent): LocalNotificationContent {
     val byteArrayOutputStream = ByteArrayOutputStream()
     ObjectOutputStream(byteArrayOutputStream).use { it.writeObject(content) }
     return ObjectInputStream(ByteArrayInputStream(byteArrayOutputStream.toByteArray())).use {
-      it.readObject() as NotificationContent
+      it.readObject() as LocalNotificationContent
     }
   }
 
-  private fun assertNotificationContentEquals(expected: NotificationContent, actual: NotificationContent) {
+  private fun assertNotificationContentEquals(expected: LocalNotificationContent, actual: LocalNotificationContent) {
     assertEquals(expected.title, actual.title)
     assertEquals(expected.text, actual.text)
     assertEquals(expected.subtitle, actual.subtitle)

@@ -16,7 +16,7 @@ import expo.modules.notifications.notifications.ArgumentsNotificationContentBuil
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
-import expo.modules.notifications.notifications.model.NotificationContent
+import expo.modules.notifications.notifications.model.LocalNotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
 import expo.modules.notifications.notifications.triggers.DailyTrigger
@@ -223,7 +223,7 @@ open class NotificationScheduler : Module() {
 
   protected open fun createNotificationRequest(
     identifier: String,
-    content: NotificationContent,
+    content: LocalNotificationContent,
     notificationTrigger: NotificationTrigger?
   ): NotificationRequest {
     return NotificationRequest(identifier, content, notificationTrigger)
