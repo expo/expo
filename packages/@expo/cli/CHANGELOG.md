@@ -31,6 +31,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix API route bundling in development.
 - Add support for `config.resolver.requireCycleIgnorePatterns` in SSR bundles. ([#31462](https://github.com/expo/expo/pull/31462) by [@EvanBacon](https://github.com/EvanBacon))
 - Force DOM components to be minified in production exports. ([#31271](https://github.com/expo/expo/pull/31271) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix DOM component re-renders in dev. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))

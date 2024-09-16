@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix bundle split HBC paths for server manifest.
 - Support global CSS in tree shaking. ([#31304](https://github.com/expo/expo/pull/31304) by [@EvanBacon](https://github.com/EvanBacon))
 - Update source map URL when config mutates modules. ([#30980](https://github.com/expo/expo/pull/30980) by [@EvanBacon](https://github.com/EvanBacon))
 - Terminate module source maps with a null mapping [upstream](https://github.com/facebook/metro/commit/96c6b893eb77b5929b6050d7189905232ddf6d6d). ([#30701](https://github.com/expo/expo/pull/30701) by [@EvanBacon](https://github.com/EvanBacon))
