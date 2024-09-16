@@ -221,6 +221,51 @@ export type NotificationTrigger = PushNotificationTrigger | CalendarNotification
 export type ChannelAwareTriggerInput = {
     channelId: string;
 };
+/**
+ * Schedulable trigger inputs (that are not a plain Date value or time value)
+ * must have the "type" property set to one of these values.
+ */
+export declare enum CalendarTriggerTypes {
+    /**
+     * A trigger type that will cause the notification to be delivered once or many times
+     * (controlled by the value of `repeats`)
+     * when the date components match the specified values.
+     * Corresponds to native
+     * [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
+     * @platform ios
+     */
+    CALENDAR = "calendar",
+    /**
+     * A trigger type that will cause the notification to be delivered once per day
+     * when the `hour` and `minute` date components match the specified values.
+     */
+    DAILY = "daily",
+    /**
+     * A trigger type that will cause the notification to be delivered once every week
+     * when the `weekday`, `hour`, and `minute` date components match the specified values.
+     * > **Note:** Weekdays are specified with a number from `1` through `7`, with `1` indicating Sunday.
+     */
+    WEEKLY = "weekly",
+    /**
+     * A trigger type that will cause the notification to be delivered once every year
+     * when the `day`, `month`, `hour`, and `minute` date components match the specified values.
+     * > **Note:** all properties are specified in JavaScript Date's ranges.
+     */
+    YEARLY = "yearly",
+    /**
+     * A trigger type that will cause the notification to be delivered once
+     * on the specified value of the `date` property. The value of `repeats` will be ignored
+     * for this trigger type.
+     */
+    DATE = "date",
+    /**
+     * A trigger of this type will cause the notification to be delivered once or many times
+     * (depends on the `repeats` field) after `seconds` time elapse.
+     * > **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater.
+     * Otherwise, the notification won't be triggered.
+     */
+    TIME_INTERVAL = "timeInterval"
+}
 export type CalendarTriggerInputValue = {
     timezone?: string;
     year?: number;
@@ -235,68 +280,38 @@ export type CalendarTriggerInputValue = {
     second?: number;
 };
 /**
- * A trigger that will cause the notification to be delivered once or many times when the date components match the specified values.
- * Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
- * @platform ios
+ * See [`SchedulableNotificationTriggerInput`](#schedulablenotificationtriggerinput)
  */
-export type CalendarTriggerInput = CalendarTriggerInputValue & {
+export type SchedulableNotificationTriggerInputObject = {
+    type: CalendarTriggerTypes;
     channelId?: string;
     repeats?: boolean;
+    seconds?: number;
+    timezone?: string;
+    year?: number;
+    month?: number;
+    weekday?: number;
+    weekOfMonth?: number;
+    weekOfYear?: number;
+    weekdayOrdinal?: number;
+    day?: number;
+    hour?: number;
+    minute?: number;
+    second?: number;
 };
 /**
- * A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
- * > **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater. Otherwise, the notification won't be triggered.
- */
-export interface TimeIntervalTriggerInput {
-    channelId?: string;
-    repeats?: boolean;
-    seconds: number;
-}
-/**
- * A trigger that will cause the notification to be delivered once per day.
- */
-export interface DailyTriggerInput {
-    channelId?: string;
-    hour: number;
-    minute: number;
-    repeats: true;
-}
-/**
- * A trigger that will cause the notification to be delivered once every week.
- * > **Note:** Weekdays are specified with a number from `1` through `7`, with `1` indicating Sunday.
- */
-export interface WeeklyTriggerInput {
-    channelId?: string;
-    weekday: number;
-    hour: number;
-    minute: number;
-    repeats: true;
-}
-/**
- * A trigger that will cause the notification to be delivered once every year.
- * > **Note:** all properties are specified in JavaScript Date's ranges.
- */
-export interface YearlyTriggerInput {
-    channelId?: string;
-    day: number;
-    month: number;
-    hour: number;
-    minute: number;
-    repeats: true;
-}
-/**
- * A trigger that will cause the notification to be delivered once at the specified `Date`.
- * If you pass in a `number` it will be interpreted as a Unix timestamp.
- */
-export type DateTriggerInput = Date | number | {
-    channelId?: string;
-    date: Date | number;
-};
-/**
- * A type represents time-based, schedulable triggers. For these triggers you can check the next trigger date
+ * Input for time-based, schedulable triggers.
+ * For these triggers you can check the next trigger date
  * with [`getNextTriggerDateAsync`](#notificationsgetnexttriggerdateasynctrigger).
+ * If you pass in a `number` (Unix timestamp) or `Date`, it will be processed as a
+ * trigger input of type [`CalendarTriggerTypes.DATE`](#date). Otherwise, the input must be
+ * an object, with a `type` value set to one of the allowed values in
+ * [`CalendarTriggerTypes`](#calendartriggertypes).
+ * If the input is an object, date components passed in will be validated, and
+ * an error thrown if they are outside their allowed range (e.g. the `minute` and
+ * `second` components must be between 0 and 59 inclusive).
  */
-export type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput | CalendarTriggerInput;
+export type SchedulableNotificationTriggerInput = Date | number | SchedulableNotificationTriggerInputObject;
 /**
  * A type represents possible triggers with which you can schedule notifications.
  * A `null` trigger means that the notification should be scheduled for delivery immediately.
