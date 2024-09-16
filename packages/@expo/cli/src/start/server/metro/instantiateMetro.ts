@@ -101,6 +101,9 @@ export async function loadMetroConfigAsync(
     },
   };
 
+  // @ts-expect-error: Set the global require cycle ignore patterns for SSR bundles. This won't work with custom global prefixes, but we don't use those.
+  globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
+
   if (isExporting) {
     // This token will be used in the asset plugin to ensure the path is correct for writing locally.
     // @ts-expect-error: typed as readonly.
