@@ -24,3 +24,7 @@ export default function IndexRoute({ path, query }) {
     </View>
   );
 }
+
+export const unstable_settings = {
+  render: 'static',
+};
