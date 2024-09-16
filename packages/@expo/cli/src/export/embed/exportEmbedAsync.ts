@@ -170,16 +170,18 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
-    await persistMetroFilesAsync(files, serverOutput);
+    if (devServer.isReactServerComponentsEnabled) {
+      // Store the server output in the project's .expo directory.
+      const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
+      await persistMetroFilesAsync(files, serverOutput);
 
-    [...files.entries()].forEach(([key, value]) => {
-      if (value.targetDomain === 'server') {
-        // Delete server resources to prevent them from being exposed in the binary.
-        files.delete(key);
-        return;
-      }
-    });
+      [...files.entries()].forEach(([key, value]) => {
+        if (value.targetDomain === 'server') {
+          // Delete server resources to prevent them from being exposed in the binary.
+          files.delete(key);
+        }
+      });
+    }
 
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
