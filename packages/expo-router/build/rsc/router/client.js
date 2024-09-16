@@ -53,23 +53,6 @@ const equalRouteProps = (a, b) => {
 const RouterContext = (0, react_1.createContext)(null);
 const InnerRouter = ({ routerData }) => {
     const refetch = (0, host_js_1.useRefetch)();
-    // TODO: strip when "is exporting".
-    if (process.env.NODE_ENV === 'development') {
-        const refetchRoute = () => {
-            const loc = parseRoute(new URL(getHref()));
-            const input = (0, common_js_1.getInputString)(loc.path);
-            refetch(input, new URLSearchParams(loc.query));
-        };
-        globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
-        const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_ROUTE__);
-        if (index !== -1) {
-            globalThis.__EXPO_RSC_RELOAD_LISTENERS__.splice(index, 1, refetchRoute);
-        }
-        else {
-            globalThis.__EXPO_RSC_RELOAD_LISTENERS__.unshift(refetchRoute);
-        }
-        globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
-    }
     const initialRouteRef = (0, react_1.useRef)();
     if (!initialRouteRef.current) {
         initialRouteRef.current = parseRoute(new URL(getHref()));

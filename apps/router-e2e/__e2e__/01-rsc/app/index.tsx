@@ -1,13 +1,14 @@
-import { Image, Text, View } from '../lib/react-native';
+import { Link } from 'expo-router/build/rsc/exports';
 
 import { Counter } from '../components/counter';
-import { Link } from 'expo-router/build/rsc/exports';
+import { Pokemon } from '../components/pokemon';
+import { Image, Text, View } from '../lib/react-native';
 
 export default function IndexRoute({ path, query }) {
   return (
     <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
       <Text testID="index-text">Hello World</Text>
-      <Link href="/second">Go to index</Link>
+      <Link href="/second">Go to second</Link>
       <Text testID="index-path">{path}</Text>
       <Text testID="index-query">{query}</Text>
       <Text>Platform: {process.env.EXPO_OS}</Text>
@@ -21,6 +22,7 @@ export default function IndexRoute({ path, query }) {
       />
 
       <Counter />
+      <Pokemon />
     </View>
   );
 }
