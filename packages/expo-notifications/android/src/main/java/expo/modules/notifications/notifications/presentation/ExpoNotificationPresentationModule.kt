@@ -54,7 +54,7 @@ open class ExpoNotificationPresentationModule : Module() {
         createResultReceiver { resultCode: Int, resultData: Bundle? ->
           val notifications = resultData?.getParcelableArrayList<Notification>(NotificationsService.NOTIFICATIONS_KEY)
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
-            promise.resolve(serializeNotifications(notifications))
+            promise.resolve(notifications.map(NotificationSerializer::toBundle))
           } else {
             val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
             promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e)
@@ -95,9 +95,5 @@ open class ExpoNotificationPresentationModule : Module() {
         }
       }
     )
-  }
-
-  protected open fun serializeNotifications(notifications: Collection<Notification>): List<Bundle> {
-    return notifications.map(NotificationSerializer::toBundle)
   }
 }
