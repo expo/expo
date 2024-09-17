@@ -7,7 +7,7 @@ public struct AppCodeSignEntitlements: Codable {
   /**
    https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_application-groups
    */
-  var appGroups: [String]?
+  public var appGroups: [String]?
 
   /**
    Create an instance from JSON string.
