@@ -48,6 +48,19 @@ public final class FileSystemNextModule: Module {
       downloadTask.resume()
     }
 
+    AsyncFunction("getAppleSharedContainersAsync") {
+      guard let appContext else {
+        throw Exceptions.AppContextLost()
+      }
+      var result: [String: String] = [:]
+      for appGroup in appContext.appCodeSignEntitlements.appGroups ?? [] {
+        if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+          result[appGroup] = directory.standardizedFileURL.path
+        }
+      }
+      return result
+    }
+
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
         return FileSystemFile(url: url.standardizedFileURL)

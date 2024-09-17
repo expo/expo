@@ -55,3 +55,16 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
       .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
   }
 }
+
+// Cannot use `static` keyword in class declaration because of a runtime error.
+Directory.getAppleSharedContainersAsync = async function getAppleSharedContainersAsync(): Promise<
+  Record<string, Directory>
+> {
+  const containers: Record<string, string> =
+    (await ExpoFileSystem.getAppleSharedContainersAsync?.()) ?? {};
+  const result: Record<string, Directory> = {};
+  for (const [appGroupId, path] of Object.entries(containers)) {
+    result[appGroupId] = new Directory(path);
+  }
+  return result;
+};

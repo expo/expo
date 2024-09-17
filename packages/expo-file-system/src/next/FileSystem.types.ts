@@ -60,6 +60,14 @@ export declare class Directory {
    * Lists the contents of a directory.
    */
   list(): (Directory | File)[];
+
+  /**
+   * Gets the shared container directories for [Apple App Groups](https://developer.apple.com/documentation/xcode/configuring-app-groups).
+   * @return Map of app group identifiers to shared directories.
+   * @platform ios
+   * @platform tvos
+   */
+  static getAppleSharedContainersAsync(): Promise<Record<string, Directory>>;
 }
 
 /**
