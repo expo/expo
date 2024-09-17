@@ -12,7 +12,7 @@ This document outlines how to trigger builds on EAS for your app from a CI envir
 
 ### Run a successful build from your local machine
 
-To trigger EAS builds from a CI environment, your app needs to be setup to use EAS Build in non-interactive mode. The  way to do this is by taking care of the EAS Build initialization steps and running a successful build from your local terminal for each platform you would like to support on CI. This way, the `eas build` command can prompt interactively for any additional configuration it needs, and then that configuration will be available for future non-interactive runs on CI.
+To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. To do this, go through the EAS Build initialization steps and run a successful build from your local terminal for each platform you would like to support on CI. This way, the `eas build` command can prompt for any additional configuration it needs, and then that configuration will be available for future non-interactive runs on CI.
 
 Running a build locally will accomplish the following critical configuration steps:
 - Initialize the project on EAS, generating a `projectId`.
