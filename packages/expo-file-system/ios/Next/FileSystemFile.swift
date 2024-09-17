@@ -21,12 +21,14 @@ internal final class FileSystemFile: FileSystemPath {
     FileManager.default.createFile(atPath: url.path, contents: nil)
   }
 
-  func exists() -> Bool {
-    var isDirectory: ObjCBool = false
-    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-      return !isDirectory.boolValue
+  var exists: Bool {
+    get {
+      var isDirectory: ObjCBool = false
+      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+        return !isDirectory.boolValue
+      }
+      return false
     }
-    return false
   }
 
   // TODO: Move to the constructor once error is rethrowed

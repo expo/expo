@@ -34,11 +34,9 @@ export declare class Directory {
   delete(): void;
 
   /**
-   * Checks if a directory exists.
-   *
-   * @returns `true` if the directory exists, `false` otherwise.
+   * A boolean representing if a directory exists. `true` if the directory exists, `false` otherwise.
    */
-  exists(): boolean;
+  exists: boolean;
 
   /**
    * Creates a directory.
@@ -110,10 +108,9 @@ export declare class File {
   delete(): void;
 
   /**
-   * Checks if a file exists.
-   * @returns `true` if the file exists, `false` otherwise.
+   * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
    */
-  exists(): boolean;
+  exists: boolean;
 
   /**
    * Creates a file.
@@ -138,11 +135,11 @@ export declare class File {
    */
   static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
   /**
-   * A size of the file in bytes. Returns null if the file does not exist or it cannot be read.
+   * A size of the file in bytes. Null if the file does not exist or it cannot be read.
    */
   size: number | null;
   /**
-   * An md5 hash of the file. Returns null if the file does not exist or it cannot be read.
+   * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
   md5: string | null;
 }

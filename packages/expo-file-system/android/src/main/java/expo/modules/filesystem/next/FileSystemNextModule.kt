@@ -86,8 +86,8 @@ class FileSystemNextModule : Module() {
         file.base64()
       }
 
-      Function("exists") { file: FileSystemFile ->
-        file.exists()
+      Property("exists") { file: FileSystemFile ->
+        file.exists
       }
 
       Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
@@ -128,8 +128,8 @@ class FileSystemNextModule : Module() {
         directory.create()
       }
 
-      Function("exists") { directory: FileSystemDirectory ->
-        directory.exists()
+      Property("exists") { directory: FileSystemDirectory ->
+        directory.exists
       }
 
       Function("validatePath") { directory: FileSystemDirectory ->
