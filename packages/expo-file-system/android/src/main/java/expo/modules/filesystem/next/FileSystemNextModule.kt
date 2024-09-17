@@ -1,9 +1,11 @@
 package expo.modules.filesystem.next
 
+import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -17,6 +19,8 @@ import java.io.FileOutputStream
 import java.net.URI
 
 class FileSystemNextModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
