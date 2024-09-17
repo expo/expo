@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Change `exists()` function to a property. ([#31522](https://github.com/expo/expo/pull/31522) by [@aleqsio](https://github.com/aleqsio))
 - Add path utilities and `parentDirectory`, `extension` fields to the new file system module. ([#31333](https://github.com/expo/expo/pull/31333) by [@aleqsio](https://github.com/aleqsio))
 - Add listing directory contents to the new file system module. ([#31121](https://github.com/expo/expo/pull/31121) by [@aleqsio](https://github.com/aleqsio))
 - Add `base64()` new file system module. ([#31357](https://github.com/expo/expo/pull/31357) by [@aleqsio](https://github.com/aleqsio))
