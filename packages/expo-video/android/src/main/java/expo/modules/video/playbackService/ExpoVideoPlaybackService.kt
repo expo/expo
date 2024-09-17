@@ -44,7 +44,11 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     .build()
 
   fun setShowNotification(showNotification: Boolean, player: ExoPlayer) {
-    val sessionExtras = mediaSessions[player]?.sessionExtras?.deepCopy() ?: Bundle()
+    val sessionExtras = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mediaSessions[player]?.sessionExtras?.deepCopy() ?: Bundle()
+    } else {
+      Bundle()
+    }
     sessionExtras.putBoolean(SESSION_SHOW_NOTIFICATION, showNotification)
     mediaSessions[player]?.let {
       it.sessionExtras = sessionExtras
