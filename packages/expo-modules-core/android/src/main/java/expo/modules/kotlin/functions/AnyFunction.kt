@@ -125,8 +125,7 @@ abstract class AnyFunction(
     return desiredArgsTypes.map { it.getCppRequiredTypes() }
   }
 
-  @Suppress("FunctionName")
-  fun Enumerable(isEnumerable: Boolean = true) = apply {
+  fun enumerable(isEnumerable: Boolean = true) = apply {
     this.isEnumerable = isEnumerable
   }
 }
