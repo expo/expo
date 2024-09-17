@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [android] Add support for react-native 0.76 ([#31504](https://github.com/expo/expo/pull/31504) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - [iOS] `loadAsync()` promise never settled when given an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))
