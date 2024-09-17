@@ -1,5 +1,6 @@
 package expo.modules.filesystem.next
 
+import android.net.Uri
 import android.webkit.URLUtil
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
@@ -20,6 +21,12 @@ class FileSystemNextModule : Module() {
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystemNext")
+
+    Constants(
+      "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
+      "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
+      "bundleDirectory" to "asset:///"
+    )
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
       val request = Request.Builder().url(url.toURL()).build()

@@ -9,13 +9,13 @@ export type URI = string;
 export declare class Directory {
   /**
    * Creates an instance of a directory.
-   * @param uri -  A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
    * @example
    * ```ts
    * const directory = new Directory("file:///path/to/directory");
    * ```
    */
-  constructor(uri: string);
+  constructor(...uris: (URI | File | Directory)[]);
 
   /**
    * Represents the directory URI.
@@ -71,7 +71,7 @@ export declare class File {
    *
    * @param uri - A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
    */
-  constructor(uri: URI);
+  constructor(...uris: (URI | File | Directory)[]);
 
   /**
    * Represents the file URI.
@@ -142,4 +142,72 @@ export declare class File {
    * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
   md5: string | null;
+}
+
+export declare class Paths {
+  /*
+   * A property containing the document directory – a place to store files that are safe from being deleted by the system.
+   */
+  static get document(): Directory;
+  /*
+   * A property containing the cache directory – a place to store files that can be deleted by the system when the device runs low on storage.
+   */
+  static get cache(): Directory;
+  /**
+   * Joins path segments into a single path.
+   * @param paths - An array of path segments.
+   * @returns A string representing the joined path.
+   */
+  static join(...paths: (URI | File | Directory)[]): string;
+  /**
+   * Resolves a relative path to an absolute path.
+   * @param from - The base path.
+   * @param to - The relative path.
+   * @returns A string representing the resolved path.
+   */
+  static relative(from: URI | File | Directory, to: URI | File | Directory): string;
+  /**
+   * Checks if a path is absolute.
+   * @param path - The path to check.
+   * @returns `true` if the path is absolute, `false` otherwise.
+   */
+  static isAbsolute(path: URI | File | Directory): boolean;
+  /**
+   * Normalizes a path.
+   * @param path - The path to normalize.
+   * @returns A string representing the normalized path.
+   */
+  static normalize(path: URI | File | Directory): string;
+  /**
+   * Returns the directory name of a path.
+   * @param path - The path to get the directory name from.
+   * @returns A string representing the directory name.
+   */
+  static dirname(path: URI | File | Directory): string;
+  /**
+   * Returns the base name of a path.
+   * @param path - The path to get the base name from.
+   * @param ext - An optional file extension.
+   * @returns A string representing the base name.
+   */
+  static basename(path: URI | File | Directory, ext?: string): string;
+  /**
+   * Returns the extension of a path.
+   * @param path - The path to get the extension from.
+   * @returns A string representing the extension.
+   */
+  static extname(path: URI | File | Directory): string;
+
+  /**
+   * Parses a path into its components.
+   * @param path - The path to parse.
+   * @returns An object containing the parsed path components.
+   */
+  static parse(path: URI | File | Directory): {
+    root: string;
+    dir: string;
+    base: string;
+    ext: string;
+    name: string;
+  };
 }
