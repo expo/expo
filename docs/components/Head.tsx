@@ -35,13 +35,13 @@ const Head = ({ title, description, canonicalUrl, children }: HeadProps) => {
       />
 
       <meta name="twitter:site" content="@expo" />
-      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:title" content={title} />
       <meta
         name="twitter:description"
         content={description === '' ? BASE_DESCRIPTION : description}
       />
-      <meta property="twitter:image" content="https://docs.expo.dev/static/images/twitter.png" />
+      <meta property="twitter:image" content={OGImageURL} />
       <meta name="google-site-verification" content="izrqNurn_EXfYbNIFgVIhEXkkZk9DleELH4UouM8s3k" />
 
       {children}
