@@ -27,12 +27,12 @@ enum class InterruptionMode(val value: String) : Enumerable {
 // Data class because we want `equals`
 data class RecordingOptions(
   @Field val extension: String,
+  @Field val sampleRate: Double?
+  @Field val numberOfChannels: Double?,
+  @Field val bitRate: Double?,
   @Field val outputFormat: AndroidOutputFormat?,
   @Field val audioEncoder: AndroidAudioEncoder?,
-  @Field val bitRate: Double?,
   @Field val maxFileSize: Int?,
-  @Field val numberOfChannels: Double?,
-  @Field val sampleRate: Double?
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {

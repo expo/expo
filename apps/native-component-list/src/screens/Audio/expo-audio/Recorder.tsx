@@ -141,7 +141,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       <View style={styles.container}>
         {renderOptionsButton('High Quality', RecordingPresets.HIGH_QUALITY)}
         <Button
-          onPress={() => audioRecorder.prepareToRecordAsync(recorderOptions)}
+          onPress={async () => await audioRecorder.prepareToRecordAsync()}
           disabled={recorderState.canRecord}
           title="Prepare Recording"
           style={[!recorderState.canRecord && { backgroundColor: 'gray' }]}

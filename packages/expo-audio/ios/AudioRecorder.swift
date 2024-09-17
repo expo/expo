@@ -7,19 +7,21 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private lazy var recordingDelegate = {
     RecordingDelegate(resultHandler: self)
   }()
-  var startTimestamp = 0
-  var previousRecordingDuration = 0
-
+  private var startTimestamp = 0
+  private var previousRecordingDuration = 0
+  private var isPrepared = false
+  private var recordingSession = AVAudioSession.sharedInstance()
+  
   override init(_ pointer: AVAudioRecorder) {
     super.init(pointer)
     pointer.delegate = recordingDelegate
 
     do {
-      try AVAudioSession.sharedInstance().setCategory(.playAndRecord)
+      try recordingSession.setCategory(.playAndRecord, mode: .default)
+      try recordingSession.setActive(true)
     } catch {
-      print("Failed to set recording category")
+      print("Failed to update the recording session")
     }
-    ref.prepareToRecord()
   }
 
   var isRecording: Bool {
@@ -37,13 +39,43 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   var uri: String {
     ref.url.absoluteString
   }
+  
+  private var currentDuration: Int {
+    deviceCurrentTime - startTimestamp
+  }
+  
+  func prepare(options: RecordingOptions?) {
+    ref.prepareToRecord()
+    // update the AVAudioRecorder settings
+    
+    isPrepared = true
+  }
+  
+  func startRecording() -> [String: Any] {
+    ref.record()
+    startTimestamp = Int(deviceCurrentTime)
+    return getRecordingStatus()
+  }
+  
+  func stopRecording() {
+    ref.stop()
+    startTimestamp = 0
+    previousRecordingDuration = 0
+    isPrepared = false
+  }
+  
+  func pauseRecording() {
+    ref.pause()
+    previousRecordingDuration += currentDuration
+    startTimestamp = 0
+  }
 
   func getRecordingStatus() -> [String: Any] {
-    let currentDuration = isRecording ? (deviceCurrentTime - startTimestamp) : 0
+    let currentDuration = isRecording ? currentDuration : 0
     let duration = previousRecordingDuration + Int(currentDuration)
 
     var result: [String: Any] = [
-      "canRecord": true,
+      "canRecord": isPrepared,
       "isRecording": isRecording,
       "durationMillis": duration,
       "mediaServicesDidReset": false,

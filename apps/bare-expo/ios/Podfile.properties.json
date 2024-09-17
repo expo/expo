@@ -1,5 +1,5 @@
 {
   "expo.jsEngine": "hermes",
-  "newArchEnabled": "true",
+  "newArchEnabled": "false",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true"
 }

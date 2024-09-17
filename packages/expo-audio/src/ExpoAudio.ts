@@ -20,12 +20,10 @@ export function useAudioPlayer(
   updateInterval: number = 500
 ): AudioPlayer {
   const parsedSource = resolveSource(source);
-  const player = useReleasingSharedObject(
+  return useReleasingSharedObject(
     () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
     [JSON.stringify(parsedSource)]
   );
-
-  return player;
 }
 
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {

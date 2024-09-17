@@ -7,8 +7,7 @@ import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
-    return player;
+    return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
 }
 export function useAudioPlayerStatus(player) {
     const currentStatus = useMemo(() => player.currentStatus, [player.id]);

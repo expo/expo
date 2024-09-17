@@ -190,27 +190,24 @@ public class AudioModule: Module {
       Property("uri") { recorder in
         recorder.uri
       }
+      
+      AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
+        recorder.prepare(options: options)
+      }
 
       Function("record") { (recorder: AudioRecorder) -> [String: Any] in
         try checkPermissions()
-        recorder.ref.record()
-        recorder.startTimestamp = Int(recorder.deviceCurrentTime)
-        return recorder.getRecordingStatus()
+        return recorder.startRecording()
       }
 
       Function("pause") { recorder in
         try checkPermissions()
-        recorder.ref.pause()
-        let current = recorder.deviceCurrentTime
-        recorder.previousRecordingDuration += (current - recorder.startTimestamp)
-        recorder.startTimestamp = 0
+        recorder.pauseRecording()
       }
 
-      Function("stop") { recorder in
+      AsyncFunction("stop") { recorder in
         try checkPermissions()
-        recorder.ref.stop()
-        recorder.startTimestamp = 0
-        recorder.previousRecordingDuration = 0
+        recorder.stopRecording()
       }
 
       Function("getStatus") { recorder -> [String: Any] in
