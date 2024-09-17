@@ -44,6 +44,7 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
+    jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -51,6 +52,7 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
+    jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
