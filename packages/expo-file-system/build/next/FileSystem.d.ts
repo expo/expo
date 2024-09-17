@@ -8,10 +8,10 @@ export declare class Paths extends PathUtilities {
 export declare class File extends ExpoFileSystem.FileSystemFile {
     constructor(...uris: (URI | File | Directory)[]);
     get parentDirectory(): Directory;
-    get extension(): any;
+    get extension(): string;
 }
 export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
-    constructor(...uris: URI[]);
+    constructor(...uris: (URI | File | Directory)[]);
     get parentDirectory(): Directory;
     list(): (Directory | File)[];
 }
