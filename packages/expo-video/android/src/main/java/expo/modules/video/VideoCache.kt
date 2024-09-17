@@ -37,7 +37,7 @@ class VideoCache(context: Context) {
   }
 
   fun setMaxCacheSize(size: Long) {
-    assertCacheReleaseConditions()
+    assertModificationReleaseConditions()
     instance.release()
     sharedPreferences.edit().putLong(CACHE_SIZE_KEY, size).apply()
     cacheEvictor = LeastRecentlyUsedCacheEvictor(size)
@@ -70,7 +70,7 @@ class VideoCache(context: Context) {
   }
 
   fun clear() {
-    assertCacheReleaseConditions()
+    assertModificationReleaseConditions()
 
     // Creates a new cache directory to avoid conflicts while removing the old cache
     val oldCacheDirectory = getCacheDir()
@@ -105,9 +105,9 @@ class VideoCache(context: Context) {
     return size
   }
 
-  private fun assertCacheReleaseConditions() {
+  private fun assertModificationReleaseConditions() {
     if (VideoManager.hasRegisteredPlayers()) {
-      throw CacheClearingException("Cannot clear cache while there are active players")
+      throw VideoCacheException("Cannot clear cache while there are active players")
     }
 
     if (Looper.myLooper() == Looper.getMainLooper()) {

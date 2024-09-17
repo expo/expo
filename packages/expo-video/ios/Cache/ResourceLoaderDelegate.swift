@@ -61,6 +61,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     }
 
     pendingRequests.insert(loadingRequest)
+    let request = self.session?.dataTask(with: loadingRequest.request)
     if (self.response != nil) {
       processPendingRequests()
     }
@@ -113,7 +114,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     guard session == nil else { return }
 
     let configuration = URLSessionConfiguration.default
-    configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+    configuration.requestCachePolicy = .useProtocolCachePolicy
     var urlRequest = URLRequest(url: url)
     owner?.urlRequestHeaders?.forEach { urlRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
     session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
@@ -148,7 +149,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     let requestsFulfilled: Set<AVAssetResourceLoadingRequest> = pendingRequests.filter {
       fillInContentInformationRequest($0.contentInformationRequest)
-      guard haveEnoughDataToFulfillRequest($0.dataRequest!) else {
+      guard let dataRequest = $0.dataRequest, haveEnoughDataToFulfillRequest(dataRequest) else {
         return false
       }
 
@@ -192,7 +193,9 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     lock.lock()
     defer { lock.unlock() }
 
-    guard bufferData.count >= downloadBufferLimit else { return }
+    guard bufferData.count >= downloadBufferLimit else {
+      return
+    }
 
     fileHandle.append(data: bufferData)
     bufferData = Data()
@@ -207,7 +210,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       saveMimeType(forUrl: url, mimeType: mimeType)
     }
 
-    VideoCacheManager.shared.maybeRemoveOldCache()
+    VideoCacheManager.shared.ensureCacheSize()
   }
 
   private func verifyResponse() -> NSError? {

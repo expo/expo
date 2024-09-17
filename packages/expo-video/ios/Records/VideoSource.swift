@@ -17,6 +17,6 @@ internal struct VideoSource: Record {
   var headers: [String: String]? = nil
 
   @Field
-  var useCaching: Bool = true
+  var useCaching: Bool = false
 }
 // swiftlint:enable redundant_optional_initialization

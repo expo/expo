@@ -31,7 +31,7 @@ public class CachingPlayerItem: AVPlayerItem {
     // Creates a regular AVURLAsset
     if !useCaching {
       urlAsset = AVURLAsset(url: url, options: avUrlAssetOptions)
-      super.init(asset: urlAsset)
+      super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
       return
     }
 
@@ -44,7 +44,7 @@ public class CachingPlayerItem: AVPlayerItem {
         VideoCacheManager.shared.registerOpenFile(at: cachedFileUrl)
       }
       urlAsset = AVURLAsset(url: URL(fileURLWithPath: cachedVideoPath), options: avUrlAssetOptions)
-      super.init(asset: urlAsset,  automaticallyLoadedAssetKeys: nil)
+      super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
       return
     }
 

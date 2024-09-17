@@ -30,5 +30,5 @@ internal class PlaybackException(reason: String?, cause: Throwable? = null) :
 internal class FailedToGetAudioFocusManagerException :
   CodedException("Failed to get AudioFocusManager service")
 
-internal class CacheClearingException(message: String?, cause: Throwable? = null) :
-  CodedException("Failed to clear cache: ${message ?: "unexpected error"}", cause)
+internal class VideoCacheException(message: String?, cause: Throwable? = null) :
+  CodedException(message ?: "Unexpected expo-video cache error", cause)

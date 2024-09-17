@@ -40,8 +40,8 @@ internal class CachingAssetInitializationException: GenericException<URL?> {
   }
 }
 
-internal class CacheClearingException: GenericException<String?> {
+internal class VideoCacheException: GenericException<String?> {
   override var reason: String {
-    "Failed to clear cache: \(param ?? defaultCause)"
+    param ?? "Unexpected expo-video cache error"
   }
 }
