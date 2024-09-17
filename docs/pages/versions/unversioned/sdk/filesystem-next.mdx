@@ -10,13 +10,48 @@ platforms: ['android', 'ios', 'tvos']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`expo-file-system` provides access to a file system stored locally on the device.
+> **INFO**
+> The `next` version of the filesystem API is included in the `expo-file-system` package. It can be used alongside the previous API, and offers a simplified, object oriented way of performing filesystem operations.
+
+`expo-file-system/next` provides access to the file system stored locally on the device. It can also download files from the network.
 
 ## Installation
 
 <APIInstallSection />
 
 ## Usage
+
+### Writing and reading text files
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system/next';
+
+try {
+  const file = new File(Paths.cache, 'example.txt');
+  file.create(); // can throw an error if the file already exists or no permission to create it
+  file.write('Hello, world!');
+  console.log(file.text()); // Hello, world!
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Downloading files
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system/next';
+
+const url = 'https://pdfobject.com/pdf/sample.pdf';
+const destination = new Directory(Paths.cache, 'pdfs');
+try {
+  destination.create();
+  const output = await File.downloadFileAsync(url, destination);
+  console.log(output.exists); // true
+  console.log(output.uri); // path to the downloaded file, e.g. '${cacheDirectory)/pdfs/sample.pdf'
+} catch (error) {
+  console.error(error);
+}
+```
 
 ## API
 
