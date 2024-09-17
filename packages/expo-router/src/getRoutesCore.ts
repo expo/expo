@@ -614,14 +614,13 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
           .map((child) => `'${child.route}'`)
           .join(', ');
 
-        // TODO(marklawlor): In v4 we need to change this error message to remove 'initialRouteName' and say 'anchor'
         if (groupName) {
           throw new Error(
-            `Layout ${node.contextKey} has invalid initialRouteName '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
+            `Layout ${node.contextKey} has invalid anchor '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
           );
         } else {
           throw new Error(
-            `Layout ${node.contextKey} has invalid initialRouteName '${anchor}'. Valid options are: ${validAnchorRoutes}`
+            `Layout ${node.contextKey} has invalid anchor '${anchor}'. Valid options are: ${validAnchorRoutes}`
           );
         }
       }
