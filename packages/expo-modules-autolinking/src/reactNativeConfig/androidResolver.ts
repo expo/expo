@@ -6,7 +6,11 @@ import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
-import { fileExistsAsync, globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from './utils';
+import {
+  fileExistsAsync,
+  globMatchFunctorAllAsync,
+  globMatchFunctorFirstAsync,
+} from '../fileUtils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
