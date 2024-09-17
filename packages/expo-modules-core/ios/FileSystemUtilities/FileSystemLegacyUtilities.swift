@@ -13,6 +13,8 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
   @objc
   public var applicationSupportDirectory: String
 
+  var appGroupSharedDirectories: [String]?
+
   var isScoped: Bool = false
 
   @objc
@@ -95,7 +97,8 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
 
   @objc
   public func getInternalPathPermissions(_ url: URL) -> EXFileSystemPermissionFlags {
-    let scopedDirs: [String] = [cachesDirectory, documentDirectory, applicationSupportDirectory]
+    let appGroupSharedDirectories: [String] = self.appGroupSharedDirectories ?? []
+    let scopedDirs: [String] = [cachesDirectory, documentDirectory, applicationSupportDirectory] + appGroupSharedDirectories
     let standardizedPath = url.standardized.path
     for scopedDirectory in scopedDirs {
       if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {
@@ -118,5 +121,18 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
       filePermissions.insert(.write)
     }
     return filePermissions
+  }
+
+  internal func maybeInitAppGroupSharedDirectories(appGroups: [String]) {
+    if appGroupSharedDirectories != nil {
+      return
+    }
+    var appGroupSharedDirectories: [String] = []
+    for appGroup in appGroups {
+      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        appGroupSharedDirectories.append(directory.standardized.path)
+      }
+    }
+    self.appGroupSharedDirectories = appGroupSharedDirectories
   }
 }

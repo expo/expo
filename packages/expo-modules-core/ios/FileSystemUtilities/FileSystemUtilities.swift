@@ -64,7 +64,7 @@ public struct FileSystemUtilities {
       return [.none]
     }
 
-    let scopedDirs = [appContext.config.cacheDirectory, appContext.config.documentDirectory]
+    let scopedDirs = [appContext.config.cacheDirectory, appContext.config.documentDirectory] + appContext.config.appGroupSharedDirectories
     let standardizedPath = url.standardized.path
 
     for dir in scopedDirs {
@@ -96,5 +96,16 @@ public struct FileSystemUtilities {
     }
 
     return filePermissions
+  }
+
+  private static func getAppGroupSharedDirectories(_ appContext: AppContext) -> [String] {
+    let appGroups = appContext.appCodeSignEntitlements.appGroups ?? []
+    var appGroupSharedDirectories: [String] = []
+    for appGroup in appGroups {
+      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        appGroupSharedDirectories.append(directory.standardized.path)
+      }
+    }
+    return appGroups
   }
 }
