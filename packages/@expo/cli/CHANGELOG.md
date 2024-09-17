@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))
