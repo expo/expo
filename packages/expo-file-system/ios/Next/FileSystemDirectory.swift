@@ -21,13 +21,11 @@ internal final class FileSystemDirectory: FileSystemPath {
   }
 
   var exists: Bool {
-    get {
-      var isDirectory: ObjCBool = false
-      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-        return isDirectory.boolValue
-      }
-      return false
+    var isDirectory: ObjCBool = false
+    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+      return isDirectory.boolValue
     }
+    return false
   }
 
   // Internal only function
