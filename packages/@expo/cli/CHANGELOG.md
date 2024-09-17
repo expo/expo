@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 - Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
-- Ignore /dist folder in the default eslint config
+- Ignore /dist folder in the default eslint config ([#31532](https://github.com/expo/expo/pull/31532) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🎉 New features
 
