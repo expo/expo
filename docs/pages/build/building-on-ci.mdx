@@ -17,7 +17,7 @@ To trigger EAS builds from a CI environment, your app needs to be set up to use 
 Running a build locally will accomplish the following critical configuration steps:
 - Initialize the project on EAS by generating a `projectId`.
 - Add an **eas.json** file defining your build profiles.
-- Ensure app config fields critical for native builds are populated, such as Android `packageName` and iOS `bundleIdentifier`.
+- Populates critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
 - Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
 
 Run `eas build -p [all|android|ios]` and verify that your builds for each platform complete successfully. Then, continue with the below steps for implementing EAS Build on CI.
