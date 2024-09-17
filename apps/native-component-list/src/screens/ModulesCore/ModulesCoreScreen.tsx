@@ -21,7 +21,7 @@ export const ModulesCoreScreens = [
   },
 ];
 
-if (Platform.OS === 'ios' && !isRunningInExpoGo()) {
+if (!isRunningInExpoGo()) {
   ModulesCoreScreens.push({
     name: 'Benchmarks',
     route: 'modulescore/benchmarks',
