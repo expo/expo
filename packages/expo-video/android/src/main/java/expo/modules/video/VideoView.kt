@@ -392,8 +392,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   @UnstableReactNativeAPI
-  internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
-    borderDrawable.setBorderColor(position, rgb, alpha)
+  internal fun setBorderColor(position: Int, rgb: Int) {
+    borderDrawable.setBorderColor(position, rgb)
     shouldInvalided = true
   }
 
