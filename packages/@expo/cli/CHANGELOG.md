@@ -4,8 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
+- server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))
+- Return error UI when an API route throws an error ([#31485](https://github.com/expo/expo/pull/31485) by [@EvanBacon](https://github.com/EvanBacon))
 - Add log formatting for DOM components. ([#31265](https://github.com/expo/expo/pull/31265) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for CSS in server components. ([#31073](https://github.com/expo/expo/pull/31073) by [@EvanBacon](https://github.com/EvanBacon))
 - Added production exports for experimental server renderer. ([#30850](https://github.com/expo/expo/pull/30850) by [@EvanBacon](https://github.com/EvanBacon))

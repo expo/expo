@@ -70,7 +70,18 @@ type FetchCache = {
 
 const defaultFetchCache: FetchCache = {};
 
+const NO_CACHE_HEADERS: Record<string, string> =
+  process.env.EXPO_OS === 'web'
+    ? {}
+    : // These are needed for iOS + Prod to get updates after the first request.
+      {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      };
+
 const ACTION_HEADERS = {
+  ...NO_CACHE_HEADERS,
   accept: RSC_CONTENT_TYPE,
   'expo-platform': process.env.EXPO_OS!,
 };
@@ -170,42 +181,25 @@ export const callServerRSC = async (
 
 const prefetchedParams = new WeakMap<Promise<unknown>, unknown>();
 
-const NO_CACHE_HEADERS: Record<string, string> =
-  process.env.EXPO_OS === 'web'
-    ? {}
-    : // These are needed for iOS + Prod to get updates after the first request.
-      {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0',
-      };
-
 const fetchRSCInternal = (url: string, params: unknown) =>
   params === undefined
     ? fetch(url, {
         // Disable caching
         headers: {
-          'expo-platform': process.env.EXPO_OS!,
           ...NO_CACHE_HEADERS,
+          'expo-platform': process.env.EXPO_OS!,
         },
       })
     : typeof params === 'string'
       ? fetch(url, {
           headers: {
-            'expo-platform': process.env.EXPO_OS!,
             ...NO_CACHE_HEADERS,
+            'expo-platform': process.env.EXPO_OS!,
             'X-Expo-Params': params,
           },
         })
       : encodeReply(params).then((body) =>
-          fetch(url, {
-            headers: {
-              'expo-platform': process.env.EXPO_OS!,
-              ...NO_CACHE_HEADERS,
-            },
-            method: 'POST',
-            body,
-          })
+          fetch(url, { method: 'POST', headers: ACTION_HEADERS, body })
         );
 
 export const fetchRSC = (
@@ -280,7 +274,7 @@ function getAdjustedFilePath(path: string): string {
 export const prefetchRSC = (input: string, params?: unknown): void => {
   // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
-  const url = BASE_PATH + encodeInput(input);
+  const url = getAdjustedFilePath(BASE_PATH + encodeInput(input));
   if (!(url in prefetched)) {
     prefetched[url] = fetchRSCInternal(url, params);
     prefetchedParams.set(prefetched[url], params);
