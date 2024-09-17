@@ -5,6 +5,7 @@ import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import { act, renderRouter, screen } from '../testing-library';
+import { store } from '../global-state/router-store';
 
 /**
  * anchor sets the "default" screen for a navigator, with the functionality changing per navigator
@@ -50,7 +51,6 @@ it('initialURL overrides anchor', async () => {
   expect(screen).toHavePathname('/apple');
 });
 
-<<<<<<< HEAD
 it('render the initial route with local params', async () => {
   // Issue #26908
   // Expo Router matches the behavior of React Navigation, but this behavior is slightly not correct
@@ -85,7 +85,8 @@ it('render the initial route with local params', async () => {
   expect(screen).toHavePathname('/apple');
   expect(screen).toHaveSearchParams({ fruit: 'apple', id: '1' });
   expect(screen.getByTestId('first')).toHaveTextContent('{"fruit":"apple","id":"1"}');
-=======
+});
+
 it('push should ignore (group)/index as an initial route if not specified', () => {
   renderRouter({
     index: () => null,
@@ -200,5 +201,4 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     stale: false,
     type: 'stack',
   });
->>>>>>> 8b5ef16ce4 (rename to anchor)
 });
