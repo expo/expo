@@ -33,6 +33,18 @@ index 4a7df1b..26a462b 100644
  #endif // HERMES_ENABLE_DEBUGGER
  };
  
+diff --git a/node_modules/react-native-reanimated/android/build.gradle b/node_modules/react-native-reanimated/android/build.gradle
+index 4558653..6fb4775 100644
+--- a/node_modules/react-native-reanimated/android/build.gradle
++++ b/node_modules/react-native-reanimated/android/build.gradle
+@@ -319,6 +319,7 @@ android {
+                 "**/libhermes.so",
+                 "**/libhermes-executor-debug.so",
+                 "**/libhermes_executor.so",
++                "**/libreactnative.so",
+                 "**/libreactnativejni.so",
+                 "**/libturbomodulejsijni.so",
+                 "**/libreact_nativemodule_core.so",
 diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java
 index 8850d03..a874967 100644
 --- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java
@@ -113,12 +125,12 @@ index ca0e29e..1953bdb 100644
      return new BorderRadii(0, 0, 0, 0, 0);
    }
 diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java
-index ab0e79b..7ca9b54 100644
+index ab0e79b..ee161c1 100644
 --- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java
 +++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java
 @@ -282,7 +282,7 @@ public class ReanimatedNativeHierarchyManager extends NativeViewHierarchyManager
  
-   public synchronized void updateLayout( 
+   public synchronized void updateLayout(
        int parentTag, int tag, int x, int y, int width, int height) {
 -    super.updateLayout(parentTag, tag, x, y, width, height);
 +    super.updateLayout(tag, x, y, width, height);
