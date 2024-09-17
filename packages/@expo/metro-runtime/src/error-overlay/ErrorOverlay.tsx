@@ -23,7 +23,7 @@ const HEADER_TITLE_MAP = {
   error: 'Console Error',
   fatal: 'Uncaught Error',
   syntax: 'Syntax Error',
-  static: 'Static Rendering Error (Node.js)',
+  static: 'Server Error',
   component: 'Render Error',
 };
 
