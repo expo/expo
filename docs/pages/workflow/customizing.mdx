@@ -71,23 +71,23 @@ If you intend to use your native module in a single app (you can always change y
 
 Creating a local module scaffolds a Swift and Kotlin module inside the `modules` directory in your project, and these modules are automatically linked to your app.
 
-<Terminal cmd={['npx create-expo-module@latest --local', 'npx expo run']} />
+<Terminal cmd={['$ npx create-expo-module@latest --local', '$ npx expo run']} />
 
 ### Sharing a module with multiple apps
 
 If you intend to use your native module with multiple apps, then use `npx create-expo-module@latest,` leave out the `--local` flag, and [create a standalone module](/modules/use-standalone-expo-module-in-your-project/). You can publish your package to npm, or you can put it in a packages directory in your [monorepo](/guides/monorepos/) (if you have one) to use it in [a similar way to local modules](/modules/use-standalone-expo-module-in-your-project/).
 
-### Considerations when using Continuous Native Generation (CNG)
+## Considerations when using Continuous Native Generation (CNG)
 
 The following suggestions are most important when using CNG, but are good guidelines even if you don't use it.
 
 ### Build locally for the best debugging experience and fast feedback
 
-By default, Expo projects created with `create-expo-app` use CNG and do not contain **android** or **ios** native directories until you've run the `npx expo prebuild` command in your project. When using CNG, developers typically do not commit the **android** and **ios** directories to source control and do not generate them locally, since EAS Build will do it automatically during the build process. That said, it is common to generate native directories and build locally with `npx expo run` when writing custom native code, to have a fast feedback loop and to have full access to native debugging tools in Android Studio / Xcode.
+By default, Expo projects created with `create-expo-app` use CNG and do not contain **android** or **ios** native directories until you've run the `npx expo prebuild` command in your project. When using CNG, developers typically do not commit the **android** and **ios** directories to source control and do not generate them locally, since EAS Build will do it automatically during the build process. That said, it is common to generate native directories and build locally with `npx expo run` when writing custom native code, to have a fast feedback loop and full access to native debugging tools in Android Studio / Xcode.
 
 ### Use config plugins for native project configuration
 
-If your native code requires that you make changes to your project configuration, such as modifying the project's **AndroidManifest.xml** or **Info.plist**, [you should apply these hanges through a config plugin](/modules/config-plugin-and-native-module-tutorial/) rather than by modifying the files directly in the **android** and **ios** directories. Remember that changes made directly to native project directories will be lost the next time you run prebuild when you use CNG.
+If your native code requires that you make changes to your project configuration, such as modifying the project's **AndroidManifest.xml** or **Info.plist**, [you should apply these changes through a config plugin](/modules/config-plugin-and-native-module-tutorial/) rather than by modifying the files directly in the **android** and **ios** directories. Remember that changes made directly to native project directories will be lost the next time you run prebuild when you use CNG.
 
 ### Use event subscribers to hook into app lifecycle events
 
