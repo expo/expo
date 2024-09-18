@@ -108,6 +108,7 @@ android {
       "**/libreactnativejni.so",
       "**/libreact_debug.so",
       "**/libreact_nativemodule_core.so",
+      "**/libreact_utils.so",
       "**/libreact_render_debug.so",
       "**/libreact_render_graphics.so",
       "**/libreact_render_core.so",
