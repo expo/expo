@@ -4,12 +4,12 @@ on:
   workflow_dispatch: {}
   pull_request:
     paths:
-      - .github/workflows/macosos-compile-test
+      - .github/workflows/macos-compile-test
       - packages/expo-modules-core/e2e/setup/create-eas-project-macos.ts
   push:
     branches: [main, 'sdk-*']
     paths:
-      - .github/workflows/macosos-compile-test.yml
+      - .github/workflows/macos-compile-test.yml
       - packages/expo/**
       - packages/expo-file-system/**
       - packages/expo-font/**
