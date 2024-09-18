@@ -39,12 +39,12 @@ Add the following code snippet inside the **app/(tabs)/index.tsx**:
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo Add this statement to import the permissions status and <CODE>requestPermission()</CODE> method from the hook. */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();/* @end */
+  /* @tutinfo Add this statement to import the permissions status and <CODE>requestPermission()</CODE> method from the hook. */const [status, requestPermission] = MediaLibrary.usePermissions();/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo Add an if statement to check the status of permission. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
-  if (permissionResponse.status !== 'granted') {
-    await requestPermission();
+  if (status === null) {
+    requestPermission();
   }
   /* @end */
 
