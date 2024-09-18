@@ -137,7 +137,9 @@ export async function exportAppAsync(
           const bundle = await devServer.nativeExportBundleAsync(
             {
               platform,
-              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+              splitChunks:
+                !env.EXPO_NO_BUNDLE_SPLITTING &&
+                ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
               mainModuleName: getEntryWithServerRoot(projectRoot, {
                 platform,
                 pkg: projectConfig.pkg,
@@ -197,7 +199,6 @@ export async function exportAppAsync(
       if (devServer.isReactServerComponentsEnabled) {
         if (!(platforms.includes('web') && useServerRendering)) {
           await exportApiRoutesStandaloneAsync(devServer, {
-            outputDir: outputPath,
             files,
             platform: 'web',
           });

@@ -21,6 +21,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix reloading RSC requests in production. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
+- Use empty cache requests to support loading RSC fresh on each request in native production builds. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix RSC errors when a missing module is loaded. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix nested server actions. ([#31019](https://github.com/expo/expo/pull/31019) by [@EvanBacon](https://github.com/EvanBacon))
 - Add client boundary callback for production exports. ([#30747](https://github.com/expo/expo/pull/30747) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent duplicated `NSUserActivityTypes` strings in prebuild. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))

@@ -6,6 +6,7 @@ import {
 } from '@expo/multipart-body-parser';
 import assert from 'assert';
 import spawn from 'cross-spawn';
+import { ChildProcess } from 'child_process';
 import { once } from 'events';
 import { EventEmitter } from 'fbemitter';
 import stripAnsi from 'strip-ansi';
@@ -16,10 +17,10 @@ export const bin = require.resolve('../../build/bin/cli');
 export class ExpoStartCommand extends EventEmitter {
   protected cliOutput: string = '';
 
-  url: string;
+  url: string | undefined;
 
   private isStopping: boolean = false;
-  private childProcess?: import('child_process').ChildProcess;
+  private childProcess?: ChildProcess;
 
   constructor(
     public projectRoot: string,
@@ -47,14 +48,14 @@ export class ExpoStartCommand extends EventEmitter {
     }
   }
 
-  private parseStdio(childProcess) {
-    childProcess.stdout.on('data', (chunk) => {
+  private parseStdio(childProcess: ChildProcess) {
+    childProcess.stdout?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stdout.write(chunk);
       this.cliOutput += msg;
       this.emit('stdout', [msg]);
     });
-    childProcess.stderr.on('data', (chunk) => {
+    childProcess.stderr?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stderr.write(chunk);
       this.cliOutput += msg;
@@ -160,10 +161,10 @@ export class ExpoStartCommand extends EventEmitter {
             console.error(`'${cmdArgs.join(' ')}' exited unexpectedly with: ${code || signal}`);
           }
         });
-        const isReadyCallback = (message) => {
+        const isReadyCallback = (message: string) => {
           const resolveServer = () => {
             try {
-              new URL(this.url);
+              new URL(this.url!);
             } catch (err) {
               reject({
                 err,
@@ -207,7 +208,7 @@ export class ExpoStartCommand extends EventEmitter {
 export abstract class ServeAbstractCommand extends EventEmitter {
   protected cliOutput: string = '';
 
-  url: string;
+  url: string | undefined;
 
   private isStopping: boolean = false;
   private childProcess?: import('child_process').ChildProcess;
@@ -238,14 +239,14 @@ export abstract class ServeAbstractCommand extends EventEmitter {
     }
   }
 
-  private parseStdio(childProcess) {
-    childProcess.stdout.on('data', (chunk) => {
+  private parseStdio(childProcess: ChildProcess) {
+    childProcess.stdout?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stdout.write(chunk);
       this.cliOutput += msg;
       this.emit('stdout', [msg]);
     });
-    childProcess.stderr.on('data', (chunk) => {
+    childProcess.stderr?.on('data', (chunk) => {
       const msg = chunk.toString();
       if (!process.env.CI) process.stderr.write(chunk);
       this.cliOutput += msg;
@@ -308,11 +309,11 @@ export abstract class ServeAbstractCommand extends EventEmitter {
             reject(new Error(errMessage));
           }
         });
-        const isReadyCallback = (message) => {
+        const isReadyCallback = (message: string) => {
           try {
             if (this.isReadyCallback(message)) {
               callback.remove();
-              new URL(this.url);
+              new URL(this.url!);
               resolve();
             }
           } catch (error) {

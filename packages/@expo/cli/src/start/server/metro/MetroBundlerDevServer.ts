@@ -429,7 +429,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.setupHmr(url);
     }
 
-    return evalMetroAndWrapFunctions(this.projectRoot, res.src, res.filename);
+    return evalMetroAndWrapFunctions(
+      this.projectRoot,
+      res.src,
+      res.filename,
+      specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
+    );
   };
 
   private async metroImportAsArtifactsAsync(
@@ -1162,7 +1167,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
-          isExporting: true,
+          isExporting: this.instanceMetroOptions.isExporting,
           platform,
         });
       } catch (error: any) {
