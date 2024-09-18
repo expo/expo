@@ -1,5 +1,4 @@
 import { isRunningInExpoGo } from 'expo';
-import { Platform } from 'expo-modules-core';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
