@@ -3,8 +3,7 @@ import type { PropsWithChildren } from 'react';
 
 type HeadProps = PropsWithChildren<{ title?: string; description?: string; canonicalUrl?: string }>;
 
-const BASE_OG_URL =
-  'https://us-central1-exponentjs.cloudfunctions.net/og-image-production?theme=docs';
+const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
 
 const BASE_TITLE = 'Expo Documentation';
 const BASE_DESCRIPTION = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
