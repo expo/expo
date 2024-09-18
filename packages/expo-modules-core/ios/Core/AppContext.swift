@@ -34,7 +34,15 @@ public final class AppContext: NSObject {
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
-  public weak var legacyModuleRegistry: EXModuleRegistry?
+  public weak var legacyModuleRegistry: EXModuleRegistry? {
+    didSet {
+      if let registry = legacyModuleRegistry,
+        let legacyModule = registry.getModuleImplementingProtocol(EXFileSystemInterface.self) as? EXFileSystemInterface,
+        let fileSystemLegacyModule = legacyModule as? FileSystemLegacyUtilities {
+        fileSystemLegacyModule.maybeInitAppGroupSharedDirectories(self.config.appGroupSharedDirectories)
+      }
+    }
+  }
 
   @objc
   public weak var legacyModulesProxy: LegacyNativeModulesProxy?
@@ -188,11 +196,7 @@ public final class AppContext: NSObject {
    Provides access to the file system manager from legacy module registry.
    */
   public var fileSystem: EXFileSystemInterface? {
-    let legacyFileSystemModule: EXFileSystemInterface? = legacyModule(implementing: EXFileSystemInterface.self)
-    if let appGroups = appCodeSignEntitlements.appGroups {
-      (legacyFileSystemModule as? FileSystemLegacyUtilities)?.maybeInitAppGroupSharedDirectories(appGroups: appGroups)
-    }
-    return legacyFileSystemModule
+    return legacyModule(implementing: EXFileSystemInterface.self)
   }
 
   /**

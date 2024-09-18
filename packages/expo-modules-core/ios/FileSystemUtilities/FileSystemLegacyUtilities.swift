@@ -123,15 +123,13 @@ public class FileSystemLegacyUtilities: NSObject, EXInternalModule, EXFileSystem
     return filePermissions
   }
 
-  internal func maybeInitAppGroupSharedDirectories(appGroups: [String]) {
+  internal func maybeInitAppGroupSharedDirectories(_ directories: [URL]) {
     if appGroupSharedDirectories != nil {
       return
     }
     var appGroupSharedDirectories: [String] = []
-    for appGroup in appGroups {
-      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
-        appGroupSharedDirectories.append(directory.standardized.path)
-      }
+    for directory in directories {
+      appGroupSharedDirectories.append(directory.standardized.path)
     }
     self.appGroupSharedDirectories = appGroupSharedDirectories
   }
