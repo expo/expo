@@ -429,7 +429,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.setupHmr(url);
     }
 
-    return evalMetroAndWrapFunctions(this.projectRoot, res.src, res.filename);
+    return evalMetroAndWrapFunctions(
+      this.projectRoot,
+      res.src,
+      res.filename,
+      specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
+    );
   };
 
   private async metroImportAsArtifactsAsync(
