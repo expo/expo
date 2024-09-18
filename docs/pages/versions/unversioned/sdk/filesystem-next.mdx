@@ -86,6 +86,30 @@ try {
 }
 ```
 
+### Listing directory contents recursively
+
+```ts example.ts
+import { Directory, Paths } from 'expo-file-system/next';
+
+function printDirectory(directory: Directory, indent: number = 0) {
+  console.log(`${' '.repeat(indent)} + ${directory.name}`);
+  const contents = directory.list();
+  for (const item of contents) {
+    if (item instanceof Directory) {
+      printDirectory(item, indent + 2);
+    } else {
+      console.log(`${' '.repeat(indent + 2)} - ${item.name} (${item.size} bytes)`);
+    }
+  }
+}
+
+try {
+  printDirectory(new Directory(Paths.cache));
+} catch (error) {
+  console.error(error);
+}
+```
+
 ## API
 
 <APISection packageName="expo-file-system-next" apiName="FileSystem Next" />

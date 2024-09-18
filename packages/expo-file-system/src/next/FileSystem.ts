@@ -28,6 +28,12 @@ export class File extends ExpoFileSystem.FileSystemFile {
   get extension() {
     return Paths.extname(this.uri);
   }
+  /**
+   * File name. Includes the extension.
+   */
+  get name() {
+    return Paths.basename(this.uri);
+  }
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.
@@ -53,5 +59,12 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return super
       .listAsRecords()
       .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
+  }
+
+  /**
+   * Directory name.
+   */
+  get name() {
+    return Paths.basename(this.uri);
   }
 }

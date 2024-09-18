@@ -172,6 +172,23 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dst.text()).toBe('Hello world');
         expect(src.exists).toBe(true);
       });
+
+      it('Can copy from cache to documents', () => {
+        const src = new File(Paths.cache, 'file.txt');
+        const dst = new File(Paths.document, 'file.txt');
+        // cleanup
+        try {
+          src.delete();
+        } catch {}
+        try {
+          dst.delete();
+        } catch {}
+        src.write('Hello world');
+        src.copy(dst);
+        expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
+        expect(dst.exists()).toBe(true);
+        expect(dst.md5).toBe(src.md5);
+      });
     });
 
     describe('When copying a directory', () => {
