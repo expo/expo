@@ -1,12 +1,12 @@
 /* eslint-env jest */
 import execa from 'execa';
-import path from 'path';
 import * as fs from 'fs';
+import { remove } from 'fs-extra';
+import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
-import { remove } from 'fs-extra';
 import { ServeLocalCommand } from '../../utils/command-instance';
+import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
