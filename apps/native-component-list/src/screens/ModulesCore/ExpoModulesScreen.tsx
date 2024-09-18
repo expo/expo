@@ -22,7 +22,7 @@ export default function ExpoModulesScreen() {
       <CheckIfPresent name="modules" />
 
       <HeadingText>Exported classes</HeadingText>
-      {['EventEmitter', 'SharedObject', 'SharedRef'].map((className) => (
+      {['EventEmitter', 'SharedObject', 'SharedRef', 'NativeModule'].map((className) => (
         <CheckIfPresent key={className} name={className} />
       ))}
 
