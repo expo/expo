@@ -499,7 +499,7 @@ After building your app, the array of files will be available for use in both [`
 You only need to provide the base filename. Here's an example using the config above:
 
 ```ts
-await Notifications.setNotificationChannelAsync('new-emails', {
+await Notifications.setNotificationChannelAsync('new_emails', {
   name: 'E-mail notifications',
   importance: Notifications.AndroidImportance.HIGH,
   sound: 'mySoundFile.wav', // Provide ONLY the base filename
@@ -512,7 +512,7 @@ await Notifications.scheduleNotificationAsync({
   },
   trigger: {
     seconds: 2,
-    channelId: 'new-emails',
+    channelId: 'new_emails',
   },
 });
 ```
@@ -528,7 +528,7 @@ For the example below to work, you would place your **email_sound.wav** file in 
 
 ```ts
 // Prepare the notification channel
-await Notifications.setNotificationChannelAsync('new-emails', {
+await Notifications.setNotificationChannelAsync('new_emails', {
   name: 'E-mail notifications',
   importance: Notifications.AndroidImportance.HIGH,
   sound: 'email_sound.wav', // <- for Android 8.0+, see channelId property below
