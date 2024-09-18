@@ -206,14 +206,15 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => src.move(dstFolder)).toThrow();
       });
 
-      it('Copies it to a folder', () => {
+      it('moves it to a folder', () => {
         const src = new File(testDirectory + 'file.txt');
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists).toBe(false);
+        expect(src.exists).toBe(true);
         const dst = new File(testDirectory + '/destination/file.txt');
+        expect(src.uri).toBe(dst.uri);
         expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
       });
@@ -225,26 +226,29 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => file.move(folder)).toThrow();
       });
 
-      it('Copies it to a file', () => {
+      it('moves it to a file', () => {
         const src = new File(testDirectory + 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory + 'file2.txt');
         src.move(dst);
         expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
-        expect(src.exists).toBe(false);
+        expect(src.exists).toBe(true);
+        expect(src.uri).toBe(dst.uri);
       });
     });
 
     describe('When moving a directory', () => {
-      it('copies it to a folder', () => {
+      it('moves it to a folder', () => {
         const src = new Directory(testDirectory + 'directory');
         src.create();
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists).toBe(false);
-        expect(new Directory(testDirectory + 'destination/directory').exists).toBe(true);
+        expect(src.exists).toBe(true);
+        const dst = new Directory(testDirectory + 'destination/directory');
+        expect(src.uri).toBe(dst.uri);
+        expect(dst.exists).toBe(true);
       });
 
       it('Throws an error when moving to a nonexistant folder without options', () => {
