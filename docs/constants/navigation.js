@@ -396,7 +396,6 @@ const general = [
       [
         makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
-        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
@@ -558,10 +557,13 @@ const archive = [
     makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
   ]),
   makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
+  makeSection('Push Notifications', [
+    makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
+    makePage('archive/push-notifications/notification-channels.mdx'),
+  ]),
   makeSection('More', [
     makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
-    makePage('archive/notification-channels.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),
