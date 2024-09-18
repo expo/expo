@@ -10,7 +10,7 @@ import { Step } from '~/ui/components/Step';
 
 In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/latest/sdk/media-library/) to save an image on device's media library.
 
-> info So far, we have used third-party libraries, such as `react-native-gesture-handler`, `react-native-reanimated`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/) depending on a use case.
+> **info** So far, we have used third-party libraries, such as `react-native-gesture-handler`, `react-native-reanimated`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/) depending on a use case.
 
 <Step label="1">
 
@@ -103,7 +103,7 @@ The `captureRef()` method also returns a promise that fulfills with the screensh
 Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx collapseHeight=440
+```tsx app/(tabs)/index.tsx|collapseHeight=440
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState, useRef } from 'react';
