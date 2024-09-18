@@ -16,8 +16,6 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
 
   abstract fun validateType()
 
-  abstract fun exists(): Boolean
-
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()
