@@ -153,7 +153,7 @@ export async function microBundle({
         throw new Error(`File not found: ${id}`);
       }
       onResolve?.(absPath);
-      const module = await parseModule(id, code, transformOptions, lightningResolver);
+      const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
       if (parent?.path) {
@@ -182,24 +182,6 @@ export async function microBundle({
       }
     }
   }
-
-  // Add virtual file resolver for lightningcss.
-  const lightningResolver: LightningResolver = {
-    read(file) {
-      const woRoot = file.replace(projectRoot, '').replace(/^\//, '');
-      if (!fullFs[woRoot]) {
-        throw new Error(`Mock file not found: ${woRoot}`);
-      }
-      return fullFs[woRoot];
-    },
-    resolve(specifier, originatingFile) {
-      if (specifier.startsWith('http')) {
-        return specifier;
-      }
-      const woRoot = originatingFile.replace(projectRoot, '').replace(/^\//, '');
-      return resolve(woRoot, specifier);
-    },
-  };
 
   function moduleExists(id: string) {
     if (fullFs[id] != null) {
@@ -294,16 +276,11 @@ export async function microBundle({
 
 type PickPartial<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;
 
-type LightningResolver = NonNullable<
-  Parameters<typeof import('lightningcss').bundleAsync>[0]['resolver']
->;
-
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
 export async function parseModule(
   relativeFilePath: string,
   code: string,
   transformOptions: PickPartial<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'>,
-  _test_resolveCss: LightningResolver | undefined = undefined,
   transformConfig: any = {}
 ): Promise<Module<{ type: string; data: { lineCount: number; code: string } }>> {
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
@@ -327,7 +304,6 @@ export async function parseModule(
       inlineRequires: false,
       ...transformOptions,
       inlinePlatform: true,
-      _test_resolveCss,
     }
   );
 

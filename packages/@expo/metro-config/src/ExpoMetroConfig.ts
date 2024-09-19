@@ -5,7 +5,6 @@ import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
-import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import { stableHash } from 'metro-cache';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
