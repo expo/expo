@@ -19,9 +19,7 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
     function pushCssModule(module) {
         const cssMetadata = getCssMetadata(module);
         if (cssMetadata) {
-            console.log('>>>>', cssMetadata);
             const contents = cssMetadata.code;
-            console.log('push css module:', module, contents);
             const originFilename = path_1.default.relative(projectRoot, module.path);
             const filename = path_1.default.join(
             // Consistent location
@@ -32,6 +30,25 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
                 filepath: originFilename,
                 src: contents,
             }) + '.css');
+            for (const external of cssMetadata.externalImports) {
+                let source = `<link rel="stylesheet" href="${external.url}"`;
+                // TODO: How can we do this for local css imports?
+                if (external.media) {
+                    source += `media="${external.media}"`;
+                }
+                // TODO: supports attribute
+                source += '>';
+                assets.push({
+                    type: 'css-external',
+                    originFilename,
+                    filename: external.url,
+                    // Link CSS file
+                    source,
+                    metadata: {
+                        hmrId: (0, css_1.pathToHtmlSafeName)(originFilename),
+                    },
+                });
+            }
             assets.push({
                 type: 'css',
                 originFilename,

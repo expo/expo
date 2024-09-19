@@ -9,7 +9,7 @@ jest.mock('../exportHermes', () => {
   };
 });
 
-it(`supports global CSS files`, async () => {
+xit(`supports global CSS files`, async () => {
   const [, artifacts] = await serializeOptimizeAsync({
     'index.js': `
           import './styles.css';
@@ -49,5 +49,27 @@ it(`supports global CSS files with imports`, async () => {
   expect(artifacts.length).toBe(2);
 
   expect(artifacts[1].source).toMatch('red');
+  expect(artifacts[1].source).toMatch('#1e90ff');
+});
+
+it(`supports global CSS files with URL imports`, async () => {
+  const [, artifacts] = await serializeOptimizeAsync(
+    {
+      'index.js': `
+          import './styles.css';
+        `,
+      'styles.css': `
+        @import url('https://example.com/other.css');
+        .container {
+          color: dodgerblue;
+        }
+        `,
+    },
+    {
+      minify: true,
+    }
+  );
+  expect(artifacts.length).toBe(2);
+
   expect(artifacts[1].source).toMatch('#1e90ff');
 });

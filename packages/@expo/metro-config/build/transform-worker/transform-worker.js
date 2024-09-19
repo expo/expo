@@ -163,12 +163,16 @@ async function transform(config, projectRoot, filename, data, options) {
                         lineCount: (0, countLines_1.default)(cssCode),
                         map: [],
                         functionMap: null,
+                        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+                        // This ensures that things like tailwind can update on every change.
+                        skipCache: postcssResults.hasPostcss,
+                        externalImports: results.externalImports,
                     },
                 },
             },
         ];
         return {
-            dependencies: jsModuleResults.dependencies,
+            dependencies: jsModuleResults.dependencies.concat(results.dependencies),
             output,
         };
     }
@@ -183,30 +187,13 @@ async function transform(config, projectRoot, filename, data, options) {
         cssModules: false,
         projectRoot,
         minify: options.minify,
-        analyzeDependencies: {
-            preserveImports: true,
-        },
+        analyzeDependencies: true,
         // @ts-expect-error: Added for testing against virtual file system.
         resolver: options._test_resolveCss,
     });
-    let cssCode = cssResults.code.toString();
-    if (cssResults.dependencies) {
-        const lines = cssCode.split('\n');
-        for (const dep of cssResults.dependencies) {
-            if (dep.type === 'import' && !cssResults.exports) {
-                if (!dep.url.match(/^[\w+]:\/\//)) {
-                    console.log(dep.loc);
-                    lines[dep.loc.start.line - 1] = lines[dep.loc.start.line - 1].slice(dep.loc.start.column, dep.loc.end.column);
-                }
-            }
-        }
-        cssCode = lines.join('\n');
-        for (const dep of cssResults.dependencies) {
-            if (dep.type === 'import' && !cssResults.exports) {
-                cssCode.replace(dep.placeholder, dep.url);
-            }
-        }
-    }
+    (0, css_modules_1.printCssWarnings)(filename, code, cssResults.warnings);
+    const cssCode = cssResults.code.toString();
+    const cssImports = (0, css_modules_1.collectCssImports)(filename, cssResults);
     // Append additional css metadata for static extraction.
     const cssOutput = {
         code: cssCode,
@@ -216,64 +203,8 @@ async function transform(config, projectRoot, filename, data, options) {
         // Disable caching for CSS files when postcss is enabled and has been run on the file.
         // This ensures that things like tailwind can update on every change.
         skipCache: postcssResults.hasPostcss,
-        externalImports: [],
+        externalImports: cssImports.externalImports,
     };
-    // TODO: Handle references for CSS modules.
-    const cssModuleDeps = [];
-    if (cssResults.dependencies) {
-        for (const dep of cssResults.dependencies) {
-            if (dep.type === 'import' && !cssResults.exports) {
-                if (dep.url.match(/^[\w+]:\/\//)) {
-                    cssOutput.externalImports.push({
-                        url: dep.url,
-                        supports: dep.supports,
-                        media: dep.media,
-                    });
-                }
-                else {
-                    cssModuleDeps.push({
-                        name: dep.url,
-                        data: {
-                            asyncType: null,
-                            // Make external URL dependencies optional.
-                            isOptional: true,
-                            // isOptional: !!dep.url.match(/^[\w+]:\/\//),
-                            locs: [
-                                {
-                                    start: {
-                                        line: dep.loc.start.line,
-                                        column: dep.loc.start.column,
-                                        index: -1, //dep.loc.start.index,
-                                    },
-                                    end: {
-                                        line: dep.loc.end.line,
-                                        column: dep.loc.end.column,
-                                        index: -1, //dep.loc.end.index,
-                                    },
-                                    filename,
-                                    identifierName: undefined,
-                                },
-                            ],
-                            css: {
-                                url: dep.url,
-                                media: dep.media,
-                                supports: dep.supports,
-                            },
-                            exportNames: [],
-                            key: dep.placeholder || dep.url,
-                        },
-                    });
-                }
-            }
-            else if (dep.type === 'url') {
-                throw new Error(`URL dependencies are not supported in global CSS files yet (url: ${dep.url})`);
-            }
-        }
-    }
-    console.log('CSS Res:', cssResults.code.toString(), cssModuleDeps, cssResults);
-    // TODO: Warnings:
-    // cssResults.warnings.forEach((warning) => {
-    // });
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
     const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev
@@ -292,7 +223,7 @@ async function transform(config, projectRoot, filename, data, options) {
         },
     ];
     return {
-        dependencies: jsModuleResults.dependencies.concat(cssModuleDeps),
+        dependencies: jsModuleResults.dependencies.concat(cssImports.dependencies),
         output,
     };
 }

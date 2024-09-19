@@ -1,4 +1,13 @@
+import codeFrame from '@babel/code-frame';
+import type { TransformResult, Warning } from 'lightningcss';
+
+import type { CollectedDependencies } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
+import { CSSMetadata } from '../serializer/jsOutput';
+
+type NotReadonly<T> = {
+  -readonly [P in keyof T]: T[P];
+};
 
 const RNW_CSS_CLASS_ID = '_';
 
@@ -31,6 +40,9 @@ export async function transformCssModuleWeb(props: {
     projectRoot: props.options.projectRoot,
     minify: props.options.minify,
   });
+
+  printCssWarnings(props.filename, props.src, cssResults.warnings);
+
   const codeAsString = cssResults.code.toString();
 
   const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(
@@ -51,10 +63,13 @@ export async function transformCssModuleWeb(props: {
     outputModule += '\n' + runtimeCss;
   }
 
+  const cssImports = collectCssImports(props.filename, cssResults);
+
   return {
     output: outputModule,
     css: cssResults.code,
     map: cssResults.map,
+    ...cssImports,
   };
 }
 
@@ -90,4 +105,74 @@ export function convertLightningCssToReactNativeWebStyleSheet(
 
 export function matchCssModule(filePath: string): boolean {
   return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
+}
+
+export function printCssWarnings(filename: string, code: string, warnings?: Warning[]) {
+  if (warnings) {
+    for (const warning of warnings) {
+      console.warn(
+        `Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${codeFrame(code, warning.loc.line, warning.loc.column)}`
+      );
+    }
+  }
+}
+
+export function collectCssImports(
+  filename: string,
+  cssResults: Pick<TransformResult, 'dependencies' | 'exports'>
+) {
+  const externalImports: CSSMetadata['externalImports'] = [];
+
+  const cssModuleDeps: NotReadonly<CollectedDependencies['dependencies']> = [];
+  if (cssResults.dependencies) {
+    for (const dep of cssResults.dependencies) {
+      if (dep.type === 'import' && !cssResults.exports) {
+        // If the URL starts with `http://` or other protocols, we'll treat it like an external import.
+        if (dep.url.match(/^\w+:\/\//)) {
+          externalImports.push({
+            url: dep.url,
+            supports: dep.supports,
+            media: dep.media,
+          });
+        } else {
+          // If the import is a local file, then add it as a JS dependency so the bundler can resolve it.
+          cssModuleDeps.push({
+            name: dep.url,
+            data: {
+              asyncType: null,
+              isOptional: false,
+              locs: [
+                {
+                  start: {
+                    line: dep.loc.start.line,
+                    column: dep.loc.start.column,
+                    index: -1, //dep.loc.start.index,
+                  },
+                  end: {
+                    line: dep.loc.end.line,
+                    column: dep.loc.end.column,
+                    index: -1, //dep.loc.end.index,
+                  },
+                  filename,
+                  identifierName: undefined,
+                },
+              ],
+              css: {
+                url: dep.url,
+                media: dep.media,
+                supports: dep.supports,
+              },
+              exportNames: [],
+              // @ts-expect-error
+              key: dep.placeholder || dep.url,
+            },
+          });
+        }
+      } else if (dep.type === 'url') {
+        throw new Error(`URL dependencies are not supported in CSS files yet (url: ${dep.url})`);
+      }
+    }
+  }
+
+  return { externalImports, dependencies: cssModuleDeps };
 }

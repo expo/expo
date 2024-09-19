@@ -13,12 +13,16 @@ import type {
 } from 'metro-transform-worker';
 
 import { wrapDevelopmentCSS } from './css';
-import { matchCssModule, transformCssModuleWeb } from './css-modules';
+import {
+  collectCssImports,
+  matchCssModule,
+  printCssWarnings,
+  transformCssModuleWeb,
+} from './css-modules';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
-import { ExpoJsOutput, JsOutput } from '../serializer/jsOutput';
-import { CollectedDependencies } from './collect-dependencies';
+import { ExpoJsOutput } from '../serializer/jsOutput';
 
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;
@@ -182,7 +186,7 @@ export async function transform(
     );
 
     const cssCode = results.css.toString();
-    const output: JsOutput[] = [
+    const output: ExpoJsOutput[] = [
       {
         type: 'js/module',
         data: {
@@ -194,13 +198,17 @@ export async function transform(
             lineCount: countLines(cssCode),
             map: [],
             functionMap: null,
+            // Disable caching for CSS files when postcss is enabled and has been run on the file.
+            // This ensures that things like tailwind can update on every change.
+            skipCache: postcssResults.hasPostcss,
+            externalImports: results.externalImports,
           },
         },
       },
     ];
 
     return {
-      dependencies: jsModuleResults.dependencies,
+      dependencies: jsModuleResults.dependencies.concat(results.dependencies),
       output,
     };
   }
@@ -218,35 +226,16 @@ export async function transform(
     cssModules: false,
     projectRoot,
     minify: options.minify,
-    analyzeDependencies: {
-      preserveImports: true,
-    },
+    analyzeDependencies: true,
     // @ts-expect-error: Added for testing against virtual file system.
     resolver: options._test_resolveCss,
   });
 
-  let cssCode = cssResults.code.toString();
+  printCssWarnings(filename, code, cssResults.warnings);
 
-  if (cssResults.dependencies) {
-    const lines = cssCode.split('\n');
-    for (const dep of cssResults.dependencies) {
-      if (dep.type === 'import' && !cssResults.exports) {
-        if (!dep.url.match(/^[\w+]:\/\//)) {
-          console.log(dep.loc);
-          lines[dep.loc.start.line - 1] = lines[dep.loc.start.line - 1].slice(
-            dep.loc.start.column,
-            dep.loc.end.column
-          );
-        }
-      }
-    }
-    cssCode = lines.join('\n');
-    for (const dep of cssResults.dependencies) {
-      if (dep.type === 'import' && !cssResults.exports) {
-        cssCode.replace(dep.placeholder, dep.url);
-      }
-    }
-  }
+  const cssCode = cssResults.code.toString();
+
+  const cssImports = collectCssImports(filename, cssResults);
 
   // Append additional css metadata for static extraction.
   const cssOutput: Required<ExpoJsOutput['data']['css']> = {
@@ -257,67 +246,8 @@ export async function transform(
     // Disable caching for CSS files when postcss is enabled and has been run on the file.
     // This ensures that things like tailwind can update on every change.
     skipCache: postcssResults.hasPostcss,
-    externalImports: [],
+    externalImports: cssImports.externalImports,
   };
-
-  // TODO: Handle references for CSS modules.
-  const cssModuleDeps: NotReadonly<CollectedDependencies['dependencies']> = [];
-  if (cssResults.dependencies) {
-    for (const dep of cssResults.dependencies) {
-      if (dep.type === 'import' && !cssResults.exports) {
-        if (dep.url.match(/^[\w+]:\/\//)) {
-          cssOutput.externalImports.push({
-            url: dep.url,
-            supports: dep.supports,
-            media: dep.media,
-          });
-        } else {
-          cssModuleDeps.push({
-            name: dep.url,
-            data: {
-              asyncType: null,
-              // Make external URL dependencies optional.
-              isOptional: true,
-              // isOptional: !!dep.url.match(/^[\w+]:\/\//),
-              locs: [
-                {
-                  start: {
-                    line: dep.loc.start.line,
-                    column: dep.loc.start.column,
-                    index: -1, //dep.loc.start.index,
-                  },
-                  end: {
-                    line: dep.loc.end.line,
-                    column: dep.loc.end.column,
-                    index: -1, //dep.loc.end.index,
-                  },
-                  filename,
-                  identifierName: undefined,
-                },
-              ],
-              css: {
-                url: dep.url,
-                media: dep.media,
-                supports: dep.supports,
-              },
-              exportNames: [],
-              key: dep.placeholder || dep.url,
-            },
-          });
-        }
-      } else if (dep.type === 'url') {
-        throw new Error(
-          `URL dependencies are not supported in global CSS files yet (url: ${dep.url})`
-        );
-      }
-    }
-  }
-
-  console.log('CSS Res:', cssResults.code.toString(), cssModuleDeps, cssResults);
-
-  // TODO: Warnings:
-  // cssResults.warnings.forEach((warning) => {
-  // });
 
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.
@@ -339,14 +269,13 @@ export async function transform(
       type: 'js/module',
       data: {
         ...(jsModuleResults.output[0] as ExpoJsOutput).data,
-
         css: cssOutput,
       },
     },
   ];
 
   return {
-    dependencies: jsModuleResults.dependencies.concat(cssModuleDeps),
+    dependencies: jsModuleResults.dependencies.concat(cssImports.dependencies),
     output,
   };
 }
@@ -361,8 +290,4 @@ module.exports = {
   // Use defaults for everything that's not custom.
   ...worker,
   transform,
-};
-
-type NotReadonly<T> = {
-  -readonly [P in keyof T]: T[P];
 };

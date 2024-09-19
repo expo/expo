@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matchCssModule = exports.convertLightningCssToReactNativeWebStyleSheet = exports.transformCssModuleWeb = void 0;
+exports.collectCssImports = exports.printCssWarnings = exports.matchCssModule = exports.convertLightningCssToReactNativeWebStyleSheet = exports.transformCssModuleWeb = void 0;
+const code_frame_1 = __importDefault(require("@babel/code-frame"));
 const css_1 = require("./css");
 const RNW_CSS_CLASS_ID = '_';
 async function transformCssModuleWeb(props) {
@@ -20,6 +24,7 @@ async function transformCssModuleWeb(props) {
         projectRoot: props.options.projectRoot,
         minify: props.options.minify,
     });
+    printCssWarnings(props.filename, props.src, cssResults.warnings);
     const codeAsString = cssResults.code.toString();
     const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(cssResults.exports);
     let outputModule = `module.exports=Object.assign(${JSON.stringify(styles)},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
@@ -31,10 +36,12 @@ async function transformCssModuleWeb(props) {
         });
         outputModule += '\n' + runtimeCss;
     }
+    const cssImports = collectCssImports(props.filename, cssResults);
     return {
         output: outputModule,
         css: cssResults.code,
         map: cssResults.map,
+        ...cssImports,
     };
 }
 exports.transformCssModuleWeb = transformCssModuleWeb;
@@ -66,4 +73,69 @@ function matchCssModule(filePath) {
     return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
 }
 exports.matchCssModule = matchCssModule;
+function printCssWarnings(filename, code, warnings) {
+    if (warnings) {
+        for (const warning of warnings) {
+            console.warn(`Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${(0, code_frame_1.default)(code, warning.loc.line, warning.loc.column)}`);
+        }
+    }
+}
+exports.printCssWarnings = printCssWarnings;
+function collectCssImports(filename, cssResults) {
+    const externalImports = [];
+    const cssModuleDeps = [];
+    if (cssResults.dependencies) {
+        for (const dep of cssResults.dependencies) {
+            if (dep.type === 'import' && !cssResults.exports) {
+                // If the URL starts with `http://` or other protocols, we'll treat it like an external import.
+                if (dep.url.match(/^\w+:\/\//)) {
+                    externalImports.push({
+                        url: dep.url,
+                        supports: dep.supports,
+                        media: dep.media,
+                    });
+                }
+                else {
+                    // If the import is a local file, then add it as a JS dependency so the bundler can resolve it.
+                    cssModuleDeps.push({
+                        name: dep.url,
+                        data: {
+                            asyncType: null,
+                            isOptional: false,
+                            locs: [
+                                {
+                                    start: {
+                                        line: dep.loc.start.line,
+                                        column: dep.loc.start.column,
+                                        index: -1, //dep.loc.start.index,
+                                    },
+                                    end: {
+                                        line: dep.loc.end.line,
+                                        column: dep.loc.end.column,
+                                        index: -1, //dep.loc.end.index,
+                                    },
+                                    filename,
+                                    identifierName: undefined,
+                                },
+                            ],
+                            css: {
+                                url: dep.url,
+                                media: dep.media,
+                                supports: dep.supports,
+                            },
+                            exportNames: [],
+                            // @ts-expect-error
+                            key: dep.placeholder || dep.url,
+                        },
+                    });
+                }
+            }
+            else if (dep.type === 'url') {
+                throw new Error(`URL dependencies are not supported in CSS files yet (url: ${dep.url})`);
+            }
+        }
+    }
+    return { externalImports, dependencies: cssModuleDeps };
+}
+exports.collectCssImports = collectCssImports;
 //# sourceMappingURL=css-modules.js.map
