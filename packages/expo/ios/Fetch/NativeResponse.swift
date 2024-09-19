@@ -178,8 +178,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
         guard let self else {
           return
         }
-        self.error = error
-        self.state = .errorReceived
+        self.urlSession(session, task: task, didCompleteWithError: error)
       }
       return
     }
