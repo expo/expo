@@ -97,9 +97,8 @@ export declare const useTrackingPermissions: (options?: PermissionHookOptions<ob
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *
- * @returns Currently this is `true` on iOS 14 and above only. On devices where the
- * Tracking Transparency API is unavailable, the get and request permissions methods will always
- * resolve to `granted`.
+ * @returns On devices where the Tracking Transparency API is unavailable,
+ * the get and request permissions methods will always resolve to `granted`.
  */
 export declare function isAvailable(): boolean;
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
