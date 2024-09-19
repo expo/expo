@@ -11,6 +11,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.asResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.buffer
@@ -97,6 +98,13 @@ internal class OkHttpFileUrlInterceptor(context: Context) : Interceptor {
     val defaultType = "application/octet-stream"
     val mimeType = URLConnection.guessContentTypeFromName(fileName) ?: defaultType
     return mimeType.toMediaTypeOrNull() ?: defaultType.toMediaType()
+  }
+
+  @Throws(IOException::class)
+  fun createAssetResponseBody(context: Context, fileName: String): ResponseBody {
+    val assetManager = context.assets
+    val inputStream = assetManager.open(fileName)
+    return inputStream.source().buffer().asResponseBody(createMediaType(fileName))
   }
 
   companion object {
