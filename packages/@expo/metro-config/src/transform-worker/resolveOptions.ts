@@ -9,7 +9,7 @@ function isHermesEngine(options: Pick<JsTransformOptions, 'unstable_transformPro
 }
 
 function isBytecodeEnabled(options: Pick<JsTransformOptions, 'customTransformOptions'>): boolean {
-  return String(options.customTransformOptions?.bytecode) === '1';
+  return options.customTransformOptions?.bytecode === '1';
 }
 
 export function shouldMinify(

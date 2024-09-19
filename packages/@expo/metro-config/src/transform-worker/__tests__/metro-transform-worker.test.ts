@@ -622,7 +622,7 @@ it('skips minification in Hermes stable transform profile', async () => {
       dev: false,
       minify: true,
       unstable_transformProfile: 'hermes-canary',
-      customTransformOptions: { __proto__: null, bytecode: true },
+      customTransformOptions: { __proto__: null, bytecode: '1' },
     }
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
@@ -643,7 +643,7 @@ it('skips minification in Hermes canary transform profile', async () => {
       dev: false,
       minify: true,
       unstable_transformProfile: 'hermes-canary',
-      customTransformOptions: { __proto__: null, bytecode: true },
+      customTransformOptions: { __proto__: null, bytecode: '1' },
     }
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
