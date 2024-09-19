@@ -1,7 +1,7 @@
-jest.unmock('resolve-from');
-import { moduleNameIsDirectFileReference } from '../plugin-resolver';
 import * as path from 'path';
-import { resolvePluginForModule } from '../plugin-resolver';
+
+import { moduleNameIsDirectFileReference, resolvePluginForModule } from '../plugin-resolver';
+jest.unmock('resolve-from');
 
 describe('plugin resolver', () => {
   describe(moduleNameIsDirectFileReference, () => {
