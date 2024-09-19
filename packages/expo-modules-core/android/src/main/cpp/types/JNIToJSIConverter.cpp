@@ -56,7 +56,7 @@ jsi::Value convert(
   // Which is actually slow. We can use some pointer magic to avoid it.
 #define CAST_AND_RETURN(type, classId) \
   if (env->IsInstanceOf(unpackedValue, cache->getJClass(#classId).clazz)) { \
-     return convertToJS(env, rt, *((jni::local_ref<type>*)((void*)&value))); \
+    return convertToJS(env, rt, *((jni::local_ref<type>*)((void*)&value))); \
   }
 #define COMMA ,
 
