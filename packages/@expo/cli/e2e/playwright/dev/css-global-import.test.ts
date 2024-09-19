@@ -88,5 +88,14 @@ test.describe(inputDir, () => {
 
     expect(errorLogs).toEqual([]);
     expect(errors).toEqual([]);
+
+    // Ensure expected tags
+    // <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap">
+    // <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300" media="screen and (min-width: 900px)">
+
+    await page.$(
+      'link[rel="stylesheet"][href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap"]'
+    );
+    await page.$('link[rel="stylesheet"][media="screen and (min-width: 900px)"]');
   });
 });

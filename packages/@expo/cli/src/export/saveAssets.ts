@@ -268,6 +268,9 @@ export function getFilesFromSerialAssets(
   }
 ) {
   resources.forEach((resource) => {
+    if (resource.type === 'css-external') {
+      return;
+    }
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
