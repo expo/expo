@@ -83,10 +83,9 @@ function htmlFromSerialAssets(
         } else {
           return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
         }
-      } else if (type === 'css-external') {
-        // External link tags will be passed through as-is.
-        return source;
       }
+      // External link tags will be passed through as-is.
+      return source;
     })
     .join('');
 
