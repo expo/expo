@@ -182,13 +182,7 @@ jni::local_ref<jobject> MethodMetadata::callJNISync(
   }
 
   auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
-
-  // Cast in this place is safe, cause we know that this function is promise-less.
-  auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
-  auto result = syncFunction->invoke(
-    convertedArgs
-  );
-
+  auto result = JNIFunctionBody::invoke(this->jBodyReference.get(), convertedArgs);
   env->DeleteLocalRef(convertedArgs);
   return result;
 }
@@ -344,12 +338,7 @@ jsi::Function MethodMetadata::createPromiseBody(
         javaCallback
       );
 
-      // Cast in this place is safe, cause we know that this function expects promise.
-      auto asyncFunction = jni::static_ref_cast<JNIAsyncFunctionBody>(this->jBodyReference);
-      asyncFunction->invoke(
-        globalArgs,
-        promise
-      );
+      JNIAsyncFunctionBody::invoke(this->jBodyReference.get(), globalArgs, promise);
 
       // We have to remove the local reference to the promise object.
       // It doesn't mean that the promise will be deallocated, but rather that we move
