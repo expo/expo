@@ -78,7 +78,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    self.delegate.urlSession(self, didCompleteWithError: error)
+    self.delegate.urlSession(self, task: task, didCompleteWithError: error)
   }
 }
 
@@ -87,5 +87,5 @@ internal protocol ExpoURLSessionTaskDelegate: AnyObject {
   func urlSession(_ session: ExpoURLSessionTask, didReceive response: URLResponse)
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data)
   func urlSession(_ session: ExpoURLSessionTask, didRedirect response: URLResponse)
-  func urlSession(_ session: ExpoURLSessionTask, didCompleteWithError error: Error?)
+  func urlSession(_ session: ExpoURLSessionTask, task: URLSessionTask, didCompleteWithError error: Error?)
 }
