@@ -7,7 +7,6 @@ import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
 import { Permalink } from '~/ui/components/Permalink';
-import { durations } from '~/ui/foundations/durations';
 
 export { AnchorContext } from './withAnchor';
 
@@ -99,16 +98,6 @@ export function createTextComponent(
 const baseTextStyle = css({
   ...typography.body.paragraph,
   color: theme.text.default,
-});
-
-const link = css({
-  cursor: 'pointer',
-  textDecoration: 'none',
-
-  ':hover': {
-    transition: durations.hover,
-    opacity: 0.8,
-  },
 });
 
 const linkStyled = css({
@@ -253,11 +242,12 @@ export const DEL = createTextComponent(TextElement.DEL, css(delStyle));
 const isExternalLink = (href?: string) => href?.includes('://');
 
 export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferrer?: boolean }) => {
-  const { isStyled, openInNewTab, shouldLeakReferrer, ...rest } = props;
+  const { isStyled, openInNewTab, shouldLeakReferrer, className, ...rest } = props;
 
   return (
     <LinkBase
-      css={[link, !isStyled && linkStyled]}
+      css={[!isStyled && linkStyled]}
+      className={mergeClasses('cursor-pointer decoration-0 hocus:opacity-80', className)}
       {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
       openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
       {...rest}

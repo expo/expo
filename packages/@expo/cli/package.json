@@ -131,6 +131,7 @@
     "@types/accepts": "^1.3.5",
     "@types/cacache": "^17.0.2",
     "@types/connect": "^3.4.33",
+    "@types/cross-spawn": "^6.0.6",
     "@types/debug": "^4.1.7",
     "@types/execa": "^0.9.0",
     "@types/form-data": "^2.2.0",

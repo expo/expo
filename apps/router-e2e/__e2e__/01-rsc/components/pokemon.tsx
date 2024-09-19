@@ -1,7 +1,8 @@
 import { Image, Text, View } from '../lib/react-native';
 
-export async function Pokemon() {
-  const res = await fetch('https://pokeapi.co/api/v2/pokemon/6');
+export async function Pokemon({ id }: { id: number }) {
+  // await new Promise((res) => setTimeout(res, 1000));
+  const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
   const json = await res.json();
   return (
     <View style={{ padding: 8, borderWidth: 1 }}>

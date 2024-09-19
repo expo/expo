@@ -73,8 +73,8 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory + 'test');
         file.create();
         const directory = new Directory(testDirectory + 'test');
-        expect(file.exists()).toBe(true);
-        expect(directory.exists()).toBe(false);
+        expect(file.exists).toBe(true);
+        expect(directory.exists).toBe(false);
       });
     });
 
@@ -82,15 +82,15 @@ export async function test({ describe, expect, it, ...t }) {
       // Not doing concating path segments in constructor, to make sure the second argument can be an options dict.
       // Instead, we want to provide utilties for it in a path object.
       const outputFile = new File(testDirectory + 'file.txt');
-      expect(outputFile.exists()).toBe(false);
+      expect(outputFile.exists).toBe(false);
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
     });
 
     it('Reads a string from a file reference', () => {
       const outputFile = new File(testDirectory + 'file2.txt');
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
       const content = outputFile.text();
       expect(content).toBe('Hello world');
     });
@@ -98,38 +98,38 @@ export async function test({ describe, expect, it, ...t }) {
     it('Deletes a file reference', () => {
       const outputFile = new File(testDirectory + 'file3.txt');
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
 
       outputFile.delete();
-      expect(outputFile.exists()).toBe(false);
+      expect(outputFile.exists).toBe(false);
     });
 
     it('Creates a folder', () => {
       const folder = new Directory(testDirectory + 'newFolder');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
     });
 
     it('Creates a folder without a slash', () => {
       const folder = new Directory(testDirectory + 'newFolder2');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
     });
 
     it('Creates an empty file', () => {
       const file = new File(testDirectory + 'newFolder');
       file.create();
-      expect(file.exists()).toBe(true);
+      expect(file.exists).toBe(true);
       expect(file.text()).toBe('');
     });
 
     it('Deletes a folder', () => {
       const folder = new Directory(testDirectory + 'newFolder');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
 
       folder.delete();
-      expect(folder.exists()).toBe(false);
+      expect(folder.exists).toBe(false);
     });
 
     describe('When copying a file', () => {
@@ -146,10 +146,10 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.copy(dstFolder);
-        expect(src.exists()).toBe(true);
+        expect(src.exists).toBe(true);
         expect(src.text()).toBe('Hello world');
         const dst = new File(testDirectory + '/destination/file.txt');
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
       });
 
@@ -165,9 +165,9 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dst = new File(testDirectory + 'file2.txt');
         src.copy(dst);
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
-        expect(src.exists()).toBe(true);
+        expect(src.exists).toBe(true);
       });
     });
 
@@ -178,8 +178,8 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.copy(dstFolder);
-        expect(src.exists()).toBe(true);
-        expect(new Directory(testDirectory + 'destination/directory').exists()).toBe(true);
+        expect(src.exists).toBe(true);
+        expect(new Directory(testDirectory + 'destination/directory').exists).toBe(true);
       });
 
       it('Throws an error when copying to a nonexistant folder without options', () => {
@@ -212,9 +212,9 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists()).toBe(false);
+        expect(src.exists).toBe(false);
         const dst = new File(testDirectory + '/destination/file.txt');
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
       });
 
@@ -230,9 +230,9 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dst = new File(testDirectory + 'file2.txt');
         src.move(dst);
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
-        expect(src.exists()).toBe(false);
+        expect(src.exists).toBe(false);
       });
     });
 
@@ -243,8 +243,8 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists()).toBe(false);
-        expect(new Directory(testDirectory + 'destination/directory').exists()).toBe(true);
+        expect(src.exists).toBe(false);
+        expect(new Directory(testDirectory + 'destination/directory').exists).toBe(true);
       });
 
       it('Throws an error when moving to a nonexistant folder without options', () => {
@@ -268,7 +268,7 @@ export async function test({ describe, expect, it, ...t }) {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory + 'image.jpeg');
         const output = await File.downloadFileAsync(url, file);
-        expect(file.exists()).toBe(true);
+        expect(file.exists).toBe(true);
         expect(output.uri).toBe(file.uri);
       });
 
@@ -280,7 +280,7 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(
           testDirectory + (Platform.OS === 'android' ? '300.jpg' : '237-200x300.jpg')
         );
-        expect(file.exists()).toBe(true);
+        expect(file.exists).toBe(true);
         expect(output.uri).toBe(file.uri);
       });
     });
