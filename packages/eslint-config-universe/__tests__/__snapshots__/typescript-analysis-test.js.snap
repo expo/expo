@@ -37,12 +37,6 @@ export function myFunc2(foo: T2 | null) {
   "usedDeprecatedRules": [
     {
       "replacedBy": [
-        "@typescript-eslint/only-throw-error",
-      ],
-      "ruleId": "@typescript-eslint/no-throw-literal",
-    },
-    {
-      "replacedBy": [
         "@typescript-eslint/ban-ts-comment",
       ],
       "ruleId": "@typescript-eslint/prefer-ts-expect-error",
@@ -80,12 +74,6 @@ for (const b in arr) {
 export { sum };",
   "suppressedMessages": [],
   "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/only-throw-error",
-      ],
-      "ruleId": "@typescript-eslint/no-throw-literal",
-    },
     {
       "replacedBy": [
         "@typescript-eslint/ban-ts-comment",
@@ -139,12 +127,6 @@ exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
   "usedDeprecatedRules": [
     {
       "replacedBy": [
-        "@typescript-eslint/only-throw-error",
-      ],
-      "ruleId": "@typescript-eslint/no-throw-literal",
-    },
-    {
-      "replacedBy": [
         "@typescript-eslint/ban-ts-comment",
       ],
       "ruleId": "@typescript-eslint/prefer-ts-expect-error",
@@ -169,7 +151,7 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
       "message": "Expected an error object to be thrown.",
       "messageId": "object",
       "nodeType": "Literal",
-      "ruleId": "@typescript-eslint/no-throw-literal",
+      "ruleId": "@typescript-eslint/only-throw-error",
       "severity": 1,
     },
   ],
@@ -178,12 +160,6 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
 }",
   "suppressedMessages": [],
   "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/only-throw-error",
-      ],
-      "ruleId": "@typescript-eslint/no-throw-literal",
-    },
     {
       "replacedBy": [
         "@typescript-eslint/ban-ts-comment",
@@ -270,6 +246,17 @@ exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
           },
           "messageId": "floatingFixVoid",
         },
+        {
+          "desc": "Add await operator.",
+          "fix": {
+            "range": [
+              404,
+              404,
+            ],
+            "text": "await ",
+          },
+          "messageId": "floatingFixAwait",
+        },
       ],
     },
   ],
@@ -299,12 +286,6 @@ export async function wat() {
 ",
   "suppressedMessages": [],
   "usedDeprecatedRules": [
-    {
-      "replacedBy": [
-        "@typescript-eslint/only-throw-error",
-      ],
-      "ruleId": "@typescript-eslint/no-throw-literal",
-    },
     {
       "replacedBy": [
         "@typescript-eslint/ban-ts-comment",
