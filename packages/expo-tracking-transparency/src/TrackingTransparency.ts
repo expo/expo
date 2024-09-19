@@ -151,11 +151,7 @@ export const useTrackingPermissions = createPermissionHook({
  * resolve to `granted`.
  */
 export function isAvailable(): boolean {
-  return (
-    Platform.OS === 'ios' &&
-    parseInt(Platform.Version.toString(), 10) >= 14 &&
-    ExpoTrackingTransparency
-  );
+  return Boolean(ExpoTrackingTransparency);
 }
 
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

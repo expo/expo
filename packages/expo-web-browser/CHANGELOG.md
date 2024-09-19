@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Removed old `Platform.Version` checks. ([#31541](https://github.com/expo/expo/pull/31541) by [@reichhartd](https://github.com/reichhartd))
+
 ## 13.0.3 — 2024-04-29
 
 ### 🐛 Bug fixes

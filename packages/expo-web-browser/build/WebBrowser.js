@@ -268,14 +268,7 @@ function _processOptions(options) {
 }
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
-    if (Platform.OS === 'android') {
-        return false;
-    }
-    else if (Platform.OS === 'web') {
-        return true;
-    }
-    const versionNumber = parseInt(String(Platform.Version), 10);
-    return versionNumber >= 11;
+    return Platform.OS !== 'android';
 }
 let _redirectSubscription = null;
 /*
