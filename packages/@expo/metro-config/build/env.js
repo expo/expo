@@ -23,6 +23,9 @@ class Env {
     get EXPO_USE_METRO_REQUIRE() {
         return (0, getenv_1.boolish)('EXPO_USE_METRO_REQUIRE', false);
     }
+    get __EXPO_SEED_CACHE() {
+        return (0, getenv_1.boolish)('__EXPO_SEED_CACHE', false);
+    }
 }
 exports.env = new Env();
 //# sourceMappingURL=env.js.map

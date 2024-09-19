@@ -763,9 +763,12 @@ export async function withMetroMultiPlatformAsync(
     }
   }
 
-  // TODO: Remove this
-  // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
-  config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
+  // // TODO: Remove this
+  // const expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
+  // // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
+  // config.transformer._expoRouterPath = expoRouterPath
+  //   ? path.relative(projectRoot, expoRouterPath)
+  //   : undefined;
 
   let tsconfig: null | TsConfigPaths = null;
 

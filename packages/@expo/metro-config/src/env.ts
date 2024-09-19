@@ -25,6 +25,10 @@ class Env {
   get EXPO_USE_METRO_REQUIRE() {
     return boolish('EXPO_USE_METRO_REQUIRE', false);
   }
+
+  get __EXPO_SEED_CACHE() {
+    return boolish('__EXPO_SEED_CACHE', false);
+  }
 }
 
 export const env = new Env();

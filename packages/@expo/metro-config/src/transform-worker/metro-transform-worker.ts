@@ -753,6 +753,9 @@ export function getCacheKey(config: JsTransformerConfig): string {
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
   ]);
 
+  console.log('CACHE_KEY[transform-worker].1:', filesKey);
+  console.log('CACHE_KEY[transform-worker].2:', remainingConfig);
+
   const babelTransformer = require(babelTransformerPath);
   return [
     filesKey,

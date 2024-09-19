@@ -13,7 +13,7 @@ import resolveFrom from 'resolve-from';
 
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
-import { FileStore } from './file-store';
+import { FileStore, VendorFileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
@@ -63,7 +63,11 @@ function getAssetPlugins(projectRoot: string): string[] {
     throw new Error(`The required package \`expo-asset\` cannot be found`);
   }
 
-  return [hashAssetFilesPath];
+  return [
+    // Use relative path to ensure maximum cache hits.
+    // This is resolved here https://github.com/facebook/metro/blob/ec584b9cc2b8356356a4deacb7e1d5c83f243c3a/packages/metro/src/Assets.js#L271
+    'expo-asset/tools/hashAssetFiles',
+  ];
 }
 
 let hasWarnedAboutExotic = false;
@@ -161,6 +165,10 @@ export function getDefaultConfig(
     );
   }
 
+  const vendorCache = path.join(
+    resolveFrom(projectRoot, '@expo/cli/package.json'),
+    '../metro-cache'
+  );
   const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
@@ -210,6 +218,10 @@ export function getDefaultConfig(
     root: path.join(os.tmpdir(), 'metro-cache'),
   });
 
+  const warmStore = new VendorFileStore<any>({
+    root: vendorCache,
+  });
+
   const serverRoot = getMetroServerRoot(projectRoot);
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
@@ -237,7 +249,7 @@ export function getDefaultConfig(
       sourceExts,
       nodeModulesPaths,
     },
-    cacheStores: [cacheStore],
+    cacheStores: [!env.__EXPO_SEED_CACHE && cacheStore, warmStore].filter(Boolean),
     watcher: {
       // strip starting dot from env files
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
@@ -308,6 +320,7 @@ export function getDefaultConfig(
       customizeFrame: getDefaultCustomizeFrame(),
     },
     transformerPath: require.resolve('./transform-worker/transform-worker'),
+    // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       // @ts-expect-error: not on type.
@@ -320,17 +333,16 @@ export function getDefaultConfig(
       // Ensure invalidation when the version changes due to the Babel plugin.
       reanimatedVersion,
       // Ensure invalidation when using identical projects in monorepos
-      _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
-      unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
+      // _expoRelativeProjectRoot: env.__EXPO_SEED_CACHE
+      //   ? // The seeded cache will only be usable in default projects.
+      //     path.relative(serverRoot, serverRoot)
+      //   : path.relative(serverRoot, projectRoot),
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
       // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
-      asyncRequireModulePath: resolveFrom(
-        reactNativePath,
-        metroDefaultValues.transformer.asyncRequireModulePath
-      ),
+      asyncRequireModulePath: metroDefaultValues.transformer.asyncRequireModulePath,
       assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({

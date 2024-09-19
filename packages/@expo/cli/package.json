@@ -8,7 +8,8 @@
   },
   "files": [
     "static",
-    "build"
+    "build",
+    "metro-cache"
   ],
   "scripts": {
     "build": "taskr",

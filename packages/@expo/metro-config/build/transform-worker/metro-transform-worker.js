@@ -562,6 +562,8 @@ function getCacheKey(config) {
         require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
         ...metro_transform_plugins_1.default.getTransformPluginCacheKeyFiles(),
     ]);
+    console.log('CACHE_KEY[transform-worker].1:', filesKey);
+    console.log('CACHE_KEY[transform-worker].2:', remainingConfig);
     const babelTransformer = require(babelTransformerPath);
     return [
         filesKey,

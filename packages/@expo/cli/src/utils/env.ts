@@ -185,6 +185,11 @@ class Env {
     return boolish('__EXPO_E2E_TEST', false);
   }
 
+  /** Used internally to seed the metro cache to reduce redundant transformation work, i.e. strip flow out of react-native. */
+  get __EXPO_SEED_CACHE(): boolean {
+    return boolish('__EXPO_SEED_CACHE', false);
+  }
+
   /** Unstable: Force single-bundle exports in production. */
   get EXPO_NO_BUNDLE_SPLITTING(): boolean {
     return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
