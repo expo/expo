@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-svg` from `15.2.0` to `15.7.1`.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
