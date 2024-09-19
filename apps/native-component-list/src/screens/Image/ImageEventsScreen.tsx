@@ -11,6 +11,7 @@ const generateSeed = () => 1 + Math.round(Math.random() * 2137);
 export default function ImageEventsScreen() {
   const [uri, setSourceUri] = useState(getRandomImageUri());
   const [logs, setLogs] = useState<string[]>([]);
+  const [isDisplayed, setIsDisplayed] = useState<boolean>(false);
 
   const onLoadStart = useCallback(() => {
     logs.push('🚀 onLoadStart');
@@ -46,14 +47,22 @@ export default function ImageEventsScreen() {
     setLogs([...logs]);
   }, [logs]);
 
+  const onDisplay = useCallback(() => {
+    logs.push('🚀 onDisplay');
+    setLogs([...logs]);
+    setIsDisplayed(true);
+  }, [logs]);
+
   const loadNewImage = useCallback(() => {
     setSourceUri(getRandomImageUri());
     setLogs([]);
+    setIsDisplayed(false);
   }, []);
 
   const loadWithError = useCallback(() => {
     setSourceUri(`https://expo.dev/?r=${generateSeed()}`);
     setLogs([]);
+    setIsDisplayed(false);
   }, []);
 
   return (
@@ -66,6 +75,13 @@ export default function ImageEventsScreen() {
         onProgress={onProgress}
         onError={onError}
         onLoadEnd={onLoadEnd}
+        onDisplay={onDisplay}
+      />
+      <View
+        style={[
+          styles.image,
+          { backgroundColor: 'red', marginTop: -220, opacity: isDisplayed ? 0 : 0.7 },
+        ]}
       />
 
       <View style={styles.buttons}>

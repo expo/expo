@@ -218,6 +218,10 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
      */
     onLoadEnd?: () => void;
     /**
+     * Called when the image view successfully rendered the source image.
+     */
+    onDisplay?: () => void;
+    /**
      * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
      * Use [`placeholder`](#placeholder) prop instead.
      */
