@@ -84,7 +84,6 @@ const baseConfig: JsTransformerConfig = {
   unstable_disableModuleWrapping: false,
   unstable_disableNormalizePseudoGlobals: false,
   unstable_allowRequireContext: false,
-  unstable_collectDependenciesPath: null,
 };
 
 const baseTransformOptions: JsTransformOptions = {
