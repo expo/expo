@@ -30,24 +30,26 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
                 filepath: originFilename,
                 src: contents,
             }) + '.css');
-            for (const external of cssMetadata.externalImports) {
-                let source = `<link rel="stylesheet" href="${external.url}"`;
-                // TODO: How can we do this for local css imports?
-                if (external.media) {
-                    source += `media="${external.media}"`;
+            if (cssMetadata.externalImports) {
+                for (const external of cssMetadata.externalImports) {
+                    let source = `<link rel="stylesheet" href="${external.url}"`;
+                    // TODO: How can we do this for local css imports?
+                    if (external.media) {
+                        source += `media="${external.media}"`;
+                    }
+                    // TODO: supports attribute
+                    source += '>';
+                    assets.push({
+                        type: 'css-external',
+                        originFilename,
+                        filename: external.url,
+                        // Link CSS file
+                        source,
+                        metadata: {
+                            hmrId: (0, css_1.pathToHtmlSafeName)(originFilename),
+                        },
+                    });
                 }
-                // TODO: supports attribute
-                source += '>';
-                assets.push({
-                    type: 'css-external',
-                    originFilename,
-                    filename: external.url,
-                    // Link CSS file
-                    source,
-                    metadata: {
-                        hmrId: (0, css_1.pathToHtmlSafeName)(originFilename),
-                    },
-                });
             }
             assets.push({
                 type: 'css',
@@ -60,26 +62,25 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
             });
         }
     }
-    function traverseDeps(absolutePath) {
-        const entry = dependencies.get(absolutePath);
-        entry?.dependencies.forEach((dep) => {
-            if (visited.has(dep.absolutePath)) {
-                return;
-            }
-            visited.add(dep.absolutePath);
-            const next = dependencies.get(dep.absolutePath);
-            if (!next || !isTypeJSModule(next)) {
-                return;
-            }
+    function checkDep(absolutePath) {
+        if (visited.has(absolutePath)) {
+            return;
+        }
+        visited.add(absolutePath);
+        const next = dependencies.get(absolutePath);
+        if (!next) {
+            return;
+        }
+        next.dependencies.forEach((dep) => {
             // Traverse the deps next to ensure the CSS is pushed in the correct order.
-            traverseDeps(next.path);
-            // Then push the JS after the siblings.
-            if (getCssMetadata(next)) {
-                pushCssModule(next);
-            }
+            checkDep(dep.absolutePath);
         });
+        // Then push the JS after the siblings.
+        if (getCssMetadata(next) && isTypeJSModule(next)) {
+            pushCssModule(next);
+        }
     }
-    traverseDeps(entryFile);
+    checkDep(entryFile);
     return assets;
 }
 exports.getCssSerialAssets = getCssSerialAssets;

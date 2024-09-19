@@ -67,28 +67,30 @@ export function getCssSerialAssets<T extends any>(
         }) + '.css'
       );
 
-      for (const external of cssMetadata.externalImports) {
-        let source = `<link rel="stylesheet" href="${external.url}"`;
+      if (cssMetadata.externalImports) {
+        for (const external of cssMetadata.externalImports) {
+          let source = `<link rel="stylesheet" href="${external.url}"`;
 
-        // TODO: How can we do this for local css imports?
-        if (external.media) {
-          source += `media="${external.media}"`;
+          // TODO: How can we do this for local css imports?
+          if (external.media) {
+            source += `media="${external.media}"`;
+          }
+
+          // TODO: supports attribute
+
+          source += '>';
+
+          assets.push({
+            type: 'css-external',
+            originFilename,
+            filename: external.url,
+            // Link CSS file
+            source,
+            metadata: {
+              hmrId: pathToHtmlSafeName(originFilename),
+            },
+          });
         }
-
-        // TODO: supports attribute
-
-        source += '>';
-
-        assets.push({
-          type: 'css-external',
-          originFilename,
-          filename: external.url,
-          // Link CSS file
-          source,
-          metadata: {
-            hmrId: pathToHtmlSafeName(originFilename),
-          },
-        });
       }
 
       assets.push({
@@ -103,30 +105,28 @@ export function getCssSerialAssets<T extends any>(
     }
   }
 
-  function traverseDeps(absolutePath: string) {
-    const entry = dependencies.get(absolutePath);
+  function checkDep(absolutePath: string) {
+    if (visited.has(absolutePath)) {
+      return;
+    }
+    visited.add(absolutePath);
+    const next = dependencies.get(absolutePath);
+    if (!next) {
+      return;
+    }
 
-    entry?.dependencies.forEach((dep) => {
-      if (visited.has(dep.absolutePath)) {
-        return;
-      }
-      visited.add(dep.absolutePath);
-      const next = dependencies.get(dep.absolutePath);
-      if (!next || !isTypeJSModule(next)) {
-        return;
-      }
-
+    next.dependencies.forEach((dep) => {
       // Traverse the deps next to ensure the CSS is pushed in the correct order.
-      traverseDeps(next.path);
-
-      // Then push the JS after the siblings.
-      if (getCssMetadata(next)) {
-        pushCssModule(next);
-      }
+      checkDep(dep.absolutePath);
     });
+
+    // Then push the JS after the siblings.
+    if (getCssMetadata(next) && isTypeJSModule(next)) {
+      pushCssModule(next);
+    }
   }
 
-  traverseDeps(entryFile);
+  checkDep(entryFile);
 
   return assets;
 }

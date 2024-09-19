@@ -106,7 +106,6 @@ export function createServerComponentsMiddleware(
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
-    // TODO: Add external CSS support
     const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
     const reactClientReferences = contents.artifacts
