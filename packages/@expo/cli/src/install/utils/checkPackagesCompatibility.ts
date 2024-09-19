@@ -9,18 +9,21 @@ export type ReactNativeDirectoryCheckResult = {
   newArchitecture: 'supported' | 'unsupported' | 'untested';
 };
 
-export async function checkPackagesCompatibility(otherPackages: string[]) {
+const ERROR_MESSAGE =
+  'Unable to fetch compatibility data from React Native Directory. Skipping check.';
+
+export async function checkPackagesCompatibility(packages: string[]) {
   try {
     const response = await fetch('https://reactnative.directory/api/libraries/check', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ packages: otherPackages }),
+      body: JSON.stringify({ packages }),
     });
 
     if (!response.ok) {
-      Log.log(chalk.gray('Unable to fetch compatibility data from React Native Directory!'));
+      Log.log(chalk.gray(ERROR_MESSAGE));
     }
 
     const packageMetadata = (await response.json()) as Record<
@@ -28,7 +31,7 @@ export async function checkPackagesCompatibility(otherPackages: string[]) {
       ReactNativeDirectoryCheckResult
     >;
 
-    const incompatiblePackages = otherPackages.filter(
+    const incompatiblePackages = packages.filter(
       (packageName) => packageMetadata[packageName]?.newArchitecture === 'unsupported'
     );
 
@@ -40,7 +43,7 @@ export async function checkPackagesCompatibility(otherPackages: string[]) {
       );
     }
   } catch {
-    Log.log(chalk.gray('Unable to fetch compatibility data from React Native Directory!'));
+    Log.log(chalk.gray(ERROR_MESSAGE));
   }
 }
 
