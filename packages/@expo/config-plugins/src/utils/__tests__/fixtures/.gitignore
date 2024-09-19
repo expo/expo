@@ -1,0 +1,2 @@
+# the fixtures are placed inside node_modules so that `resolve-from` finds them
+!node_modules

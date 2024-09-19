@@ -18,13 +18,6 @@ function _assert() {
   };
   return data;
 }
-function _findUp() {
-  const data = _interopRequireDefault(require("find-up"));
-  _findUp = function () {
-    return data;
-  };
-  return data;
-}
 function path() {
   const data = _interopRequireWildcard(require("path"));
   path = function () {
@@ -58,27 +51,44 @@ function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // Default plugin entry file name.
 const pluginFileName = exports.pluginFileName = 'app.plugin.js';
-function findUpPackageJson(root) {
-  const packageJson = _findUp().default.sync('package.json', {
-    cwd: root
-  });
-  (0, _assert().default)(packageJson, `No package.json found for module "${root}"`);
-  return packageJson;
-}
-function resolvePluginForModule(projectRoot, modulePath) {
-  const resolved = _resolveFrom().default.silent(projectRoot, modulePath);
-  if (!resolved) {
-    throw new (_errors().PluginError)(`Failed to resolve plugin for module "${modulePath}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
+
+// pluginReference is a node module or a file path, as user entered it in app.config.js
+function resolvePluginForModule(projectRoot, pluginReference) {
+  const resolvedPackageJson = _resolveFrom().default.silent(projectRoot, `${pluginReference}/package.json`);
+  const resolvedPluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
+  const hasResolved = !!(resolvedPackageJson || resolvedPluginScriptFile);
+  function throwPluginNotFound() {
+    throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
   }
-  // If the modulePath is something like `@bacon/package/index.js` or `expo-foo/build/app`
+  if (!hasResolved) {
+    throwPluginNotFound();
+  }
+  // If the pluginReference is something like `@bacon/package/index.js` or `expo-foo/build/app`
   // then skip resolving the module `app.plugin.js`
-  if (moduleNameIsDirectFileReference(modulePath)) {
+  if (moduleNameIsDirectFileReference(pluginReference) && resolvedPluginScriptFile) {
     return {
       isPluginFile: false,
-      filePath: resolved
+      filePath: resolvedPluginScriptFile
     };
   }
-  return findUpPlugin(resolved);
+  if (!resolvedPackageJson) {
+    throwPluginNotFound();
+  }
+  const maybePluginFilePath = findUpPlugin(resolvedPackageJson);
+  if (maybePluginFilePath) {
+    return {
+      isPluginFile: true,
+      filePath: maybePluginFilePath
+    };
+  } else {
+    if (!resolvedPluginScriptFile) {
+      throwPluginNotFound();
+    }
+    return {
+      isPluginFile: false,
+      filePath: resolvedPluginScriptFile
+    };
+  }
 }
 
 // TODO: Test windows
@@ -111,17 +121,11 @@ function resolveExpoPluginFile(root) {
   }
   return null;
 }
-function findUpPlugin(root) {
-  // Get the closest package.json to the node module
-  const packageJson = findUpPackageJson(root);
-  // resolve the root folder for the node module
-  const moduleRoot = path().dirname(packageJson);
+function findUpPlugin(rootPackageJsonPath) {
+  // resolve the rootPackageJsonPath folder for the node module
+  const moduleRoot = path().dirname(rootPackageJsonPath);
   // use whatever the initial resolved file was ex: `node_modules/my-package/index.js` or `./something.js`
-  const pluginFile = resolveExpoPluginFile(moduleRoot);
-  return {
-    filePath: pluginFile ?? root,
-    isPluginFile: !!pluginFile
-  };
+  return resolveExpoPluginFile(moduleRoot);
 }
 function normalizeStaticPlugin(plugin) {
   if (Array.isArray(plugin)) {
