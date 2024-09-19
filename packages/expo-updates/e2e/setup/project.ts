@@ -473,11 +473,9 @@ function transformAppJsonForE2E(
       updates: {
         ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
+        assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
-        updates: {
-          assetPatternsToBeBundled: ['includedAssets/*'],
-        },
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
