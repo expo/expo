@@ -347,7 +347,11 @@ export function createServerComponentsMiddleware(
 
       await Promise.all(
         Array.from(buildConfig).map(async ({ entries }) => {
-          for (const { input } of entries || []) {
+          for (const { input, isStatic } of entries || []) {
+            if (!isStatic) {
+              debug('Skipping static export for route', { input });
+              continue;
+            }
             const destRscFile = path.join('_flight', platform, encodeInput(input));
 
             const pipe = await renderRscToReadableStream(

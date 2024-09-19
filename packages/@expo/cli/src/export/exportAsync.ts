@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import path from 'path';
 
 import { exportAppAsync } from './exportApp';
@@ -26,7 +27,7 @@ export async function exportAsync(projectRoot: string, options: Options) {
   await waitUntilAtlasExportIsReadyAsync(projectRoot);
 
   // Final notes
-  Log.log(`App exported to: ${options.outputDir}`);
+  Log.log(chalk.greenBright`Exported: ${options.outputDir}`);
 
   // Exit the process to stop any hanging processes from reading the app.config.js or server rendering.
   ensureProcessExitsAfterDelay();

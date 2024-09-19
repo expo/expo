@@ -61,6 +61,7 @@ android {
     // Theses files are intermediated linking files to build reanimated and should not be in final package.
     excludes += [
         "**/libc++_shared.so",
+        "**/libreactnative.so",
         "**/libreactnativejni.so",
         "**/libglog.so",
         "**/libjscexecutor.so",

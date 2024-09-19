@@ -24,6 +24,7 @@ const hasPathSpecPrefix = (prefix, path) => {
     }
     return true;
 };
+const sanitizeSlug = (slug) => slug.replace(/\./g, '').replace(/ /g, '-');
 function createPages(fn) {
     let configured = false;
     // TODO I think there's room for improvement to refactor these structures
@@ -48,30 +49,49 @@ function createPages(fn) {
         if (page.unstable_disableSSR) {
             noSsrSet.add(pathSpec);
         }
-        const numSlugs = pathSpec.filter(({ type }) => type !== 'literal').length;
-        const numWildcards = pathSpec.filter(({ type }) => type === 'wildcard').length;
+        const { numSlugs, numWildcards } = (() => {
+            let numSlugs = 0;
+            let numWildcards = 0;
+            for (const slug of pathSpec) {
+                if (slug.type !== 'literal') {
+                    numSlugs++;
+                }
+                if (slug.type === 'wildcard') {
+                    numWildcards++;
+                }
+            }
+            return { numSlugs, numWildcards };
+        })();
         if (page.render === 'static' && numSlugs === 0) {
             staticPathSet.add([page.path, pathSpec]);
             const id = (0, path_1.joinPath)(page.path, 'page').replace(/^\//, '');
             registerStaticComponent(id, page.component);
         }
-        else if (page.render === 'static' && numSlugs > 0 && numWildcards === 0) {
-            const staticPaths = page.staticPaths.map((item) => (Array.isArray(item) ? item : [item]));
+        else if (page.render === 'static' && numSlugs > 0 && 'staticPaths' in page) {
+            const staticPaths = page.staticPaths.map((item) => (Array.isArray(item) ? item : [item]).map(sanitizeSlug));
             for (const staticPath of staticPaths) {
-                if (staticPath.length !== numSlugs) {
+                if (staticPath.length !== numSlugs && numWildcards === 0) {
                     throw new Error('staticPaths does not match with slug pattern');
                 }
                 const mapping = {};
                 let slugIndex = 0;
-                const pathItems = pathSpec.map(({ type, name }) => {
-                    if (type !== 'literal') {
-                        const actualName = staticPath[slugIndex++];
-                        if (name) {
-                            mapping[name] = actualName;
-                        }
-                        return actualName;
+                const pathItems = [];
+                pathSpec.forEach(({ type, name }) => {
+                    switch (type) {
+                        case 'literal':
+                            pathItems.push(name);
+                            break;
+                        case 'wildcard':
+                            mapping[name] = staticPath.slice(slugIndex);
+                            staticPath.slice(slugIndex++).forEach((slug) => {
+                                pathItems.push(slug);
+                            });
+                            break;
+                        case 'group':
+                            pathItems.push(staticPath[slugIndex++]);
+                            mapping[name] = pathItems[pathItems.length - 1];
+                            break;
                     }
-                    return name;
                 });
                 staticPathSet.add([page.path, pathItems.map((name) => ({ type: 'literal', name }))]);
                 const id = (0, path_1.joinPath)(...pathItems, 'page');
@@ -131,8 +151,16 @@ function createPages(fn) {
         const paths = [];
         for (const [path, pathSpec] of staticPathSet) {
             const noSsr = noSsrSet.has(pathSpec);
-            const isStatic = Array.from(dynamicLayoutPathMap.values()).every(([layoutPathSpec]) => !hasPathSpecPrefix(layoutPathSpec, pathSpec));
+            const isStatic = (() => {
+                for (const [_, [layoutPathSpec]] of dynamicLayoutPathMap) {
+                    if (hasPathSpecPrefix(layoutPathSpec, pathSpec)) {
+                        return false;
+                    }
+                }
+                return true;
+            })();
             paths.push({
+                pattern: (0, path_1.path2regexp)((0, path_1.parsePathWithSlug)(path)),
                 path: pathSpec,
                 isStatic,
                 noSsr,
@@ -142,6 +170,7 @@ function createPages(fn) {
         for (const [path, [pathSpec]] of dynamicPagePathMap) {
             const noSsr = noSsrSet.has(pathSpec);
             paths.push({
+                pattern: (0, path_1.path2regexp)((0, path_1.parsePathWithSlug)(path)),
                 path: pathSpec,
                 isStatic: false,
                 noSsr,
@@ -151,6 +180,7 @@ function createPages(fn) {
         for (const [path, [pathSpec]] of wildcardPagePathMap) {
             const noSsr = noSsrSet.has(pathSpec);
             paths.push({
+                pattern: (0, path_1.path2regexp)((0, path_1.parsePathWithSlug)(path)),
                 path: pathSpec,
                 isStatic: false,
                 noSsr,
@@ -165,7 +195,7 @@ function createPages(fn) {
             unstable_setShouldSkip([]);
             return staticComponent;
         }
-        for (const [pathSpec, Component] of dynamicPagePathMap.values()) {
+        for (const [_, [pathSpec, Component]] of dynamicPagePathMap) {
             const mapping = (0, path_1.getPathMapping)([...pathSpec, { type: 'literal', name: 'page' }], id);
             if (mapping) {
                 if (Object.keys(mapping).length === 0) {
@@ -177,7 +207,7 @@ function createPages(fn) {
                 return WrappedComponent;
             }
         }
-        for (const [pathSpec, Component] of wildcardPagePathMap.values()) {
+        for (const [_, [pathSpec, Component]] of wildcardPagePathMap) {
             const mapping = (0, path_1.getPathMapping)([...pathSpec, { type: 'literal', name: 'page' }], id);
             if (mapping) {
                 const WrappedComponent = (props) => (0, react_1.createElement)(Component, { ...props, ...mapping });
@@ -185,7 +215,7 @@ function createPages(fn) {
                 return WrappedComponent;
             }
         }
-        for (const [pathSpec, Component] of dynamicLayoutPathMap.values()) {
+        for (const [_, [pathSpec, Component]] of dynamicLayoutPathMap) {
             const mapping = (0, path_1.getPathMapping)([...pathSpec, { type: 'literal', name: 'layout' }], id);
             if (mapping) {
                 if (Object.keys(mapping).length) {

@@ -33,8 +33,7 @@ export class ExpoDomWebView {
   eval(source: string): any {
     const { deferredId, deferred } = this.createDeferred();
     const args = JSON.stringify({ source, deferredId });
-    const EVAL_PROMPT_HEADER = '__EXPO_DOM_WEBVIEW_JS_EVAL__';
-    const result = JSON.parse(window.prompt(EVAL_PROMPT_HEADER + args) as string);
+    const result = JSON.parse(window.ExpoDomWebViewBridge.eval(args) as string);
     if (result.isPromise) {
       return deferred.getPromise();
     }

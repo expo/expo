@@ -1,7 +1,7 @@
 /**
- * A string representing a file or directory path.
+ * A string representing a file or directory url.
  */
-export type Path = string;
+export type URI = string;
 
 /**
  * Represents a directory on the file system.
@@ -9,18 +9,18 @@ export type Path = string;
 export declare class Directory {
   /**
    * Creates an instance of a directory.
-   * @param path -  A string representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+   * @param uri -  A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
    * @example
    * ```ts
    * const directory = new Directory("file:///path/to/directory");
    * ```
    */
-  constructor(path: Path);
+  constructor(uri: string);
 
   /**
-   * Represents the directory path.
+   * Represents the directory URI.
    */
-  readonly path: Path;
+  readonly uri: URI;
 
   /**
    * Validates a directory path.
@@ -34,11 +34,9 @@ export declare class Directory {
   delete(): void;
 
   /**
-   * Checks if a directory exists.
-   *
-   * @returns `true` if the directory exists, `false` otherwise.
+   * A boolean representing if a directory exists. `true` if the directory exists, `false` otherwise.
    */
-  exists(): boolean;
+  exists: boolean;
 
   /**
    * Creates a directory.
@@ -52,6 +50,16 @@ export declare class Directory {
    * Moves a directory.
    */
   move(destination: Directory | File);
+  /**
+   * @hidden
+   * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
+   * This function is internal and will be removed in the future (when returning arrays of shared objects is supported).
+   */
+  listAsRecords(): { isDirectory: string; path: string }[];
+  /**
+   * Lists the contents of a directory.
+   */
+  list(): (Directory | File)[];
 }
 
 /**
@@ -61,14 +69,14 @@ export declare class File {
   /**
    * Creates an instance of File.
    *
-   * @param path - A string representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+   * @param uri - A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
    */
-  constructor(path: Path);
+  constructor(uri: URI);
 
   /**
-   * Represents the file path.
+   * Represents the file URI.
    */
-  readonly path: string;
+  readonly uri: string;
 
   /**
    * Validates a directory path.
@@ -83,6 +91,12 @@ export declare class File {
   text(): string;
 
   /**
+   * Retrieves content of the file as base64.
+   * @returns The contents of the file as a base64 string.
+   */
+  base64(): string;
+
+  /**
    * Writes content to the file.
    * @param content - The content to write into the file.
    */
@@ -94,10 +108,9 @@ export declare class File {
   delete(): void;
 
   /**
-   * Checks if a file exists.
-   * @returns `true` if the file exists, `false` otherwise.
+   * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
    */
-  exists(): boolean;
+  exists: boolean;
 
   /**
    * Creates a file.
@@ -122,11 +135,11 @@ export declare class File {
    */
   static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
   /**
-   * A size of the file in bytes. Returns null if the file does not exist or it cannot be read.
+   * A size of the file in bytes. Null if the file does not exist or it cannot be read.
    */
   size: number | null;
   /**
-   * An md5 hash of the file. Returns null if the file does not exist or it cannot be read.
+   * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
   md5: string | null;
 }

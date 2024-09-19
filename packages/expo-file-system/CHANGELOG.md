@@ -8,6 +8,10 @@
 
 ### 🎉 New features
 
+- Change `exists()` function to a property. ([#31522](https://github.com/expo/expo/pull/31522) by [@aleqsio](https://github.com/aleqsio))
+- Add path utilities and `parentDirectory`, `extension` fields to the new file system module. ([#31333](https://github.com/expo/expo/pull/31333) by [@aleqsio](https://github.com/aleqsio))
+- Add listing directory contents to the new file system module. ([#31121](https://github.com/expo/expo/pull/31121) by [@aleqsio](https://github.com/aleqsio))
+- Add `base64()` new file system module. ([#31357](https://github.com/expo/expo/pull/31357) by [@aleqsio](https://github.com/aleqsio))
 - Add size and md5 properties to the new file system module. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
 - Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
@@ -21,6 +25,7 @@
 
 ### 💡 Others
 
+- [iOS] Validate folder/file type when operating on File/Folder instances in the new FS module. ([#31316](https://github.com/expo/expo/pull/31316) by [@aleqsio](https://github.com/aleqsio))
 - Use the `src` folder as the Metro target. ([#31234](https://github.com/expo/expo/pull/31234) by [@aleqsio](https://github.com/aleqsio))
 - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 

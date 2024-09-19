@@ -53,6 +53,7 @@ class SuspendFunctionComponent(
     jsObject.registerAsyncFunction(
       name,
       takesOwner,
+      isEnumerable,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, promiseImpl ->
       if (BuildConfig.DEBUG) {

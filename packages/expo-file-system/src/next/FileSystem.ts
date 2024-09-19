@@ -1,10 +1,23 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { Path } from './FileSystem.types';
+import { URI } from './FileSystem.types';
+import { dirname, extname, join } from './pathUtilities/path';
 
 export class File extends ExpoFileSystem.FileSystemFile {
-  constructor(path: Path) {
-    super(path);
+  constructor(uri: URI) {
+    super(uri);
     this.validatePath();
+  }
+  /*
+   * Directory containing the file.
+   */
+  get parentDirectory() {
+    return new Directory(dirname(this.uri));
+  }
+  /*
+   * File extension (with the dot).
+   */
+  get extension() {
+    return extname(this.uri);
   }
 }
 
@@ -15,13 +28,21 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
 };
 
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(path: Path) {
-    super(path);
+  constructor(uri: URI) {
+    super(uri);
     this.validatePath();
   }
-}
+  /*
+   * Directory containing the file.
+   */
+  get parentDirectory() {
+    return new Directory(join(this.uri, '..'));
+  }
 
-// consider module functions as API alternative
-export async function write(file: File, contents: string) {
-  return file.write(contents);
+  list() {
+    // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
+    return super
+      .listAsRecords()
+      .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
+  }
 }
