@@ -24,11 +24,11 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@typescript-eslint/types": "^7.2.0",
-    "@typescript-eslint/utils": "^7.2.0"
+    "@typescript-eslint/types": "^8.6.0",
+    "@typescript-eslint/utils": "^8.6.0"
   },
   "devDependencies": {
-    "@types/eslint": "^8.56.5",
+    "@types/eslint": "^8.56.12",
     "@types/jest": "^29.5.12",
     "@typescript-eslint/rule-tester": "^7.2.0",
     "eslint-config-universe": "^13.0.0",
@@ -40,7 +40,7 @@
     "node": ">=18.0.0"
   },
   "peerDependencies": {
-    "eslint": ">=8"
+    "eslint": ">=8 <9"
   },
   "license": "MIT"
 }

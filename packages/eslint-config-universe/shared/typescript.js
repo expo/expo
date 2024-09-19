@@ -24,38 +24,8 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/array-type': ['warn', { default: 'array' }],
-        '@typescript-eslint/ban-types': [
-          'error',
-          {
-            types: {
-              Number: {
-                message: 'Use `number` instead.',
-                fixWith: 'number',
-              },
-              Boolean: {
-                message: 'Use `boolean` instead.',
-                fixWith: 'boolean',
-              },
-              Symbol: {
-                message: 'Use `symbol` instead.',
-                fixWith: 'symbol',
-              },
-              Object: {
-                message: 'Use `object` instead.',
-                fixWith: 'object',
-              },
-              String: {
-                message: 'Use `string` instead.',
-                fixWith: 'string',
-              },
-              '{}': {
-                message: 'Use `object` instead.',
-                fixWith: 'object',
-              },
-            },
-            extendDefaults: false,
-          },
-        ],
+        '@typescript-eslint/no-empty-object-type': 'warn',
+        '@typescript-eslint/no-wrapper-object-types': 'warn',
         '@typescript-eslint/consistent-type-assertions': [
           'warn',
           { assertionStyle: 'as', objectLiteralTypeAssertions: 'allow' },
