@@ -222,6 +222,7 @@ export async function transform(
   const cssResults = transform({
     filename,
     code: Buffer.from(code),
+    errorRecovery: true,
     sourceMap: false,
     cssModules: false,
     projectRoot,
@@ -233,9 +234,8 @@ export async function transform(
 
   printCssWarnings(filename, code, cssResults.warnings);
 
-  const cssCode = cssResults.code.toString();
-
-  const cssImports = collectCssImports(filename, cssResults);
+  const cssImports = collectCssImports(filename, code, cssResults.code.toString(), cssResults);
+  const cssCode = cssImports.code;
 
   // Append additional css metadata for static extraction.
   const cssOutput: Required<ExpoJsOutput['data']['css']> = {

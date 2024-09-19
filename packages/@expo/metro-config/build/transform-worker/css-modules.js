@@ -20,6 +20,8 @@ async function transformCssModuleWeb(props) {
             // variables created in global files are available.
             dashedIdents: false,
         },
+        errorRecovery: true,
+        analyzeDependencies: true,
         // cssModules: true,
         projectRoot: props.options.projectRoot,
         minify: props.options.minify,
@@ -36,10 +38,10 @@ async function transformCssModuleWeb(props) {
         });
         outputModule += '\n' + runtimeCss;
     }
-    const cssImports = collectCssImports(props.filename, cssResults);
+    const cssImports = collectCssImports(props.filename, props.src, cssResults.code.toString(), cssResults);
     return {
         output: outputModule,
-        css: cssResults.code,
+        css: cssImports.code,
         map: cssResults.map,
         ...cssImports,
     };
@@ -81,14 +83,17 @@ function printCssWarnings(filename, code, warnings) {
     }
 }
 exports.printCssWarnings = printCssWarnings;
-function collectCssImports(filename, cssResults) {
+function isExternalUrl(url) {
+    return url.match(/^\w+:\/\//);
+}
+function collectCssImports(filename, originalCode, code, cssResults) {
     const externalImports = [];
     const cssModuleDeps = [];
     if (cssResults.dependencies) {
         for (const dep of cssResults.dependencies) {
-            if (dep.type === 'import' && !cssResults.exports) {
+            if (dep.type === 'import') {
                 // If the URL starts with `http://` or other protocols, we'll treat it like an external import.
-                if (dep.url.match(/^\w+:\/\//)) {
+                if (isExternalUrl(dep.url)) {
                     externalImports.push({
                         url: dep.url,
                         supports: dep.supports,
@@ -131,11 +136,18 @@ function collectCssImports(filename, cssResults) {
                 }
             }
             else if (dep.type === 'url') {
-                throw new Error(`URL dependencies are not supported in CSS files yet (url: ${dep.url})`);
+                if (isExternalUrl(dep.url)) {
+                    // Put the external URL back.
+                    code = code.replaceAll(dep.placeholder, dep.url);
+                }
+                else {
+                    // Assert that syntax like `background: url('./img.png');` is not supported yet.
+                    throw new Error(`Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${(0, code_frame_1.default)(originalCode, dep.loc.start.line, dep.loc.start.column)}`);
+                }
             }
         }
     }
-    return { externalImports, dependencies: cssModuleDeps };
+    return { externalImports, code, dependencies: cssModuleDeps };
 }
 exports.collectCssImports = collectCssImports;
 //# sourceMappingURL=css-modules.js.map

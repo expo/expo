@@ -16,6 +16,7 @@ export declare function transformCssModuleWeb(props: {
         supports: string | null;
         media: string | null;
     }[];
+    code: string;
     dependencies: Readonly<{
         data: Readonly<{
             key: string;
@@ -40,7 +41,7 @@ export declare function transformCssModuleWeb(props: {
         name: string;
     }>[];
     output: string;
-    css: Buffer;
+    css: string;
     map: void | Buffer;
 }>;
 export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
@@ -50,12 +51,13 @@ export declare function convertLightningCssToReactNativeWebStyleSheet(input: imp
 };
 export declare function matchCssModule(filePath: string): boolean;
 export declare function printCssWarnings(filename: string, code: string, warnings?: Warning[]): void;
-export declare function collectCssImports(filename: string, cssResults: Pick<TransformResult, 'dependencies' | 'exports'>): {
+export declare function collectCssImports(filename: string, originalCode: string, code: string, cssResults: Pick<TransformResult, 'dependencies' | 'exports'>): {
     externalImports: {
         url: string;
         supports: string | null;
         media: string | null;
     }[];
+    code: string;
     dependencies: Readonly<{
         data: Readonly<{
             key: string;

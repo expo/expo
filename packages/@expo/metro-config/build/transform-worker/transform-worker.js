@@ -183,6 +183,7 @@ async function transform(config, projectRoot, filename, data, options) {
     const cssResults = transform({
         filename,
         code: Buffer.from(code),
+        errorRecovery: true,
         sourceMap: false,
         cssModules: false,
         projectRoot,
@@ -192,8 +193,8 @@ async function transform(config, projectRoot, filename, data, options) {
         resolver: options._test_resolveCss,
     });
     (0, css_modules_1.printCssWarnings)(filename, code, cssResults.warnings);
-    const cssCode = cssResults.code.toString();
-    const cssImports = (0, css_modules_1.collectCssImports)(filename, cssResults);
+    const cssImports = (0, css_modules_1.collectCssImports)(filename, code, cssResults.code.toString(), cssResults);
+    const cssCode = cssImports.code;
     // Append additional css metadata for static extraction.
     const cssOutput = {
         code: cssCode,
