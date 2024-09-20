@@ -12,9 +12,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 <Collapsible summary="How to configure the EXPO_TOKEN environment variable on your GitHub repository">
 
-- Navigate to [https://expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens).
+- Navigate to [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and then:
 - Click **Create token** to create a new personal access token.
-- Copy the token generated.
+- Copy the generated token.
 - Navigate to https://github.com/your-username/your-repo-name/settings/secrets/actions by replacing "your-username" and "your-repo-name" with your project's info.
 - Under **Repository secrets**, click **New repository secret**.
 - Create a secret with the name **EXPO_TOKEN**, and paste the copied access token in as the value.
@@ -66,7 +66,7 @@ Running your GitHub workflows in debug mode will automatically add the `--debug`
 
 ## GitHub Action: expo-github-action
 
-An alternative GitHub action is [expo-github-action](https://github.com/expo/expo-github-action/tree/main) that can be used to publish updates on push and previews on pull requests `continuous-deploy-fingerprint` uses fingerprints to determine if a build is needed or not in order to deploy an update, while `expo-github-action` will only publish updates.
+An alternative GitHub action is [expo-github-action](https://github.com/expo/expo-github-action/tree/main) that can be used to publish updates on push and previews on pull requests. `continuous-deploy-fingerprint` uses fingerprints to determine if a build is needed or not to deploy an update, while `expo-github-action` will only publish updates.
 
 - To learn about publishing updates when code is pushed to the main branch, refer to the [README](https://github.com/expo/expo-github-action/tree/main?tab=readme-ov-file#create-new-eas-update-on-push-to-main).
 - To learn about Pull Request previews with `expo-github-action`, refer to the [GitHub PR Previews guide](/eas-update/github-actions/).
