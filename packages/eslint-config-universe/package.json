@@ -5,7 +5,7 @@
   "main": "default.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest --showConfig && jest"
   },
   "repository": {
     "type": "git",
