@@ -26,6 +26,15 @@
     "shared"
   ],
   "jest": {
+    "verbose": true,
+    "transform": {
+      "^.+\\.(ts|tsx)$": [
+        "ts-jest",
+        {
+          "tsconfig": "./fixtures/tsconfig.json"
+        }
+      ]
+    },
     "testMatch": [
       "**/__tests__/*-test.js"
     ]
