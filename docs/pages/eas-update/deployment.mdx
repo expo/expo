@@ -115,21 +115,23 @@ When creating a new production build, increment your app version every time in o
 
 Run `eas update --channel production` to publish an update to production. This will make your hotfix immediately available to users of production builds with the same runtime version.
 
-If you have already published the fix to staging and verified it there, you can use `eas update:republish` to promote the update to production.
+**If you have already published the fix to staging and verified it there**, ensure that you are republishing from the same commit. We recommend using identical environment variables and code signing configuration on staging as on production, in order to ensure that updates verified in staging work exactly the same in production.
+
+{/* If you have already published the fix to staging and verified it there, you can use `eas update:republish` to promote the update to production. */}
 
 ### Gradually rolling out updates
 
-Rollouts that leverage multiple branches can't be used with this workflow. Instead, you can roll out updates on a single branch.
-
-{/* depends on new feature */}
-To roll out the upgrade gradually, run: `......`
+Rollouts that leverage multiple branches can't be used with this workflow. We're working on a solution for this, but in the meantime, you will need to use a process similar to the [branch promotion flow](/eas-update/deployment-patterns/#branch-promotion-flow) to incrementally roll out updates.
 
 Learn more in [Rollouts](/eas-update/rollouts/).
 
 ### Rolling back to a previous update version
+
+If you've mistakenly published an update to any of your environments, you can run `eas update:rollback` initiate a rollback to a previous update.
 
 Learn more in [Rollbacks](/eas-update/rollbacks/).
 
 ## Next steps
 
 - [Learn more about the Persistent staging release process](/eas-update/deployment-patterns/#persistent-staging-flow), which is very similar to what is described here.
+- [Explore using preview updates in development builds](/eas-update/develop-faster/).
