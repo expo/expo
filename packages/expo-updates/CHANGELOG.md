@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Store strong references to long-lived objects created in procedures ([#31599](https://github.com/expo/expo/pull/31599) by [@wschurman](https://github.com/wschurman))
-
 ### 💡 Others
+
+## 0.25.25 — 2024-09-20
+
+### 🐛 Bug fixes
+
+- [ios] Store strong references to long-lived objects created in procedures ([#31599](https://github.com/expo/expo/pull/31599) by [@wschurman](https://github.com/wschurman))
 
 ## 0.25.24 — 2024-08-23
 
