@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 
 const getBaseConfig = require('./tools/getBaseConfig');
 const lintAsync = require('./tools/lintAsync');
@@ -9,6 +9,7 @@ const alteredBaseConfig = {
   ...getBaseConfig(),
   parserOptions: {
     project: 'tsconfig.test.json',
+    tsconfigRootDir: __dirname,
   },
 };
 
@@ -23,6 +24,7 @@ it(`lints`, async () => {
     },
     ['__tests__/fixtures/*typescript-analysis*'],
   );
+
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);
     delete result.filePath;
