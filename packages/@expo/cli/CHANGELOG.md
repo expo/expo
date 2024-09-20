@@ -36,6 +36,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix exporting index files for server hosting in Expo Router. ([#31543](https://github.com/expo/expo/pull/31543) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix API route bundling in development. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `config.resolver.requireCycleIgnorePatterns` in SSR bundles. ([#31462](https://github.com/expo/expo/pull/31462) by [@EvanBacon](https://github.com/EvanBacon))
 - Force DOM components to be minified in production exports. ([#31271](https://github.com/expo/expo/pull/31271) by [@EvanBacon](https://github.com/EvanBacon))
