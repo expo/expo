@@ -19,7 +19,10 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/array-type': ['warn', { default: 'array' }],
-        '@typescript-eslint/no-empty-object-type': 'warn',
+        '@typescript-eslint/no-empty-object-type': [
+          'warn',
+          { allowInterfaces: 'with-single-extends' },
+        ],
         '@typescript-eslint/no-wrapper-object-types': 'warn',
         '@typescript-eslint/consistent-type-assertions': [
           'warn',
