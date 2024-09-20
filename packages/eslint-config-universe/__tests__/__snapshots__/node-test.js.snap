@@ -92,12 +92,6 @@ function* gen() {}
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
-    },
   ],
   "warningCount": 1,
 }
@@ -175,12 +169,6 @@ function _fn(...args: any): void {}
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
-    },
   ],
   "warningCount": 2,
 }
@@ -238,12 +226,6 @@ function unused2() {
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
-    },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 3,
@@ -316,12 +298,6 @@ function tsUnused2() {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
-    },
   ],
   "warningCount": 4,
 }
@@ -344,12 +320,6 @@ exports[`lints with the Node config: fixtures/all-04.ts 1`] = `
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
-    },
   ],
   "warningCount": 0,
 }
@@ -369,12 +339,6 @@ exports[`lints with the Node config: fixtures/all-05.ts 1`] = `
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
-    },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 0,
@@ -446,12 +410,6 @@ export const objectShorthandTest: {} | null = null;
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
     },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
-    },
   ],
   "warningCount": 1,
 }
@@ -479,12 +437,6 @@ export default a + b + c + d + e;
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
-    },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 0,
@@ -528,12 +480,6 @@ exports[`lints with the Node config: fixtures/node-00.js 1`] = `
     {
       "replacedBy": [],
       "ruleId": "no-buffer-constructor",
-    },
-    {
-      "replacedBy": [
-        "no-object-constructor",
-      ],
-      "ruleId": "no-new-object",
     },
   ],
   "warningCount": 2,

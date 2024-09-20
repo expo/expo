@@ -5,7 +5,7 @@
   "main": "default.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest --showConfig && jest"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,6 @@
     "shared"
   ],
   "jest": {
-    "verbose": true,
     "testMatch": [
       "**/__tests__/*-test.js"
     ]
