@@ -27,9 +27,12 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Supports different slash combinations', async () => {
       expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
-      // FirstDirectory is a host when url parsing.
-      expect(new File('file://firstDirectory/to/file').uri).toBe('file:///to/file');
-      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+      // This URL is confusing, as path is actually a hostname.
+      // We throw a descriptive error in this case.
+      expect(() => new File('file://path/to/file').uri).toThrow();
+
+      expect(new File('file://localhost/path/to/file').uri).toBe('file:///path/to/file');
+      expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
     });
 
     it('Accepts and correctly handles uris to files', () => {
@@ -353,6 +356,31 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('joins paths', () => {
         expect(Paths.join('file:///path', 'to', '..', 'file')).toBe('file:///path/file');
+        expect(Paths.join(new Directory('file:///path'), 'to', '..', 'file')).toBe(
+          'file:///path/file'
+        );
+      });
+
+      it('joins paths in the File and Directory constructors', () => {
+        expect(new File('file:///path', 'to', '..', 'file').uri).toBe('file:///path/file');
+        expect(new Directory('file:///path', 'to', '..', 'directory').uri).toBe(
+          'file:///path/directory/'
+        );
+      });
+    });
+
+    describe('Exposes common app directories', () => {
+      it('exposes cache directory', () => {
+        expect(Paths.cache instanceof Directory).toBe(true);
+        expect(Paths.cache.uri).toBe(FS.cacheDirectory);
+      });
+      it('exposes document directory', () => {
+        expect(Paths.document instanceof Directory).toBe(true);
+        expect(Paths.document.uri).toBe(FS.documentDirectory);
+      });
+      it('can be easily used with joining paths', () => {
+        const file = new File(Paths.document, 'file.txt');
+        expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
       });
     });
   });

@@ -6,6 +6,14 @@ public final class FileSystemNextModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
+    Constants {
+      return [
+        "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
+        "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
+        "bundleDirectory": Bundle.main.bundlePath
+      ]
+    }
+
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
       let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
