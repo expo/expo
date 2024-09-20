@@ -19,7 +19,7 @@ it(`lints`, async () => {
       ignore: false,
       useEslintrc: false,
     },
-    ['fixtures/*typescript-analysis*'],
+    ['fixtures/typescript-analysis-*'],
   );
 
   for (const result of results) {

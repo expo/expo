@@ -25,11 +25,6 @@
     "web.js",
     "shared"
   ],
-  "jest": {
-    "testMatch": [
-      "**/__tests__/*-test.js"
-    ]
-  },
   "eslintIgnore": [
     "/__tests__/fixtures/*"
   ],
