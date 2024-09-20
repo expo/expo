@@ -10,12 +10,15 @@ module.exports = async function lintAsync(eslintOptions, sourceFiles) {
       JSON.stringify(eslintOptions),
       ...sourceFiles,
     ],
-    { cwd: path.resolve(__dirname, '../..') },
+    { cwd: path.resolve(__dirname, '..') },
   );
+
   const childProcess = lintProcess.child;
+
   childProcess.stderr.on('data', (data) => {
     console.error(`[eslint]: ${data}`);
   });
+
   const result = await lintProcess;
   return JSON.parse(result.stdout);
 };
