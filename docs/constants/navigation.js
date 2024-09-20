@@ -352,14 +352,14 @@ const general = [
       makePage('eas-update/continuous-deployment.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
-    makeGroup('Troubleshooting', [
-      makePage('eas-update/debug.mdx'),
-      makePage('eas-update/error-recovery.mdx'),
-    ]),
     makeGroup('Concepts', [
       makePage('eas-update/how-it-works.mdx'),
       makePage('eas-update/eas-cli.mdx'),
       makePage('eas-update/runtime-versions.mdx'),
+    ]),
+    makeGroup('Troubleshooting', [
+      makePage('eas-update/debug.mdx'),
+      makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas-update/codepush.mdx'),
