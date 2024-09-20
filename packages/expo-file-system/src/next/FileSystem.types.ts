@@ -47,7 +47,7 @@ export declare class Directory {
    */
   copy(destination: Directory | File);
   /**
-   * Moves a directory.
+   * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File);
   /**
@@ -123,7 +123,7 @@ export declare class File {
   copy(destination: Directory | File);
 
   /**
-   * Moves a directory.
+   * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File);
 
