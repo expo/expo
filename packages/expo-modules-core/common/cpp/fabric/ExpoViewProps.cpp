@@ -20,7 +20,7 @@ std::unordered_map<std::string, folly::dynamic> propsMapFromProps(const ExpoView
   const auto& dynamicRawProps = static_cast<folly::dynamic>(rawProps);
   for (const auto& propsPair : dynamicRawProps.items()) {
     std::string propName = propsPair.first.getString();
-    propsMap[propName] = (folly::dynamic)propsPair.second;
+    propsMap[propName] = static_cast<folly::dynamic>(propsPair.second);
   }
 
   return propsMap;
