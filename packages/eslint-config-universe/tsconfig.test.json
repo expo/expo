@@ -1,3 +1,3 @@
 {
-  "extends": "expo-module-scripts/tsconfig.base",
+  "extends": "expo-module-scripts/tsconfig.base"
 }
