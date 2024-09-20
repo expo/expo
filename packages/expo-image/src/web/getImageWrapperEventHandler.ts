@@ -11,7 +11,7 @@ export function getImageWrapperEventHandler(
       events?.onLoad?.forEach((e) => e?.(event));
 
       if (typeof window !== 'undefined') {
-        // On Web there is no way to detect when the image gets displayed, but we can assume it happens on the rapaint right after the image is successfully loaded.
+        // On Web there is no way to detect when the image gets displayed, but we can assume it happens on the repaint right after the image is successfully loaded.
         window.requestAnimationFrame(() => {
           events?.onDisplay?.forEach((e) => e?.());
         });
