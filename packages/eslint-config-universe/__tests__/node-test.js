@@ -27,7 +27,7 @@ it(`lints with the Node config`, async () => {
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*all*', '__tests__/fixtures/*node*'],
+    ['fixtures/*all*', 'fixtures/*node*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);

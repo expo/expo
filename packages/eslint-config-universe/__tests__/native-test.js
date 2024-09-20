@@ -27,7 +27,7 @@ it(`lints with the React Native config`, async () => {
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*all*', '__tests__/fixtures/*native*'],
+    ['fixtures/*all*', 'fixtures/*native*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);
