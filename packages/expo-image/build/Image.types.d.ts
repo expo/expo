@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -453,6 +453,13 @@ export declare class ImageRef extends SharedRef {
      * Whether the referenced image is an animated image.
      */
     readonly isAnimated?: boolean;
+}
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+    Image: typeof ImageRef;
+    loadAsync(source: ImageSource): Promise<ImageRef>;
 }
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

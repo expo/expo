@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 import resolveAssetSource from './resolveAssetSource';
 import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
 import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
@@ -45,7 +47,7 @@ export function resolveSources(sources?: ImageProps['source']): ImageNativeProps
   if (Array.isArray(sources)) {
     return sources.map(resolveSource).filter(Boolean) as ImageSource[];
   }
-  if (isImageRef(sources)) {
+  if (isImageRef(sources) && Platform.OS !== 'web') {
     // @ts-expect-error
     return sources.__expo_shared_object_id__;
   }
