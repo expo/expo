@@ -58,6 +58,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["RUNTIME_VERSION"] = "expo.modules.updates.EXPO_RUNTIME_VERSION";
   Config["UPDATE_URL"] = "expo.modules.updates.EXPO_UPDATE_URL";
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY";
+  Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "expo.modules.updates.HAS_EMBEDDED_UPDATE";
   Config["CODE_SIGNING_CERTIFICATE"] = "expo.modules.updates.CODE_SIGNING_CERTIFICATE";
   Config["CODE_SIGNING_METADATA"] = "expo.modules.updates.CODE_SIGNING_METADATA";
   return Config;
@@ -118,6 +119,10 @@ async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoU
     (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, requestHeaders);
   } else {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY);
+  }
+  const hasEmbeddedUpdate = (0, _Updates().getUpdatesUseEmbeddedUpdate)(config);
+  if (hasEmbeddedUpdate) {
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.UPDATES_HAS_EMBEDDED_UPDATE, String(hasEmbeddedUpdate));
   }
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }

@@ -28,6 +28,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["RUNTIME_VERSION"] = "EXUpdatesRuntimeVersion";
   Config["UPDATE_URL"] = "EXUpdatesURL";
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "EXUpdatesRequestHeaders";
+  Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "EXUpdatesHasEmbeddedUpdate";
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
   return Config;
@@ -47,7 +48,12 @@ async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdates
     ...expoPlist,
     [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
     [Config.CHECK_ON_LAUNCH]: (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion),
-    [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config)
+    [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config),
+    // The native config name is "has embedded update", but we want to expose
+    // this to the user as "use embedded update", since this is more accurate.
+    // The field does not disable actually building and embedding the update,
+    // only whether it is actually used.
+    [Config.UPDATES_HAS_EMBEDDED_UPDATE]: (0, _Updates().getUpdatesUseEmbeddedUpdate)(config)
   };
   const updateUrl = (0, _Updates().getUpdateUrl)(config);
   if (updateUrl) {

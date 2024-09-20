@@ -22,6 +22,7 @@ import {
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
+  getUpdatesUseEmbeddedUpdate,
 } from '../utils/Updates';
 
 export enum Config {
@@ -31,6 +32,7 @@ export enum Config {
   RUNTIME_VERSION = 'expo.modules.updates.EXPO_RUNTIME_VERSION',
   UPDATE_URL = 'expo.modules.updates.EXPO_UPDATE_URL',
   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = 'expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY',
+  UPDATES_HAS_EMBEDDED_UPDATE = 'expo.modules.updates.HAS_EMBEDDED_UPDATE',
   CODE_SIGNING_CERTIFICATE = 'expo.modules.updates.CODE_SIGNING_CERTIFICATE',
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
 }
@@ -148,6 +150,15 @@ export async function setUpdatesConfigAsync(
     removeMetaDataItemFromMainApplication(
       mainApplication,
       Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
+    );
+  }
+
+  const useEmbeddedUpdate = getUpdatesUseEmbeddedUpdate(config);
+  if (useEmbeddedUpdate === false) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.UPDATES_HAS_EMBEDDED_UPDATE,
+      String(useEmbeddedUpdate)
     );
   }
 

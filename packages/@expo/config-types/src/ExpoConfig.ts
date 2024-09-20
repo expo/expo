@@ -177,6 +177,10 @@ export interface ExpoConfig {
      */
     checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
     /**
+     * Whether to use embedded updates. Defaults to true. If set to false, an update will be fetched at launch. Ensure that `updates.checkAutomatically` is enabled if you disable embedded updates, and increase the `updates.fallbackToCacheTimeout`. You should not use this field in a production deployment.
+     */
+    useEmbeddedUpdate?: boolean;
+    /**
      * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
      */
     fallbackToCacheTimeout?: number;

@@ -11,6 +11,7 @@ import {
   getUpdatesRequestHeaders,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
 } from '../utils/Updates';
 
@@ -21,6 +22,7 @@ export enum Config {
   RUNTIME_VERSION = 'EXUpdatesRuntimeVersion',
   UPDATE_URL = 'EXUpdatesURL',
   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = 'EXUpdatesRequestHeaders',
+  UPDATES_HAS_EMBEDDED_UPDATE = 'EXUpdatesHasEmbeddedUpdate',
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
 }
@@ -53,6 +55,11 @@ export async function setUpdatesConfigAsync(
     [Config.ENABLED]: getUpdatesEnabled(config),
     [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
+    // The native config name is "has embedded update", but we want to expose
+    // this to the user as "use embedded update", since this is more accurate.
+    // The field does not disable actually building and embedding the update,
+    // only whether it is actually used.
+    [Config.UPDATES_HAS_EMBEDDED_UPDATE]: getUpdatesUseEmbeddedUpdate(config),
   };
 
   const updateUrl = getUpdateUrl(config);
