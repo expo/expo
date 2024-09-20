@@ -1,12 +1,10 @@
 const path = require('node:path');
 
-const getBaseConfig = require('./tools/getBaseConfig');
 const lintAsync = require('./tools/lintAsync');
 
-const configFile = path.resolve(__dirname, '../shared/typescript-analysis.js');
+const overrideConfigFile = path.resolve(__dirname, '../shared/typescript-analysis.js');
 
-const alteredBaseConfig = {
-  ...getBaseConfig(),
+const baseConfig = {
   parserOptions: {
     project: 'tsconfig.json',
   },
@@ -15,11 +13,11 @@ const alteredBaseConfig = {
 it(`lints`, async () => {
   const results = await lintAsync(
     {
-      baseConfig: alteredBaseConfig,
-      overrideConfigFile: configFile,
+      baseConfig,
+      overrideConfigFile,
       fix: true,
       ignore: false,
-      useEslintrc: false,
+      useEslintrc: true,
     },
     ['fixtures/*typescript-analysis*'],
   );
