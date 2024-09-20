@@ -3,11 +3,10 @@ import { RuleTester } from '@typescript-eslint/rule-tester';
 import { noEnvVarDestructuring } from '../rules/noEnvVarDestructuring';
 
 const ruleTester = new RuleTester({
-  languageOptions: {
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
-      },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
     },
   },
 });

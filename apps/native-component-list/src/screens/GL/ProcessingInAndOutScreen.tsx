@@ -1,6 +1,8 @@
 import ProcessingWrap from './ProcessingWrap';
 
-export default ProcessingWrap<object>(`'In and out' from openprocessing.org`, (p) => {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default ProcessingWrap<{}>(`'In and out' from openprocessing.org`, (p) => {
   p.setup = () => {
     p.strokeWeight(7);
   };

@@ -1,6 +1,5 @@
 # eslint-config-universe
-
-Shared ESLint configs for internal Expo projects.
+Shared ESLint configs for Node, Web, and universal Expo projects.
 
 ## Installation
 

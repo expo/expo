@@ -363,58 +363,13 @@ exports[`lints with the web config: fixtures/all-06.ts 1`] = `
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": [
-    {
-      "column": 35,
-      "endColumn": 37,
-      "endLine": 6,
-      "line": 6,
-      "message": "The \`{}\` ("empty object") type allows any non-nullish value, including literals like \`0\` and \`""\`.
-- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
-- If you want a type meaning "any object", you probably want \`object\` instead.
-- If you want a type meaning "any value", you probably want \`unknown\` instead.",
-      "messageId": "noEmptyObject",
-      "nodeType": "TSTypeLiteral",
-      "ruleId": "@typescript-eslint/no-empty-object-type",
-      "severity": 1,
-      "suggestions": [
-        {
-          "data": {
-            "replacement": "object",
-          },
-          "desc": "Replace \`{}\` with \`object\`.",
-          "fix": {
-            "range": [
-              271,
-              273,
-            ],
-            "text": "object",
-          },
-          "messageId": "replaceEmptyObjectType",
-        },
-        {
-          "data": {
-            "replacement": "unknown",
-          },
-          "desc": "Replace \`{}\` with \`unknown\`.",
-          "fix": {
-            "range": [
-              271,
-              273,
-            ],
-            "text": "unknown",
-          },
-          "messageId": "replaceEmptyObjectType",
-        },
-      ],
-    },
-  ],
+  "messages": [],
   "output": "export const numberTest: number | null = null;
 export const booleanTest: boolean | null = null;
 export const symbolTest: symbol | null = null;
 export const objectTest: object | null = null;
 export const stringTest: string | null = null;
-export const objectShorthandTest: {} | null = null;
+export const objectShorthandTest: object | null = null;
 ",
   "suppressedMessages": [],
   "usedDeprecatedRules": [
@@ -425,7 +380,7 @@ export const objectShorthandTest: {} | null = null;
       "ruleId": "no-new-object",
     },
   ],
-  "warningCount": 1,
+  "warningCount": 0,
 }
 `;
 

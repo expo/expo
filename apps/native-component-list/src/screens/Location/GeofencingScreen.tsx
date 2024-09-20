@@ -11,25 +11,26 @@ import Button from '../../components/Button';
 
 const GEOFENCING_TASK = 'geofencing';
 
-type GeofencingRegion = {
+interface GeofencingRegion {
   identifier: string;
   latitude: number;
   longitude: number;
   radius: number;
-};
+}
 
-export type MapEvent<T = object> = NativeSyntheticEvent<
-  T & {
-    coordinate: {
-      latitude: number;
-      longitude: number;
-    };
-    position: {
-      x: number;
-      y: number;
-    };
-  }
->;
+export interface MapEvent<T = object>
+  extends NativeSyntheticEvent<
+    T & {
+      coordinate: {
+        latitude: number;
+        longitude: number;
+      };
+      position: {
+        x: number;
+        y: number;
+      };
+    }
+  > {}
 
 type Region = {
   latitude: number;
