@@ -7,6 +7,7 @@ const configFile = path.resolve(__dirname, '../shared/typescript-analysis.js');
 
 const alteredBaseConfig = {
   ...getBaseConfig(),
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.test.json',
     tsconfigRootDir: __dirname,
