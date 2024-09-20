@@ -1,11 +1,9 @@
-@import "./beta.css";
+@import './beta.css';
 
 .global {
-    color: dodgerblue;
+  color: dodgerblue;
 }
 
 .collide {
-    color: blue;
+  color: blue;
 }
-
-/* . */

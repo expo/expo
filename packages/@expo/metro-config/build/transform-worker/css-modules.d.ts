@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import type { TransformResult, Warning } from 'lightningcss';
 export declare function transformCssModuleWeb(props: {
     filename: string;
@@ -42,7 +41,7 @@ export declare function transformCssModuleWeb(props: {
     }>[];
     output: string;
     css: string;
-    map: void | Buffer;
+    map: void | Uint8Array;
 }>;
 export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
     styles: Record<string, string>;
