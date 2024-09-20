@@ -105,6 +105,7 @@ android {
       "**/libhermes.so",
       "**/libjscexecutor.so",
       "**/libjsi.so",
+      "**/libreactnative.so",
       "**/libreactnativejni.so",
       "**/libreact_debug.so",
       "**/libreact_nativemodule_core.so",
