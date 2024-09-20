@@ -180,6 +180,7 @@ export async function exportEmbedBundleAndAssetsAsync(
 
       // Store the server output in the project's .expo directory.
       const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
+      await removeAsync(serverOutput);
       await persistMetroFilesAsync(files, serverOutput);
 
       [...files.entries()].forEach(([key, value]) => {
