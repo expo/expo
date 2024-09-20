@@ -10,7 +10,7 @@ function ensurePictureOptions(options) {
     if (!options || typeof options !== 'object') {
         return {};
     }
-    if (!options.quality) {
+    if (options.quality === undefined) {
         options.quality = 1;
     }
     if (options.mirror) {
