@@ -15,7 +15,6 @@ it(`lints`, async () => {
     {
       baseConfig,
       overrideConfigFile,
-      fix: true,
       ignore: false,
       useEslintrc: false,
     },

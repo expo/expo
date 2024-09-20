@@ -5,9 +5,46 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
-  "messages": [],
-  "output": "type T = {
+  "fixableWarningCount": 2,
+  "messages": [
+    {
+      "column": 10,
+      "endColumn": 46,
+      "endLine": 20,
+      "fix": {
+        "range": [
+          227,
+          263,
+        ],
+        "text": "foo?.a?.b?.c",
+      },
+      "line": 20,
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "messageId": "preferOptionalChain",
+      "nodeType": null,
+      "ruleId": "@typescript-eslint/prefer-optional-chain",
+      "severity": 1,
+    },
+    {
+      "column": 3,
+      "endColumn": 33,
+      "endLine": 24,
+      "fix": {
+        "range": [
+          312,
+          342,
+        ],
+        "text": "foo?.a?.b.method",
+      },
+      "line": 24,
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "messageId": "preferOptionalChain",
+      "nodeType": null,
+      "ruleId": "@typescript-eslint/prefer-optional-chain",
+      "severity": 1,
+    },
+  ],
+  "source": "type T = {
   a?: {
     b?: {
       c: string;
@@ -26,11 +63,11 @@ type T2 = {
 };
 
 export function myFunc(foo: T | null) {
-  return foo?.a?.b?.c;
+  return foo && foo.a && foo.a.b && foo.a.b.c;
 }
 
 export function myFunc2(foo: T2 | null) {
-  foo?.a?.b.method && foo.a.b.method();
+  foo && foo.a && foo.a.b.method && foo.a.b.method();
 }
 ",
   "suppressedMessages": [],
@@ -42,7 +79,7 @@ export function myFunc2(foo: T2 | null) {
       "ruleId": "@typescript-eslint/prefer-ts-expect-error",
     },
   ],
-  "warningCount": 0,
+  "warningCount": 2,
 }
 `;
 
@@ -173,11 +210,29 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
 
 exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
 {
-  "errorCount": 1,
+  "errorCount": 2,
   "fatalErrorCount": 0,
-  "fixableErrorCount": 0,
+  "fixableErrorCount": 1,
   "fixableWarningCount": 0,
   "messages": [
+    {
+      "column": 10,
+      "endColumn": 33,
+      "endLine": 2,
+      "fix": {
+        "range": [
+          33,
+          33,
+        ],
+        "text": "await ",
+      },
+      "line": 2,
+      "message": "Returning an awaited promise is required in this context.",
+      "messageId": "requiredPromiseAwait",
+      "nodeType": "CallExpression",
+      "ruleId": "@typescript-eslint/return-await",
+      "severity": 2,
+    },
     {
       "column": 3,
       "endColumn": 22,
@@ -193,8 +248,8 @@ exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
           "desc": "Remove unnecessary \`await\`.",
           "fix": {
             "range": [
-              156,
-              161,
+              150,
+              155,
             ],
             "text": "",
           },
@@ -239,8 +294,8 @@ exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
           "desc": "Add void operator to ignore.",
           "fix": {
             "range": [
-              404,
-              404,
+              398,
+              398,
             ],
             "text": "void ",
           },
@@ -250,8 +305,8 @@ exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
           "desc": "Add await operator.",
           "fix": {
             "range": [
-              404,
-              404,
+              398,
+              398,
             ],
             "text": "await ",
           },
@@ -260,8 +315,8 @@ exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
       ],
     },
   ],
-  "output": "async function test() {
-  return await Promise.resolve('blah');
+  "source": "async function test() {
+  return Promise.resolve('blah');
 }
 
 export async function wat() {

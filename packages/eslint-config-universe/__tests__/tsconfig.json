@@ -1,25 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "lib": ["dom", "DOM.Iterable", "esnext"],
-    "jsx": "react-native",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "types": ["jest", "jest-require"],
-    "typeRoots": [
-      "./ts-declarations",
-      "./node_modules/@types",
-      "../../node_modules/@types",
-    ],
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "inlineSources": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "skipLibCheck": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true
-  }
+  "extends": "expo-module-scripts/tsconfig.base"
 }

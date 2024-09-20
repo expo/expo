@@ -23,7 +23,6 @@ it(`lints with the web config`, async () => {
     {
       baseConfig: getBaseConfig(),
       overrideConfigFile: configFile,
-      fix: true,
       ignore: false,
       useEslintrc: false,
     },
