@@ -109,9 +109,13 @@ export function removeNotificationSubscription(subscription: EventSubscription) 
   subscription.remove();
 }
 
-// @docsMissing
 /**
- * @header listen
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * @return A promise that resolves to one of these values:
+ * - `null` - if no notification response has been received yet,
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
   if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
@@ -120,4 +124,18 @@ export async function getLastNotificationResponseAsync(): Promise<NotificationRe
   const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
   const mappedResponse = response ? mapNotificationResponse(response) : response;
   return mappedResponse;
+}
+
+/**
+ * Clears the notification response that was received most recently. May be used in cases
+ * where the app selects a route based on the notification response, and it is undesirable
+ * to continue to select the route after the response has already been handled.
+ *
+ * @return A promise that resolves if the native call was succesful.
+ */
+export async function clearLastNotificationResponseAsync(): Promise<void> {
+  if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
+    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+  }
+  return await NotificationsEmitterModule.clearLastNotificationResponseAsync();
 }
