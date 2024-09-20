@@ -26,12 +26,6 @@
     "shared"
   ],
   "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "/__tests__/tsconfig.json",
-        "strict": true
-      }
-    },
     "testMatch": [
       "**/__tests__/*-test.js"
     ]
