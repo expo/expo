@@ -8,8 +8,7 @@ const configFile = path.resolve(__dirname, '../shared/typescript-analysis.js');
 const alteredBaseConfig = {
   ...getBaseConfig(),
   parserOptions: {
-    project: 'fixtures/tsconfig.test.json',
-    tsconfigRootDir: __dirname,
+    project: 'tsconfig.json',
   },
 };
 
