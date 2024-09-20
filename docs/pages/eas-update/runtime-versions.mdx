@@ -121,24 +121,6 @@ We provide the `"fingerprint"` runtime version policy for Expo projects that aut
 
 This policy works for both projects with and without custom native code. It works by using the `@expo/fingerprint` package to calculate the hash of your project during builds and updates to determine build-update compatibility (also known as the runtime).
 
-### `"fingerprintExperimental"` runtime version policy
-
-> **warning** `fingerprintExperimental`is deprecated and is removed from SDK 51 onwards.
-
-We provide the `"fingerprintExperimental"` runtime version policy for a project that has custom native code that may change between builds:
-
-```json
-{
-  "expo": {
-    "runtimeVersion": {
-      "policy": "fingerprintExperimental"
-    }
-  }
-}
-```
-
-This policy is well-suited for projects incorporating custom native code that require safe updates without native conflicts. Unlike the `"nativeVersion"` policy, the `"fingerprintExperimental"` option automatically scans your project's native dependencies to update the `"runtimeVersion"` accordingly.
-
 Enabling fingerprinting may lengthen build times, as the fingerprinting process can be resource-intensive.
 
 ### `"sdkVersion"` runtime version policy (deprecated)
