@@ -6,7 +6,7 @@ import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
 
-export function createMetroDevMiddleware(metroConfig: MetroConfig) {
+export function createMetroDevMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
   const messages = createMessagesSocket({ logger: Log });
   const events = createEventsSocket(messages);
 
@@ -54,15 +54,16 @@ const metroOpenStackFrameMiddleware: connect.NextHandleFunction = (req, res, nex
   // Only handle requests with a raw body
   if (!('rawBody' in req) || !req.rawBody) {
     res.statusCode = 406;
-    res.write('Open stack frame requires the JSON stack frame as request body');
-    return res.end();
+    return res.end('Open stack frame requires the JSON stack frame as request body');
   }
 
   const frame = JSON.parse(req.rawBody as string);
   openInEditorAsync(frame.file, frame.lineNumber).finally(() => res.end('OK'));
 };
 
-function createMetroStatusMiddleware(metroConfig: MetroConfig): connect.NextHandleFunction {
+function createMetroStatusMiddleware(
+  metroConfig: Pick<MetroConfig, 'projectRoot'>
+): connect.NextHandleFunction {
   return (_req, res) => {
     res.setHeader('X-React-Native-Project-Root', metroConfig.projectRoot!);
     res.end('packager-status:running');
