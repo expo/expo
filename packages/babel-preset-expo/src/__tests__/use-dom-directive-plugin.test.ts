@@ -4,7 +4,7 @@
 
 import * as babel from '@babel/core';
 
-import preset from '..';
+import preset, { type BabelPresetExpoOptions } from '..';
 
 const ENABLED_CALLER = {
   name: 'metro',
@@ -17,19 +17,27 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
   return props as unknown as babel.TransformCaller;
 }
 
-const DEF_OPTIONS = {
-  // Ensure this is absolute to prevent the filename from being converted to absolute and breaking CI tests.
-  filename: '/unknown',
+function createBabelOptions({
+  filename,
+  presetOptions,
+}: {
+  filename?: string;
+  presetOptions?: BabelPresetExpoOptions;
+}): babel.TransformOptions {
+  return {
+    // Ensure this is absolute to prevent the filename from being converted to absolute and breaking CI tests.
+    filename: filename || '/unknown',
 
-  babelrc: false,
-  presets: [[preset, { disableImportExportTransform: true }]],
-  sourceMaps: true,
-  configFile: false,
-  compact: false,
-  comments: true,
-  retainLines: false,
-  caller: getCaller({ ...ENABLED_CALLER, platform: 'ios' }),
-};
+    babelrc: false,
+    presets: [[preset, { disableImportExportTransform: true, ...presetOptions }]],
+    sourceMaps: true,
+    configFile: false,
+    compact: false,
+    comments: true,
+    retainLines: false,
+    caller: getCaller({ ...ENABLED_CALLER, platform: 'ios' }),
+  };
+}
 
 const originalEnv = process.env;
 
@@ -41,9 +49,21 @@ afterAll(() => {
   process.env = { ...originalEnv };
 });
 
-function transformClient(sourceCode: string, platform: string = 'ios', isDev: boolean = false) {
+function transformClient({
+  sourceCode,
+  platform = 'ios',
+  isDev = false,
+  filename,
+  presetOptions,
+}: {
+  sourceCode: string;
+  platform?: string;
+  isDev?: boolean;
+  filename?: string;
+  presetOptions?: BabelPresetExpoOptions;
+}) {
   const options = {
-    ...DEF_OPTIONS,
+    ...createBabelOptions({ filename, presetOptions }),
     caller: getCaller({ ...ENABLED_CALLER, isReactServer: false, platform, isDev }),
   };
 
@@ -66,7 +86,7 @@ export default function App() {
 // Should be identical in development.
 ['ios', 'android'].forEach((platform) => {
   it(`adds dom components proxy for ${platform} in dev`, () => {
-    const res = transformClient(sourceCode, platform, true);
+    const res = transformClient({ sourceCode, platform, isDev: true });
     expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
     expect(res.code).toMatch('react');
     expect(res.code).toMatch('expo/dom/internal');
@@ -91,13 +111,13 @@ export default function App() {
 });
 
 it(`does nothing on web`, () => {
-  const res = transformClient(sourceCode, 'web', false);
+  const res = transformClient({ sourceCode, platform: 'web', isDev: false });
   expect(res.metadata.expoDomComponentReference).toBeUndefined();
   expect(res.code).not.toMatch('expo/dom/internal');
 });
 
 it(`adds dom components proxy for ios in production`, () => {
-  const res = transformClient(sourceCode, 'ios', false);
+  const res = transformClient({ sourceCode, platform: 'ios', isDev: false });
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
@@ -119,7 +139,7 @@ it(`adds dom components proxy for ios in production`, () => {
   `);
 });
 it(`adds dom components proxy for android in production`, () => {
-  const res = transformClient(sourceCode, 'android', false);
+  const res = transformClient({ sourceCode, platform: 'android', isDev: false });
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
@@ -140,6 +160,23 @@ it(`adds dom components proxy for android in production`, () => {
     });"
   `);
 });
+it(`keeps React import from tsx`, () => {
+  const sourceCode = `
+    'use dom';
+    import React from 'react';
+
+    export default function App() {
+      return <div />;
+    }`;
+  const res = transformClient({
+    sourceCode,
+    filename: 'unknown.tsx',
+    presetOptions: { disableImportExportTransform: false },
+  });
+  expect(res.code).toMatch(/var _react = _interopRequireDefault\(require\("react"\)\)/);
+  expect(res.code).toMatch(/_react\.default/);
+  expect(res.code).not.toMatch(/React\.createElement/);
+});
 
 describe('errors', () => {
   it(`throws when there are non-default exports`, () => {
@@ -150,7 +187,7 @@ describe('errors', () => {
         return <div />
         }`;
 
-    expect(() => transformClient(sourceCode)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => transformClient({ sourceCode })).toThrowErrorMatchingInlineSnapshot(`
       "/unknown: Modules with the "use dom" directive only support a single default export.
         2 |         "use dom"
         3 |
@@ -168,7 +205,7 @@ function App() {
     return <div />
 }`;
 
-    expect(() => transformClient(sourceCode)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => transformClient({ sourceCode })).toThrowErrorMatchingInlineSnapshot(`
       "/unknown: The "use dom" directive requires a default export to be present in the file.
       > 1 |
           | ^
