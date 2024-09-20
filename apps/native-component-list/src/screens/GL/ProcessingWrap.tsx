@@ -9,7 +9,9 @@ import { Colors } from '../../constants';
  * @param title string
  * @param sketch processing.js `sketch` function
  */
-export default <P extends { style?: StyleProp<ViewStyle> } = object>(
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
   title: string,
   sketch: (p: any) => void
 ) => {
