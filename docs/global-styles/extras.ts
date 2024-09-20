@@ -20,7 +20,7 @@ export const globalExtras = css`
   }
 
   ::selection {
-    background-color: ${theme.palette.blue5};
+    background-color: ${theme.palette.blue9};
     color: ${theme.text.default};
   }
 
