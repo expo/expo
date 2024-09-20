@@ -245,6 +245,11 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
    */
   onLoadEnd?: () => void;
 
+  /**
+   * Called when the image view successfully rendered the source image.
+   */
+  onDisplay?: () => void;
+
   // DEPRECATED
 
   /**
