@@ -112,12 +112,12 @@ function collectCssImports(filename, originalCode, code, cssResults) {
                                     start: {
                                         line: dep.loc.start.line,
                                         column: dep.loc.start.column,
-                                        index: -1, //dep.loc.start.index,
+                                        index: -1,
                                     },
                                     end: {
                                         line: dep.loc.end.line,
                                         column: dep.loc.end.column,
-                                        index: -1, //dep.loc.end.index,
+                                        index: -1,
                                     },
                                     filename,
                                     identifierName: undefined,
@@ -129,8 +129,7 @@ function collectCssImports(filename, originalCode, code, cssResults) {
                                 supports: dep.supports,
                             },
                             exportNames: [],
-                            // @ts-expect-error
-                            key: dep.placeholder || dep.url,
+                            key: dep.url,
                         },
                     });
                 }

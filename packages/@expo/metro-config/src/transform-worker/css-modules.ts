@@ -74,7 +74,7 @@ export async function transformCssModuleWeb(props: {
 
   return {
     output: outputModule,
-    css: cssImports.code, //cssResults.code,
+    css: cssImports.code,
     map: cssResults.map,
     ...cssImports,
   };
@@ -159,12 +159,12 @@ export function collectCssImports(
                   start: {
                     line: dep.loc.start.line,
                     column: dep.loc.start.column,
-                    index: -1, //dep.loc.start.index,
+                    index: -1,
                   },
                   end: {
                     line: dep.loc.end.line,
                     column: dep.loc.end.column,
-                    index: -1, //dep.loc.end.index,
+                    index: -1,
                   },
                   filename,
                   identifierName: undefined,
@@ -176,8 +176,7 @@ export function collectCssImports(
                 supports: dep.supports,
               },
               exportNames: [],
-              // @ts-expect-error
-              key: dep.placeholder || dep.url,
+              key: dep.url,
             },
           });
         }
