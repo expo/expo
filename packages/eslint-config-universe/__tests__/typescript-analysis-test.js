@@ -6,7 +6,7 @@ const overrideConfigFile = path.resolve(__dirname, '../shared/typescript-analysi
 
 const baseConfig = {
   parserOptions: {
-    project: 'tsconfig.json',
+    project: path.resolve(__dirname, 'tsconfig.json'),
   },
 };
 
@@ -17,7 +17,7 @@ it(`lints`, async () => {
       overrideConfigFile,
       fix: true,
       ignore: false,
-      useEslintrc: true,
+      useEslintrc: false,
     },
     ['fixtures/*typescript-analysis*'],
   );
