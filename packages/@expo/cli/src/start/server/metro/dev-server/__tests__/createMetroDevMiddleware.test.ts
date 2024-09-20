@@ -84,7 +84,7 @@ describe(createMetroDevMiddleware, () => {
     it('creates the /message websocket', () => {
       expect(metro.messagesSocket).toBeDefined();
       expect(metro.messagesSocket).toHaveProperty('endpoint', '/message');
-      expect(metro.messagesSocket.broadcast).toBeInstanceOf(Function);
+      expect(metro.messagesSocket).toHaveProperty('broadcast', expect.any(Function));
       expect(metro.websocketEndpoints).toHaveProperty(
         metro.messagesSocket.endpoint,
         metro.messagesSocket.server
@@ -94,7 +94,7 @@ describe(createMetroDevMiddleware, () => {
     it('creates the /events websocket', () => {
       expect(metro.eventsSocket).toBeDefined();
       expect(metro.eventsSocket).toHaveProperty('endpoint', '/events');
-      expect(metro.eventsSocket.reportMetroEvent).toBeInstanceOf(Function);
+      expect(metro.eventsSocket).toHaveProperty('reportMetroEvent', expect.any(Function));
       expect(metro.websocketEndpoints).toHaveProperty(
         metro.eventsSocket.endpoint,
         metro.eventsSocket.server
