@@ -130,7 +130,8 @@ class ExpoImageModule : Module() {
         "onLoadStart",
         "onProgress",
         "onError",
-        "onLoad"
+        "onLoad",
+        "onDisplay"
       )
 
       Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap>? ->

@@ -244,6 +244,11 @@ export interface ImageProps extends ViewProps {
    */
   onLoadEnd?: () => void;
 
+  /**
+   * Called when the image view successfully rendered the source image.
+   */
+  onDisplay?: () => void;
+
   // DEPRECATED
 
   /**

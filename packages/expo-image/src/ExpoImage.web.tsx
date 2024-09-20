@@ -90,6 +90,7 @@ export default function ExpoImage({
   onError,
   responsivePolicy,
   onLoadEnd,
+  onDisplay,
   priority,
   blurRadius,
   recyclingKey,
@@ -156,6 +157,7 @@ export default function ExpoImage({
             onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
             onMount: [onMount],
             onTransitionEnd: [onAnimationFinished],
+            onDisplay: [onDisplay],
           }}
           style={{
             objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,

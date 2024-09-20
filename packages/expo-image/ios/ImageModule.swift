@@ -22,7 +22,8 @@ public final class ImageModule: Module {
         "onLoadStart",
         "onProgress",
         "onError",
-        "onLoad"
+        "onLoad",
+        "onDisplay"
       )
 
       Prop("source") { (view, sources: [ImageSource]?) in

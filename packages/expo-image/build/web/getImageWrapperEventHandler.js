@@ -2,14 +2,12 @@ import { isBlurhashString } from '../utils/resolveSources';
 export function getImageWrapperEventHandler(events, source) {
     return {
         onLoad: (event) => {
+            events?.onLoad?.forEach((e) => e?.(event));
             if (typeof window !== 'undefined') {
-                // this ensures the animation will run, since the starting class is applied at least 1 frame before the target class set in the onLoad event callback
+                // On Web there is no way to detect when the image gets displayed, but we can assume it happens on the repaint right after the image is successfully loaded.
                 window.requestAnimationFrame(() => {
-                    events?.onLoad?.forEach((e) => e?.(event));
+                    events?.onDisplay?.forEach((e) => e?.());
                 });
-            }
-            else {
-                events?.onLoad?.forEach((e) => e?.(event));
             }
         },
         onTransitionEnd: () => events?.onTransitionEnd?.forEach((e) => e?.()),

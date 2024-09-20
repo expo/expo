@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `onDisplay` event. ([#31581](https://github.com/expo/expo/pull/31581) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

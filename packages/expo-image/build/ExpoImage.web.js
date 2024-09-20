@@ -62,7 +62,7 @@ function isFlipTransition(transition) {
         transition?.effect === 'flip-from-left' ||
         transition?.effect === 'flip-from-right');
 }
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, nativeViewRef, containerViewRef, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, onDisplay, priority, blurRadius, recyclingKey, style, nativeViewRef, containerViewRef, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
@@ -91,6 +91,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                 onMount: [onMount],
                 onTransitionEnd: [onAnimationFinished],
+                onDisplay: [onDisplay],
             }} style={{
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
