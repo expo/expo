@@ -1,4 +1,5 @@
 package expo.modules.filesystem.next
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.CodedException
 
 internal class CopyOrMoveDirectoryToFileException :
@@ -21,4 +22,9 @@ internal class UnableToDownloadException(reason: String) :
 internal class UnableToDeleteException(reason: String) :
   CodedException(
     "Unable to delete file or directory: $reason"
+  )
+
+internal class InvalidPermissionException(permission: Permission) :
+  CodedException(
+    "Missing '${permission.name}' permission for accessing the file."
   )

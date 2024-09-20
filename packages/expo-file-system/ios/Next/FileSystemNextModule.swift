@@ -16,6 +16,8 @@ public final class FileSystemNextModule: Module {
     }
 
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
+      try to.validatePermission(.write)
+
       let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
           return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
@@ -90,7 +92,7 @@ public final class FileSystemNextModule: Module {
       }
 
       Property("exists") { file in
-        return file.exists
+        return (try? file.exists) ?? false
       }
 
       Function("create") { file in

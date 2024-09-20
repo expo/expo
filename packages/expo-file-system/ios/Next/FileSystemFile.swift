@@ -17,6 +17,7 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func create() throws {
+    try validatePermission(.write)
     try validateType()
     guard !exists else {
       throw UnableToCreateFileException("file already exists")
@@ -25,11 +26,15 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   var exists: Bool {
-    var isDirectory: ObjCBool = false
-    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-      return !isDirectory.boolValue
+    get throws {
+      try validatePermission(.read)
+
+      var isDirectory: ObjCBool = false
+      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+        return !isDirectory.boolValue
+      }
+      return false
     }
-    return false
   }
 
   // TODO: Move to the constructor once error is rethrowed
@@ -41,6 +46,7 @@ internal final class FileSystemFile: FileSystemPath {
 
   var size: Int64 {
     get throws {
+      try validatePermission(.read)
       let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
       guard let size = attributes[.size] else {
         throw UnableToGetFileSizeException("attributes do not contain size")
@@ -54,6 +60,7 @@ internal final class FileSystemFile: FileSystemPath {
 
   var md5: String {
     get throws {
+      try validatePermission(.read)
       let fileData = try Data(contentsOf: url)
       let hash = Insecure.MD5.hash(data: fileData)
       return hash.map { String(format: "%02hhx", $0) }.joined()
@@ -62,6 +69,7 @@ internal final class FileSystemFile: FileSystemPath {
 
   func write(_ content: String) throws {
     try validateType()
+    try validatePermission(.write)
     try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
   }
 
@@ -71,10 +79,12 @@ internal final class FileSystemFile: FileSystemPath {
 
   func text() throws -> String {
     try validateType()
+    try validatePermission(.read)
     return try String(contentsOf: url)
   }
 
   func base64() throws -> String {
+    try validatePermission(.read)
     return try Data(contentsOf: url).base64EncodedString()
   }
 }

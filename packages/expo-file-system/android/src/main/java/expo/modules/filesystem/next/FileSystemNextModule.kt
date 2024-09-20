@@ -3,6 +3,8 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
+import expo.modules.filesystem.FileSystemModule
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
@@ -33,6 +35,7 @@ class FileSystemNextModule : Module() {
     )
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
+      to.validatePermission(Permission.WRITE)
       val request = Request.Builder().url(url.toURL()).build()
       val client = OkHttpClient()
       val response = request.await(client)
@@ -116,13 +119,17 @@ class FileSystemNextModule : Module() {
       Property("md5") { file ->
         try {
           file.md5
-        } catch (e: FileNotFoundException) {
+        } catch (e: Exception) {
           null
         }
       }
 
       Property("size") { file ->
-        file.size
+        try {
+          file.size
+        } catch (e: Exception) {
+          null
+        }
       }
     }
 
