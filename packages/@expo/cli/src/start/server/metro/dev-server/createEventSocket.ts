@@ -2,9 +2,9 @@ import { format as prettyFormat, plugins as prettyPlugins } from 'pretty-format'
 import { WebSocketServer } from 'ws';
 
 import type { createMessagesSocket } from './createMessageSocket';
-import { createBroadcaster } from './createSocketBroadcaster';
-import { createSocketMap } from './createSocketMap';
-import { parseRawMessage, serializeMessage } from './socketMessages';
+import { createBroadcaster } from './utils/createSocketBroadcaster';
+import { createSocketMap } from './utils/createSocketMap';
+import { parseRawMessage, serializeMessage } from './utils/socketMessages';
 
 const debug = require('debug')('expo:metro:devserver:eventsSocket') as typeof console.log;
 

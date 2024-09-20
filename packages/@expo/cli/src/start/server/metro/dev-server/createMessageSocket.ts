@@ -1,8 +1,8 @@
 import { WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
-import { createBroadcaster } from './createSocketBroadcaster';
-import { createSocketMap, type SocketId } from './createSocketMap';
-import { parseRawMessage, serializeMessage } from './socketMessages';
+import { createBroadcaster } from './utils/createSocketBroadcaster';
+import { createSocketMap, type SocketId } from './utils/createSocketMap';
+import { parseRawMessage, serializeMessage } from './utils/socketMessages';
 
 type MessageSocketOptions = {
   logger: {
