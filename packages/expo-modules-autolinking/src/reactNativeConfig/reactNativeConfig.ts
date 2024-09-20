@@ -103,7 +103,12 @@ export async function resolveDependencyConfigAsync(
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
-    // For example, the `react-native` package.
+    return null;
+  }
+  if (name === 'react-native') {
+    // Starting from version 0.76, the `react-native` package only defines platforms
+    // when @react-native-community/cli-platform-android/ios is installed.
+    // Therefore, we need to manually filter it out.
     return null;
   }
 
