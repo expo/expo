@@ -36,7 +36,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLooper(context.mainLooper)
     .build()
 
-  val serviceConnection = PlaybackServiceConnection(WeakReference(player))
+  val serviceConnection = PlaybackServiceConnection(WeakReference(this))
 
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
@@ -57,7 +57,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       field = preservesPitch
       playbackParameters = applyPitchCorrection(playbackParameters)
     }
-  var showNowPlayingNotification = true
+  var showNowPlayingNotification = false
     set(value) {
       field = value
       serviceConnection.playbackServiceBinder?.service?.setShowNotification(value, this.player)

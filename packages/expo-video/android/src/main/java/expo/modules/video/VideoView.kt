@@ -15,13 +15,13 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.ui.PlayerView
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
@@ -43,8 +43,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   var isInFullscreen: Boolean = false
     private set
 
-  private val currentActivity = appContext.currentActivity
-    ?: throw Exceptions.MissingActivity()
+  private val currentActivity = appContext.throwingActivity
   private val decorView = currentActivity.window.decorView
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 
@@ -57,6 +56,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   private val outlineProvider = OutlineProvider(context)
 
+  @UnstableReactNativeAPI
   private val borderDrawableLazyHolder = lazy {
     ReactViewBackgroundDrawable(context).apply {
       callback = this@VideoView
@@ -74,6 +74,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
+  @UnstableReactNativeAPI
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
@@ -286,6 +287,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     applyRectHint()
   }
 
+  @UnstableReactNativeAPI
   override fun draw(canvas: Canvas) {
     // When the border-radii are not all the same, a convex-path
     // is used for the Outline. Unfortunately clipping is not supported
@@ -332,6 +334,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
     if (isInvalidated) {
@@ -356,21 +359,25 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderWidth(position: Int, width: Float) {
     borderDrawable.setBorderWidth(position, width)
     shouldInvalided = true
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
     borderDrawable.setBorderColor(position, rgb, alpha)
     shouldInvalided = true
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderStyle(style: String?) {
     borderDrawable.setBorderStyle(style)
     shouldInvalided = true
   }
 
+  @UnstableReactNativeAPI
   fun didUpdateProps() {
     val hasBorder = if (borderDrawableLazyHolder.isInitialized()) {
       val spacings = listOf(

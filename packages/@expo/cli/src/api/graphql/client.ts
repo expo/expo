@@ -65,7 +65,7 @@ export const graphqlClient = createUrqlClient({
 
 /* Please specify additionalTypenames in your Graphql queries */
 export interface StricterClient extends Client {
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   query<Data = any, Variables extends object = {}>(
     query: DocumentNode | TypedDocumentNode<Data, Variables> | string,
     variables: Variables | undefined,

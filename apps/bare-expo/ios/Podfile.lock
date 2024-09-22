@@ -1,4 +1,26 @@
 PODS:
+  - BenchmarkingModule (0.0.1):
+    - DoubleConversion
+    - ExpoModulesCore
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - EASClient (0.12.0):
@@ -354,6 +376,8 @@ PODS:
   - ExpoDevice (6.0.2):
     - ExpoModulesCore
   - ExpoDocumentPicker (12.0.1):
+    - ExpoModulesCore
+  - ExpoDomWebView (0.0.1):
     - ExpoModulesCore
   - ExpoFileSystem (17.0.1):
     - ExpoModulesCore
@@ -2516,7 +2540,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.2.0):
+  - RNSVG (15.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2536,9 +2560,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.2.0)
+    - RNSVG/common (= 15.7.1)
     - Yoga
-  - RNSVG/common (15.2.0):
+  - RNSVG/common (15.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2580,6 +2604,7 @@ PODS:
     - ZXingObjC/Core
 
 DEPENDENCIES:
+  - BenchmarkingModule (from `../modules/benchmarking/ios`)
   - boost (from `../../../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
@@ -2618,6 +2643,7 @@ DEPENDENCIES:
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
+  - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
   - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
@@ -2764,6 +2790,9 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
+  BenchmarkingModule:
+    inhibit_warnings: false
+    :path: "../modules/benchmarking/ios"
   boost:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -2854,6 +2883,9 @@ EXTERNAL SOURCES:
   ExpoDocumentPicker:
     inhibit_warnings: false
     :path: "../../../packages/expo-document-picker/ios"
+  ExpoDomWebView:
+    inhibit_warnings: false
+    :path: "../../../packages/@expo/dom-webview/ios"
   ExpoFileSystem:
     inhibit_warnings: false
     :path: "../../../packages/expo-file-system/ios"
@@ -3134,6 +3166,7 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  BenchmarkingModule: 0be4117c4bf255d2e21df9e4a4a486ec89c8640f
   boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
@@ -3165,6 +3198,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: f00f63a8a5ecd2b7057af35e684cffc5b8f86b35
   ExpoDevice: 7d3225af2ca41978e44b4c08d0d716e1341cf842
   ExpoDocumentPicker: bdf8ee5573ea32ff59c2dd25e7b7ef07f755008e
+  ExpoDomWebView: 71d9f0808dce43b9f36b45a8c091c242dfa7b372
   ExpoFileSystem: 4fe2130545fed1936aa8eb3022d4720036f00824
   ExpoFont: 8052e556507ff9c37bbd3fd24a4d52e79d60892e
   ExpoGL: 538b9cfb79816799a06c6557571d08bf50654a7e
@@ -3188,7 +3222,7 @@ SPEC CHECKSUMS:
   ExpoPrint: ab75a41dd1f48c14a6f8de320e75cd6d57c53153
   ExpoScreenCapture: 1f7ac662e67a14261424bebb046e0e9c7bb4e73d
   ExpoScreenOrientation: 084827cae9c5cdc16ac8dc105957ba17c3def0e9
-  ExpoSecureStore: 74ea9ca707ce12d855a98c6ff6afe44691c355c1
+  ExpoSecureStore: ce152862c108e05d619077da572c77cf0e938a1b
   ExpoSensors: e6e78e3a1522e320fe79b1ae41a09b6ec8a598b8
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
   ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
@@ -3279,7 +3313,7 @@ SPEC CHECKSUMS:
   React-RuntimeHermes: 860cf64708a12a2fa62366fe51fe000121fa031b
   React-runtimescheduler: fff88d51ad2c8815fc75930dbac224d680593e6b
   React-utils: 81a715d9c0a2a49047e77a86f3a2247408540deb
-  ReactCodegen: 4c29be59257644159393c3996669167e0d3f19a5
+  ReactCodegen: 506d0e24c7fefd38e1559ab6fa52064dbbd21a2b
   ReactCommon: 6ef348087d250257c44c0204461c03f036650e9b
   RNCAsyncStorage: a927b768986f83467b635cf6d7559e6edb46db7a
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
@@ -3289,7 +3323,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: f769e1b9057085db07546aa3e259daa85c898dc7
   RNReanimated: f72882a50158dd5b8b429b60b41331e4aec39151
   RNScreens: de6e57426ba0e6cbc3fb5b4f496e7f08cb2773c2
-  RNSVG: f57ef92b778b88c6481ce0856be993036f4b9279
+  RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c

@@ -76,7 +76,7 @@ public:
   using Shared = std::shared_ptr<NativeState>;
 
   NativeState();
-  virtual ~NativeState();
+  ~NativeState() override;
 
   /**
    A structure containing event listeners.

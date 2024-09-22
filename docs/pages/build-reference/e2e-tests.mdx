@@ -51,6 +51,16 @@ The following command creates a new project on Expo servers for your app and cre
 </Step>
 
 <Step label="3">
+
+## Disable New Android Builds Infrastructure
+
+Go to [**Project settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Builds Infrastructure**.
+
+Unfortunately, the new build infrastructure is incompatible with E2E tests due to the lack of virtualization support required to start Android Emulator. We are working on better solutions for running various tests on EAS.
+
+</Step>
+
+<Step label="4">
 ## Add example Maestro test cases
 
 This is what the UI of the app created from the default Expo template looks like:
@@ -86,7 +96,7 @@ If you want to run these flows locally to verify that they work as expected, you
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 ## Create a custom build workflow for running Maestro E2E tests
 
 The easiest way to run Maestro E2E tests on EAS Build is to create a [custom build workflow](/custom-builds/get-started/). This workflow will build your app and run the Maestro tests on it.
@@ -134,7 +144,7 @@ Now modify the **eas.json** by adding a new [build profile](/build/eas-json/#bui
 
 </Step>
 
-<Step label="5">
+<Step label="6">
 ## Build your app and run E2E tests on EAS Build
 
 To execute a custom build using the `build-and-maestro-test` profile that will build your app and run the Maestro E2E tests afterward, run the following command:
@@ -161,3 +171,13 @@ When the flow fails, any Maestro artifacts are automatically uploaded as build a
 If you want to build more advanced custom builds workflows, see the [custom build schema reference](/custom-builds/schema/) for more information.
 
 To learn more about Maestro flows and how to write them, see the [Maestro documentation](https://maestro.mobile.dev).
+
+## Troubleshooting
+
+If you encounter the following error message when starting an Android Emulator for E2E tests on EAS Build:
+
+```text
+Failed to configure emulator: emulator with required ID not found.
+```
+
+This is likely because the New Build Infrastructure is enabled for your project. Go to [**Project Settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Builds Infrastructure**.

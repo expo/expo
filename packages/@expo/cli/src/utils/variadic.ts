@@ -6,7 +6,7 @@ const debug = require('debug')('expo:utils:variadic') as typeof console.log;
 export function parseVariadicArguments(argv: string[]): {
   variadic: string[];
   extras: string[];
-  flags: Record<string, boolean>;
+  flags: Record<string, boolean | undefined>;
 } {
   const variadic: string[] = [];
   const flags: Record<string, boolean> = {};

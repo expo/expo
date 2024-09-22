@@ -58,7 +58,7 @@ class ExpoFirebaseMessagingDelegate(context: Context) : FirebaseMessagingDelegat
     content: NotificationContent,
     notificationTrigger: FirebaseNotificationTrigger
   ): NotificationRequest {
-    val data = notificationTrigger.remoteMessage.data
+    val data = notificationTrigger.getRemoteMessage().data
     return ScopedNotificationRequest(
       identifier,
       content,

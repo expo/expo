@@ -21,8 +21,6 @@ private const val OPEN_DOCUMENT_CODE = 4137
 class DocumentPickerModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var pendingPromise: Promise? = null
   private var copyToCacheDirectory = true
 
@@ -45,7 +43,7 @@ class DocumentPickerModule : Module() {
           options.type[0]
         }
       }
-      currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
+      appContext.throwingActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
     }
 
     OnActivityResult { _, (requestCode, resultCode, intent) ->

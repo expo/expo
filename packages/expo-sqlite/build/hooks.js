@@ -37,7 +37,7 @@ export function SQLiteProvider({ children, onError, useSuspense = false, ...prop
  *
  * export function Main() {
  *   const db = useSQLiteContext();
- *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   console.log('sqlite version', db.getFirstSync('SELECT sqlite_version()'));
  *   return <View />
  * }
  * ```

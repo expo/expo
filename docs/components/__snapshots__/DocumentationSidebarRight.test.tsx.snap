@@ -74,10 +74,9 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </p>
     </a>
     <a
-      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      class="flex mb-1.5 truncate items-center justify-between !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
       data-state="closed"
       href="#level-3-subheading"
-      style="padding-left: 12px;"
     >
       <p
         class="w-full !text-secondary hocus:!text-link emotion-1"
@@ -87,10 +86,9 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </p>
     </a>
     <a
-      class="flex mb-1.5 truncate items-center justify-between !text-pretty focus-visible:relative focus-visible:z-10"
+      class="flex mb-1.5 truncate items-center justify-between !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
       data-state="closed"
       href="#code-heading-depth-1"
-      style="padding-left: 12px;"
     >
       <code
         class="w-full !text-secondary hocus:!text-link truncate !text-2xs emotion-3"
