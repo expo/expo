@@ -5,11 +5,19 @@
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
   "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {  
+      "react-server": "./build/Constants.server.js",
+      "default": "./build/Constants.js"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"

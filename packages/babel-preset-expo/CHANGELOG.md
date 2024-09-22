@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for inlining constants for native server environments. ([#30586](https://github.com/expo/expo/pull/30586) by [@EvanBacon](https://github.com/EvanBacon))
 - Add basic support for using DOM Components in React Server Components projects. ([#31080](https://github.com/expo/expo/pull/31080) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and expose `expoDomComponentReference` on metadata. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `hasCjsExports` metadata for tracking static exports. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
