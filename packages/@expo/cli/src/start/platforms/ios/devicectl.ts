@@ -29,7 +29,7 @@ const DEVICE_CTL_EXISTS_PATH = path.join(getExpoHomeDirectory(), 'devicectl-exis
 
 const debug = require('debug')('expo:devicectl') as typeof console.log;
 
-type AnyEnum<T extends string = string> = T | (string & {});
+type AnyEnum<T extends string = string> = T | (string & object);
 
 type DeviceCtlDevice = {
   capabilities: DeviceCtlDeviceCapability[];
