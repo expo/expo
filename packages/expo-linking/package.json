@@ -7,8 +7,8 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      
-      "react-server": "./build/Linking.server.js"
+      "react-server": "./build/Linking.server.js",
+      "default": "./build/Linking.js"
     }
   },
   "scripts": {
