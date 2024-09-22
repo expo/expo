@@ -9,7 +9,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-We've to configure the status bar, add a splash screen, and an app icon to consider the app in a launchable state. In this chapter, we'll learn how to do all of this.
+In this chapter, we'll address some app details before deploying our app to an app store, such as theming the statusbar, add a splash screen, and customizing the app icon.
 
 <Step label="1">
 
@@ -59,7 +59,7 @@ Let's take a look at our app now on Android, and iOS:
 
 A splash screen is visible before the app's contents have had a chance to load. It hides once the app's content is ready for display.
 
-Defining a path to the `"splash.image"` property in the [**app.json**](/workflow/configuration/) file configures a splash screen. By default, a new Expo project already defines the path. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
+Setting the `"splash.image"` property with a valid file path in the [**app.json**](/workflow/configuration/) file configures a splash screen. By default, a new Expo project already sets this property to a placeholder splash image. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
 
 <ContentSpotlight
   src="/static/images/tutorial/splash.png"
@@ -67,7 +67,7 @@ Defining a path to the `"splash.image"` property in the [**app.json**](/workflow
   className="max-w-[250px]"
 />
 
-Let's take a look at our app now on Android, and iOS:
+Let's take a look at our app now on Android and iOS:
 
 <ContentSpotlight file="tutorial/splash-screen.mp4" />
 

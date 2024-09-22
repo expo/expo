@@ -10,15 +10,15 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
-In this chapter, we'll learn Expo Router's fundamentals to create stack and bottom tabs navigators with two routes.
+In this chapter, we'll learn Expo Router's fundamentals to create stack navigation and a bottom tab bar with two tabs.
 
 ## Expo Router basics
 
 Expo Router is a file-based routing framework for React Native and web apps. It manages navigation between screens and uses the same components across multiple platforms. To get started, we need to know about the following conventions:
 
-- **app directory**: It is a special directory. Any files added to this directory become a screen inside our native app and a page on the web.
+- **app directory**: A special directory containing only routes and their layouts. Any files added to this directory become a screen inside our native app and a page on the web.
 - **Root layout**: The **app/\_layout.tsx** file. It defines shared UI elements such as headers and tab bars so they are consistent between different routes.
-- **File name conventions**: File name, such as **index.tsx**, matches the parent directory and do not add a path segment. For example, the **index.tsx** file in the **app** directory matches `/` route.
+- **File name conventions**: _Index_ file names, such as **index.tsx**, match their parent directory and do not add a path segment. For example, the **index.tsx** file in the **app** directory matches `/` route.
 - A **route** file exports a React component as its default value. It can use either `.js`, `.jsx`, `.ts`, or `.tsx` extension.
 - Android, iOS, and web share a unified navigation structure.
 
@@ -28,7 +28,7 @@ Expo Router is a file-based routing framework for React Native and web apps. It 
 
 ## Add a new screen to the stack
 
-Let's create a new file **about.tsx** inside the **app** directory. It displays the screen name when the user navigates to `/about` route.
+Let's create a new file named **about.tsx** inside the **app** directory. It displays the screen name when the user navigates to `/about` route.
 
 ```tsx app/about.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
@@ -141,9 +141,9 @@ Let's took a look at the changes in our app. Click on `Link` to navigate to `/ab
 
 ## Add a not-found route
 
-When a route doesn't exist, we can use a `+not-found` route to display a fallback screen. This is useful when we want to display a custom screen when a user navigates to a 404 route. Expo Router uses a special **+not-found.tsx** file to handle this case.
+When a route doesn't exist, we can use a `+not-found` route to display a fallback screen. This is useful when we want to display a custom screen when navigating to an invalid route on mobile instead of crashing the app or display a _404_ error on web. Expo Router uses a special **+not-found.tsx** file to handle this case.
 
-1. Create a new file **+not-found.tsx** inside the app directory to add `NotFoundScreen` component.
+1. Create a new file **+not-found.tsx** inside the app directory to add the `NotFoundScreen` component.
 2. Add `options` prop from `Stack.Screen` to display a custom screen title for this route.
 3. Add a `Link` component to navigate to `/` route, which is our fallback route.
 
