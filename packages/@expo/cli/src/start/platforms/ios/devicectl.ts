@@ -117,7 +117,7 @@ type DeviceCtlConnectionProperties = {
   /** ["00001111-001111110110101A.coredevice.local", "A1A1AAA1-0011-1AA1-11A1-10A1111AA11A.coredevice.local"] */
   potentialHostnames: string[];
   transportType: AnyEnum<'localNetwork' | 'wired'>;
-  tunnelState: AnyEnum<'disconnected'>;
+  tunnelState: AnyEnum<'disconnected' | 'unavailable'>;
   tunnelTransportProtocol: AnyEnum<'tcp'>;
 };
 
