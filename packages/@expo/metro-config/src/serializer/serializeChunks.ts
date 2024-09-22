@@ -454,6 +454,23 @@ export class Chunk {
               .flat()
           ),
         ].filter((value) => typeof value === 'string') as string[],
+        reactServerReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'reactServerReference' in output.data &&
+                    typeof output.data.reactServerReference === 'string'
+                  ) {
+                    return output.data.reactServerReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
       },
       source: jsCode.code,
     };

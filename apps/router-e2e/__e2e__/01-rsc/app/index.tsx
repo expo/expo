@@ -4,7 +4,18 @@ import { Counter } from '../components/counter';
 import { Pokemon } from '../components/pokemon';
 import { Image, Text, View } from '../lib/react-native';
 
-export default function IndexRoute({ path, query }) {
+export default function IndexRoute({ query, path }) {
+  const foo = '4';
+  const serverAction2 = async (...props) => {
+    'use server';
+    console.log('Nested action', props);
+    return [foo, ...props];
+  };
+  const serverAction = async (...props) => {
+    'use server';
+    console.log('Action', props);
+    return serverAction2.bind(null, '3')(...props);
+  };
   return (
     <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
       <Text testID="index-text">Hello World</Text>
@@ -15,13 +26,13 @@ export default function IndexRoute({ path, query }) {
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>
 
+      <Counter onPress={serverAction.bind(null, '2')} />
       <Image
         testID="main-image"
         source={require('../../../assets/icon.png')}
         style={{ width: 100, height: 100 }}
       />
 
-      <Counter />
       <Pokemon />
     </View>
   );

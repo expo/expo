@@ -15,6 +15,7 @@
     "assets",
     "build",
     "ios",
+    "rsc",
     "node",
     "plugin",
     "!src",

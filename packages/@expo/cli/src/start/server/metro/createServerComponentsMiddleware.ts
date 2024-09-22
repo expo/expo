@@ -169,7 +169,7 @@ export function createServerComponentsMiddleware(
       `The server must be started. (isExporting: ${isExporting}, baseUrl: ${baseUrl}, mode: ${mode}, routerRoot: ${routerRoot}, asyncRoutes: ${asyncRoutes})`
     );
 
-    return (file: string) => {
+    return (file: string, isServer: boolean) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
         const relativeFilePath = path.relative(serverRoot, file);
@@ -203,6 +203,7 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
+        environment: isServer ? 'react-server' : 'client',
       });
 
       searchParams.set('resolver.clientboundary', String(true));
@@ -314,9 +315,38 @@ export function createServerComponentsMiddleware(
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
-        loadServerModuleRsc: async (url) => {
-          // TODO: SSR load action code from Metro URL.
-          throw new Error('React server actions are not implemented yet');
+        async loadServerModuleRsc(chunk) {
+          // id = metro URL
+
+          const serverRoot = getMetroServerRootMemo(projectRoot);
+
+          debug('[SSR] loadServerModuleRsc:', chunk);
+
+          const url = new URL(chunk, 'http://localhost:0');
+          const getStringParam = (key: string) => {
+            const param = url.searchParams.get(key);
+            if (Array.isArray(param)) {
+              throw new Error(`Expected single value for ${key}`);
+            }
+            return param;
+          };
+
+          let pathname = url.pathname;
+          if (pathname.endsWith('.bundle')) {
+            pathname = pathname.slice(0, -'.bundle'.length);
+          }
+
+          const options = {
+            mode: (getStringParam('dev') ?? 'true') === 'true' ? 'development' : 'production',
+            minify: (getStringParam('minify') ?? 'false') === 'true',
+            lazy: (getStringParam('lazy') ?? 'false') === 'true',
+            routerRoot: getStringParam('transform.routerRoot') ?? 'app',
+            isExporting: (getStringParam('resolver.exporting') ?? 'false') === 'true',
+            environment: getStringParam('transform.environment') ?? 'node',
+            platform: url.searchParams.get('platform') ?? 'web',
+          };
+
+          return await ssrLoadModule(path.join(serverRoot, pathname), options);
         },
       }
     );

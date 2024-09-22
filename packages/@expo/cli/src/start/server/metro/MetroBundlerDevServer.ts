@@ -656,6 +656,53 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       extraOptions
     );
 
+    // Get the React server action boundaries from the client bundle.
+    const reactServerReferences = bundle.artifacts
+      .filter((a) => a.type === 'js')
+      .map((artifact) =>
+        artifact.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref))
+      )
+      // TODO: Segment by module for splitting.
+      .flat()
+      .filter(Boolean) as string[];
+
+    if (!reactServerReferences) {
+      // Issue with babel plugin / metro-config.
+      throw new Error(
+        'Static server action references were not returned from the Metro client bundle'
+      );
+    }
+    debug('React server action boundaries from client:', reactServerReferences);
+
+    // TODO: export server actions that are imported from client modules and create a manifest for the server renderer.
+
+    const serverActionManifest = new Map<string, string>();
+
+    await Promise.all(
+      reactServerReferences.map(async (ref) => {
+        // TODO: Bundle server action and add to the files.
+        const actionBundle = await this.ssrLoadModuleContents(ref, {
+          isExporting: true,
+          ...options,
+          platform: options.platform,
+          environment: 'react-server',
+        });
+
+        // Write to a manifest so we can lookup in SSR.
+        serverActionManifest.set(
+          // NOTE: This needs to be the identifier for the server action.
+          ref,
+          actionBundle.filename
+        );
+        // Store file
+        files.set(actionBundle.filename, {
+          contents: actionBundle.src,
+          targetDomain: 'server',
+          // TODO: Add new React Server Action ID for logging.
+        });
+      })
+    );
+
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
 
@@ -712,6 +759,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
         Object.fromEntries(
           Array.from(ssrManifest.entries()).map(([key, value]) => [
+            path.join(serverRoot, key),
+            [key, value],
+          ])
+        )
+      ),
+    });
+
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${options.platform}/action-manifest.json`, {
+      targetDomain: 'server',
+      contents: JSON.stringify(
+        // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+        Object.fromEntries(
+          Array.from(serverActionManifest.entries()).map(([key, value]) => [
             path.join(serverRoot, key),
             [key, value],
           ])

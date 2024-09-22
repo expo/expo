@@ -331,6 +331,19 @@ class Chunk {
                     })
                         .flat()),
                 ].filter((value) => typeof value === 'string'),
+                reactServerReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('reactServerReference' in output.data &&
+                                typeof output.data.reactServerReference === 'string') {
+                                return output.data.reactServerReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
             },
             source: jsCode.code,
         };

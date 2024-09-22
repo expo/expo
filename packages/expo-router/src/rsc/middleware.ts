@@ -82,11 +82,12 @@ export async function renderRscWithImportsAsync(
           chunks: chunk ? [chunk] : [],
         };
       },
-      entries: entries!,
-      loadServerModuleRsc: async (url) => {
-        // TODO: SSR load action code from on disk file.
-        throw new Error('React server actions are not implemented yet');
+      async loadServerModuleRsc(file) {
+        // @ts-expect-error
+        return $$require_external(file);
       },
+
+      entries: entries!,
     }
   );
 }

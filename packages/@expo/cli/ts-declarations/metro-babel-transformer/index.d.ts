@@ -39,6 +39,7 @@ declare module 'metro-babel-transformer' {
     transform: (args: BabelTransformerArgs) => {
       ast: Ast;
       metadata?: BabelFileMetadata & {
+        reactServerReference?: string;
         reactClientReference?: string;
         expoDomComponentReference?: string;
         hasCjsExports?: boolean;

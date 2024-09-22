@@ -60,8 +60,6 @@ export async function transform(
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
       // Inject client boundaries into the root client bundle for production bundling.
       if (clientBoundaries) {
-        console.log('Parsed client boundaries:', clientBoundaries);
-
         // Inject source
         const src =
           'module.exports = {\n' +

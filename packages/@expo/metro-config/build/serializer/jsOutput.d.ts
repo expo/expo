@@ -23,6 +23,7 @@ export type JsOutput = {
         ast?: import('@babel/types').File;
         hasCjsExports?: boolean;
         readonly reconcile?: ReconcileTransformSettings;
+        readonly reactServerReference?: string;
         readonly reactClientReference?: string;
         readonly expoDomComponentReference?: string;
     };

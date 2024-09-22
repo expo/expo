@@ -29,7 +29,7 @@ export type RenderRscArgs = {
     }) => void;
     onError?: (err: unknown) => void;
 };
-type ResolveClientEntry = (id: string) => {
+type ResolveClientEntry = (id: string, server: boolean) => {
     id: string;
     chunks: string[];
 };
