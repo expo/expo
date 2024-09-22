@@ -1,32 +1,41 @@
-import { SafeAreaView, Text, View } from '../lib/react-native';
+import 'server-only';
 
 import { Counter } from '../components/counter';
+import { greet } from '../components/server-actions-in-file';
+import { UIHost } from '../components/ui-host';
+import { Text, View } from '../lib/react-native';
 
-// TODO: Server Actions from file with module-level directive should be tested too.
+type ServerFunction<T> = T extends (...args: infer A) => infer R
+  ? (...args: A) => Promise<R>
+  : never;
 
-const renderView = async (message: string) => {
-  'use server';
-  return <Text testID="server-action-txt">{message}</Text>;
-};
-
-export default function IndexRoute({ query, path }) {
-  const foo = '4';
-  const serverAction2 = async (...props) => {
+export default function ServerActionTest() {
+  async function renderNativeViews(name: string) {
     'use server';
-    console.log('Nested action', props);
-    return [foo, ...props].join(', ');
-  };
-  const serverAction = async (...props) => {
-    'use server';
-    console.log('Action', props);
-    return serverAction2.bind(null, '3')(...props);
-  };
+
+    return (
+      <>
+        <Text style={{ color: 'darkcyan' }} testID="server-action-props">
+          {name}
+        </Text>
+        <Text testID="server-action-platform">{process.env.EXPO_OS}</Text>
+      </>
+    );
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1, padding: 12 }} testID="child-wrapper">
-      <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
-        <Text testID="index-text">Hello World</Text>
-        <Counter onNestedAction={serverAction.bind(null, '2')} onRenderView={renderView} />
-      </View>
-    </SafeAreaView>
+    <View>
+      <Text testID="index-text" style={{ fontWeight: 'bold' }}>
+        2) Server Action (Server Component)
+      </Text>
+
+      <Text testID="index-server-date-rendered">Date rendered: {new Date().toISOString()}</Text>
+
+      <Counter greet={greet as unknown as ServerFunction<typeof greet>} />
+
+      <UIHost
+        renderNativeViews={renderNativeViews as unknown as ServerFunction<typeof renderNativeViews>}
+      />
+    </View>
   );
 }

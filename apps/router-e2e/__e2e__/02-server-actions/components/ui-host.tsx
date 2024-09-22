@@ -1,18 +1,22 @@
-/// <reference types="react/canary" />
 'use client';
 
-import { View, Text, Button } from '../lib/react-native';
+import { View, Text, Button } from 'react-native';
 import { useState, useTransition } from 'react';
 
-export const Counter = ({ greet }: { greet: (name: string) => Promise<string> }) => {
+export const UIHost = ({
+  renderNativeViews,
+}: {
+  renderNativeViews: (param: string) => Promise<React.ReactElement>;
+}) => {
   const [isPending, startTransition] = useTransition();
   const [count, setCount] = useState(0);
-  const [text, setText] = useState<string | Promise<string>>('');
+  const [remoteJsx, setText] = useState<React.ReactElement | Promise<React.ReactElement>>(<></>);
   const handleClick1 = () => {
     startTransition(() => {
-      setText(greet('c=' + count));
+      setText(renderNativeViews('c=' + count));
     });
   };
+
   return (
     <View
       style={{
@@ -24,15 +28,16 @@ export const Counter = ({ greet }: { greet: (name: string) => Promise<string> })
       }}>
       <Text>(client component)</Text>
       <Button
+        testID="update-jsx-server-action-props"
         onPress={() => setCount((c) => c + 1)}
-        testID="button-client-state"
         title="Increment++"
       />
-      <Text testID="client-state-count">{count}</Text>
 
-      <Text onPress={handleClick1} testID="button-server-action">
-        Call Server Action: {count}
-      </Text>
+      <Button
+        testID="call-jsx-server-action"
+        onPress={handleClick1}
+        title={`Invoke: renderNativeViews("c=" + ${count})`}
+      />
 
       <View
         style={{
@@ -42,10 +47,11 @@ export const Counter = ({ greet }: { greet: (name: string) => Promise<string> })
           padding: 8,
           gap: 8,
         }}>
-        <Text testID="client-transition-pending">{`${isPending ? 'Transition Pending...' : ''}`}</Text>
+        <Text>{`${isPending ? 'Transition Pending...' : ''}`}</Text>
 
         <Text>Server Result → </Text>
-        <Text testID="client-transition-text">{text || '[No results]'}</Text>
+
+        {remoteJsx}
       </View>
     </View>
   );
