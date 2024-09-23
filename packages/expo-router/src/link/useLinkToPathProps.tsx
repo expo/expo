@@ -5,6 +5,7 @@ import { appendBaseUrl } from '../fork/getPathFromState';
 import { useExpoRouter } from '../global-state/router-store';
 import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
+import { shouldLinkExternally } from '../utils/url';
 
 function eventShouldPreventDefault(
   e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
@@ -52,9 +53,23 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
     }
   };
 
+  const baseAppendedStrippedHref = React.useMemo(() => {
+    const strippedHref = stripGroupSegmentsFromPath(href);
+    // Ensure there's always a value for href.
+    if (!strippedHref) {
+      return appendBaseUrl('/');
+    }
+
+    // Append base url only if needed (for non-external URLs)
+    if (shouldLinkExternally(strippedHref)) {
+      return strippedHref;
+    } else {
+      return appendBaseUrl(strippedHref);
+    }
+  }, [href]);
+
   return {
-    // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-    href: appendBaseUrl(stripGroupSegmentsFromPath(href) || '/'),
+    href: baseAppendedStrippedHref,
     role: 'link' as const,
     onPress,
   };
