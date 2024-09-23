@@ -56,6 +56,10 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
     }
   }
 
+  open fun onStartListeningToEvent(eventName: String) = Unit
+
+  open fun onStopListeningToEvent(eventName: String) = Unit
+
   /**
    * Called when the shared object being deallocated.
    */
