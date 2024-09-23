@@ -48,16 +48,8 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
 export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const icon = getIcons(config);
 
-  if (icon === null) {
+  if (!icon || (typeof icon === 'string' && !icon) || (typeof icon === 'object' && !icon?.any && !icon?.dark && !icon?.tinted)) {
     WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-  } else if (typeof icon === 'string') {
-    if (!icon) {
-      WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-    }
-  } else if (typeof icon === 'object') {
-    if (!icon?.any && !icon?.dark && !icon?.tinted) {
-      WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-    }
   }
 
   // Something like projectRoot/ios/MyApp/
