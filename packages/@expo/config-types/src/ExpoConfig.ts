@@ -177,7 +177,7 @@ export interface ExpoConfig {
      */
     checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
     /**
-     * Whether to use embedded updates. Defaults to true. If set to false, an update will be fetched at launch. Ensure that `updates.checkAutomatically` is enabled if you disable embedded updates, and increase the `updates.fallbackToCacheTimeout`. You should not use this field in a production deployment.
+     * Whether to load the embedded update. Defaults to true. If set to false, an update will be fetched at launch. When set to false, ensure that `checkAutomatically` is set to `ON_LOAD` and `fallbackToCacheTimeout` is large enough for the initial remote update to download. This should not be used in production.
      */
     useEmbeddedUpdate?: boolean;
     /**

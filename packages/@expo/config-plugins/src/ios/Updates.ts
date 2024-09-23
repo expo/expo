@@ -59,7 +59,7 @@ export async function setUpdatesConfigAsync(
   if (!useEmbeddedUpdate && timeout === 0 && checkOnLaunch !== 'ALWAYS') {
     addWarningIOS(
       'updates.useEmbeddedUpdate',
-      `updates.checkOnLaunch should be set to "ALWAYS" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`
+      `updates.checkOnLaunch should be set to "ON_LOAD" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`
     );
   }
 

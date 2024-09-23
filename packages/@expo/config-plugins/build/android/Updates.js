@@ -109,8 +109,9 @@ async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoU
   if (useEmbeddedUpdate) {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.UPDATES_HAS_EMBEDDED_UPDATE);
   } else {
+    // TODO: is there a better place for this validation?
     if (timeout === 0 && checkOnLaunch !== 'ALWAYS') {
-      (0, _warnings().addWarningAndroid)('updates.useEmbeddedUpdate', `updates.checkOnLaunch should be set to "ALWAYS" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`);
+      (0, _warnings().addWarningAndroid)('updates.useEmbeddedUpdate', `updates.checkOnLaunch should be set to "ON_LOAD" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`);
     }
     (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.UPDATES_HAS_EMBEDDED_UPDATE, 'false');
   }
