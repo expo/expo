@@ -6,6 +6,7 @@ export class Paths extends PathUtilities {
   static get cache() {
     return new Directory(ExpoFileSystem.cacheDirectory);
   }
+
   static get document() {
     return new Directory(ExpoFileSystem.documentDirectory);
   }
@@ -16,18 +17,21 @@ export class File extends ExpoFileSystem.FileSystemFile {
     super(Paths.join(...uris));
     this.validatePath();
   }
+
   /*
    * Directory containing the file.
    */
   get parentDirectory() {
     return new Directory(Paths.dirname(this.uri));
   }
+
   /*
    * File extension (with the dot).
    */
   get extension() {
     return Paths.extname(this.uri);
   }
+
   /**
    * File name. Includes the extension.
    */
@@ -47,6 +51,7 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     super(Paths.join(...uris));
     this.validatePath();
   }
+
   /*
    * Directory containing the file.
    */
