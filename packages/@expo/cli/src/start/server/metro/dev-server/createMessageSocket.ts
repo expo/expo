@@ -1,3 +1,4 @@
+import { parse } from 'node:url';
 import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
 import { createBroadcaster } from './utils/createSocketBroadcaster';
@@ -16,8 +17,16 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 
   const server = new WebSocketServer({ noServer: true });
 
-  server.on('connection', (socket) => {
+  server.on('connection', (socket, req) => {
     const client = clients.registerSocket(socket);
+
+    // Assign the query parameters to the socket, used for `getpeers` requests
+    // NOTE(cedric): this looks like a legacy feature, might be able to drop it
+    if (req.url) {
+      Object.defineProperty(socket, '_upgradeQuery', {
+        value: parse(req.url).query,
+      });
+    }
 
     // Register disconnect handlers
     socket.on('close', client.terminate);
@@ -57,10 +66,9 @@ function createClientMessageHandler(
 
     if (message.method === 'getpeers') {
       const peers: Record<string, any> = {};
-      clients.map.forEach((_socket, socketId) => {
-        if (socketId !== clientId) {
-          // TODO: add query parameters for every client to the response
-          peers[socketId] = {};
+      clients.map.forEach((peerSocket, peerSocketId) => {
+        if (peerSocketId !== clientId) {
+          peers[peerSocketId] = '_upgradeQuery' in peerSocket ? peerSocket._upgradeQuery : {};
         }
       });
       return socket.send(serializeMessage({ id: message.id, result: peers }));

@@ -103,9 +103,12 @@ describe(createMessagesSocket, () => {
     // Wait until the sockets are connected
     await Promise.all([once(client1, 'open'), once(client2, 'open'), once(client3, 'open')]);
 
-    // Fetch the client ID of client2, to test if this client is not included in the response
-    const client2Id = await requestClientId(client2);
-    expect(client2Id).toBeDefined();
+    // Fetch the client IDs of all clients
+    const [client1Id, client2Id, client3Id] = await Promise.all([
+      requestClientId(client1, 'getpeers#client1'),
+      requestClientId(client2, 'getpeers#client2'),
+      requestClientId(client3, 'getpeers#client3'),
+    ]);
 
     // Add listener to client2 for the getpeers response
     const client2Listener = jest.fn();
@@ -120,10 +123,14 @@ describe(createMessagesSocket, () => {
       expect(client2Listener.mock.calls[0][0]).toBeInstanceOf(Buffer);
 
       const message = JSON.parse(client2Listener.mock.calls[0][0].toString());
-      expect(message).toHaveProperty('id', 'testid#2');
-      expect(Object.keys(message.result)).toHaveLength(2);
+      expect(message).toMatchObject({
+        id: 'testid#2',
+        result: expect.objectContaining({
+          [client1Id]: 'test=data',
+          [client3Id]: 'other=test',
+        }),
+      });
       expect(message.result).not.toHaveProperty(client2Id);
-      // TODO: assert the query parameters as result values
     });
   });
 
