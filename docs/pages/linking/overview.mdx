@@ -15,30 +15,18 @@ import { CODE } from '~/ui/components/Text';
 
 Linking allows your app to interact with incoming and outgoing URLs. In this process, the user not only gets directed to open your app, but they are taken to a specific screen (route) within the app.
 
-For example, by clicking an advertisement of your product, your app will open on the user's device and they can view that product's details. This product's link that the user clicked may look like:
-
-```html
-myapp://web-app.com/product
-```
-
-This link is constructed by three parts:
-
-- **Scheme**: The URL scheme that identifies the app that should open the URL (example: `myapp://`). It can also be `https` or `http` for non-standard deep links.
-- **Host**: The domain name of the app that should open the URL (example: `web-app.com`).
-- **Path**: The path to the screen that should be opened (example: `/product`). If the path isn't specified, the user is taken to the home screen of the app.
-
-## Linking strategies
+### Linking strategies
 
 There are different linking strategies you handle in your Expo app:
 
 - Linking to other apps from your app (outgoing links)
 - Linking to your app from other apps or a web browser (incoming links)
-- Android App Links
-- iOS Universal Links
+- Linking to specific content within your app (deep links)
+- Redirecting links to your web domain to your app if it is installed (Android App Links and iOS Universal Links); also known as App shortcuts
 
 > **info** **Tip:** We recommend using [Development builds](/develop/development-builds/introduction/) to test your app's linking strategies instead of Expo Go.
 
-### Into other apps
+## Linking to other apps from your app
 
 Linking to other apps from your app is achieved using a URL based on the target app's URL scheme. This **URL scheme** allows you to reference resources within that native app.
 
@@ -51,9 +39,21 @@ Your app can use a [common URL scheme](/linking/into-other-apps/#common-url-sche
   Icon={BookOpen02Icon}
 />
 
-### Into your app
+## Linking to your app from other apps or a web browser
 
-Linking to your app from other apps or a web browser is achieved using a URL based on the scheme for your app. These URLs are called **deep links**.
+[Deep Links](https://en.wikipedia.org/wiki/Deep_linking) are links to a specific URL based content inside an app or a website.
+
+For example, by clicking an advertisement of your product, your app will open on the user's device and they can view that product's details. This product's link that the user clicked may look like:
+
+```html
+myapp://web-app.com/product
+```
+
+This link is constructed by three parts:
+
+- **Scheme**: The URL scheme that identifies the app that should open the URL (example: `myapp://`). It can also be `https` or `http` for non-standard deep links.
+- **Host**: The domain name of the app that should open the URL (example: `web-app.com`).
+- **Path**: The path to the screen that should be opened (example: `/product`). If the path isn't specified, the user is taken to the home screen of the app.
 
 <BoxLink
   title="Linking to your app"
@@ -61,6 +61,8 @@ Linking to your app from other apps or a web browser is achieved using a URL bas
   href="/linking/into-your-app/"
   Icon={BookOpen02Icon}
 />
+
+## App shortcuts
 
 ### Android App Links
 
@@ -99,10 +101,9 @@ This link type allows your app to always open when a user clicks the link instea
 
 ## Use Expo Router to handle deep linking
 
-To implement any of the above Linking strategy, **we recommend using** [Expo Router](/router/introduction/) since deep linking is automatically enabled for all of your app's screens.
+To implement any of the above Linking strategies, **we recommend using** [Expo Router](/router/introduction/) since deep linking is automatically enabled for all of your app's screens.
 
 **Benefits:**
 
-- When implementing deep links, you can skip [adding `scheme` to your app's config](/linking/into-your-app/#add-a-custom-scheme-in-app-config).
 - `Link` component from Expo Router can be used to [handle URL schemes to other apps](/linking/into-other-apps/#expo-router)
 - Android App Links and iOS Universal Links require configuring two-way association and runtime routing for the link in your app. This configuration is done in JavaScript and must be applied to every route to ensure coordination between web and native platforms. Since Expo Router enables deep links automatically, you don't have to configure runtime routing separately.
