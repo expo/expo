@@ -1,8 +1,10 @@
 import {
+  DefaultNavigatorOptions,
   LinkingContext,
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
+  TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
 import {
@@ -18,10 +20,10 @@ import {
 import { StyleSheet, ViewProps, View } from 'react-native';
 
 import {
-  ExpoTabsProps,
   ExpoTabsScreenOptions,
   TabNavigationEventMap,
   TabTriggerMapContext,
+  TabsContextValue,
 } from './TabContext';
 import { isTabList } from './TabList';
 import { ExpoTabRouter, ExpoTabRouterOptions } from './TabRouter';
@@ -40,15 +42,45 @@ export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
 
-export type UseTabsOptions = Omit<ExpoTabsProps, 'children'> &
-  Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
+/**
+ * Options to provide to the Tab Router.
+ */
+export type UseTabsOptions = Omit<
+  DefaultNavigatorOptions<
+    ParamListBase,
+    any,
+    TabNavigationState<any>,
+    ExpoTabsScreenOptions,
+    TabNavigationEventMap,
+    any
+  >,
+  'children'
+> & {
+  backBehavior?: TabRouterOptions['backBehavior'];
+};
 
 export type TabsProps = ViewProps & {
+  /** Forward props to child component and removes the extra <View />. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
 };
 
-export function Tabs({ children, asChild, options, ...props }: TabsProps) {
+/**
+ * Root component for the headless tabs.
+ *
+ * @see useTabsWithChildren - The hook version of this component.
+ * @example
+ * ```ts
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
+export function Tabs(props: TabsProps) {
+  const { children, asChild, options, ...rest } = props;
   const Comp = asChild ? SafeAreaViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -58,7 +90,7 @@ export function Tabs({ children, asChild, options, ...props }: TabsProps) {
   });
 
   return (
-    <Comp style={styles.tabsRoot} {...props}>
+    <Comp style={styles.tabsRoot} {...rest}>
       <NavigationContent>{children}</NavigationContent>
     </Comp>
   );
@@ -72,14 +104,38 @@ export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptio
   triggers: ScreenTrigger<T>[];
 };
 
-export function useTabsWithChildren({ children, ...options }: UseTabsWithChildrenOptions) {
-  return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
+/**
+ * Hook version of `<Tabs />`. The returned NavigationContent component should be rendered
+ *
+ * @see Tabs - The component version of this hook
+ * @example
+ * ```ts
+ * export function MyTabs({ children }) {
+ *   const { NavigationContent } = useTabsWithChildren({ children })
+ * return <NavigationContent />
+ * ```
+ */
+export function useTabsWithChildren(options: UseTabsWithChildrenOptions) {
+  const { children, ...rest } = options;
+  return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...rest });
 }
 
-export function useTabsWithTriggers<T extends string | object>({
-  triggers,
-  ...options
-}: UseTabsWithTriggersOptions<T>) {
+/**
+ * Alternative hook version of `<Tabs />` that uses explicit triggers instead of `children`
+ *
+ * @see Tabs - The component version of this hook
+ * @example
+ * ```ts
+ * export function MyTabs({ children }) {
+ *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
+ *   return <NavigationContent />
+ * }
+ * ```
+ */
+export function useTabsWithTriggers<T extends string | object>(
+  options: UseTabsWithTriggersOptions<T>
+): TabsContextValue {
+  const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = useContext(TabTriggerMapContext);
   const routeNode = useRouteNode();
@@ -111,7 +167,7 @@ export function useTabsWithTriggers<T extends string | object>({
     TabNavigationEventMap
   >(ExpoTabRouter, {
     children,
-    ...options,
+    ...rest,
     triggerMap,
     id: contextKey,
     initialRouteName,
@@ -121,6 +177,7 @@ export function useTabsWithTriggers<T extends string | object>({
     state,
     descriptors,
     navigation,
+    describe,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
@@ -139,9 +196,9 @@ export function useTabsWithTriggers<T extends string | object>({
         <RNNavigationContent>{children}</RNNavigationContent>
       </NavigatorContext.Provider>
     </TabTriggerMapContext.Provider>
-  ));
+  )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent };
+  return { state, descriptors, navigation, NavigationContent, describe };
 }
 
 function parseTriggersFromChildren(

@@ -1,12 +1,16 @@
+import { TabNavigationState } from '@react-navigation/native';
 import { ReactNode, ReactElement, ComponentProps } from 'react';
 import { View, PressableProps } from 'react-native';
 import { ExpoTabsResetValue } from './TabRouter';
+import type { TriggerMap } from './common';
 import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
     children?: ReactNode | undefined;
 };
 export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
+    /** Name of tab. When used within a `<TabList />` this sets the name of the tab. Otherwise, this references the name. */
     name: string;
+    /** Name of tab. Required when used within a `<TabList />` */
     href?: Href<T>;
     /** Forward props to child component. Useful for custom wrappers. */
     asChild?: boolean;
@@ -21,74 +25,52 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
     isFocused?: boolean;
     href?: string;
 };
+/**
+ * Creates a trigger to navigate to a tab. `<TabTrigger />` functionality slightly changes when used as a child of `<TabList />`. In this instance, the `href` prop is required, and the trigger also defines what routes are present in the `<Tabs />`.
+ *
+ * When used outside of `<TabList />`, `<TabTrigger />` no longer requires a `href`.
+ *
+ * @example
+ * ```ts
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 export declare function TabTrigger<T extends string | object>({ asChild, name, href, reset, ...props }: TabTriggerProps<T>): import("react").JSX.Element;
+/**
+ * @hidden
+ */
 export declare function isTabTrigger(child: ReactElement<any>): child is ReactElement<ComponentProps<typeof TabTrigger>>;
+/**
+ * Options for `switchTab` function.
+ */
 export type SwitchToOptions = {
+    /** Navigate and reset the history */
     reset?: ExpoTabsResetValue;
 };
-export declare function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps<any>): {
-    switchTab: (name: string, options?: SwitchToOptions) => void;
-    getTrigger: (name: string) => {
-        type: "internal";
-        name: string;
-        href: string;
-        routeNode: import("../Route").RouteNode;
-        action: import("@react-navigation/routers").TabActionType | {
-            type: "JUMP_TO";
-            source?: string | undefined;
-            target?: string | undefined;
-            payload: {
-                name: string;
-                reset?: ExpoTabsResetValue | undefined;
-                params?: object | undefined;
-            };
-        };
-        index: number;
-        isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
-        resolvedHref: string;
-    } | {
-        type: "external";
-        name: string;
-        href: string;
-        index: number;
-        isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
-        resolvedHref: string;
-    } | undefined;
-    trigger: {
-        type: "internal";
-        name: string;
-        href: string;
-        routeNode: import("../Route").RouteNode;
-        action: import("@react-navigation/routers").TabActionType | {
-            type: "JUMP_TO";
-            source?: string | undefined;
-            target?: string | undefined;
-            payload: {
-                name: string;
-                reset?: ExpoTabsResetValue | undefined;
-                params?: object | undefined;
-            };
-        };
-        index: number;
-        isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
-        resolvedHref: string;
-    } | {
-        type: "external";
-        name: string;
-        href: string;
-        index: number;
-        isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
-        resolvedHref: string;
-    } | undefined;
-    triggerProps: {
-        isFocused: boolean;
-        onPress: (event: import("react-native").GestureResponderEvent) => void;
-        onLongPress: (event: import("react-native").GestureResponderEvent) => void;
-    };
+export type Trigger = TriggerMap[string] & {
+    isFocused: boolean;
+    resolvedHref: string;
+    route: TabNavigationState<any>['routes'][number];
 };
+export type UseTabTriggerResult = {
+    switchTab: (name: string, options: SwitchToOptions) => void;
+    getTrigger: (name: string) => Trigger | undefined;
+    trigger?: Trigger;
+    triggerProps: TriggerProps;
+};
+export type TriggerProps = {
+    isFocused: boolean;
+    onPress: PressableProps['onPress'];
+    onLongPress: PressableProps['onLongPress'];
+};
+/**
+ * Utility hook creating custom `<TabTrigger />`
+ */
+export declare function useTabTrigger(options: TabTriggerProps<any>): UseTabTriggerResult;
 export {};
 //# sourceMappingURL=TabTrigger.d.ts.map

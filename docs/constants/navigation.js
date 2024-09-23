@@ -232,6 +232,7 @@ const general = [
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
     ]),
+    makeGroup('UI', [makePage('router/ui/tabs.mdx')], { expanded: false }),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
