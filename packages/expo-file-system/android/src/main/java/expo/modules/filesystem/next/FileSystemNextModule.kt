@@ -3,7 +3,6 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
-import expo.modules.filesystem.FileSystemModule
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
@@ -16,7 +15,6 @@ import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.net.URI
 
