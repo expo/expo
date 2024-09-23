@@ -42,6 +42,13 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     super.deallocate()
   }
 
+  fun onStarted() {
+    if (isInvalidState(ResponseState.INITIALIZED)) {
+      return
+    }
+    state = ResponseState.STARTED
+  }
+
   fun startStreaming() {
     if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
       return

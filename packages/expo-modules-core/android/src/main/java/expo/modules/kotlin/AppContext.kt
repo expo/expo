@@ -355,5 +355,12 @@ class AppContext(
         ?: (reactContext as? ReactApplicationContext)?.currentActivity
     }
 
+  val throwingActivity: Activity
+    get() {
+      val current = activityProvider?.currentActivity
+        ?: (reactContext as? ReactApplicationContext)?.currentActivity
+      return current ?: throw Exceptions.MissingActivity()
+    }
+
 // endregion
 }

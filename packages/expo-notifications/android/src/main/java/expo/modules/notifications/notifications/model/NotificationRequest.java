@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
+import expo.modules.notifications.notifications.interfaces.INotificationContent;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
@@ -13,16 +14,16 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
  */
 public class NotificationRequest implements Parcelable, Serializable {
   private String mIdentifier;
-  private NotificationContent mContent;
+  private INotificationContent mContent;
   private NotificationTrigger mTrigger;
 
-  public NotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger) {
+  public NotificationRequest(String identifier, INotificationContent content, NotificationTrigger trigger) {
     mIdentifier = identifier;
     mContent = content;
     mTrigger = trigger;
   }
 
-  public NotificationContent getContent() {
+  public INotificationContent getContent() {
     return mContent;
   }
 

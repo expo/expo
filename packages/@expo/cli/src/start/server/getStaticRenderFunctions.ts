@@ -87,7 +87,8 @@ export async function createMetroEndpointAsync(
 export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
-  filename: string
+  filename: string,
+  isExporting: boolean
 ): T {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
   const contents = evalMetroNoHandling(projectRoot, script, filename);
@@ -111,7 +112,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
         return await fn.apply(this, props);
       } catch (error: any) {
         await logMetroError(projectRoot, { error });
-        throw new SilentError(error);
+        if (isExporting) {
+          throw error;
+        } else {
+          throw new SilentError(error);
+        }
       }
     };
     return acc;

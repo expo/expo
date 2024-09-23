@@ -215,7 +215,6 @@ export async function exportFromServerAsync(
 
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
-      outputDir,
       platform: 'web',
       server: devServer,
       manifest: serverManifest,
@@ -248,12 +247,18 @@ export function getHtmlFiles({
     route: RouteNode | null,
     baseUrl = ''
   ) {
-    for (const value of Object.values(screens)) {
+    for (const [key, value] of Object.entries(screens)) {
       let leaf: string | null = null;
       if (typeof value === 'string') {
         leaf = value;
       } else if (Object.keys(value.screens).length === 0) {
-        leaf = value.path;
+        // Ensure the trailing index is accounted for.
+        if (key === value.path + '/index') {
+          leaf = key;
+        } else {
+          leaf = value.path;
+        }
+
         route = value._route ?? null;
       }
 
@@ -387,11 +392,9 @@ export function getPathVariations(routePath: string): string[] {
 export async function exportApiRoutesStandaloneAsync(
   devServer: MetroBundlerDevServer,
   {
-    outputDir,
     files = new Map(),
     platform,
   }: {
-    outputDir: string;
     files?: ExportAssetMap;
     platform: string;
   }
@@ -399,7 +402,6 @@ export async function exportApiRoutesStandaloneAsync(
   const { serverManifest } = await devServer.getServerManifestAsync();
 
   const apiRoutes = await exportApiRoutesAsync({
-    outputDir,
     server: devServer,
     manifest: serverManifest,
     // NOTE(kitten): For now, we always output source maps for API route exports
@@ -417,11 +419,10 @@ export async function exportApiRoutesStandaloneAsync(
 
 async function exportApiRoutesAsync({
   includeSourceMaps,
-  outputDir,
   server,
   platform,
   ...props
-}: Pick<Options, 'outputDir' | 'includeSourceMaps'> & {
+}: Pick<Options, 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
   platform: string;
@@ -432,8 +433,6 @@ async function exportApiRoutesAsync({
     includeSourceMaps,
     platform,
   });
-
-  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),

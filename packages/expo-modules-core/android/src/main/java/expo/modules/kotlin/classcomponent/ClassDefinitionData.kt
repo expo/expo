@@ -6,5 +6,6 @@ import expo.modules.kotlin.objects.ObjectDefinitionData
 class ClassDefinitionData(
   val name: String,
   val constructor: SyncFunctionComponent,
-  val objectDefinition: ObjectDefinitionData
+  val objectDefinition: ObjectDefinitionData,
+  val isSharedRef: Boolean
 )

@@ -30,9 +30,11 @@ if (style.styleSheet){
         "data": {
           "css": {
             "code": "._R_BGG_container{background:red}",
+            "externalImports": [],
             "functionMap": null,
             "lineCount": 1,
             "map": [],
+            "skipCache": false,
           },
         },
         "type": "js/module",
@@ -78,9 +80,11 @@ if (style.styleSheet){
   background: red;
 }
 ",
+            "externalImports": [],
             "functionMap": null,
             "lineCount": 4,
             "map": [],
+            "skipCache": false,
           },
         },
         "type": "js/module",
@@ -109,7 +113,10 @@ style.setAttribute('data-expo-css-hmr', "acme_css");
   }
 style.setAttribute('data-expo-loader', 'css');
 head.appendChild(style);
-const css = \`body { background: red; }\`;
+const css = \`body {
+  background: red;
+}
+\`;
 if (style.styleSheet){
   style.styleSheet.cssText = css;
 } else {
@@ -126,6 +133,7 @@ if (style.styleSheet){
   background: red;
 }
 ",
+            "externalImports": [],
             "functionMap": null,
             "lineCount": 4,
             "map": [],

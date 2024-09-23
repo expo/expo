@@ -43,8 +43,11 @@ namespace expo {
     void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                                         jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder) {
       auto &runtime = *reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
-      auto callInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
-
+      auto callInvokerHolder = jsCallInvokerHolder->cthis();
+      if (callInvokerHolder == nullptr) {
+        jni::throwNewJavaException("java/lang/IllegalStateException", "CallInvokerHolder is null");
+      }
+      auto callInvoker = callInvokerHolder->getCallInvoker();
       auto function = [this, callInvoker](jsi::Runtime &runtime,
                                           const jsi::Value &thisValue,
                                           const jsi::Value *args,

@@ -46,7 +46,7 @@ function runVoidBenchmark(): BenchmarkResult {
     }
     const end = performance.now();
     bridgeTime = end - start;
-    console.log(`BridgeModule took ${expoTime.toFixed(2)}ms to run nothing() ${runs}x!`);
+    console.log(`BridgeModule took ${bridgeTime.toFixed(2)}ms to run nothing() ${runs}x!`);
   }
 
   return { expoTime, turboTime, bridgeTime };

@@ -15,6 +15,8 @@ final class FetchUpdateProcedure: StateMachineProcedure {
   private let successBlock: (_ fetchUpdateResult: FetchUpdateResult) -> Void
   private let errorBlock: (_ error: Exception) -> Void
 
+  private let remoteAppLoader: RemoteAppLoader
+
   init(
     database: UpdatesDatabase,
     config: UpdatesConfig,
@@ -35,6 +37,14 @@ final class FetchUpdateProcedure: StateMachineProcedure {
     self.getLaunchedUpdate = getLaunchedUpdate
     self.successBlock = successBlock
     self.errorBlock = errorBlock
+
+    self.remoteAppLoader = RemoteAppLoader(
+      config: self.config,
+      database: self.database,
+      directory: self.updatesDirectory,
+      launchedUpdate: self.getLaunchedUpdate(),
+      completionQueue: controllerQueue
+    )
   }
 
   func getLoggerTimerLabel() -> String {
@@ -43,14 +53,6 @@ final class FetchUpdateProcedure: StateMachineProcedure {
 
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventDownload())
-
-    let remoteAppLoader = RemoteAppLoader(
-      config: self.config,
-      database: self.database,
-      directory: self.updatesDirectory,
-      launchedUpdate: self.getLaunchedUpdate(),
-      completionQueue: controllerQueue
-    )
     remoteAppLoader.loadUpdate(
       fromURL: self.config.updateUrl
     ) { updateResponse in

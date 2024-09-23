@@ -6,6 +6,14 @@ public final class FileSystemNextModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
+    Constants {
+      return [
+        "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
+        "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
+        "bundleDirectory": Bundle.main.bundlePath
+      ]
+    }
+
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
       let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
@@ -30,7 +38,7 @@ public final class FileSystemNextModule: Module {
             promise.resolve(FileSystemFile(url: destination).url.absoluteString)
           } else {
             try FileManager.default.moveItem(at: fileURL, to: to.url)
-            // TODO: Remove .url once returning shared objects works
+            // TODO: Remove .url.absoluteString once returning shared objects works
             promise.resolve(to.url.absoluteString)
           }
         } catch {
@@ -55,6 +63,10 @@ public final class FileSystemNextModule: Module {
         return try file.text()
       }
 
+      Function("base64") { file in
+        return try file.base64()
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -76,12 +88,12 @@ public final class FileSystemNextModule: Module {
         try file.delete()
       }
 
-      Function("exists") { file in
-        return file.exists()
+      Property("exists") { file in
+        return file.exists
       }
 
       Function("create") { file in
-        file.create()
+        try file.create()
       }
 
       Function("copy") { (file, to: FileSystemPath) in
@@ -92,7 +104,7 @@ public final class FileSystemNextModule: Module {
         try file.move(to: to)
       }
 
-      Property("path") { file in
+      Property("uri") { file in
         return file.url.absoluteString
       }
     }
@@ -111,8 +123,8 @@ public final class FileSystemNextModule: Module {
         try directory.delete()
       }
 
-      Function("exists") { directory in
-        return directory.exists()
+      Property("exists") { directory in
+        return directory.exists
       }
 
       Function("create") { directory in
@@ -127,7 +139,12 @@ public final class FileSystemNextModule: Module {
         try directory.move(to: to)
       }
 
-      Property("path") { directory in
+      // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+      Function("listAsRecords") { directory in
+        try directory.listAsRecords()
+      }
+
+      Property("uri") { directory in
         return directory.url.absoluteString
       }
     }

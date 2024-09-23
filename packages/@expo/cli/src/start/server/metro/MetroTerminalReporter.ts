@@ -114,7 +114,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
     // Don't print a giant logo...
-    this.terminal.log('Starting Metro Bundler');
+    this.terminal.log(chalk.dim('Starting Metro Bundler'));
   }
 
   shouldFilterClientLog(event: {

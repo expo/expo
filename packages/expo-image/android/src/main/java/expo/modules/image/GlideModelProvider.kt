@@ -3,70 +3,49 @@ package expo.modules.image
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.bumptech.glide.load.model.GlideUrl
+import expo.modules.image.blurhash.BlurhashModel
 import expo.modules.image.decodedsource.DecodedModel
 import expo.modules.image.okhttp.GlideUrlWrapper
+import expo.modules.image.thumbhash.ThumbhashModel
 
-sealed class GlideModelProvider {
-  abstract val glideModel: Any
-
-  override fun equals(other: Any?): Boolean {
-    return this === other || (other is GlideModelProvider && glideModel == other.glideModel)
-  }
-
-  override fun hashCode(): Int = glideModel.hashCode()
+fun interface GlideModelProvider {
+  fun getGlideModel(): Any
 }
 
-class DecodedModelProvider(drawable: Drawable) : GlideModelProvider() {
-  override val glideModel = DecodedModel(drawable)
+data class DecodedModelProvider(
+  private val drawable: Drawable
+) : GlideModelProvider {
+  override fun getGlideModel() = DecodedModel(drawable)
 }
 
-class UrlModelProvider(
-  glideUrl: GlideUrl
-) : GlideModelProvider() {
-  override val glideModel: GlideUrlWrapper = GlideUrlWrapper(glideUrl)
+data class UrlModelProvider(
+  private val glideUrl: GlideUrl
+) : GlideModelProvider {
+  override fun getGlideModel() = GlideUrlWrapper(glideUrl)
 }
 
-class RawModelProvider(
-  data: String
-) : GlideModelProvider() {
-  override val glideModel: String = data
+data class RawModelProvider(
+  private val data: String
+) : GlideModelProvider {
+  override fun getGlideModel() = data
 }
 
-class UriModelProvider(
-  uri: Uri
-) : GlideModelProvider() {
-  override val glideModel: Uri = uri
+data class UriModelProvider(
+  private val uri: Uri
+) : GlideModelProvider {
+  override fun getGlideModel() = uri
 }
 
-class BlurhashModelProvider(
-  val uri: Uri,
-  val width: Int,
-  val height: Int
-) : GlideModelProvider() {
-  override val glideModel: BlurhashModelProvider = this
-
-  override fun equals(other: Any?): Boolean {
-    return this === other || (other is BlurhashModelProvider && uri == other.uri && width == other.width && height == other.height)
-  }
-
-  override fun hashCode(): Int {
-    var result = uri.hashCode()
-    result = 31 * result + width
-    result = 31 * result + height
-    return result
-  }
+data class BlurhashModelProvider(
+  private val uri: Uri,
+  private val width: Int,
+  private val height: Int
+) : GlideModelProvider {
+  override fun getGlideModel() = BlurhashModel(uri, width, height)
 }
 
-class ThumbhashModelProvider(
-  var uri: Uri
-) : GlideModelProvider() {
-  override val glideModel: ThumbhashModelProvider = this
-
-  override fun equals(other: Any?): Boolean {
-    return this === other || (other is ThumbhashModelProvider && uri == other.uri)
-  }
-
-  override fun hashCode(): Int {
-    return uri.hashCode()
-  }
+data class ThumbhashModelProvider(
+  private val uri: Uri
+) : GlideModelProvider {
+  override fun getGlideModel() = ThumbhashModel(uri)
 }

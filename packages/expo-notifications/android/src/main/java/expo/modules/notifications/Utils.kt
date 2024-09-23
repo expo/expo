@@ -90,11 +90,11 @@ internal fun isValidJSONString(test: Any?): Boolean {
   when (test is String) {
     true -> {
       try {
-        JSONObject(test as String)
+        JSONObject(test)
         return true
       } catch (objectEx: JSONException) {
         try {
-          JSONArray(test as String)
+          JSONArray(test)
           return true
         } catch (arrayEx: JSONException) {
           return false

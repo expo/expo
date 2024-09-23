@@ -217,7 +217,7 @@ export type AudioMode = {
     interruptionMode: InterruptionMode;
     allowsRecording: boolean;
     shouldPlayInBackground: boolean;
+    shouldRouteThroughEarpiece: boolean;
 };
-type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
-export {};
+export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
 //# sourceMappingURL=Audio.types.d.ts.map

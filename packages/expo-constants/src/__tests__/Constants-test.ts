@@ -66,9 +66,12 @@ describe(`manifest`, () => {
       const ExpoModulesCore = jest.requireActual('expo-modules-core');
       return {
         ...ExpoModulesCore,
-        NativeModulesProxy: {
-          ...(ExpoModulesCore.NativeModulesProxy ?? {}),
-          ...mockValues,
+        requireOptionalNativeModule(moduleName) {
+          if (Object.keys(mockValues).includes(moduleName)) {
+            return mockValues[moduleName];
+          }
+
+          return jest.requireActual('expo-modules-core').requireOptionalNativeModule(moduleName);
         },
       };
     });

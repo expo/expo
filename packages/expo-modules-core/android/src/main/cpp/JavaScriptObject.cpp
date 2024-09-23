@@ -182,7 +182,7 @@ void JavaScriptObject::defineNativeDeallocator(
         JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
         nullptr
       );
-      globalRef->invoke(args);
+      JNIFunctionBody::invoke(globalRef.get(), args);
       globalRef.reset();
     }
   );

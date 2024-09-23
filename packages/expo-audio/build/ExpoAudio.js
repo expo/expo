@@ -22,7 +22,6 @@ export function useAudioSampleListener(player, listener) {
         }
         const subscription = player.addListener('onAudioSampleUpdate', listener);
         return () => {
-            player.setAudioSamplingEnabled(false);
             subscription.remove();
         };
     }, [player.id]);

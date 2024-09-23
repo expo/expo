@@ -176,7 +176,6 @@ describe('server', () => {
         'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        'debug.html',
         'favicon.ico',
         'index.html',
         'metadata.json',
@@ -282,7 +281,6 @@ describe('server', () => {
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/9ce7db807e4147e00df372d053c154c2',
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        'debug.html',
         'favicon.ico',
         'metadata.json',
       ]);

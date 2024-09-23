@@ -87,12 +87,12 @@ function generateChangelogStub(pullRequest: PullRequest) {
   const userLink = markdownLink('@' + pullRequest.user!.login, pullRequest.user!.html_url);
   const suggestedTitle = filterBracketContent(pullRequest.title);
 
-  return `- ${suggestedTitle} (${prLink} by ${userLink})`;
+  return `\`- ${suggestedTitle} (${prLink} by ${userLink})\``;
 }
 
 function filterBracketContent(input: string): string {
   // many PR titles start with package name (e.g. [video]). We don't want that in a package-specific changelog.
-  return input.replace(/\[.*?\]/g, '').trim();
+  return input.replace(/\[.*?\]/, '').trim();
 }
 
 function globalChangelogEntriesOutput(changelogLinks: string): ReviewOutput {

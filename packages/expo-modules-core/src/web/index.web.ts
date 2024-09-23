@@ -8,7 +8,7 @@ export function registerWebGlobals() {
     NativeModule,
     SharedObject,
     SharedRef,
-    modules: globalThis.ExpoDomWebView?.expoModulesProxy ?? {},
+    modules: {},
     uuidv4: uuid.v4,
     uuidv5: uuid.v5,
     getViewConfig: () => {

@@ -46,7 +46,7 @@ import kotlin.math.min
 @SuppressLint("ViewConstructor")
 class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private val activity: Activity
-    get() = appContext.currentActivity ?: throw MissingActivity()
+    get() = appContext.throwingActivity
 
   internal val requestManager = getOrCreateRequestManager(appContext, activity)
   private val progressListener = OkHttpProgressListener(WeakReference(this))
@@ -74,6 +74,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onProgress by EventDispatcher<ImageProgressEvent>()
   internal val onError by EventDispatcher<ImageErrorEvent>()
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
+  internal val onDisplay by EventDispatcher<Unit>()
 
   internal var sources: List<Source> = emptyList()
   private val bestSource: Source?
@@ -314,6 +315,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
 
           configureView(newView, target, resource, isPlaceholder)
+
+          // Dispatch "onDisplay" event only for the main source (no placeholder).
+          if (target.hasSource) {
+            onDisplay.invoke(Unit)
+          }
+
           if (transitionDuration <= 0) {
             clearPreviousView()
             newView.alpha = 1f
@@ -518,8 +525,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       val bestSource = bestSource
       val bestPlaceholder = bestPlaceholder
 
-      val sourceToLoad = bestSource?.createGlideModel(context)
-      val placeholder = bestPlaceholder?.createGlideModel(context)
+      val sourceToLoad = bestSource?.createGlideModelProvider(context)
+      val placeholder = bestPlaceholder?.createGlideModelProvider(context)
 
       if (cleanIfNeeded(bestSource, sourceToLoad, placeholder)) {
         // the view was cleaned
@@ -550,7 +557,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       val options = bestSource?.createGlideOptions(context)
       val propOptions = createPropOptions()
 
-      val model = sourceToLoad?.glideModel
+      val model = sourceToLoad?.getGlideModel()
       if (model is GlideUrlWrapper) {
         model.progressListener = progressListener
       }
@@ -576,7 +583,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
           newTarget.placeholderContentFit = newPlaceholderContentFit
 
-          thumbnail(requestManager.load(placeholderModel.glideModel))
+          thumbnail(requestManager.load(placeholderModel.getGlideModel()))
             .apply(placeholderSource.createGlideOptions(context))
         }
         .downsample(downsampleStrategy)

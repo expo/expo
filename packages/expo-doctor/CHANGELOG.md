@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `.easignore` files when performing project validations. ([#31334](https://github.com/expo/expo/pull/31334) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

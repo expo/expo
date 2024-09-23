@@ -31,7 +31,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
     }
 
     val hasSharedObject = ownerClass !== Unit::class // TODO: Add an empty constructor that throws when called from JS
-    if (hasSharedObject && constructor == null && !ownerClass.isSubclassOf(SharedRef::class)) {
+    val isSharedRef = ownerClass.isSubclassOf(SharedRef::class)
+    if (hasSharedObject && constructor == null && !isSharedRef) {
       throw IllegalArgumentException("constructor cannot be null")
     }
 
@@ -41,7 +42,8 @@ class ClassComponentBuilder<SharedObjectType : Any>(
     return ClassDefinitionData(
       name,
       constructor,
-      objectData
+      objectData,
+      isSharedRef
     )
   }
 

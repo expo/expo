@@ -8,6 +8,7 @@
 
 - Added `react-native-config` command to support core autolinking for react-native. ([#29818](https://github.com/expo/expo/pull/29818) by [@kudo](https://github.com/kudo))
 - Added AAR files autolinking as Gradle projects. ([#30706](https://github.com/expo/expo/pull/30706) by [@kudo](https://github.com/kudo))
+- Add support for react-native 0.76 ([#31593](https://github.com/expo/expo/pull/31593) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

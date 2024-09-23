@@ -10,35 +10,11 @@
 //// <reference types="react/canary" />
 'use client';
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
-const FS = __importStar(require("expo-file-system"));
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");
@@ -63,7 +39,16 @@ const ENTRY = 'e';
 const SET_ELEMENTS = 's';
 const ON_FETCH_DATA = 'o';
 const defaultFetchCache = {};
+const NO_CACHE_HEADERS = process.env.EXPO_OS === 'web'
+    ? {}
+    : // These are needed for iOS + Prod to get updates after the first request.
+        {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+            Expires: '0',
+        };
 const ACTION_HEADERS = {
+    ...NO_CACHE_HEADERS,
     accept: RSC_CONTENT_TYPE,
     'expo-platform': process.env.EXPO_OS,
 };
@@ -147,10 +132,22 @@ const callServerRSC = async (actionId, args, fetchCache = defaultFetchCache) => 
 exports.callServerRSC = callServerRSC;
 const prefetchedParams = new WeakMap();
 const fetchRSCInternal = (url, params) => params === undefined
-    ? (0, fetch_1.fetch)(url)
+    ? (0, fetch_1.fetch)(url, {
+        // Disable caching
+        headers: {
+            ...NO_CACHE_HEADERS,
+            'expo-platform': process.env.EXPO_OS,
+        },
+    })
     : typeof params === 'string'
-        ? (0, fetch_1.fetch)(url, { headers: { 'expo-platform': process.env.EXPO_OS, 'X-Expo-Params': params } })
-        : encodeReply(params).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', body }));
+        ? (0, fetch_1.fetch)(url, {
+            headers: {
+                ...NO_CACHE_HEADERS,
+                'expo-platform': process.env.EXPO_OS,
+                'X-Expo-Params': params,
+            },
+        })
+        : encodeReply(params).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', headers: ACTION_HEADERS, body }));
 const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     // TODO: strip when "is exporting".
     if (process.env.NODE_ENV === 'development') {
@@ -207,18 +204,12 @@ function getAdjustedFilePath(path) {
     if (path.match(/[0-9a-z]{40}#/i)) {
         return getAdjustedRemoteFilePath(path);
     }
-    if ((0, getDevServer_1.getDevServer)().bundleLoadedFromServer) {
-        return getAdjustedRemoteFilePath(path);
-    }
-    if (process.env.EXPO_OS === 'android') {
-        return 'file:///android_asset' + path;
-    }
-    return 'file://' + FS.bundleDirectory + path;
+    return getAdjustedRemoteFilePath(path);
 }
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = BASE_PATH + (0, utils_1.encodeInput)(input);
+    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     if (!(url in prefetched)) {
         prefetched[url] = fetchRSCInternal(url, params);
         prefetchedParams.set(prefetched[url], params);

@@ -2,6 +2,8 @@
 
 package expo.modules.image
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
@@ -31,11 +33,12 @@ import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
-import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -180,10 +183,11 @@ class ExpoImageModule : Module() {
         "onLoadStart",
         "onProgress",
         "onError",
-        "onLoad"
+        "onLoad",
+        "onDisplay"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sources: Either<List<SourceMap>, SharedRef<Drawable>>? ->
+      Prop("source") { view: ExpoImageViewWrapper, sources: EitherOfThree<List<SourceMap>, SharedRef<Drawable>, SharedRef<Bitmap>>? ->
         if (sources == null) {
           view.sources = emptyList()
           return@Prop
@@ -194,7 +198,14 @@ class ExpoImageModule : Module() {
           return@Prop
         }
 
-        val drawable = sources.get(toKClass<SharedRef<Drawable>>()).ref
+        if (sources.`is`(toKClass<SharedRef<Drawable>>())) {
+          val drawable = sources.get(toKClass<SharedRef<Drawable>>()).ref
+          view.sources = listOf(DecodedSource(drawable))
+        }
+
+        val bitmap = sources.get(toKClass<SharedRef<Bitmap>>()).ref
+        val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+        val drawable = BitmapDrawable(context.resources, bitmap)
         view.sources = listOf(DecodedSource(drawable))
       }
 

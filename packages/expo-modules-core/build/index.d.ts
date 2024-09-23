@@ -13,7 +13,7 @@ import './sweet/setUpErrorManager.fx';
 import './web/index';
 export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
-export { NativeModulesProxy, ProxyNativeModule, Platform, requireNativeViewManager, EventEmitter, SharedObject, SharedRef, NativeModule, CodedError, UnavailabilityError, EventSubscription, LegacyEventEmitter, };
+export { ProxyNativeModule, Platform, requireNativeViewManager, EventEmitter, SharedObject, SharedRef, NativeModule, CodedError, UnavailabilityError, EventSubscription, NativeModulesProxy, LegacyEventEmitter, };
 export * from './requireNativeModule';
 export * from './registerWebModule';
 export * from './TypedArrays.types';

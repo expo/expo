@@ -59,11 +59,13 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
     validations:
       required: true
   - type: textarea
     attributes:
       label: Expo Doctor Diagnostics
       description: Run the `npx expo-doctor@latest` command on your minimal reproduction and paste its output in the field below. If Doctor reports any errors, fix them before submitting the issue.
+      render: text
     validations:
       required: true

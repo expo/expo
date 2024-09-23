@@ -50,27 +50,6 @@ To use an [exact version of Bun](/eas/json/#bun) with EAS, add the version numbe
 }
 ```
 
-## Migrate to using Bun from npm, pnpm or yarn
-
-It is currently not possible to import another package manager's lockfile into Bun (though this feature is being [worked on](https://github.com/oven-sh/bun/issues/1751)). Until this is done, there is an element of risk to switching over to Bun on an existing project.
-
-The purpose of a lockfile is to _lock_ down your dependency tree. If there is a library in **package.json** whose version number starts with a `^` or `~`, you are likely to end up with a different version of the package.
-
-- `^` means you're opting into future minor and patch versions
-- `~` means you're opting into future patch versions only
-
-According to Semantic Versioning (SemVer), minor and patch versions do not include breaking changes. Unfortunately, breaking changes can still slip through. Since a lockdown file contains **specific versions** of dependencies, you will not get updates unless you explicitly opt-in. By deleting the lockfile, you are losing that safety and getting the latest versions available of all the packages as defined in your **package.json**.
-
-To migrate to using Bun (use at your own risk):
-
-<Terminal
-  cmd={[
-    '$ rm -rf node_modules',
-    '$ rm yarn.lock pnpm-lock.yaml package-lock.json',
-    '$ bun install',
-  ]}
-/>
-
 ## Trusted dependencies
 
 Unlike other package managers, Bun does not automatically execute lifecycle scripts from installed libraries, as this is considered a security risk. However, if a package you are installing has a `postinstall` script that you want to run, you have to explicitly state that by including that library in your [`trustedDependencies`](https://bun.sh/guides/install/trusted) array in your **package.json**.

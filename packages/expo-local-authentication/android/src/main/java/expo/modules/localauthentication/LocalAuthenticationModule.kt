@@ -75,7 +75,7 @@ class LocalAuthenticationModule : Module() {
     }
 
     AsyncFunction("authenticateAsync") { options: AuthOptions, promise: Promise ->
-      val fragmentActivity = currentActivity as? FragmentActivity
+      val fragmentActivity = appContext.throwingActivity as? FragmentActivity
       if (fragmentActivity == null) {
         promise.reject(Exceptions.MissingActivity())
         return@AsyncFunction
@@ -137,9 +137,6 @@ class LocalAuthenticationModule : Module() {
 
   private val keyguardManager: KeyguardManager
     get() = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-
-  private val currentActivity: Activity?
-    get() = appContext.currentActivity
 
   private val biometricManager by lazy { BiometricManager.from(context) }
   private val packageManager by lazy { context.packageManager }
@@ -239,7 +236,7 @@ class LocalAuthenticationModule : Module() {
   }
 
   private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: Promise) {
-    val fragmentActivity = currentActivity as FragmentActivity?
+    val fragmentActivity = appContext.throwingActivity as FragmentActivity?
     if (fragmentActivity == null) {
       promise.resolve(
         createResponse(

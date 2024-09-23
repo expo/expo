@@ -51,7 +51,7 @@
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-doctor                           @keith-kurak
 /packages/expo-document-picker                  @lukmccall @alanjhughes 
-/packages/expo-env-info                         @bycedric @kbrandwijk
+/packages/expo-env-info                         @bycedric
 /packages/expo-face-detector                    @kudo
 /packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-font                             @tsapeta @alanjhughes

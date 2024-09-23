@@ -26,17 +26,18 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
       client.newBuilder().cookieJar(CookieJar.NO_COOKIES).build()
     }
 
-    var headers = requestInit.headers.toHeaders()
+    val headers = requestInit.headers.toHeaders()
     val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()
     val request = Request.Builder()
       .headers(headers)
       .method(requestInit.method, requestBody?.toRequestBody(mediaType))
-      .url(url)
+      .url(OkHttpFileUrlInterceptor.handleFileUrl(url))
       .build()
     this.requestHolder.request = request
 
     this.task = newClient.newCall(request)
     this.task?.enqueue(this.response)
+    response.onStarted()
   }
 
   fun cancel() {

@@ -1,5 +1,5 @@
 import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
-export interface DomWebViewProps extends ViewProps, IosScrollViewProps, UnsupportedWebViewProps {
+export interface DomWebViewProps extends ViewProps, AndroidProps, IosScrollViewProps, UnsupportedWebViewProps {
     /**
      * Loads static html or a uri (with optional headers) in the WebView.
      */
@@ -27,6 +27,16 @@ export interface DomWebViewProps extends ViewProps, IosScrollViewProps, Unsuppor
     onMessage?: (event: {
         nativeEvent: MessageEventData;
     }) => void;
+    /**
+     * Boolean value that determines whether a horizontal scroll indicator is
+     * shown in the `WebView`. The default value is `true`.
+     */
+    showsHorizontalScrollIndicator?: boolean;
+    /**
+     * Boolean value that determines whether a vertical scroll indicator is
+     * shown in the `WebView`. The default value is `true`.
+     */
+    showsVerticalScrollIndicator?: boolean;
 }
 interface IosScrollViewProps {
     /**
@@ -85,16 +95,16 @@ interface IosScrollViewProps {
      * @platform ios
      */
     directionalLockEnabled?: boolean;
+}
+interface AndroidProps {
     /**
-     * Boolean value that determines whether a horizontal scroll indicator is
-     * shown in the `WebView`. The default value is `true`.
+     * Allows to scroll inside the webview when used inside a scrollview.
+     * Behaviour already existing on iOS.
+     *
+     * @platform android
+     * @default true
      */
-    showsHorizontalScrollIndicator?: boolean;
-    /**
-     * Boolean value that determines whether a vertical scroll indicator is
-     * shown in the `WebView`. The default value is `true`.
-     */
-    showsVerticalScrollIndicator?: boolean;
+    nestedScrollEnabled?: boolean;
 }
 /**
  * Unsupported RNC WebView props that to suppress TypeScript errors.

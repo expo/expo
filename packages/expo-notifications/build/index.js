@@ -1,3 +1,9 @@
+import { isRunningInExpoGo } from 'expo';
+if (isRunningInExpoGo()) {
+    const message = '`expo-notifications` functionality is not fully supported in Expo Go:\n' +
+        'We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+    console.warn(message);
+}
 export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 export { default as unregisterForNotificationsAsync } from './unregisterForNotificationsAsync';
 export { default as getExpoPushTokenAsync } from './getExpoPushTokenAsync';

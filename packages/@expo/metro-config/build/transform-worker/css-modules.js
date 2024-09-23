@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matchCssModule = exports.convertLightningCssToReactNativeWebStyleSheet = exports.transformCssModuleWeb = void 0;
+exports.collectCssImports = exports.printCssWarnings = exports.matchCssModule = exports.convertLightningCssToReactNativeWebStyleSheet = exports.transformCssModuleWeb = void 0;
+const code_frame_1 = __importDefault(require("@babel/code-frame"));
 const css_1 = require("./css");
 const RNW_CSS_CLASS_ID = '_';
 async function transformCssModuleWeb(props) {
@@ -16,10 +20,13 @@ async function transformCssModuleWeb(props) {
             // variables created in global files are available.
             dashedIdents: false,
         },
+        errorRecovery: true,
+        analyzeDependencies: true,
         // cssModules: true,
         projectRoot: props.options.projectRoot,
         minify: props.options.minify,
     });
+    printCssWarnings(props.filename, props.src, cssResults.warnings);
     const codeAsString = cssResults.code.toString();
     const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(cssResults.exports);
     let outputModule = `module.exports=Object.assign(${JSON.stringify(styles)},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
@@ -31,10 +38,12 @@ async function transformCssModuleWeb(props) {
         });
         outputModule += '\n' + runtimeCss;
     }
+    const cssImports = collectCssImports(props.filename, props.src, cssResults.code.toString(), cssResults);
     return {
         output: outputModule,
-        css: cssResults.code,
+        css: cssImports.code,
         map: cssResults.map,
+        ...cssImports,
     };
 }
 exports.transformCssModuleWeb = transformCssModuleWeb;
@@ -66,4 +75,78 @@ function matchCssModule(filePath) {
     return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
 }
 exports.matchCssModule = matchCssModule;
+function printCssWarnings(filename, code, warnings) {
+    if (warnings) {
+        for (const warning of warnings) {
+            console.warn(`Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${(0, code_frame_1.default)(code, warning.loc.line, warning.loc.column)}`);
+        }
+    }
+}
+exports.printCssWarnings = printCssWarnings;
+function isExternalUrl(url) {
+    return url.match(/^\w+:\/\//);
+}
+function collectCssImports(filename, originalCode, code, cssResults) {
+    const externalImports = [];
+    const cssModuleDeps = [];
+    if (cssResults.dependencies) {
+        for (const dep of cssResults.dependencies) {
+            if (dep.type === 'import') {
+                // If the URL starts with `http://` or other protocols, we'll treat it like an external import.
+                if (isExternalUrl(dep.url)) {
+                    externalImports.push({
+                        url: dep.url,
+                        supports: dep.supports,
+                        media: dep.media,
+                    });
+                }
+                else {
+                    // If the import is a local file, then add it as a JS dependency so the bundler can resolve it.
+                    cssModuleDeps.push({
+                        name: dep.url,
+                        data: {
+                            asyncType: null,
+                            isOptional: false,
+                            locs: [
+                                {
+                                    start: {
+                                        line: dep.loc.start.line,
+                                        column: dep.loc.start.column,
+                                        index: -1,
+                                    },
+                                    end: {
+                                        line: dep.loc.end.line,
+                                        column: dep.loc.end.column,
+                                        index: -1,
+                                    },
+                                    filename,
+                                    identifierName: undefined,
+                                },
+                            ],
+                            css: {
+                                url: dep.url,
+                                media: dep.media,
+                                supports: dep.supports,
+                            },
+                            exportNames: [],
+                            key: dep.url,
+                        },
+                    });
+                }
+            }
+            else if (dep.type === 'url') {
+                if (isExternalUrl(dep.url)) {
+                    // Put the external URL back.
+                    code = code.replaceAll(dep.placeholder, dep.url);
+                }
+                else {
+                    // Assert that syntax like `background: url('./img.png');` is not supported yet.
+                    throw new Error(`Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${(0, code_frame_1.default)(originalCode, dep.loc.start.line, dep.loc.start.column)}`);
+                }
+            }
+        }
+    }
+    return { externalImports, code, dependencies: cssModuleDeps };
+}
+exports.collectCssImports = collectCssImports;
 //# sourceMappingURL=css-modules.js.map

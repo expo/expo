@@ -112,8 +112,11 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
 
       return response;
     } catch (error: any) {
-      // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
-      if ('code' in error && error.code === 'ENOTFOUND') {
+      // When running `expo start`, but wifi or internet has issues
+      if (
+        ('code' in error && error.code === 'ENOTFOUND') || // node-fetch error handling
+        ('cause' in error && 'code' in error.cause && error.cause.code === 'ENOTFOUND') // undici error handling
+      ) {
         disableNetwork();
 
         throw new CommandError(

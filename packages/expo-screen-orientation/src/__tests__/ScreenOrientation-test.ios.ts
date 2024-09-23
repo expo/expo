@@ -1,8 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-
+import ExpoScreenOrientation from '../ExpoScreenOrientation';
 import * as ScreenOrientation from '../ScreenOrientation';
-
-const { ExpoScreenOrientation } = NativeModulesProxy;
 
 it(`calls the lockPlatformAsync platform API with only iOS properties`, async () => {
   const androidProperties = {

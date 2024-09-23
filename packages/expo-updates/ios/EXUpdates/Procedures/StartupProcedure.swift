@@ -49,6 +49,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   private let errorRecovery = ErrorRecovery()
+  private var errorRecoveryRemoteAppLoader: RemoteAppLoader?
   internal func requestStartErrorMonitoring() {
     errorRecovery.startMonitoring()
   }
@@ -250,14 +251,15 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
 
     remoteLoadStatus = .Loading
 
-    let remoteAppLoader = RemoteAppLoader(
+    // swiftlint:disable force_unwrapping
+    errorRecoveryRemoteAppLoader = RemoteAppLoader(
       config: config,
       database: database,
       directory: self.updatesDirectory,
       launchedUpdate: launchedUpdate(),
       completionQueue: controllerQueue
     )
-    remoteAppLoader.loadUpdate(
+    errorRecoveryRemoteAppLoader!.loadUpdate(
       fromURL: config.updateUrl
     ) { updateResponse in
       if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
@@ -291,6 +293,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }
+    // swiftlint:enable force_unwrapping
   }
 
   func markFailedLaunchForLaunchedUpdate() {

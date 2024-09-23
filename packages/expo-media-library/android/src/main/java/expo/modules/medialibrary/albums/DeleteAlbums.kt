@@ -14,9 +14,22 @@ internal class DeleteAlbums(
   private val mAlbumIds = albumIds.toTypedArray()
 
   fun execute() {
-    val selection = "${MediaStore.Images.Media.BUCKET_ID} IN (${queryPlaceholdersFor(mAlbumIds)} )"
+    val selectionImages = "${MediaStore.Images.Media.BUCKET_ID} IN (${queryPlaceholdersFor(mAlbumIds)})"
+    val selectionVideos = "${MediaStore.Video.Media.BUCKET_ID} IN (${queryPlaceholdersFor(mAlbumIds)})"
     val selectionArgs = mAlbumIds
 
-    MediaLibraryUtils.deleteAssets(context, selection, selectionArgs, promise)
+    // We need to run delete for images and videos separately, but resolve the promise only once
+    val promiseOverride = object : Promise {
+      override fun resolve(value: Any?) {
+        MediaLibraryUtils.deleteAssets(context, selectionVideos, selectionArgs, promise)
+      }
+
+      override fun reject(code: String, message: String?, cause: Throwable?) {
+        promise.reject(code, message, cause)
+      }
+    }
+
+    // Delete Images
+    MediaLibraryUtils.deleteAssets(context, selectionImages, selectionArgs, promiseOverride)
   }
 }

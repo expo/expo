@@ -16,6 +16,7 @@
 - [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
 - [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix a crash on android when calling `setSystemGestureExclusionRects` on apis below 29. ([#31114](https://github.com/expo/expo/pull/31114) by [@alanjhughes](https://github.com/alanjhughes))
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

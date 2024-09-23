@@ -56,8 +56,12 @@ public class PersistentFileLog {
   public func appendEntry(entry: String, _ completionHandler: PersistentFileLogCompletionHandler? = nil) {
     PersistentFileLog.serialQueue.async {
       self.ensureFileExists()
-      self.appendTextToFile(text: entry + "\n")
-      completionHandler?(nil)
+      do {
+        try self.appendTextToFile(text: entry + "\n")
+        completionHandler?(nil)
+      } catch {
+        completionHandler?(error)
+      }
     }
   }
 
@@ -110,11 +114,11 @@ public class PersistentFileLog {
     }
   }
 
-  private func appendTextToFile(text: String) {
+  private func appendTextToFile(text: String) throws {
     if let data = text.data(using: .utf8) {
       if let fileHandle = FileHandle(forWritingAtPath: filePath) {
         fileHandle.seekToEndOfFile()
-        fileHandle.write(data)
+        try fileHandle.write(data)
         fileHandle.closeFile()
       }
     }

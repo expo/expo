@@ -53,9 +53,6 @@ import java.lang.ref.WeakReference
 class MediaLibraryModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
-
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   private var imagesObserver: MediaStoreContentObserver? = null
   private var videosObserver: MediaStoreContentObserver? = null
@@ -441,7 +438,7 @@ class MediaLibraryModule : Module() {
 
         try {
           awaitingAction = action
-          currentActivity.startIntentSenderForResult(
+          appContext.throwingActivity.startIntentSenderForResult(
             deleteRequest.intentSender,
             WRITE_REQUEST_CODE,
             null,

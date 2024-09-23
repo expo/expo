@@ -13,6 +13,8 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
   private let successBlock: (_ checkForUpdateResult: CheckForUpdateResult) -> Void
   private let errorBlock: (_ error: Exception) -> Void
 
+  private let fileDownloader: FileDownloader
+
   init(
     database: UpdatesDatabase,
     config: UpdatesConfig,
@@ -29,6 +31,8 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
     self.getLaunchedUpdate = getLaunchedUpdate
     self.successBlock = successBlock
     self.errorBlock = errorBlock
+
+    self.fileDownloader = FileDownloader(config: self.config)
   }
 
   func getLoggerTimerLabel() -> String {
@@ -47,7 +51,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
         embeddedUpdate: embeddedUpdate
       )
 
-      FileDownloader(config: self.config).downloadRemoteUpdate(
+      self.fileDownloader.downloadRemoteUpdate(
         fromURL: self.config.updateUrl,
         withDatabase: self.database,
         extraHeaders: extraHeaders) { updateResponse in

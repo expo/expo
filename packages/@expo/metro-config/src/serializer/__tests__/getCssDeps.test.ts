@@ -71,9 +71,7 @@ describe(getCssSerialAssets, () => {
           ['/root/bar', barModule],
         ]),
         {
-          processModuleFilter(modules) {
-            return true;
-          },
+          entryFile: '/foobar.js',
           projectRoot: '/',
         }
       )

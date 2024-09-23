@@ -1,7 +1,6 @@
 import React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 import { ImageErrorEventData, ImageLoadEventData, ImageNativeProps, ImageProgressEventData } from './Image.types';
-import ExpoImageModule from './ImageModule';
 declare class ExpoImage extends React.PureComponent<ImageNativeProps> {
     onLoadStart: () => void;
     onLoad: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
@@ -10,6 +9,5 @@ declare class ExpoImage extends React.PureComponent<ImageNativeProps> {
     onLoadEnd: () => void;
     render(): React.JSX.Element;
 }
-export { ExpoImageModule };
 export default ExpoImage;
 //# sourceMappingURL=ExpoImage.d.ts.map

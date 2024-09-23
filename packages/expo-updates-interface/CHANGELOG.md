@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.16.2 — 2024-05-09

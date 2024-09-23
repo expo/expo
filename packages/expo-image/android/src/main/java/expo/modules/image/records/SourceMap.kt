@@ -30,7 +30,7 @@ sealed interface Source {
   val pixelCount: Double
     get() = width * height * scale * scale
 
-  fun createGlideModel(context: Context): GlideModelProvider?
+  fun createGlideModelProvider(context: Context): GlideModelProvider?
   fun createGlideOptions(context: Context): RequestOptions
 
   /**
@@ -42,7 +42,7 @@ sealed interface Source {
 class DecodedSource(
   val drawable: Drawable
 ) : Source {
-  override fun createGlideModel(context: Context): GlideModelProvider {
+  override fun createGlideModelProvider(context: Context): GlideModelProvider {
     return DecodedModelProvider(drawable)
   }
 
@@ -92,7 +92,7 @@ data class SourceMap(
     }
   }
 
-  override fun createGlideModel(context: Context): GlideModelProvider? {
+  override fun createGlideModelProvider(context: Context): GlideModelProvider? {
     if (uri.isNullOrBlank()) {
       return null
     }

@@ -69,6 +69,13 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     return import(filePath);
 }, logApiRouteExecutionError = (error) => {
     console.error(error);
+}, handleApiRouteError = async () => {
+    return new Response('Internal server error', {
+        status: 500,
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+    });
 }, } = {}) {
     let routesManifest;
     function updateRequestWithConfig(request, config) {
@@ -163,12 +170,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (error instanceof Error) {
                     logApiRouteExecutionError(error);
                 }
-                return new Response('Internal server error', {
-                    status: 500,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
-                });
+                return handleApiRouteError(error);
             }
         }
         // Finally, test 404 routes

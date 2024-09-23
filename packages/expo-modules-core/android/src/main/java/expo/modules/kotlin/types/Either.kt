@@ -110,9 +110,9 @@ open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   fun `is`(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>): Boolean = `is`(2)
 
   @JvmName("getThirdType")
-  fun get(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>) = get(3) as ThirdType
+  fun get(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>) = get(2) as ThirdType
 
-  fun third(): ThirdType = get(3) as ThirdType
+  fun third(): ThirdType = get(2) as ThirdType
 }
 
 @EitherType

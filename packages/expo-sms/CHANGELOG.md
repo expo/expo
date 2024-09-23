@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+
 ## 12.0.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._

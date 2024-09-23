@@ -12,8 +12,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class MailComposerModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var composerOpened = false
   private var pendingPromise: Promise? = null
 
@@ -26,7 +24,7 @@ class MailComposerModule : Module() {
 
     AsyncFunction("composeAsync") { options: MailComposerOptions, promise: Promise ->
       val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
-      val application = currentActivity.application
+      val application = appContext.throwingActivity.application
       val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
 
       val mailIntents = resolveInfo.map { info ->
@@ -59,7 +57,7 @@ class MailComposerModule : Module() {
       }
 
       pendingPromise = promise
-      currentActivity.startActivityForResult(chooser, REQUEST_CODE)
+      appContext.throwingActivity.startActivityForResult(chooser, REQUEST_CODE)
       composerOpened = true
     }
 

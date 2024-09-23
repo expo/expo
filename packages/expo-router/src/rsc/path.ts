@@ -148,3 +148,19 @@ export const getPathMapping = (
   }
   return mapping;
 };
+
+/**
+ * Transform a path spec to a regular expression.
+ */
+export const path2regexp = (path: PathSpec) => {
+  const parts = path.map(({ type, name }) => {
+    if (type === 'literal') {
+      return name;
+    } else if (type === 'group') {
+      return `([^/]+)`;
+    } else {
+      return `(.*)`;
+    }
+  });
+  return `^/${parts.join('/')}$`;
+};

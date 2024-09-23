@@ -10,9 +10,10 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare && ./scripts/buildBrowserScripts.ts",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "syncBrowserScripts": "./scripts/buildBrowserScripts.ts"
   },
   "keywords": [
     "react-native",

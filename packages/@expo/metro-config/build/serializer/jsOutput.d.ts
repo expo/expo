@@ -28,6 +28,18 @@ export type JsOutput = {
     };
     type: JSFileType;
 };
+export type CSSMetadata = {
+    code: string;
+    lineCount: number;
+    map: unknown[];
+    functionMap: null;
+    skipCache?: boolean;
+    externalImports: {
+        url: string;
+        supports: string | null;
+        media: string | null;
+    }[];
+};
 export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
     data: JsOutput['data'] & {
         profiling?: {
@@ -35,13 +47,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
             end: number;
             duration: number;
         };
-        css?: {
-            code: string;
-            lineCount: number;
-            map: unknown[];
-            functionMap: null;
-            skipCache?: boolean;
-        };
+        css?: CSSMetadata;
     };
 };
 export type ReconcileTransformSettings = {

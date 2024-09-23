@@ -46,6 +46,11 @@ export default function ImageEventsScreen() {
     setLogs([...logs]);
   }, [logs]);
 
+  const onDisplay = useCallback(() => {
+    logs.push('🚀 onDisplay');
+    setLogs([...logs]);
+  }, [logs]);
+
   const loadNewImage = useCallback(() => {
     setSourceUri(getRandomImageUri());
     setLogs([]);
@@ -66,6 +71,7 @@ export default function ImageEventsScreen() {
         onProgress={onProgress}
         onError={onError}
         onLoadEnd={onLoadEnd}
+        onDisplay={onDisplay}
       />
 
       <View style={styles.buttons}>

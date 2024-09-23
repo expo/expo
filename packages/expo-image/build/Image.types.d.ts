@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -217,6 +217,10 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
      * Called when the image load either succeeds or fails.
      */
     onLoadEnd?: () => void;
+    /**
+     * Called when the image view successfully rendered the source image.
+     */
+    onDisplay?: () => void;
     /**
      * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
      * Use [`placeholder`](#placeholder) prop instead.
@@ -453,6 +457,13 @@ export declare class ImageRef extends SharedRef {
      * Whether the referenced image is an animated image.
      */
     readonly isAnimated?: boolean;
+}
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+    Image: typeof ImageRef;
+    loadAsync(source: ImageSource): Promise<ImageRef>;
 }
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

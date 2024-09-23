@@ -17,4 +17,9 @@ export declare class ReactServerError extends Error {
     code: string;
     constructor(message: string, url: string, statusCode: number);
 }
+export declare class NetworkError extends Error {
+    url: string;
+    code: string;
+    constructor(message: string, url: string);
+}
 //# sourceMappingURL=errors.d.ts.map

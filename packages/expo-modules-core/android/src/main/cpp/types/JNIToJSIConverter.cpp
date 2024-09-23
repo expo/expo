@@ -52,9 +52,11 @@ jsi::Value convert(
   auto unpackedValue = value.get();
   auto cache = JavaReferencesCache::instance();
 
+  // We could use jni::static_ref_cast here. It will lead to the creation of a new local reference.
+  // Which is actually slow. We can use some pointer magic to avoid it.
 #define CAST_AND_RETURN(type, classId) \
   if (env->IsInstanceOf(unpackedValue, cache->getJClass(#classId).clazz)) { \
-    return convertToJS(env, rt, jni::static_ref_cast<type>(value)); \
+    return convertToJS(env, rt, *((jni::local_ref<type>*)((void*)&value))); \
   }
 #define COMMA ,
 

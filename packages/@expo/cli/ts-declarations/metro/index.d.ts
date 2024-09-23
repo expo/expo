@@ -333,10 +333,12 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
     options: SourceMapGeneratorOptions
   ): Promise<string>;
 
-  declare var _export: {
-    sourceMapString: typeof sourceMapString,
-    sourceMapStringNonBlocking: typeof sourceMapStringNonBlocking,
-  } | typeof sourceMapString
+  declare var _export:
+    | {
+        sourceMapString: typeof sourceMapString;
+        sourceMapStringNonBlocking: typeof sourceMapStringNonBlocking;
+      }
+    | typeof sourceMapString;
 
   // NOTE(@kitten): The export changed to an object in metro@0.80.10
   export = _export;
@@ -501,6 +503,15 @@ declare module 'metro/src/lib/getAppendScripts' {
 declare module 'metro/src/IncrementalBundler' {
   import type OriginalIncrementalBundler from 'metro/src/IncrementalBundler.d';
   import { Graph } from 'metro/src/DeltaBundler';
+  import type { GraphId } from 'metro/src/lib/getGraphId';
+
+  export interface GraphRevision {
+    readonly id: RevisionId;
+    readonly date: Date;
+    readonly graphId: GraphId;
+    readonly graph: OutputGraph;
+    readonly prepend: readonly Module<void>[];
+  }
 
   export type RevisionId = string;
 

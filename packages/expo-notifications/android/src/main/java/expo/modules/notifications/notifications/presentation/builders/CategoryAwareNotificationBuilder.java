@@ -11,9 +11,10 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
+
+import expo.modules.notifications.notifications.interfaces.INotificationContent;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
-import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.service.NotificationsService;
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
@@ -30,7 +31,7 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
   protected NotificationCompat.Builder createBuilder() {
     NotificationCompat.Builder builder = super.createBuilder();
 
-    NotificationContent content = getNotificationContent();
+    INotificationContent content = getNotificationContent();
 
     String categoryIdentifier = content.getCategoryId();
     if (categoryIdentifier != null) {
@@ -53,7 +54,6 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
         }
       } catch (ClassNotFoundException | IOException e) {
         Log.e("expo-notifications", String.format("Could not read category with identifier: %s. %s", categoryIdentifier, e.getMessage()));
-        e.printStackTrace();
       }
       for (NotificationAction action : actions) {
         if (action instanceof TextInputNotificationAction) {

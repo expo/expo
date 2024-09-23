@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Show meaningful error when podspecPath is not defined. ([#20789](https://github.com/expo/expo/pull/20789) by [@deggertsen](https://github.com/deggertsen))
 - Add experimental `__rsc_tests__` directory to npm ignore. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
 - Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
 - Update `glob@7` to `glob@10`. ([#29931](https://github.com/expo/expo/pull/29931) by [@byCedric](https://github.com/byCedric))

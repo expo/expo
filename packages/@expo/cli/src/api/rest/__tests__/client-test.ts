@@ -4,9 +4,11 @@ import { URLSearchParams } from 'url';
 import { CommandError } from '../../../utils/errors';
 import { fetch } from '../../../utils/fetch';
 import { getExpoApiBaseUrl } from '../../endpoint';
+import { disableNetwork } from '../../settings';
 import UserSettings from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
 
+jest.mock('../../settings');
 jest.mock('../../user/UserSettings');
 jest.mock('../../../utils/fetch', () => ({
   fetch: jest.fn(jest.requireActual('../../../utils/fetch').fetch),
@@ -169,4 +171,34 @@ it('only uses access token when both authentication methods are available', asyn
     .reply(200, 'Hello World');
 
   expect(await fetchAsync('get-me', { method: 'GET' })).toMatchObject({ status: 200 });
+});
+
+it('switches to offline mode when node-fetch network errors are thrown', async () => {
+  const nodeFetchNetworkError = new Error('getaddrinfo ENOTFOUND api.expo.dev');
+
+  Object.defineProperty(nodeFetchNetworkError, 'code', { value: 'ENOTFOUND' });
+
+  jest.mocked(fetch).mockRejectedValueOnce(nodeFetchNetworkError);
+
+  await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
+    'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
+  );
+
+  expect(disableNetwork).toHaveBeenCalled();
+});
+
+it('switches to offline mode when undici network errors are thrown', async () => {
+  const undiciNetworkError = new Error('fetch failed');
+  const undiciNetworkCause = new Error('getaddrinfo ENOTFOUND api.expo.dev');
+
+  Object.defineProperty(undiciNetworkError, 'cause', { value: undiciNetworkCause });
+  Object.defineProperty(undiciNetworkCause, 'code', { value: 'ENOTFOUND' });
+
+  jest.mocked(fetch).mockRejectedValueOnce(undiciNetworkError);
+
+  await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
+    'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
+  );
+
+  expect(disableNetwork).toHaveBeenCalled();
 });

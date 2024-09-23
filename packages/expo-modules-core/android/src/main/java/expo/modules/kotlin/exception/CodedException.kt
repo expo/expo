@@ -188,6 +188,13 @@ internal class InvalidSharedObjectException(
   message = "Cannot convert provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
 )
 
+internal class IncorrectRefTypeException(
+  desiredType: KType,
+  receivedClass: Class<*>
+) : CodedException(
+  message = "Cannot convert received '$receivedClass' to the '$desiredType', because of the inner ref type mismatch"
+)
+
 internal class FieldCastException(
   fieldName: String,
   fieldType: KType,

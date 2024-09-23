@@ -133,6 +133,7 @@ exceptions:
   - '.*Keychain.*'
   - '.*Kotlin.*'
   - '.*layout.*'
+  - '.*Legend-State.*'
   - '.*Library.*'
   - '.*Link.*'
   - '.*Linking.*'

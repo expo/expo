@@ -43,6 +43,16 @@ target_link_libraries(
         ${LOG_LIB}
         fbjni::fbjni
         ReactAndroid::jsi
-        ReactAndroid::reactnativejni
         android
 )
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+  target_link_libraries(
+          ${PACKAGE_NAME}
+          ReactAndroid::reactnative
+  )
+else()
+  target_link_libraries(
+          ${PACKAGE_NAME}
+          ReactAndroid::reactnativejni
+  )
+endif()
