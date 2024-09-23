@@ -20,9 +20,12 @@ import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.i18nmanager.I18nUtil
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
-import com.facebook.react.views.view.ReactViewBackgroundDrawable
+import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
+import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -66,7 +69,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   @UnstableReactNativeAPI
   private val borderDrawableLazyHolder = lazy {
-    ReactViewBackgroundDrawable(context).apply {
+    CSSBackgroundDrawable(context).apply {
       callback = this@VideoView
 
       outlineProvider.borderRadiiConfig
@@ -74,9 +77,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .withIndex()
         .forEach { (i, radius) ->
           if (i == 0) {
-            setRadius(radius)
+            setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
           } else {
-            setRadius(radius, i - 1)
+            setBorderRadius(BorderRadiusProp.entries[i - 1], LengthPercentage(radius, LengthPercentageType.POINT))
           }
         }
     }
@@ -377,9 +380,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       val radius = borderRadius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
       borderDrawableLazyHolder.value.apply {
         if (position == 0) {
-          setRadius(radius)
+          setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
         } else {
-          setRadius(radius, position - 1)
+          setBorderRadius(BorderRadiusProp.entries[position - 1], LengthPercentage(radius, LengthPercentageType.POINT))
         }
       }
     }
