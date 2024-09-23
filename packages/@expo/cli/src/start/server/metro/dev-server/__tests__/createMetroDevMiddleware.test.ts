@@ -1,7 +1,4 @@
-import { createServer } from 'node:http';
-import type { AddressInfo } from 'node:net';
-import { promisify } from 'node:util';
-
+import { withMetroServer } from './utils';
 import { openInEditorAsync } from '../../../../../utils/editor';
 import { createMetroDevMiddleware } from '../createMetroDevMiddleware';
 
@@ -102,36 +99,3 @@ describe(createMetroDevMiddleware, () => {
     });
   });
 });
-
-function withMetroServer(projectRoot = '/project'): {
-  projectRoot: string;
-  metro: ReturnType<typeof createMetroDevMiddleware>;
-  server: ReturnType<typeof createServer> & {
-    fetch: (url: string, init?: RequestInit) => Promise<Response>;
-  };
-} {
-  const metro = createMetroDevMiddleware({ projectRoot });
-  const server = createServer(metro.middleware);
-  const close = promisify(server.close.bind(server));
-
-  function listen() {
-    return new Promise<void>((resolve) => {
-      server.listen(() => {
-        const address = server.address() as AddressInfo;
-        const hostname = address.family === 'IPv6' ? `[${address.address}]` : address.address;
-
-        Object.defineProperty(server, 'fetch', {
-          value: (url = '', init?: RequestInit) =>
-            fetch(`http://${hostname}:${address.port}${url}`, init),
-        });
-
-        resolve();
-      });
-    });
-  }
-
-  afterAll(() => close());
-  beforeAll(() => listen());
-
-  return { metro, server: server as any, projectRoot };
-}

@@ -1,4 +1,4 @@
-import { WebSocketServer, type RawData as WebSocketRawData } from 'ws';
+import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
@@ -23,7 +23,7 @@ export function createMessagesSocket(options: MessageSocketOptions) {
     socket.on('close', client.terminate);
     socket.on('error', client.terminate);
     // Register message handler
-    socket.on('message', createClientMessageHandler(client.id, clients, broadcast));
+    socket.on('message', createClientMessageHandler(socket, client.id, clients, broadcast));
   });
 
   return {
@@ -42,23 +42,45 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 }
 
 function createClientMessageHandler(
+  socket: WebSocket,
   clientId: SocketId,
   clients: ReturnType<typeof createSocketMap>,
   broadcast: ReturnType<typeof createBroadcaster>
 ) {
+  function handleServerRequest(message: RequestMessage) {
+    // Ignore messages without identifiers, unable to link responses
+    if (!message.id) return;
+
+    if (message.method === 'getid') {
+      return socket.send(serializeMessage({ id: message.id, result: clientId }));
+    }
+
+    if (message.method === 'getpeers') {
+      const peers: Record<string, any> = {};
+      clients.map.forEach((_socket, socketId) => {
+        if (socketId !== clientId) {
+          // TODO: add query parameters for every client to the response
+          peers[socketId] = {};
+        }
+      });
+      return socket.send(serializeMessage({ id: message.id, result: peers }));
+    }
+  }
+
   return (data: WebSocketRawData, isBinary: boolean) => {
     const message = parseRawMessage<IncomingMessage>(data, isBinary);
     if (!message) return;
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
-      return broadcast(null, data.toString());
+      return broadcast(null, data);
     }
 
     // Handle incoming requests from clients
     if (messageIsRequest(message)) {
-      // Ignore legacy server messages
-      if (message.target === 'server') return;
+      if (message.target === 'server') {
+        return handleServerRequest(message);
+      }
 
       return clients.findSocket(message.target)?.send(
         serializeMessage({
