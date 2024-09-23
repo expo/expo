@@ -232,7 +232,7 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
-  if (type === 'REPLACE' && navigationState.type === 'tab') {
+  if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
     type = 'JUMP_TO';
   }
 
