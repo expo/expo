@@ -1,7 +1,6 @@
 ---
 title: Shared routes
 description: Learn how to define shared routes or use arrays to use the same route multiple times with different layouts using Expo Router.
-hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
@@ -60,4 +59,10 @@ export default function DynamicLayout({ segment }) {
 }
 ```
 
-In the above example, the `home` route is the default route for the `home` group and the app, and the `search` route is the default route for the `search` group.
+In the above example, the `home` route is the default route for the `home` group and the app. The `search` route is the default route for the `search` group.
+
+## Key points
+
+- You can only provide groups for the current navigator.
+- When using the array syntax, if there are two groups (for example, `(one)/(two)`), only the last group's segment is used for matching the route.
+- If there are at least two group `initialRouteNames`, but a default `initialRouteName` is not provided, the first group's `initialRouteName` is used.
