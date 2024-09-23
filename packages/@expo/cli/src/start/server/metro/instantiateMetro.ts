@@ -188,7 +188,7 @@ export async function instantiateMetroAsync(
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
-    middleware.use(createCorsMiddleware(exp));
+    prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
     const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
