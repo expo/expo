@@ -93,7 +93,7 @@ describe('server', () => {
                 path: 'assets/3858f62230ac3c915f300c664312c63f',
               },
             ],
-            bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.js/),
           },
           ios: {
             assets: [
@@ -110,7 +110,7 @@ describe('server', () => {
                 path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
               },
             ],
-            bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.js/),
           },
         },
         version: 0,
