@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `updates.useEmbeddedUpdate` key ([#31608](https://github.com/expo/expo/pull/31608) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
