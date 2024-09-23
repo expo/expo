@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added `onDisplay` event. ([#31581](https://github.com/expo/expo/pull/31581) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.13.0 — 2024-09-23
+
+### 🎉 New features
+
+- Added `onDisplay` event. ([#31581](https://github.com/expo/expo/pull/31581) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.12.15 — 2024-08-24
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.27 — 2024-09-23
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.26 — 2024-09-03
 
 - Add `addGeneratedScheme` config plugin option to disable automatic adding of dev client app scheme. ([#31147](https://github.com/expo/expo/pull/31147) by [@keith-kurak](https://github.com/keith-kurak))
