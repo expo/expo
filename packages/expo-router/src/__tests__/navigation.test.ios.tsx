@@ -16,6 +16,43 @@ import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
 
+it('should respect `unstable_settings', () => {
+  const render = (options: any = {}) =>
+    renderRouter(
+      {
+        '(one,two)/_layout': {
+          unstable_settings: {
+            initialRouteName: 'apple',
+            two: {
+              initialRouteName: 'orange',
+            },
+          },
+          default: () => <Tabs />,
+        },
+        '(one,two)/apple': () => <Text testID="apple"> Apple</Text>,
+        '(two)/banana': () => <Text testID="banana">Banana</Text>,
+        '(one,two)/orange': () => <Text testID="orange">Orange</Text>,
+      },
+      options
+    );
+
+  render({ initialUrl: '/orange' });
+  expect(screen).toHaveSegments(['(two)', 'orange']);
+
+  expect(screen.getByTestId('orange')).toBeVisible();
+  // Orange is the initial route so you can't go back
+  expect(router.canGoBack()).toBeFalsy();
+
+  // Reset the app, but start at /banana
+  screen.unmount();
+  render({ initialUrl: '/banana' });
+
+  expect(screen.getByTestId('banana')).toBeVisible();
+  // Orange should be the initialRouteName, because we are in (two)
+  act(() => router.back());
+  expect(screen.getByTestId('orange')).toBeVisible();
+});
+
 describe('hooks only', () => {
   it('can handle navigation between routes', async () => {
     renderRouter({

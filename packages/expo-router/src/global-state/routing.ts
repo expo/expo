@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid/non-secure';
 
 import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
-import { resolveHref } from '../link/href';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
@@ -120,35 +120,7 @@ export function linkTo(
 
   const rootState = navigationRef.getRootState();
 
-  if (href.startsWith('.')) {
-    // Resolve base path by merging the current segments with the params
-    let base =
-      this.routeInfo?.segments
-        ?.map((segment) => {
-          if (!segment.startsWith('[')) return segment;
-
-          if (segment.startsWith('[...')) {
-            segment = segment.slice(4, -1);
-            const params = this.routeInfo?.params?.[segment];
-            if (Array.isArray(params)) {
-              return params.join('/');
-            } else {
-              return params?.split(',')?.join('/') ?? '';
-            }
-          } else {
-            segment = segment.slice(1, -1);
-            return this.routeInfo?.params?.[segment];
-          }
-        })
-        .filter(Boolean)
-        .join('/') ?? '/';
-
-    if (relativeToDirectory) {
-      base = `${base}/`;
-    }
-
-    href = new URL(href, `http://hostname/${base}`).pathname;
-  }
+  href = resolveHrefStringWithSegments(href, this.routeInfo, relativeToDirectory);
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 
@@ -254,6 +226,10 @@ function getNavigateAction(
     if (navigationState.type === 'stack') {
       rootPayload.key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
     }
+  }
+
+  if (navigationState.type === 'expo-tab') {
+    type = 'JUMP_TO';
   }
 
   if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
