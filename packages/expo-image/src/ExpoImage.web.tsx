@@ -9,37 +9,6 @@ import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
 
-export const ExpoImageModule = {
-  async prefetch(urls: string | string[], _, __): Promise<boolean> {
-    const urlsArray = Array.isArray(urls) ? urls : [urls];
-
-    return new Promise<boolean>((resolve) => {
-      let imagesLoaded = 0;
-
-      urlsArray.forEach((url) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = () => {
-          imagesLoaded++;
-
-          if (imagesLoaded === urlsArray.length) {
-            resolve(true);
-          }
-        };
-        img.onerror = () => resolve(false);
-      });
-    });
-  },
-
-  async clearMemoryCache(): Promise<boolean> {
-    return false;
-  },
-
-  async clearDiskCache(): Promise<boolean> {
-    return false;
-  },
-};
-
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = event.target as HTMLImageElement;
@@ -98,6 +67,7 @@ export default function ExpoImage({
   onError,
   responsivePolicy,
   onLoadEnd,
+  onDisplay,
   priority,
   blurRadius,
   recyclingKey,
@@ -162,6 +132,7 @@ export default function ExpoImage({
             onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
             onMount: [onMount],
             onTransitionEnd: [onAnimationFinished],
+            onDisplay: [onDisplay],
           }}
           style={{
             objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,

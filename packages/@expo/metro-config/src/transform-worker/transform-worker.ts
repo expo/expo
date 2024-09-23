@@ -13,11 +13,18 @@ import type {
 } from 'metro-transform-worker';
 
 import { wrapDevelopmentCSS } from './css';
-import { matchCssModule, transformCssModuleWeb } from './css-modules';
+import {
+  collectCssImports,
+  matchCssModule,
+  printCssWarnings,
+  transformCssModuleWeb,
+} from './css-modules';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
-import { ExpoJsOutput, JsOutput } from '../serializer/jsOutput';
+import { ExpoJsOutput } from '../serializer/jsOutput';
+
+const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;
@@ -60,7 +67,7 @@ export async function transform(
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
       // Inject client boundaries into the root client bundle for production bundling.
       if (clientBoundaries) {
-        console.log('Parsed client boundaries:', clientBoundaries);
+        debug('Parsed client boundaries:', clientBoundaries);
 
         // Inject source
         const src =
@@ -181,7 +188,7 @@ export async function transform(
     );
 
     const cssCode = results.css.toString();
-    const output: JsOutput[] = [
+    const output: ExpoJsOutput[] = [
       {
         type: 'js/module',
         data: {
@@ -193,13 +200,17 @@ export async function transform(
             lineCount: countLines(cssCode),
             map: [],
             functionMap: null,
+            // Disable caching for CSS files when postcss is enabled and has been run on the file.
+            // This ensures that things like tailwind can update on every change.
+            skipCache: postcssResults.hasPostcss,
+            externalImports: results.externalImports,
           },
         },
       },
     ];
 
     return {
-      dependencies: jsModuleResults.dependencies,
+      dependencies: jsModuleResults.dependencies.concat(results.dependencies),
       output,
     };
   }
@@ -208,21 +219,37 @@ export async function transform(
 
   const { transform } = require('lightningcss') as typeof import('lightningcss');
 
-  // TODO: Add bundling to resolve imports
-  // https://lightningcss.dev/bundling.html#bundling-order
-
+  // Here we delegate bundling to lightningcss to resolve all CSS imports together.
+  // TODO: Add full CSS bundling support to Metro.
   const cssResults = transform({
     filename,
     code: Buffer.from(code),
+    errorRecovery: true,
     sourceMap: false,
     cssModules: false,
     projectRoot,
     minify: options.minify,
+    analyzeDependencies: true,
+    // @ts-expect-error: Added for testing against virtual file system.
+    resolver: options._test_resolveCss,
   });
 
-  // TODO: Warnings:
-  // cssResults.warnings.forEach((warning) => {
-  // });
+  printCssWarnings(filename, code, cssResults.warnings);
+
+  const cssImports = collectCssImports(filename, code, cssResults.code.toString(), cssResults);
+  const cssCode = cssImports.code;
+
+  // Append additional css metadata for static extraction.
+  const cssOutput: Required<ExpoJsOutput['data']['css']> = {
+    code: cssCode,
+    lineCount: countLines(cssCode),
+    map: [],
+    functionMap: null,
+    // Disable caching for CSS files when postcss is enabled and has been run on the file.
+    // This ensures that things like tailwind can update on every change.
+    skipCache: postcssResults.hasPostcss,
+    externalImports: cssImports.externalImports,
+  };
 
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.
@@ -231,12 +258,10 @@ export async function transform(
     projectRoot,
     filename,
     options.dev
-      ? Buffer.from(wrapDevelopmentCSS({ src: code, filename, reactServer }))
+      ? Buffer.from(wrapDevelopmentCSS({ src: cssCode, filename, reactServer }))
       : Buffer.from(''),
     options
   );
-
-  const cssCode = cssResults.code.toString();
 
   // In production, we export the CSS as a string and use a special type to prevent
   // it from being included in the JS bundle. We'll extract the CSS like an asset later
@@ -246,23 +271,13 @@ export async function transform(
       type: 'js/module',
       data: {
         ...(jsModuleResults.output[0] as ExpoJsOutput).data,
-
-        // Append additional css metadata for static extraction.
-        css: {
-          code: cssCode,
-          lineCount: countLines(cssCode),
-          map: [],
-          functionMap: null,
-          // Disable caching for CSS files when postcss is enabled and has been run on the file.
-          // This ensures that things like tailwind can update on every change.
-          skipCache: postcssResults.hasPostcss,
-        },
+        css: cssOutput,
       },
     },
   ];
 
   return {
-    dependencies: jsModuleResults.dependencies,
+    dependencies: jsModuleResults.dependencies.concat(cssImports.dependencies),
     output,
   };
 }

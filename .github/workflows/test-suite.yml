@@ -59,7 +59,7 @@ jobs:
         working-directory: apps/bare-expo/ios
         continue-on-error: true
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: 🌳 Display pod environment
         run: pod env
@@ -186,7 +186,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare

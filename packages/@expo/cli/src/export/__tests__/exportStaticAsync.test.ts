@@ -80,6 +80,24 @@ describe(getPathVariations, () => {
 });
 
 describe(getHtmlFiles, () => {
+  function expectPaths(paths: string[]) {
+    return expect(
+      getHtmlFiles({
+        includeGroupVariations: true,
+        manifest: getMockConfig(
+          Object.fromEntries(paths.map((path) => [path, { default: Route }])),
+          false
+        ),
+      })
+        .map((a) => a.filePath)
+        .sort((a, b) => a.length - b.length)
+    );
+  }
+
+  it(`should get html files with nested index`, () => {
+    expectPaths(['./newroute/index.tsx']).toEqual(['newroute/index.html']);
+  });
+
   it(`should get html files`, () => {
     expect(
       getHtmlFiles({
