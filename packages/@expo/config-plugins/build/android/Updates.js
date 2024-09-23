@@ -51,6 +51,13 @@ function _Updates() {
   };
   return data;
 }
+function _warnings() {
+  const data = require("../utils/warnings");
+  _warnings = function () {
+    return data;
+  };
+  return data;
+}
 let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["ENABLED"] = "expo.modules.updates.ENABLED";
   Config["CHECK_ON_LAUNCH"] = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH";
@@ -58,6 +65,7 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
   Config["RUNTIME_VERSION"] = "expo.modules.updates.EXPO_RUNTIME_VERSION";
   Config["UPDATE_URL"] = "expo.modules.updates.EXPO_UPDATE_URL";
   Config["UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY"] = "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY";
+  Config["UPDATES_HAS_EMBEDDED_UPDATE"] = "expo.modules.updates.HAS_EMBEDDED_UPDATE";
   Config["CODE_SIGNING_CERTIFICATE"] = "expo.modules.updates.CODE_SIGNING_CERTIFICATE";
   Config["CODE_SIGNING_METADATA"] = "expo.modules.updates.CODE_SIGNING_METADATA";
   return Config;
@@ -93,8 +101,20 @@ async function applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot, con
 async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoUpdatesPackageVersion) {
   const mainApplication = (0, _Manifest().getMainApplicationOrThrow)(androidManifest);
   (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.ENABLED, String((0, _Updates().getUpdatesEnabled)(config)));
-  (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.CHECK_ON_LAUNCH, (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion));
-  (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.LAUNCH_WAIT_MS, String((0, _Updates().getUpdatesTimeout)(config)));
+  const checkOnLaunch = (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion);
+  (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.CHECK_ON_LAUNCH, checkOnLaunch);
+  const timeout = (0, _Updates().getUpdatesTimeout)(config);
+  (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.LAUNCH_WAIT_MS, String(timeout));
+  const useEmbeddedUpdate = (0, _Updates().getUpdatesUseEmbeddedUpdate)(config);
+  if (useEmbeddedUpdate) {
+    (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.UPDATES_HAS_EMBEDDED_UPDATE);
+  } else {
+    // TODO: is there a better place for this validation?
+    if (timeout === 0 && checkOnLaunch !== 'ALWAYS') {
+      (0, _warnings().addWarningAndroid)('updates.useEmbeddedUpdate', `updates.checkOnLaunch should be set to "ON_LOAD" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`);
+    }
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.UPDATES_HAS_EMBEDDED_UPDATE, 'false');
+  }
   const updateUrl = (0, _Updates().getUpdateUrl)(config);
   if (updateUrl) {
     (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.UPDATE_URL, updateUrl);
