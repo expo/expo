@@ -87,6 +87,12 @@ export interface LinkProps<T extends string | object>
    * @see: https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references
    */
   relativeToDirectory?: boolean;
+
+  /**
+   * Ignore the initial anchor screen when navigating to a new navigator
+   * @default false
+   */
+  unstable_ignoreAnchor?: boolean;
 }
 
 export interface LinkComponent {
@@ -117,6 +123,7 @@ export function Redirect({ href }: { href: Href }) {
  * @param props.push Should push the current route, always adding to the history.
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
+ * @param props.unstable_ignoreAnchor  Ignore the anchor if navigating to a new navigator .
  * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
 export const Link = React.forwardRef(ExpoRouterLink) as unknown as LinkComponent;
@@ -180,6 +187,7 @@ function ExpoRouterLink(
     rel,
     target,
     download,
+    unstable_ignoreAnchor,
     ...rest
   }: LinkProps<any>,
   ref: React.ForwardedRef<Text>
@@ -201,7 +209,12 @@ function ExpoRouterLink(
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
 
-  const props = useLinkToPathProps({ href: resolvedHref, event, relativeToDirectory });
+  const props = useLinkToPathProps({
+    href: resolvedHref,
+    event,
+    relativeToDirectory,
+    unstable_ignoreAnchor,
+  });
 
   const onPress = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
     if ('onPress' in rest) {

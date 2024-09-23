@@ -553,14 +553,14 @@ describe('entry points', () => {
   });
 });
 
-describe('initialRouteName', () => {
+describe('anchor', () => {
   it(`should append entry points for all parent _layouts`, () => {
     expect(
       getRoutes(
         inMemoryContext({
           _layout: {
             unstable_settings: {
-              initialRouteName: 'a',
+              anchor: 'a',
             },
             default: () => null,
           },
@@ -599,13 +599,13 @@ describe('initialRouteName', () => {
     });
   });
 
-  it(`throws if initialRouteName does not match a route`, () => {
+  it.only(`throws if anchor does not match a route`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
           _layout: {
             unstable_settings: {
-              initialRouteName: 'c',
+              anchor: 'c',
             },
             default: () => null,
           },
@@ -614,21 +614,21 @@ describe('initialRouteName', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"Layout ./_layout.js has invalid initialRouteName 'c'. Valid options are: 'a', 'b'"`
+      `"Layout ./_layout.js has invalid anchor 'c'. Valid options are: 'a', 'b'"`
     );
   });
 
-  it(`throws if initialRouteName with group selection does not match a route`, () => {
+  it(`throws if anchor with group selection does not match a route`, () => {
     expect(() => {
       getRoutes(
         inMemoryContext({
           '(a,b)/_layout': {
             unstable_settings: {
               a: {
-                initialRouteName: 'c',
+                anchor: 'c',
               },
               b: {
-                initialRouteName: 'd',
+                anchor: 'd',
               },
             },
             default: () => null,
@@ -637,7 +637,7 @@ describe('initialRouteName', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"Layout ./(a,b)/_layout.js has invalid initialRouteName 'd' for group '(b)'. Valid options are: 'c'"`
+      `"Layout ./(a,b)/_layout.js has invalid anchor 'd' for group '(b)'. Valid options are: 'c'"`
     );
   });
 });

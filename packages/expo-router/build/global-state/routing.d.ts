@@ -17,6 +17,11 @@ export type LinkToOptions = {
      * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
      */
     relativeToDirectory?: boolean;
+    /**
+     * Ignore the initial anchor screen when navigating to a new navigator
+     * @default false
+     */
+    unstable_ignoreAnchor?: boolean;
 };
-export declare function linkTo(this: RouterStore, href: string, { event, relativeToDirectory }?: LinkToOptions): void;
+export declare function linkTo(this: RouterStore, href: string, { event, relativeToDirectory, unstable_ignoreAnchor }?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
