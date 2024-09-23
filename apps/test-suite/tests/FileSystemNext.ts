@@ -186,7 +186,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         src.copy(dst);
         expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.md5).toBe(src.md5);
       });
     });
