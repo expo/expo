@@ -14,6 +14,7 @@ import {
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
 } from '../utils/Updates';
+import { addWarningIOS } from '../utils/warnings';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
@@ -50,16 +51,27 @@ export async function setUpdatesConfigAsync(
   expoPlist: ExpoPlist,
   expoUpdatesPackageVersion?: string | null
 ): Promise<ExpoPlist> {
+  const checkOnLaunch = getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion);
+  const timeout = getUpdatesTimeout(config);
+  const useEmbeddedUpdate = getUpdatesUseEmbeddedUpdate(config);
+
+  if (!useEmbeddedUpdate && timeout === 0 && checkOnLaunch !== 'ALWAYS') {
+    addWarningIOS(
+      'updates.useEmbeddedUpdate',
+      `updates.checkOnLaunch should be set to "ALWAYS" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`
+    );
+  }
+
   const newExpoPlist = {
     ...expoPlist,
     [Config.ENABLED]: getUpdatesEnabled(config),
-    [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
-    [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
+    [Config.CHECK_ON_LAUNCH]: checkOnLaunch,
+    [Config.LAUNCH_WAIT_MS]: timeout,
     // The native config name is "has embedded update", but we want to expose
     // this to the user as "use embedded update", since this is more accurate.
     // The field does not disable actually building and embedding the update,
     // only whether it is actually used.
-    [Config.UPDATES_HAS_EMBEDDED_UPDATE]: getUpdatesUseEmbeddedUpdate(config),
+    [Config.UPDATES_HAS_EMBEDDED_UPDATE]: useEmbeddedUpdate,
   };
 
   const updateUrl = getUpdateUrl(config);
