@@ -77,16 +77,8 @@ function getIcons(config) {
 }
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);
-  if (icon === null) {
+  if (!icon || typeof icon === 'string' && !icon || typeof icon === 'object' && !icon?.any && !icon?.dark && !icon?.tinted) {
     _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-  } else if (typeof icon === 'string') {
-    if (!icon) {
-      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-    }
-  } else if (typeof icon === 'object') {
-    if (!icon?.any && !icon?.dark && !icon?.tinted) {
-      _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-    }
   }
 
   // Something like projectRoot/ios/MyApp/
