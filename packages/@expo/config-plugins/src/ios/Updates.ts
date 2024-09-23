@@ -55,6 +55,7 @@ export async function setUpdatesConfigAsync(
   const timeout = getUpdatesTimeout(config);
   const useEmbeddedUpdate = getUpdatesUseEmbeddedUpdate(config);
 
+  // TODO: is there a better place for this validation?
   if (!useEmbeddedUpdate && timeout === 0 && checkOnLaunch !== 'ALWAYS') {
     addWarningIOS(
       'updates.useEmbeddedUpdate',
