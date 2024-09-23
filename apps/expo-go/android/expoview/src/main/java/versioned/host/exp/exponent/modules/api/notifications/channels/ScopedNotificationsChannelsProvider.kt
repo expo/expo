@@ -1,39 +1,24 @@
-package versioned.host.exp.exponent.modules.api.notifications.channels;
+package versioned.host.exp.exponent.modules.api.notifications.channels
 
-import android.content.Context;
+import android.content.Context
+import expo.modules.notifications.notifications.channels.AbstractNotificationsChannelsProvider
+import expo.modules.notifications.notifications.channels.managers.NotificationsChannelGroupManager
+import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer
+import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer
+import host.exp.exponent.kernel.ExperienceKey
 
-import expo.modules.notifications.notifications.channels.AbstractNotificationsChannelsProvider;
-import expo.modules.notifications.notifications.channels.managers.NotificationsChannelGroupManager;
-import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
-import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer;
-import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer;
-import host.exp.exponent.kernel.ExperienceKey;
+class ScopedNotificationsChannelsProvider(
+    context: Context?,
+    private val mExperienceKey: ExperienceKey,
+) : AbstractNotificationsChannelsProvider(context) {
+    override val channelManager get() = ScopedNotificationsChannelManager(mContext, mExperienceKey, groupManager)
 
-public class ScopedNotificationsChannelsProvider extends AbstractNotificationsChannelsProvider {
-  private ExperienceKey mExperienceKey;
+    override val groupManager: NotificationsChannelGroupManager
+        get() = ScopedNotificationsGroupManager(mContext, mExperienceKey)
 
-  public ScopedNotificationsChannelsProvider(Context context, ExperienceKey experienceKey) {
-    super(context);
-    mExperienceKey = experienceKey;
-  }
+    override val groupSerializer: NotificationsChannelGroupSerializer
+        get() = ScopedGroupSerializer(channelSerializer)
 
-  @Override
-  protected NotificationsChannelManager createChannelManager() {
-    return new ScopedNotificationsChannelManager(mContext, mExperienceKey, getGroupManager());
-  }
-
-  @Override
-  protected NotificationsChannelGroupManager createChannelGroupManager() {
-    return new ScopedNotificationsGroupManager(mContext, mExperienceKey);
-  }
-
-  @Override
-  protected NotificationsChannelSerializer createChannelSerializer() {
-    return new ScopedChannelSerializer();
-  }
-
-  @Override
-  protected NotificationsChannelGroupSerializer createChannelGroupSerializer() {
-    return new ScopedGroupSerializer(getChannelSerializer());
-  }
+    override val channelSerializer: NotificationsChannelSerializer
+        get() = ScopedChannelSerializer()
 }
