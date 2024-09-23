@@ -205,6 +205,10 @@ export interface ExpoConfig {
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
+         */
+        assetPatternsToBeBundled?: string[];
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -303,7 +307,7 @@ export interface Splash {
  */
 export interface IOS {
     /**
-     * The Apple development team ID to use for all build configurations.
+     * The Apple development team ID to use for all native targets. You can find your team ID in [the Apple Developer Portal](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/).
      */
     appleTeamId?: string;
     /**
