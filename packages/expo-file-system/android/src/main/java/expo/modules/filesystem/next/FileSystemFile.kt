@@ -1,8 +1,10 @@
 package expo.modules.filesystem.next
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Base64
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
 import java.io.FileOutputStream
@@ -59,6 +61,12 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   fun text(): String {
     validateType()
     return file.readText()
+  }
+
+  fun image(): SharedRef<Drawable>? {
+    validateType()
+    val drawable = Drawable.createFromPath(file.path) ?: return null
+    return SharedRef(drawable)
   }
 
   fun base64(): String {
