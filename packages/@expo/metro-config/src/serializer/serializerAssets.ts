@@ -5,7 +5,7 @@ export type SerialAsset = {
   filename: string;
   // '\ndiv {\n    background: cyan;\n}\n\n'
   source: string;
-  type: 'css' | 'js' | 'map' | 'json';
+  type: 'css-external' | 'css' | 'js' | 'map' | 'json';
 
   metadata: {
     hmrId?: string;

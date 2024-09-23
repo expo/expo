@@ -113,9 +113,6 @@ class ImagePickerModule : Module() {
   val context: Context
     get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
 
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw MissingCurrentActivityException()
-
   private val mediaHandler = MediaHandler(this)
 
   private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
@@ -266,7 +263,7 @@ class ImagePickerModule : Module() {
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
     val cameraIntent = Intent(options.nativeMediaTypes.toCameraIntentAction())
-    if (cameraIntent.resolveActivity(currentActivity.application.packageManager) == null) {
+    if (cameraIntent.resolveActivity(appContext.throwingActivity.application.packageManager) == null) {
       throw MissingActivityToHandleIntent(cameraIntent.type)
     }
   }
@@ -276,7 +273,7 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
             continuation.resume(Unit)
           } else {
@@ -292,7 +289,7 @@ class ImagePickerModule : Module() {
         }
       },
       *listOfNotNull(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.Q },
         Manifest.permission.CAMERA
       ).toTypedArray()
     )

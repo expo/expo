@@ -13,12 +13,8 @@ exports[`formatStackLikeMetro formats stack trace: ERROR_IN_ROUTER_GLOBAL_SCOPE 
 
 exports[`formatStackLikeMetro formats stack trace: ERROR_IN_ROUTER_GLOBAL_SCOPE_PRODUCTION 1`] = `"  factory (app/index.tsx:5:16)"`;
 
-exports[`formatStackLikeMetro formats stack trace: REACT_NAVIGATION_RNW_WARNING 1`] = `
-"  factory (../../node_modules/@react-navigation/elements/lib/commonjs/Header/HeaderBackButton.js:130:40)
-  factory (../../node_modules/@react-navigation/elements/lib/commonjs/index.js:126:48)
-  <unknown> (../../node_modules/@react-navigation/bottom-tabs/lib/commonjs/views/BottomTabView.js:8:17)"
-`;
+exports[`formatStackLikeMetro formats stack trace: REACT_NAVIGATION_RNW_WARNING 1`] = `""`;
 
-exports[`formatStackLikeMetro formats stack trace: SAFE_AREA_CONTEXT_RNW_WARNING 1`] = `"  Component (../../node_modules/react-native-safe-area-context/lib/commonjs/SafeAreaContext.js:72:36)"`;
+exports[`formatStackLikeMetro formats stack trace: SAFE_AREA_CONTEXT_RNW_WARNING 1`] = `""`;
 
 exports[`formatStackLikeMetro formats stack trace: WARN_IN_ROUTER_COMPONENT_FIXTURE 1`] = `"  Component (app/index.tsx:6:11)"`;

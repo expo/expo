@@ -40,17 +40,17 @@ private:
   /**
    Adds a listener for the given event name.
    */
-  void add(jsi::Runtime &runtime, std::string eventName, const jsi::Function &listener) noexcept;
+  void add(jsi::Runtime &runtime, const std::string& eventName, const jsi::Function &listener) noexcept;
 
   /**
    Removes the listener for the given event name.
    */
-  void remove(jsi::Runtime &runtime, std::string eventName, const jsi::Function &listener) noexcept;
+  void remove(jsi::Runtime &runtime, const std::string& eventName, const jsi::Function &listener) noexcept;
 
   /**
    Removes all listeners for the given event name.
    */
-  void removeAll(std::string eventName) noexcept;
+  void removeAll(const std::string& eventName) noexcept;
 
   /**
    Clears the entire map of events and listeners.
@@ -60,12 +60,12 @@ private:
   /**
    Returns a number of listeners added for the given event name.
    */
-  size_t listenersCount(std::string eventName) noexcept;
+  size_t listenersCount(const std::string& eventName) noexcept;
 
   /**
    Calls listeners for the given event name, with the given `this` object and payload arguments.
    */
-  void call(jsi::Runtime &runtime, std::string eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept;
+  void call(jsi::Runtime &runtime, const std::string& eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept;
 };
 
 /**
@@ -76,7 +76,7 @@ public:
   using Shared = std::shared_ptr<NativeState>;
 
   NativeState();
-  virtual ~NativeState();
+  ~NativeState() override;
 
   /**
    A structure containing event listeners.

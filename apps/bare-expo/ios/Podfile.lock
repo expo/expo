@@ -377,6 +377,8 @@ PODS:
     - ExpoModulesCore
   - ExpoDocumentPicker (12.0.1):
     - ExpoModulesCore
+  - ExpoDomWebView (0.0.1):
+    - ExpoModulesCore
   - ExpoFileSystem (17.0.1):
     - ExpoModulesCore
   - ExpoFileSystem/Tests (17.0.1):
@@ -2538,7 +2540,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.2.0):
+  - RNSVG (15.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2558,9 +2560,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.2.0)
+    - RNSVG/common (= 15.7.1)
     - Yoga
-  - RNSVG/common (15.2.0):
+  - RNSVG/common (15.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2641,6 +2643,7 @@ DEPENDENCIES:
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
+  - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
   - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
@@ -2880,6 +2883,9 @@ EXTERNAL SOURCES:
   ExpoDocumentPicker:
     inhibit_warnings: false
     :path: "../../../packages/expo-document-picker/ios"
+  ExpoDomWebView:
+    inhibit_warnings: false
+    :path: "../../../packages/@expo/dom-webview/ios"
   ExpoFileSystem:
     inhibit_warnings: false
     :path: "../../../packages/expo-file-system/ios"
@@ -3192,6 +3198,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: f00f63a8a5ecd2b7057af35e684cffc5b8f86b35
   ExpoDevice: 7d3225af2ca41978e44b4c08d0d716e1341cf842
   ExpoDocumentPicker: bdf8ee5573ea32ff59c2dd25e7b7ef07f755008e
+  ExpoDomWebView: 71d9f0808dce43b9f36b45a8c091c242dfa7b372
   ExpoFileSystem: 4fe2130545fed1936aa8eb3022d4720036f00824
   ExpoFont: 8052e556507ff9c37bbd3fd24a4d52e79d60892e
   ExpoGL: 538b9cfb79816799a06c6557571d08bf50654a7e
@@ -3215,7 +3222,7 @@ SPEC CHECKSUMS:
   ExpoPrint: ab75a41dd1f48c14a6f8de320e75cd6d57c53153
   ExpoScreenCapture: 1f7ac662e67a14261424bebb046e0e9c7bb4e73d
   ExpoScreenOrientation: 084827cae9c5cdc16ac8dc105957ba17c3def0e9
-  ExpoSecureStore: 74ea9ca707ce12d855a98c6ff6afe44691c355c1
+  ExpoSecureStore: ce152862c108e05d619077da572c77cf0e938a1b
   ExpoSensors: e6e78e3a1522e320fe79b1ae41a09b6ec8a598b8
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
   ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
@@ -3316,7 +3323,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: f769e1b9057085db07546aa3e259daa85c898dc7
   RNReanimated: f72882a50158dd5b8b429b60b41331e4aec39151
   RNScreens: de6e57426ba0e6cbc3fb5b4f496e7f08cb2773c2
-  RNSVG: f57ef92b778b88c6481ce0856be993036f4b9279
+  RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c

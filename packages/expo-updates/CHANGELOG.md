@@ -17,6 +17,8 @@
 - Add missing `react` peer dependencies for isolated modules. ([#30488](https://github.com/expo/expo/pull/30488) by [@byCedric](https://github.com/byCedric))
 - Use relative entry point from `@expo/config/paths` with support for server root. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
 - [iOS] Rollback to system SQLite3 and fix incompatible issue when any third-party library uses iOS system SQLite3. ([#30826](https://github.com/expo/expo/pull/30826) by [@kudo](https://github.com/kudo))
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
+- [ios] Store strong references to long-lived objects created in procedures ([#31599](https://github.com/expo/expo/pull/31599) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -26,6 +28,7 @@
 - [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Re-exported `@expo/fingerprint` as `expo-updates/fingerprint`. ([#30757](https://github.com/expo/expo/pull/30757) by [@kudo](https://github.com/kudo))
+- Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
 
 ### ⚠️ Notices
 

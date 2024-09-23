@@ -25,9 +25,15 @@
 - [Android] `EitherTypeConverter` now can work with the `Dynamic` class. ([#31074](https://github.com/expo/expo/pull/31074) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta))
 - [Android] The single parameter now can be auto-cast to the list. ([#31290](https://github.com/expo/expo/pull/31290) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `SharedRef` converter now checks the inner ref type. ([#31441](https://github.com/expo/expo/pull/31441) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Added support for changing if functions are enumerable. ([#31495](https://github.com/expo/expo/pull/31495) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Introduced a base class for all shared refs (`expo.SharedRef`). ([#31513](https://github.com/expo/expo/pull/31513) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Add support for react-native 0.76 ([#31580](https://github.com/expo/expo/pull/31580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Added `onStartListeningToEvent` and `onStopListeningToEvent` to the `SharedObject`. ([#31385](https://github.com/expo/expo/pull/31385) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
+- [Android] Change JS return type for kotlin `null` to be `null` instead of `undefined`. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))
 - [jest] Fix `uuid` mock in `jest-expo`. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Fix error: no viable constructor or deduction guide for deduction of template arguments of 'weak_ptr' ([#29075](https://github.com/expo/expo/pull/29075) by [@rafi16jan](https://github.com/rafi16jan))
@@ -47,6 +53,10 @@
 - [Android] Fixed `Class declares 0 type parameters, but X were provided` on Android when R8 is enabled. ([#30659](https://github.com/expo/expo/pull/30659) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed SharedObject class names are obfuscated when R8 is enabled. ([#30948](https://github.com/expo/expo/pull/30948) by [@lukmccall](https://github.com/lukmccall))
 - Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed `CodedException.getCode()` crash when R8 is enabled. ([#31392](https://github.com/expo/expo/pull/31392) by [@kudo](https://github.com/kudo))
+- [Android] Fixed getter for the third parameter of `Either`. ([#31443](https://github.com/expo/expo/pull/31443) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed R8 build error `Missing class expo.modules.kotlin.types.ExperimentalJSTypeConverter$URIConverter`. on macOS host. ([#31452](https://github.com/expo/expo/pull/31452) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed `No space left on device` when saving persistent log. ([#31583](https://github.com/expo/expo/pull/31583) by [@RodolfoGS](https://github.com/RodolfoGS))
 
 ### 💡 Others
 
@@ -76,6 +86,10 @@
 - JS values are now used directly instead of using shared pointers to improve the overall performance. ([#31219](https://github.com/expo/expo/pull/31219) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Use singletons for string and data dynamic types. ([#31220](https://github.com/expo/expo/pull/31220) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a bottleneck in the performance-critical code by getting away from `enumerated` function. ([#31226](https://github.com/expo/expo/pull/31226) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Cached argument's type information to improve memory and startup time. ([#31297](https://github.com/expo/expo/pull/31297) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Make `func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?)` `open`. ([#31398](https://github.com/expo/expo/pull/31398) by [@abulenok](https://github.com/abulenok))
+- [Android] Expose `RuntimeContext.eval()` as `JavaScriptRuntime.eval()` on iOS. ([#31445](https://github.com/expo/expo/pull/31445) by [@kudo](https://github.com/kudo))
+- Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
 
 ### ⚠️ Notices
 

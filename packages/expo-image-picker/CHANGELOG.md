@@ -17,6 +17,7 @@
 - [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - [web] Return missing values from video selection. ([#30966](https://github.com/expo/expo/pull/30966) by [@entiendoNull](https://github.com/entiendoNull))
+- [Android] Fix permissions on devices running Android 11 and 12. ([#31396](https://github.com/expo/expo/pull/31396) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

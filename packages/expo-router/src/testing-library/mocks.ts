@@ -5,6 +5,10 @@ try {
   require('@testing-library/jest-native/extend-expect');
 } catch {}
 
+try {
+  require('react-native-gesture-handler/jestSetup');
+} catch {}
+
 // include this section and the NativeAnimatedHelper section for mocking react-native-reanimated
 jest.mock('react-native-reanimated', () => {
   try {

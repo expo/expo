@@ -451,8 +451,6 @@ open class FileSystemModule : Module() {
     }
 
     AsyncFunction("requestDirectoryPermissionsAsync") { initialFileUrl: String?, promise: Promise ->
-      val currentActivity = appContext.currentActivity
-        ?: throw Exceptions.MissingActivity()
       if (dirPermissionsRequest != null) {
         throw FileSystemPendingPermissionsRequestException()
       }
@@ -464,7 +462,7 @@ open class FileSystemModule : Module() {
       }
 
       dirPermissionsRequest = promise
-      currentActivity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE)
+      appContext.throwingActivity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE)
     }
 
     AsyncFunction("uploadAsync") { url: String, fileUriString: String, options: FileSystemUploadOptions, promise: Promise ->
@@ -699,8 +697,6 @@ open class FileSystemModule : Module() {
 
     OnActivityResult { _, (requestCode, resultCode, data) ->
       if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && dirPermissionsRequest != null) {
-        val currentActivity =
-          appContext.currentActivity ?: throw Exceptions.MissingActivity()
         val result = Bundle()
         if (resultCode == Activity.RESULT_OK && data != null) {
           val treeUri = data.data
@@ -709,7 +705,7 @@ open class FileSystemModule : Module() {
               and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             )
           treeUri?.let {
-            currentActivity.contentResolver.takePersistableUriPermission(it, takeFlags)
+            appContext.throwingActivity.contentResolver.takePersistableUriPermission(it, takeFlags)
           }
           result.putBoolean("granted", true)
           result.putString("directoryUri", treeUri.toString())
@@ -862,12 +858,9 @@ open class FileSystemModule : Module() {
   }
 
   private fun contentUriFromFile(file: File): Uri {
-    val currentActivity = appContext.currentActivity
-      ?: throw Exceptions.MissingActivity()
-
     return FileProvider.getUriForFile(
-      currentActivity.application,
-      "${currentActivity.application.packageName}.FileSystemFileProvider",
+      appContext.throwingActivity.application,
+      "${appContext.throwingActivity.application.packageName}.FileSystemFileProvider",
       file
     )
   }

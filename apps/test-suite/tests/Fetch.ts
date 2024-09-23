@@ -1,4 +1,6 @@
 import { fetch } from 'expo/fetch';
+import * as FS from 'expo-file-system';
+import { Platform } from 'react-native';
 
 export const name = 'Fetch';
 
@@ -201,6 +203,81 @@ export function test({ describe, expect, it, ...t }) {
       expect(jsons[3].url).toBe('https://httpbin.org/put');
       expect(jsons[4].url).toBe('https://httpbin.org/delete');
     });
+  });
+
+  addLocalFileTestSuite({ describe, expect, it, ...t });
+}
+
+function addLocalFileTestSuite({ describe, expect, it, ...t }) {
+  if (Platform.OS === 'web') {
+    return;
+  }
+
+  const itIos = Platform.OS === 'ios' ? it : t.xit;
+  const itAndroid = Platform.OS === 'android' ? it : t.xit;
+
+  describe('Local file', () => {
+    it('should fetch a text file in document directory', async () => {
+      const outputFile = FS.documentDirectory + 'file.txt';
+      await FS.writeAsStringAsync(outputFile, 'Hello world');
+
+      const resp = await fetch(`file://${outputFile}`);
+      expect(resp.status).toBe(200);
+      expect(resp.ok).toBe(true);
+
+      const text = await resp.text();
+      expect(text).toBe('Hello world');
+      await FS.deleteAsync(outputFile);
+    });
+
+    it('should return 404 when local file not found', async () => {
+      const resp = await fetch(`file:///notfound.txt`);
+      expect(resp.status).toBe(404);
+      expect(resp.ok).toBe(false);
+    });
+
+    it('should throw an error when permission is denied', async () => {
+      let error = null;
+      const deniedFile = Platform.OS === 'ios' ? '/etc/master.passwd' : '/data/system/packages.xml';
+      try {
+        await fetch(`file://${deniedFile}`);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).not.toBeNull();
+    });
+
+    itIos('should fetch ios app info.plist as binary', async () => {
+      const file = FS.bundleDirectory + 'Info.plist';
+      const resp = await fetch(`file://${file}`);
+      expect(resp.status).toBe(200);
+      expect(resp.ok).toBe(true);
+
+      const buffer = await resp.arrayBuffer();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+
+      // Check if the file is a binary plist with the prefix "bplist"
+      const prefixBuffer = buffer.slice(0, 6);
+      const array = new Uint8Array(prefixBuffer);
+      expect(array).toEqual(new Uint8Array([0x62, 0x70, 0x6c, 0x69, 0x73, 0x74]));
+    });
+
+    itAndroid('should fetch asset data using file:///android_asset/', async () => {
+      const resp = await fetch('file:///android_asset/app.config');
+      expect(resp.status).toBe(200);
+      expect(resp.ok).toBe(true);
+      const config = await resp.json();
+      expect(config.name.length).toBeGreaterThan(0);
+    });
+
+    itAndroid(
+      'should return 404 for not found asset using file:///android_asset/notfound',
+      async () => {
+        const resp = await fetch(`file:///android_asset/notfound`);
+        expect(resp.status).toBe(404);
+        expect(resp.ok).toBe(false);
+      }
+    );
   });
 }
 

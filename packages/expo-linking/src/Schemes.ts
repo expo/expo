@@ -1,5 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-modules-core';
 
 const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 

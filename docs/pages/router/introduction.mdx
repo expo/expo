@@ -10,6 +10,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Expo Router is a file-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move seamlessly between different parts of your app's UI, using the same components on multiple platforms (Android, iOS, and web).
 
@@ -24,6 +25,12 @@ It brings the best file-system routing concepts from the web to a universal appl
 - **Iteration**: Universal Fast Refresh across Android, iOS, and web, along with artifact memoization in the bundler to keep you moving fast at scale.
 - **Universal**: Android, iOS, and web share a unified navigation structure, with the ability to drop-down to platform-specific APIs at the route level.
 - **Discoverable**: Expo Router enables build-time static rendering on web, and universal linking to native. Meaning your app content can be indexed by search engines.
+
+<Collapsible summary="Can I use a different navigation library?">
+
+You can use any other navigation library, like [React Navigation](https://reactnavigation.org/docs/getting-started#installation), in your Expo project. However, if you are building a new app, we recommend using Expo Router for all the features described above. With other navigation libraries, you might have to implement your own strategies for some of these features, such as shareable links or handling web and native navigation in the same project.
+
+</Collapsible>
 
 ## Next steps
 

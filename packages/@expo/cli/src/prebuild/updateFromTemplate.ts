@@ -4,6 +4,7 @@ import chalk from 'chalk';
 
 import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
+import { type ResolvedTemplateOption } from './resolveOptions';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
@@ -32,8 +33,8 @@ export async function updateFromTemplateAsync(
     exp: ExpoConfig;
     /** package.json as JSON */
     pkg: PackageJSONConfig;
-    /** Template reference ID. */
-    template?: string;
+    /** Template to clone from. */
+    template?: ResolvedTemplateOption;
     /** Directory to write the template to before copying into the project. */
     templateDirectory?: string;
     /** List of platforms to clone. */
@@ -92,7 +93,7 @@ export async function cloneTemplateAndCopyToProjectAsync({
 }: {
   projectRoot: string;
   templateDirectory: string;
-  template?: string;
+  template?: ResolvedTemplateOption;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   platforms: ModPlatform[];
 }): Promise<{ copiedPaths: string[]; templateChecksum: string }> {

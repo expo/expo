@@ -10,16 +10,11 @@ useCoreDependencies()
 useDefaultAndroidSdkVersions()
 useExpoPublishing()
 
-def isEdgeToEdgeEnabled() {
-  return project.hasProperty("edgeToEdgeEnabled") && project.edgeToEdgeEnabled == "true"
-}
-
 android {
   namespace "expo.modules.systemui"
   defaultConfig {
     versionCode 1
     versionName '3.0.4'
-    buildConfigField "boolean", "IS_EDGE_TO_EDGE_ENABLED", isEdgeToEdgeEnabled().toString()
   }
 }
 
