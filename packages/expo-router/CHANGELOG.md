@@ -18,7 +18,7 @@
 - Add `relativeToDirectory` option to `<Link />` and imperative navigation. ([#30675](https://github.com/expo/expo/pull/30675) by [@marklawlor](https://github.com/marklawlor))
 - Fix parsing URLs hash on the web after location update ([#31375](https://github.com/expo/expo/pull/31375) by [@marklawlor](https://github.com/marklawlor))
 - Add `routerOptions` prop and improved types of `<Navigator />`. ([#31289](https://github.com/expo/expo/pull/31289) by [@marklawlor](https://github.com/marklawlor))
-- Render the default StatusBar before screens are rendered.
+- Render the default StatusBar before screens are rendered. ([#31624](https://github.com/expo/expo/pull/31624) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
