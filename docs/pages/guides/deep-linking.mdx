@@ -17,7 +17,7 @@ Before you can use app/universal links, you have to set up the two-way associati
 1. **Native app verification:** This requires some form of code signing that references the target website domain (URL).
 2. **Website verification:** This requires a file to be hosted on the target website in the **/.well-known** directory.
 
-After the two-way association is set up, you have to set up the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction/).
+After setting up the two-way association, you have to set up the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction/).
 
 > Universal links cannot be tested in the Expo Go app. You need to create a [development build](/develop/development-builds/introduction).
 
@@ -47,7 +47,7 @@ Build your native app with EAS Build to ensure the entitlement is registered wit
 
 <ConfigReactNative title="Manual native configuration">
 
-Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation) (`npx expo prebuild`) must [manually configure](/build-reference/ios-capabilities#manual-) the **Associated Domains** capability for their bundle identifier.
+Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation) (`npx expo prebuild`) must [manually configure](/build-reference/ios-capabilities#manual-setup) the **Associated Domains** capability for their bundle identifier.
 
 If you enable through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file:
 
