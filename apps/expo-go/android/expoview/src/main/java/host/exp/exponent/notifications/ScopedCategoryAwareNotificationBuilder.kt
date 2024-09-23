@@ -1,6 +1,7 @@
 package host.exp.exponent.notifications
 
 import android.content.Context
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
@@ -17,14 +18,19 @@ class ScopedCategoryAwareNotificationBuilder(
   ) {
     val requester = notification.notificationRequest
     val content = notificationContent
-    val scopedCategoryIdentifier: String = if (requester is ScopedNotificationRequest) {
-      ScopedNotificationsIdUtils.getScopedCategoryIdRaw(
-        requester.experienceScopeKeyString!!,
-        content.categoryId
-      )
+    val categoryId = content.categoryId
+    if (categoryId != null) {
+      val scopedCategoryIdentifier: String = if (requester is ScopedNotificationRequest) {
+        ScopedNotificationsIdUtils.getScopedCategoryIdRaw(
+          requester.experienceScopeKeyString!!,
+          categoryId
+        )
+      } else {
+        categoryId
+      }
+      super.addActionsToBuilder(builder, scopedCategoryIdentifier)
     } else {
-      content.categoryId
+      Log.e("expo-notifications", "Notification content is missing categoryId")
     }
-    super.addActionsToBuilder(builder, scopedCategoryIdentifier)
   }
 }

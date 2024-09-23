@@ -104,10 +104,7 @@ open class ExpoPresentationDelegate(
       return
     }
     CoroutineScope(Dispatchers.IO).launch {
-      val androidNotification = CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).apply {
-        setNotification(notification)
-        setAllowedBehavior(behavior)
-      }.build()
+      val androidNotification = createNotification(notification, behavior)
 
       NotificationManagerCompat.from(context).notify(
         notification.notificationRequest.identifier,
@@ -159,6 +156,12 @@ open class ExpoPresentationDelegate(
   }
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
+
+  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+    CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).apply {
+      setNotification(notification)
+      setAllowedBehavior(notificationBehavior)
+    }.build()
 
   protected open fun getNotification(statusBarNotification: StatusBarNotification): Notification? {
     val notification = statusBarNotification.notification

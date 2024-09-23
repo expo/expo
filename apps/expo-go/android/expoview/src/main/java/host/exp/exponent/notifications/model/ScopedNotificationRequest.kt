@@ -6,6 +6,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import android.os.Parcel
 import host.exp.exponent.kernel.ExperienceKey
 import android.os.Parcelable
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 
 class ScopedNotificationRequest : NotificationRequest {
   // We store String instead of ExperienceKey because ScopedNotificationRequest must be serializable.
@@ -13,7 +14,7 @@ class ScopedNotificationRequest : NotificationRequest {
 
   constructor(
     identifier: String,
-    content: NotificationContent,
+    content: INotificationContent,
     trigger: NotificationTrigger?,
     experienceScopeKey: String?
   ) : super(identifier, content, trigger) {

@@ -5,6 +5,7 @@ import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.RemoteMessageSerializer
 import expo.modules.notifications.notifications.background.BackgroundRemoteNotificationTaskConsumer
 import expo.modules.notifications.notifications.debug.DebugLogging
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.RemoteNotificationContent
@@ -100,7 +101,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
     val identifier = getNotificationIdentifier(remoteMessage)
 
-    val request = NotificationRequest(identifier, RemoteNotificationContent(remoteMessage), FirebaseNotificationTrigger(remoteMessage))
+    val request = createNotificationRequest(identifier, RemoteNotificationContent(remoteMessage), FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))
   }
 
@@ -111,6 +112,14 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
    */
   protected fun getNotificationIdentifier(remoteMessage: RemoteMessage): String {
     return remoteMessage.data["tag"] ?: remoteMessage.messageId ?: UUID.randomUUID().toString()
+  }
+
+  protected open fun createNotificationRequest(
+    identifier: String,
+    content: INotificationContent,
+    notificationTrigger: FirebaseNotificationTrigger
+  ): NotificationRequest {
+    return NotificationRequest(identifier, content, notificationTrigger)
   }
 
   override fun onDeletedMessages() {

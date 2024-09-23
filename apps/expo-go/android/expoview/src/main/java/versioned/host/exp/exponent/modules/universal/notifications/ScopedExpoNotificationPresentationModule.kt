@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationContent
@@ -22,7 +23,7 @@ class ScopedExpoNotificationPresentationModule(
 
   override fun createNotificationRequest(
     identifier: String,
-    content: NotificationContent,
+    content: INotificationContent,
     trigger: NotificationTrigger?
   ): NotificationRequest {
     return ScopedNotificationRequest(identifier, content, trigger, experienceKey.scopeKey)
