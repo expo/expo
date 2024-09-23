@@ -27,12 +27,13 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
   fun buildClass(): ClassDefinitionData {
     if (eventsDefinition != null && ownerClass.isSubclassOf(SharedObject::class)) {
-      listOf("__expo__startObserving" to SharedObject::startObserving, "__expo__stopObserving" to SharedObject::stopObserving)
+      listOf("__expo_onStartListening" to SharedObject::onStartListening, "__expo_onStopListening" to SharedObject::onStopListening)
         .forEach { (name, function) ->
           SyncFunctionComponent(name, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
             enforceType<SharedObject, String>(self, eventName)
             function.invoke(self, eventName)
           }.also { function ->
+            function.enumerable(false)
             syncFunctions[name] = function
           }
         }

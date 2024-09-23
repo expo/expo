@@ -196,11 +196,11 @@ class SharedObjectTest {
     var lastOnStartObserving = ""
     var lastOnStopObserving = ""
 
-    override fun startObserving(eventName: String) {
+    override fun onStartListening(eventName: String) {
       lastOnStartObserving = eventName
     }
 
-    override fun stopObserving(eventName: String) {
+    override fun onStopListening(eventName: String) {
       lastOnStopObserving = eventName
     }
   }
