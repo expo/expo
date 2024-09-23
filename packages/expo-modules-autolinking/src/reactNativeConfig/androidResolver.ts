@@ -18,7 +18,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
   }
   const androidDir = path.join(packageRoot, 'android');
   const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
-  if (!manifest && !gradle) {
+  if (!manifest || !gradle) {
     return null;
   }
 
@@ -232,7 +232,7 @@ export async function findGradleAndManifestAsync({
 }: {
   androidDir: string;
   isLibrary: boolean;
-}): Promise<{ gradle: string; manifest: string }> {
+}): Promise<{ gradle: string | null; manifest: string | null }> {
   const globExcludes = [
     'node_modules/**',
     '**/build/**',
@@ -250,6 +250,6 @@ export async function findGradleAndManifestAsync({
     glob(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
   ]);
   const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
-  const gradle = gradles[0];
-  return { gradle, manifest };
+  const gradle = gradles[0] ?? null;
+  return { gradle: gradle || null, manifest: manifest || null };
 }

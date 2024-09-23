@@ -15,7 +15,7 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
     }
     const androidDir = path_1.default.join(packageRoot, 'android');
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
-    if (!manifest && !gradle) {
+    if (!manifest || !gradle) {
         return null;
     }
     const packageName = reactNativeConfig?.packageName ||
@@ -201,8 +201,8 @@ async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {
         (0, fast_glob_1.default)(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
     ]);
     const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
-    const gradle = gradles[0];
-    return { gradle, manifest };
+    const gradle = gradles[0] ?? null;
+    return { gradle: gradle || null, manifest: manifest || null };
 }
 exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 //# sourceMappingURL=androidResolver.js.map
