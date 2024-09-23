@@ -31,3 +31,24 @@ export function replaceMiddlewareWith(
     item.handle = targetMiddleware;
   }
 }
+
+/**
+ * Removes a middleware from the connect app stack.
+ *
+ * @param app connect app server instance
+ * @param middleware middlware to remove
+ * @returns `true` if middleware was removed, `false` otherwise
+ */
+export function removeMiddleware(app: ConnectServer, middleware: HandleFunction) {
+  const index = app.stack.findIndex((item) => {
+    const handlerCode = item.handle.toString();
+    return !handlerCode.includes('[native code]') && handlerCode === middleware.toString();
+  });
+
+  if (index !== -1) {
+    app.stack.splice(index, 1);
+    return true;
+  }
+
+  return false;
+}

@@ -17,7 +17,7 @@ import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
-import { createMetroDevMiddleware } from './dev-server/createMetroDevMiddleware';
+import { createLegacyOrModernMetroMiddleware } from './dev-server';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
@@ -184,7 +184,7 @@ export async function instantiateMetroAsync(
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
-    createMetroDevMiddleware(metroConfig);
+    createLegacyOrModernMetroMiddleware(metroConfig, { isExporting });
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features

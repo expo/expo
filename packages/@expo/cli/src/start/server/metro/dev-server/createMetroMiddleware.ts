@@ -8,7 +8,11 @@ import { openInEditorAsync } from '../../../../utils/editor';
 
 const compression = require('compression');
 
-export function createMetroDevMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
+/**
+ * Create the base websockets and middleware stack for Metro.
+ * This is a version of the `@react-native-communicty/cli-server-api` middleware, without the legacy functionality.
+ */
+export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
   const messages = createMessagesSocket({ logger: Log });
   const events = createEventsSocket(messages);
 
