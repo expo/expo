@@ -1,4 +1,5 @@
-import { WebSocketServer, type RawData as WebSocketRawData } from 'ws';
+import { parse } from 'node:url';
+import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
@@ -16,14 +17,22 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 
   const server = new WebSocketServer({ noServer: true });
 
-  server.on('connection', (socket) => {
+  server.on('connection', (socket, req) => {
     const client = clients.registerSocket(socket);
+
+    // Assign the query parameters to the socket, used for `getpeers` requests
+    // NOTE(cedric): this looks like a legacy feature, might be able to drop it
+    if (req.url) {
+      Object.defineProperty(socket, '_upgradeQuery', {
+        value: parse(req.url).query,
+      });
+    }
 
     // Register disconnect handlers
     socket.on('close', client.terminate);
     socket.on('error', client.terminate);
     // Register message handler
-    socket.on('message', createClientMessageHandler(client.id, clients, broadcast));
+    socket.on('message', createClientMessageHandler(socket, client.id, clients, broadcast));
   });
 
   return {
@@ -42,23 +51,44 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 }
 
 function createClientMessageHandler(
+  socket: WebSocket,
   clientId: SocketId,
   clients: ReturnType<typeof createSocketMap>,
   broadcast: ReturnType<typeof createBroadcaster>
 ) {
+  function handleServerRequest(message: RequestMessage) {
+    // Ignore messages without identifiers, unable to link responses
+    if (!message.id) return;
+
+    if (message.method === 'getid') {
+      return socket.send(serializeMessage({ id: message.id, result: clientId }));
+    }
+
+    if (message.method === 'getpeers') {
+      const peers: Record<string, any> = {};
+      clients.map.forEach((peerSocket, peerSocketId) => {
+        if (peerSocketId !== clientId) {
+          peers[peerSocketId] = '_upgradeQuery' in peerSocket ? peerSocket._upgradeQuery : {};
+        }
+      });
+      return socket.send(serializeMessage({ id: message.id, result: peers }));
+    }
+  }
+
   return (data: WebSocketRawData, isBinary: boolean) => {
     const message = parseRawMessage<IncomingMessage>(data, isBinary);
     if (!message) return;
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
-      return broadcast(null, data.toString());
+      return broadcast(null, data);
     }
 
     // Handle incoming requests from clients
     if (messageIsRequest(message)) {
-      // Ignore legacy server messages
-      if (message.target === 'server') return;
+      if (message.target === 'server') {
+        return handleServerRequest(message);
+      }
 
       return clients.findSocket(message.target)?.send(
         serializeMessage({
