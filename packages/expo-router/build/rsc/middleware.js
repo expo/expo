@@ -31,11 +31,11 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
     const ssrManifest = getSSRManifest(distFolder, platform);
     return (0, rsc_renderer_1.renderRsc)({
         body: body ?? undefined,
-        searchParams,
         context,
         config,
         input,
         contentType,
+        decodedBody: searchParams.get('x-expo-params'),
     }, {
         isExporting: true,
         resolveClientEntry(file) {
