@@ -2,6 +2,7 @@ import type {
   EventMapBase,
   NavigationState,
   ParamListBase,
+  RouteConfig,
   RouteProp,
   ScreenListeners,
 } from '@react-navigation/native';
@@ -258,7 +259,32 @@ export function createGetIdForRoute(
   };
 }
 
-function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
+export function screenOptionsFactory(
+  route: RouteNode,
+  options?: ScreenProps['options']
+): RouteConfig<any, any, any, any, any>['options'] {
+  return (args) => {
+    // Only eager load generated components
+    const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
+    const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+    const dynamicResult = typeof options === 'function' ? options?.(args) : options;
+    const output = {
+      ...staticResult,
+      ...dynamicResult,
+    };
+
+    // Prevent generated screens from showing up in the tab bar.
+    if (route.generated) {
+      output.tabBarButton = () => null;
+      // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
+      output.drawerItemStyle = { height: 0, display: 'none' };
+    }
+
+    return output;
+  };
+}
+
+export function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
   return (
     <Screen
       // Users can override the screen getId function.
@@ -266,26 +292,7 @@ function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenPr
       {...props}
       name={route.route}
       key={route.route}
-      options={(args) => {
-        // Only eager load generated components
-        const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-        const staticResult =
-          typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
-        const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-        const output = {
-          ...staticResult,
-          ...dynamicResult,
-        };
-
-        // Prevent generated screens from showing up in the tab bar.
-        if (route.generated) {
-          output.tabBarButton = () => null;
-          // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-          output.drawerItemStyle = { height: 0, display: 'none' };
-        }
-
-        return output;
-      }}
+      options={screenOptionsFactory(route, options)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );
