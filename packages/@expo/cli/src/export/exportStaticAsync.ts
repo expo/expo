@@ -247,12 +247,18 @@ export function getHtmlFiles({
     route: RouteNode | null,
     baseUrl = ''
   ) {
-    for (const value of Object.values(screens)) {
+    for (const [key, value] of Object.entries(screens)) {
       let leaf: string | null = null;
       if (typeof value === 'string') {
         leaf = value;
       } else if (Object.keys(value.screens).length === 0) {
-        leaf = value.path;
+        // Ensure the trailing index is accounted for.
+        if (key === value.path + '/index') {
+          leaf = key;
+        } else {
+          leaf = value.path;
+        }
+
         route = value._route ?? null;
       }
 

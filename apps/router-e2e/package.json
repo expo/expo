@@ -9,6 +9,7 @@
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_CANARY_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
+    "start:headless": "E2E_ROUTER_SRC=headless expo",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },

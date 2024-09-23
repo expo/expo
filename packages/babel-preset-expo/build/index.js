@@ -148,10 +148,10 @@ function babelPresetExpo(api, options = {}) {
     }
     if (platform === 'web') {
         extraPlugins.push(require('babel-plugin-react-native-web'));
-        // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
-        if (bundler !== 'webpack') {
-            extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
-        }
+    }
+    // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+    if (bundler !== 'webpack') {
+        extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
     }
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);

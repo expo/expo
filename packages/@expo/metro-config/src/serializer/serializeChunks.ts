@@ -74,8 +74,8 @@ export async function graphToSerialAssetsAsync(
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
+    entryFile,
     projectRoot: options.projectRoot,
-    processModuleFilter: options.processModuleFilter,
   });
 
   // Create chunks for splitting.

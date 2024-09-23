@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-  api 'androidx.test:core:1.5.0'
+  api 'androidx.test:core:1.6.1'
   api 'junit:junit:4.13.2'
   api('io.mockk:mockk:1.13.5') {
     // jupiter is junit 5 which we don't use
@@ -47,9 +47,9 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
 
   // instrumented testing dependencies
-  api 'androidx.test.ext:junit:1.1.5'
-  api 'androidx.test:runner:1.5.2'
-  api 'androidx.test:rules:1.5.0'
+  api 'androidx.test.ext:junit:1.2.1'
+  api 'androidx.test:runner:1.6.2'
+  api 'androidx.test:rules:1.6.1'
   api "com.google.truth:truth:1.1.2"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 }

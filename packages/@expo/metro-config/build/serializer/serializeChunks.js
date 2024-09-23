@@ -35,8 +35,8 @@ const sourceMapString = typeof sourceMapString_1.default !== 'function'
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
+        entryFile,
         projectRoot: options.projectRoot,
-        processModuleFilter: options.processModuleFilter,
     });
     // Create chunks for splitting.
     const chunks = new Set();

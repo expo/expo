@@ -20,8 +20,12 @@ export const globalExtras = css`
   }
 
   ::selection {
-    background-color: ${theme.palette.blue5};
+    background-color: rgb(from ${theme.palette.blue5} r g b / 80%);
     color: ${theme.text.default};
+  }
+
+  ::-moz-selection {
+    background-color: ${theme.palette.blue5};
   }
 
   ::-webkit-scrollbar {

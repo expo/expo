@@ -27,9 +27,12 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Supports different slash combinations', async () => {
       expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
-      // FirstDirectory is a host when url parsing.
-      expect(new File('file://firstDirectory/to/file').uri).toBe('file:///to/file');
-      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+      // This URL is confusing, as path is actually a hostname.
+      // We throw a descriptive error in this case.
+      expect(() => new File('file://path/to/file').uri).toThrow();
+
+      expect(new File('file://localhost/path/to/file').uri).toBe('file:///path/to/file');
+      expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
     });
 
     it('Accepts and correctly handles uris to files', () => {
@@ -206,14 +209,15 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => src.move(dstFolder)).toThrow();
       });
 
-      it('Copies it to a folder', () => {
+      it('moves it to a folder', () => {
         const src = new File(testDirectory + 'file.txt');
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists).toBe(false);
+        expect(src.exists).toBe(true);
         const dst = new File(testDirectory + '/destination/file.txt');
+        expect(src.uri).toBe(dst.uri);
         expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
       });
@@ -225,26 +229,29 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => file.move(folder)).toThrow();
       });
 
-      it('Copies it to a file', () => {
+      it('moves it to a file', () => {
         const src = new File(testDirectory + 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory + 'file2.txt');
         src.move(dst);
         expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
-        expect(src.exists).toBe(false);
+        expect(src.exists).toBe(true);
+        expect(src.uri).toBe(dst.uri);
       });
     });
 
     describe('When moving a directory', () => {
-      it('copies it to a folder', () => {
+      it('moves it to a folder', () => {
         const src = new Directory(testDirectory + 'directory');
         src.create();
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists).toBe(false);
-        expect(new Directory(testDirectory + 'destination/directory').exists).toBe(true);
+        expect(src.exists).toBe(true);
+        const dst = new Directory(testDirectory + 'destination/directory');
+        expect(src.uri).toBe(dst.uri);
+        expect(dst.exists).toBe(true);
       });
 
       it('Throws an error when moving to a nonexistant folder without options', () => {
@@ -349,6 +356,31 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('joins paths', () => {
         expect(Paths.join('file:///path', 'to', '..', 'file')).toBe('file:///path/file');
+        expect(Paths.join(new Directory('file:///path'), 'to', '..', 'file')).toBe(
+          'file:///path/file'
+        );
+      });
+
+      it('joins paths in the File and Directory constructors', () => {
+        expect(new File('file:///path', 'to', '..', 'file').uri).toBe('file:///path/file');
+        expect(new Directory('file:///path', 'to', '..', 'directory').uri).toBe(
+          'file:///path/directory/'
+        );
+      });
+    });
+
+    describe('Exposes common app directories', () => {
+      it('exposes cache directory', () => {
+        expect(Paths.cache instanceof Directory).toBe(true);
+        expect(Paths.cache.uri).toBe(FS.cacheDirectory);
+      });
+      it('exposes document directory', () => {
+        expect(Paths.document instanceof Directory).toBe(true);
+        expect(Paths.document.uri).toBe(FS.documentDirectory);
+      });
+      it('can be easily used with joining paths', () => {
+        const file = new File(Paths.document, 'file.txt');
+        expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
       });
     });
   });

@@ -1,63 +1,88 @@
 import * as nodePath from './path';
 import { fileURLToPath, isFileUrl, pathToFileURLString } from './url';
 
-export function join(...paths: string[]): string {
-  if (paths[0] && isFileUrl(paths[0])) {
-    const [firstPath, ...rest] = paths;
-    return pathToFileURLString(nodePath.join(fileURLToPath(firstPath), ...rest));
-  }
-  return nodePath.join(...paths);
+type Path = string | { uri: string };
+
+function uriObjectToString(path: Path): string {
+  return typeof path === 'string' ? path : path.uri;
 }
 
-export function relative(from: string, to: string): string {
-  // If the first path is a file URL, convert it to a path
-  if (isFileUrl(from)) {
-    from = fileURLToPath(from);
+export class PathUtilities {
+  static join(...paths: Path[]): string {
+    const stringPaths = paths.map(uriObjectToString);
+    if (stringPaths[0] && isFileUrl(stringPaths[0])) {
+      const [firstPath, ...rest] = stringPaths;
+      return pathToFileURLString(nodePath.join(fileURLToPath(firstPath), ...rest));
+    }
+    return nodePath.join(...stringPaths);
   }
-  // If the second path is a file URL, convert it to a path
-  if (isFileUrl(to)) {
-    to = fileURLToPath(to);
-  }
-  return nodePath.relative(from, to);
-}
 
-export function isAbsolute(path: string): boolean {
-  if (isFileUrl(path)) {
-    return true;
-  }
-  return nodePath.isAbsolute(path);
-}
+  static relative(from: Path, to: Path): string {
+    const fromString = uriObjectToString(from);
+    const toString = uriObjectToString(to);
 
-export function normalize(path: string): string {
-  if (isFileUrl(path)) {
-    return pathToFileURLString(fileURLToPath(nodePath.normalize(path)));
+    // If the first path is a file URL, convert it to a path
+    if (isFileUrl(fromString)) {
+      from = fileURLToPath(fromString);
+    }
+    // If the second path is a file URL, convert it to a path
+    if (isFileUrl(toString)) {
+      to = fileURLToPath(toString);
+    }
+    return nodePath.relative(fromString, toString);
   }
-  return nodePath.normalize(path);
-}
 
-export function dirname(path: string): string {
-  if (isFileUrl(path)) {
-    return pathToFileURLString(nodePath.dirname(fileURLToPath(path)));
+  static isAbsolute(path: Path): boolean {
+    const pathString = uriObjectToString(path);
+    if (isFileUrl(pathString)) {
+      return true;
+    }
+    return nodePath.isAbsolute(pathString);
   }
-  return nodePath.dirname(path);
-}
 
-export function basename(path: string, ext?: string): string {
-  if (isFileUrl(path)) {
-    return nodePath.basename(fileURLToPath(path), ext);
+  static normalize(path: Path): string {
+    const pathString = uriObjectToString(path);
+    if (isFileUrl(pathString)) {
+      return pathToFileURLString(fileURLToPath(nodePath.normalize(pathString)));
+    }
+    return nodePath.normalize(pathString);
   }
-  return nodePath.basename(path, ext);
-}
 
-export function parse(path: string): {
-  root: string;
-  dir: string;
-  base: string;
-  ext: string;
-  name: string;
-} {
-  if (isFileUrl(path)) {
-    return nodePath.parse(fileURLToPath(path));
+  static dirname(path: Path): string {
+    const pathString = uriObjectToString(path);
+    if (isFileUrl(pathString)) {
+      return pathToFileURLString(nodePath.dirname(fileURLToPath(pathString)));
+    }
+    return nodePath.dirname(pathString);
   }
-  return nodePath.parse(path);
+
+  static basename(path: Path, ext?: string): string {
+    const pathString = uriObjectToString(path);
+    if (isFileUrl(pathString)) {
+      return nodePath.basename(fileURLToPath(pathString), ext);
+    }
+    return nodePath.basename(pathString, ext);
+  }
+
+  static extname(path: Path): string {
+    const pathString = uriObjectToString(path);
+    if (isFileUrl(pathString)) {
+      return nodePath.extname(fileURLToPath(pathString));
+    }
+    return nodePath.extname(pathString);
+  }
+
+  static parse(path: Path): {
+    root: string;
+    dir: string;
+    base: string;
+    ext: string;
+    name: string;
+  } {
+    const pathString = uriObjectToString(path);
+    if (isFileUrl(pathString)) {
+      return nodePath.parse(fileURLToPath(pathString));
+    }
+    return nodePath.parse(pathString);
+  }
 }

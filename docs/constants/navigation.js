@@ -339,36 +339,37 @@ const general = [
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
-    makePage('eas-update/publish.mdx'),
-    makePage('eas-update/eas-cli.mdx'),
-    makePage('eas-update/develop-faster.mdx'),
-    makePage('eas-update/github-actions.mdx'),
-    makePage('eas-update/faq.mdx'),
-    makeGroup('Concepts', [
-      makePage('eas-update/how-it-works.mdx'),
-      makePage('eas-update/runtime-versions.mdx'),
-      makePage('eas-update/deployment-patterns.mdx'),
-    ]),
-    makeGroup('Troubleshoot', [
-      makePage('eas-update/debug.mdx'),
-      makePage('eas-update/debug-advanced.mdx'),
+    makeGroup('Preview', [
+      makePage('eas-update/develop-faster.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
-      makePage('eas-update/build-locally.mdx'),
-      makePage('eas-update/error-recovery.mdx'),
+      makePage('eas-update/github-actions.mdx'),
     ]),
-    makeGroup('Advanced', [
-      makePage('eas-update/optimize-assets.mdx'),
-      makePage('eas-update/environment-variables.mdx'),
-      makePage('eas-update/code-signing.mdx'),
+    makeGroup('Deployment', [
+      makePage('eas-update/deployment.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
-      makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/continuous-deployment.mdx'),
+      makePage('eas-update/deployment-patterns.mdx'),
+    ]),
+    makeGroup('Concepts', [
+      makePage('eas-update/how-it-works.mdx'),
+      makePage('eas-update/eas-cli.mdx'),
+      makePage('eas-update/runtime-versions.mdx'),
+    ]),
+    makeGroup('Troubleshooting', [
+      makePage('eas-update/debug.mdx'),
+      makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/codepush.mdx'),
+      makePage('eas-update/environment-variables.mdx'),
+      makePage('eas-update/code-signing.mdx'),
+      makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
+      makePage('eas-update/build-locally.mdx'),
+      makePage('eas-update/faq.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [

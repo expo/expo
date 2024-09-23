@@ -1,4 +1,4 @@
-import type { EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners } from '@react-navigation/native';
+import type { EventMapBase, NavigationState, ParamListBase, RouteConfig, RouteProp, ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, State extends NavigationState = NavigationState, EventMap extends EventMapBase = EventMapBase> = {
@@ -32,4 +32,6 @@ export declare function getQualifiedRouteComponent(value: RouteNode): React.Comp
 export declare function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route' | 'contextKey' | 'children'>): ({ params }?: {
     params?: Record<string, any> | undefined;
 }) => string;
+export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): RouteConfig<any, any, any, any, any>['options'];
+export declare function routeToScreen(route: RouteNode, { options, ...props }?: Partial<ScreenProps>): React.JSX.Element;
 //# sourceMappingURL=useScreens.d.ts.map
