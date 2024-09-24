@@ -203,7 +203,7 @@ export class AudioPlayerWeb
   }
 
   _createMediaElement(): HTMLAudioElement {
-    const newSource = typeof this.src === 'string' ? this.src : this.src?.uri ?? '';
+    const newSource = typeof this.src === 'string' ? this.src : (this.src?.uri ?? '');
     const media = new Audio(newSource);
 
     media.ontimeupdate = () => {

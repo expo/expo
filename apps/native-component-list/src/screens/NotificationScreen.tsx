@@ -20,9 +20,7 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
 
 const remotePushSupported = Device.isDevice;
 export default class NotificationScreen extends React.Component<
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  {},
+  object,
   {
     lastNotifications?: Notifications.Notification;
   }
@@ -34,9 +32,7 @@ export default class NotificationScreen extends React.Component<
   private _onReceivedListener: EventSubscription | undefined;
   private _onResponseReceivedListener: EventSubscription | undefined;
 
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  constructor(props: {}) {
+  constructor(props: object) {
     super(props);
     this.state = {};
   }

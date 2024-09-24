@@ -1,6 +1,5 @@
 /**
  * @hidden
  */
-export interface WebGLObject {
-}
+export type WebGLObject = object;
 //# sourceMappingURL=types.d.ts.map
