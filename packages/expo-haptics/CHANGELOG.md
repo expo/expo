@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31294](https://github.com/expo/expo/pull/31294) by [@kudo](https://github.com/kudo))
+- Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
 
 ## 13.0.1 — 2024-04-23
 
