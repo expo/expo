@@ -2,11 +2,13 @@
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
 import { Paths } from 'expo-file-system/src/next';
+import { Image } from 'expo-image';
 import { Platform } from 'react-native';
+import { mountAndWaitFor } from './helpers';
 
 export const name = 'FileSystem@next';
 
-export async function test({ describe, expect, it, ...t }) {
+export async function test({ describe, expect, it, ...t }, { setPortalChild }) {
   const testDirectory = FS.documentDirectory + 'tests/';
   t.beforeEach(async () => {
     try {
@@ -382,6 +384,25 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(Paths.document, 'file.txt');
         expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
       });
+    });
+
+    describe('Is compatible with other packages', () => {
+      it('creates a shared ref image', async () => {
+        const url = 'https://picsum.photos/id/237/200/300';
+        const file = new File(testDirectory + 'image.jpeg');
+        const output = await File.downloadFileAsync(url, file);
+        const sharedRef = output.image();
+        console.log(sharedRef);
+        expect(
+          (
+            await mountAndWaitFor(
+              <Image source={sharedRef} style={{ height: 40, width: 40 }} />,
+              'onLoad',
+              setPortalChild
+            )
+          ).source
+        ).toBe(200);
+      }, 10000);
     });
   });
 }

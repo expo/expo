@@ -1,3 +1,5 @@
+import { SharedRef } from 'expo-modules-core/types';
+
 /**
  * A string representing a file or directory url.
  */
@@ -89,6 +91,7 @@ export declare class File {
    * @returns The contents of the file as string.
    */
   text(): string;
+  image(): SharedRef<any>;
 
   /**
    * Retrieves content of the file as base64.

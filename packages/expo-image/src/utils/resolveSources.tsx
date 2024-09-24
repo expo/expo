@@ -51,5 +51,10 @@ export function resolveSources(sources?: ImageProps['source']): ImageNativeProps
     // @ts-expect-error
     return sources.__expo_shared_object_id__;
   }
+  // @ts-expect-error
+  if (sources?.__expo_shared_object_id__) {
+    // @ts-expect-error
+    return sources.__expo_shared_object_id__;
+  }
   return [resolveSource(sources)].filter(Boolean) as ImageSource[];
 }

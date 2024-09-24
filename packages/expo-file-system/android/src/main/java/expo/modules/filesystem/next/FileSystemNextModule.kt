@@ -93,6 +93,10 @@ class FileSystemNextModule : Module() {
         file.text()
       }
 
+      Function("image") { file: FileSystemFile ->
+        file.image()
+      }
+
       Function("base64") { file: FileSystemFile ->
         file.base64()
       }
