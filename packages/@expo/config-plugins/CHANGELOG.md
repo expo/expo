@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `updates.useEmbeddedUpdate` key ([#31608](https://github.com/expo/expo/pull/31608) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 8.0.9 — 2024-09-24
+
+### 🎉 New features
+
+- Add `updates.useEmbeddedUpdate` key ([#31608](https://github.com/expo/expo/pull/31608) by [@brentvatne](https://github.com/brentvatne))
 
 ## 8.0.8 — 2024-07-11
 
