@@ -290,6 +290,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             asyncRequireModulePath: (0, resolve_from_1.default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
             assetRegistryPath: '@react-native/assets-registry/registry',
             assetPlugins: getAssetPlugins(projectRoot),
+            hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {
                     experimentalImportSupport: false,
