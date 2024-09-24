@@ -4,10 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- Removed the deprecated `generate-package-list` command for Apple platforms. ([#31518](https://github.com/expo/expo/pull/31518) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 - Added `react-native-config` command to support core autolinking for react-native. ([#29818](https://github.com/expo/expo/pull/29818) by [@kudo](https://github.com/kudo))
 - Added AAR files autolinking as Gradle projects. ([#30706](https://github.com/expo/expo/pull/30706) by [@kudo](https://github.com/kudo))
+- Add support for react-native 0.76 ([#31593](https://github.com/expo/expo/pull/31593) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added Apple code sign entitlements to generated `ExpoModulesProvider.swift`. ([#31518](https://github.com/expo/expo/pull/31518) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -16,6 +20,7 @@
 - Added missing `project.android.packageName` in react-native-config for Android core autolinking. ([#30913](https://github.com/expo/expo/pull/30913) by [@kudo](https://github.com/kudo))
 - Fixed core autolinking for react-native-maps. ([#31190](https://github.com/expo/expo/pull/31190) by [@kudo](https://github.com/kudo))
 - Fixed broken `searchPaths` from package.json. ([#31196](https://github.com/expo/expo/pull/31196) by [@kudo](https://github.com/kudo))
+- Fixed `react-native-config` error when running on CNG projects without Android native files. ([#31637](https://github.com/expo/expo/pull/31637) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

@@ -11,13 +11,30 @@ import type { RouteNode } from './Route';
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
     file: string;
     page: string;
+    /**
+     * Keys are route param names that have been normalized for a regex named-matcher, values are the original route param names.
+     */
     routeKeys: Record<string, string>;
+    /**
+     * Regex for matching a path against the route.
+     * The regex is normalized for named matchers so keys must be looked up against the `routeKeys` object to collect the original route param names.
+     * Regex matching alone cannot accurately route to a file, the order in which routes are matched is equally important to ensure correct priority.
+     */
     namedRegex: TRegex;
+    /** Indicates that the route was generated and does not map to any file in the project's routes directory. */
     generated?: boolean;
 };
 export type ExpoRouterServerManifestV1<TRegex = string> = {
-    apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+    /**
+     * Routes that are matched first and return static HTML files for a given path.
+     * These are only matched against requests with method `GET` and `HEAD`.
+     */
     htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+    /**
+     * Routes that are matched after HTML routes and invoke WinterCG-compliant functions.
+     */
+    apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+    /** List of routes that are matched last and return with status code 404. */
     notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 export interface Group {

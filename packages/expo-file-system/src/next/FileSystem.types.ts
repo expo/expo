@@ -1,7 +1,7 @@
 /**
- * A string representing a file or directory path.
+ * A string representing a file or directory url.
  */
-export type Path = string;
+export type URI = string;
 
 /**
  * Represents a directory on the file system.
@@ -9,18 +9,18 @@ export type Path = string;
 export declare class Directory {
   /**
    * Creates an instance of a directory.
-   * @param path -  A string representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
    * @example
    * ```ts
    * const directory = new Directory("file:///path/to/directory");
    * ```
    */
-  constructor(path: Path);
+  constructor(...uris: (URI | File | Directory)[]);
 
   /**
-   * Represents the directory path.
+   * Represents the directory URI.
    */
-  readonly path: Path;
+  readonly uri: URI;
 
   /**
    * Validates a directory path.
@@ -34,11 +34,9 @@ export declare class Directory {
   delete(): void;
 
   /**
-   * Checks if a directory exists.
-   *
-   * @returns `true` if the directory exists, `false` otherwise.
+   * A boolean representing if a directory exists. `true` if the directory exists, `false` otherwise.
    */
-  exists(): boolean;
+  exists: boolean;
 
   /**
    * Creates a directory.
@@ -49,9 +47,19 @@ export declare class Directory {
    */
   copy(destination: Directory | File);
   /**
-   * Moves a directory.
+   * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File);
+  /**
+   * @hidden
+   * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
+   * This function is internal and will be removed in the future (when returning arrays of shared objects is supported).
+   */
+  listAsRecords(): { isDirectory: string; path: string }[];
+  /**
+   * Lists the contents of a directory.
+   */
+  list(): (Directory | File)[];
 }
 
 /**
@@ -61,14 +69,14 @@ export declare class File {
   /**
    * Creates an instance of File.
    *
-   * @param path - A string representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+   * @param uri - A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
    */
-  constructor(path: Path);
+  constructor(...uris: (URI | File | Directory)[]);
 
   /**
-   * Represents the file path.
+   * Represents the file URI.
    */
-  readonly path: string;
+  readonly uri: string;
 
   /**
    * Validates a directory path.
@@ -83,6 +91,12 @@ export declare class File {
   text(): string;
 
   /**
+   * Retrieves content of the file as base64.
+   * @returns The contents of the file as a base64 string.
+   */
+  base64(): string;
+
+  /**
    * Writes content to the file.
    * @param content - The content to write into the file.
    */
@@ -94,10 +108,9 @@ export declare class File {
   delete(): void;
 
   /**
-   * Checks if a file exists.
-   * @returns `true` if the file exists, `false` otherwise.
+   * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
    */
-  exists(): boolean;
+  exists: boolean;
 
   /**
    * Creates a file.
@@ -110,7 +123,7 @@ export declare class File {
   copy(destination: Directory | File);
 
   /**
-   * Moves a directory.
+   * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File);
 
@@ -122,11 +135,79 @@ export declare class File {
    */
   static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
   /**
-   * A size of the file in bytes. Returns null if the file does not exist or it cannot be read.
+   * A size of the file in bytes. Null if the file does not exist or it cannot be read.
    */
   size: number | null;
   /**
-   * An md5 hash of the file. Returns null if the file does not exist or it cannot be read.
+   * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
   md5: string | null;
+}
+
+export declare class Paths {
+  /*
+   * A property containing the document directory – a place to store files that are safe from being deleted by the system.
+   */
+  static get document(): Directory;
+  /*
+   * A property containing the cache directory – a place to store files that can be deleted by the system when the device runs low on storage.
+   */
+  static get cache(): Directory;
+  /**
+   * Joins path segments into a single path.
+   * @param paths - An array of path segments.
+   * @returns A string representing the joined path.
+   */
+  static join(...paths: (URI | File | Directory)[]): string;
+  /**
+   * Resolves a relative path to an absolute path.
+   * @param from - The base path.
+   * @param to - The relative path.
+   * @returns A string representing the resolved path.
+   */
+  static relative(from: URI | File | Directory, to: URI | File | Directory): string;
+  /**
+   * Checks if a path is absolute.
+   * @param path - The path to check.
+   * @returns `true` if the path is absolute, `false` otherwise.
+   */
+  static isAbsolute(path: URI | File | Directory): boolean;
+  /**
+   * Normalizes a path.
+   * @param path - The path to normalize.
+   * @returns A string representing the normalized path.
+   */
+  static normalize(path: URI | File | Directory): string;
+  /**
+   * Returns the directory name of a path.
+   * @param path - The path to get the directory name from.
+   * @returns A string representing the directory name.
+   */
+  static dirname(path: URI | File | Directory): string;
+  /**
+   * Returns the base name of a path.
+   * @param path - The path to get the base name from.
+   * @param ext - An optional file extension.
+   * @returns A string representing the base name.
+   */
+  static basename(path: URI | File | Directory, ext?: string): string;
+  /**
+   * Returns the extension of a path.
+   * @param path - The path to get the extension from.
+   * @returns A string representing the extension.
+   */
+  static extname(path: URI | File | Directory): string;
+
+  /**
+   * Parses a path into its components.
+   * @param path - The path to parse.
+   * @returns An object containing the parsed path components.
+   */
+  static parse(path: URI | File | Directory): {
+    root: string;
+    dir: string;
+    base: string;
+    ext: string;
+    name: string;
+  };
 }

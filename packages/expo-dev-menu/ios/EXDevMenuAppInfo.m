@@ -16,7 +16,7 @@
   NSMutableDictionary *appInfo = [NSMutableDictionary new];
 
   NSString *appIcon = [EXDevMenuAppInfo getAppIcon];
-  NSString *runtimeVersion = [EXDevMenuAppInfo getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *runtimeVersion = @"";
   NSString *appVersion = [EXDevMenuAppInfo getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
 
@@ -25,6 +25,10 @@
   if (manager.currentManifest != nil) {
     appName = [manager.currentManifest name];
     appVersion = [manager.currentManifest version];
+
+    if ([manager.currentManifest isKindOfClass:[EXManifestsExpoUpdatesManifest class]]) {
+      runtimeVersion = [(EXManifestsExpoUpdatesManifest *)manager.currentManifest runtimeVersion];
+    }
   }
 
   NSString *engine;
@@ -69,22 +73,6 @@
   }
 
   return appIcon;
-}
-
-+(NSString *)getUpdatesConfigForKey:(NSString *)key
-{
-  NSString *value = @"";
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"Expo" ofType:@"plist"];
-
-  if (path != nil) {
-    NSDictionary *expoConfig = [NSDictionary dictionaryWithContentsOfFile:path];
-
-    if (expoConfig != nil) {
-      value = [expoConfig objectForKey:key] ?: @"";
-    }
-  }
-
-  return value;
 }
 
 +(NSString *)getFormattedAppVersion

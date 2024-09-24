@@ -10,7 +10,7 @@ import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { TransformInputOptions } from 'metro';
+import { DeltaResult, TransformInputOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
@@ -18,6 +18,7 @@ import {
 } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
 import type MetroHmrServer from 'metro/src/HmrServer';
 import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
+import { GraphRevision } from 'metro/src/IncrementalBundler';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
@@ -428,7 +429,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.setupHmr(url);
     }
 
-    return evalMetroAndWrapFunctions(this.projectRoot, res.src, res.filename);
+    return evalMetroAndWrapFunctions(
+      this.projectRoot,
+      res.src,
+      res.filename,
+      specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
+    );
   };
 
   private async metroImportAsArtifactsAsync(
@@ -1162,7 +1168,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
         return await this.ssrLoadModuleContents(filePath, {
-          isExporting: true,
+          isExporting: this.instanceMetroOptions.isExporting,
           platform,
         });
       } catch (error: any) {
@@ -1359,22 +1365,49 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     try {
-      const { delta, revision } = await (revPromise != null
-        ? this.metro.getBundler().updateGraph(await revPromise, false)
-        : this.metro.getBundler().initializeGraph(
-            // NOTE: Using absolute path instead of relative input path is a breaking change.
-            // entryFile,
-            resolvedEntryFilePath,
+      let delta: DeltaResult<void>;
+      let revision: GraphRevision;
 
-            transformOptions,
-            resolverOptions,
-            {
-              onProgress,
-              shallow: graphOptions.shallow,
-              // @ts-expect-error: typed incorrectly
-              lazy: graphOptions.lazy,
-            }
-          ));
+      // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
+      // We should resolve the bug because it results in ~6x faster bundling to reuse the graph revision.
+      if (transformOptions.customTransformOptions?.environment === 'react-server') {
+        const props = await this.metro.getBundler().initializeGraph(
+          // NOTE: Using absolute path instead of relative input path is a breaking change.
+          // entryFile,
+          resolvedEntryFilePath,
+
+          transformOptions,
+          resolverOptions,
+          {
+            onProgress,
+            shallow: graphOptions.shallow,
+            // @ts-expect-error: typed incorrectly
+            lazy: graphOptions.lazy,
+          }
+        );
+        delta = props.delta;
+        revision = props.revision;
+      } else {
+        const props = await (revPromise != null
+          ? this.metro.getBundler().updateGraph(await revPromise, false)
+          : this.metro.getBundler().initializeGraph(
+              // NOTE: Using absolute path instead of relative input path is a breaking change.
+              // entryFile,
+              resolvedEntryFilePath,
+
+              transformOptions,
+              resolverOptions,
+              {
+                onProgress,
+                shallow: graphOptions.shallow,
+                // @ts-expect-error: typed incorrectly
+                lazy: graphOptions.lazy,
+              }
+            ));
+        delta = props.delta;
+        revision = props.revision;
+      }
+
       bundlePerfLogger?.annotate({
         int: {
           graph_node_count: revision.graph.dependencies.size,

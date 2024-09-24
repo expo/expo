@@ -14,6 +14,7 @@ class PostalAddressModel : BaseModel() {
     val postalAddressType = when (label) {
       "home" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME
       "work" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK
+      "other" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER
       else -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER
     }
     return postalAddressType

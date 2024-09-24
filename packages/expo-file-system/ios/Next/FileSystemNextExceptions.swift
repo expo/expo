@@ -19,6 +19,18 @@ internal class UnableToDownloadException: GenericException<String> {
   }
 }
 
+internal class InvalidTypeFileException: Exception {
+  override var reason: String {
+    "A folder with the same name already exists in the file location"
+  }
+}
+
+internal class InvalidTypeFolderException: Exception {
+  override var reason: String {
+    "A file with the same name already exists in the folder location"
+  }
+}
+
 internal class UnableToGetFileSizeException: GenericException<String> {
   override var reason: String {
     "Unable to get file size: \(param)"

@@ -124,7 +124,7 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
  * @see https://github.com/sindresorhus/open/issues/205
  */
 async function openWithSystemRootEnvironment(
-  appId: string | Readonly<string[]>,
+  appId: string | readonly string[],
   options?: open.OpenAppOptions
 ): Promise<import('child_process').ChildProcess> {
   const oldSystemRoot = process.env.SYSTEMROOT;

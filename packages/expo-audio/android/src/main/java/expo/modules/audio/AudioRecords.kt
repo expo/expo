@@ -24,7 +24,8 @@ enum class InterruptionMode(val value: String) : Enumerable {
   DUCK_OTHERS("duckOthers")
 }
 
-class RecordingOptions(
+// Data class because we want `equals`
+data class RecordingOptions(
   @Field val extension: String,
   @Field val outputFormat: AndroidOutputFormat?,
   @Field val audioEncoder: AndroidAudioEncoder?,

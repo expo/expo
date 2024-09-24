@@ -19,6 +19,7 @@
 - Added fetch API support. ([#30173](https://github.com/expo/expo/pull/30173), [#30219](https://github.com/expo/expo/pull/30219), [#30576](https://github.com/expo/expo/pull/30576) by [@kudo](https://github.com/kudo))
 - Added `useTransportationNext` option for `DevToolsPluginClient` to support binary payload. ([#30935](https://github.com/expo/expo/pull/30935) by [@kudo](https://github.com/kudo))
 - Added `autoSize` prop support to DOM components. ([#31103](https://github.com/expo/expo/pull/31103) by [@kudo](https://github.com/kudo))
+- Added local `file://` support to the Fetch API. ([#31551](https://github.com/expo/expo/pull/31551) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -33,6 +34,7 @@
 - Fixed `devtools` module not found. ([#30933](https://github.com/expo/expo/pull/30933) by [@kudo](https://github.com/kudo))
 - Reloads DOM components WebView while app in background and browser renderer processes are gone. ([#31318](https://github.com/expo/expo/pull/31318) by [@kudo](https://github.com/kudo))
 - Add missing `types` folder from published package ([#31339](https://github.com/expo/expo/pull/31339) by [@marklawlor](https://github.com/marklawlor))
+- Fixed leaking `web-streams-polyfill` imported on web bundles for API routes. ([#31611](https://github.com/expo/expo/pull/31611) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

@@ -5,4 +5,5 @@
  * LICENSE file in the root directory of this source tree.
  */
 declare let __METRO_GLOBAL_PREFIX__: string;
+declare const disableReactNativeMissingModuleHandling: boolean;
 //# sourceMappingURL=runtime.d.ts.map
