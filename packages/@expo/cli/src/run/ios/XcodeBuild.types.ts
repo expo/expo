@@ -40,4 +40,5 @@ export type BuildProps = {
   /** Should use derived data for builds. */
   buildCache: boolean;
   scheme: string;
+  prebundleOutput?: string;
 } & BundlerProps;

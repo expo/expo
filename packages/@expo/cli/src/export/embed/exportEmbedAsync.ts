@@ -31,7 +31,7 @@ import {
 } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
-import { removeAsync } from '../../utils/dir';
+import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -44,6 +44,7 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
+import { deserializeInputKey, getExportEmbedKey } from '../../run/ios/prebundleIos';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -63,9 +64,44 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
   return possiblePath;
 }
 
+function getPrebundledOutput(): string | undefined {
+  return process.env.__EXPO_HAS_PREBUNDLED_OUTPUT;
+}
+
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
+
+  // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
+  // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
+  // This path is also used for automatically deploying server bundles to a remote host.
+  const prebundleId = getPrebundledOutput();
+  if (prebundleId) {
+    const inputKey = getExportEmbedKey(options);
+
+    const { options: prebundleOptions, key } = deserializeInputKey(prebundleId);
+
+    if (key === inputKey) {
+      // Copy the prebundleOptions.bundleOutput to options.bundleOutput and prebundleOptions.assetsDest to options.assetsDest
+      await removeAsync(options.bundleOutput);
+
+      copyAsync(prebundleOptions.bundleOutput, options.bundleOutput);
+
+      if (prebundleOptions.assetsDest && options.assetsDest) {
+        copyAsync(prebundleOptions.assetsDest, options.assetsDest);
+      }
+
+      console.log('info: Copied output to binary:', options.bundleOutput);
+      return;
+    }
+    console.log('Prebundle keys:', key, inputKey);
+    console.warn('warning: Prebundle key mismatch, rebundling with cache.');
+  }
+
+  // If the app was bundled previously in the same process, then we should reuse the Metro cache.
+  if (getPrebundledOutput()) {
+    options.resetCache = false;
+  }
 
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
@@ -249,6 +285,9 @@ async function exportDomComponentsAsync(
   exp: ExpoConfig,
   files: ExportAssetMap
 ) {
+  if (expoDomComponentReferences.length === 0) {
+    return;
+  }
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
     // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
