@@ -234,17 +234,6 @@ function getNodeBinary() {
   return 'node';
 }
 
-function getGlobalTool(tool: string, amend: boolean = isRunningFromXcodeBuildScript) {
-  const globalBin = getCommandBin('eas');
-  if (!globalBin) {
-    if (amend) {
-      return getGlobalTool(tool, false);
-    }
-    throw new Error(`"${tool}" could not be found in the PATH.`);
-  }
-  return globalBin;
-}
-
 async function runServerDeployCommandAsync(
   projectRoot: string,
   {
@@ -283,6 +272,7 @@ async function runServerDeployCommandAsync(
       // Ensures that errors can be caught.
       stdio: 'pipe',
       env: {
+        // TODO: NO MERGE
         EXPO_STAGING: '1',
         ...process.env,
       },
