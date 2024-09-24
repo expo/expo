@@ -1,4 +1,4 @@
-import { openDatabaseAsync, openDatabaseSync } from './SQLiteDatabase';
+import { openDatabaseAsync, openDatabaseSync } from './index';
 const DATABASE_VERSION = 1;
 const STATEMENT_GET = 'SELECT value FROM storage WHERE key = ?;';
 const STATEMENT_SET = 'INSERT INTO storage (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value;';
@@ -321,6 +321,7 @@ export class SQLiteStorage {
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
  */
 export const AsyncStorage = new SQLiteStorage('ExpoSQLiteStorage');
+export default AsyncStorage;
 /**
  * Alias for [`AsyncStorage`](#asyncstorage-1), given the storage not only offers asynchronous methods.
  */

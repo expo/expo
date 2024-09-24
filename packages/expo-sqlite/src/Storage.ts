@@ -1,4 +1,4 @@
-import { openDatabaseAsync, openDatabaseSync, type SQLiteDatabase } from './SQLiteDatabase';
+import { openDatabaseAsync, openDatabaseSync, type SQLiteDatabase } from './index';
 
 /**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.
@@ -383,6 +383,8 @@ export class SQLiteStorage {
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
  */
 export const AsyncStorage = new SQLiteStorage('ExpoSQLiteStorage');
+
+export default AsyncStorage;
 
 /**
  * Alias for [`AsyncStorage`](#asyncstorage-1), given the storage not only offers asynchronous methods.

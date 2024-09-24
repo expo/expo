@@ -120,6 +120,7 @@ export declare class SQLiteStorage {
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).
  */
 export declare const AsyncStorage: SQLiteStorage;
+export default AsyncStorage;
 /**
  * Alias for [`AsyncStorage`](#asyncstorage-1), given the storage not only offers asynchronous methods.
  */
