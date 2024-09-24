@@ -6,6 +6,7 @@ const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+const didClearNotificationResponseEventName = 'onDidClearNotificationResponse';
 // @docsMissing
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
 /**
@@ -110,12 +111,24 @@ export async function getLastNotificationResponseAsync() {
  * where the app selects a route based on the notification response, and it is undesirable
  * to continue to select the route after the response has already been handled.
  *
+ * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
+ * this call will also clear the value returned by the hook.
+ *
  * @return A promise that resolves if the native call was succesful.
  */
 export async function clearLastNotificationResponseAsync() {
     if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
     }
+    emitter.emit(didClearNotificationResponseEventName, []);
     return await NotificationsEmitterModule.clearLastNotificationResponseAsync();
+}
+/**
+ * @hidden
+ */
+export function addNotificationResponseClearedListener(listener) {
+    return emitter.addListener(didClearNotificationResponseEventName, () => {
+        listener();
+    });
 }
 //# sourceMappingURL=NotificationsEmitter.js.map

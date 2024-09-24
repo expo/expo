@@ -82,7 +82,14 @@ export declare function getLastNotificationResponseAsync(): Promise<Notification
  * where the app selects a route based on the notification response, and it is undesirable
  * to continue to select the route after the response has already been handled.
  *
+ * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
+ * this call will also clear the value returned by the hook.
+ *
  * @return A promise that resolves if the native call was succesful.
  */
 export declare function clearLastNotificationResponseAsync(): Promise<void>;
+/**
+ * @hidden
+ */
+export declare function addNotificationResponseClearedListener(listener: () => void): EventSubscription;
 //# sourceMappingURL=NotificationsEmitter.d.ts.map
