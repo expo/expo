@@ -179,7 +179,7 @@ const executeCommand = async (
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
         return (
-          ['id', 'groups', 'kindString', 'originalName'].includes(key) ||
+          ['id', 'groups', 'kindString', 'originalName', 'files'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
         );
       });
