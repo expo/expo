@@ -679,6 +679,18 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
+            "value": "Enable AAPT2 PNG crunching",
+          },
+          {
+            "key": "android.enablePngCrunchInReleaseBuilds",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
             "value": "Use this property to specify which architecture you want to build.",
           },
           {
