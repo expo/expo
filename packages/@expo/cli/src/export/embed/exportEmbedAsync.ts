@@ -135,6 +135,73 @@ async function dumpDeploymentLogs(projectRoot: string, logs: string, name = 'dep
   return outputPath;
 }
 
+const DEPLOYMENT_SUCCESS_FIXTURE = {
+  pid: 84795,
+  output: [
+    '{\n' +
+      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+      '  "deployment": {\n' +
+      '    "identifier": "dccw84urit",\n' +
+      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+      '  }\n' +
+      '}\n',
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+      '> Project export: server\n' +
+      '- Preparing project\n' +
+      '- Creating deployment\n' +
+      '✔ Created deployment\n',
+  ],
+  stdout:
+    '{\n' +
+    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+    '  "deployment": {\n' +
+    '    "identifier": "dccw84urit",\n' +
+    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+    '  }\n' +
+    '}\n',
+  stderr:
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+    '> Project export: server\n' +
+    '- Preparing project\n' +
+    '- Creating deployment\n' +
+    '✔ Created deployment\n',
+  status: 0,
+  signal: null,
+};
+const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
+  pid: 84795,
+  output: [
+    '{\n' +
+      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+      '  "deployment": {\n' +
+      '    "identifier": "dccw84urit",\n' +
+      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+      '  }\n' +
+      '}\n',
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+      '> Project export: server\n' +
+      '- Preparing project\n' +
+      '- Creating deployment\n' +
+      '✔ Created deployment\n',
+  ],
+  stdout:
+    '{\n' +
+    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+    '  "deployment": {\n' +
+    '    "identifier": "dccw84urit",\n' +
+    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+    '  }\n' +
+    '}\n',
+  stderr:
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+    '> Project export: server\n' +
+    '- Preparing project\n' +
+    '- Creating deployment\n' +
+    '✔ Created deployment\n',
+  status: 0,
+  signal: null,
+};
+
 async function runServerDeployCommandAsync(
   projectRoot: string,
   {
@@ -157,23 +224,47 @@ async function runServerDeployCommandAsync(
     const spawnOptions: spawnAsync.SpawnOptions = {
       cwd: projectRoot,
       // Ensures that errors can be caught.
-      stdio: 'inherit',
+      stdio: 'pipe',
+      env: {
+        EXPO_STAGING: '1',
+        ...process.env,
+      },
     };
-    if (deployScript) {
-      logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
-      results = await spawnAsync(
-        deployScript.script,
-        ['--export-dir', distDirectory],
-        spawnOptions
-      );
-    } else {
-      logInXcode('Deploying server to EAS');
-      results = await spawnAsync(
-        'eas',
-        ['deploy', '--non-interactive', '--json', '--export-dir', distDirectory],
-        spawnOptions
+    // if (deployScript) {
+    //   logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
+    //   results = await spawnAsync(
+    //     deployScript.script,
+    //     ['--export-dir', distDirectory],
+    //     spawnOptions
+    //   );
+    // } else {
+
+    logInXcode('Deploying server to EAS');
+    // Xcode build scripts do not have access to the global path, so we need to use the EAS binary that's set ahead of time during the cocoapods install (TODO).
+    const easPath = process.env.DEPLOY_BINARY;
+    if (!easPath) {
+      throw new Error(
+        'Environment variable DEPLOY_BINARY is not defined. It must be set to the path of the server deployment CLI binary.'
       );
     }
+    // results = DEPLOYMENT_SUCCESS_FIXTURE;
+    results = await spawnAsync(
+      process.env.NODE_BINARY!,
+      [
+        easPath,
+        'deploy',
+        '--non-interactive',
+        '--json',
+        '--export-dir',
+        // TODO: Support absolute paths in EAS CLI
+        path.relative(projectRoot, distDirectory),
+      ],
+      spawnOptions
+    );
+
+    // }
+
+    console.log(results);
 
     const logPath = await dumpDeploymentLogs(projectRoot, results.output.join('\n'));
 
@@ -185,7 +276,7 @@ async function runServerDeployCommandAsync(
       //     "url": "https://sep23--29bkrcd7ky.staging.expo.app"
       //   }
       // }
-      json = JSON.parse(results.stdout);
+      json = JSON.parse(results.stdout.trim());
     } catch {
       logMetroErrorInXcode(
         projectRoot,
@@ -361,6 +452,9 @@ export async function exportEmbedBundleAndAssetsAsync(
       // Copy over the server output on top of the public folder.
       await persistMetroFilesAsync(files, serverOutput);
 
+      // TODO: This is required for eas cli to detect that the project is dynamic. We need to fix upstream.
+      await fs.promises.mkdir(path.join(serverOutput, 'client'), { recursive: true });
+
       [...files.entries()].forEach(([key, value]) => {
         if (value.targetDomain === 'server') {
           // Delete server resources to prevent them from being exposed in the binary.
@@ -388,9 +482,10 @@ export async function exportEmbedBundleAndAssetsAsync(
 
       // If the user-defined server URL is not defined, use the deployed server URL.
       // This allows for overwriting the server URL in the project's native files.
-      serverUrl ??= deployedServerUrl;
+      serverUrl ||= deployedServerUrl;
 
       if (serverUrl) {
+        logInXcode(`Setting server origin: ${serverUrl}`);
         // Write the server URL to the project's native files.
         files.set(
           // The filename will be read by expo/fetch and used to polyfill relative network requests in production.
