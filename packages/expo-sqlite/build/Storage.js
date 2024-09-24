@@ -7,7 +7,7 @@ const STATEMENT_GET_ALL_KEYS = 'SELECT key FROM storage;';
 const STATEMENT_CLEAR = 'DELETE FROM storage;';
 const MIGRATION_STATEMENT_0 = 'CREATE TABLE IF NOT EXISTS storage (key TEXT PRIMARY KEY NOT NULL, value TEXT);';
 /**
- * Key-value storage backed by SQLite. This class accepts a `databaseName` parameter in its constructor, which is the name of the database file to use for the storage.
+ * Key-value store backed by SQLite. This class accepts a `databaseName` parameter in its constructor, which is the name of the database file to use for the storage.
  */
 export class SQLiteStorage {
     databaseName;

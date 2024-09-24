@@ -5,7 +5,7 @@
  */
 export type SQLiteStorageSetItemUpdateFunction = (prevValue: string | null) => string;
 /**
- * Key-value storage backed by SQLite. This class accepts a `databaseName` parameter in its constructor, which is the name of the database file to use for the storage.
+ * Key-value store backed by SQLite. This class accepts a `databaseName` parameter in its constructor, which is the name of the database file to use for the storage.
  */
 export declare class SQLiteStorage {
     private readonly databaseName;
