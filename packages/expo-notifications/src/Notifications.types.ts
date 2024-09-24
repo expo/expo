@@ -253,7 +253,7 @@ export type ChannelAwareTriggerInput = {
 };
 
 /**
- * Schedulable trigger inputs (that are not a plain Date value or time value)
+ * Schedulable trigger inputs (that are not a plain date value or time value)
  * must have the "type" property set to one of these values.
  */
 export enum CalendarTriggerTypes {
@@ -280,7 +280,7 @@ export enum CalendarTriggerTypes {
   /**
    * A trigger type that will cause the notification to be delivered once every year
    * when the `day`, `month`, `hour`, and `minute` date components match the specified values.
-   * > **Note:** all properties are specified in JavaScript Date's ranges.
+   * > **Note:** All properties are specified in JavaScript `Date` object's ranges.
    */
   YEARLY = 'yearly',
   /**
@@ -343,7 +343,7 @@ export type SchedulableNotificationTriggerInputObject = {
  * an object, with a `type` value set to one of the allowed values in
  * [`CalendarTriggerTypes`](#calendartriggertypes).
  * If the input is an object, date components passed in will be validated, and
- * an error thrown if they are outside their allowed range (e.g. the `minute` and
+ * an error is thrown if they are outside their allowed range (for example, the `minute` and
  * `second` components must be between 0 and 59 inclusive).
  */
 export type SchedulableNotificationTriggerInput =
