@@ -323,7 +323,7 @@ export class SQLiteStorage {
 export const AsyncStorage = new SQLiteStorage('ExpoSQLiteStorage');
 export default AsyncStorage;
 /**
- * Alias for [`AsyncStorage`](#asyncstorage-1), given the storage not only offers asynchronous methods.
+ * Alias for [`AsyncStorage`](#sqliteasyncstorage), given the storage not only offers asynchronous methods.
  */
 export const Storage = AsyncStorage;
 //# sourceMappingURL=Storage.js.map

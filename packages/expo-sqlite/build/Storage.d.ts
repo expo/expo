@@ -122,7 +122,7 @@ export declare class SQLiteStorage {
 export declare const AsyncStorage: SQLiteStorage;
 export default AsyncStorage;
 /**
- * Alias for [`AsyncStorage`](#asyncstorage-1), given the storage not only offers asynchronous methods.
+ * Alias for [`AsyncStorage`](#sqliteasyncstorage), given the storage not only offers asynchronous methods.
  */
 export declare const Storage: SQLiteStorage;
 //# sourceMappingURL=Storage.d.ts.map
