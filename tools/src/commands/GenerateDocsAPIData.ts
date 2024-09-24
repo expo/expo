@@ -141,7 +141,6 @@ const executeCommand = async (
       excludePrivate: true,
       excludeProtected: true,
       excludeExternals: true,
-      skipErrorChecking: true,
       jsDocCompatibility: false,
       pretty: !MINIFY_JSON,
       commentStyle: 'All',
