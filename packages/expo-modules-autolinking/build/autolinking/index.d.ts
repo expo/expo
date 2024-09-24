@@ -3,7 +3,7 @@ import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync, resolveSearch
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 import type { ModuleDescriptor, SearchOptions } from '../types';
 export { findModulesAsync, getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync, resolveExtraBuildDependenciesAsync, resolveModulesAsync, resolveSearchPathsAsync, };
-export { generatePackageListAsync } from './generatePackageList';
+export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
 export { verifySearchResults } from './verifySearchResults';
 export * from '../types';
 /**

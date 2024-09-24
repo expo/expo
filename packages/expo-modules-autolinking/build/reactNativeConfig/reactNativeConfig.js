@@ -9,8 +9,8 @@ const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
-const utils_1 = require("./utils");
-const utils_2 = require("../autolinking/utils");
+const utils_1 = require("../autolinking/utils");
+const fileUtils_1 = require("../fileUtils");
 /**
  * Create config for react-native core autolinking.
  */
@@ -47,10 +47,10 @@ async function findDependencyRootsAsync(projectRoot, searchPaths) {
     for (const name of dependencies) {
         for (const searchPath of searchPathSet) {
             const packageConfigPath = path_1.default.resolve(searchPath, name, 'package.json');
-            if (await (0, utils_1.fileExistsAsync)(packageConfigPath)) {
+            if (await (0, fileUtils_1.fileExistsAsync)(packageConfigPath)) {
                 const packageRoot = path_1.default.dirname(packageConfigPath);
                 results[name] = packageRoot;
-                const maybeIsolatedModulesPath = (0, utils_2.getIsolatedModulesPath)(packageRoot, name);
+                const maybeIsolatedModulesPath = (0, utils_1.getIsolatedModulesPath)(packageRoot, name);
                 if (maybeIsolatedModulesPath) {
                     searchPathSet.add(maybeIsolatedModulesPath);
                 }

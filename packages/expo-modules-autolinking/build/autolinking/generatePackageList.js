@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generatePackageListAsync = void 0;
+exports.generateModulesProviderAsync = exports.generatePackageListAsync = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const utils_1 = require("./utils");
 /**
@@ -21,4 +21,19 @@ async function generatePackageListAsync(modules, options) {
     }
 }
 exports.generatePackageListAsync = generatePackageListAsync;
+/**
+ * Generates ExpoModulesProvider file listing all packages to link.
+ * Right know it works only for Apple platforms.
+ */
+async function generateModulesProviderAsync(modules, options) {
+    try {
+        const platformLinking = (0, utils_1.getLinkingImplementationForPlatform)(options.platform);
+        await platformLinking.generateModulesProviderAsync(modules, options.target, options.entitlement);
+    }
+    catch (e) {
+        console.error(chalk_1.default.red(`Generating modules provider is not available for platform: ${options.platform}`));
+        throw e;
+    }
+}
+exports.generateModulesProviderAsync = generateModulesProviderAsync;
 //# sourceMappingURL=generatePackageList.js.map

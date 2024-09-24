@@ -103,11 +103,12 @@ const renderProps = (
 };
 
 export const renderProp = (
-  { comment, name, type, flags, signatures }: PropData,
+  propData: PropData,
   sdkVersion: string,
   defaultValue?: string,
   { exposeInSidebar, ...options }: RenderPropOptions = {}
 ) => {
+  const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   const extractedSignatures = signatures || type?.declaration?.signatures;
