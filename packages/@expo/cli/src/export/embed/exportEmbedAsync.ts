@@ -41,6 +41,7 @@ import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/mid
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
+import { attemptModification } from '../../utils/modifyConfigAsync';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
@@ -535,6 +536,37 @@ export async function exportEmbedBundleAndAssetsAsync(
       // If the user-defined server URL is not defined, use the deployed server URL.
       // This allows for overwriting the server URL in the project's native files.
       serverUrl ||= deployedServerUrl;
+
+      // If the user hasn't manually defined the server URL, write the deployed server URL to the app.json.
+      if (!exp.extra?.router?.origin) {
+        try {
+          // NOTE: Is is it possible to assert that the config needs to be modifiable before building the app?
+          await attemptModification(
+            projectRoot,
+            {
+              ...exp,
+              extra: {
+                ...(exp.extra ?? {}),
+                router: {
+                  ...(exp.extra?.router ?? {}),
+                  generatedOrigin: serverUrl,
+                },
+              },
+            },
+
+            // TODO: This modification warning doesn't make any sense since the user shouldn't be adding the generated origin manually.
+            {
+              extra: {
+                router: {
+                  generatedOrigin: serverUrl,
+                },
+              },
+            }
+          );
+        } catch (error) {
+          throw new Error(`Failed to write server origin to app.json: ${error.message}`);
+        }
+      }
 
       // TODO: Write to app.json serverOrigin field. Skip when eager bundle was already made.
       if (serverUrl) {
