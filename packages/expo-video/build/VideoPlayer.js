@@ -15,7 +15,7 @@ NativeVideoModule.VideoPlayer.prototype.replace = function (source) {
  */
 export function useVideoPlayer(source, setup) {
     const parsedSource = parseSource(source);
-    // If the application name contains ANY non-ascii characters, raise a console.warn
+    // If the application name contains ANY non-ascii characters, raise a warning to the user because it can cause video playback issues on Android.
     useEffect(() => {
         if (applicationName && /[^\x00-\x7F]/.test(applicationName)) {
             console.warn(`The application name "${applicationName}" contains non-ASCII characters. ` +
