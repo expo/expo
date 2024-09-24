@@ -6,9 +6,9 @@
 
 ### 🎉 New features
 
-- Change same protocol hrefs to `https://`.
-
 ### 🐛 Bug fixes
+
+- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
