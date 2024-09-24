@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 import type {
   PlayerError,
@@ -8,6 +7,7 @@ import type {
   VideoPlayerStatus,
   VideoSource,
 } from './VideoPlayer.types';
+import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
   source: VideoSource,
