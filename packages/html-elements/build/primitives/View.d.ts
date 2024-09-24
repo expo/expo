@@ -1,5 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle, BoxShadowValue, FilterFunction } from 'react-native';
 type NativeViewProps = ComponentProps<typeof NativeView> & ClassAttributes<typeof NativeView>;
 /**
  * https://baconbrix.gitbook.io/react-native-web/primitives/view
@@ -40,7 +40,7 @@ export interface WebViewStyle {
     /** @platform web */
     backgroundSize?: string;
     /** @platform web */
-    boxShadow?: string;
+    boxShadow?: string | readonly BoxShadowValue[];
     /** @platform web */
     boxSizing?: string;
     /** @platform web */
@@ -48,7 +48,7 @@ export interface WebViewStyle {
     /** @platform web */
     cursor?: string;
     /** @platform web */
-    filter?: string;
+    filter?: string | readonly FilterFunction[];
     /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
