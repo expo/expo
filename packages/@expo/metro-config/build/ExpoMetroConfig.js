@@ -49,6 +49,13 @@ const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
 const debug = require('debug')('expo:metro:config');
+const warnMemoCache = new Set();
+function memoWarn(message) {
+    if (!warnMemoCache.has(message)) {
+        warnMemoCache.add(message);
+        console.warn(message);
+    }
+}
 function getAssetPlugins(projectRoot) {
     const hashAssetFilesPath = resolve_from_1.default.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
     if (!hashAssetFilesPath) {
@@ -220,6 +227,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 ? createStableModuleIdFactory.bind(null, serverRoot)
                 : createNumericModuleIdFactory,
             getModulesRunBeforeMainModule: () => {
+                if (!env_1.env.EXPO_USE_DEPRECATED_POLYFILL_SORTING) {
+                    return [];
+                }
+                memoWarn(chalk_1.default.yellow(`Using deprecated Metro polyfill sorting hack because the environment variable EXPO_USE_DEPRECATED_POLYFILL_SORTING is enabled. This will be removed in the future. If your app requires this flag to bundle correctly, try importing "expo" on the first line of your entry JS file.`));
                 const preModules = [
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),

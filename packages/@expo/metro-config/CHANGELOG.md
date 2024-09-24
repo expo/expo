@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Stop using `serializer.getModulesRunBeforeMainModule` (in favor of simply importing `expo`) and move previous behavior behind `process.env.EXPO_USE_DEPRECATED_POLYFILL_SORTING`. ([#31460](https://github.com/expo/expo/pull/31460) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - add support for css imports from other css files ([#31574](https://github.com/expo/expo/pull/31574) by [@EvanBacon](https://github.com/EvanBacon))
