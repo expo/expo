@@ -1,11 +1,10 @@
-import fs from 'fs-extra';
 import path from 'path';
 
-import { exportEmbedAsync, exportEmbedInternalAsync } from '../../export/embed/exportEmbedAsync';
-import { Log } from '../../log';
+import { exportEmbedInternalAsync } from '../../export/embed/exportEmbedAsync';
 import { env } from '../../utils/env';
 import { AbortCommandError } from '../../utils/errors';
 import { Options } from '../../export/embed/resolveOptions';
+
 const canonicalize = require('metro-core/src/canonicalize');
 
 // TODO: Disable minification if hermes is enabled
@@ -14,13 +13,6 @@ function isHermesEnabled(projectRoot: string) {
   return true;
 }
 
-/**
- * A JS implementation of `react-native/scripts/react-native-xcode.sh` which can be run before the native build for quicker results.
- *
- * @param projectRoot
- * @param param1
- * @returns
- */
 export async function prebundleAppAsync(
   projectRoot: string,
   {
@@ -37,16 +29,7 @@ export async function prebundleAppAsync(
     resetCache?: boolean;
   }
 ) {
-  // if (process.env.BUNDLE_COMMAND) {
-  //   Log.warn('Env BUNDLE_COMMAND is not supported in bundle-first mode');
-  // }
-  // if (process.env.CLI_PATH) {
-  //   Log.warn('Env CLI_PATH is not supported in bundle-first mode');
-  // }
-  // if (process.env.NODE_ARGS) {
-  //   Log.warn('Env NODE_ARGS is not supported in bundle-first mode');
-  // }
-
+  
   const bundleFile = path.join(destination, 'main.jsbundle');
 
   const isHermes = isHermesEnabled(projectRoot);
@@ -81,6 +64,7 @@ export async function prebundleAppAsync(
 }
 
 export function getExportEmbedKey(options: Options) {
+  // Create a sorted key for the options, removing values that won't change the Metro results.
   return JSON.stringify(
     {
       ...options,
@@ -94,34 +78,4 @@ export function getExportEmbedKey(options: Options) {
 
 export function deserializeInputKey(key: string) {
   return JSON.parse(key) as Awaited<ReturnType<typeof prebundleAppAsync>>;
-}
-
-async function copyDirAsync(src: string, dest: string) {
-  await fs.promises.mkdir(dest, { recursive: true });
-  const entries = await fs.promises.readdir(src, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    if (entry.isDirectory()) {
-      await copyDirAsync(srcPath, destPath);
-    } else {
-      await fs.promises.copyFile(srcPath, destPath);
-    }
-  }
-}
-
-export async function embedBundleAsync(bundlePath: string, binaryPath: string) {
-  Log.debug('Copying JS into app binary folder: ' + binaryPath);
-  // Move pre bundled app into binary
-  await copyDirAsync(bundlePath, binaryPath);
-  if (!env.EXPO_DEBUG) {
-    try {
-      // clean up
-      await fs.remove(bundlePath);
-    } catch (error: unknown) {
-      Log.warn(`Failed to remove pre-bundled JS: ${error}`);
-    }
-  }
 }
