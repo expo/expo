@@ -1,9 +1,9 @@
 import path from 'path';
 
 import { exportEmbedInternalAsync } from '../../export/embed/exportEmbedAsync';
+import { Options } from '../../export/embed/resolveOptions';
 import { env } from '../../utils/env';
 import { AbortCommandError } from '../../utils/errors';
-import { Options } from '../../export/embed/resolveOptions';
 
 const canonicalize = require('metro-core/src/canonicalize');
 
@@ -29,7 +29,6 @@ export async function prebundleAppAsync(
     resetCache?: boolean;
   }
 ) {
-  
   const bundleFile = path.join(destination, 'main.jsbundle');
 
   const isHermes = isHermesEnabled(projectRoot);

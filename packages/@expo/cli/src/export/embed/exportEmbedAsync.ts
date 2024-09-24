@@ -20,6 +20,7 @@ import resolveFrom from 'resolve-from';
 import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
+import { deserializeInputKey, getExportEmbedKey } from '../../run/ios/prebundleIos';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
@@ -44,7 +45,6 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
-import { deserializeInputKey, getExportEmbedKey } from '../../run/ios/prebundleIos';
 
 const debug = require('debug')('expo:export:embed');
 

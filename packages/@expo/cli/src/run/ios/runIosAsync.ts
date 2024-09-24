@@ -1,8 +1,12 @@
+import { resolveEntryPoint } from '@expo/config/paths';
 import chalk from 'chalk';
+import os from 'os';
+import path from 'path';
 
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
@@ -12,12 +16,8 @@ import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
-import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { prebundleAppAsync } from './prebundleIos';
-import { resolveEntryPoint } from '@expo/config/paths';
-import path from 'path';
-import os from 'os';
-import { ensurePortAvailabilityAsync } from '../../utils/port';
+import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -47,7 +47,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const isCustomBinary = !!options.binary;
 
   let prebundleData: string | undefined;
-  const needsBundling = !isCustomBinary && (options.configuration !== 'Debug' || !props.isSimulator);
+  const needsBundling =
+    !isCustomBinary && (options.configuration !== 'Debug' || !props.isSimulator);
   if (needsBundling) {
     hasPrebundle = true;
     // Prebundle the app
@@ -86,7 +87,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   const launchInfo = await getLaunchInfoForBinaryAsync(binaryPath);
-  
 
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
