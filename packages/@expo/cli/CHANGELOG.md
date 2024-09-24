@@ -54,6 +54,7 @@
 - Fixed the `CorsMiddleware` is a not registered since react-native 0.75. ([#30752](https://github.com/expo/expo/pull/30752) by [@kudo](https://github.com/kudo))
 - Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
 - Detect network issues and enable offline mode with Undici errors. ([#31517](https://github.com/expo/expo/pull/31517) by [@byCedric](https://github.com/byCedric))
+- Resolve dom components entry relative to workspace root instead of project root. ([#31433](https://github.com/expo/expo/pull/31433) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
