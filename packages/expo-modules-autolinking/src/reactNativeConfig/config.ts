@@ -4,7 +4,7 @@ import requireFromString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
 import type { RNConfigReactNativeConfig } from './reactNativeConfig.types';
-import { fileExistsAsync } from './utils';
+import { fileExistsAsync } from '../fileUtils';
 
 let tsMain: typeof import('typescript') | null | undefined = undefined;
 

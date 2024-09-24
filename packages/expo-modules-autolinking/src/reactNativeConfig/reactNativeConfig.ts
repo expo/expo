@@ -16,8 +16,8 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { fileExistsAsync } from './utils';
 import { getIsolatedModulesPath } from '../autolinking/utils';
+import { fileExistsAsync } from '../fileUtils';
 import type { SupportedPlatform } from '../types';
 
 /**

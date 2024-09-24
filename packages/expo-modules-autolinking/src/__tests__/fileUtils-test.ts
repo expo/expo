@@ -2,7 +2,7 @@ import glob from 'fast-glob';
 import { vol } from 'memfs';
 import { Readable } from 'stream';
 
-import { globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from '../utils';
+import { globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from '../fileUtils';
 
 jest.mock('fast-glob');
 jest.mock('fs/promises');

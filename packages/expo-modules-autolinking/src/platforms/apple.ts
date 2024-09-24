@@ -1,8 +1,11 @@
+import spawnAsync from '@expo/spawn-async';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { fileExistsAsync } from '../fileUtils';
 import type {
+  AppleCodeSignEntitlements,
   ExtraDependencies,
   ModuleDescriptorIos,
   ModuleIosPodspecInfo,
@@ -91,12 +94,18 @@ export async function resolveExtraBuildDependenciesAsync(
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
-export async function generatePackageListAsync(
+export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
-  targetPath: string
+  targetPath: string,
+  entitlementPath: string
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
-  const generatedFileContent = await generatePackageListFileContentAsync(modules, className);
+  const entitlements = await parseEntitlementsAsync(entitlementPath);
+  const generatedFileContent = await generatePackageListFileContentAsync(
+    modules,
+    className,
+    entitlements
+  );
 
   await fs.outputFile(targetPath, generatedFileContent);
 }
@@ -106,7 +115,8 @@ export async function generatePackageListAsync(
  */
 async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
-  className: string
+  className: string,
+  entitlements: AppleCodeSignEntitlements
 ): Promise<string> {
   const iosModules = modules.filter(
     (module) =>
@@ -172,6 +182,10 @@ ${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
 ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}
+  }
+
+  public override func getAppCodeSignEntitlements() -> AppCodeSignEntitlements {
+    return AppCodeSignEntitlements.from(json: #"${JSON.stringify(entitlements)}"#)
   }
 }
 `;
@@ -261,4 +275,15 @@ function wrapInDebugConfigurationCheck(
   return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
     indentationLevel
   )}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
+}
+
+async function parseEntitlementsAsync(entitlementPath: string): Promise<AppleCodeSignEntitlements> {
+  if (!(await fileExistsAsync(entitlementPath))) {
+    return {};
+  }
+  const { stdout } = await spawnAsync('plutil', ['-convert', 'json', '-o', '-', entitlementPath]);
+  const entitlementsJson = JSON.parse(stdout);
+  return {
+    appGroups: entitlementsJson['com.apple.security.application-groups'] || undefined,
+  };
 }
