@@ -1,7 +1,6 @@
 package host.exp.exponent.notifications.model
 
 import expo.modules.notifications.notifications.model.NotificationRequest
-import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import android.os.Parcel
 import host.exp.exponent.kernel.ExperienceKey

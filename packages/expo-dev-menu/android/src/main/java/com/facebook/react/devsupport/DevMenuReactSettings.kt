@@ -3,10 +3,6 @@
 package com.facebook.react.devsupport
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.preference.PreferenceManager
-import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.PackagerConnectionSettings
 import expo.modules.devmenu.react.DevMenuPackagerConnectionSettings
@@ -19,7 +15,7 @@ import expo.modules.devmenu.react.DevMenuPackagerConnectionSettings
 
 internal class DevMenuReactSettings(
   context: Context,
-  serverIp: String,
+  serverIp: String
 ) : DevMenuSettingsBase(context) {
   override val packagerConnectionSettings = DevMenuPackagerConnectionSettings(serverIp, context)
 

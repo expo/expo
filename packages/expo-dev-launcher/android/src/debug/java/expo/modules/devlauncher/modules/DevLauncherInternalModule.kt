@@ -10,7 +10,6 @@ import android.net.Uri
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.core.utilities.EmulatorUtilities
-import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
