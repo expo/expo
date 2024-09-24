@@ -18,7 +18,12 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { Options } from './resolveOptions';
-import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
+import {
+  isExecutingFromXcodebuild,
+  logInXcode,
+  logMetroErrorInXcode,
+  warnInXcode,
+} from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
@@ -44,6 +49,8 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
+import spawnAsync from '@expo/spawn-async';
+import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -116,6 +123,140 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ]);
 }
 
+async function dumpDeploymentLogs(projectRoot: string, logs: string) {
+  const outputPath = path.join(projectRoot, '.expo/logs/deploy.log');
+  fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+  debug('Dumping server deployment logs to: ' + outputPath);
+  await fs.promises.writeFile(outputPath, logs);
+  return outputPath;
+}
+
+async function runServerDeployCommandAsync(
+  projectRoot: string,
+  {
+    distDirectory,
+    deployScript,
+  }: { distDirectory: string; deployScript: { scriptName: string; script: string } | null }
+): Promise<string | false> {
+  // TODO: Test error cases thoroughly since they run at the end of a build:
+  // - EAS not installed.
+  // - EAS not configured.
+  // - Build from Xcode locally.
+  // - Build from Xcode with EAS.
+  // - Network error.
+  // - Custom deploy script `deploy.native`.
+
+  let json: any;
+  try {
+    let results: spawnAsync.SpawnResult;
+
+    if (deployScript) {
+      logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
+      results = await spawnAsync(deployScript.script, ['--export-dir', distDirectory]);
+    } else {
+      logInXcode('Deploying server to EAS');
+      results = await spawnAsync('eas', [
+        'deploy',
+        '--non-interactive',
+        '--json',
+        '--export-dir',
+        distDirectory,
+      ]);
+    }
+
+    const logPath = await dumpDeploymentLogs(projectRoot, results.output.join('\n'));
+
+    try {
+      // {
+      //   "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",
+      //   "deployment": {
+      //     "identifier": "29bkrcd7ky",
+      //     "url": "https://sep23--29bkrcd7ky.staging.expo.app"
+      //   }
+      // }
+      json = JSON.parse(results.stdout);
+    } catch {
+      logMetroErrorInXcode(
+        projectRoot,
+        `Failed to parse server deployment JSON output. Check the logs for more information: ${logPath}`
+      );
+      return false;
+    }
+  } catch (error) {
+    // TODO: Account for EAS not being installed.
+
+    if (isSpawnResultError(error)) {
+      if (error.stderr.match(/Must configure EAS project by running/)) {
+        // EAS not configured, this can happen when building a project locally before building in EAS.
+        // User must run `eas init`, `eas deploy`, or `eas build` first.
+
+        // TODO: Should we fail the build here or just warn users?
+        logMetroErrorInXcode(
+          projectRoot,
+          `Skipping server deployment because EAS is not configured. Run 'eas init' before trying again, or disable server output in the project.`
+        );
+        return false;
+      }
+    }
+
+    // Throw unhandled server deployment errors.
+    throw error;
+  }
+
+  // Assert json format
+  assertDeploymentJsonOutput(json);
+
+  // Warn about the URL not being valid. This should never happen, but might be possible with third-parties.
+  if (!URL.canParse(json.deployment.url)) {
+    warnInXcode(`The server deployment URL is not a valid URL: ${json.deployment.url}`);
+  }
+
+  logInXcode(`Server deployed to: ${json.deployment.url}`);
+
+  return json.deployment.url;
+}
+
+type ServerDeploymentResults = {
+  deployment: {
+    url: string;
+  };
+};
+
+function assertDeploymentJsonOutput(json: any): asserts json is ServerDeploymentResults {
+  if (
+    !json ||
+    typeof json !== 'object' ||
+    typeof json.deployment !== 'object' ||
+    typeof json.deployment.url !== 'string'
+  ) {
+    throw new Error(
+      'JSON output of server deployment command are not in the expected format: { deployment: { url: "https://..." } }'
+    );
+  }
+}
+
+function getServerDeploymentScript(
+  scripts: Record<string, string> | undefined,
+  platform: string
+): { scriptName: string; script: string } | null {
+  // Users can overwrite the default deployment script with:
+  // { scripts: { "native:deploy": "eas deploy --json --non-interactive" } }
+  // { scripts: { "native:deploy:ios": "eas deploy" } }
+  // A quick search on GitHub showed that `native:deploy` is not used in any public repos yet.
+  // https://github.com/search?q=%22native%3Adeploy%22+path%3Apackage.json&type=code
+  const DEFAULT_SCRIPT_NAME = 'native:deploy';
+
+  const scriptNames = [DEFAULT_SCRIPT_NAME + ':' + platform, DEFAULT_SCRIPT_NAME];
+
+  for (const scriptName of scriptNames) {
+    if (scripts?.[scriptName]) {
+      return { scriptName, script: scripts[scriptName] };
+    }
+  }
+
+  return null;
+}
+
 export async function exportEmbedBundleAndAssetsAsync(
   projectRoot: string,
   options: Options
@@ -137,7 +278,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
+  const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
@@ -171,16 +312,29 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    if (devServer.isReactServerComponentsEnabled) {
+    const apiRoutesEnabled = exp.web?.output === 'server';
+
+    if (devServer.isReactServerComponentsEnabled || apiRoutesEnabled) {
+      logInXcode('Exporting server');
+
+      // Store the server output in the project's .expo directory.
+      const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
+
+      // Remove the previous server output to prevent stale files.
+      await removeAsync(serverOutput);
+
       // Export the API routes for server rendering the React Server Components.
       await exportApiRoutesStandaloneAsync(devServer, {
         files,
         platform: 'web',
       });
 
-      // Store the server output in the project's .expo directory.
-      const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
-      await removeAsync(serverOutput);
+      const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+
+      // Copy over public folder items
+      await copyPublicFolderAsync(publicPath, serverOutput);
+
+      // Copy over the server output on top of the public folder.
       await persistMetroFilesAsync(files, serverOutput);
 
       [...files.entries()].forEach(([key, value]) => {
@@ -189,6 +343,42 @@ export async function exportEmbedBundleAndAssetsAsync(
           files.delete(key);
         }
       });
+
+      // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
+      let serverUrl = exp?.extra?.router?.origin;
+
+      // Deploy the server output to a hosting provider.
+      const deployedServerUrl = env.EXPO_NO_DEPLOY
+        ? false
+        : await runServerDeployCommandAsync(projectRoot, {
+            distDirectory: serverOutput,
+            deployScript: getServerDeploymentScript(pkg.scripts, options.platform),
+          });
+
+      if (serverUrl) {
+        logInXcode(`Using custom server URL: ${serverUrl}`);
+        if (deployedServerUrl) {
+          logInXcode(`Ignoring deployment URL: ${deployedServerUrl}`);
+        }
+      }
+
+      // If the user-defined server URL is not defined, use the deployed server URL.
+      // This allows for overwriting the server URL in the project's native files.
+      serverUrl ??= deployedServerUrl;
+
+      if (serverUrl) {
+        // Write the server URL to the project's native files.
+        files.set(
+          // The filename will be read by expo/fetch and used to polyfill relative network requests in production.
+          options.platform === 'ios'
+            ? 'server-origin.txt'
+            : // TODO: Where does this go on Android?
+              '???',
+          {
+            contents: serverUrl,
+          }
+        );
+      }
     }
 
     // TODO: Remove duplicates...

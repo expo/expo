@@ -60,16 +60,27 @@ export function getXcodeCompilerErrorMessage(
       // Unknown error
       return makeXcodeCompilerLog('error', error.message);
     }
+  } else if (typeof error === 'string') {
+    return makeXcodeCompilerLog('error', error);
   }
 
   return null;
 }
 
-export function logMetroErrorInXcode(projectRoot: string, error: Error) {
+/** Log an error that can be parsed by Xcode and related build tools https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script */
+export function logMetroErrorInXcode(projectRoot: string, error: Error | string) {
   const message = getXcodeCompilerErrorMessage(projectRoot, error);
   if (message != null) {
     console.error(message);
   }
+}
+
+export function logInXcode(message: string) {
+  console.log(makeXcodeCompilerLog('note', message));
+}
+
+export function warnInXcode(message: string) {
+  console.error(makeXcodeCompilerLog('warning', message));
 }
 
 // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Access-script-related-files-from-environment-variables
