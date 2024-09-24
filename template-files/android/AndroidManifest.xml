@@ -234,34 +234,6 @@
       android:name=".ExponentIntentService"
       android:exported="false" />
 
-    <!-- Analytics -->
-    <receiver
-      android:name="host.exp.exponent.referrer.InstallReferrerReceiver"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="com.android.vending.INSTALL_REFERRER" />
-      </intent-filter>
-    </receiver>
-
-    <!--
-    This crashes: https://code.google.com/p/analytics-issues/issues/detail?id=667
-    TODO: turn it back on when it's fixed
-    <service
-      android:name="com.google.android.gms.analytics.CampaignTrackingService"
-      android:enabled="true"
-      android:exported="false" />-->
-
-    <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-              android:enabled="true">
-      <intent-filter>
-        <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
-      </intent-filter>
-    </receiver>
-
-    <service android:name="com.google.android.gms.analytics.AnalyticsService"
-             android:enabled="true"
-             android:exported="false"/>
-
     <!-- FCM -->
     <service
       android:name=".fcm.ExpoFcmMessagingService"

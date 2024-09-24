@@ -343,18 +343,9 @@ class Kernel : KernelInterface() {
     }
   private val kernelLaunchOptions: Bundle
     get() {
-      val exponentProps = JSONObject()
-      val referrer = exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY)
-      if (referrer != null) {
-        try {
-          exponentProps.put("referrer", referrer)
-        } catch (e: JSONException) {
-          EXL.e(TAG, e)
-        }
-      }
       val bundle = Bundle()
       try {
-        bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps))
+        bundle.putBundle("exp", BundleJSONConverter.convertToBundle(JSONObject()))
       } catch (e: JSONException) {
         throw Error("JSONObject failed to be converted to Bundle", e)
       }
