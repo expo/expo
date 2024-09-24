@@ -385,12 +385,11 @@ export async function test({ describe, expect, it, ...t }) {
     });
   });
 
-  await addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
+  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
 }
 
-async function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
-  const containers = await Directory.getAppleSharedContainersAsync();
-  const firstContainer = Object.values(containers)?.[0];
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
+  const firstContainer = Object.values(Paths.appleSharedContainers)?.[0];
   const sharedContainerTestDir = firstContainer ? firstContainer.uri + 'test/' : null;
   const scopedIt = sharedContainerTestDir ? it : t.xit;
 
@@ -409,33 +408,33 @@ async function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
 
     scopedIt('Writes a string to a file reference', () => {
       const outputFile = new File(sharedContainerTestDir + 'file.txt');
-      expect(outputFile.exists()).toBe(false);
+      expect(outputFile.exists).toBe(false);
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
     });
 
     scopedIt('Deletes a file reference', () => {
       const outputFile = new File(sharedContainerTestDir + 'file3.txt');
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
 
       outputFile.delete();
-      expect(outputFile.exists()).toBe(false);
+      expect(outputFile.exists).toBe(false);
     });
 
     scopedIt('Creates a folder', () => {
       const folder = new Directory(sharedContainerTestDir + 'newFolder');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
     });
 
     scopedIt('Deletes a folder', () => {
       const folder = new Directory(sharedContainerTestDir + 'newFolder');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
 
       folder.delete();
-      expect(folder.exists()).toBe(false);
+      expect(folder.exists).toBe(false);
     });
   });
 }

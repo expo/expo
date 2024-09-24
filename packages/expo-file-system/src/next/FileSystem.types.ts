@@ -60,14 +60,6 @@ export declare class Directory {
    * Lists the contents of a directory.
    */
   list(): (Directory | File)[];
-
-  /**
-   * Gets the shared container directories for [Apple App Groups](https://developer.apple.com/documentation/xcode/configuring-app-groups).
-   * @return Map of app group identifiers to shared directories.
-   * @platform ios
-   * @platform tvos
-   */
-  static getAppleSharedContainersAsync(): Promise<Record<string, Directory>>;
 }
 
 /**
@@ -161,6 +153,13 @@ export declare class Paths {
    * A property containing the cache directory – a place to store files that can be deleted by the system when the device runs low on storage.
    */
   static get cache(): Directory;
+  /**
+   * Gets the shared container directories for [Apple App Groups](https://developer.apple.com/documentation/xcode/configuring-app-groups).
+   * @return Map of app group identifiers to shared directories.
+   * @platform ios
+   * @platform tvos
+   */
+  static get appleSharedContainers(): Record<string, Directory>;
   /**
    * Joins path segments into a single path.
    * @param paths - An array of path segments.

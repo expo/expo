@@ -9,6 +9,14 @@ export class Paths extends PathUtilities {
   static get document() {
     return new Directory(ExpoFileSystem.documentDirectory);
   }
+  static get appleSharedContainers() {
+    const containers: Record<string, string> = ExpoFileSystem.appleSharedContainers ?? {};
+    const result: Record<string, Directory> = {};
+    for (const [appGroupId, path] of Object.entries(containers)) {
+      result[appGroupId] = new Directory(path);
+    }
+    return result;
+  }
 }
 
 export class File extends ExpoFileSystem.FileSystemFile {
@@ -55,16 +63,3 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
       .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
   }
 }
-
-// Cannot use `static` keyword in class declaration because of a runtime error.
-Directory.getAppleSharedContainersAsync = async function getAppleSharedContainersAsync(): Promise<
-  Record<string, Directory>
-> {
-  const containers: Record<string, string> =
-    (await ExpoFileSystem.getAppleSharedContainersAsync?.()) ?? {};
-  const result: Record<string, Directory> = {};
-  for (const [appGroupId, path] of Object.entries(containers)) {
-    result[appGroupId] = new Directory(path);
-  }
-  return result;
-};
