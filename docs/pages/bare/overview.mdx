@@ -5,6 +5,7 @@ hideTOC: true
 description: Learn how to use Expo tools and services with existing React Native apps.
 ---
 
+import { DocsLogo } from '@expo/styleguide';
 import { BuildArtifactIcon } from '@expo/styleguide-icons/custom/BuildArtifactIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { ChevronUpDoubleIcon } from '@expo/styleguide-icons/outline/ChevronUpDoubleIcon';
@@ -25,52 +26,107 @@ If you've ever written a native module for React Native, you'll be surprised how
 
 There's so much more to explore, and the links below will help you to explore the options available to you.
 
-## Next Steps
+## Incremental adoption steps
+
+There are four steps of incremental adoption to help you get started with:
+
+### Prerequisites
+
+Required to use Expo tools and services:
 
 <BoxLink
   title="Install Expo modules"
   Icon={Rocket02Icon}
   description={
     <>
-      If you have already initialized a React Native app without <CODE>create-expo-app</CODE>, learn
-      how to install the Expo module library.
+      To unlock Expo capabilities, you need to install <CODE>expo</CODE> package in your project in
+      your existing React Native project. This guide provides both automated and manual installation
+      steps.
     </>
   }
   href="/bare/installing-expo-modules"
 />
+
+<BoxLink
+  title="Use Expo CLI"
+  Icon={BookOpen02Icon}
+  description={
+    <>
+      Migrating to Expo CLI provides many benefits over <CODE>@react-native-community/cli</CODE>.
+      This guide explains these benefits and provides compilation commands to start your development
+      server after installing <CODE>expo</CODE> package.
+    </>
+  }
+  href="/bare/using-expo-cli/"
+/>
+
+### Quick wins
+
+The following helps improving development experience and requires configuration:
+
 <BoxLink
   title="Use Expo SDK"
-  Icon={BookOpen02Icon}
-  description="Use one of the many libraries provided by the Expo SDK, an extensive set of libraries that provide access to native APIs."
+  Icon={DocsLogo}
+  description="Use one of the many libraries provided by the Expo SDK &mdash; an extensive set of libraries that provide access to native APIs."
   href="/versions/"
 />
+
+<BoxLink
+  title="Install expo-dev-client"
+  Icon={BookOpen02Icon}
+  description={
+    <>
+      <CODE>expo-dev-client</CODE> provides access to Expo Go-style app launcher interface into your
+      debug app variants. Learn how to install and configure it in your existing React Native
+      project.
+    </>
+  }
+  href="/bare/install-dev-builds-in-bare/"
+/>
+
 <BoxLink
   title="Write native modules"
   description="Use the Expo Modules API to write native modules using Swift and Kotlin."
   Icon={Lightbulb01Icon}
   href="/modules/overview/"
 />
-<BoxLink
-  title="Use Expo CLI"
-  Icon={BookOpen02Icon}
-  description="Learn about the many benefits Expo CLI provides over @react-native-community/cli."
-  href="/bare/using-expo-cli/"
-/>
+
 <BoxLink
   title="Native project upgrade helper"
   Icon={ChevronUpDoubleIcon}
   description="View file-by-file diffs of all the changes you need to make to your native projects to upgrade them to the next Expo SDK and React Native version."
   href="/bare/upgrade/"
 />
+
+### New workflows
+
+Once your app has `expo` package installed, you can submit your app to app stores with a single command or update configure `expo-updates` library to manage remote updates to you app's code:
+
+<BoxLink
+  title="App distribution"
+  Icon={BuildArtifactIcon}
+  description="Build and submit your app to app stores with a single command."
+  href="/distribution/introduction"
+/>
+
+<BoxLink
+  title="Install expo-updates"
+  Icon={BuildArtifactIcon}
+  description={
+    <>
+      Learn how to install and configure <CODE>expo-updates</CODE> to manage remote updates.
+    </>
+  }
+  href="/bare/installing-updates/"
+/>
+
+### New mindset
+
+The following helps with your project's long term maintainability, native code maintenance, and easier upgrades:
+
 <BoxLink
   title="Adopt Prebuild"
   Icon={RefreshCw02Icon}
   description="Learn how to simplify maintaining your native projects by generating them on demand from configuration."
   href="/guides/adopting-prebuild"
-/>
-<BoxLink
-  title="App distribution"
-  Icon={BuildArtifactIcon}
-  description="Build and submit your app to the app store with a single command."
-  href="/distribution/introduction"
 />
