@@ -256,7 +256,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async getServerManifestAsync({
-    environment = 'react-server',
+    environment,
   }: Pick<ExpoMetroOptions, 'environment'> = {}): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
   }> {
@@ -264,7 +264,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment,
+      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
     });
 
     return {

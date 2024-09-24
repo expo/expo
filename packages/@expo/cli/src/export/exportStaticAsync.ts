@@ -391,19 +391,13 @@ export async function exportApiRoutesStandaloneAsync(
     outputDir,
     files = new Map(),
     platform,
-    environment,
   }: {
     outputDir: string;
     files?: ExportAssetMap;
     platform: string;
-    environment?: MetroEnvironment;
   }
 ) {
-  const { serverManifest } = await devServer.getServerManifestAsync({ environment });
-
-  // Clear HTML routes during standalone API route export.
-  serverManifest.htmlRoutes = [];
-  serverManifest.notFoundRoutes = [];
+  const { serverManifest } = await devServer.getServerManifestAsync();
 
   const apiRoutes = await exportApiRoutesAsync({
     outputDir,
@@ -412,6 +406,7 @@ export async function exportApiRoutesStandaloneAsync(
     // NOTE(kitten): For now, we always output source maps for API route exports
     includeSourceMaps: true,
     platform,
+    apiRoutesOnly: true,
   });
 
   // Add the api routes to the files to export.
@@ -427,11 +422,13 @@ async function exportApiRoutesAsync({
   outputDir,
   server,
   platform,
+  apiRoutesOnly,
   ...props
 }: Pick<Options, 'outputDir' | 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
   platform: string;
+  apiRoutesOnly?: boolean;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
@@ -439,6 +436,12 @@ async function exportApiRoutesAsync({
     includeSourceMaps,
     platform,
   });
+
+  // HACK: Clear out the HTML and 404 routes if we're only exporting API routes. This is used for native apps that are using API routes but haven't implemented web support yet.
+  if (apiRoutesOnly) {
+    manifest.htmlRoutes = [];
+    manifest.notFoundRoutes = [];
+  }
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
