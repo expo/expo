@@ -135,72 +135,72 @@ async function dumpDeploymentLogs(projectRoot: string, logs: string, name = 'dep
   return outputPath;
 }
 
-const DEPLOYMENT_SUCCESS_FIXTURE = {
-  pid: 84795,
-  output: [
-    '{\n' +
-      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-      '  "deployment": {\n' +
-      '    "identifier": "dccw84urit",\n' +
-      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-      '  }\n' +
-      '}\n',
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-      '> Project export: server\n' +
-      '- Preparing project\n' +
-      '- Creating deployment\n' +
-      '✔ Created deployment\n',
-  ],
-  stdout:
-    '{\n' +
-    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-    '  "deployment": {\n' +
-    '    "identifier": "dccw84urit",\n' +
-    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-    '  }\n' +
-    '}\n',
-  stderr:
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-    '> Project export: server\n' +
-    '- Preparing project\n' +
-    '- Creating deployment\n' +
-    '✔ Created deployment\n',
-  status: 0,
-  signal: null,
-};
-const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
-  pid: 84795,
-  output: [
-    '{\n' +
-      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-      '  "deployment": {\n' +
-      '    "identifier": "dccw84urit",\n' +
-      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-      '  }\n' +
-      '}\n',
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-      '> Project export: server\n' +
-      '- Preparing project\n' +
-      '- Creating deployment\n' +
-      '✔ Created deployment\n',
-  ],
-  stdout:
-    '{\n' +
-    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-    '  "deployment": {\n' +
-    '    "identifier": "dccw84urit",\n' +
-    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-    '  }\n' +
-    '}\n',
-  stderr:
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-    '> Project export: server\n' +
-    '- Preparing project\n' +
-    '- Creating deployment\n' +
-    '✔ Created deployment\n',
-  status: 0,
-  signal: null,
-};
+// const DEPLOYMENT_SUCCESS_FIXTURE = {
+//   pid: 84795,
+//   output: [
+//     '{\n' +
+//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//       '  "deployment": {\n' +
+//       '    "identifier": "dccw84urit",\n' +
+//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//       '  }\n' +
+//       '}\n',
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//       '> Project export: server\n' +
+//       '- Preparing project\n' +
+//       '- Creating deployment\n' +
+//       '✔ Created deployment\n',
+//   ],
+//   stdout:
+//     '{\n' +
+//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//     '  "deployment": {\n' +
+//     '    "identifier": "dccw84urit",\n' +
+//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//     '  }\n' +
+//     '}\n',
+//   stderr:
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//     '> Project export: server\n' +
+//     '- Preparing project\n' +
+//     '- Creating deployment\n' +
+//     '✔ Created deployment\n',
+//   status: 0,
+//   signal: null,
+// };
+// const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
+//   pid: 84795,
+//   output: [
+//     '{\n' +
+//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//       '  "deployment": {\n' +
+//       '    "identifier": "dccw84urit",\n' +
+//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//       '  }\n' +
+//       '}\n',
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//       '> Project export: server\n' +
+//       '- Preparing project\n' +
+//       '- Creating deployment\n' +
+//       '✔ Created deployment\n',
+//   ],
+//   stdout:
+//     '{\n' +
+//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//     '  "deployment": {\n' +
+//     '    "identifier": "dccw84urit",\n' +
+//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//     '  }\n' +
+//     '}\n',
+//   stderr:
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//     '> Project export: server\n' +
+//     '- Preparing project\n' +
+//     '- Creating deployment\n' +
+//     '✔ Created deployment\n',
+//   status: 0,
+//   signal: null,
+// };
 
 import { execSync } from 'node:child_process';
 import os from 'node:os';
@@ -210,70 +210,6 @@ function getCommandBin(command: string) {
     return execSync(`command -v ${command}`, { stdio: 'pipe' }).toString().trim();
   } catch {
     return null;
-  }
-}
-
-function commandExists(command: string) {
-  return !!getCommandBin(command);
-}
-
-function sourceAndExecute(sourceCommand, executeCommand) {
-  try {
-    const result = execSync(
-      `
-      source ${sourceCommand}
-      ${executeCommand}
-    `,
-      { shell: '/bin/bash' }
-    );
-    return result.toString().trim();
-  } catch (error) {
-    console.error(`Error executing command: ${error.message}`);
-    return null;
-  }
-}
-
-function amendPathForXcode() {
-  if (!isRunningFromXcodeBuildScript) {
-    return;
-  }
-  // Add common Node.js installation locations to PATH
-  process.env.PATH = `${process.env.PATH}:/usr/local/bin:/opt/homebrew/bin:/opt/local/bin:${os.homedir()}/.npm-global/bin`;
-
-  if (commandExists('volta')) {
-    console.log('Using Volta');
-    process.env.VOLTA_HOME = path.join(os.homedir(), '.volta');
-    process.env.PATH = `${process.env.VOLTA_HOME}/bin:${process.env.PATH}`;
-  } else if (fs.existsSync(path.join(os.homedir(), '.nvm/nvm.sh'))) {
-    console.log('Using NVM');
-    const nvmPath = path.join(os.homedir(), '.nvm/nvm.sh');
-
-    // Note: Sourcing nvm.sh and using it directly isn't possible in Node.js
-    // You'd typically handle NVM in the shell before running this Node.js script
-    console.log('NVM detected, but must be initialized in the shell before running this script');
-    const nodeVersion = sourceAndExecute(
-      nvmPath,
-      'nvm use default > /dev/null 2>&1 && node --version'
-    );
-    console.log(`Active Node.js version (NVM): ${nodeVersion}`);
-  } else if (commandExists('n')) {
-    console.log('Using n');
-    process.env.N_PREFIX = path.join(os.homedir(), 'n');
-    process.env.PATH = `${process.env.N_PREFIX}/bin:${process.env.PATH}`;
-  } else if (commandExists('asdf')) {
-    console.log('Using asdf');
-    // Note: asdf typically needs to be sourced in the shell
-    console.log('asdf detected, but must be initialized in the shell before running this script');
-  } else if (commandExists('fnm')) {
-    console.log('Using fnm');
-    // Note: fnm typically needs to be evaluated in the shell
-    console.log('fnm detected, but must be initialized in the shell before running this script');
-  } else if (commandExists('nodenv')) {
-    console.log('Using nodenv');
-    // Note: nodenv typically needs to be evaluated in the shell
-    console.log('nodenv detected, but must be initialized in the shell before running this script');
-  } else {
-    console.log('No specific version manager detected, using system Node.js');
   }
 }
 
@@ -302,7 +238,6 @@ function getGlobalTool(tool: string, amend: boolean = isRunningFromXcodeBuildScr
   const globalBin = getCommandBin('eas');
   if (!globalBin) {
     if (amend) {
-      amendPathForXcode();
       return getGlobalTool(tool, false);
     }
     throw new Error(`"${tool}" could not be found in the PATH.`);
@@ -327,6 +262,18 @@ async function runServerDeployCommandAsync(
   // - Network error.
   // - Custom deploy script `deploy.native`.
 
+  const globalBin = getCommandBin('eas');
+
+  if (!globalBin) {
+    // This should never happen from EAS Builds.
+    // Possible to happen when building locally with `npx expo run`
+    logMetroErrorInXcode(
+      projectRoot,
+      `eas-cli is not installed globally, skipping server deployment. Install EAS CLI with 'npm install -g eas-cli'.`
+    );
+    return false;
+  }
+
   let json: any;
   try {
     let results: spawnAsync.SpawnResult;
@@ -345,7 +292,6 @@ async function runServerDeployCommandAsync(
     if (deployScript) {
       logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
       // Amend the path to try and make the custom scripts work.
-      amendPathForXcode();
 
       results = await spawnAsync(
         'npm',
@@ -358,13 +304,7 @@ async function runServerDeployCommandAsync(
       // results = DEPLOYMENT_SUCCESS_FIXTURE;
       results = await spawnAsync(
         nodeBin,
-        [
-          getGlobalTool('eas'),
-          'deploy',
-          '--non-interactive',
-          '--json',
-          `--export-dir=${exportDir}`,
-        ],
+        [globalBin, 'deploy', '--non-interactive', '--json', `--export-dir=${exportDir}`],
         spawnOptions
       );
     }
@@ -508,29 +448,28 @@ export async function exportEmbedBundleAndAssetsAsync(
   const files: ExportAssetMap = new Map();
 
   try {
-    const bundles = {};
-    // const bundles = await devServer.nativeExportBundleAsync(
-    //   {
-    //     // TODO: Re-enable when we get bytecode chunk splitting working again.
-    //     splitChunks: false, //devServer.isReactServerComponentsEnabled,
-    //     mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
-    //     platform: options.platform,
-    //     minify: options.minify,
-    //     mode: options.dev ? 'development' : 'production',
-    //     engine: isHermes ? 'hermes' : undefined,
-    //     serializerIncludeMaps: !!sourceMapUrl,
-    //     // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-    //     bytecode: false,
-    //     // source map inline
-    //     reactCompiler: !!exp.experiments?.reactCompiler,
-    //   },
-    //   files,
-    //   {
-    //     sourceMapUrl,
-    //     unstable_transformProfile: (options.unstableTransformProfile ||
-    //       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
-    //   }
-    // );
+    const bundles = await devServer.nativeExportBundleAsync(
+      {
+        // TODO: Re-enable when we get bytecode chunk splitting working again.
+        splitChunks: false, //devServer.isReactServerComponentsEnabled,
+        mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+        platform: options.platform,
+        minify: options.minify,
+        mode: options.dev ? 'development' : 'production',
+        engine: isHermes ? 'hermes' : undefined,
+        serializerIncludeMaps: !!sourceMapUrl,
+        // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
+        bytecode: false,
+        // source map inline
+        reactCompiler: !!exp.experiments?.reactCompiler,
+      },
+      files,
+      {
+        sourceMapUrl,
+        unstable_transformProfile: (options.unstableTransformProfile ||
+          (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
+      }
+    );
 
     const apiRoutesEnabled = exp.web?.output === 'server';
 
@@ -570,8 +509,27 @@ export async function exportEmbedBundleAndAssetsAsync(
       // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
       let serverUrl = exp?.extra?.router?.origin;
 
+      const shouldSkipServerDeployment = (() => {
+        // Add an opaque flag to disable server deployment.
+        if (env.EXPO_NO_DEPLOY) {
+          warnInXcode(
+            'Skipping server deployment because environment variable EXPO_NO_DEPLOY is set.'
+          );
+          return true;
+        }
+
+        // Can't safely deploy from Xcode since the PATH isn't set up correctly. We could amend this in the future and allow users who customize the PATH to deploy from Xcode.
+        if (isRunningFromXcodeBuildScript) {
+          // TODO: Don't warn when the eager bundle has been run.
+          warnInXcode(
+            'Skipping server deployment because the build is running from an Xcode run script. Build with Expo CLI or EAS Build to deploy the server automatically.'
+          );
+          return true;
+        }
+      })();
+
       // Deploy the server output to a hosting provider.
-      const deployedServerUrl = env.EXPO_NO_DEPLOY
+      const deployedServerUrl = shouldSkipServerDeployment
         ? false
         : await runServerDeployCommandAsync(projectRoot, {
             distDirectory: serverOutput,
