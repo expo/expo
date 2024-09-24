@@ -74,6 +74,25 @@ urlScheme:
 
 [`Linking.createURL()`](/versions/latest/sdk/linking/#createurloptions) will ensure you're using the proper scheme, whether you're running in Expo Go or your production app. `'/--/'` is necessary in Expo Go because it indicates that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
 
+#### PaymentSheet localization on iOS
+
+Translation of PaymentSheet is automatically detected based on device's langage, at least on Android. For this to work on iOS, you must add `CFBundleAllowMixedLocalizations` and `CFBundleLocalizations` declarations in `app.json` (or `app.config.js`, `app.config.ts`). 
+
+```
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+          "CFBundleAllowMixedLocalizations": true,
+          "CFBundleLocalizations": ['fr']
+          ...
+      }
+      ...
+    }
+  }
+}
+```
+
 ## Limitations
 
 ### Google Pay
