@@ -3,7 +3,6 @@ package host.exp.exponent.fcm
 import android.content.Context
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.interfaces.INotificationContent
-import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate
