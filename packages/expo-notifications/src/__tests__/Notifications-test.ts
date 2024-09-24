@@ -1,5 +1,5 @@
 import NotificationScheduler from '../NotificationScheduler';
-import { CalendarTriggerTypes, NotificationTriggerInput } from '../Notifications.types';
+import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
 import scheduleNotificationAsync from '../scheduleNotificationAsync';
 
 const notificationTriggerInputTest = {
@@ -43,7 +43,7 @@ it(`verifies date (as time) trigger handling`, async () => {
 
 it(`verifies daily trigger handling`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.DAILY,
+    type: SchedulableTriggerInputTypes.DAILY,
     hour: 12,
     minute: 30,
   };
@@ -63,7 +63,7 @@ it(`verifies daily trigger handling`, async () => {
 
 it(`verifies daily trigger input validation`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.DAILY,
+    type: SchedulableTriggerInputTypes.DAILY,
     hour: 12,
     minute: 70,
   };
@@ -83,7 +83,7 @@ it(`verifies daily trigger input validation`, async () => {
 
 it(`verifies weekly trigger handling`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.WEEKLY,
+    type: SchedulableTriggerInputTypes.WEEKLY,
     weekday: 1,
     hour: 12,
     minute: 30,
@@ -104,7 +104,7 @@ it(`verifies weekly trigger handling`, async () => {
 
 it(`verifies weekly trigger input validation`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.WEEKLY,
+    type: SchedulableTriggerInputTypes.WEEKLY,
     weekday: 8,
     hour: 12,
     minute: 30,
@@ -125,7 +125,7 @@ it(`verifies weekly trigger input validation`, async () => {
 
 it(`verifies yearly trigger handling`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.YEARLY,
+    type: SchedulableTriggerInputTypes.YEARLY,
     day: 1,
     month: 6,
     hour: 12,
@@ -147,7 +147,7 @@ it(`verifies yearly trigger handling`, async () => {
 
 it(`verifies yearly trigger input validation`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.YEARLY,
+    type: SchedulableTriggerInputTypes.YEARLY,
     day: 32,
     month: 6,
     hour: 12,
@@ -169,7 +169,7 @@ it(`verifies yearly trigger input validation`, async () => {
 
 it(`verifies daily trigger handling with channelId`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.DAILY,
+    type: SchedulableTriggerInputTypes.DAILY,
     hour: 12,
     minute: 30,
     channelId: 'test-channel-id',
@@ -190,7 +190,7 @@ it(`verifies daily trigger handling with channelId`, async () => {
 
 it(`verifies weekly trigger handling with channelId`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.WEEKLY,
+    type: SchedulableTriggerInputTypes.WEEKLY,
     weekday: 1,
     hour: 12,
     minute: 30,
@@ -212,7 +212,7 @@ it(`verifies weekly trigger handling with channelId`, async () => {
 
 it(`verifies yearly trigger handling with channelId`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.YEARLY,
+    type: SchedulableTriggerInputTypes.YEARLY,
     day: 1,
     month: 6,
     hour: 12,
@@ -265,7 +265,7 @@ it(`verifies immediate trigger handling with channelId`, async () => {
 
 it(`verifies time interval trigger handling`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.TIME_INTERVAL,
+    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: 3600,
   };
   const input = {
@@ -304,7 +304,7 @@ it(`verifies time interval trigger handling`, async () => {
 
 it(`verifies calendar trigger handling`, async () => {
   const trigger: NotificationTriggerInput = {
-    type: CalendarTriggerTypes.CALENDAR,
+    type: SchedulableTriggerInputTypes.CALENDAR,
     hour: 12,
     minute: 30,
   };

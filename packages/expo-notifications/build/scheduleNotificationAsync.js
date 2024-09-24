@@ -1,6 +1,6 @@
 import { Platform, UnavailabilityError, uuid } from 'expo-modules-core';
 import NotificationScheduler from './NotificationScheduler';
-import { CalendarTriggerTypes, } from './Notifications.types';
+import { SchedulableTriggerInputTypes, } from './Notifications.types';
 /**
  * Schedules a notification to be triggered in the future.
  * > **Note:** Please note that this does not mean that the notification will be presented when it is triggered.
@@ -109,7 +109,7 @@ function parseCalendarTrigger(trigger) {
     if (trigger !== null &&
         typeof trigger === 'object' &&
         'type' in trigger &&
-        trigger.type === CalendarTriggerTypes.CALENDAR) {
+        trigger.type === SchedulableTriggerInputTypes.CALENDAR) {
         const { repeats, ...calendarTrigger } = trigger;
         return { type: 'calendar', value: calendarTrigger, repeats };
     }
@@ -122,7 +122,7 @@ function parseDateTrigger(trigger) {
     else if (typeof trigger === 'object' &&
         trigger !== null &&
         'type' in trigger &&
-        trigger.type === CalendarTriggerTypes.DATE &&
+        trigger.type === SchedulableTriggerInputTypes.DATE &&
         'date' in trigger &&
         trigger.date instanceof Date) {
         const result = {
@@ -148,7 +148,7 @@ function parseDailyTrigger(trigger) {
     if (trigger !== null &&
         typeof trigger === 'object' &&
         'type' in trigger &&
-        trigger.type === CalendarTriggerTypes.DAILY) {
+        trigger.type === SchedulableTriggerInputTypes.DAILY) {
         validateDateComponentsInTrigger(trigger, ['hour', 'minute']);
         const result = {
             type: 'daily',
@@ -166,7 +166,7 @@ function parseWeeklyTrigger(trigger) {
     if (trigger !== null &&
         typeof trigger === 'object' &&
         'type' in trigger &&
-        trigger.type === CalendarTriggerTypes.WEEKLY) {
+        trigger.type === SchedulableTriggerInputTypes.WEEKLY) {
         validateDateComponentsInTrigger(trigger, ['weekday', 'hour', 'minute']);
         const result = {
             type: 'weekly',
@@ -185,7 +185,7 @@ function parseYearlyTrigger(trigger) {
     if (trigger !== null &&
         typeof trigger === 'object' &&
         'type' in trigger &&
-        trigger.type === CalendarTriggerTypes.YEARLY) {
+        trigger.type === SchedulableTriggerInputTypes.YEARLY) {
         validateDateComponentsInTrigger(trigger, ['month', 'day', 'hour', 'minute']);
         const result = {
             type: 'yearly',
@@ -205,7 +205,7 @@ function parseTimeIntervalTrigger(trigger) {
     if (trigger !== null &&
         typeof trigger === 'object' &&
         'type' in trigger &&
-        trigger.type === CalendarTriggerTypes.TIME_INTERVAL &&
+        trigger.type === SchedulableTriggerInputTypes.TIME_INTERVAL &&
         'seconds' in trigger &&
         typeof trigger.seconds === 'number') {
         const result = {

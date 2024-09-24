@@ -13,7 +13,7 @@ import {
 import {
   NotificationRequestInput,
   NotificationTriggerInput,
-  CalendarTriggerTypes,
+  SchedulableTriggerInputTypes,
 } from './Notifications.types';
 
 /**
@@ -145,7 +145,7 @@ function parseCalendarTrigger(
     trigger !== null &&
     typeof trigger === 'object' &&
     'type' in trigger &&
-    trigger.type === CalendarTriggerTypes.CALENDAR
+    trigger.type === SchedulableTriggerInputTypes.CALENDAR
   ) {
     const { repeats, ...calendarTrigger } = trigger;
     return { type: 'calendar', value: calendarTrigger, repeats };
@@ -160,7 +160,7 @@ function parseDateTrigger(trigger: NotificationTriggerInput): NativeDateTriggerI
     typeof trigger === 'object' &&
     trigger !== null &&
     'type' in trigger &&
-    trigger.type === CalendarTriggerTypes.DATE &&
+    trigger.type === SchedulableTriggerInputTypes.DATE &&
     'date' in trigger &&
     trigger.date instanceof Date
   ) {
@@ -189,7 +189,7 @@ function parseDailyTrigger(trigger: NotificationTriggerInput): NativeDailyTrigge
     trigger !== null &&
     typeof trigger === 'object' &&
     'type' in trigger &&
-    trigger.type === CalendarTriggerTypes.DAILY
+    trigger.type === SchedulableTriggerInputTypes.DAILY
   ) {
     validateDateComponentsInTrigger(trigger, ['hour', 'minute']);
     const result: NativeDailyTriggerInput = {
@@ -212,7 +212,7 @@ function parseWeeklyTrigger(
     trigger !== null &&
     typeof trigger === 'object' &&
     'type' in trigger &&
-    trigger.type === CalendarTriggerTypes.WEEKLY
+    trigger.type === SchedulableTriggerInputTypes.WEEKLY
   ) {
     validateDateComponentsInTrigger(trigger, ['weekday', 'hour', 'minute']);
     const result: NativeWeeklyTriggerInput = {
@@ -236,7 +236,7 @@ function parseYearlyTrigger(
     trigger !== null &&
     typeof trigger === 'object' &&
     'type' in trigger &&
-    trigger.type === CalendarTriggerTypes.YEARLY
+    trigger.type === SchedulableTriggerInputTypes.YEARLY
   ) {
     validateDateComponentsInTrigger(trigger, ['month', 'day', 'hour', 'minute']);
     const result: NativeYearlyTriggerInput = {
@@ -261,7 +261,7 @@ function parseTimeIntervalTrigger(
     trigger !== null &&
     typeof trigger === 'object' &&
     'type' in trigger &&
-    trigger.type === CalendarTriggerTypes.TIME_INTERVAL &&
+    trigger.type === SchedulableTriggerInputTypes.TIME_INTERVAL &&
     'seconds' in trigger &&
     typeof trigger.seconds === 'number'
   ) {
