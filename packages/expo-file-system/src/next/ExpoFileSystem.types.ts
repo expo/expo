@@ -1,23 +1,10 @@
-/**
- * A string representing a file or directory url.
- */
-export type URI = string;
-
 export declare class Directory {
-  /**
-   * Creates an instance of a directory.
-   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
-   * @example
-   * ```ts
-   * const directory = new Directory("file:///path/to/directory");
-   * ```
-   */
-  constructor(...uris: (URI | File | Directory)[]);
+  constructor(...uris: (string | File | Directory)[]);
 
   /**
    * Represents the directory URI.
    */
-  readonly uri: URI;
+  readonly uri: string;
 
   /**
    * Validates a directory path.
@@ -59,12 +46,7 @@ export declare class Directory {
 }
 
 export declare class File {
-  /**
-   * Creates an instance of File.
-   *
-   * @param uri - A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
-   */
-  constructor(...uris: (URI | File | Directory)[]);
+  constructor(...uris: (string | File | Directory)[]);
 
   /**
    * Represents the file URI.

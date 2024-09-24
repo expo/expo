@@ -1,5 +1,4 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { URI } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 
 export class Paths extends PathUtilities {
@@ -19,7 +18,15 @@ export class Paths extends PathUtilities {
 }
 
 export class File extends ExpoFileSystem.FileSystemFile {
-  constructor(...uris: (URI | File | Directory)[]) {
+  /**
+   * Creates an instance of a file.
+   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+   * @example
+   * ```ts
+   * const file = new File("file:///path/to/file.txt");
+   * ```
+   */
+  constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
   }
@@ -59,7 +66,15 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
  * A `Directory` instance can be created for any path, and does not need to exist on the filesystem during creation.
  */
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(...uris: (URI | File | Directory)[]) {
+  /**
+   * Creates an instance of a directory.
+   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+   * @example
+   * ```ts
+   * const directory = new Directory("file:///path/to/directory");
+   * ```
+   */
+  constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
   }

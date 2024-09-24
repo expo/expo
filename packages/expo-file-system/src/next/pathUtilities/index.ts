@@ -1,9 +1,8 @@
+import type { Directory, File } from '../FileSystem';
 import * as nodePath from './path';
 import { fileURLToPath, isFileUrl, pathToFileURLString } from './url';
 
-type Path = string | { uri: string };
-
-function uriObjectToString(path: Path): string {
+function uriObjectToString(path: string | File | Directory): string {
   return typeof path === 'string' ? path : path.uri;
 }
 
@@ -13,7 +12,7 @@ export class PathUtilities {
    * @param paths - An array of path segments.
    * @returns A string representing the joined path.
    */
-  static join(...paths: Path[]): string {
+  static join(...paths: (string | File | Directory)[]): string {
     const stringPaths = paths.map(uriObjectToString);
     if (stringPaths[0] && isFileUrl(stringPaths[0])) {
       const [firstPath, ...rest] = stringPaths;
@@ -28,7 +27,7 @@ export class PathUtilities {
    * @param to - The relative path.
    * @returns A string representing the resolved path.
    */
-  static relative(from: Path, to: Path): string {
+  static relative(from: string | File | Directory, to: string | File | Directory): string {
     const fromString = uriObjectToString(from);
     const toString = uriObjectToString(to);
 
@@ -48,7 +47,7 @@ export class PathUtilities {
    * @param path - The path to check.
    * @returns `true` if the path is absolute, `false` otherwise.
    */
-  static isAbsolute(path: Path): boolean {
+  static isAbsolute(path: string | File | Directory): boolean {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
       return true;
@@ -61,7 +60,7 @@ export class PathUtilities {
    * @param path - The path to normalize.
    * @returns A string representing the normalized path.
    */
-  static normalize(path: Path): string {
+  static normalize(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
       return pathToFileURLString(fileURLToPath(nodePath.normalize(pathString)));
@@ -74,7 +73,7 @@ export class PathUtilities {
    * @param path - The path to get the directory name from.
    * @returns A string representing the directory name.
    */
-  static dirname(path: Path): string {
+  static dirname(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
       return pathToFileURLString(nodePath.dirname(fileURLToPath(pathString)));
@@ -88,7 +87,7 @@ export class PathUtilities {
    * @param ext - An optional file extension.
    * @returns A string representing the base name.
    */
-  static basename(path: Path, ext?: string): string {
+  static basename(path: string | File | Directory, ext?: string): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
       return nodePath.basename(fileURLToPath(pathString), ext);
@@ -101,7 +100,7 @@ export class PathUtilities {
    * @param path - The path to get the extension from.
    * @returns A string representing the extension.
    */
-  static extname(path: Path): string {
+  static extname(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
       return nodePath.extname(fileURLToPath(pathString));
@@ -114,7 +113,7 @@ export class PathUtilities {
    * @param path - The path to parse.
    * @returns An object containing the parsed path components.
    */
-  static parse(path: Path): {
+  static parse(path: string | File | Directory): {
     root: string;
     dir: string;
     base: string;
