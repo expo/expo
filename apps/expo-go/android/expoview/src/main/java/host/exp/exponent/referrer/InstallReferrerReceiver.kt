@@ -14,7 +14,7 @@ class InstallReferrerReceiver : CampaignTrackingReceiver() {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
-  override fun onReceive(context: Context, intent: Intent) {
+  override fun onReceive(context: Context, intent: Intent?) {
     super.onReceive(context, intent)
     if (context.applicationContext !is ExpoApplication) {
       EXL.e(
@@ -25,7 +25,7 @@ class InstallReferrerReceiver : CampaignTrackingReceiver() {
     }
     NativeModuleDepsProvider.instance.inject(InstallReferrerReceiver::class.java, this)
 
-    val referrer = intent.getStringExtra("referrer")
+    val referrer = intent?.getStringExtra("referrer")
     EXL.d(TAG, "Referrer: $referrer")
     if (referrer != null) {
       exponentSharedPreferences.setString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY, referrer)

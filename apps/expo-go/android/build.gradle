@@ -88,10 +88,6 @@ allprojects {
       libs.fresco.imagepipeline.okhttp3,
       libs.fresco.ui.common
     )
-    // TODO(kudo,20240919): Remove this when we bump stripe-react-native version
-    resolutionStrategy {
-      force('com.google.android.gms:play-services-basement:18.1.0')
-    }
   }
 }
 
