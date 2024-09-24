@@ -173,7 +173,7 @@ async function getEasBuildSourcesAsync(projectRoot, options) {
     return results;
 }
 exports.getEasBuildSourcesAsync = getEasBuildSourcesAsync;
-async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, resolveExpoAutolinkingVersion) {
+async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoAutolinkingVersion) {
     if (!options.platforms.includes('android')) {
         return [];
     }

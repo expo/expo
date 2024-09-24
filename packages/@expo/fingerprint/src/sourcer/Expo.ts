@@ -212,7 +212,7 @@ export async function getEasBuildSourcesAsync(projectRoot: string, options: Norm
 export async function getExpoAutolinkingAndroidSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions,
-  resolveExpoAutolinkingVersion: string
+  expoAutolinkingVersion: string
 ): Promise<HashSource[]> {
   if (!options.platforms.includes('android')) {
     return [];
