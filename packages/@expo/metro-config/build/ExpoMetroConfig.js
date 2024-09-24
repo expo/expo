@@ -270,8 +270,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-            // @ts-expect-error: not on type.
             unstable_renameRequire: false,
+            // @ts-expect-error: not on type.
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg.browserslist
                 ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg.browserslist)).toString('hex')
