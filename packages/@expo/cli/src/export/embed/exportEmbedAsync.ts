@@ -534,6 +534,7 @@ export async function exportEmbedBundleAndAssetsAsync(
       // This allows for overwriting the server URL in the project's native files.
       serverUrl ||= deployedServerUrl;
 
+      // TODO: Write to app.json serverOrigin field. Skip when eager bundle was already made.
       if (serverUrl) {
         logInXcode(`Setting server origin: ${serverUrl}`);
         // Write the server URL to the project's native files.
