@@ -24,7 +24,7 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/array-type': ['warn', { default: 'array' }],
-        '@typescript-eslint/ban-types': [
+        '@typescript-eslint/no-restricted-types': [
           'error',
           {
             types: {
@@ -49,7 +49,6 @@ module.exports = {
                 fixWith: 'string',
               },
             },
-            extendDefaults: false,
           },
         ],
         '@typescript-eslint/consistent-type-assertions': [
