@@ -381,9 +381,9 @@ You can inspect a database, execute queries against it, and explore data with th
 
 ## AsyncStorage
 
-The `expo-sqlite` library provides [`AsyncStorage`](#sqliteasyncstorage) as a drop-in replacement for the [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage) library. This key-value storage is backed by SQLite. If your project already uses `expo-sqlite`, you can leverage `AsyncStorage` from `expo-sqlite` without needing to add another dependency.
+The `expo-sqlite` library provides [`AsyncStorage`](#sqliteasyncstorage) as a drop-in replacement for the [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage) library. This key-value store is backed by SQLite. If your project already uses `expo-sqlite`, you can leverage `AsyncStorage` from `expo-sqlite` without needing to add another dependency.
 
-[`AsyncStorage`](#sqliteasyncstorage) offers the same API as the `@react-native-async-storage/async-storage`:
+[`AsyncStorage`](#sqliteasyncstorage) provides the same API as `@react-native-async-storage/async-storage`:
 
 ```ts Using the Storage
 import AsyncStorage from 'expo-sqlite/async-storage';
@@ -394,7 +394,7 @@ const entity = JSON.parse(value);
 console.log(entity); // { entity: 'value' }
 ```
 
-A key benefit of using `AsyncStorage` from `expo-sqlite` is the availability of synchronous APIs for added convenience:
+A key benefit of using `AsyncStorage` from `expo-sqlite` is the addition of synchronous APIs for added convenience:
 
 ```ts Using the Storage with synchronous APIs
 import AsyncStorage from 'expo-sqlite/async-storage';
