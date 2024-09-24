@@ -149,7 +149,7 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
-              type: Notifications.CalendarTriggerTypes.TIME_INTERVAL,
+              type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
               seconds: 10,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
@@ -158,10 +158,9 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
-              type: Notifications.CalendarTriggerTypes.DAILY,
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
               hour: 9,
               minute: 0,
-              repeats: true,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for 9 AM"
@@ -169,11 +168,10 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
-              type: Notifications.CalendarTriggerTypes.WEEKLY,
+              type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
               hour: 9,
               minute: 0,
               weekday: 1,
-              repeats: true,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for Sunday, 9 AM"
@@ -261,7 +259,7 @@ export default class NotificationScreen extends React.Component<
         sound: true,
       },
       trigger: {
-        type: Notifications.CalendarTriggerTypes.TIME_INTERVAL,
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
       },
     });
@@ -286,7 +284,7 @@ export default class NotificationScreen extends React.Component<
         sound: 'cat.wav',
       },
       trigger: {
-        type: Notifications.CalendarTriggerTypes.TIME_INTERVAL,
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         channelId: 'custom-sound',
         seconds: 1,
       },
@@ -302,7 +300,7 @@ export default class NotificationScreen extends React.Component<
         sound: true,
       },
       trigger: {
-        type: Notifications.CalendarTriggerTypes.TIME_INTERVAL,
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
       },
     });
