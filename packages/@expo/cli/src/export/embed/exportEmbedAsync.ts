@@ -73,7 +73,7 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // NOTE: HACK NO MERGE
-  // options.resetCache = false;
+  options.resetCache = false;
 
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
@@ -202,6 +202,114 @@ const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
   signal: null,
 };
 
+import { execSync } from 'node:child_process';
+import os from 'node:os';
+
+function getCommandBin(command: string) {
+  try {
+    return execSync(`command -v ${command}`, { stdio: 'pipe' }).toString().trim();
+  } catch {
+    return null;
+  }
+}
+
+function commandExists(command: string) {
+  return !!getCommandBin(command);
+}
+
+function sourceAndExecute(sourceCommand, executeCommand) {
+  try {
+    const result = execSync(
+      `
+      source ${sourceCommand}
+      ${executeCommand}
+    `,
+      { shell: '/bin/bash' }
+    );
+    return result.toString().trim();
+  } catch (error) {
+    console.error(`Error executing command: ${error.message}`);
+    return null;
+  }
+}
+
+function amendPathForXcode() {
+  if (!isRunningFromXcodeBuildScript) {
+    return;
+  }
+  // Add common Node.js installation locations to PATH
+  process.env.PATH = `${process.env.PATH}:/usr/local/bin:/opt/homebrew/bin:/opt/local/bin:${os.homedir()}/.npm-global/bin`;
+
+  if (commandExists('volta')) {
+    console.log('Using Volta');
+    process.env.VOLTA_HOME = path.join(os.homedir(), '.volta');
+    process.env.PATH = `${process.env.VOLTA_HOME}/bin:${process.env.PATH}`;
+  } else if (fs.existsSync(path.join(os.homedir(), '.nvm/nvm.sh'))) {
+    console.log('Using NVM');
+    const nvmPath = path.join(os.homedir(), '.nvm/nvm.sh');
+
+    // Note: Sourcing nvm.sh and using it directly isn't possible in Node.js
+    // You'd typically handle NVM in the shell before running this Node.js script
+    console.log('NVM detected, but must be initialized in the shell before running this script');
+    const nodeVersion = sourceAndExecute(
+      nvmPath,
+      'nvm use default > /dev/null 2>&1 && node --version'
+    );
+    console.log(`Active Node.js version (NVM): ${nodeVersion}`);
+  } else if (commandExists('n')) {
+    console.log('Using n');
+    process.env.N_PREFIX = path.join(os.homedir(), 'n');
+    process.env.PATH = `${process.env.N_PREFIX}/bin:${process.env.PATH}`;
+  } else if (commandExists('asdf')) {
+    console.log('Using asdf');
+    // Note: asdf typically needs to be sourced in the shell
+    console.log('asdf detected, but must be initialized in the shell before running this script');
+  } else if (commandExists('fnm')) {
+    console.log('Using fnm');
+    // Note: fnm typically needs to be evaluated in the shell
+    console.log('fnm detected, but must be initialized in the shell before running this script');
+  } else if (commandExists('nodenv')) {
+    console.log('Using nodenv');
+    // Note: nodenv typically needs to be evaluated in the shell
+    console.log('nodenv detected, but must be initialized in the shell before running this script');
+  } else {
+    console.log('No specific version manager detected, using system Node.js');
+  }
+}
+
+// Detect running in XCode
+// https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Access-script-related-files-from-environment-variables
+const isRunningFromXcodeBuildScript = !!(
+  process.env.BUILT_PRODUCTS_DIR &&
+  process.env.SCRIPT_INPUT_FILE_COUNT &&
+  process.env.SCRIPT_INPUT_FILE_LIST_COUNT &&
+  process.env.SCRIPT_OUTPUT_FILE_COUNT
+);
+
+function getNodeBinary() {
+  if (isRunningFromXcodeBuildScript) {
+    if (!process.env.NODE_BINARY) {
+      throw new Error(
+        'Environment variable NODE_BINARY is not defined. It must be set to the path of the Node.js binary when building from Xcode.'
+      );
+    }
+    return process.env.NODE_BINARY;
+  }
+  return 'node';
+}
+
+function getGlobalTool(tool: string, amend: boolean = isRunningFromXcodeBuildScript) {
+  const globalBin = getCommandBin('eas');
+  if (!globalBin) {
+    if (amend) {
+      amendPathForXcode();
+      return getGlobalTool(tool, false);
+    }
+    throw new Error(`"${tool}" could not be found in the PATH.`);
+  }
+  return globalBin;
+}
+
 async function runServerDeployCommandAsync(
   projectRoot: string,
   {
@@ -209,6 +317,8 @@ async function runServerDeployCommandAsync(
     deployScript,
   }: { distDirectory: string; deployScript: { scriptName: string; script: string } | null }
 ): Promise<string | false> {
+  const nodeBin = getNodeBinary();
+
   // TODO: Test error cases thoroughly since they run at the end of a build:
   // - EAS not installed.
   // - EAS not configured.
@@ -230,41 +340,34 @@ async function runServerDeployCommandAsync(
         ...process.env,
       },
     };
-    // if (deployScript) {
-    //   logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
-    //   results = await spawnAsync(
-    //     deployScript.script,
-    //     ['--export-dir', distDirectory],
-    //     spawnOptions
-    //   );
-    // } else {
+    // TODO: Support absolute paths in EAS CLI
+    const exportDir = path.relative(projectRoot, distDirectory);
+    if (deployScript) {
+      logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
+      // Amend the path to try and make the custom scripts work.
+      amendPathForXcode();
 
-    logInXcode('Deploying server to EAS');
-    // Xcode build scripts do not have access to the global path, so we need to use the EAS binary that's set ahead of time during the cocoapods install (TODO).
-    const easPath = process.env.DEPLOY_BINARY;
-    if (!easPath) {
-      throw new Error(
-        'Environment variable DEPLOY_BINARY is not defined. It must be set to the path of the server deployment CLI binary.'
+      results = await spawnAsync(
+        'npm',
+        ['run', deployScript.scriptName, `--export-dir=${exportDir}`],
+        spawnOptions
+      );
+    } else {
+      logInXcode('Deploying server to EAS');
+
+      // results = DEPLOYMENT_SUCCESS_FIXTURE;
+      results = await spawnAsync(
+        nodeBin,
+        [
+          getGlobalTool('eas'),
+          'deploy',
+          '--non-interactive',
+          '--json',
+          `--export-dir=${exportDir}`,
+        ],
+        spawnOptions
       );
     }
-    // results = DEPLOYMENT_SUCCESS_FIXTURE;
-    results = await spawnAsync(
-      process.env.NODE_BINARY!,
-      [
-        easPath,
-        'deploy',
-        '--non-interactive',
-        '--json',
-        '--export-dir',
-        // TODO: Support absolute paths in EAS CLI
-        path.relative(projectRoot, distDirectory),
-      ],
-      spawnOptions
-    );
-
-    // }
-
-    console.log(results);
 
     const logPath = await dumpDeploymentLogs(projectRoot, results.output.join('\n'));
 
@@ -285,6 +388,7 @@ async function runServerDeployCommandAsync(
       return false;
     }
   } catch (error) {
+    console.log(error);
     // TODO: Account for EAS not being installed.
 
     if (isSpawnResultError(error)) {
@@ -404,28 +508,29 @@ export async function exportEmbedBundleAndAssetsAsync(
   const files: ExportAssetMap = new Map();
 
   try {
-    const bundles = await devServer.nativeExportBundleAsync(
-      {
-        // TODO: Re-enable when we get bytecode chunk splitting working again.
-        splitChunks: false, //devServer.isReactServerComponentsEnabled,
-        mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
-        platform: options.platform,
-        minify: options.minify,
-        mode: options.dev ? 'development' : 'production',
-        engine: isHermes ? 'hermes' : undefined,
-        serializerIncludeMaps: !!sourceMapUrl,
-        // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-        bytecode: false,
-        // source map inline
-        reactCompiler: !!exp.experiments?.reactCompiler,
-      },
-      files,
-      {
-        sourceMapUrl,
-        unstable_transformProfile: (options.unstableTransformProfile ||
-          (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
-      }
-    );
+    const bundles = {};
+    // const bundles = await devServer.nativeExportBundleAsync(
+    //   {
+    //     // TODO: Re-enable when we get bytecode chunk splitting working again.
+    //     splitChunks: false, //devServer.isReactServerComponentsEnabled,
+    //     mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+    //     platform: options.platform,
+    //     minify: options.minify,
+    //     mode: options.dev ? 'development' : 'production',
+    //     engine: isHermes ? 'hermes' : undefined,
+    //     serializerIncludeMaps: !!sourceMapUrl,
+    //     // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
+    //     bytecode: false,
+    //     // source map inline
+    //     reactCompiler: !!exp.experiments?.reactCompiler,
+    //   },
+    //   files,
+    //   {
+    //     sourceMapUrl,
+    //     unstable_transformProfile: (options.unstableTransformProfile ||
+    //       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
+    //   }
+    // );
 
     const apiRoutesEnabled = exp.web?.output === 'server';
 
