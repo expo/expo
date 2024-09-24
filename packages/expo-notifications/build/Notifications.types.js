@@ -1,5 +1,5 @@
 /**
- * Schedulable trigger inputs (that are not a plain Date value or time value)
+ * Schedulable trigger inputs (that are not a plain date value or time value)
  * must have the "type" property set to one of these values.
  */
 export var CalendarTriggerTypes;
@@ -27,7 +27,7 @@ export var CalendarTriggerTypes;
     /**
      * A trigger type that will cause the notification to be delivered once every year
      * when the `day`, `month`, `hour`, and `minute` date components match the specified values.
-     * > **Note:** all properties are specified in JavaScript Date's ranges.
+     * > **Note:** All properties are specified in JavaScript `Date` object's ranges.
      */
     CalendarTriggerTypes["YEARLY"] = "yearly";
     /**
