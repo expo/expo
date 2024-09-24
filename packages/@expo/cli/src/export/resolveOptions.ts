@@ -79,8 +79,9 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
+  const platforms = resolvePlatformOption(exp, platformBundlers, args['--platform']);
   return {
-    platforms: resolvePlatformOption(exp, platformBundlers, args['--platform']),
+    platforms,
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
     bytecode: !args['--no-bytecode'],
@@ -89,6 +90,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],
     sourceMaps: !!args['--source-maps'],
-    skipSSG: !!args['--no-ssg'],
+    // Can't skip SSG if the web platform is included.
+    skipSSG: !platforms.includes('web') && !!args['--no-ssg'],
   };
 }
