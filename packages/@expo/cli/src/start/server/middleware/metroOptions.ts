@@ -72,6 +72,7 @@ function withDefaults({
   minify = mode === 'production',
   preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
+  environment,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
   if (props.bytecode) {
@@ -85,9 +86,7 @@ function withDefaults({
 
   const optimize =
     props.optimize ??
-    (props.environment !== 'node' &&
-      mode === 'production' &&
-      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+    (environment !== 'node' && mode === 'production' && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
 
   return {
     mode,
@@ -96,6 +95,7 @@ function withDefaults({
     optimize,
     usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
+    environment: environment === 'client' ? undefined : environment,
     ...props,
   };
 }
@@ -194,7 +194,7 @@ export function getMetroDirectBundleOptions(
     environment,
     baseUrl: baseUrl || undefined,
     routerRoot,
-    bytecode: bytecode || undefined,
+    bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler || undefined,
     dom: domRoot,
   };
@@ -304,7 +304,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.engine', engine);
   }
   if (bytecode) {
-    queryParams.append('transform.bytecode', String(bytecode));
+    queryParams.append('transform.bytecode', '1');
   }
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
