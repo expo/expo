@@ -143,6 +143,7 @@ const nonLinkableTypes = [
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',
+  'PropsWithoutRef',
   // Cross-package types with no export entry
   'CodedError',
   'RequestPermissionMethod',
@@ -205,6 +206,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',

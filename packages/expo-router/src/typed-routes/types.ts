@@ -1,8 +1,18 @@
+/**
+ * @hidden
+ **/
 type HasTypedRoutes = ExpoRouter.__routes extends { StaticRoutes: string } ? true : false;
 
+/**
+ * @hidden
+ **/
 export type StaticRoutes = ExpoRouter.__routes extends { StaticRoutes: string }
   ? ExpoRouter.__routes['StaticRoutes']
   : string;
+
+/**
+ * @hidden
+ **/
 export type DynamicRoutes<T extends string> =
   ExpoRouter.__routes<T> extends {
     DynamicRoutes: any;
@@ -12,6 +22,10 @@ export type DynamicRoutes<T extends string> =
       ? T
       : never
     : string;
+
+/**
+ * @hidden
+ **/
 export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTemplate: string }
   ? ExpoRouter.__routes['DynamicRouteTemplate']
   : string;
@@ -26,6 +40,9 @@ export namespace ExpoRouter {
   export interface __routes<T extends string = string> extends Record<string, unknown> {}
 }
 
+/**
+ * @hidden
+ **/
 export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
 
 /**
