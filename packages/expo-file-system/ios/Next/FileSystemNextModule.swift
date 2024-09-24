@@ -10,7 +10,8 @@ public final class FileSystemNextModule: Module {
       return [
         "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
         "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
-        "bundleDirectory": Bundle.main.bundlePath
+        "bundleDirectory": Bundle.main.bundlePath,
+        "appleSharedContainers": getAppleSharedContainers()
       ]
     }
 
@@ -46,19 +47,6 @@ public final class FileSystemNextModule: Module {
         }
       }
       downloadTask.resume()
-    }
-
-    Function("getAppleSharedContainers") { () -> [String: String] in
-      guard let appContext else {
-        throw Exceptions.AppContextLost()
-      }
-      var result: [String: String] = [:]
-      for appGroup in appContext.appCodeSignEntitlements.appGroups ?? [] {
-        if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
-          result[appGroup] = directory.standardizedFileURL.path
-        }
-      }
-      return result
     }
 
     Class(FileSystemFile.self) {
@@ -161,5 +149,18 @@ public final class FileSystemNextModule: Module {
         return directory.url.absoluteString
       }
     }
+  }
+
+  private func getAppleSharedContainers() -> [String: String] {
+    guard let appContext else {
+      return [:]
+    }
+    var result: [String: String] = [:]
+    for appGroup in appContext.appCodeSignEntitlements.appGroups ?? [] {
+      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        result[appGroup] = directory.standardizedFileURL.path
+      }
+    }
+    return result
   }
 }

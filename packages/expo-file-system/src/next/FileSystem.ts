@@ -10,7 +10,7 @@ export class Paths extends PathUtilities {
     return new Directory(ExpoFileSystem.documentDirectory);
   }
   static get appleSharedContainers() {
-    const containers: Record<string, string> = ExpoFileSystem.getAppleSharedContainers?.() ?? {};
+    const containers: Record<string, string> = ExpoFileSystem.appleSharedContainers ?? {};
     const result: Record<string, Directory> = {};
     for (const appGroupId in containers) {
       result[appGroupId] = new Directory(containers[appGroupId]);
