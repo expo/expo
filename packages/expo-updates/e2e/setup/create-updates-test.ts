@@ -25,17 +25,12 @@ function transformAppJson(appJson: any, projectName: string, runtimeVersion: str
       ...appJson.expo,
       name: projectName,
       runtimeVersion,
-      extra: {
-        ...appJson.extra,
-        updates: {
-          assetPatternsToBeBundled: ['assetsInUpdates/*'],
-        },
-      },
       updates: {
         ...appJson.expo.updates,
         requestHeaders: {
           'expo-channel-name': 'main',
         },
+        assetPatternsToBeBundled: ['assetsInUpdates/*'],
       },
       android: {
         ...appJson.expo.android,

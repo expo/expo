@@ -153,7 +153,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         getStatusFromMedia(this.media, this.id);
     }
     _createMediaElement() {
-        const newSource = typeof this.src === 'string' ? this.src : this.src?.uri ?? '';
+        const newSource = typeof this.src === 'string' ? this.src : (this.src?.uri ?? '');
         const media = new Audio(newSource);
         media.ontimeupdate = () => {
             this.emit('onPlaybackStatusUpdate', getStatusFromMedia(media, this.id));

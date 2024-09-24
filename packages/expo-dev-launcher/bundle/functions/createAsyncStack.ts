@@ -14,7 +14,7 @@ export type StackEvent<T = any> = {
   };
 };
 
-const AValue = new Animated.Value(0);
+type AValue = Animated.Value;
 
 export type StackItem<T = any> = {
   key: string;
@@ -24,7 +24,7 @@ export type StackItem<T = any> = {
   onPushEnd: () => void;
   onPopEnd: () => void;
   data: T;
-  animatedValue: typeof AValue;
+  animatedValue: AValue;
 };
 
 export type StackState<T = any> = {
@@ -35,7 +35,7 @@ export type StackState<T = any> = {
 
 export type Stack<T> = {
   push: (data?: T | undefined) => StackItem<T>;
-  pop: (amount?: number, startIndex?: number) => StackItem<any>[];
+  pop: (amount?: number, startIndex?: number) => StackItem[];
   subscribe: (listener: (state: StackEvent<T>) => void) => () => void;
   getState: () => StackState;
 };
@@ -63,7 +63,6 @@ export function createAsyncStack<T = any>() {
     const item: StackItem<T> = {
       key,
       promise,
-      // @ts-ignore
       data,
       status: 'pushing' as Status,
       pop: () => pop(`${key}`),
