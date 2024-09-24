@@ -25,13 +25,14 @@ fun buildDataSourceFactory(context: Context, videoSource: VideoSource): DataSour
 @OptIn(UnstableApi::class)
 fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): OkHttpDataSource.Factory {
   val client = OkHttpClient.Builder().build()
-  val userAgent = Util.getUserAgent(context, getApplicationName(context))
+  val defaultUserAgent = Util.getUserAgent(context, getApplicationName(context))
+
   return OkHttpDataSource.Factory(client).apply {
-    videoSource.headers?.let {
-      if (it.isNotEmpty()) {
-        setDefaultRequestProperties(it)
-      }
+    val headers = videoSource.headers
+    headers?.takeIf { it.isNotEmpty() }?.let {
+      setDefaultRequestProperties(it)
     }
+    val userAgent = headers?.get("User-Agent") ?: defaultUserAgent
     setUserAgent(userAgent)
   }
 }
