@@ -252,7 +252,6 @@ async function transformJS(file, { config, options }) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
     applyUseStrictDirective(ast);
-    // @ts-expect-error: Not on types yet (Metro 0.80).
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
