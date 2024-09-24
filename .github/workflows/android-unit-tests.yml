@@ -30,6 +30,8 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     timeout-minutes: 100
+    strategy:
+      fail-fast: false
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
