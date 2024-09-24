@@ -6,6 +6,7 @@
  */
 import { ExpoConfig, getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
+import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import crypto from 'crypto';
 import fs from 'fs';
@@ -14,6 +15,7 @@ import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
+import { execSync } from 'node:child_process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -25,6 +27,7 @@ import {
   warnInXcode,
 } from './xcodeCompilerLogger';
 import { Log } from '../../log';
+import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
@@ -49,9 +52,73 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
-import spawnAsync from '@expo/spawn-async';
-import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
-import { logLikeMetro } from '../../start/server/serverLogLikeMetro';
+
+// const DEPLOYMENT_SUCCESS_FIXTURE = {
+//   pid: 84795,
+//   output: [
+//     '{\n' +
+//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//       '  "deployment": {\n' +
+//       '    "identifier": "dccw84urit",\n' +
+//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//       '  }\n' +
+//       '}\n',
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//       '> Project export: server\n' +
+//       '- Preparing project\n' +
+//       '- Creating deployment\n' +
+//       '✔ Created deployment\n',
+//   ],
+//   stdout:
+//     '{\n' +
+//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//     '  "deployment": {\n' +
+//     '    "identifier": "dccw84urit",\n' +
+//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//     '  }\n' +
+//     '}\n',
+//   stderr:
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//     '> Project export: server\n' +
+//     '- Preparing project\n' +
+//     '- Creating deployment\n' +
+//     '✔ Created deployment\n',
+//   status: 0,
+//   signal: null,
+// };
+// const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
+//   pid: 84795,
+//   output: [
+//     '{\n' +
+//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//       '  "deployment": {\n' +
+//       '    "identifier": "dccw84urit",\n' +
+//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//       '  }\n' +
+//       '}\n',
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//       '> Project export: server\n' +
+//       '- Preparing project\n' +
+//       '- Creating deployment\n' +
+//       '✔ Created deployment\n',
+//   ],
+//   stdout:
+//     '{\n' +
+//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+//     '  "deployment": {\n' +
+//     '    "identifier": "dccw84urit",\n' +
+//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+//     '  }\n' +
+//     '}\n',
+//   stderr:
+//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+//     '> Project export: server\n' +
+//     '- Preparing project\n' +
+//     '- Creating deployment\n' +
+//     '✔ Created deployment\n',
+//   status: 0,
+//   signal: null,
+// };
 
 const debug = require('debug')('expo:export:embed');
 
@@ -134,76 +201,6 @@ async function dumpDeploymentLogs(projectRoot: string, logs: string, name = 'dep
   await fs.promises.writeFile(outputPath, logs);
   return outputPath;
 }
-
-// const DEPLOYMENT_SUCCESS_FIXTURE = {
-//   pid: 84795,
-//   output: [
-//     '{\n' +
-//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//       '  "deployment": {\n' +
-//       '    "identifier": "dccw84urit",\n' +
-//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//       '  }\n' +
-//       '}\n',
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//       '> Project export: server\n' +
-//       '- Preparing project\n' +
-//       '- Creating deployment\n' +
-//       '✔ Created deployment\n',
-//   ],
-//   stdout:
-//     '{\n' +
-//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//     '  "deployment": {\n' +
-//     '    "identifier": "dccw84urit",\n' +
-//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//     '  }\n' +
-//     '}\n',
-//   stderr:
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//     '> Project export: server\n' +
-//     '- Preparing project\n' +
-//     '- Creating deployment\n' +
-//     '✔ Created deployment\n',
-//   status: 0,
-//   signal: null,
-// };
-// const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
-//   pid: 84795,
-//   output: [
-//     '{\n' +
-//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//       '  "deployment": {\n' +
-//       '    "identifier": "dccw84urit",\n' +
-//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//       '  }\n' +
-//       '}\n',
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//       '> Project export: server\n' +
-//       '- Preparing project\n' +
-//       '- Creating deployment\n' +
-//       '✔ Created deployment\n',
-//   ],
-//   stdout:
-//     '{\n' +
-//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//     '  "deployment": {\n' +
-//     '    "identifier": "dccw84urit",\n' +
-//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//     '  }\n' +
-//     '}\n',
-//   stderr:
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//     '> Project export: server\n' +
-//     '- Preparing project\n' +
-//     '- Creating deployment\n' +
-//     '✔ Created deployment\n',
-//   status: 0,
-//   signal: null,
-// };
-
-import { execSync } from 'node:child_process';
-import os from 'node:os';
 
 function getCommandBin(command: string) {
   try {
