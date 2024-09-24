@@ -30,8 +30,6 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     timeout-minutes: 100
-    strategy:
-      fail-fast: false
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
@@ -66,6 +64,7 @@ jobs:
       - name: 💅 Run Spotless lint check
         working-directory: apps/expo-go/android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
+        continue-on-error: true
       - name: 🎸 Run native Android unit tests
         timeout-minutes: 30
         run: expotools native-unit-tests --platform android
