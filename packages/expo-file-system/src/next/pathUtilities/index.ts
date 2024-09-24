@@ -8,6 +8,11 @@ function uriObjectToString(path: Path): string {
 }
 
 export class PathUtilities {
+  /**
+   * Joins path segments into a single path.
+   * @param paths - An array of path segments.
+   * @returns A string representing the joined path.
+   */
   static join(...paths: Path[]): string {
     const stringPaths = paths.map(uriObjectToString);
     if (stringPaths[0] && isFileUrl(stringPaths[0])) {
@@ -17,6 +22,12 @@ export class PathUtilities {
     return nodePath.join(...stringPaths);
   }
 
+  /**
+   * Resolves a relative path to an absolute path.
+   * @param from - The base path.
+   * @param to - The relative path.
+   * @returns A string representing the resolved path.
+   */
   static relative(from: Path, to: Path): string {
     const fromString = uriObjectToString(from);
     const toString = uriObjectToString(to);
@@ -32,6 +43,11 @@ export class PathUtilities {
     return nodePath.relative(fromString, toString);
   }
 
+  /**
+   * Checks if a path is absolute.
+   * @param path - The path to check.
+   * @returns `true` if the path is absolute, `false` otherwise.
+   */
   static isAbsolute(path: Path): boolean {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
@@ -40,6 +56,11 @@ export class PathUtilities {
     return nodePath.isAbsolute(pathString);
   }
 
+  /**
+   * Normalizes a path.
+   * @param path - The path to normalize.
+   * @returns A string representing the normalized path.
+   */
   static normalize(path: Path): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
@@ -48,6 +69,11 @@ export class PathUtilities {
     return nodePath.normalize(pathString);
   }
 
+  /**
+   * Returns the directory name of a path.
+   * @param path - The path to get the directory name from.
+   * @returns A string representing the directory name.
+   */
   static dirname(path: Path): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
@@ -56,6 +82,12 @@ export class PathUtilities {
     return nodePath.dirname(pathString);
   }
 
+  /**
+   * Returns the base name of a path.
+   * @param path - The path to get the base name from.
+   * @param ext - An optional file extension.
+   * @returns A string representing the base name.
+   */
   static basename(path: Path, ext?: string): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
@@ -64,6 +96,11 @@ export class PathUtilities {
     return nodePath.basename(pathString, ext);
   }
 
+  /**
+   * Returns the extension of a path.
+   * @param path - The path to get the extension from.
+   * @returns A string representing the extension.
+   */
   static extname(path: Path): string {
     const pathString = uriObjectToString(path);
     if (isFileUrl(pathString)) {
@@ -72,6 +109,11 @@ export class PathUtilities {
     return nodePath.extname(pathString);
   }
 
+  /**
+   * Parses a path into its components.
+   * @param path - The path to parse.
+   * @returns An object containing the parsed path components.
+   */
   static parse(path: Path): {
     root: string;
     dir: string;

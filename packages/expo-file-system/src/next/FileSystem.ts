@@ -1,12 +1,18 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { URI } from './FileSystem.types';
+import { URI } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 
 export class Paths extends PathUtilities {
+  /**
+   * A property containing the cache directory – a place to store files that can be deleted by the system when the device runs low on storage.
+   */
   static get cache() {
     return new Directory(ExpoFileSystem.cacheDirectory);
   }
 
+  /**
+   * A property containing the document directory – a place to store files that are safe from being deleted by the system.
+   */
   static get document() {
     return new Directory(ExpoFileSystem.documentDirectory);
   }
@@ -25,8 +31,9 @@ export class File extends ExpoFileSystem.FileSystemFile {
     return new Directory(Paths.dirname(this.uri));
   }
 
-  /*
-   * File extension (with the dot).
+  /**
+   * File extension.
+   * @example '.png'
    */
   get extension() {
     return Paths.extname(this.uri);
@@ -46,6 +53,11 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
   return new File(outputPath);
 };
 
+/**
+ * Represents a directory on the filesystem.
+ *
+ * A `Directory` instance can be created for any path, and does not need to exist on the filesystem during creation.
+ */
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
   constructor(...uris: (URI | File | Directory)[]) {
     super(Paths.join(...uris));
@@ -59,7 +71,12 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return new Directory(Paths.join(this.uri, '..'));
   }
 
-  list() {
+  /**
+   * Lists the contents of a directory.
+   * Calling this method if the parent directory does not exist will throw an error.
+   * @returns An array of `Directory` and `File` instances.
+   */
+  list(): (Directory | File)[] {
     // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()
