@@ -1,4 +1,5 @@
 import Foundation
+import ExpoModulesCore
 
 final class MediaFileHandle {
   private let filePath: String
@@ -55,6 +56,16 @@ extension MediaFileHandle {
     readHandle?.seek(toFileOffset: UInt64(offset))
     return readHandle?.readData(ofLength: length)
   }
+
+  func write(data: Data, atOffset offset: Int) throws {
+    lock.lock()
+    defer { lock.unlock() }
+    guard let writeHandle = writeHandle else { return }
+    try writeHandle.seek(toOffset: UInt64(offset))
+    writeHandle.write(data)
+    writeHandle.synchronizeFile()
+  }
+
 
   func append(data: Data) {
     lock.lock()

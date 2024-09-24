@@ -19,9 +19,7 @@ internal struct DynamicVoidType: AnyDynamicType {
     return value
   }
 
-  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    return .undefined
-  }
+ 
 
   var description: String {
     "Void"

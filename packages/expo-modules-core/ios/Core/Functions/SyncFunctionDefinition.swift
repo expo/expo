@@ -97,42 +97,6 @@ public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySy
     }
   }
 
-  func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue {
-    do {
-      try validateArgumentsNumber(function: self, received: arguments.count)
-
-      // This array will include the owner (if needed) and function arguments.
-      var allNativeArguments: [Any] = []
-
-      // If the function takes the owner, convert it and add to the final arguments.
-      if takesOwner, let this, let ownerType = dynamicArgumentTypes.first {
-        let nativeOwner = try appContext.converter.toNative(this, ownerType)
-        allNativeArguments.append(nativeOwner)
-      }
-
-      // Convert JS values to non-JS native types desired by the function.
-      let nativeArguments = try appContext.converter.toNative(arguments, Array(dynamicArgumentTypes.dropFirst(allNativeArguments.count)))
-
-      allNativeArguments.append(contentsOf: nativeArguments)
-
-      // Fill in with nils in place of missing optional arguments.
-      if arguments.count < argumentsCount {
-        allNativeArguments.append(contentsOf: Array(repeating: Any?.none as Any, count: argumentsCount - arguments.count))
-      }
-
-      guard let argumentsTuple = try Conversions.toTuple(allNativeArguments) as? Args else {
-        throw ArgumentConversionException()
-      }
-      let result = try body(argumentsTuple)
-
-      return try appContext.converter.toJS(result, returnType)
-    } catch let error as Exception {
-      throw FunctionCallException(name).causedBy(error)
-    } catch {
-      throw UnexpectedException(error)
-    }
-  }
-
   // MARK: - JavaScriptObjectBuilder
 
   func build(appContext: AppContext) throws -> JavaScriptObject {

@@ -5,7 +5,7 @@ class VideoCacheManager {
   static let defaultAutoCleanCache = true
   static let expoVideoCacheScheme = "expo-video-cache"
   static let expoVideoCacheDirectory = "expo-video-cache"
-  static let mimeTypeSuffix = "&mimeType"
+  static let mediaInfoSuffix = "&mediaInfo"
 
   static let shared = VideoCacheManager()
   private let defaults = UserDefaults.standard
@@ -118,7 +118,7 @@ class VideoCacheManager {
   }
 
   private func removeVideoAndMimeTypeFile(at fileUrl: URL) throws {
-    let mimeTypeFileUrl = URL(string: "\(fileUrl.relativeString)\(Self.mimeTypeSuffix)")
+    let mimeTypeFileUrl = URL(string: "\(fileUrl.relativeString)\(Self.mediaInfoSuffix)")
     try FileManager.default.removeItem(at: fileUrl)
     if let mimeTypeFileUrl, FileManager.default.fileExists(atPath: mimeTypeFileUrl.relativePath) {
       try FileManager.default.removeItem(at: mimeTypeFileUrl)
@@ -161,7 +161,7 @@ class VideoCacheManager {
       return []
     }
     let fileUrls = (try? FileManager.default.contentsOfDirectory(at: videoCacheDir, includingPropertiesForKeys: [.contentAccessDateKey, .contentModificationDateKey], options: .skipsHiddenFiles)) ?? []
-    return fileUrls.filter { !$0.absoluteString.hasSuffix(Self.mimeTypeSuffix)}
+    return fileUrls.filter { !$0.absoluteString.hasSuffix(Self.mediaInfoSuffix)}
   }
 
   private func fileIsOpen(url: URL) -> Bool {
