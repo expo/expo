@@ -1,7 +1,6 @@
 ---
 title: Overview of using Expo with existing React Native apps
 sidebar_title: Overview
-hideTOC: true
 description: Learn how to use Expo tools and services with existing React Native apps.
 ---
 
@@ -14,6 +13,7 @@ import { RefreshCw02Icon } from '@expo/styleguide-icons/outline/RefreshCw02Icon'
 import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 
 If you have a React Native app that doesn't use any Expo tools, you might be wondering what Expo can provide for you, why you might want to use Expo tools and services, and how to get started.
@@ -28,7 +28,7 @@ There's so much more to explore, and the links below will help you to explore th
 
 ## Incremental adoption steps
 
-There are four steps of incremental adoption to help you get started with:
+There are four steps of incremental adoption to help you get started.
 
 ### Prerequisites
 
@@ -130,3 +130,71 @@ The following helps with your project's long term maintainability, native code m
   description="Learn how to simplify maintaining your native projects by generating them on demand from configuration."
   href="/guides/adopting-prebuild"
 />
+
+## Common questions
+
+<Collapsible summary="How long will it take to adopt Expo in my existing React Native project?">
+
+Adopting Expo doesn't have to be done in one step. You can start with _quick wins_ and then move to tackle more complex parts. You can also pick and choose which features you want to adopt at the beginning of this process.
+
+</Collapsible>
+
+<Collapsible summary="What will I gain from using Expo in my React Native App?">
+
+Adopting Expo tools in your existing React Native app will help you maintain long-term maintenance support, easier native upgrades, and a better developer experience.
+
+</Collapsible>
+
+<Collapsible summary="Who uses Expo?">
+
+Expo is used by top companies worldwide that serve millions of end users. For more information, see our [Expo showcase](https://expo.dev/customers).
+
+</Collapsible>
+
+<Collapsible summary="What impact will adopting Expo have on my app's size?">
+
+The `expo` package has a small footprint since it only includes a minimal set of modules required in every app with autolinking infrastructure and other Expo SDK libraries that are built-in.
+
+Including `expo` package in your app adds 1 MB to the final size of apps on app stores. This package has a marginal cost. For example, on Android, it only adds 150 Kib and the rest of the size comes from the language runtime (Kotlin).
+
+</Collapsible>
+
+<Collapsible summary="Why did React Native recommend using Expo?">
+
+Most React Native developers solve common problems when building an app, such as implementing navigation, accessing Native APIs, upgrading to new versions, and more. This requires using a specific set of tools and libraries to build and maintain your app &mdash; which means you are creating your own framework.
+
+Expo solves these problems by providing a set of primitives and helping you (the developer) to focus on building your app. It also offers tools to iterate faster in development. For more information, see [Why React Native recommends using a framework](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps).
+
+</Collapsible>
+
+<Collapsible summary="Do I have to get rid of my native projects to use Expo?">
+
+By default, Expo projects created with `create-expo-app` use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) and do not contain android and ios native directories. If you incrementally adopt Expo in your existing React Native app, you don't have to remove these directories. You can continue with `npx expo run:[android|ios]` as alternates to commands offered by `@react-native-community/cli` to compile your app locally and keep the configuration of your native projects.
+
+</Collapsible>
+
+<Collapsible summary="I use CodePush. Can I continue using it with Expo?">
+
+CodePush will retire in March 2025 and is incompatible with React Native's New Architecture. Instead, we recommend using the `expo-updates` library to manage remote updates to your app's code.
+
+</Collapsible>
+
+<Collapsible summary="Do I have to build with EAS?">
+
+[Expo Application Services (EAS)](/eas/) are deeply integrated cloud services for Expo and React Native apps that provide tools to build, test, and deploy your app.
+
+Although we recommend using EAS for a smooth collaboration with your teammates and fast distribution, you can compile your app locally, on your CI, or any other way you prefer.
+
+</Collapsible>
+
+<Collapsible summary="Can I install third-party native libraries in my code?">
+
+Yes, you can install and use third-party libraries that require native projects (**android** and **ios**) configuration with [development builds](/workflow/overview/#development-builds). See [Using Third-Party libraries](/workflow/using-libraries/#third-party-libraries) for more information.
+
+</Collapsible>
+
+<Collapsible summary="I use React Navigation. Do I have to use Expo Router?">
+
+You can continue using any navigation library in your project. However, we recommend using Expo Router for all the benefits [described here](/router/introduction).
+
+</Collapsible>
