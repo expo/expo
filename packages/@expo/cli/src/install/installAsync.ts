@@ -7,6 +7,7 @@ import { checkPackagesAsync } from './checkPackages';
 import { installExpoPackageAsync } from './installExpoPackage';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
+import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
@@ -31,7 +32,7 @@ export async function installAsync(
   setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
-  const projectRoot = options.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
+  const projectRoot = options?.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
   require('@expo/env').load(projectRoot);
 
   // Resolve the package manager used by the project, or based on the provided arguments.
@@ -63,6 +64,11 @@ export async function installAsync(
       packageManager,
       packageManagerArguments,
     });
+  }
+
+  // note(simek): check out the packages compatibility with New Architecture against RND API
+  if (!process.env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
+    await checkPackagesCompatibility(otherPackages);
   }
 
   // Read the project Expo config without plugins.

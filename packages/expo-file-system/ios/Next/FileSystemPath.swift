@@ -2,7 +2,7 @@ import Foundation
 import ExpoModulesCore
 
 internal class FileSystemPath: SharedObject {
-  let url: URL
+  var url: URL
 
   init(url: URL, isDirectory: Bool) {
     let standardizedUrl = url.deletingLastPathComponent().appendingPathComponent(url.lastPathComponent, isDirectory: isDirectory)
@@ -26,13 +26,16 @@ internal class FileSystemPath: SharedObject {
 
   func move(to destination: FileSystemPath) throws {
     if destination is FileSystemDirectory {
-      try FileManager.default.moveItem(at: url, to: destination.url.appendingPathComponent(url.lastPathComponent))
+      let to = destination.url.appendingPathComponent(url.lastPathComponent, isDirectory: self is FileSystemDirectory)
+      try FileManager.default.moveItem(at: url, to: to)
+      url = to
     }
     if destination is FileSystemFile {
-      guard !url.hasDirectoryPath else {
+      guard self is FileSystemFile else {
         throw MoveDirectoryToFileException()
       }
       try FileManager.default.moveItem(at: url, to: destination.url)
+      url = destination.url
     }
   }
 }

@@ -4,11 +4,19 @@
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-server": "./build/Linking.server.js",
+      "default": "./build/Linking.js"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"

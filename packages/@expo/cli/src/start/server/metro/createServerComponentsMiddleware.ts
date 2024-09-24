@@ -106,7 +106,7 @@ export function createServerComponentsMiddleware(
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
-    const cssModules = contents.artifacts.filter((a) => a.type === 'css');
+    const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
@@ -347,7 +347,11 @@ export function createServerComponentsMiddleware(
 
       await Promise.all(
         Array.from(buildConfig).map(async ({ entries }) => {
-          for (const { input } of entries || []) {
+          for (const { input, isStatic } of entries || []) {
+            if (!isStatic) {
+              debug('Skipping static export for route', { input });
+              continue;
+            }
             const destRscFile = path.join('_flight', platform, encodeInput(input));
 
             const pipe = await renderRscToReadableStream(

@@ -19,7 +19,7 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from './saveAssets';
-import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
+import { createAssetMap } from './writeContents';
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
@@ -146,7 +146,9 @@ export async function exportAppAsync(
           const bundle = await devServer.nativeExportBundleAsync(
             {
               platform,
-              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+              splitChunks:
+                !env.EXPO_NO_BUNDLE_SPLITTING &&
+                ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
               mainModuleName: getEntryWithServerRoot(projectRoot, {
                 platform,
                 pkg: projectConfig.pkg,
@@ -206,7 +208,6 @@ export async function exportAppAsync(
       if (devServer.isReactServerComponentsEnabled) {
         if (!(platforms.includes('web') && useServerRendering)) {
           await exportApiRoutesStandaloneAsync(devServer, {
-            outputDir: outputPath,
             files,
             platform: 'web',
           });
@@ -233,18 +234,6 @@ export async function exportAppAsync(
           bundle.artifacts.filter((asset) => asset.type === 'js').map((asset) => asset.filename),
         ])
       );
-
-      // build source maps
-      if (sourceMaps) {
-        Log.log('Preparing additional debugging files');
-        // If we output source maps, then add a debug HTML file which the user can open in
-        // the web browser to inspect the output like web.
-        files.set('debug.html', {
-          contents: createSourceMapDebugHtml({
-            fileNames: Object.values(fileNames).flat(),
-          }),
-        });
-      }
 
       // Generate a `metadata.json` for EAS Update.
       const contents = createMetadataJson({

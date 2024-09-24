@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { theme, DocsLogo, LinkBase } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
+import { DocsLogo, LinkBase } from '@expo/styleguide';
 import { BookOpen02DuotoneIcon } from '@expo/styleguide-icons/duotone/BookOpen02DuotoneIcon';
 import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
 import { Home02DuotoneIcon } from '@expo/styleguide-icons/duotone/Home02DuotoneIcon';
@@ -20,7 +18,7 @@ type SidebarHeadProps = {
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
   if (sidebarActiveGroup === 'archive') {
     return (
-      <div css={sidebarHeadContainerStyle} className="!p-1.5">
+      <div className="flex flex-col p-1.5 border-b border-default bg-default gap-0.5">
         <LinkBase
           href="/"
           className="flex gap-3 items-center p-2.5 rounded-md text-secondary hocus:bg-element">
@@ -33,7 +31,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   return (
     <>
-      <div css={sidebarHeadContainerStyle}>
+      <div className="flex flex-col p-4 border-b border-default bg-default gap-0.5">
         <Search />
         <SidebarSingleEntry
           href="/"
@@ -48,7 +46,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           isActive={sidebarActiveGroup === 'general'}
         />
         <SidebarSingleEntry
-          href="/versions/latest"
+          href="/versions/latest/"
           title="Reference"
           Icon={DocsLogo}
           isActive={sidebarActiveGroup === 'reference'}
@@ -61,7 +59,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         />
         {shouldShowFeaturePreviewLink() && (
           <SidebarSingleEntry
-            href="/feature-preview"
+            href="/feature-preview/"
             title="Feature Preview"
             Icon={Stars02DuotoneIcon}
             isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
@@ -72,12 +70,3 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
     </>
   );
 };
-
-const sidebarHeadContainerStyle = css({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: spacing[4],
-  borderBottom: `1px solid ${theme.border.default}`,
-  background: theme.background.default,
-  gap: spacing[0.5],
-});

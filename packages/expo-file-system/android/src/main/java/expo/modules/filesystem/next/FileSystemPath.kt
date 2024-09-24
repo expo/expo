@@ -16,8 +16,6 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
 
   abstract fun validateType()
 
-  abstract fun exists(): Boolean
-
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()
@@ -66,16 +64,21 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       if (to is FileSystemDirectory) {
         file.toPath().moveTo(File(to.file.path, file.name).toPath())
+        file = File(to.file.path, file.name)
       } else {
         file.toPath().moveTo(to.file.toPath())
+        file = to.file
       }
     } else {
       if (to is FileSystemDirectory) {
         file.copyTo(File(to.file.path, file.name))
+        file.delete()
+        file = File(to.file.path, file.name)
       } else {
         file.copyTo(to.file)
+        file.delete()
+        file = to.file
       }
-      file.delete()
     }
   }
 }

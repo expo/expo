@@ -8,40 +8,59 @@ import expo.modules.kotlin.component8
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
+import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 
 class ClassComponentBuilder<SharedObjectType : Any>(
   val name: String,
   private val ownerClass: KClass<SharedObjectType>,
-  val ownerType: KType
+  val ownerType: AnyType
 ) : ObjectDefinitionBuilder() {
   var constructor: SyncFunctionComponent? = null
 
   fun buildClass(): ClassDefinitionData {
+    if (eventsDefinition != null && ownerClass.isSubclassOf(SharedObject::class)) {
+      listOf("__expo_onStartListeningToEvent" to SharedObject::onStartListeningToEvent, "__expo_onStopListeningToEvent" to SharedObject::onStopListeningToEvent)
+        .forEach { (name, function) ->
+          SyncFunctionComponent(name, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
+            enforceType<SharedObject, String>(self, eventName)
+            function.invoke(self, eventName)
+          }.also { function ->
+            function.enumerable(false)
+            syncFunctions[name] = function
+          }
+        }
+    }
+
     val objectData = buildObject()
     objectData.functions.forEach {
-      it.ownerType = ownerType
+      it.ownerType = ownerType.kType
       it.canTakeOwner = true
     }
 
     val hasSharedObject = ownerClass !== Unit::class // TODO: Add an empty constructor that throws when called from JS
-    if (hasSharedObject && constructor == null && !ownerClass.isSubclassOf(SharedRef::class)) {
+    val isSharedRef = ownerClass.isSubclassOf(SharedRef::class)
+    if (hasSharedObject && constructor == null && !isSharedRef) {
       throw IllegalArgumentException("constructor cannot be null")
     }
 
-    val constructor = constructor ?: SyncFunctionComponent("constructor", emptyArray(), toReturnType<Unit>()) {}
+    val constructor = constructor
+      ?: SyncFunctionComponent("constructor", emptyArray(), toReturnType<Unit>()) {}
     constructor.canTakeOwner = true
-    constructor.ownerType = ownerType
+    constructor.ownerType = ownerType.kType
+
     return ClassDefinitionData(
       name,
       constructor,
-      objectData
+      objectData,
+      isSharedRef
     )
   }
 
@@ -146,14 +165,14 @@ class ClassComponentBuilder<SharedObjectType : Any>(
    * Creates the read-only property whose getter takes the caller as an argument.
    */
   inline fun <reified T> Property(name: String, crossinline body: (owner: SharedObjectType) -> T): PropertyComponentBuilderWithThis<SharedObjectType> {
-    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType, name).also {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
       it.get(body)
       properties[name] = it
     }
   }
 
   override fun Property(name: String): PropertyComponentBuilderWithThis<SharedObjectType> {
-    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType, name).also {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
       properties[name] = it
     }
   }

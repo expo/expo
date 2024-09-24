@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 
-import { compileToHermesBytecodeAsync } from './hermes-util';
 import preset from '..';
+import { compileToHermesBytecodeAsync } from './hermes-util';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;

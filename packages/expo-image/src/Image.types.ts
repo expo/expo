@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
@@ -244,6 +244,11 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
    * Called when the image load either succeeds or fails.
    */
   onLoadEnd?: () => void;
+
+  /**
+   * Called when the image view successfully rendered the source image.
+   */
+  onDisplay?: () => void;
 
   // DEPRECATED
 
@@ -538,4 +543,14 @@ export declare class ImageRef extends SharedRef {
    * Whether the referenced image is an animated image.
    */
   readonly isAnimated?: boolean;
+}
+
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+  // TODO: Add missing function declarations
+  Image: typeof ImageRef;
+
+  loadAsync(source: ImageSource): Promise<ImageRef>;
 }

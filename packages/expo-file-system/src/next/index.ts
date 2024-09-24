@@ -1,1 +1,1 @@
-export { Directory, File } from './FileSystem';
+export { Directory, File, Paths } from './FileSystem';

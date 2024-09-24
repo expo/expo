@@ -1,10 +1,32 @@
 import ExpoFileSystem from './ExpoFileSystem';
 import { URI } from './FileSystem.types';
+import { PathUtilities } from './pathUtilities';
+
+export class Paths extends PathUtilities {
+  static get cache() {
+    return new Directory(ExpoFileSystem.cacheDirectory);
+  }
+  static get document() {
+    return new Directory(ExpoFileSystem.documentDirectory);
+  }
+}
 
 export class File extends ExpoFileSystem.FileSystemFile {
-  constructor(url: URI) {
-    super(url);
+  constructor(...uris: (URI | File | Directory)[]) {
+    super(Paths.join(...uris));
     this.validatePath();
+  }
+  /*
+   * Directory containing the file.
+   */
+  get parentDirectory() {
+    return new Directory(Paths.dirname(this.uri));
+  }
+  /*
+   * File extension (with the dot).
+   */
+  get extension() {
+    return Paths.extname(this.uri);
   }
 }
 
@@ -15,9 +37,15 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
 };
 
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(uri: URI) {
-    super(uri);
+  constructor(...uris: (URI | File | Directory)[]) {
+    super(Paths.join(...uris));
     this.validatePath();
+  }
+  /*
+   * Directory containing the file.
+   */
+  get parentDirectory() {
+    return new Directory(Paths.join(this.uri, '..'));
   }
 
   list() {
