@@ -40,17 +40,13 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Resolve the CLI arguments into useable options.
   const props = await resolveOptionsAsync(projectRoot, options);
 
-  const tempDir: string = getTemporaryPath();
-
-  let hasPrebundle = false;
-
   const isCustomBinary = !!options.binary;
 
   let prebundleData: string | undefined;
   const needsBundling =
     !isCustomBinary && (options.configuration !== 'Debug' || !props.isSimulator);
   if (needsBundling) {
-    hasPrebundle = true;
+    const tempDir: string = getTemporaryPath();
     // Prebundle the app
     debug('Bundling JS before building: ' + tempDir);
     prebundleData = JSON.stringify(
