@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Change same protocol hrefs to `https://`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

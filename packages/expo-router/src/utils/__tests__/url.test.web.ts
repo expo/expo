@@ -14,6 +14,7 @@ describe(shouldLinkExternally, () => {
     'sms://',
     'exp+com.my-app_thing://',
     'hello://world.com',
+    '//world.com',
   ].forEach((href) => {
     it(`should return true for "${href}"`, () => {
       expect(shouldLinkExternally(href)).toBe(true);
