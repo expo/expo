@@ -44,8 +44,10 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   let hasPrebundle = false;
 
+  const isCustomBinary = !!options.binary;
+
   let prebundleData: string | undefined;
-  const needsBundling = options.configuration !== 'Debug' || !props.isSimulator;
+  const needsBundling = !isCustomBinary && (options.configuration !== 'Debug' || !props.isSimulator);
   if (needsBundling) {
     hasPrebundle = true;
     // Prebundle the app
@@ -84,7 +86,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   const launchInfo = await getLaunchInfoForBinaryAsync(binaryPath);
-  const isCustomBinary = !!options.binary;
+  
 
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.

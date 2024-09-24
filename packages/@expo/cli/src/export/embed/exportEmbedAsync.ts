@@ -103,6 +103,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     options.resetCache = false;
   }
 
+  return await exportEmbedInternalAsync(projectRoot, options);
+}
+
+export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
 

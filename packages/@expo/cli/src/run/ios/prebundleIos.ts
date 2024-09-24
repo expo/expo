@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { exportEmbedAsync } from '../../export/embed/exportEmbedAsync';
+import { exportEmbedAsync, exportEmbedInternalAsync } from '../../export/embed/exportEmbedAsync';
 import { Log } from '../../log';
 import { env } from '../../utils/env';
 import { AbortCommandError } from '../../utils/errors';
@@ -67,7 +67,7 @@ export async function prebundleAppAsync(
   };
 
   try {
-    await exportEmbedAsync(projectRoot, options);
+    await exportEmbedInternalAsync(projectRoot, options);
     // TODO: Compose source maps
   } catch (error: any) {
     // ctrl+c
