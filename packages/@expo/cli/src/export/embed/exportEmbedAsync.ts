@@ -51,6 +51,7 @@ import {
 } from '../saveAssets';
 import spawnAsync from '@expo/spawn-async';
 import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
+import { logLikeMetro } from '../../start/server/serverLogLikeMetro';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -71,6 +72,9 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
 }
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
+  // NOTE: HACK NO MERGE
+  // options.resetCache = false;
+
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
@@ -123,9 +127,9 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ]);
 }
 
-async function dumpDeploymentLogs(projectRoot: string, logs: string) {
-  const outputPath = path.join(projectRoot, '.expo/logs/deploy.log');
-  fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+async function dumpDeploymentLogs(projectRoot: string, logs: string, name = 'deploy') {
+  const outputPath = path.join(projectRoot, `.expo/logs/${name}.log`);
+  await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
   debug('Dumping server deployment logs to: ' + outputPath);
   await fs.promises.writeFile(outputPath, logs);
   return outputPath;
@@ -150,18 +154,25 @@ async function runServerDeployCommandAsync(
   try {
     let results: spawnAsync.SpawnResult;
 
+    const spawnOptions: spawnAsync.SpawnOptions = {
+      cwd: projectRoot,
+      // Ensures that errors can be caught.
+      stdio: 'inherit',
+    };
     if (deployScript) {
       logInXcode(`Using custom server deploy script: ${deployScript.scriptName}`);
-      results = await spawnAsync(deployScript.script, ['--export-dir', distDirectory]);
+      results = await spawnAsync(
+        deployScript.script,
+        ['--export-dir', distDirectory],
+        spawnOptions
+      );
     } else {
       logInXcode('Deploying server to EAS');
-      results = await spawnAsync('eas', [
-        'deploy',
-        '--non-interactive',
-        '--json',
-        '--export-dir',
-        distDirectory,
-      ]);
+      results = await spawnAsync(
+        'eas',
+        ['deploy', '--non-interactive', '--json', '--export-dir', distDirectory],
+        spawnOptions
+      );
     }
 
     const logPath = await dumpDeploymentLogs(projectRoot, results.output.join('\n'));
@@ -186,6 +197,19 @@ async function runServerDeployCommandAsync(
     // TODO: Account for EAS not being installed.
 
     if (isSpawnResultError(error)) {
+      const output = error.output.join('\n').trim() || error.toString();
+      await dumpDeploymentLogs(projectRoot, output, 'deploy-error');
+
+      logInXcode(output);
+      if (output.match(/spawn eas ENOENT/)) {
+        // EAS not installed.
+        logMetroErrorInXcode(
+          projectRoot,
+          `Server deployment failed because eas-cli cannot be accessed from the build script's environment (ENOENT). Install EAS CLI with 'npm install -g eas-cli'.`
+        );
+        return false;
+      }
+
       if (error.stderr.match(/Must configure EAS project by running/)) {
         // EAS not configured, this can happen when building a project locally before building in EAS.
         // User must run `eas init`, `eas deploy`, or `eas build` first.
@@ -439,6 +463,10 @@ async function exportDomComponentsAsync(
   exp: ExpoConfig,
   files: ExportAssetMap
 ) {
+  if (!expoDomComponentReferences.length) {
+    return;
+  }
+
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
     // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.

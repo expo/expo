@@ -39,7 +39,9 @@ export function getXcodeCompilerErrorMessage(
   const makeFilepathAbsolute = (filepath: string) =>
     filepath.startsWith('/') ? filepath : path.join(projectRoot, filepath);
 
-  if ('message' in error) {
+  if (typeof error === 'string') {
+    return makeXcodeCompilerLog('error', error);
+  } else if ('message' in error) {
     // Metro's `UnableToResolveError`
     if (isPossiblyUnableToResolveError(error)) {
       const loc = getLineNumberForStringInFile(error.originModulePath, error.targetModuleName);
@@ -60,8 +62,6 @@ export function getXcodeCompilerErrorMessage(
       // Unknown error
       return makeXcodeCompilerLog('error', error.message);
     }
-  } else if (typeof error === 'string') {
-    return makeXcodeCompilerLog('error', error);
   }
 
   return null;
