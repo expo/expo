@@ -513,6 +513,8 @@ export async function exportEmbedBundleAndAssetsAsync(
           );
           return true;
         }
+
+        return false;
       })();
 
       // Deploy the server output to a hosting provider.
