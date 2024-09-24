@@ -257,10 +257,8 @@ export async function exportAppAsync(
       if (skipSSG) {
         Log.log('Skipping static site generation');
         await exportApiRoutesStandaloneAsync(devServer, {
-          outputDir: outputPath,
           files,
           platform: 'web',
-          environment: 'node',
         });
 
         // Output a placeholder index.html if one doesn't exist in the public directory.
