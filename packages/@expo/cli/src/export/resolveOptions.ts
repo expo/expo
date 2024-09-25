@@ -90,7 +90,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],
     sourceMaps: !!args['--source-maps'],
-    // Can't skip SSG if the web platform is included.
-    skipSSG: !platforms.includes('web') && !!args['--no-ssg'],
+    skipSSG: !!args['--no-ssg'],
   };
 }
