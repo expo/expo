@@ -31,20 +31,20 @@ export class SQLiteStorage {
   /**
    * Retrieves the value associated with the given key asynchronously.
    */
-  getItemAsync = async (key: string): Promise<string | null> => {
+  async getItemAsync(key: string): Promise<string | null> {
     const db = await this.getDbAsync();
     const result = await db.getFirstAsync<{ value: string }>(STATEMENT_GET, key);
     return result?.value ?? null;
-  };
+  }
 
   /**
    * Sets the value for the given key asynchronously.
    * If a function is provided, it computes the new value based on the previous value.
    */
-  setItemAsync = async (
+  async setItemAsync(
     key: string,
     value: string | SQLiteStorageSetItemUpdateFunction
-  ): Promise<void> => {
+  ): Promise<void> {
     const db = await this.getDbAsync();
 
     if (typeof value === 'function') {
@@ -58,44 +58,44 @@ export class SQLiteStorage {
     }
 
     await db.runAsync(STATEMENT_SET, key, value);
-  };
+  }
 
   /**
    * Removes the value associated with the given key asynchronously.
    */
-  removeItemAsync = async (key: string): Promise<boolean> => {
+  async removeItemAsync(key: string): Promise<boolean> {
     const db = await this.getDbAsync();
     const result = await db.runAsync(STATEMENT_REMOVE, key);
     return result.changes > 0;
-  };
+  }
 
   /**
    * Retrieves all keys stored in the storage asynchronously.
    */
-  getAllKeysAsync = async (): Promise<string[]> => {
+  async getAllKeysAsync(): Promise<string[]> {
     const db = await this.getDbAsync();
     const result = await db.getAllAsync<{ key: string }>(STATEMENT_GET_ALL_KEYS);
     return result.map(({ key }) => key);
-  };
+  }
 
   /**
    * Clears all key-value pairs from the storage asynchronously.
    */
-  clearAsync = async (): Promise<boolean> => {
+  async clearAsync(): Promise<boolean> {
     const db = await this.getDbAsync();
     const result = await db.runAsync(STATEMENT_CLEAR);
     return result.changes > 0;
-  };
+  }
 
   /**
    * Closes the database connection asynchronously.
    */
-  closeAsync = async (): Promise<void> => {
+  async closeAsync(): Promise<void> {
     if (this.db) {
       await this.db.closeAsync();
       this.db = null;
     }
-  };
+  }
 
   //#endregion
 
@@ -104,17 +104,17 @@ export class SQLiteStorage {
   /**
    * Retrieves the value associated with the given key synchronously.
    */
-  getItemSync = (key: string): string | null => {
+  getItemSync(key: string): string | null {
     const db = this.getDbSync();
     const result = db.getFirstSync<{ value: string }>(STATEMENT_GET, key);
     return result?.value ?? null;
-  };
+  }
 
   /**
    * Sets the value for the given key synchronously.
    * If a function is provided, it computes the new value based on the previous value.
    */
-  setItemSync = (key: string, value: string | SQLiteStorageSetItemUpdateFunction): void => {
+  setItemSync(key: string, value: string | SQLiteStorageSetItemUpdateFunction): void {
     const db = this.getDbSync();
 
     if (typeof value === 'function') {
@@ -128,44 +128,44 @@ export class SQLiteStorage {
     }
 
     db.runSync(STATEMENT_SET, key, value);
-  };
+  }
 
   /**
    * Removes the value associated with the given key synchronously.
    */
-  removeItemSync = (key: string): boolean => {
+  removeItemSync(key: string): boolean {
     const db = this.getDbSync();
     const result = db.runSync(STATEMENT_REMOVE, key);
     return result.changes > 0;
-  };
+  }
 
   /**
    * Retrieves all keys stored in the storage synchronously.
    */
-  getAllKeysSync = (): string[] => {
+  getAllKeysSync(): string[] {
     const db = this.getDbSync();
     const result = db.getAllSync<{ key: string }>(STATEMENT_GET_ALL_KEYS);
     return result.map(({ key }) => key);
-  };
+  }
 
   /**
    * Clears all key-value pairs from the storage synchronously.
    */
-  clearSync = (): boolean => {
+  clearSync(): boolean {
     const db = this.getDbSync();
     const result = db.runSync(STATEMENT_CLEAR);
     return result.changes > 0;
-  };
+  }
 
   /**
    * Closes the database connection synchronously.
    */
-  closeSync = (): void => {
+  closeSync(): void {
     if (this.db) {
       this.db.closeSync();
       this.db = null;
     }
-  };
+  }
 
   //#endregion
 
@@ -174,46 +174,43 @@ export class SQLiteStorage {
   /**
    * Alias for [`getItemAsync()`](#getitemasynckey) method.
    */
-  getItem = async (key: string): Promise<string | null> => {
+  async getItem(key: string): Promise<string | null> {
     return this.getItemAsync(key);
-  };
+  }
 
   /**
    * Alias for [`setItemAsync()`](#setitemasynckey-value).
    */
-  setItem = async (
-    key: string,
-    value: string | SQLiteStorageSetItemUpdateFunction
-  ): Promise<void> => {
+  async setItem(key: string, value: string | SQLiteStorageSetItemUpdateFunction): Promise<void> {
     this.setItemAsync(key, value);
-  };
+  }
 
   /**
    * Alias for [`removeItemAsync()`](#removeitemasynckey) method.
    */
-  removeItem = async (key: string): Promise<void> => {
+  async removeItem(key: string): Promise<void> {
     this.removeItemAsync(key);
-  };
+  }
 
   /**
    * Alias for [`getAllKeysAsync()`](#getallkeysasync) method.
    */
-  getAllKeys = async (): Promise<string[]> => {
+  async getAllKeys(): Promise<string[]> {
     return this.getAllKeysAsync();
-  };
+  }
 
   /**
    * Alias for [`clearAsync()`](#clearasync) method.
    */
-  clear = async (): Promise<void> => {
+  async clear(): Promise<void> {
     this.clearAsync();
-  };
+  }
 
   /**
    * Merges the given value with the existing value for the given key asynchronously.
    * If the existing value is a JSON object, performs a deep merge.
    */
-  mergeItem = async (key: string, value: string): Promise<void> => {
+  async mergeItem(key: string, value: string): Promise<void> {
     await this.setItemAsync(key, (prevValue) => {
       if (prevValue == null) {
         return value;
@@ -223,12 +220,12 @@ export class SQLiteStorage {
       const mergedJSON = SQLiteStorage.mergeDeep(prevJSON, newJSON);
       return JSON.stringify(mergedJSON);
     });
-  };
+  }
 
   /**
    * Retrieves the values associated with the given keys asynchronously.
    */
-  multiGet = async (keys: string[]): Promise<[string, string | null][]> => {
+  async multiGet(keys: string[]): Promise<[string, string | null][]> {
     const db = await this.getDbAsync();
     let result: [string, string | null][] = [];
     await db.withExclusiveTransactionAsync(async (tx) => {
@@ -240,37 +237,37 @@ export class SQLiteStorage {
       );
     });
     return result;
-  };
+  }
 
   /**
    * Sets multiple key-value pairs asynchronously.
    */
-  multiSet = async (keyValuePairs: [string, string][]): Promise<void> => {
+  async multiSet(keyValuePairs: [string, string][]): Promise<void> {
     const db = await this.getDbAsync();
     await db.withExclusiveTransactionAsync(async (tx) => {
       for (const [key, value] of keyValuePairs) {
         await tx.runAsync(STATEMENT_SET, key, value);
       }
     });
-  };
+  }
 
   /**
    * Removes the values associated with the given keys asynchronously.
    */
-  multiRemove = async (keys: string[]): Promise<void> => {
+  async multiRemove(keys: string[]): Promise<void> {
     const db = await this.getDbAsync();
     await db.withExclusiveTransactionAsync(async (tx) => {
       for (const key of keys) {
         await tx.runAsync(STATEMENT_REMOVE, key);
       }
     });
-  };
+  }
 
   /**
    * Merges multiple key-value pairs asynchronously.
    * If existing values are JSON objects, performs a deep merge.
    */
-  multiMerge = async (keyValuePairs: [string, string][]): Promise<void> => {
+  async multiMerge(keyValuePairs: [string, string][]): Promise<void> {
     const db = await this.getDbAsync();
     await db.withExclusiveTransactionAsync(async (tx) => {
       for (const [key, value] of keyValuePairs) {
@@ -285,14 +282,14 @@ export class SQLiteStorage {
         await tx.runAsync(STATEMENT_SET, key, JSON.stringify(mergedJSON));
       }
     });
-  };
+  }
 
   /**
    * Alias for [`closeAsync()`](#closeasync-1) method.
    */
-  close = async (): Promise<void> => {
+  async close(): Promise<void> {
     this.closeAsync();
-  };
+  }
 
   //#endregion
 
