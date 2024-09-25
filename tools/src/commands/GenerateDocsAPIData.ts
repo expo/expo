@@ -181,7 +181,15 @@ const executeCommand = async (
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
         return (
-          ['id', 'groups', 'kindString', 'originalName', 'files', 'sourceFileName', 'target'].includes(key) ||
+          [
+            'id',
+            'groups',
+            'kindString',
+            'originalName',
+            'files',
+            'sourceFileName',
+            'target',
+          ].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
         );
       });
