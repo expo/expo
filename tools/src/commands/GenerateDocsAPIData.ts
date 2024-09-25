@@ -141,10 +141,12 @@ const executeCommand = async (
       excludePrivate: true,
       excludeProtected: true,
       excludeExternals: true,
-      jsDocCompatibility: false,
       pretty: !MINIFY_JSON,
       commentStyle: 'All',
+      jsDocCompatibility: false,
       preserveLinkText: true,
+      sourceLinkExternal: false,
+      markdownLinkExternal: false,
       blockTags: [
         ...Configuration.OptionDefaults.blockTags,
         '@alias',
@@ -179,7 +181,7 @@ const executeCommand = async (
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
         return (
-          ['id', 'groups', 'kindString', 'originalName', 'files'].includes(key) ||
+          ['id', 'groups', 'kindString', 'originalName', 'files', 'sourceFileName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
         );
       });
