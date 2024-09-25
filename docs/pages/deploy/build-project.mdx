@@ -4,6 +4,10 @@ description: Learn how to create production builds of your project that are read
 sidebar_title: Build for app stores
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 To submit your app to the app stores, you'll need to create a production build. This build is optimized for performance and size, and it includes all the necessary assets and configurations for the app stores.
@@ -15,14 +19,40 @@ Paid developer accounts are required to submit builds to the app stores. You wil
 - A [Google Play Developer](https://play.google.com/apps/publish/signup/) membership ($25 one-time fee)
 - An [Apple Developer Program](https://developer.apple.com/programs) membership ($99 per year)
 
-## Configure over-the-air updates
-
+<Collapsible summary="Optional: Configure over-the-air updates">
 Over-the-air updates allow you to send critical bug fixes and improvements to your users. To set it up, run the following [EAS CLI](/develop/tools/#eas-cli) command:
 
 <Terminal cmd={['$ eas update:configure']} />
+</Collapsible>
 
-## Create a production build
+## Create a production build with EAS
 
 To create a production build, run the following [EAS CLI](/develop/tools/#eas-cli) command:
 
 <Terminal cmd={['$ eas build --profile production']} />
+
+## Create a production build locally
+
+To create a production build locally with Android Studio and Xcode, see the following guides.
+
+These guides assume your project has **android** and/or **ios** directories containing native projects. If you use [Continuous Native Generation](/workflow/continuous-native-generation) then you will need to run [prebuild](/workflow/prebuild) to generate the directories.
+
+> **Note**: When following the guides below, in step four, when you build the release **.aab** for Android, run `./gradlew app:bundleRelease` from the **android** directory instead of `npx react-native build-android --mode=release`.
+
+<BoxLink
+  title="Publishing to Google Play Store"
+  description="Learn how to publish an app to Google Play Store by following the necessary steps manually."
+  Icon={BookOpen02Icon}
+  href="https://reactnative.dev/docs/signed-apk-android"
+/>
+
+<BoxLink
+  title="Publishing to Apple App Store"
+  description="Learn how to publish an app to Apple App Store by following the necessary steps manually."
+  Icon={BookOpen02Icon}
+  href="https://reactnative.dev/docs/publishing-to-app-store"
+/>
+
+## Learn more
+
+You can learn how to [automate submissions](/build/automate-submissions/), automate [app version management](/build-reference/app-versions/), and more with our [build guides](/build/introduction/).
