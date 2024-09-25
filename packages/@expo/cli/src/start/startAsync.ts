@@ -1,4 +1,4 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
@@ -12,13 +12,10 @@ import { BundlerStartOptions } from './server/BundlerDevServer';
 import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
-import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { env } from '../utils/env';
-import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
-import { record } from '../utils/telemetry';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -115,12 +112,6 @@ export async function startAsync(
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
   }
 
-  // Some tracking thing
-
-  if (options.devClient) {
-    await trackAsync(projectRoot, exp);
-  }
-
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);
 
@@ -148,23 +139,4 @@ export async function startAsync(
       isInteractive() ? chalk.dim(` Press Ctrl+C to exit.`) : ''
     }`
   );
-}
-
-async function trackAsync(projectRoot: string, exp: ExpoConfig): Promise<void> {
-  record({
-    event: 'dev client start command',
-    properties: {
-      status: 'started',
-      ...getDevClientProperties(projectRoot, exp),
-    },
-  });
-  installExitHooks(async () => {
-    record({
-      event: 'dev client start command',
-      properties: {
-        status: 'finished',
-        ...getDevClientProperties(projectRoot, exp),
-      },
-    });
-  });
 }

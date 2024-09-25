@@ -1,10 +1,9 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
-import { record } from '../../../../utils/telemetry';
 import { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
-import { MetroBundlerDevServer, getDeepLinkHandler } from '../MetroBundlerDevServer';
+import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { warnInvalidWebOutput } from '../router';
 import { FileChangeEvent, observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
@@ -42,8 +41,6 @@ jest.mock('../instantiateMetro', () => ({
 
 jest.mock('../../middleware/mutations');
 jest.mock('../../../../log');
-jest.mock('../../../../utils/analytics/getDevClientProperties', () => jest.fn(() => ({})));
-jest.mock('../../../../utils/telemetry');
 
 beforeEach(() => {
   vol.reset();
@@ -191,24 +188,5 @@ describe('API Route output warning', () => {
       },
     ]);
     expect(warnInvalidWebOutput).not.toBeCalled();
-  });
-});
-
-describe('onDeepLink', () => {
-  it(`logs an event if runtime is custom`, async () => {
-    const handler = getDeepLinkHandler('/');
-    await handler({ runtime: 'custom', platform: 'ios' });
-    expect(record).toHaveBeenCalledWith({
-      event: 'dev client start command',
-      properties: {
-        status: 'started',
-      },
-    });
-  });
-
-  it(`does not log an event if runtime is expo`, async () => {
-    const handler = getDeepLinkHandler('/');
-    await handler({ runtime: 'expo', platform: 'ios' });
-    expect(record).not.toHaveBeenCalled();
   });
 });
