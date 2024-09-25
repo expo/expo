@@ -130,6 +130,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     EXExpoGoAppDelegate* appDelegate = [EXExpoGoAppDelegate new];
     appDelegate.sourceURL = [self bundleUrl];
     appDelegate.manager = _versionManager;
+    appDelegate.rootViewFactory.reactHost = [appDelegate.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
     appDelegate.rootViewFactory = [appDelegate createRCTRootViewFactory];
     
     if (!_isHeadless) {
@@ -354,7 +355,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if ([notification.name isEqualToString:RCTInstanceDidLoadBundle]) {
     _isHostRunning = YES;
     _hasBridgeEverLoaded = YES;
-    [_versionManager bridgeFinishedLoading:self.reactAppDelegate];
+    [_versionManager hostFinishedLoading:self.reactHost];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
@@ -441,7 +442,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 {
   if ([self enablesDeveloperTools]) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.versionManager showDevMenuForBridge:self.reactAppDelegate];
+      [self.versionManager showDevMenuForHost:self.reactHost];
     });
   }
 }

@@ -96,8 +96,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) EXVersionedNetworkInterceptor *networkInterceptor;
-@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
-@property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 @property (nonatomic, assign, readonly) BOOL fabricEnabled;
 
 // Legacy
@@ -161,12 +159,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)bridgeFinishedLoading:(id)bridge
+- (void)hostFinishedLoading:(id)host
 {
   // Override the "Reload" button from Redbox to reload the app from manifest
   // Keep in mind that it is possible this will return a EXDisabledRedBox
-  id clazz = [bridge getModuleClassFromName:"RedBox"];
-  RCTRedBox *redBox = (RCTRedBox *)[bridge getModuleInstanceFromClass:clazz];
+  RCTRedBox *redBox = (RCTRedBox *)[[host moduleRegistry] moduleForName:"RedBox"];
   [redBox setOverrideReloadAction:^{
     [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
@@ -260,10 +257,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)showDevMenuForBridge:(id)bridge
+- (void)showDevMenuForHost:(id)host
 {
   RCTAssertMainQueue();
-  id devMenu = [self _moduleInstanceForHost:bridge named:@"DevMenu"];
+  id devMenu = [self _moduleInstanceForHost:host named:@"DevMenu"];
   // respondsToSelector: check is required because it's possible this bridge
   // was instantiated with a `disabledDevMenu` instance and the gesture preference was recently updated.
   if ([devMenu respondsToSelector:@selector(show)]) {

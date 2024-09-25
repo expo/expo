@@ -17,13 +17,13 @@
                           logThreshold:(RCTLogLevel)logThreshold;
 
 - (void)bridgeWillStartLoading:(id)bridge;
-- (void)bridgeFinishedLoading:(id)bridge;
+- (void)hostFinishedLoading:(id)host;
 - (void)invalidate;
 
 /**
  *  Dev tools (implementation varies by SDK)
  */
-- (void)showDevMenuForBridge:(id)bridge;
+- (void)showDevMenuForHost:(id)host;
 - (void)disableRemoteDebuggingForBridge:(id)bridge;
 - (void)toggleRemoteDebuggingForBridge:(id)bridge;
 - (void)togglePerformanceMonitorForBridge:(id)bridge;
