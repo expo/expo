@@ -46,6 +46,7 @@ typedef enum EXReactAppManagerStatus {
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;
 @property (nonatomic, readonly) NSString *scopedCachesDirectory;
 @property (nonatomic, strong) id reactBridge;
+@property (nonatomic, strong) id reactHost;
 @property (nonatomic, strong) RCTAppDelegate *reactAppDelegate;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
@@ -58,7 +59,7 @@ typedef enum EXReactAppManagerStatus {
 /**
  * Call reload on existing bridge (developer-facing devtools reload)
  */
-- (void)reloadBridge;
+- (void)reloadApp;
 
 /**
  * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.

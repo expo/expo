@@ -31,6 +31,8 @@
 
 #import "Expo_Go-Swift.h"
 
+NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
+
 @implementation RCTSource (EXReactAppManager)
 
 - (instancetype)initWithURL:(nonnull NSURL *)url data:(nonnull NSData *)data
@@ -72,6 +74,10 @@
 
 - (id)reactBridge {
   return _reactAppDelegate.rootViewFactory.bridge;
+}
+
+- (id)reactHost {
+  return _reactAppDelegate.rootViewFactory.reactHost;
 }
 
 - (void)setAppRecord:(EXKernelAppRecord *)appRecord
@@ -298,7 +304,7 @@
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:@"RCTInstanceDidLoadBundle"
+                                               name:RCTInstanceDidLoadBundle
                                              object:self.reactBridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptStartLoadingEvent:)
@@ -324,7 +330,7 @@
 
 - (void)_stopObservingBridgeNotifications
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:@"RCTInstanceDidLoadBundle" object:self.reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTInstanceDidLoadBundle object:self.reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:self.reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:self.reactBridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:self.reactBridge];
@@ -345,8 +351,7 @@
 
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
-  if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification]
-      || [notification.name isEqualToString:@"RCTInstanceDidLoadBundle"]) {
+  if ([notification.name isEqualToString:RCTInstanceDidLoadBundle]) {
     _isHostRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:self.reactAppDelegate];
@@ -441,10 +446,10 @@
   }
 }
 
-- (void)reloadBridge
+- (void)reloadApp
 {
   if ([self enablesDeveloperTools]) {
-    [(RCTBridge *) self.reactBridge reload];
+    RCTTriggerReloadCommandListeners(@"Dev menu - reload");
   }
 }
 
@@ -545,13 +550,13 @@
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
 {
-  return [self.versionManager devMenuItemsForBridge:self.reactAppDelegate];
+  return [self.versionManager devMenuItemsForHost:self.reactHost];
 }
 
 - (void)selectDevMenuItemWithKey:(NSString *)key
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactAppDelegate];
+    [self.versionManager selectDevMenuItemWithKey:key host:self.reactHost bundleURL:[self bundleUrl]];
   });
 }
 
