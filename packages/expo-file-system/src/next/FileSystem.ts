@@ -1,6 +1,3 @@
-import { UnavailabilityError } from 'expo-modules-core';
-import { Platform } from 'react-native';
-
 import ExpoFileSystem from './ExpoFileSystem';
 import { Path } from './FileSystem.types';
 
@@ -23,17 +20,6 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     this.validatePath();
   }
 }
-
-Directory.getSharedContainer = function getSharedContainer(appGroup: string): Directory | null {
-  if (Platform.OS === 'ios') {
-    if (!ExpoFileSystem.getSharedContainer) {
-      throw new UnavailabilityError('expo-file-system', 'getSharedContainer');
-    }
-    return new Directory(ExpoFileSystem.getSharedContainer(appGroup));
-  } else {
-    return null;
-  }
-};
 
 // consider module functions as API alternative
 export async function write(file: File, contents: string) {

@@ -46,13 +46,6 @@ export declare class Directory {
      * Moves a directory.
      */
     move(destination: Directory | File): any;
-    /**
-     * Gets the shared container directory for the given app group.
-     * @param appGroup Name of the app group.
-     * @return `Directory` pointing to the shared container.
-     * @platform ios
-     */
-    static getSharedContainer(appGroup: string): Directory | null;
 }
 /**
  * Represents a file on the file system.

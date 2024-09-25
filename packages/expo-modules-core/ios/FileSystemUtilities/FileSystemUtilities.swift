@@ -56,16 +56,6 @@ public struct FileSystemUtilities {
     if !permissionForInternalDirs.contains(.none) {
       return permissionForInternalDirs
     }
-    let standardizedPath = path.standardizedFileURL.path
-    if let range = standardizedPath.range(of: "Containers/Shared/AppGroup") {
-      let appGroupRoot = String(standardizedPath[..<range.upperBound])
-      guard let appGroupRootUrl = convertToUrl(string: appGroupRoot) else {
-        return []
-      }
-
-      return getExternalPathPermissions(appGroupRootUrl)
-    }
-
     return getExternalPathPermissions(path)
   }
 
