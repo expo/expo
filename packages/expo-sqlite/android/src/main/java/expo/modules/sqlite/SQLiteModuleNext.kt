@@ -74,7 +74,7 @@ class SQLiteModuleNext : Module() {
     AsyncFunction("ensureDatabasePathExistsAsync") { databasePath: String ->
       ensureDatabasePathExists(databasePath)
     }
-    Function("ensureDatabasePathExistsSync") { databasePath: String  ->
+    Function("ensureDatabasePathExistsSync") { databasePath: String ->
       ensureDatabasePathExists(databasePath)
     }
 
@@ -84,7 +84,6 @@ class SQLiteModuleNext : Module() {
         if (serializedData != null) {
           database = deserializeDatabase(serializedData, options)
         } else {
-
           // Try to find opened database for fast refresh
           findCachedDatabase { it.databasePath == databasePath && it.openOptions == options && !options.useNewConnection }?.let {
             it.addRef()
