@@ -7,9 +7,9 @@ import { RouteNode } from '../Route';
 import { Href } from '../types';
 export declare const ViewSlot: import("react").ForwardRefExoticComponent<ViewProps & import("react").RefAttributes<View>>;
 export declare const SafeAreaViewSlot: import("react").ForwardRefExoticComponent<ViewProps & import("react").RefAttributes<SafeAreaView>>;
-export type ScreenTrigger<T extends string | object> = {
+export type ScreenTrigger = {
     type: 'internal';
-    href: Href<T>;
+    href: Href;
     name: string;
 } | {
     type: 'external';
@@ -33,7 +33,7 @@ type TriggerConfig = {
 export type TriggerMap = Record<string, TriggerConfig & {
     index: number;
 }>;
-export declare function triggersToScreens(triggers: ScreenTrigger<any>[], layoutRouteNode: RouteNode, linking: LinkingOptions<ParamListBase>, initialRouteName: undefined | string, parentTriggerMap: TriggerMap, routeInfo: UrlObject, contextKey: string): {
+export declare function triggersToScreens(triggers: ScreenTrigger[], layoutRouteNode: RouteNode, linking: LinkingOptions<ParamListBase>, initialRouteName: undefined | string, parentTriggerMap: TriggerMap, routeInfo: UrlObject, contextKey: string): {
     children: import("react").JSX.Element[];
     triggerMap: TriggerMap;
 };

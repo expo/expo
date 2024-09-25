@@ -100,8 +100,8 @@ export type UseTabsWithChildrenOptions = UseTabsOptions & {
   children: ReactNode;
 };
 
-export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptions & {
-  triggers: ScreenTrigger<T>[];
+export type UseTabsWithTriggersOptions = UseTabsOptions & {
+  triggers: ScreenTrigger[];
 };
 
 /**
@@ -132,9 +132,7 @@ export function useTabsWithChildren(options: UseTabsWithChildrenOptions) {
  * }
  * ```
  */
-export function useTabsWithTriggers<T extends string | object>(
-  options: UseTabsWithTriggersOptions<T>
-): TabsContextValue {
+export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsContextValue {
   const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = useContext(TabTriggerMapContext);
@@ -203,7 +201,7 @@ export function useTabsWithTriggers<T extends string | object>(
 
 function parseTriggersFromChildren(
   children: ReactNode,
-  screenTriggers: ScreenTrigger<any>[] = [],
+  screenTriggers: ScreenTrigger[] = [],
   isInTabList = false
 ) {
   Children.forEach(children, (child) => {

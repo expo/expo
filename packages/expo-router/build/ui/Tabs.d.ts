@@ -36,8 +36,8 @@ export declare function Tabs(props: TabsProps): import("react").JSX.Element;
 export type UseTabsWithChildrenOptions = UseTabsOptions & {
     children: ReactNode;
 };
-export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptions & {
-    triggers: ScreenTrigger<T>[];
+export type UseTabsWithTriggersOptions = UseTabsOptions & {
+    triggers: ScreenTrigger[];
 };
 /**
  * Hook version of `<Tabs />`. The returned NavigationContent component should be rendered
@@ -110,6 +110,18 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T;
         getState(): Readonly<{
             key: string;
+            /**
+             * Alternative hook version of `<Tabs />` that uses explicit triggers instead of `children`
+             *
+             * @see Tabs - The component version of this hook
+             * @example
+             * ```ts
+             * export function MyTabs({ children }) {
+             *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
+             *   return <NavigationContent />
+             * }
+             * ```
+             */
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
@@ -247,5 +259,5 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
  * }
  * ```
  */
-export declare function useTabsWithTriggers<T extends string | object>(options: UseTabsWithTriggersOptions<T>): TabsContextValue;
+export declare function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsContextValue;
 //# sourceMappingURL=Tabs.d.ts.map
