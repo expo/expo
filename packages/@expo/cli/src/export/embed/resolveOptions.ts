@@ -1,9 +1,14 @@
+import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
+import os from 'os';
 import path from 'path';
 
+import { isAndroidUsingHermesAsync, isIosUsingHermesAsync } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
+
+const canonicalize = require('metro-core/src/canonicalize');
 
 export interface Options {
   assetsDest?: string;
@@ -70,4 +75,72 @@ export function resolveOptions(
     dev,
     minify,
   };
+}
+
+function getTemporaryPath() {
+  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
+}
+
+/** Best effort guess of which options will be used for the export:embed invocation that is called from the native build scripts. */
+export async function resolveEagerOptionsAsync(
+  projectRoot: string,
+  {
+    destination,
+    bundleConfig,
+    entryFile,
+    dev,
+    resetCache,
+    platform,
+  }: {
+    platform: string;
+    dev: boolean;
+    destination?: string;
+    entryFile?: string;
+    bundleConfig?: string;
+    resetCache?: boolean;
+  }
+): Promise<Options> {
+  destination ??= getTemporaryPath();
+  entryFile ??= resolveEntryPoint(projectRoot, { platform: 'ios' });
+
+  const isHermes =
+    platform === 'android'
+      ? await isAndroidUsingHermesAsync(projectRoot)
+      : await isIosUsingHermesAsync(projectRoot);
+
+  const bundleFile =
+    platform === 'ios'
+      ? path.join(destination, 'main.jsbundle')
+      : path.join(destination, 'index.js');
+
+  return {
+    entryFile,
+    platform,
+    minify: !isHermes,
+    dev,
+    bundleEncoding: 'utf8',
+    bundleOutput: bundleFile,
+    assetsDest: path.join(destination, 'assets'),
+    resetCache: !!resetCache,
+    sourcemapUseAbsolutePath: false,
+    verbose: env.EXPO_DEBUG,
+    config: bundleConfig,
+  };
+}
+
+export function getExportEmbedOptionsKey({
+  // Extract all values that won't change the Metro results.
+  resetCache,
+  assetsDest,
+  bundleOutput,
+  verbose,
+  maxWorkers,
+  ...options
+}: Options) {
+  // Create a sorted key for the options, removing values that won't change the Metro results.
+  return JSON.stringify(options, canonicalize);
+}
+
+export function deserializeEagerKey(key: string) {
+  return JSON.parse(key) as { options: Options; key: string };
 }

@@ -17,10 +17,9 @@ import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
-import { deserializeInputKey, getExportEmbedKey } from '../../run/ios/prebundleIos';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
@@ -64,10 +63,6 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
   return possiblePath;
 }
 
-function getPrebundledOutput(): string | undefined {
-  return process.env.__EXPO_HAS_PREBUNDLED_OUTPUT;
-}
-
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // The React Native build scripts always enable the cache reset but we shouldn't need this in CI environments.
   // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
@@ -82,35 +77,36 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
   // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
   // This path is also used for automatically deploying server bundles to a remote host.
-  const prebundleId = getPrebundledOutput();
-  if (prebundleId) {
-    const inputKey = getExportEmbedKey(options);
+  const eagerBundleOptions = env.__EXPO_EAGER_BUNDLE_OPTIONS
+    ? deserializeEagerKey(env.__EXPO_EAGER_BUNDLE_OPTIONS)
+    : null;
+  if (eagerBundleOptions) {
+    // Get the cache key for the current process to compare against the eager key.
+    const inputKey = getExportEmbedOptionsKey(options);
 
-    const { options: prebundleOptions, key } = deserializeInputKey(prebundleId);
+    // If the app was bundled previously in the same process, then we should reuse the Metro cache.
+    options.resetCache = false;
 
-    if (key === inputKey) {
-      // Copy the prebundleOptions.bundleOutput to options.bundleOutput and prebundleOptions.assetsDest to options.assetsDest
+    if (eagerBundleOptions.key === inputKey) {
+      // Copy the eager bundleOutput and assets to the new locations.
       await removeAsync(options.bundleOutput);
 
-      copyAsync(prebundleOptions.bundleOutput, options.bundleOutput);
+      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
 
-      if (prebundleOptions.assetsDest && options.assetsDest) {
-        copyAsync(prebundleOptions.assetsDest, options.assetsDest);
+      if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
+        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
       }
 
       console.log('info: Copied output to binary:', options.bundleOutput);
       return;
     }
-    console.log('Prebundle keys:', key, inputKey);
-    console.warn('warning: Prebundle key mismatch, rebundling with cache.');
+    console.log('  Eager key:', eagerBundleOptions.key, inputKey);
+    console.log('Request key:', eagerBundleOptions.key, inputKey);
+    // TODO: We may want an analytic event here in the future to understand when this happens.
+    console.warn('warning: Eager bundle does not match new options, bundling again.');
   }
 
-  // If the app was bundled previously in the same process, then we should reuse the Metro cache.
-  if (getPrebundledOutput()) {
-    options.resetCache = false;
-  }
-
-  return await exportEmbedInternalAsync(projectRoot, options);
+  return exportEmbedInternalAsync(projectRoot, options);
 }
 
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {

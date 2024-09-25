@@ -1,7 +1,5 @@
-import { resolveEntryPoint } from '@expo/config/paths';
+
 import chalk from 'chalk';
-import os from 'os';
-import path from 'path';
 
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
@@ -16,14 +14,11 @@ import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
-import { prebundleAppAsync } from './prebundleIos';
+import { exportEagerAsync } from '../../export/embed/exportEager';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 const debug = require('debug')('expo:run:ios');
 
-function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
-}
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
@@ -40,35 +35,27 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Resolve the CLI arguments into useable options.
   const props = await resolveOptionsAsync(projectRoot, options);
 
-  const isCustomBinary = !!options.binary;
-
-  let prebundleData: string | undefined;
-  const needsBundling =
-    !isCustomBinary && (options.configuration !== 'Debug' || !props.isSimulator);
-  if (needsBundling) {
-    const tempDir: string = getTemporaryPath();
-    // Prebundle the app
-    debug('Bundling JS before building: ' + tempDir);
-    prebundleData = JSON.stringify(
-      await prebundleAppAsync(projectRoot, {
-        resetCache: false,
-        dev: options.configuration === 'Debug',
-        destination: tempDir,
-        entryFile: resolveEntryPoint(projectRoot, { platform: 'ios' }),
-      })
-    );
-    debug('JS bundling complete');
-  }
 
   let binaryPath: string;
   if (options.binary) {
     binaryPath = await getValidBinaryPathAsync(options.binary, props);
     Log.log('Using custom binary path:', binaryPath);
   } else {
+    let eagerBundleOptions: string | undefined;
+
+    if (options.configuration === 'Release') {
+      eagerBundleOptions = JSON.stringify(
+        await exportEagerAsync(projectRoot, {
+          dev: false,
+          platform: 'ios',
+        })
+      );
+    }
+
     // Spawn the `xcodebuild` process to create the app binary.
     const buildOutput = await XcodeBuild.buildAsync({
       ...props,
-      prebundleOutput: prebundleData,
+      eagerBundleOptions,
     });
 
     // Find the path to the built app binary, this will be used to install the binary
