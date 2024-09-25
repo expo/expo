@@ -229,7 +229,7 @@ We'll add a bottom tab navigator to our app and reuse the existing Home and Abou
 
 1. Inside **app** directory, add a **(tabs)** subdirectory. This special directory is used to group routes together and display them in a bottom tab bar.
 2. Create a **(tabs)/\_layout.tsx** file inside the directory. It will be used to define the tab layout, which is separate from Root layout.
-3. Move the existing **index.tsx** and **about.tsx** files inside **(tabs)** directory. The structure of **app** directory will look like this now:
+3. Move the existing **index.tsx** and **about.tsx** files inside the **(tabs)** directory. The structure of **app** directory will look like this now:
 
 <FileTree
   files={[
@@ -259,7 +259,7 @@ export default function RootLayout() {
 }
 ```
 
-Inside **(tabs)/\_layout.tsx**, add `Tabs` component to define the bottom tab layout:
+Inside **(tabs)/\_layout.tsx**, add a `Tabs` component to define the bottom tab layout:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx
@@ -297,7 +297,7 @@ Modify the **(tabs)/\_layout.tsx** file to add tab bar icons:
 
 1. Import `Ioncicons` icons set from [`@expo/vector-icons`](/guides/icons/#expovector-icons) &mdash; a library that includes popular icon sets.
 2. Add the `tabBarIcon` to both the `index` and `about` routes. This function takes `focused` and `color` as params and renders the icon component. From the icon set, we can provide custom icon names.
-3. Add `screenOptions.tabBarActiveTintColor` to `Tabs` component and set its value to `#ffd33d`. This will change the color of the tab bar icon and label when active.
+3. Add `screenOptions.tabBarActiveTintColor` to the `Tabs` component and set its value to `#ffd33d`. This will change the color of the tab bar icon and label when active.
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx

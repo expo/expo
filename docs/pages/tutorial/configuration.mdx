@@ -57,7 +57,7 @@ Let's take a look at our app now on Android, and iOS:
 
 ## Splash screen
 
-A splash screen is visible before the app's contents have had a chance to load. It hides once the app's content is ready for display.
+A splash screen is visible before the app's content is loaded. It hides once the app's content is ready to be displayed.
 
 Setting the `"splash.image"` property with a valid file path in the [**app.json**](/workflow/configuration/) file configures a splash screen. By default, a new Expo project already sets this property to a placeholder splash image. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
 
@@ -73,7 +73,7 @@ Let's take a look at our app now on Android and iOS:
 
 <Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
 
-You can display the splash screen for longer intervals. Run running the following command to install `expo-splash-screen`, a library that provides a `preventAutoHideAsync()` method to delay hiding the splash screen:
+You can display the splash screen for longer intervals. Run the following command to install `expo-splash-screen`, a library that provides a `preventAutoHideAsync()` method to delay hiding the splash screen:
 
 <Terminal cmd={['$ npx expo install expo-splash-screen']} />
 
@@ -90,7 +90,7 @@ Don't forget to remove this code when you are done testing your splash screen.
 
 </Collapsible>
 
-Depending on the device's resolution, a white bar is visible on the edges of an Android device's screen. To resolve this, set the `backgroundColor` for the splash screen in app.json:
+Depending on the device's resolution, a white bar may be visible on the edges of an Android device's screen. To resolve this, set the `backgroundColor` for the splash screen in **app.json** to match the background in the splash image:
 
 {/* prettier-ignore */}
 ```json app.json

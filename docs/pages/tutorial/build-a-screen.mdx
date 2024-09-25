@@ -63,7 +63,7 @@ Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the te
 
 The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
 
-`Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **./assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
+The `Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **./assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
 
 <ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
@@ -199,9 +199,9 @@ The `@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optiona
 
 ## Create buttons using Pressable
 
-React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the [`<Pressable>`](https://reactnative.dev/docs/pressable). It can detect various stages of interactions, from basic single-tap events to advanced events such as long press.
+React Native includes a few different components for handling touch events, but[`<Pressable>`](https://reactnative.dev/docs/pressable) is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
 
-In the design, there are two buttons we need to create. Each has different styles and labels. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the components directory with the following code:
+In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the components directory with the following code:
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx|collapseHeight=280
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls an `alert()` on its `onPress` prop. Let's import this component into **app/(tabs)/index.tsx** file and add styles for `<View>` that encapsulates these buttons:
+The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls `alert()` on its `onPress` prop. Let's import this component into **app/(tabs)/index.tsx** file and add styles for the `<View>` that encapsulates these buttons:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
@@ -311,7 +311,7 @@ The second button with the label "Use this photo" resembles the actual button fr
 
 ## Enhance the reusable button component
 
-The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme. This button also has an icon before the label. We will use an icon from `@expo/vector-icons` library.
+The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme. This button also has an icon before the label. We will use an icon from the `@expo/vector-icons` library.
 
 To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **components/Button.tsx** to add the following code snippet:
 
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
 Let's learn what the above code does:
 
 - The primary theme button uses **inline styles**, which overrides the styles defined in `StyleSheet.create()` with an object directly passed in the `style` prop.
-- `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the button's background color. If we add this property to the `styles.button`, the background color value will be set for both the primary theme and the unstyled one.
+- The `<Pressable>` component in the primary theme uses a `backgroundColor` property with a value `#fff` to set the button's background to white. If we add this property to the `styles.button`, the background color value will be set for both the primary theme and the unstyled one.
 - Inline styles use JavaScript and override the default styles for a specific value.
 
 Now, modify the **app/(tabs)/index.tsx** file to use the `theme="primary"` prop on the first button.
