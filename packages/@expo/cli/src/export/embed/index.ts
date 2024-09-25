@@ -27,6 +27,9 @@ export const expoExportEmbed: Command = async (argv) => {
     // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
     '--config-cmd': String,
 
+    // New flag to guess the other flags based on the environment.
+    '--eager': Boolean,
+
     // This is here for compatibility with the `npx react-native bundle` command.
     // devs should use `DEBUG=expo:*` instead.
     '--verbose': Boolean,
@@ -61,6 +64,7 @@ export const expoExportEmbed: Command = async (argv) => {
         `--asset-catalog-dest <string>          Directory to create an iOS Asset Catalog for images`,
         `--unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default`,
         `--reset-cache                          Removes cached files`,
+        `--eager                                Eagerly export the bundle with default options`,
         `-v, --verbose                          Enables debug logging`,
 
         `--config <string>                      Path to the CLI configuration file`,
@@ -86,12 +90,15 @@ export const expoExportEmbed: Command = async (argv) => {
 
   return (async () => {
     const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {
+      '--eager': Boolean,
       '--dev': Boolean,
       '--minify': Boolean,
       '--sourcemap-use-absolute-path': Boolean,
       '--reset-cache': Boolean,
       '--read-global-cache': Boolean,
     });
-    return exportEmbedAsync(path.resolve(parsed.projectRoot), resolveOptions(args, parsed));
+
+    const projectRoot = path.resolve(parsed.projectRoot);
+    return exportEmbedAsync(projectRoot, resolveOptions(projectRoot, args, parsed));
   })().catch(logCmdError);
 };

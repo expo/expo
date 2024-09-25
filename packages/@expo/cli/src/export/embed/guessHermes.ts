@@ -19,24 +19,24 @@ function parseGradleProperties(content: string): Record<string, string> {
   return result;
 }
 
-export async function isAndroidUsingHermesAsync(projectRoot: string) {
+export function isAndroidUsingHermes(projectRoot: string) {
   // Check gradle.properties from prebuild template
   const gradlePropertiesPath = path.join(projectRoot, 'android', 'gradle.properties');
   if (fs.existsSync(gradlePropertiesPath)) {
-    const props = parseGradleProperties(await fs.promises.readFile(gradlePropertiesPath, 'utf8'));
+    const props = parseGradleProperties(fs.readFileSync(gradlePropertiesPath, 'utf8'));
     return props['hermesEnabled'] === 'true';
   }
 
   return ASSUME_HERMES_IS_USED_BY_DEFAULT;
 }
 
-export async function isIosUsingHermesAsync(projectRoot: string): Promise<boolean> {
+export function isIosUsingHermes(projectRoot: string) {
   // Trying best to check ios native project if by chance to be consistent between app config
 
   // Check ios/Podfile for ":hermes_enabled => true"
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   if (fs.existsSync(podfilePath)) {
-    const content = await fs.promises.readFile(podfilePath, 'utf8');
+    const content = fs.readFileSync(podfilePath, 'utf8');
     return content.search(/^\s*:hermes_enabled\s*=>\s*true,?\s+/m) >= 0;
   }
 

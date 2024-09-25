@@ -100,8 +100,11 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       console.log('info: Copied output to binary:', options.bundleOutput);
       return;
     }
-    console.log('  Eager key:', eagerBundleOptions.key, inputKey);
-    console.log('Request key:', eagerBundleOptions.key, inputKey);
+    // TODO: sourcemapOutput is set on Android
+    // e.g. `sourcemapOutput":"/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map",`
+    console.log('  Eager key:', eagerBundleOptions.key);
+    console.log('Request key:', inputKey);
+
     // TODO: We may want an analytic event here in the future to understand when this happens.
     console.warn('warning: Eager bundle does not match new options, bundling again.');
   }

@@ -3,7 +3,7 @@ import arg from 'arg';
 import os from 'os';
 import path from 'path';
 
-import { isAndroidUsingHermesAsync, isIosUsingHermesAsync } from './guessHermes';
+import { isAndroidUsingHermes, isIosUsingHermes } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
@@ -37,6 +37,7 @@ function assertIsBoolean(val: any): asserts val is boolean {
 }
 
 export function resolveOptions(
+  projectRoot: string,
   args: arg.Result<arg.Spec>,
   parsed: Awaited<ReturnType<typeof resolveCustomBooleanArgsAsync>>
 ): Options {
@@ -46,18 +47,17 @@ export function resolveOptions(
   const minify = parsed.args['--minify'] ?? !dev;
   assertIsBoolean(minify);
 
-  const entryFile = args['--entry-file'];
-  if (!entryFile) {
-    throw new CommandError(`Missing required argument: --entry-file`);
+  const platform = args['--platform'];
+  if (!platform) {
+    throw new CommandError(`Missing required argument: --platform`);
   }
+
   const bundleOutput = args['--bundle-output'];
-  if (!bundleOutput) {
-    throw new CommandError(`Missing required argument: --bundle-output`);
-  }
-  return {
-    entryFile,
+
+  const commonOptions = {
+    entryFile: args['--entry-file'] ?? resolveEntryPoint(projectRoot, { platform }),
     assetCatalogDest: args['--asset-catalog-dest'],
-    platform: args['--platform'] ?? 'ios',
+    platform,
     transformer: args['--transformer'],
     // TODO: Support `--dev false`
     //   dev: false,
@@ -75,6 +75,18 @@ export function resolveOptions(
     dev,
     minify,
   };
+
+  if (parsed.args['--eager']) {
+    return resolveEagerOptionsAsync(projectRoot, commonOptions);
+  }
+
+  // Perform extra assertions after the eager options are resolved.
+
+  if (!bundleOutput) {
+    throw new CommandError(`Missing required argument: --bundle-output`);
+  }
+
+  return { ...commonOptions, bundleOutput };
 }
 
 function getTemporaryPath() {
@@ -82,49 +94,39 @@ function getTemporaryPath() {
 }
 
 /** Best effort guess of which options will be used for the export:embed invocation that is called from the native build scripts. */
-export async function resolveEagerOptionsAsync(
+export function resolveEagerOptionsAsync(
   projectRoot: string,
   {
     destination,
-    bundleConfig,
-    entryFile,
     dev,
-    resetCache,
     platform,
-  }: {
+    ...options
+  }: Partial<Omit<Options, 'platform' | 'dev'>> & {
     platform: string;
     dev: boolean;
     destination?: string;
-    entryFile?: string;
-    bundleConfig?: string;
-    resetCache?: boolean;
   }
-): Promise<Options> {
+): Options {
   destination ??= getTemporaryPath();
-  entryFile ??= resolveEntryPoint(projectRoot, { platform: 'ios' });
 
   const isHermes =
-    platform === 'android'
-      ? await isAndroidUsingHermesAsync(projectRoot)
-      : await isIosUsingHermesAsync(projectRoot);
-
-  const bundleFile =
-    platform === 'ios'
-      ? path.join(destination, 'main.jsbundle')
-      : path.join(destination, 'index.js');
+    platform === 'android' ? isAndroidUsingHermes(projectRoot) : isIosUsingHermes(projectRoot);
 
   return {
-    entryFile,
+    ...options,
+    entryFile: options.entryFile ?? resolveEntryPoint(projectRoot, { platform }),
+    resetCache: !!options.resetCache,
     platform,
     minify: !isHermes,
     dev,
     bundleEncoding: 'utf8',
-    bundleOutput: bundleFile,
+    bundleOutput:
+      options.bundleOutput ?? platform === 'ios'
+        ? path.join(destination, 'main.jsbundle')
+        : path.join(destination, 'index.js'),
     assetsDest: path.join(destination, 'assets'),
-    resetCache: !!resetCache,
     sourcemapUseAbsolutePath: false,
     verbose: env.EXPO_DEBUG,
-    config: bundleConfig,
   };
 }
 
