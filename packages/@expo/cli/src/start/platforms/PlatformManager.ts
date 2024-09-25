@@ -115,6 +115,7 @@ export class PlatformManager<
     const { exp } = getConfig(this.projectRoot);
     const sdkVersion = exp.sdkVersion;
     assert(sdkVersion, 'sdkVersion should be resolved by getConfig');
+    await deviceManager.ensureExpoGoAsync(sdkVersion);
 
     deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url, { appId: deviceManager.getExpoGoAppId() });
