@@ -185,25 +185,6 @@ const styles = StyleSheet.create({
 });
 ```
 
-Update `Stack` in the **app/\_layout.tsx** file to add the `+not-found` route:
-
-{/* prettier-ignore */}
-```tsx app/_layout.tsx
-import { Stack } from 'expo-router';
-
-export default function RootLayout() {
-  return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: 'Home' }} />
-      <Stack.Screen name="about" options={{ title: 'About' }} />
-      /* @tutinfo Adding <CODE>+not-found</CODE> route in <CODE>RootLayout</CODE> will display this fallback screen when a user navigates to a 404 route. */
-      <Stack.Screen name="+not-found" />
-      /* @end */
-    </Stack>
-  );
-}
-```
-
 To test this, navigate to `http:localhost:8081/123` URL in the web browser since it is easy to change the URL path there. The app should display the `NotFoundScreen` component:
 
 <ContentSpotlight file="tutorial/02-not-found-route.mp4" />
