@@ -41,7 +41,7 @@ describe(checkPackagesCompatibility, () => {
     expect(Log.warn).toBeCalledTimes(1);
     expect(Log.warn).toHaveBeenLastCalledWith(
       expect.stringMatching(
-        /@react-native-community\/blur, @gorhom\/bottom-sheet and react-native-code-push do not support the New Architecture/
+        /@react-native-community\/blur and @gorhom\/bottom-sheet do not support the New Architecture/
       )
     );
   });
