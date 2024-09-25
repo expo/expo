@@ -63,7 +63,7 @@ Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the te
 
 The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
 
-The `Image` component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **./assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
+The Image component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **./assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
 
 <ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
@@ -71,7 +71,7 @@ The `Image` component takes the source of an image as its value. The source can 
   className="max-w-[250px]"
 />
 
-To use the `Image` component in **app/(tabs)/index.tsx** file:
+To use the Image component in **app/(tabs)/index.tsx** file:
 
 1. Import `Image` from the `expo-image` library.
 2. Create a `PlaceholderImage` variable to use ./assets/images/background-image.png file as the `source` prop on the `Image` component.
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
 
 ## Divide components into files
 
-Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
+Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
 
 1. Inside the **components** directory, create a **ImageViewer.tsx** file.
 2. Move the code to display the image in this file along with the `image` styles.
