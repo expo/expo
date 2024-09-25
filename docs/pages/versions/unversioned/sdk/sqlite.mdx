@@ -380,17 +380,17 @@ Configure the App Group in `app.json`:
 ```
 </Step>
 <Step label="2">
-Use [`getSharedContainer`](filesystem-next/#getsharedcontainerappgroup) from the [`expo-file-system`](filesystem-next/) module to retrieve the path to the shared container:
+Use [`Paths.appleSharedContainers`](filesystem-next/#applesharedcontainers) from the [`expo-file-system`](filesystem-next/) module to retrieve the path to the shared container:
 ```tsx Using Shared Container for SQLite Database on iOS
 import { SQLiteProvider, defaultDatabaseDirectory } from 'expo-sqlite';
-import { Directory } from 'expo-file-system/next';
+import { Paths } from 'expo-file-system/next';
 import { useMemo } from 'react';
 import { Platform, View } from 'react-native';
 
 export default function App() {
   const dbDirectory = useMemo(() => {
     if (Platform.OS === 'ios') {
-      return Directory.getSharedContainer('group.com.myapp')?.path;
+      return Paths.appleSharedContainers['group.com.myapp']?.uri;
     }
     return defaultDatabaseDirectory;
   }, []);
