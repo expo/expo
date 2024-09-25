@@ -1,4 +1,3 @@
-
 import chalk from 'chalk';
 
 import * as Log from '../../log';
@@ -14,11 +13,10 @@ import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
-import { exportEagerAsync } from '../../export/embed/exportEager';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
+import { exportEagerAsync } from '../../export/embed/exportEager';
 
 const debug = require('debug')('expo:run:ios');
-
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
@@ -34,7 +32,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Resolve the CLI arguments into useable options.
   const props = await resolveOptionsAsync(projectRoot, options);
-
 
   let binaryPath: string;
   if (options.binary) {

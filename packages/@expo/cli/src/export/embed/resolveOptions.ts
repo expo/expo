@@ -44,9 +44,6 @@ export function resolveOptions(
   const dev = parsed.args['--dev'] ?? true;
   assertIsBoolean(dev);
 
-  const minify = parsed.args['--minify'] ?? !dev;
-  assertIsBoolean(minify);
-
   const platform = args['--platform'];
   if (!platform) {
     throw new CommandError(`Missing required argument: --platform`);
@@ -73,7 +70,7 @@ export function resolveOptions(
     verbose: args['--verbose'] ?? env.EXPO_DEBUG,
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,
-    minify,
+    minify: parsed.args['--minify'] as boolean | undefined,
   };
 
   if (parsed.args['--eager']) {
@@ -86,7 +83,10 @@ export function resolveOptions(
     throw new CommandError(`Missing required argument: --bundle-output`);
   }
 
-  return { ...commonOptions, bundleOutput };
+  const minify = parsed.args['--minify'] ?? !dev;
+  assertIsBoolean(minify);
+
+  return { ...commonOptions, minify, bundleOutput };
 }
 
 function getTemporaryPath() {
@@ -97,34 +97,47 @@ function getTemporaryPath() {
 export function resolveEagerOptionsAsync(
   projectRoot: string,
   {
-    destination,
     dev,
     platform,
+    assetsDest,
+    bundleOutput,
+    minify,
     ...options
   }: Partial<Omit<Options, 'platform' | 'dev'>> & {
     platform: string;
     dev: boolean;
-    destination?: string;
   }
 ): Options {
-  destination ??= getTemporaryPath();
+  // If the minify prop is undefined, then check if the project is using hermes.
+  minify ??= !(platform === 'android'
+    ? isAndroidUsingHermes(projectRoot)
+    : isIosUsingHermes(projectRoot));
 
-  const isHermes =
-    platform === 'android' ? isAndroidUsingHermes(projectRoot) : isIosUsingHermes(projectRoot);
+  let destination: string | undefined;
+
+  if (!assetsDest) {
+    destination ??= getTemporaryPath();
+    assetsDest = path.join(destination, 'assets');
+  }
+
+  if (!bundleOutput) {
+    destination ??= getTemporaryPath();
+    bundleOutput =
+      platform === 'ios'
+        ? path.join(destination, 'main.jsbundle')
+        : path.join(destination, 'index.js');
+  }
 
   return {
     ...options,
+    bundleOutput,
+    assetsDest,
     entryFile: options.entryFile ?? resolveEntryPoint(projectRoot, { platform }),
     resetCache: !!options.resetCache,
     platform,
-    minify: !isHermes,
+    minify,
     dev,
     bundleEncoding: 'utf8',
-    bundleOutput:
-      options.bundleOutput ?? platform === 'ios'
-        ? path.join(destination, 'main.jsbundle')
-        : path.join(destination, 'index.js'),
-    assetsDest: path.join(destination, 'assets'),
     sourcemapUseAbsolutePath: false,
     verbose: env.EXPO_DEBUG,
   };
