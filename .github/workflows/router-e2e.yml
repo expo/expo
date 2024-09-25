@@ -3,6 +3,7 @@ name: Router Maestro E2E
 on:
   pull_request:
     paths:
+      - .github/workflows/router-e2e.yml
       - packages/@expo/cli/**
       - packages/expo-router/**
 
