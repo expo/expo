@@ -67,6 +67,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   const launchInfo = await getLaunchInfoForBinaryAsync(binaryPath);
+  const isCustomBinary = !!options.binary;
 
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
