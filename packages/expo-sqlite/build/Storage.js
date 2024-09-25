@@ -19,16 +19,16 @@ export class SQLiteStorage {
     /**
      * Retrieves the value associated with the given key asynchronously.
      */
-    getItemAsync = async (key) => {
+    async getItemAsync(key) {
         const db = await this.getDbAsync();
         const result = await db.getFirstAsync(STATEMENT_GET, key);
         return result?.value ?? null;
-    };
+    }
     /**
      * Sets the value for the given key asynchronously.
      * If a function is provided, it computes the new value based on the previous value.
      */
-    setItemAsync = async (key, value) => {
+    async setItemAsync(key, value) {
         const db = await this.getDbAsync();
         if (typeof value === 'function') {
             await db.withExclusiveTransactionAsync(async (tx) => {
@@ -40,55 +40,55 @@ export class SQLiteStorage {
             return;
         }
         await db.runAsync(STATEMENT_SET, key, value);
-    };
+    }
     /**
      * Removes the value associated with the given key asynchronously.
      */
-    removeItemAsync = async (key) => {
+    async removeItemAsync(key) {
         const db = await this.getDbAsync();
         const result = await db.runAsync(STATEMENT_REMOVE, key);
         return result.changes > 0;
-    };
+    }
     /**
      * Retrieves all keys stored in the storage asynchronously.
      */
-    getAllKeysAsync = async () => {
+    async getAllKeysAsync() {
         const db = await this.getDbAsync();
         const result = await db.getAllAsync(STATEMENT_GET_ALL_KEYS);
         return result.map(({ key }) => key);
-    };
+    }
     /**
      * Clears all key-value pairs from the storage asynchronously.
      */
-    clearAsync = async () => {
+    async clearAsync() {
         const db = await this.getDbAsync();
         const result = await db.runAsync(STATEMENT_CLEAR);
         return result.changes > 0;
-    };
+    }
     /**
      * Closes the database connection asynchronously.
      */
-    closeAsync = async () => {
+    async closeAsync() {
         if (this.db) {
             await this.db.closeAsync();
             this.db = null;
         }
-    };
+    }
     //#endregion
     //#region Synchronous API
     /**
      * Retrieves the value associated with the given key synchronously.
      */
-    getItemSync = (key) => {
+    getItemSync(key) {
         const db = this.getDbSync();
         const result = db.getFirstSync(STATEMENT_GET, key);
         return result?.value ?? null;
-    };
+    }
     /**
      * Sets the value for the given key synchronously.
      * If a function is provided, it computes the new value based on the previous value.
      */
-    setItemSync = (key, value) => {
+    setItemSync(key, value) {
         const db = this.getDbSync();
         if (typeof value === 'function') {
             db.withTransactionSync(() => {
@@ -100,77 +100,77 @@ export class SQLiteStorage {
             return;
         }
         db.runSync(STATEMENT_SET, key, value);
-    };
+    }
     /**
      * Removes the value associated with the given key synchronously.
      */
-    removeItemSync = (key) => {
+    removeItemSync(key) {
         const db = this.getDbSync();
         const result = db.runSync(STATEMENT_REMOVE, key);
         return result.changes > 0;
-    };
+    }
     /**
      * Retrieves all keys stored in the storage synchronously.
      */
-    getAllKeysSync = () => {
+    getAllKeysSync() {
         const db = this.getDbSync();
         const result = db.getAllSync(STATEMENT_GET_ALL_KEYS);
         return result.map(({ key }) => key);
-    };
+    }
     /**
      * Clears all key-value pairs from the storage synchronously.
      */
-    clearSync = () => {
+    clearSync() {
         const db = this.getDbSync();
         const result = db.runSync(STATEMENT_CLEAR);
         return result.changes > 0;
-    };
+    }
     /**
      * Closes the database connection synchronously.
      */
-    closeSync = () => {
+    closeSync() {
         if (this.db) {
             this.db.closeSync();
             this.db = null;
         }
-    };
+    }
     //#endregion
     //#region react-native-async-storage compatible API
     /**
      * Alias for [`getItemAsync()`](#getitemasynckey) method.
      */
-    getItem = async (key) => {
+    async getItem(key) {
         return this.getItemAsync(key);
-    };
+    }
     /**
      * Alias for [`setItemAsync()`](#setitemasynckey-value).
      */
-    setItem = async (key, value) => {
+    async setItem(key, value) {
         this.setItemAsync(key, value);
-    };
+    }
     /**
      * Alias for [`removeItemAsync()`](#removeitemasynckey) method.
      */
-    removeItem = async (key) => {
+    async removeItem(key) {
         this.removeItemAsync(key);
-    };
+    }
     /**
      * Alias for [`getAllKeysAsync()`](#getallkeysasync) method.
      */
-    getAllKeys = async () => {
+    async getAllKeys() {
         return this.getAllKeysAsync();
-    };
+    }
     /**
      * Alias for [`clearAsync()`](#clearasync) method.
      */
-    clear = async () => {
+    async clear() {
         this.clearAsync();
-    };
+    }
     /**
      * Merges the given value with the existing value for the given key asynchronously.
      * If the existing value is a JSON object, performs a deep merge.
      */
-    mergeItem = async (key, value) => {
+    async mergeItem(key, value) {
         await this.setItemAsync(key, (prevValue) => {
             if (prevValue == null) {
                 return value;
@@ -180,11 +180,11 @@ export class SQLiteStorage {
             const mergedJSON = SQLiteStorage.mergeDeep(prevJSON, newJSON);
             return JSON.stringify(mergedJSON);
         });
-    };
+    }
     /**
      * Retrieves the values associated with the given keys asynchronously.
      */
-    multiGet = async (keys) => {
+    async multiGet(keys) {
         const db = await this.getDbAsync();
         let result = [];
         await db.withExclusiveTransactionAsync(async (tx) => {
@@ -194,34 +194,34 @@ export class SQLiteStorage {
             }));
         });
         return result;
-    };
+    }
     /**
      * Sets multiple key-value pairs asynchronously.
      */
-    multiSet = async (keyValuePairs) => {
+    async multiSet(keyValuePairs) {
         const db = await this.getDbAsync();
         await db.withExclusiveTransactionAsync(async (tx) => {
             for (const [key, value] of keyValuePairs) {
                 await tx.runAsync(STATEMENT_SET, key, value);
             }
         });
-    };
+    }
     /**
      * Removes the values associated with the given keys asynchronously.
      */
-    multiRemove = async (keys) => {
+    async multiRemove(keys) {
         const db = await this.getDbAsync();
         await db.withExclusiveTransactionAsync(async (tx) => {
             for (const key of keys) {
                 await tx.runAsync(STATEMENT_REMOVE, key);
             }
         });
-    };
+    }
     /**
      * Merges multiple key-value pairs asynchronously.
      * If existing values are JSON objects, performs a deep merge.
      */
-    multiMerge = async (keyValuePairs) => {
+    async multiMerge(keyValuePairs) {
         const db = await this.getDbAsync();
         await db.withExclusiveTransactionAsync(async (tx) => {
             for (const [key, value] of keyValuePairs) {
@@ -236,13 +236,13 @@ export class SQLiteStorage {
                 await tx.runAsync(STATEMENT_SET, key, JSON.stringify(mergedJSON));
             }
         });
-    };
+    }
     /**
      * Alias for [`closeAsync()`](#closeasync-1) method.
      */
-    close = async () => {
+    async close() {
         this.closeAsync();
-    };
+    }
     //#endregion
     //#region Internals
     async getDbAsync() {
