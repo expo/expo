@@ -194,7 +194,7 @@ export interface NativeConstants {
 export interface Constants extends NativeConstants {
     /**
      * @hidden
-     * @warning do not use this property. Use `manifest` by default.
+     * > **Warning**: Do not use this property. Use `manifest` by default.
      *
      * In certain cases accessing manifest via this property
      * suppresses important warning about missing manifest.
@@ -202,7 +202,7 @@ export interface Constants extends NativeConstants {
     __unsafeNoWarnManifest?: EmbeddedManifest;
     /**
      * @hidden
-     * @warning do not use this property. Use `manifest2` by default.
+     * > **Warning**: Do not use this property. Use `manifest2` by default.
      *
      * In certain cases accessing manifest via this property
      * suppresses important warning about missing manifest.

@@ -107,9 +107,6 @@ export interface PluginConfigTypeAndroid {
      * ```
      *
      * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
-     *
-     * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
      */
     extraMavenRepos?: (AndroidMavenRepository | string)[];
     /**
@@ -227,9 +224,6 @@ export interface PluginConfigTypeIos {
      * ```ruby
      * pod 'Protobuf', '~> 3.14.0'
      * ```
-     *
-     * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside `expo-build-properties`.
      */
     extraPods?: ExtraIosPodDependency[];
     /**

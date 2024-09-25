@@ -2,7 +2,7 @@ import RudderAnalytics from '@expo/rudder-sdk-node';
 
 import { getContext } from './getContext';
 import type { TelemetryClient, TelemetryRecord, TelemetryRecordWithDate } from './types';
-import UserSettings from '../../api/user/UserSettings';
+import { getAnonymousIdAsync } from '../../api/user/UserSettings';
 import { type Actor, getActorDisplayName, getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
@@ -61,7 +61,7 @@ export class RudderClient implements TelemetryClient {
     debug('Actor received');
 
     const userId = actor.id;
-    const anonymousId = await UserSettings.getAnonymousIdentifierAsync();
+    const anonymousId = await getAnonymousIdAsync();
 
     if (this.identity?.userId === userId && this.identity?.anonymousId === anonymousId) {
       return;

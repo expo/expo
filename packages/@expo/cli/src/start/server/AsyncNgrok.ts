@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import * as path from 'path';
 import slugify from 'slugify';
 
-import UserSettings from '../../api/user/UserSettings';
+import { getSettingsDirectory } from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
@@ -158,7 +158,7 @@ export class AsyncNgrok {
   ): Promise<string | false> {
     try {
       // Global config path.
-      const configPath = path.join(UserSettings.getDirectory(), 'ngrok.yml');
+      const configPath = path.join(getSettingsDirectory(), 'ngrok.yml');
       debug('Global config path:', configPath);
       const urlProps = await this._getConnectionPropsAsync();
 

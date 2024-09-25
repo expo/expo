@@ -7,8 +7,7 @@ function isHermesEngine(options) {
         options.unstable_transformProfile === 'hermes-stable');
 }
 function isBytecodeEnabled(options) {
-    return (options.customTransformOptions?.bytecode === true ||
-        options.customTransformOptions?.bytecode === 'true');
+    return options.customTransformOptions?.bytecode === '1';
 }
 function shouldMinify(options) {
     // If using Hermes + bytecode, then skip minification because the Hermes compiler will minify the code.

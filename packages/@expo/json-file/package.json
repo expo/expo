@@ -38,7 +38,8 @@
     "@types/babel__code-frame": "^7.0.1",
     "@types/json5": "^2.2.0",
     "@types/write-file-atomic": "^2.1.1",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^3.3.0",
+    "memfs": "^3.2.0"
   },
   "publishConfig": {
     "access": "public"
