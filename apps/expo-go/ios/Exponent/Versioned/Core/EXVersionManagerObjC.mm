@@ -27,7 +27,7 @@
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTNetworking.h>
-#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTInspectorDevServerHelper.h>
@@ -35,6 +35,20 @@
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <react/config/ReactNativeConfig.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+
+#import <React/RCTUIManager.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <reacthermes/HermesExecutorFactory.h>
+
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -45,7 +59,7 @@
 #endif
 
 // Import 3rd party modules that need to be scoped.
-#import <RNCAsyncStorage/RNCAsyncStorage.h>
+#import "RNCAsyncStorage/RNCAsyncStorage.h"
 #import "RNCWebViewManager.h"
 
 #import "EXScopedModuleRegistry.h"
@@ -72,13 +86,19 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 @end
 
-@interface EXVersionManagerObjC ()
+@interface EXVersionManagerObjC () <RCTTurboModuleManagerDelegate> {
+  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
+  facebook::react::ContextContainer::Shared _contextContainer;
+}
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) EXVersionedNetworkInterceptor *networkInterceptor;
+@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
+@property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+@property (nonatomic, assign, readonly) BOOL fabricEnabled;
 
 // Legacy
 @property (nonatomic, strong) EXModuleRegistry *legacyModuleRegistry;
@@ -112,6 +132,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if (self = [super init]) {
     _params = params;
     _manifest = manifest;
+    _fabricEnabled = true;
   }
   return self;
 }
@@ -148,7 +169,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   // Override the "Reload" button from Redbox to reload the app from manifest
   // Keep in mind that it is possible this will return a EXDisabledRedBox
-  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
+  id clazz = [bridge getModuleClassFromName:"RedBox"];
+  RCTRedBox *redBox = (RCTRedBox *)[bridge getModuleInstanceFromClass:clazz];
   [redBox setOverrideReloadAction:^{
     [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
@@ -162,7 +184,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[bridge getModuleInstanceFromClass:[bridge getModuleClassFromName:"DevSettings"]];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [NSMutableDictionary new];
 
@@ -311,9 +333,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
-- (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
+- (id<RCTTurboModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
 {
-  return [bridge moduleForClass:[self getModuleClassFromName:[name UTF8String]]];
+  return [bridge getModuleInstanceFromClass:[bridge getModuleClassFromName:[name UTF8String]]];
 }
 
 - (NSArray *)extraModulesForBridge:(id)bridge
@@ -343,17 +365,14 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     [extraModules addObject:homeModule];
   }
 
-  if (!RCTTurboModuleEnabled()) {
-    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
-    id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
-    if (exceptionsManager) {
-      [extraModules addObject:exceptionsManager];
-    }
-    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
-    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
-    [extraModules addObject:[self getModuleInstanceFromClass:RNCAsyncStorage.class]];
+  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
+  id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
+  if (exceptionsManager) {
+    [extraModules addObject:exceptionsManager];
   }
-
+  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
+  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
+  
   return extraModules;
 }
 
@@ -426,7 +445,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   // Standard
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
-      return @[[RCTLocalAssetImageLoader new]];
+      return @[[RCTBundleAssetImageLoader new]];
     } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
       return @[[RCTGIFImageDecoder new]];
     }];

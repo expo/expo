@@ -45,7 +45,7 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   if (_appManager && _appManager.status == kEXReactAppManagerStatusError && _appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {
     return kEXKernelAppRecordStatusError;
   }
-  if (_appManager && _appManager.isBridgeRunning) {
+  if (_appManager && _appManager.isHostRunning) {
     return kEXKernelAppRecordStatusRunning;
   }
   if (_appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {

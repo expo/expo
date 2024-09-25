@@ -32,7 +32,7 @@ typedef enum EXReactAppManagerStatus {
 @interface EXReactAppManager : NSObject <RCTBridgeDelegate, EXAppFetcherDataSource>
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps;
-- (void)rebuildBridge;
+- (void)rebuildHost;
 - (void)invalidate;
 
 // these are piped in from the view controller when the app manager is waiting for a bundle.
@@ -40,7 +40,7 @@ typedef enum EXReactAppManagerStatus {
 - (void)appLoaderFailedWithError:(NSError *)error;
 
 @property (nonatomic, assign) BOOL isHeadless;
-@property (nonatomic, readonly) BOOL isBridgeRunning;
+@property (nonatomic, readonly) BOOL isHostRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;
 @property (nonatomic, readonly) UIView *rootView;
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;

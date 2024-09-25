@@ -30,7 +30,7 @@ final class VersionManager: EXVersionManagerObjC {
     self.manifest = manifest
 
     configureReact(
-      enableTurboModules: manifest.experiments()?["turboModules"] as? Bool ?? false,
+      enableTurboModules: true,
       fatalHandler: fatalHandler,
       logFunction: logFunction,
       logThreshold: logThreshold

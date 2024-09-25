@@ -12,10 +12,8 @@ class AppDelegate: ExpoAppDelegate {
       // App launched in foreground
       setUpUserInterfaceForApplication(application, withLaunchOptions: launchOptions)
     }
-
-    super.application(application, didFinishLaunchingWithOptions: launchOptions)
-
-    return true
+    
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
   override func applicationWillEnterForeground(_ application: UIApplication) {
@@ -32,10 +30,10 @@ class AppDelegate: ExpoAppDelegate {
     ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
 
     window = UIWindow(frame: UIScreen.main.bounds)
-    window!.backgroundColor = UIColor.white
+    window?.backgroundColor = UIColor.white
     rootViewController = (ExpoKit.sharedInstance().rootViewController() as! EXRootViewController)
-    window!.rootViewController = rootViewController
+    window?.rootViewController = rootViewController
 
-    window!.makeKeyAndVisible()
+    window?.makeKeyAndVisible()
   }
 }

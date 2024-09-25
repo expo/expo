@@ -11,7 +11,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import MapView, { Circle, MapPressEvent } from 'react-native-maps';
+// import MapView, { Circle, MapPressEvent } from 'react-native-maps';
 
 import NavigationEvents from '../../components/NavigationEvents';
 import Button from '../../components/PrimaryButton';
@@ -43,7 +43,7 @@ type State = {
 type Props = unknown;
 
 export default class GeofencingScreen extends React.Component<Props, State> {
-  mapViewRef = React.createRef<MapView>();
+  // mapViewRef = React.createRef<MapView>();
 
   appStateSubscription?: NativeEventSubscription;
 
@@ -137,52 +137,53 @@ export default class GeofencingScreen extends React.Component<Props, State> {
 
   centerMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
-    const mapView = this.mapViewRef.current;
+    // const mapView = this.mapViewRef.current;
 
-    if (mapView) {
-      mapView.animateToRegion({
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        latitudeDelta: 0.004,
-        longitudeDelta: 0.002,
-      });
-    }
+    // if (mapView) {
+    //   mapView.animateToRegion({
+    //     latitude: coords.latitude,
+    //     longitude: coords.longitude,
+    //     latitudeDelta: 0.004,
+    //     longitudeDelta: 0.002,
+    //   });
+    // }
   };
 
-  onMapPress = ({ nativeEvent: { coordinate } }: MapPressEvent) => {
-    this.setState(
-      (state) => ({
-        geofencingRegions: [
-          ...state.geofencingRegions,
-          {
-            identifier: `${coordinate.latitude},${coordinate.longitude}`,
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude,
-            radius: state.newRegionRadius,
-          },
-        ],
-      }),
-      async () => {
-        if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
-          // update existing geofencing task
-          await Location.startGeofencingAsync(GEOFENCING_TASK, this.state.geofencingRegions);
-        }
-      }
-    );
-  };
+  // onMapPress = ({ nativeEvent: { coordinate } }: MapPressEvent) => {
+  //   this.setState(
+  //     (state) => ({
+  //       geofencingRegions: [
+  //         ...state.geofencingRegions,
+  //         {
+  //           identifier: `${coordinate.latitude},${coordinate.longitude}`,
+  //           latitude: coordinate.latitude,
+  //           longitude: coordinate.longitude,
+  //           radius: state.newRegionRadius,
+  //         },
+  //       ],
+  //     }),
+  //     async () => {
+  //       if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
+  //         // update existing geofencing task
+  //         await Location.startGeofencingAsync(GEOFENCING_TASK, this.state.geofencingRegions);
+  //       }
+  //     }
+  //   );
+  // };
 
   renderRegions() {
     const { geofencingRegions } = this.state;
 
     return geofencingRegions.map((region) => {
       return (
-        <Circle
-          key={region.identifier}
-          center={region}
-          radius={region.radius}
-          strokeColor="rgba(78,155,222,0.8)"
-          fillColor="rgba(78,155,222,0.2)"
-        />
+        // <Circle
+        //   key={region.identifier}
+        //   center={region}
+        //   radius={region.radius}
+        //   strokeColor="rgba(78,155,222,0.8)"
+        //   fillColor="rgba(78,155,222,0.2)"
+        // />
+        null
       );
     });
   }
@@ -209,15 +210,6 @@ export default class GeofencingScreen extends React.Component<Props, State> {
 
     return (
       <View style={styles.screen}>
-        <MapView
-          ref={this.mapViewRef}
-          style={styles.mapView}
-          initialRegion={this.state.initialRegion}
-          onPress={this.onMapPress}
-          showsUserLocation>
-          {this.renderRegions()}
-        </MapView>
-
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>

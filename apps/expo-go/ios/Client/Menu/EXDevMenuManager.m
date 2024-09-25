@@ -64,6 +64,11 @@ static NSString *kEXDevMenuTouchGestureEnabled = @"EXDevMenuTouchGestureEnabled"
   return [_delegate mainBridgeForDevMenuManager:self];
 }
 
+- (RCTAppDelegate *)mainAppDelegate
+{
+  return [_delegate appDelegateForDevMenuManager:self];
+}
+
 - (BOOL)isVisible
 {
   return _window ? !_window.hidden : NO;

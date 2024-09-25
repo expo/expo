@@ -42,4 +42,8 @@
 
 - (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
 
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
+
+- (Class)getModuleClassFromName:(const char *)name;
+
 @end

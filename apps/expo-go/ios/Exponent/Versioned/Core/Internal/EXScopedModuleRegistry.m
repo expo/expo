@@ -6,7 +6,7 @@
 static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
 
 NSDictionary<NSString *, NSDictionary *> * EXGetScopedModuleClasses(void);
-NSDictionary<NSString *, NSDictionary *> * EXGetScopedModuleClasses()
+NSDictionary<NSString *, NSDictionary *> * EXGetScopedModuleClasses(void)
 {
   return EXScopedModuleClasses;
 }

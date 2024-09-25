@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static android.app.Activity.RESULT_OK;
 
 public class RNCWebViewModuleImpl implements ActivityEventListener {
-    public static final String NAME = "RNCWebView";
+    public static final String NAME = "RNCWebViewModule";
 
     public static final int PICKER = 1;
     public static final int PICKER_LEGACY = 3;

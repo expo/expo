@@ -284,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
       [self _invalidateRecoveryTimer];
-      [self.appRecord.appManager rebuildBridge];
+      [self.appRecord.appManager rebuildHost];
     });
   }
 }

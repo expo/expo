@@ -321,6 +321,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return _appRegistry.homeAppRecord.appManager.reactBridge;
 }
 
+- (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
+  return _appRegistry.homeAppRecord.appManager.reactAppDelegate;
+}
+
 - (nullable RCTBridge *)appBridgeForDevMenuManager:(EXDevMenuManager *)manager
 {
   if (_visibleApp == _appRegistry.homeAppRecord) {
