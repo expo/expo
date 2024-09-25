@@ -100,8 +100,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       console.log('info: Copied output to binary:', options.bundleOutput);
       return;
     }
-    // TODO: sourcemapOutput is set on Android
-    // e.g. `sourcemapOutput":"/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map",`
+    // TODO: sourcemapOutput is set on Android but not during eager. This is tolerable since it doesn't invalidate the Metro cache.
     console.log('  Eager key:', eagerBundleOptions.key);
     console.log('Request key:', inputKey);
 
