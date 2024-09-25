@@ -8,11 +8,11 @@ type dpiMap = Record<DPIString, {
 }>;
 export declare const ANDROID_RES_PATH = "android/app/src/main/res/";
 export declare const dpiValues: dpiMap;
-export declare const META_DATA_NOTIFICATION_ICON = "com.google.firebase.messaging.default_notification_icon";
-export declare const META_DATA_NOTIFICATION_ICON_COLOR = "com.google.firebase.messaging.default_notification_color";
-export declare const META_DATA_NOTIFICATION_DEFAULT_CHANNEL_ID = "com.google.firebase.messaging.default_notification_channel_id";
-export declare const META_DATA_LEGACY_NOTIFICATION_ICON = "expo.modules.notifications.default_notification_icon";
-export declare const META_DATA_LEGACY_NOTIFICATION_ICON_COLOR = "expo.modules.notifications.default_notification_color";
+export declare const META_DATA_FCM_NOTIFICATION_ICON = "com.google.firebase.messaging.default_notification_icon";
+export declare const META_DATA_FCM_NOTIFICATION_ICON_COLOR = "com.google.firebase.messaging.default_notification_color";
+export declare const META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID = "com.google.firebase.messaging.default_notification_channel_id";
+export declare const META_DATA_LOCAL_NOTIFICATION_ICON = "expo.modules.notifications.default_notification_icon";
+export declare const META_DATA_LOCAL_NOTIFICATION_ICON_COLOR = "expo.modules.notifications.default_notification_color";
 export declare const NOTIFICATION_ICON = "notification_icon";
 export declare const NOTIFICATION_ICON_RESOURCE: string;
 export declare const NOTIFICATION_ICON_COLOR = "notification_icon_color";

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.shouldHandleMouseEvent = void 0;
 const react_native_1 = require("react-native");
 const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
@@ -25,16 +26,8 @@ function eventShouldPreventDefault(e) {
 }
 function useLinkToPathProps({ href, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
-    const onPress = (e) => {
-        let shouldHandle = false;
-        if (react_native_1.Platform.OS !== 'web' || !e) {
-            shouldHandle = e ? !e.defaultPrevented : true;
-        }
-        else if (eventShouldPreventDefault(e)) {
-            e.preventDefault();
-            shouldHandle = true;
-        }
-        if (shouldHandle) {
+    const onPress = (event) => {
+        if (shouldHandleMouseEvent(event)) {
             linkTo(href, options);
         }
     };
@@ -46,4 +39,15 @@ function useLinkToPathProps({ href, ...options }) {
     };
 }
 exports.default = useLinkToPathProps;
+function shouldHandleMouseEvent(event) {
+    if (react_native_1.Platform.OS !== 'web') {
+        return !event?.defaultPrevented;
+    }
+    if (event && eventShouldPreventDefault(event)) {
+        event.preventDefault();
+        return true;
+    }
+    return false;
+}
+exports.shouldHandleMouseEvent = shouldHandleMouseEvent;
 //# sourceMappingURL=useLinkToPathProps.js.map

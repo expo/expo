@@ -110,6 +110,20 @@ export function createRouteHandlerMiddleware(
       logApiRouteExecutionError(error) {
         logMetroError(projectRoot, { error });
       },
+      async handleApiRouteError(error) {
+        const htmlServerError = await getErrorOverlayHtmlAsync({
+          error,
+          projectRoot,
+          routerRoot: options.routerRoot!,
+        });
+
+        return new Response(htmlServerError, {
+          status: 500,
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        });
+      },
       async getApiRoute(route) {
         const { exp } = options.config;
         if (exp.web?.output !== 'server') {

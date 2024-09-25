@@ -97,6 +97,7 @@ module.exports = withExpo({
   // older versions can use next-transpile-modules
   transpilePackages: [
     'react-native',
+    'react-native-web',
     'expo',
     // Add more React Native/Expo packages here...
   ],
@@ -114,6 +115,7 @@ const nextConfig = withExpo({
   swcMinify: true,
   transpilePackages: [
     'react-native',
+    'react-native-web',
     'expo',
     // Add more React Native/Expo packages here...
   ],
@@ -216,8 +218,9 @@ module.exports = withExpo({
     transpilePackages: [
       // NOTE: Even though `react-native` is never used in Next.js,
       // you need to list `react-native` because `react-native-web`
-      // is aliased to `react-native`. Adding `react-native-web` will not work.
+      // is aliased to `react-native`.
       'react-native',
+      'react-native-web',
       'expo',
       // Add more React Native/Expo packages here...
     ],
@@ -285,6 +288,7 @@ module.exports = withExpo({
   experimental: {
     transpilePackages: [
       'react-native',
+      'react-native-web',
       'expo',
       // Add the failing package here, and restart the server...
     ],

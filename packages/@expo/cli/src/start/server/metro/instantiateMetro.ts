@@ -2,7 +2,6 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
@@ -18,6 +17,7 @@ import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
+import { createMetroDevMiddleware } from './dev-server/createMetroDevMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
@@ -28,9 +28,8 @@ import { CommandError } from '../../../utils/errors';
 import { logEventAsync } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
-import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
+import { prependMiddleware } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -100,6 +99,9 @@ export async function loadMetroConfigAsync(
       },
     },
   };
+
+  // @ts-expect-error: Set the global require cycle ignore patterns for SSR bundles. This won't work with custom global prefixes, but we don't use those.
+  globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
   if (isExporting) {
     // This token will be used in the asset plugin to ensure the path is correct for writing locally.
@@ -187,33 +189,19 @@ export async function instantiateMetroAsync(
     }
   );
 
-  const { createDevServerMiddleware, securityHeadersMiddleware } =
-    require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
-
-  const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
-    createDevServerMiddleware({
-      port: metroConfig.server.port,
-      watchFolders: metroConfig.watchFolders,
-    });
-
-  let debugWebsocketEndpoints: {
-    [path: string]: import('ws').WebSocketServer;
-  } = {};
+  // Create the core middleware stack for Metro, including websocket listeners
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
+    createMetroDevMiddleware(metroConfig);
 
   if (!isExporting) {
-    // The `securityHeadersMiddleware` does not support cross-origin requests, we replace with the enhanced version.
-    // From react-native 0.75, the exported `securityHeadersMiddleware` is a middleware factory that accepts single option parameter.
-    const securityHeadersMiddlewareHandler =
-      securityHeadersMiddleware.length === 1
-        ? securityHeadersMiddleware({})
-        : securityHeadersMiddleware;
-    replaceMiddlewareWith(
-      middleware as ConnectServer,
-      securityHeadersMiddlewareHandler,
-      createCorsMiddleware(exp)
-    );
+    // Enable correct CORS headers for Expo Router features
+    middleware.use(createCorsMiddleware(exp));
 
-    prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+    // Enable debug middleware for CDP-related debugging
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+    Object.assign(websocketEndpoints, debugWebsocketEndpoints);
+    middleware.use(debugMiddleware);
+    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
     // TODO: We can probably drop this now.
     const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
@@ -226,12 +214,6 @@ export async function instantiateMetroAsync(
     };
 
     middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
-
-    // Initialize all React Native debug features
-    const { debugMiddleware, ...options } = createDebugMiddleware(metroBundler);
-    debugWebsocketEndpoints = options.debugWebsocketEndpoints;
-    prependMiddleware(middleware, debugMiddleware);
-    middleware.use('/_expo/debugger', createJsInspectorMiddleware());
   }
 
   // Attach Expo Atlas if enabled
@@ -249,10 +231,9 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
+      // @ts-expect-error: Inconsistent `websocketEndpoints` type in metro
       websocketEndpoints: {
         ...websocketEndpoints,
-        ...debugWebsocketEndpoints,
         ...createDevToolsPluginWebsocketEndpoint(),
       },
       watch: !isExporting && isWatchEnabled(),
@@ -303,14 +284,14 @@ export async function instantiateMetroAsync(
     return next();
   });
 
-  setEventReporter(eventsSocketEndpoint.reportEvent);
+  setEventReporter(eventsSocket.reportMetroEvent);
 
   return {
     metro,
     hmrServer,
     server,
     middleware,
-    messageSocket: messageSocketEndpoint,
+    messageSocket: messagesSocket,
   };
 }
 

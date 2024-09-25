@@ -74,6 +74,7 @@ class ModuleHolder<T : Module>(val module: T) {
             prototypeDecorator,
             constructor.takesOwner,
             ownerClass,
+            clazz.isSharedRef,
             constructor.getCppRequiredTypes().toTypedArray(),
             constructor.getJNIFunctionBody(clazz.name, appContext)
           )

@@ -27,16 +27,16 @@ function _path() {
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
+function _() {
+  const data = require("..");
+  _ = function () {
     return data;
   };
   return data;
 }
-function _() {
-  const data = require("..");
-  _ = function () {
+function _Xcodeproj() {
+  const data = require("./utils/Xcodeproj");
+  _Xcodeproj = function () {
     return data;
   };
   return data;

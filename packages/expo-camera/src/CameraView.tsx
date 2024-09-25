@@ -27,7 +27,7 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
     return {};
   }
 
-  if (!options.quality) {
+  if (options.quality === undefined) {
     options.quality = 1;
   }
 

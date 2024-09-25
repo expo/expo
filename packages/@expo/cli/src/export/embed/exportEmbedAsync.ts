@@ -35,6 +35,7 @@ import { removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
+import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
 import {
@@ -63,6 +64,13 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
 }
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
+  // The React Native build scripts always enable the cache reset but we shouldn't need this in CI environments.
+  // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
+  if (env.CI && options.resetCache) {
+    debug('CI environment detected, disabling automatic cache reset');
+    options.resetCache = false;
+  }
+
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
@@ -144,10 +152,13 @@ export async function exportEmbedBundleAndAssetsAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
+  const files: ExportAssetMap = new Map();
+
   try {
-    const bundles = await devServer.legacySinglePageExportBundleAsync(
+    const bundles = await devServer.nativeExportBundleAsync(
       {
-        splitChunks: false,
+        // TODO: Re-enable when we get bytecode chunk splitting working again.
+        splitChunks: false, //devServer.isReactServerComponentsEnabled,
         mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,
@@ -159,6 +170,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         // source map inline
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
+      files,
       {
         sourceMapUrl,
         unstable_transformProfile: (options.unstableTransformProfile ||
@@ -166,7 +178,25 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    const files: ExportAssetMap = new Map();
+    if (devServer.isReactServerComponentsEnabled) {
+      // Export the API routes for server rendering the React Server Components.
+      await exportApiRoutesStandaloneAsync(devServer, {
+        files,
+        platform: 'web',
+      });
+
+      // Store the server output in the project's .expo directory.
+      const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
+      await removeAsync(serverOutput);
+      await persistMetroFilesAsync(files, serverOutput);
+
+      [...files.entries()].forEach(([key, value]) => {
+        if (value.targetDomain === 'server') {
+          // Delete server resources to prevent them from being exposed in the binary.
+          files.delete(key);
+        }
+      });
+    }
 
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts

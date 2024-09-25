@@ -263,6 +263,7 @@ const general = [
         makePage('modules/autolinking.mdx'),
         makePage('modules/module-config.mdx'),
         makePage('modules/mocking.mdx'),
+        makePage('modules/design.mdx'),
       ]),
     ],
     { expanded: false }
@@ -323,6 +324,7 @@ const general = [
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/e2e-tests.mdx'),
+        makePage('build-reference/easignore.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
       { expanded: false }
@@ -337,36 +339,37 @@ const general = [
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
-    makePage('eas-update/publish.mdx'),
-    makePage('eas-update/eas-cli.mdx'),
-    makePage('eas-update/develop-faster.mdx'),
-    makePage('eas-update/github-actions.mdx'),
-    makePage('eas-update/faq.mdx'),
-    makeGroup('Concepts', [
-      makePage('eas-update/how-it-works.mdx'),
-      makePage('eas-update/runtime-versions.mdx'),
-      makePage('eas-update/deployment-patterns.mdx'),
-    ]),
-    makeGroup('Troubleshoot', [
-      makePage('eas-update/debug.mdx'),
-      makePage('eas-update/debug-advanced.mdx'),
+    makeGroup('Preview', [
+      makePage('eas-update/develop-faster.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
-      makePage('eas-update/build-locally.mdx'),
-      makePage('eas-update/error-recovery.mdx'),
+      makePage('eas-update/github-actions.mdx'),
     ]),
-    makeGroup('Advanced', [
-      makePage('eas-update/optimize-assets.mdx'),
-      makePage('eas-update/environment-variables.mdx'),
-      makePage('eas-update/code-signing.mdx'),
+    makeGroup('Deployment', [
+      makePage('eas-update/deployment.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
-      makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/continuous-deployment.mdx'),
+      makePage('eas-update/deployment-patterns.mdx'),
+    ]),
+    makeGroup('Concepts', [
+      makePage('eas-update/how-it-works.mdx'),
+      makePage('eas-update/eas-cli.mdx'),
+      makePage('eas-update/runtime-versions.mdx'),
+    ]),
+    makeGroup('Troubleshooting', [
+      makePage('eas-update/debug.mdx'),
+      makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/codepush.mdx'),
+      makePage('eas-update/environment-variables.mdx'),
+      makePage('eas-update/code-signing.mdx'),
+      makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/updating-your-app.mdx'),
+      makePage('eas-update/build-locally.mdx'),
+      makePage('eas-update/faq.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [
@@ -394,7 +397,6 @@ const general = [
       [
         makePage('push-notifications/obtaining-a-device-token-for-fcm-or-apns.mdx'),
         makePage('push-notifications/sending-notifications-custom.mdx'),
-        makePage('push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
         makePage('push-notifications/faq.mdx'),
       ],
       { expanded: false }
@@ -556,10 +558,13 @@ const archive = [
     makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
   ]),
   makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
+  makeSection('Push Notifications', [
+    makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
+    makePage('archive/push-notifications/notification-channels.mdx'),
+  ]),
   makeSection('More', [
     makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
-    makePage('archive/notification-channels.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/using-expo-client.mdx'),

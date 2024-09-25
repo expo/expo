@@ -41,7 +41,7 @@ function useLoadedPhotos() {
 
 export default function GalleryScreen(props: TouchableOpacityProps & { photos?: string[] }) {
   const photos = useLoadedPhotos();
-  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : props.photos ?? []} />;
+  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : (props.photos ?? [])} />;
 }
 
 class LoadedGalleryScreen extends React.Component<

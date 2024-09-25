@@ -1,10 +1,10 @@
+import Schemer from '..';
+import { ErrorCodes, SchemerError } from '../Error';
 import good from './fixtures/app.json';
 import bad from './fixtures/bad.json';
 import badWithNot from './fixtures/badwithnot.json';
 import invalidAppIcon from './fixtures/invalidAppIcon.json';
 import schema from './fixtures/schema.json';
-import Schemer from '..';
-import { ErrorCodes, SchemerError } from '../Error';
 
 const validator = new Schemer(schema.schema, { rootDir: __dirname });
 

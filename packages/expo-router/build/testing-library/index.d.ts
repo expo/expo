@@ -5,7 +5,7 @@ import { render } from '@testing-library/react-native';
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoLinkingOptions } from '../getLinkingConfig';
 export * from '@testing-library/react-native';
-type RenderRouterOptions = Parameters<typeof render>[1] & {
+export type RenderRouterOptions = Parameters<typeof render>[1] & {
     initialUrl?: any;
     linking?: Partial<ExpoLinkingOptions>;
 };

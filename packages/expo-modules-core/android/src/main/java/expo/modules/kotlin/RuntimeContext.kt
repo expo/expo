@@ -7,6 +7,7 @@ import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIContext
+import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.tracing.trace
@@ -33,6 +34,13 @@ class RuntimeContext(
 
   private fun isJSIContextInitialized(): Boolean {
     return this::jsiContext.isInitialized
+  }
+
+  /**
+   * Evaluates JavaScript code represented as a string.
+   */
+  fun eval(source: String): JavaScriptValue {
+    return jsiContext.evaluateScript(source)
   }
 
   /**

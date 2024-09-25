@@ -1,10 +1,40 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { Path } from './FileSystem.types';
+import { URI } from './FileSystem.types';
+import { PathUtilities } from './pathUtilities';
+
+export class Paths extends PathUtilities {
+  static get cache() {
+    return new Directory(ExpoFileSystem.cacheDirectory);
+  }
+  static get document() {
+    return new Directory(ExpoFileSystem.documentDirectory);
+  }
+  static get appleSharedContainers() {
+    const containers: Record<string, string> = ExpoFileSystem.appleSharedContainers ?? {};
+    const result: Record<string, Directory> = {};
+    for (const appGroupId in containers) {
+      result[appGroupId] = new Directory(containers[appGroupId]);
+    }
+    return result;
+  }
+}
 
 export class File extends ExpoFileSystem.FileSystemFile {
-  constructor(path: Path) {
-    super(path);
+  constructor(...uris: (URI | File | Directory)[]) {
+    super(Paths.join(...uris));
     this.validatePath();
+  }
+  /*
+   * Directory containing the file.
+   */
+  get parentDirectory() {
+    return new Directory(Paths.dirname(this.uri));
+  }
+  /*
+   * File extension (with the dot).
+   */
+  get extension() {
+    return Paths.extname(this.uri);
   }
 }
 
@@ -15,13 +45,21 @@ File.downloadFileAsync = async function downloadFileAsync(url: string, to: File 
 };
 
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  constructor(path: Path) {
-    super(path);
+  constructor(...uris: (URI | File | Directory)[]) {
+    super(Paths.join(...uris));
     this.validatePath();
   }
-}
+  /*
+   * Directory containing the file.
+   */
+  get parentDirectory() {
+    return new Directory(Paths.join(this.uri, '..'));
+  }
 
-// consider module functions as API alternative
-export async function write(file: File, contents: string) {
-  return file.write(contents);
+  list() {
+    // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
+    return super
+      .listAsRecords()
+      .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
+  }
 }

@@ -601,7 +601,7 @@ function getParamsWithConventionsCollapsed({
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
     const name = testNotFound(routeName)
       ? 'not-found'
-      : matchDeepDynamicRouteName(routeName) ?? routeName;
+      : (matchDeepDynamicRouteName(routeName) ?? routeName);
     delete processedParams[name];
   }
 
