@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- Add `npx expo export --no-ssg` to export web API routes without static rendering the pages. ([#31475](https://github.com/expo/expo/pull/31475) by [@EvanBacon](https://github.com/EvanBacon))
 - disable export:embed cache reset when running in CI. ([#31663](https://github.com/expo/expo/pull/31663) by [@EvanBacon](https://github.com/EvanBacon))
 - add support for css imports from other css files ([#31574](https://github.com/expo/expo/pull/31574) by [@EvanBacon](https://github.com/EvanBacon))
 - server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))

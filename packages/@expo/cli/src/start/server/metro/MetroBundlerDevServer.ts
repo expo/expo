@@ -256,12 +256,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
-  async getServerManifestAsync(): Promise<{ serverManifest: ExpoRouterServerManifestV1 }> {
+  async getServerManifestAsync({
+    environment,
+  }: Pick<ExpoMetroOptions, 'environment'> = {}): Promise<{
+    serverManifest: ExpoRouterServerManifestV1;
+  }> {
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment: 'react-server',
+      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
     });
 
     return {
