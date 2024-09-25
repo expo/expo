@@ -26,7 +26,7 @@ fun buildDataSourceFactory(context: Context, videoSource: VideoSource): DataSour
 fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): OkHttpDataSource.Factory {
   val client = OkHttpClient.Builder().build()
 
-  // If the application name has ANY non-ASCII characters, we need to strip them out. This is because using ASCII characters
+  // If the application name has ANY non-ASCII characters, we need to strip them out. This is because using non-ASCII characters
   // in the User-Agent header can cause issues with getting the media to play.
   val applicationName = getApplicationName(context).filter { it.code in 0..127 }
 
