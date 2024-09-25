@@ -10,14 +10,21 @@ internal final class FileSystemDirectory: FileSystemPath {
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
       if !isDirectory.boolValue {
-        throw InvalidTypeFolderException()
+        throw InvalidTypeDirectoryException()
       }
     }
   }
 
   func create() throws {
     try validateType()
-    try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
+    guard !exists else {
+      throw UnableToCreateDirectoryException("directory already exists")
+    }
+    do {
+      try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
+    } catch {
+      throw UnableToCreateDirectoryException(error.localizedDescription)
+    }
   }
 
   var exists: Bool {

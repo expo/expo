@@ -11,6 +11,9 @@ import kotlin.io.path.moveTo
 // https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
 abstract class FileSystemPath(var file: File) : SharedObject() {
   fun delete() {
+    if (!file.exists()) {
+      throw UnableToDeleteException("path does not exist")
+    }
     file.delete()
   }
 

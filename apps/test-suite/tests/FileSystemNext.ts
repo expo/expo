@@ -107,6 +107,11 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(false);
     });
 
+    it('Throws if a file does not exist', () => {
+      const file = new File('file:///path/to/file');
+      expect(() => file.delete()).toThrow();
+    });
+
     it('Creates a folder', () => {
       const folder = new Directory(testDirectory + 'newFolder');
       folder.create();
