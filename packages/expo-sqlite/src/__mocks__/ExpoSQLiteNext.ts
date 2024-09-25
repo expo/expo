@@ -16,6 +16,9 @@ export default {
 
   defaultDatabaseDirectory: 'testDir/SQLite',
 
+  ensureDatabasePathExistsAsync: jest.fn().mockImplementation(async (databasePath: string) => {}),
+  ensureDatabasePathExistsSync: jest.fn().mockImplementation((databasePath: string) => {}),
+
   NativeDatabase: jest
     .fn()
     .mockImplementation(
