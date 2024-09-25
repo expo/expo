@@ -44,14 +44,7 @@ export function getAccessToken(): string | null {
 }
 
 export function getSession() {
-  try {
-    return getSettings().get('auth', null);
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
-      return null;
-    }
-    throw error;
-  }
+  return getSettings().get('auth', null);
 }
 
 export async function setSessionAsync(sessionData?: SessionData) {
