@@ -1,7 +1,6 @@
 import { exportEmbedInternalAsync } from './exportEmbedAsync';
 import { getExportEmbedOptionsKey, resolveEagerOptionsAsync } from './resolveOptions';
 import { env } from '../../utils/env';
-import { AbortCommandError } from '../../utils/errors';
 
 const debug = require('debug')('expo:eager');
 
@@ -22,16 +21,8 @@ export async function exportEagerAsync(
     resetCache: !env.CI,
   });
   debug('Starting eager export: ' + options.bundleOutput);
-  try {
-    await exportEmbedInternalAsync(projectRoot, options);
-    // TODO: Compose source maps
-  } catch (error: any) {
-    // ctrl+c
-    if (error.signal === 'SIGINT') {
-      throw new AbortCommandError();
-    }
-    throw error;
-  }
+
+  await exportEmbedInternalAsync(projectRoot, options);
 
   debug('Eager export complete');
 

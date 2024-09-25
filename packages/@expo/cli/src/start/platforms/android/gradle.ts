@@ -84,9 +84,11 @@ export async function assembleAsync(
     port,
     architectures,
     args,
-    env: {
-      __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
-    },
+    env: eagerBundleOptions
+      ? {
+          __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
+        }
+      : {},
   });
 }
 
