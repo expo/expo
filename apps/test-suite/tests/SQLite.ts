@@ -1,9 +1,8 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
-import { Directory } from 'expo-file-system/next';
+import { Paths } from 'expo-file-system/next';
 import * as SQLite from 'expo-sqlite';
 import path from 'path';
-import { Platform } from 'react-native';
 import semver from 'semver';
 
 export const name = 'SQLite';
@@ -915,56 +914,61 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
       expect(fileInfo.exists).toBeFalsy();
     });
 
-    if (Platform.OS === 'ios') {
-      describe('iOS App Group', () => {
-        beforeAll(async () => {
-          const sharedContainerRoot = Directory.getSharedContainer('group.dev.expo.Payments');
-          const sharedContainerDir = sharedContainerRoot.path + 'SQLite';
-          await FS.deleteAsync(sharedContainerDir, { idempotent: true });
-          await FS.makeDirectoryAsync(sharedContainerDir, { intermediates: true });
-          await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
-          await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
-        });
+    addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
+  });
+}
 
-        it('should create and delete a database in a shared container', async () => {
-          const sharedContainerRoot = Directory.getSharedContainer('group.dev.expo.Payments');
-          const dbDirectory = sharedContainerRoot.path + 'SQLite';
-          const dbUri = dbDirectory + '/test.db';
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+  const sharedContainerRoot = Object.values(Paths.appleSharedContainers)?.[0];
+  const sharedContainerDir = sharedContainerRoot ? sharedContainerRoot.uri + 'SQLite' : null;
+  const scopedIt = sharedContainerDir ? it : t.xit;
 
-          const db = await SQLite.openDatabaseAsync('test.db', {}, dbDirectory);
-          await db.execAsync(`
+  describe('iOS App Group', () => {
+    beforeEach(async () => {
+      if (sharedContainerDir) {
+        await FS.deleteAsync(sharedContainerDir, { idempotent: true });
+        await FS.makeDirectoryAsync(sharedContainerDir, { intermediates: true });
+      }
+      await FS.deleteAsync(FS.documentDirectory + 'SQLite', { idempotent: true });
+      await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite', { intermediates: true });
+    });
+
+    scopedIt('should create and delete a database in a shared container', async () => {
+      const dbUri = sharedContainerDir + '/test.db';
+
+      const db = await SQLite.openDatabaseAsync('test.db', {}, sharedContainerDir);
+      await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
 INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 `);
-          const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
-          expect(results.length).toBe(1);
-          await db.closeAsync();
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+      await db.closeAsync();
 
-          let fileInfo = await FS.getInfoAsync(dbUri);
-          expect(fileInfo.exists).toBeTruthy();
+      let fileInfo = await FS.getInfoAsync(dbUri);
+      expect(fileInfo.exists).toBeTruthy();
 
-          await SQLite.deleteDatabaseAsync('test.db', dbDirectory);
-          fileInfo = await FS.getInfoAsync(dbUri);
-          expect(fileInfo.exists).toBeFalsy();
-        });
+      await SQLite.deleteDatabaseAsync('test.db', sharedContainerDir);
+      fileInfo = await FS.getInfoAsync(dbUri);
+      expect(fileInfo.exists).toBeFalsy();
+    });
 
-        it('should support internal importDatabaseFromAssetAsync without using expo-file-system', async () => {
-          const sharedContainerRoot = Directory.getSharedContainer('group.dev.expo.Payments');
-          const dbDirectory = sharedContainerRoot.path + 'SQLite';
-          await SQLite.importDatabaseFromAssetAsync(
-            'test.db',
-            { assetId: require('../assets/asset-db.db') },
-            dbDirectory
-          );
-          const db = await SQLite.openDatabaseAsync('test.db', {}, dbDirectory);
-          const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
-          expect(results.length).toEqual(3);
-          expect(results[0].j).toBeCloseTo(23.4);
-          await db.closeAsync();
-        });
-      });
-    }
+    scopedIt(
+      'should support internal importDatabaseFromAssetAsync without using expo-file-system',
+      async () => {
+        await SQLite.importDatabaseFromAssetAsync(
+          'test.db',
+          { assetId: require('../assets/asset-db.db') },
+          sharedContainerDir
+        );
+        const db = await SQLite.openDatabaseAsync('test.db', {}, sharedContainerDir);
+        const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+        expect(results.length).toEqual(3);
+        expect(results[0].j).toBeCloseTo(23.4);
+        await db.closeAsync();
+      }
+    );
   });
 }
 
