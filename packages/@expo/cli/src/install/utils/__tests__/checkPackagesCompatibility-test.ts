@@ -6,8 +6,10 @@ jest.mock('../../../log');
 jest.mock('../../../utils/fetch');
 
 describe(checkPackagesCompatibility, () => {
+  jest.useFakeTimers();
+
   it(`warns about one unsupported package`, async () => {
-    jest.mocked(fetch).mockResolvedValueOnce({
+    jest.mocked(fetch).mockResolvedValue({
       json: () =>
         Promise.resolve({
           'react-native-auth0': { newArchitecture: 'unsupported' },
@@ -16,14 +18,16 @@ describe(checkPackagesCompatibility, () => {
 
     await checkPackagesCompatibility(['react-native-code-push']);
 
-    expect(Log.warn).toBeCalledTimes(1);
-    expect(Log.warn).toHaveBeenLastCalledWith(
-      expect.stringMatching(/react-native-code-push do not support the New Architecture/)
-    );
+    setTimeout(() => {
+      expect(Log.warn).toHaveBeenCalledTimes(1);
+      expect(Log.warn).toHaveBeenLastCalledWith(
+        expect.stringMatching(/react-native-code-push do not support the New Architecture/)
+      );
+    }, 10);
   });
 
   it(`warns about multiple unsupported package`, async () => {
-    jest.mocked(fetch).mockResolvedValueOnce({
+    jest.mocked(fetch).mockResolvedValue({
       json: () =>
         Promise.resolve({
           '@react-native-community/blur': { newArchitecture: 'unsupported' },
@@ -38,16 +42,18 @@ describe(checkPackagesCompatibility, () => {
       'react-native-code-push',
     ]);
 
-    expect(Log.warn).toBeCalledTimes(1);
-    expect(Log.warn).toHaveBeenLastCalledWith(
-      expect.stringMatching(
-        /@react-native-community\/blur, @gorhom\/bottom-sheet and react-native-code-push do not support the New Architecture/
-      )
-    );
+    setTimeout(() => {
+      expect(Log.warn).toHaveBeenCalledTimes(1);
+      expect(Log.warn).toHaveBeenLastCalledWith(
+        expect.stringMatching(
+          /@react-native-community\/blur, @gorhom\/bottom-sheet and react-native-code-push do not support the New Architecture/
+        )
+      );
+    }, 10);
   });
 
   it(`does not warn about supported or unknown package`, async () => {
-    jest.mocked(fetch).mockResolvedValueOnce({
+    jest.mocked(fetch).mockResolvedValue({
       json: () =>
         Promise.resolve({
           'expo-image': { newArchitecture: 'supported' },
@@ -57,16 +63,20 @@ describe(checkPackagesCompatibility, () => {
 
     await checkPackagesCompatibility(['expo-image']);
 
-    expect(Log.warn).toBeCalledTimes(0);
+    setTimeout(() => {
+      expect(Log.warn).toHaveBeenCalledTimes(0);
+    }, 10);
   });
 
   it(`does not fail for non-listed package`, async () => {
-    jest.mocked(fetch).mockResolvedValueOnce({
+    jest.mocked(fetch).mockResolvedValue({
       json: () => Promise.resolve({}),
     } as any);
 
     await checkPackagesCompatibility(['package-which-do-not-exist']);
 
-    expect(Log.warn).toBeCalledTimes(0);
+    setTimeout(() => {
+      expect(Log.warn).toHaveBeenCalledTimes(0);
+    }, 10);
   });
 });
