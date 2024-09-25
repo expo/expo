@@ -13,6 +13,7 @@ export type Options = {
   bytecode: boolean;
   dumpAssetmap: boolean;
   sourceMaps: boolean;
+  skipSSG: boolean;
 };
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
@@ -78,8 +79,9 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
+  const platforms = resolvePlatformOption(exp, platformBundlers, args['--platform']);
   return {
-    platforms: resolvePlatformOption(exp, platformBundlers, args['--platform']),
+    platforms,
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
     bytecode: !args['--no-bytecode'],
@@ -88,5 +90,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],
     sourceMaps: !!args['--source-maps'],
+    skipSSG: !!args['--no-ssg'],
   };
 }

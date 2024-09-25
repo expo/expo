@@ -294,9 +294,10 @@ async function exportDomComponentsAsync(
   exp: ExpoConfig,
   files: ExportAssetMap
 ) {
-  if (expoDomComponentReferences.length === 0) {
+  if (!expoDomComponentReferences.length) {
     return;
   }
+
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
     // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.

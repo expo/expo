@@ -46,7 +46,7 @@ import getDevClientProperties from '../../../utils/analytics/getDevClientPropert
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
-import { logEventAsync } from '../../../utils/telemetry';
+import { record } from '../../../utils/telemetry';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   cachedSourceMaps,
@@ -256,12 +256,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
-  async getServerManifestAsync(): Promise<{ serverManifest: ExpoRouterServerManifestV1 }> {
+  async getServerManifestAsync({
+    environment,
+  }: Pick<ExpoMetroOptions, 'environment'> = {}): Promise<{
+    serverManifest: ExpoRouterServerManifestV1;
+  }> {
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment: 'react-server',
+      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
     });
 
     return {
@@ -1618,9 +1622,12 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
   return async ({ runtime }) => {
     if (runtime === 'expo') return;
     const { exp } = getConfig(projectRoot);
-    await logEventAsync('dev client start command', {
-      status: 'started',
-      ...getDevClientProperties(projectRoot, exp),
+    record({
+      event: 'dev client start command',
+      properties: {
+        status: 'started',
+        ...getDevClientProperties(projectRoot, exp),
+      },
     });
   };
 }
