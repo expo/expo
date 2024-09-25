@@ -4,8 +4,6 @@ import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
 
-import { recordCommand } from '../src/utils/telemetry';
-
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
   Debug.enable('expo:*');
@@ -209,5 +207,9 @@ commands[command]().then((exec) => {
   // NOTE(EvanBacon): Track some basic telemetry events indicating the command
   // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
   // We do this to determine how well deprecations are going before removing a command.
-  recordCommand(command);
+  if (!boolish('EXPO_NO_TELEMETRY', false)) {
+    const { recordCommand } =
+      require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
+    recordCommand(command);
+  }
 });
