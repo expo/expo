@@ -2,9 +2,6 @@ import { vol } from 'memfs';
 
 import { anyMatchAsync, everyMatchAsync } from '../glob';
 
-// See: https://github.com/isaacs/node-glob/issues/515#issuecomment-1478780708
-jest.mock('node:fs/promises');
-
 describe(everyMatchAsync, () => {
   beforeEach(() => {
     vol.reset();

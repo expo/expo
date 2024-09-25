@@ -6,7 +6,7 @@ import { getContext } from '../getContext';
 
 jest.mock('@expo/rudder-sdk-node');
 jest.mock('../../../api/user/UserSettings', () => ({
-  getAnonymousIdentifierAsync: jest.fn().mockResolvedValue('anonymous-id'),
+  getAnonymousIdAsync: jest.fn().mockResolvedValue('anonymous-id'),
 }));
 jest.mock('../../../api/user/user', () => ({
   getActorDisplayName: jest.fn(),
