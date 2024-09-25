@@ -179,7 +179,7 @@ void JavaScriptObject::defineNativeDeallocator(
     [globalRef = std::move(globalRef)]() mutable {
       auto args = jni::Environment::ensureCurrentThreadIsAttached()->NewObjectArray(
         0,
-        JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+        JCacheHolder::get().jObject,
         nullptr
       );
       JNIFunctionBody::invoke(globalRef.get(), args);

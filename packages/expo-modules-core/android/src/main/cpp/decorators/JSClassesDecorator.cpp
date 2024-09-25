@@ -94,8 +94,7 @@ void JSClassesDecorator::decorate(
         jclass resultClass = env->GetObjectClass(unpackedResult);
         if (env->IsAssignableFrom(
           resultClass,
-          JavaReferencesCache::instance()->getJClass(
-            "expo/modules/kotlin/sharedobjects/SharedObject").clazz
+          JCacheHolder::get().jSharedObject
         )) {
           JSIContext *jsiContext = getJSIContext(runtime);
           auto jsThisObject = JavaScriptObject::newInstance(

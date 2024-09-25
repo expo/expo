@@ -25,7 +25,8 @@
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
     // Loads references to often use Java classes
-    expo::JavaReferencesCache::instance()->loadJClasses(jni::Environment::current());
+    expo::JCacheHolder::init(jni::Environment::current());
+
     expo::FrontendConverterProvider::instance()->createConverters();
 
     expo::RuntimeHolder::registerNatives();
