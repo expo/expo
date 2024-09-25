@@ -7,6 +7,9 @@ import NativeVideoView from './NativeVideoView';
  * > **Note:** All major web browsers support Picture in Picture (PiP) mode except Firefox.
  * > For more information, see [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/API/Picture-in-Picture_API#browser_compatibility).
  * @returns A `boolean` which is `true` if the device supports PiP mode, and `false` otherwise.
+ * @platform android
+ * @platform ios
+ * @platform web
  */
 export function isPictureInPictureSupported() {
     return NativeVideoModule.isPictureInPictureSupported();
@@ -31,12 +34,18 @@ export class VideoView extends PureComponent {
      *
      * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-app-config)
      * > has to be configured for the PiP to work.
+     * @platform android
+     * @platform ios
+     * @platform web
      */
     async startPictureInPicture() {
         return await this.nativeRef.current?.startPictureInPicture();
     }
     /**
      * Exits Picture in Picture (PiP) mode.
+     * @platform android
+     * @platform ios
+     * @platform web
      */
     async stopPictureInPicture() {
         return await this.nativeRef.current?.stopPictureInPicture();
