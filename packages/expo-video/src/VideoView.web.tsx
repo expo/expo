@@ -73,18 +73,18 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   }));
 
   useEffect(() => {
-    const enterPiPListener = videoRef.current?.addEventListener('enterpictureinpicture', () => {
+    const onEnter = () => {
       props.onPictureInPictureStart?.();
-    });
-    const exitPiPListener = videoRef.current?.addEventListener('leavepictureinpicture', () => {
+    };
+    const onLeave = () => {
       props.onPictureInPictureStop?.();
-    });
+    };
+    videoRef.current?.addEventListener('enterpictureinpicture', onEnter);
+    videoRef.current?.addEventListener('leavepictureinpicture', onLeave);
 
     return () => {
-      enterPiPListener &&
-        videoRef.current?.removeEventListener('enterpictureinpicture', enterPiPListener);
-      exitPiPListener &&
-        videoRef.current?.removeEventListener('leavepictureinpicture', exitPiPListener);
+      videoRef.current?.removeEventListener('enterpictureinpicture', onEnter);
+      videoRef.current?.removeEventListener('leavepictureinpicture', onLeave);
     };
   }, [videoRef, props.onPictureInPictureStop, props.onPictureInPictureStart]);
 
