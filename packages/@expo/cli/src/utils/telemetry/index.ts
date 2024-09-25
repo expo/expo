@@ -3,6 +3,7 @@ import process from 'node:process';
 import type { Telemetry } from './Telemetry';
 import { commandEvent } from './events';
 import type { TelemetryRecord } from './types';
+import { getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
 /** The singleton telemetry manager to use */
@@ -20,6 +21,11 @@ export function getTelemetry(): Telemetry | null {
     process.once('SIGINT', () => telemetry?.flushOnExit());
     process.once('SIGTERM', () => telemetry?.flushOnExit());
     process.once('beforeExit', () => telemetry?.flushOnExit());
+
+    // Initialize the telemetry
+    getUserAsync()
+      .then((actor) => telemetry?.initialize({ userId: actor?.id ?? null }))
+      .catch(() => telemetry?.initialize({ userId: null }));
   }
 
   return telemetry;

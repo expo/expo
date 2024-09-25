@@ -1,5 +1,7 @@
 import { getTelemetry } from '..';
 
+jest.mock('../../../api/user/user');
+
 beforeEach(() => setEnv('EXPO_NO_TELEMETRY', undefined));
 afterEach(() => resetEnv());
 

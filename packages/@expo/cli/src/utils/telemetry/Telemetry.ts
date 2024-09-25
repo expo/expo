@@ -14,22 +14,42 @@ type TelemetryOptions = {
   anonymousId?: string;
   /** A locally generated ID, per CLI invocation */
   sessionId?: string;
+  /** The authenticated user ID, this is used to generate an untracable hash */
+  userId?: string;
   /** The underlying telemetry strategy to use */
   strategy?: TelemetryClientStrategy;
 };
 
+type TelemetryActor = Required<Pick<TelemetryOptions, 'anonymousId' | 'sessionId'>> & {
+  /**
+   * Hashed version of the user ID, untracable to an actual user.
+   * If this value is set to `undefined`, telemetry is considered uninitialized and will wait until its set.
+   * If this value is set to `null`, telemetry is considered initialized without an authenticated user.
+   * If this value is set to a string, telemetry is considered initialized with an authenticated user.
+   */
+  userHash?: string | null;
+};
+
 export class Telemetry {
-  private actor: Required<Pick<TelemetryOptions, 'anonymousId' | 'sessionId'>>;
   private context = createContext();
   private client: TelemetryClient = new RudderDetachedClient();
+  private actor: TelemetryActor;
+
+  /** A list of all events, recorded before the telemetry was fully initialized */
+  private earlyRecords: TelemetryRecord[] = [];
 
   constructor({
     anonymousId = getAnonymousId(),
     sessionId = crypto.randomUUID(),
+    userId,
     strategy = 'detached',
   }: TelemetryOptions = {}) {
     this.actor = { anonymousId, sessionId };
     this.setStrategy(env.EXPO_NO_TELEMETRY_DETACH ? 'debug' : strategy);
+
+    if (userId) {
+      this.initialize({ userId });
+    }
   }
 
   get strategy() {
@@ -53,32 +73,62 @@ export class Telemetry {
     return this;
   }
 
+  get isInitialized() {
+    return this.actor.userHash !== undefined;
+  }
+
+  initialize({ userId }: { userId: string | null }) {
+    this.actor.userHash = userId ? hashUserId(userId) : null;
+    this.flushEarlyRecords();
+  }
+
+  private flushEarlyRecords() {
+    if (this.earlyRecords.length) {
+      this.recordInternal(this.earlyRecords);
+      this.earlyRecords = [];
+    }
+  }
+
+  private recordInternal(records: TelemetryRecord[]) {
+    return this.client.record(
+      records.map((record) => ({
+        ...record,
+        type: 'track' as const,
+        sentAt: new Date(),
+        messageId: createMessageId(record),
+        anonymousId: this.actor.anonymousId,
+        userHash: this.actor.userHash,
+        context: {
+          ...this.context,
+          sessionId: this.actor.sessionId,
+          client: { mode: this.client.strategy },
+        },
+      }))
+    );
+  }
+
   record(record: TelemetryRecord | TelemetryRecord[]) {
-    const records = (Array.isArray(record) ? record : [record]).map((record) => ({
-      type: 'track' as const,
-      ...record,
-      sentAt: new Date(),
-      messageId: createMessageId(record),
-      anonymousId: this.actor.anonymousId,
-      context: {
-        ...this.context,
-        sessionId: this.actor.sessionId,
-        client: { mode: this.client.strategy },
-      },
-    }));
+    const records = Array.isArray(record) ? record : [record];
 
     debug('Recording %d event(s)', records.length);
 
-    return this.client.record(records);
+    if (!this.isInitialized) {
+      this.earlyRecords.push(...records);
+      return;
+    }
+
+    return this.recordInternal(records);
   }
 
   flush() {
     debug('Flushing events...');
+    this.flushEarlyRecords();
     return this.client.flush();
   }
 
   flushOnExit() {
     this.setStrategy('detached');
+    this.flushEarlyRecords();
     return this.client.flush();
   }
 }
@@ -100,4 +150,9 @@ function createMessageId(record: TelemetryRecord) {
   const md5 = crypto.createHash('md5').update(JSON.stringify(record)).digest('hex');
 
   return `node-${md5}-${uuid}`;
+}
+
+/** Hash the user identifier to make it untracable */
+function hashUserId(userId: string) {
+  return crypto.createHash('sha256').update(userId).digest('hex');
 }
