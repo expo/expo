@@ -3,12 +3,8 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 
 import ExpoSQLite from './ExpoSQLiteNext';
 import type { SQLiteOpenOptions } from './NativeDatabase';
-import {
-  createDatabasePath,
-  openDatabaseAsync,
-  resolveDbDirectory,
-  type SQLiteDatabase,
-} from './SQLiteDatabase';
+import { openDatabaseAsync, type SQLiteDatabase } from './SQLiteDatabase';
+import { createDatabasePath } from './pathUtils';
 
 export interface SQLiteProviderAssetSource {
   /**
@@ -315,12 +311,11 @@ export async function importDatabaseFromAssetAsync(
   assetSource: SQLiteProviderAssetSource,
   directory?: string
 ) {
-  const resolvedDirectory = resolveDbDirectory(directory);
   const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
   if (!asset.localUri) {
     throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);
   }
-  const path = createDatabasePath(databaseName, resolvedDirectory);
+  const path = createDatabasePath(databaseName, directory);
   await ExpoSQLite.importAssetDatabaseAsync(
     path,
     asset.localUri,

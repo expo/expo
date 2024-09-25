@@ -1,5 +1,6 @@
 import ExpoSQLite from './ExpoSQLiteNext';
 import { SQLiteStatement, } from './SQLiteStatement';
+import { createDatabasePath } from './pathUtils';
 /**
  * A SQLite database.
  */
@@ -285,37 +286,6 @@ export class SQLiteDatabase {
  */
 export const defaultDatabaseDirectory = ExpoSQLite.defaultDatabaseDirectory;
 /**
- * Resolves the database directory from the given directory or the default directory.
- *
- * @hidden
- */
-export function resolveDbDirectory(directory) {
-    const resolvedDirectory = directory ?? defaultDatabaseDirectory;
-    if (resolvedDirectory === null) {
-        throw new Error('Both provided directory and defaultDatabaseDirectory are null.');
-    }
-    return resolvedDirectory;
-}
-/**
- * Creates a normalized database path by combining the directory and database name.
- *
- * Ensures the directory does not end with a trailing slash and the database name
- * does not start with a leading slash, preventing redundant slashes in the final path.
- *
- * @hidden
- */
-export function createDatabasePath(databaseName, directory) {
-    if (databaseName === ':memory:')
-        return databaseName;
-    function removeTrailingSlash(path) {
-        return path.replace(/\/*$/, '');
-    }
-    function removeLeadingSlash(path) {
-        return path.replace(/^\/+/, '');
-    }
-    return `${removeTrailingSlash(directory)}/${removeLeadingSlash(databaseName)}`;
-}
-/**
  * Open a database.
  *
  * @param databaseName The name of the database file to open.
@@ -324,7 +294,7 @@ export function createDatabasePath(databaseName, directory) {
  */
 export async function openDatabaseAsync(databaseName, options, directory) {
     const openOptions = options ?? {};
-    const databasePath = createDatabasePath(databaseName, resolveDbDirectory(directory));
+    const databasePath = createDatabasePath(databaseName, directory);
     await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
     await nativeDatabase.initAsync();
@@ -341,7 +311,7 @@ export async function openDatabaseAsync(databaseName, options, directory) {
  */
 export function openDatabaseSync(databaseName, options, directory) {
     const openOptions = options ?? {};
-    const databasePath = createDatabasePath(databaseName, resolveDbDirectory(directory));
+    const databasePath = createDatabasePath(databaseName, directory);
     ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
     nativeDatabase.initSync();
@@ -380,7 +350,7 @@ export function deserializeDatabaseSync(serializedData, options) {
  * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
 export async function deleteDatabaseAsync(databaseName, directory) {
-    const databasePath = createDatabasePath(databaseName, resolveDbDirectory(directory));
+    const databasePath = createDatabasePath(databaseName, directory);
     return await ExpoSQLite.deleteDatabaseAsync(databasePath);
 }
 /**
@@ -392,7 +362,7 @@ export async function deleteDatabaseAsync(databaseName, directory) {
  * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
  */
 export function deleteDatabaseSync(databaseName, directory) {
-    const databasePath = createDatabasePath(databaseName, resolveDbDirectory(directory));
+    const databasePath = createDatabasePath(databaseName, directory);
     return ExpoSQLite.deleteDatabaseSync(databasePath);
 }
 /**
