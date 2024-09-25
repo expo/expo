@@ -1,8 +1,9 @@
 import { codeFrameColumns } from '@babel/code-frame';
-import fs from 'fs';
 import JSON5 from 'json5';
-import path from 'path';
-import { promisify } from 'util';
+import type { Buffer } from 'node:buffer';
+import fs from 'node:fs';
+import path from 'node:path';
+import { promisify } from 'node:util';
 import writeFileAtomic from 'write-file-atomic';
 
 import JsonFileError, { EmptyJsonFileError } from './JsonFileError';
@@ -57,12 +58,19 @@ export default class JsonFile<TJSONObject extends JSONObject> {
   static read = read;
   static readAsync = readAsync;
   static parseJsonString = parseJsonString;
+  static write = write;
   static writeAsync = writeAsync;
+  static get = getSync;
   static getAsync = getAsync;
+  static set = setSync;
   static setAsync = setAsync;
+  static merge = merge;
   static mergeAsync = mergeAsync;
+  static deleteKey = deleteKey;
   static deleteKeyAsync = deleteKeyAsync;
+  static deleteKeys = deleteKeys;
   static deleteKeysAsync = deleteKeysAsync;
+  static rewrite = rewrite;
   static rewriteAsync = rewriteAsync;
 
   constructor(file: string, options: Options<TJSONObject> = {}) {
@@ -78,12 +86,24 @@ export default class JsonFile<TJSONObject extends JSONObject> {
     return readAsync(this.file, this._getOptions(options));
   }
 
+  write(object: TJSONObject, options?: Options<TJSONObject>) {
+    return write(this.file, object, this._getOptions(options));
+  }
+
   async writeAsync(object: TJSONObject, options?: Options<TJSONObject>) {
     return writeAsync(this.file, object, this._getOptions(options));
   }
 
   parseJsonString(json: string, options?: Options<TJSONObject>): TJSONObject {
     return parseJsonString(json, options);
+  }
+
+  get<K extends keyof TJSONObject, TDefault extends TJSONObject[K] | null>(
+    key: K,
+    defaultValue: TDefault,
+    options?: Options<TJSONObject>
+  ): Defined<TJSONObject[K]> | TDefault {
+    return getSync(this.file, key, defaultValue, this._getOptions(options));
   }
 
   async getAsync<K extends keyof TJSONObject, TDefault extends TJSONObject[K] | null>(
@@ -94,23 +114,46 @@ export default class JsonFile<TJSONObject extends JSONObject> {
     return getAsync(this.file, key, defaultValue, this._getOptions(options));
   }
 
+  set(key: string, value: unknown, options?: Options<TJSONObject>) {
+    return setSync(this.file, key, value, this._getOptions(options));
+  }
+
   async setAsync(key: string, value: unknown, options?: Options<TJSONObject>) {
     return setAsync(this.file, key, value, this._getOptions(options));
+  }
+
+  async merge(
+    sources: Partial<TJSONObject> | Partial<TJSONObject>[],
+    options?: Options<TJSONObject>
+  ) {
+    return merge<TJSONObject>(this.file, sources, this._getOptions(options));
   }
 
   async mergeAsync(
     sources: Partial<TJSONObject> | Partial<TJSONObject>[],
     options?: Options<TJSONObject>
-  ): Promise<TJSONObject> {
+  ) {
     return mergeAsync<TJSONObject>(this.file, sources, this._getOptions(options));
+  }
+
+  deleteKey(key: string, options?: Options<TJSONObject>) {
+    return deleteKey(this.file, key, this._getOptions(options));
   }
 
   async deleteKeyAsync(key: string, options?: Options<TJSONObject>) {
     return deleteKeyAsync(this.file, key, this._getOptions(options));
   }
 
+  deleteKeys(keys: string[], options?: Options<TJSONObject>) {
+    return deleteKeys(this.file, keys, this._getOptions(options));
+  }
+
   async deleteKeysAsync(keys: string[], options?: Options<TJSONObject>) {
     return deleteKeysAsync(this.file, keys, this._getOptions(options));
+  }
+
+  rewrite(options?: Options<TJSONObject>) {
+    return rewrite(this.file, this._getOptions(options));
   }
 
   async rewriteAsync(options?: Options<TJSONObject>) {
@@ -191,6 +234,22 @@ function parseJsonString<TJSONObject extends JSONObject>(
   }
 }
 
+function getSync<TJSONObject extends JSONObject, K extends keyof TJSONObject, DefaultValue>(
+  file: string,
+  key: K,
+  defaultValue: DefaultValue,
+  options?: Options<TJSONObject>
+): any {
+  const object = read(file, options);
+  if (key in object) {
+    return object[key];
+  }
+  if (defaultValue === undefined) {
+    throw new JsonFileError(`No value at key path "${String(key)}" in JSON object from: ${file}`);
+  }
+  return defaultValue;
+}
+
 async function getAsync<TJSONObject extends JSONObject, K extends keyof TJSONObject, DefaultValue>(
   file: string,
   key: K,
@@ -205,6 +264,32 @@ async function getAsync<TJSONObject extends JSONObject, K extends keyof TJSONObj
     throw new JsonFileError(`No value at key path "${String(key)}" in JSON object from: ${file}`);
   }
   return defaultValue;
+}
+
+function write<TJSONObject extends JSONObject>(
+  file: string,
+  object: TJSONObject,
+  options?: Options<TJSONObject>
+): TJSONObject {
+  if (options?.ensureDir) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+  }
+  const space = _getOption(options, 'space');
+  const json5 = _getOption(options, 'json5');
+  const addNewLineAtEOF = _getOption(options, 'addNewLineAtEOF');
+  let json;
+  try {
+    if (json5) {
+      json = JSON5.stringify(object, null, space);
+    } else {
+      json = JSON.stringify(object, null, space);
+    }
+  } catch (e: any) {
+    throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
+  }
+  const data = addNewLineAtEOF ? `${json}\n` : json;
+  writeFileAtomic.sync(file, data, {});
+  return object;
 }
 
 async function writeAsync<TJSONObject extends JSONObject>(
@@ -233,6 +318,18 @@ async function writeAsync<TJSONObject extends JSONObject>(
   return object;
 }
 
+function setSync<TJSONObject extends JSONObject>(
+  file: string,
+  key: string,
+  value: unknown,
+  options?: Options<TJSONObject>
+): TJSONObject {
+  // TODO: Consider implementing some kind of locking mechanism, but
+  // it's not critical for our use case, so we'll leave it out for now
+  const object = read(file, options);
+  return write(file, { ...object, [key]: value }, options);
+}
+
 async function setAsync<TJSONObject extends JSONObject>(
   file: string,
   key: string,
@@ -259,12 +356,34 @@ async function mergeAsync<TJSONObject extends JSONObject>(
   return writeAsync(file, object, options);
 }
 
+function merge<TJSONObject extends JSONObject>(
+  file: string,
+  sources: Partial<TJSONObject> | Partial<TJSONObject>[],
+  options?: Options<TJSONObject>
+): TJSONObject {
+  const object = read(file, options);
+  if (Array.isArray(sources)) {
+    Object.assign(object, ...sources);
+  } else {
+    Object.assign(object, sources);
+  }
+  return write(file, object, options);
+}
+
 async function deleteKeyAsync<TJSONObject extends JSONObject>(
   file: string,
   key: string,
   options?: Options<TJSONObject>
 ): Promise<TJSONObject> {
   return deleteKeysAsync(file, [key], options);
+}
+
+function deleteKey<TJSONObject extends JSONObject>(
+  file: string,
+  key: string,
+  options?: Options<TJSONObject>
+): TJSONObject {
+  return deleteKeys(file, [key], options);
 }
 
 async function deleteKeysAsync<TJSONObject extends JSONObject>(
@@ -289,12 +408,41 @@ async function deleteKeysAsync<TJSONObject extends JSONObject>(
   return object;
 }
 
+function deleteKeys<TJSONObject extends JSONObject>(
+  file: string,
+  keys: string[],
+  options?: Options<TJSONObject>
+): TJSONObject {
+  const object = read(file, options);
+  let didDelete = false;
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (object.hasOwnProperty(key)) {
+      delete object[key];
+      didDelete = true;
+    }
+  }
+
+  if (didDelete) {
+    return write(file, object, options);
+  }
+  return object;
+}
+
 async function rewriteAsync<TJSONObject extends JSONObject>(
   file: string,
   options?: Options<TJSONObject>
 ): Promise<TJSONObject> {
   const object = await readAsync(file, options);
   return writeAsync(file, object, options);
+}
+
+function rewrite<TJSONObject extends JSONObject>(
+  file: string,
+  options?: Options<TJSONObject>
+): TJSONObject {
+  return write(file, read(file, options), options);
 }
 
 function jsonParseErrorDefault<TJSONObject extends JSONObject>(
