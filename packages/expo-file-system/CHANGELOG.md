@@ -20,6 +20,7 @@
 - Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
 - Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
 - Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Added `Paths.appleSharedContainers` to get the paths to the Apple App Groups shared containers. ([#31525](https://github.com/expo/expo/pull/31525) by [@IgorKhramtsov](https://github.com/IgorKhramtsov) and [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

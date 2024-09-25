@@ -73,8 +73,7 @@ function updateDeploymentTargetXcodeProject(
     .map(([_, target]) => target.buildConfigurationList);
 
   for (const buildConfigListId of targetBuildConfigListIds) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [_, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+    for (const [, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
       project,
       buildConfigListId
     )) {

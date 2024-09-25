@@ -9,6 +9,7 @@ export declare class Paths extends PathUtilities {
      * A property containing the document directory – a place to store files that are safe from being deleted by the system.
      */
     static get document(): Directory;
+    static get appleSharedContainers(): Record<string, Directory>;
 }
 export declare class File extends ExpoFileSystem.FileSystemFile {
     /**
