@@ -23,7 +23,6 @@ jest.mock('../expoSsoLauncher', () => ({
 }));
 
 jest.mock('../../../log');
-jest.mock('../../../utils/telemetry');
 jest.unmock('../UserSettings');
 jest.mock('../../graphql/client', () => ({
   graphqlClient: {

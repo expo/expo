@@ -17,7 +17,7 @@ function getExpoDependencyChunks({
   includeTV: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env'],
+    ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],

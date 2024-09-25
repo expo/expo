@@ -25,7 +25,7 @@ import { getMetroProperties } from '../../../utils/analytics/getMetroProperties'
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { logEventAsync } from '../../../utils/telemetry';
+import { record } from '../../../utils/telemetry';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
@@ -148,7 +148,10 @@ export async function loadMetroConfigAsync(
   });
 
   if (process.env.NODE_ENV !== 'test') {
-    logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+    record({
+      event: 'metro config',
+      properties: getMetroProperties(projectRoot, exp, config),
+    });
   }
 
   return {

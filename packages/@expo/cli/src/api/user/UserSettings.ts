@@ -70,3 +70,20 @@ export async function getAnonymousIdAsync(): Promise<string> {
 
   return id;
 }
+
+/**
+ * Get an anonymous and randomly generated identifier.
+ * This is used to group telemetry event by unknown actor,
+ * and cannot be used to identify a single user.
+ */
+export function getAnonymousId(): string {
+  const settings = getSettings();
+  let id = settings.get('uuid', null);
+
+  if (!id) {
+    id = crypto.randomUUID();
+    settings.set('uuid', id);
+  }
+
+  return id;
+}
