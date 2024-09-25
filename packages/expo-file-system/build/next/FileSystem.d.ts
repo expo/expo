@@ -4,6 +4,7 @@ import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     static get cache(): Directory;
     static get document(): Directory;
+    static get appleSharedContainers(): Record<string, Directory>;
 }
 export declare class File extends ExpoFileSystem.FileSystemFile {
     constructor(...uris: (URI | File | Directory)[]);

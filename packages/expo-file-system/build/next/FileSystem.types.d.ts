@@ -132,6 +132,13 @@ export declare class Paths {
     static get document(): Directory;
     static get cache(): Directory;
     /**
+     * Gets the shared container directories for [Apple App Groups](https://developer.apple.com/documentation/xcode/configuring-app-groups).
+     * @return Map of app group identifiers to shared directories.
+     * @platform ios
+     * @platform tvos
+     */
+    static get appleSharedContainers(): Record<string, Directory>;
+    /**
      * Joins path segments into a single path.
      * @param paths - An array of path segments.
      * @returns A string representing the joined path.

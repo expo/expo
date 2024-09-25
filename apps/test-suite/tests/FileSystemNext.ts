@@ -384,4 +384,57 @@ export async function test({ describe, expect, it, ...t }) {
       });
     });
   });
+
+  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
+}
+
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
+  const firstContainer = Object.values(Paths.appleSharedContainers)?.[0];
+  const sharedContainerTestDir = firstContainer ? firstContainer.uri + 'test/' : null;
+  const scopedIt = sharedContainerTestDir ? it : t.xit;
+
+  describe('Apple App Group', () => {
+    t.beforeEach(async () => {
+      if (sharedContainerTestDir) {
+        await FS.makeDirectoryAsync(sharedContainerTestDir, { intermediates: true });
+      }
+    });
+
+    t.afterEach(async () => {
+      if (sharedContainerTestDir) {
+        await FS.deleteAsync(sharedContainerTestDir, { idempotent: true });
+      }
+    });
+
+    scopedIt('Writes a string to a file reference', () => {
+      const outputFile = new File(sharedContainerTestDir + 'file.txt');
+      expect(outputFile.exists).toBe(false);
+      outputFile.write('Hello world');
+      expect(outputFile.exists).toBe(true);
+    });
+
+    scopedIt('Deletes a file reference', () => {
+      const outputFile = new File(sharedContainerTestDir + 'file3.txt');
+      outputFile.write('Hello world');
+      expect(outputFile.exists).toBe(true);
+
+      outputFile.delete();
+      expect(outputFile.exists).toBe(false);
+    });
+
+    scopedIt('Creates a folder', () => {
+      const folder = new Directory(sharedContainerTestDir + 'newFolder');
+      folder.create();
+      expect(folder.exists).toBe(true);
+    });
+
+    scopedIt('Deletes a folder', () => {
+      const folder = new Directory(sharedContainerTestDir + 'newFolder');
+      folder.create();
+      expect(folder.exists).toBe(true);
+
+      folder.delete();
+      expect(folder.exists).toBe(false);
+    });
+  });
 }
