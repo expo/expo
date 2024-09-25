@@ -1,10 +1,9 @@
-import fs from 'fs/promises';
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, getRouterE2ERoot } from '../utils';
+import { bin, getRouterE2ERoot } from '../utils';
 import JsonFile from '@expo/json-file';
 
 runExportSideEffects();
