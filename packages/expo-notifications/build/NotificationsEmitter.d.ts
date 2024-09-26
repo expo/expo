@@ -72,21 +72,11 @@ export declare function removeNotificationSubscription(subscription: EventSubscr
  * Gets the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
  *
- * @return A promise that resolves to one of these values:
- * - `null` - if no notification response has been received yet,
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export declare function getLastNotificationResponseAsync(): Promise<NotificationResponse | null>;
-/**
- * Clears the notification response that was received most recently. May be used in cases
- * where the app selects a route based on the notification response, and it is undesirable
- * to continue to select the route after the response has already been handled.
- *
- * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
- * this call will also clear the value returned by the hook.
- *
- * @return A promise that resolves if the native call was succesful.
- */
 export declare function clearLastNotificationResponseAsync(): Promise<void>;
 /**
  * @hidden

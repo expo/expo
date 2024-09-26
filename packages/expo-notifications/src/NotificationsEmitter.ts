@@ -114,8 +114,8 @@ export function removeNotificationSubscription(subscription: EventSubscription) 
  * Gets the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
  *
- * @return A promise that resolves to one of these values:
- * - `null` - if no notification response has been received yet,
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
@@ -127,15 +127,15 @@ export async function getLastNotificationResponseAsync(): Promise<NotificationRe
   return mappedResponse;
 }
 
-/**
- * Clears the notification response that was received most recently. May be used in cases
- * where the app selects a route based on the notification response, and it is undesirable
+/* Clears the notification response that was received most recently. May be used
+ * when an app selects a route based on the notification response, and it is undesirable
+ * to continue selecting the route after the response has already been handled.
  * to continue to select the route after the response has already been handled.
  *
  * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
  * this call will also clear the value returned by the hook.
  *
- * @return A promise that resolves if the native call was succesful.
+ * @return A promise that resolves if the native call was successful.
  */
 export async function clearLastNotificationResponseAsync(): Promise<void> {
   if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
@@ -149,7 +149,5 @@ export async function clearLastNotificationResponseAsync(): Promise<void> {
  * @hidden
  */
 export function addNotificationResponseClearedListener(listener: () => void): EventSubscription {
-  return emitter.addListener<void>(didClearNotificationResponseEventName, () => {
-    listener();
-  });
+  return emitter.addListener<void>(didClearNotificationResponseEventName, listener);
 }
