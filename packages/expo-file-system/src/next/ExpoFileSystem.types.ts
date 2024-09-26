@@ -39,20 +39,24 @@ export declare class Directory {
    * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
    */
   create(): void;
+
   /**
    * Copies a directory.
    */
   copy(destination: Directory | File);
+
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
   move(destination: Directory | File);
+
   /**
    * @hidden
    * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
    * This function is internal and will be removed in the future (when returning arrays of shared objects is supported).
    */
   listAsRecords(): { isDirectory: string; path: string }[];
+
   /**
    * Lists the contents of a directory.
    */
@@ -130,16 +134,22 @@ export declare class File {
   move(destination: Directory | File);
 
   /**
-   * Downloads a file from the network.
+   * A static method that downloads a file from the network.
    * @param url - The URL of the file to download.
-   * @param destination - The destination directory or file. If a destination is provided, the resulting filename will be determined based on the response headers.
+   * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
    * @returns A promise that resolves to the downloaded file.
+   * @example
+   * ```ts
+   * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
+   * ```
    */
   static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
+
   /**
    * A size of the file in bytes. Null if the file does not exist or it cannot be read.
    */
   size: number | null;
+
   /**
    * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
