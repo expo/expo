@@ -227,4 +227,23 @@ export default Svg;
 
     expect(contents?.code).not.toMatch('react-server-dom-webpack');
   });
+
+  it(`converts "use dom" to client proxies`, () => {
+    const res = transformReactServer(`
+    "use dom";
+    import { Text } from 'react-native';
+    
+    export const foo = 'bar';
+    
+    module.exports = function App() {
+      return <Text>Hello World</Text>
+    }
+    `);
+    expect(res.metadata.proxyExports).toEqual(['foo']);
+    expect(res.code).toMatchInlineSnapshot(`
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      module.exports = proxy;
+      export const foo = proxy["foo"];"
+    `);
+  });
 });

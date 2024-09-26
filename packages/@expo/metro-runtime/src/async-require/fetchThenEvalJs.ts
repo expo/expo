@@ -9,7 +9,7 @@ import { fetchAsync } from './fetchAsync';
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
  *
- * @param bundlePath Given a statement like `import('./Bacon')` `bundlePath` would be `Bacon`.
+ * @param url Given a statement like `import('./Bacon')` `bundlePath` would be `Bacon`.
  */
 export function fetchThenEvalAsync(url: string): Promise<void> {
   return fetchAsync(url).then(({ body, status, headers }) => {

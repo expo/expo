@@ -16,7 +16,7 @@ See [Server infrastructure reference](/build-reference/infrastructure) for more 
 
 Build jobs for Android install npm and Maven dependencies from a local cache. Build jobs for iOS install npm dependencies from a local cache, but there is no caching for CocoaPods yet.
 
-Intermediate artifacts like `node_modules` directories are not cached and restored (eg: based on `yarn.lock` or `package-lock.json`), but if you commit them to your git repository then they will be uploaded to build servers.
+Intermediate artifacts like **node_modules** directories are not cached and restored (for example, based on **package-lock.json** or **yarn.lock**), but if you commit them to your Git repository then they will be uploaded to build servers.
 
 See [dependency caching](/build-reference/caching) for more information.
 

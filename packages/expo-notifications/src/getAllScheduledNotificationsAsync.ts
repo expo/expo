@@ -2,6 +2,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationScheduler from './NotificationScheduler';
 import { NotificationRequest } from './Notifications.types';
+import { mapNotificationRequest } from './utils/mapNotificationResponse';
 
 /**
  * Fetches information about all scheduled notifications.
@@ -13,5 +14,7 @@ export default async function getAllScheduledNotificationsAsync(): Promise<Notif
     throw new UnavailabilityError('Notifications', 'getAllScheduledNotificationsAsync');
   }
 
-  return await NotificationScheduler.getAllScheduledNotificationsAsync();
+  return (await NotificationScheduler.getAllScheduledNotificationsAsync()).map((request) =>
+    mapNotificationRequest(request)
+  );
 }

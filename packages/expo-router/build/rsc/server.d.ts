@@ -22,7 +22,7 @@ export type BuildConfig = {
     customData?: unknown;
 }[];
 export type RenderEntries = (input: string, options: {
-    searchParams: URLSearchParams;
+    params: unknown | undefined;
     buildConfig: BuildConfig | undefined;
 }) => Promise<Elements | null>;
 export type GetBuildConfig = (unstable_collectClientModules: (input: string) => Promise<string[]>) => Promise<BuildConfig>;
@@ -32,7 +32,7 @@ export type GetSsrConfig = (pathname: string, options: {
 }) => Promise<{
     input: string;
     searchParams?: URLSearchParams;
-    body: ReactNode;
+    html: ReactNode;
 } | null>;
 export declare function defineEntries(renderEntries: RenderEntries, getBuildConfig?: GetBuildConfig, getSsrConfig?: GetSsrConfig): {
     renderEntries: RenderEntries;
@@ -48,15 +48,15 @@ export type EntriesPrd = EntriesDev & {
     dynamicHtmlPaths: [pathSpec: PathSpec, htmlHead: string][];
     publicIndexHtml: string;
 };
-type RenderStore<RscContext extends Record<string, unknown> = Record<string, unknown>> = {
-    rerender: (input: string, searchParams?: URLSearchParams) => void;
-    context: RscContext;
+type RenderStore = {
+    rerender: (input: string, params?: unknown) => void;
+    context: Record<string, unknown>;
 };
 /**
  * This is an internal function and not for public use.
  */
 export declare const runWithRenderStore: <T>(renderStore: RenderStore, fn: () => T) => T;
-export declare function rerender(input: string, searchParams?: URLSearchParams): void;
+export declare function rerender(input: string, params?: unknown): void;
 export declare function getContext<RscContext extends Record<string, unknown> = Record<string, unknown>>(): RscContext;
 export {};
 //# sourceMappingURL=server.d.ts.map

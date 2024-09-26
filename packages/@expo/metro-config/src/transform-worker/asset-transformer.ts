@@ -44,6 +44,10 @@ export async function transform(
     projectRoot: '',
   };
 
+  // Is bundling for webview.
+  const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
+  const isExport = options.publicPath.includes('?export_path=');
+
   const absolutePath = path.resolve(options.projectRoot, filename);
 
   if (options.customTransformOptions?.environment === 'react-server') {
@@ -68,7 +72,11 @@ export async function transform(
     filename,
     assetDataPlugins,
     options.platform,
-    options.publicPath
+    isDomComponent && isExport
+      ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
+        // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
+        `/assets?export_path=assets`
+      : options.publicPath
   );
 
   return {

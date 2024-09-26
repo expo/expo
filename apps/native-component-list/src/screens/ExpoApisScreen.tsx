@@ -67,7 +67,6 @@ const screens = [
   'Notification',
   'Pedometer',
   'Print',
-  'Random',
   'SMS',
   'NavigationBar',
   'SafeAreaContext',

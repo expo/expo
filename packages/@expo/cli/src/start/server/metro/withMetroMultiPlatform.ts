@@ -319,11 +319,8 @@ export function withExtendedResolver(
         }
 
         if (context.customResolverOptions?.environment === 'react-server') {
-          // Ensure `expo-router/build/server-actions` module is external as it contains state that must be accessed by the CLI
-          // in order to retrieve the server actions.
-
           // Ensure these non-react-server modules are excluded when bundling for React Server Components in development.
-          return /^(expo-router\/build\/server-actions|source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
+          return /^(source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
             moduleName
           );
         }
@@ -721,6 +718,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isNamedRequiresEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -731,10 +729,11 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
-  if (env.EXPO_USE_METRO_REQUIRE) {
+  if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
     require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
@@ -750,11 +749,6 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
-  if (['static', 'server'].includes(webOutput ?? '')) {
-    // Enable static rendering in runtime space.
-    process.env.EXPO_PUBLIC_USE_STATIC = '1';
-  }
-
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
     if (!config.watchFolders) {
@@ -769,8 +763,7 @@ export async function withMetroMultiPlatformAsync(
     }
   }
 
-  // @ts-expect-error
-  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: Remove this
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 

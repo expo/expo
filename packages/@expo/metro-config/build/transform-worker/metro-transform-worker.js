@@ -238,7 +238,7 @@ async function transformJS(file, { config, options }) {
     file.type === 'js/module' &&
         String(options.customTransformOptions?.optimize) === 'true' &&
         // Disable tree shaking on JSON files.
-        !file.filename.endsWith('.json');
+        !file.filename.match(/\.(json|s?css|sass)$/);
     const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
     if (optimize && !options.experimentalImportSupport) {
         // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.
@@ -387,6 +387,7 @@ async function transformJS(file, { config, options }) {
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
+                expoDomComponentReference: file.expoDomComponentReference,
                 ...(possibleReconcile
                     ? {
                         ast: wrappedAst,
@@ -449,6 +450,7 @@ async function transformJSWithBabel(file, context) {
             null,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
         reactClientReference: transformResult.metadata?.reactClientReference,
+        expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
     };
     return await transformJS(jsFile, context);
 }

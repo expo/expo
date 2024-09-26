@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
-import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import { Application, Configuration, TSConfigReader, TypeDocReader } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -86,8 +86,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite-legacy': ['legacy/index.ts', 'expo-sqlite'],
-  'expo-sqlite': ['index.ts'],
-  'expo-status-bar': ['StatusBar.ts'],
+  'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
+  'expo-status-bar': ['StatusBar.tsx'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
@@ -140,10 +140,22 @@ const executeCommand = async (
       hideGenerator: true,
       excludePrivate: true,
       excludeProtected: true,
-      skipErrorChecking: true,
       excludeExternals: true,
-      jsDocCompatibility: false,
       pretty: !MINIFY_JSON,
+      commentStyle: 'All',
+      jsDocCompatibility: false,
+      preserveLinkText: true,
+      sourceLinkExternal: false,
+      markdownLinkExternal: false,
+      blockTags: [
+        ...Configuration.OptionDefaults.blockTags,
+        '@alias',
+        '@deprecated',
+        '@docsMissing',
+        '@header',
+        '@needsAudit',
+        '@platform',
+      ],
     },
     [new TSConfigReader(), new TypeDocReader()]
   );
@@ -167,12 +179,20 @@ const executeCommand = async (
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(
-        trimmedOutput,
-        ({ key, node }) =>
-          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
+      const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
+        return (
+          [
+            'id',
+            'groups',
+            'kindString',
+            'originalName',
+            'files',
+            'sourceFileName',
+            'target',
+          ].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
-      );
+        );
+      });
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
       await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));

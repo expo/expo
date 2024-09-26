@@ -9,7 +9,7 @@ export EXPO_NO_TELEMETRY=1
 cat > app.json <<EOF
 {
   "expo": {
-    "jsEngine": "hermes"
+    "jsEngine": "jsc"
   }
 }
 EOF

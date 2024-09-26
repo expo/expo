@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWatchFolders = exports.resolveAllWorkspacePackageJsonPaths = exports.globAllPackageJsonPaths = void 0;
+const paths_1 = require("@expo/config/paths");
 const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
-const getModulesPaths_1 = require("./getModulesPaths");
 function readJsonFile(filePath) {
     // Read with fs
     const file = fs_1.default.readFileSync(filePath, 'utf8');
@@ -78,9 +78,10 @@ exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPath
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
  */
 function getWatchFolders(projectRoot) {
-    const workspaceRoot = (0, getModulesPaths_1.getWorkspaceRoot)(path_1.default.resolve(projectRoot));
+    const resolvedProjectRoot = path_1.default.resolve(projectRoot);
+    const workspaceRoot = (0, paths_1.getMetroServerRoot)(resolvedProjectRoot);
     // Rely on default behavior in standard projects.
-    if (!workspaceRoot) {
+    if (workspaceRoot === resolvedProjectRoot) {
         return [];
     }
     const packages = resolveAllWorkspacePackageJsonPaths(workspaceRoot);

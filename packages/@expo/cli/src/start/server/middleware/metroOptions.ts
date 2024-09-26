@@ -30,6 +30,8 @@ export type ExpoMetroOptions = {
   reactCompiler: boolean;
   baseUrl?: string;
   isExporting: boolean;
+  /** Is bundling a DOM Component ("use dom"). Requires the entry dom component file path. */
+  domRoot?: string;
   inlineSourceMap?: boolean;
   clientBoundaries?: string[];
   splitChunks?: boolean;
@@ -70,6 +72,7 @@ function withDefaults({
   minify = mode === 'production',
   preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
+  environment,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
   if (props.bytecode) {
@@ -83,9 +86,7 @@ function withDefaults({
 
   const optimize =
     props.optimize ??
-    (props.environment !== 'node' &&
-      mode === 'production' &&
-      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+    (environment !== 'node' && mode === 'production' && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
 
   return {
     mode,
@@ -94,6 +95,7 @@ function withDefaults({
     optimize,
     usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
+    environment: environment === 'client' ? undefined : environment,
     ...props,
   };
 }
@@ -155,6 +157,8 @@ export function getMetroDirectBundleOptions(
     usedExports,
     reactCompiler,
     optimize,
+    domRoot,
+    clientBoundaries,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -179,6 +183,29 @@ export function getMetroDirectBundleOptions(
     }
   }
 
+  const customTransformOptions: ExpoMetroBundleOptions['customTransformOptions'] = {
+    __proto__: null,
+    optimize: optimize || undefined,
+    engine,
+    clientBoundaries,
+    preserveEnvVars: preserveEnvVars || undefined,
+    // Use string to match the query param behavior.
+    asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
+    environment,
+    baseUrl: baseUrl || undefined,
+    routerRoot,
+    bytecode: bytecode ? '1' : undefined,
+    reactCompiler: reactCompiler || undefined,
+    dom: domRoot,
+  };
+
+  // Iterate and delete undefined values
+  for (const key in customTransformOptions) {
+    if (customTransformOptions[key] === undefined) {
+      delete customTransformOptions[key];
+    }
+  }
+
   const bundleOptions: Partial<ExpoMetroBundleOptions> = {
     platform,
     entryFile: mainModuleName,
@@ -187,19 +214,7 @@ export function getMetroDirectBundleOptions(
     inlineSourceMap: inlineSourceMap ?? false,
     lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
-    customTransformOptions: {
-      __proto__: null,
-      optimize: optimize || undefined,
-      engine,
-      preserveEnvVars: preserveEnvVars || undefined,
-      // Use string to match the query param behavior.
-      asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
-      environment,
-      baseUrl: baseUrl || undefined,
-      routerRoot,
-      bytecode: bytecode || undefined,
-      reactCompiler: reactCompiler || undefined,
-    },
+    customTransformOptions,
     customResolverOptions: {
       __proto__: null,
       environment,
@@ -258,6 +273,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     splitChunks,
     usedExports,
     optimize,
+    domRoot,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -288,7 +304,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.engine', engine);
   }
   if (bytecode) {
-    queryParams.append('transform.bytecode', String(bytecode));
+    queryParams.append('transform.bytecode', '1');
   }
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
@@ -307,6 +323,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (reactCompiler) {
     queryParams.append('transform.reactCompiler', String(reactCompiler));
+  }
+  if (domRoot) {
+    queryParams.append('transform.dom', domRoot);
   }
 
   if (environment) {

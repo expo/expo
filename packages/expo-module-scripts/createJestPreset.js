@@ -1,8 +1,8 @@
 'use strict';
 
-const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
 const path = require('path');
+const { resolveWorkspaceRoot } = require('resolve-workspace-root');
 
 module.exports = function (basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
@@ -72,6 +72,8 @@ function _createJestPreset(basePreset) {
       ],
       ...basePreset.transform,
     },
+    // Add the React 19 workaround
+    setupFiles: [...basePreset.setupFiles, require.resolve('./jest-setup-react-19.js')],
   };
 }
 
@@ -126,12 +128,10 @@ function _getDefaultTypeRoots(currentDirectory) {
     return typeRoots;
   }
 
-  const workspaceRootPath = findYarnWorkspaceRoot(packageDirectory);
-
   // If the TypeScript configuration is in a Yarn workspace, workspace's npm dependencies may be
   // installed in the workspace root. If the configuration is in a non-workspace package, its
   // dependencies are installed only in the package's directory.
-  const rootPath = workspaceRootPath || packageDirectory;
+  const rootPath = resolveWorkspaceRoot(packageDirectory) || packageDirectory;
 
   let relativeAncestorDirectoryPath = '..';
   while (currentDirectory !== rootPath) {

@@ -60,6 +60,7 @@ it(`can create a micro Metro graph fixture`, async () => {
       var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
       console.log(foo);
     });",
+                  "expoDomComponentReference": undefined,
                   "functionMap": {
                     "mappings": "AAA",
                     "names": [
@@ -208,6 +209,7 @@ it(`can create a micro Metro graph fixture`, async () => {
       const foo = 'foo';
       exports.foo = foo;
     });",
+                  "expoDomComponentReference": undefined,
                   "functionMap": {
                     "mappings": "AAA",
                     "names": [

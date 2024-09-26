@@ -11,9 +11,47 @@ import {
   usePathname,
   Link,
 } from '../exports';
+import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
+
+it('should respect `unstable_settings', () => {
+  const render = (options: any = {}) =>
+    renderRouter(
+      {
+        '(one,two)/_layout': {
+          unstable_settings: {
+            initialRouteName: 'apple',
+            two: {
+              initialRouteName: 'orange',
+            },
+          },
+          default: () => <Tabs />,
+        },
+        '(one,two)/apple': () => <Text testID="apple"> Apple</Text>,
+        '(two)/banana': () => <Text testID="banana">Banana</Text>,
+        '(one,two)/orange': () => <Text testID="orange">Orange</Text>,
+      },
+      options
+    );
+
+  render({ initialUrl: '/orange' });
+  expect(screen).toHaveSegments(['(two)', 'orange']);
+
+  expect(screen.getByTestId('orange')).toBeVisible();
+  // Orange is the initial route so you can't go back
+  expect(router.canGoBack()).toBeFalsy();
+
+  // Reset the app, but start at /banana
+  screen.unmount();
+  render({ initialUrl: '/banana' });
+
+  expect(screen.getByTestId('banana')).toBeVisible();
+  // Orange should be the initialRouteName, because we are in (two)
+  act(() => router.back());
+  expect(screen.getByTestId('orange')).toBeVisible();
+});
 
 describe('hooks only', () => {
   it('can handle navigation between routes', async () => {
@@ -868,42 +906,83 @@ it('can push the same route multiple times', () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
-it('can push relative links from index routes', async () => {
-  renderRouter({
-    _layout: () => <Slot />,
-    '(app)/index': () => <Text testID="one" />,
-    '(app)/test/_layout': () => <Stack />,
-    '(app)/test/index': () => <Text testID="two" />,
-    '(app)/test/bar': () => <Text testID="three" />,
+describe('relative urls', () => {
+  it('can push relative links from index routes', async () => {
+    renderRouter(
+      {
+        _layout: () => <Slot />,
+        '(app)/test/_layout': () => <Stack />,
+        '(app)/test/index': () => <Text testID="two" />,
+        '(app)/test/bar': () => <Text testID="three" />,
+      },
+      {
+        initialUrl: '/test',
+      }
+    );
+
+    expect(screen).toHavePathname('/test');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+    act(() => router.push('./test/bar'));
+    expect(screen.getByTestId('three')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test/bar');
   });
 
-  expect(screen).toHavePathname('/');
-  expect(screen.getByTestId('one')).toBeOnTheScreen();
+  it('can push relative links relative to the directory', async () => {
+    renderRouter(
+      {
+        _layout: () => <Slot />,
+        '(app)/index': () => <Text testID="one" />,
+        '(app)/test/_layout': () => <Stack />,
+        '(app)/test/index': () => <Text testID="two" />,
+        '(app)/test/bar': () => <Text testID="three" />,
+      },
+      {
+        initialUrl: '/test',
+      }
+    );
 
-  act(() => router.push('./test'));
-  expect(screen).toHavePathname('/test');
-  expect(screen.getByTestId('two')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
 
-  act(() => router.push('./bar'));
-  expect(screen.getByTestId('three')).toBeOnTheScreen();
-  expect(screen).toHavePathname('/test/bar');
-});
+    act(() => router.push('./bar', { relativeToDirectory: true }));
+    expect(screen.getByTestId('three')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/test/bar');
+  });
 
-it('can push relative links from hoisted routes', () => {
-  renderRouter(
-    {
-      _layout: () => <Stack />,
-      'parent/index': () => <Link testID="link" href="./child" />,
-      'parent/child': () => <View testID="child" />,
-    },
-    {
-      initialUrl: '/parent',
-    }
-  );
+  it('can push relative links from hoisted routes', () => {
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        'parent/index': () => <Link testID="link" href="./parent/child" />,
+        'parent/child': () => <View testID="child" />,
+      },
+      {
+        initialUrl: '/parent',
+      }
+    );
 
-  expect(screen.getByTestId('link')).toBeOnTheScreen();
-  fireEvent(screen.getByTestId('link'), 'press');
-  expect(screen.getByTestId('child')).toBeOnTheScreen();
+    expect(screen.getByTestId('link')).toBeOnTheScreen();
+    fireEvent(screen.getByTestId('link'), 'press');
+    expect(screen.getByTestId('child')).toBeOnTheScreen();
+  });
+
+  it('can push relative links from hoisted routes relative to the directory', () => {
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        'parent/index': () => <Link testID="link" href="./child" relativeToDirectory />,
+        'parent/child': () => <View testID="child" />,
+      },
+      {
+        initialUrl: '/parent',
+      }
+    );
+
+    expect(screen.getByTestId('link')).toBeOnTheScreen();
+    fireEvent(screen.getByTestId('link'), 'press');
+    expect(screen.getByTestId('child')).toBeOnTheScreen();
+  });
 });
 
 it('can navigation to a relative route without losing path params', async () => {
@@ -1323,5 +1402,177 @@ describe('stack unwinding', () => {
     act(() => router.push('/a')); // This will unwind the stack
 
     expect(router.canGoBack()).toBe(true); //
+  });
+});
+
+it('should always prefer static routes over dynamic ones', async () => {
+  renderRouter(
+    {
+      // Uses Layouts at different levels to create different hoisting for each group
+      '(tabs)/nested/_layout': () => null,
+      '(tabs)/nested/index': () => null,
+      '(tabs)/nested/[fruit]': () => null,
+      '(tabs)/nested/orange': () => null,
+      '(stack)/_layout': () => null,
+      '(stack)/nested/banana': () => null,
+      '(stack)/nested/[fruit]': () => null,
+      'nested/grape': () => null,
+      'nested/[fruit]': () => null,
+      '[param]/melon': () => null,
+    },
+    {
+      initialUrl: '/(tabs)/nested/apple',
+    }
+  );
+
+  // We start in (tabs)
+  expect(screen).toHavePathname('/nested/apple');
+  expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
+
+  // Banana is more specific in (stack) so we move
+  act(() => router.push('/nested/banana'));
+  expect(screen).toHaveSegments(['(stack)', 'nested', 'banana']);
+
+  // Apple could be in either (tabs) or (stack) so we stay in the same group
+  act(() => router.push('/nested/apple'));
+  expect(screen).toHavePathname('/nested/apple');
+  expect(screen).toHaveSegments(['(stack)', 'nested', '[fruit]']);
+
+  // Orange is more specific in (tabs) so we move
+  act(() => router.push('/nested/orange'));
+  expect(screen).toHavePathname('/nested/orange');
+  expect(screen).toHaveSegments(['(tabs)', 'nested', 'orange']);
+
+  // Grape is more specific outside any group
+  act(() => router.push('/nested/grape'));
+  expect(screen).toHavePathname('/nested/grape');
+  expect(screen).toHaveSegments(['nested', 'grape']);
+
+  // This matches /(tabs)/nested/[fruit].
+  // We don't match:
+  // - nested/[fruit] because /(tabs)/nested/fruit is more specific
+  // - [param]/melon because segments are evaluated left-right. 'nested' is static and '[param]' is dynamic
+  act(() => router.push('/nested/melon'));
+  expect(screen).toHavePathname('/nested/melon');
+  expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
+});
+
+it('can push relative links that are relative to the directory', () => {
+  renderRouter(
+    {
+      '(stack)/_layout': () => <Stack />,
+      '(stack)/[fruit]/index': function Fruit() {
+        const { fruit } = useLocalSearchParams();
+        return <Text testID="fruit">{fruit}</Text>;
+      },
+    },
+    {
+      initialUrl: '/apple',
+    }
+  );
+
+  expect(screen.getByText('apple')).toBeOnTheScreen();
+  act(() => router.push('./banana'));
+  expect(screen.getByText('banana')).toBeOnTheScreen();
+});
+
+it('respects nested unstable settings', async () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    '(app)/_layout': () => {
+      return (
+        <Tabs>
+          <Tabs.Screen name="(index)" options={{ title: 'Home' }} />
+          <Tabs.Screen name="(search)" options={{ title: 'Search' }} />
+          <Tabs.Screen name="(profile)" options={{ title: 'Profile' }} />
+        </Tabs>
+      );
+    },
+    '(app)/(index,search,profile)/_layout': {
+      unstable_settings: {
+        index: { initialRouteName: 'index' },
+        search: { initialRouteName: 'search' },
+        profile: { initialRouteName: 'profile' },
+      },
+      default: () => <Stack />,
+    },
+    '(app)/(index,search,profile)/index': () => <Text testID="index">Index Screen</Text>,
+    '(app)/(index,search,profile)/search': () => <Text testID="search">Search Screen</Text>,
+    '(app)/(index,search,profile)/profile': () => <Text testID="profile">Profile Screen</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  fireEvent.press(screen.getByText('Search'));
+  expect(screen.getByTestId('search')).toBeVisible();
+  fireEvent.press(screen.getByText('Profile'));
+  expect(screen.getByTestId('profile')).toBeVisible();
+  fireEvent.press(screen.getByText('Home'));
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+describe('navigation action fallbacks', () => {
+  function runPushTest() {
+    act(() => router.navigate('/'));
+    expect(screen).toHavePathname('/');
+
+    // Go to one
+    act(() => router.navigate('/one'));
+    expect(screen).toHavePathname('/one');
+    expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+    // Push to two. `PUSH` action should fall back to `NAVIGATE` action
+    act(() => router.push('/two'));
+    expect(screen).toHavePathname('/two');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
+  }
+
+  function runReplaceTest() {
+    act(() => router.navigate('/'));
+    expect(screen).toHavePathname('/');
+
+    // Go to one
+    act(() => router.navigate('/one'));
+    expect(screen).toHavePathname('/one');
+    expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+    // Replace to two. `REPLACE` action should fall back to `JUMP_TO` action
+    act(() => router.replace('/two'));
+    expect(screen).toHavePathname('/two');
+    expect(screen.getByTestId('two')).toBeOnTheScreen();
+  }
+
+  function runRedirectionTest() {
+    act(() => router.navigate('/'));
+    expect(screen).toHavePathname('/');
+
+    // `<Redirect />` uses `REPLACE` action and should fall back to `JUMP_TO` action
+    act(() => router.navigate('/redirected'));
+    expect(screen).toHavePathname('/');
+  }
+
+  it('can fall back correctly for tab navigators', () => {
+    renderRouter({
+      _layout: () => <Tabs />,
+      one: () => <Text testID="one" />,
+      two: () => <Text testID="two" />,
+      redirected: () => <Redirect href="/" />,
+    });
+
+    runPushTest();
+    runReplaceTest();
+    runRedirectionTest();
+  });
+
+  it('can fall back correctly for drawer navigators', () => {
+    renderRouter({
+      _layout: () => <Drawer useLegacyImplementation={false} />,
+      one: () => <Text testID="one" />,
+      two: () => <Text testID="two" />,
+      redirected: () => <Redirect href="/" />,
+    });
+
+    runPushTest();
+    runReplaceTest();
+    runRedirectionTest();
   });
 });

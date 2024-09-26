@@ -7,7 +7,7 @@
  *
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
-import { type EntriesDev, type EntriesPrd } from './server';
+import { type EntriesDev } from './server';
 export interface RenderContext<T = unknown> {
     rerender: (input: string, searchParams?: URLSearchParams) => void;
     context: T;
@@ -17,29 +17,27 @@ export type RenderRscArgs = {
     config: ResolvedConfig;
     input: string;
     searchParams: URLSearchParams;
-    method: 'GET' | 'POST';
     context: Record<string, unknown> | undefined;
     body?: ReadableStream | undefined;
     contentType?: string | undefined;
+    decodedBody?: unknown;
     moduleIdCallback?: (module: {
         id: string;
         chunks: string[];
         name: string;
         async: boolean;
     }) => void;
+    onError?: (err: unknown) => void;
 };
 type ResolveClientEntry = (id: string) => {
     id: string;
     chunks: string[];
 };
 type RenderRscOpts = {
-    isExporting: true;
-    entries: EntriesPrd;
-    resolveClientEntry?: ResolveClientEntry;
-} | {
-    isExporting: false;
+    isExporting: boolean;
     entries: EntriesDev;
     resolveClientEntry: ResolveClientEntry;
+    loadServerModuleRsc: (url: string) => Promise<any>;
 };
 export declare function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream>;
 export {};

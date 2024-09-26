@@ -48,7 +48,7 @@ const withPrimaryColorStyles = config => {
   return (0, _androidPlugins().withAndroidStyles)(config, config => {
     config.modResults = (0, _Styles().assignStylesValue)(config.modResults, {
       add: !!getPrimaryColor(config),
-      parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
+      parent: (0, _Styles().getAppThemeGroup)(),
       name: COLOR_PRIMARY_KEY,
       value: `@color/${COLOR_PRIMARY_KEY}`
     });

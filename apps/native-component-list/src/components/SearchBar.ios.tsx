@@ -139,7 +139,7 @@ export default function SearchBar({
           <Text
             style={{
               fontSize: 17,
-              color: tintColor || '#007AFF',
+              color: tintColor,
             }}>
             {cancelButtonText || 'Cancel'}
           </Text>

@@ -252,8 +252,32 @@ export type ChannelAwareTriggerInput = {
   channelId: string;
 };
 
-// @docsMissing
-export type CalendarTriggerInputValue = {
+/**
+ * Schedulable trigger inputs (that are not a plain date value or time value)
+ * must have the "type" property set to one of these values.
+ */
+export enum SchedulableTriggerInputTypes {
+  CALENDAR = 'calendar',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  YEARLY = 'yearly',
+  DATE = 'date',
+  TIME_INTERVAL = 'timeInterval',
+}
+
+/**
+ * This trigger input will cause the notification to be delivered once or many times
+ * (controlled by the value of `repeats`)
+ * when the date components match the specified values.
+ * Corresponds to native
+ * [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
+ * @platform ios
+ */
+export type CalendarTriggerInput = {
+  type: SchedulableTriggerInputTypes.CALENDAR;
+  channelId?: string;
+  repeats?: boolean;
+  seconds?: number;
   timezone?: string;
   year?: number;
   month?: number;
@@ -268,77 +292,85 @@ export type CalendarTriggerInputValue = {
 };
 
 /**
- * A trigger that will cause the notification to be delivered once or many times when the date components match the specified values.
- * Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
- * @platform ios
+ * This trigger input will cause the notification to be delivered once per day
+ * when the `hour` and `minute` date components match the specified values.
  */
-export type CalendarTriggerInput = CalendarTriggerInputValue & {
-  channelId?: string;
-  repeats?: boolean;
-};
-
-/**
- * A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
- * > **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater. Otherwise, the notification won't be triggered.
- */
-export interface TimeIntervalTriggerInput {
-  channelId?: string;
-  repeats?: boolean;
-  seconds: number;
-}
-
-/**
- * A trigger that will cause the notification to be delivered once per day.
- */
-export interface DailyTriggerInput {
+export type DailyTriggerInput = {
+  type: SchedulableTriggerInputTypes.DAILY;
   channelId?: string;
   hour: number;
   minute: number;
-  repeats: true;
-}
+};
 
 /**
- * A trigger that will cause the notification to be delivered once every week.
+ * This trigger input will cause the notification to be delivered once every week
+ * when the `weekday`, `hour`, and `minute` date components match the specified values.
  * > **Note:** Weekdays are specified with a number from `1` through `7`, with `1` indicating Sunday.
  */
-export interface WeeklyTriggerInput {
+export type WeeklyTriggerInput = {
+  type: SchedulableTriggerInputTypes.WEEKLY;
   channelId?: string;
   weekday: number;
   hour: number;
   minute: number;
-  repeats: true;
-}
+};
 
 /**
- * A trigger that will cause the notification to be delivered once every year.
- * > **Note:** all properties are specified in JavaScript Date's ranges.
+ * This trigger input will cause the notification to be delivered once every year
+ * when the `day`, `month`, `hour`, and `minute` date components match the specified values.
+ * > **Note:** All properties are specified in JavaScript `Date` object's ranges.
  */
-export interface YearlyTriggerInput {
+export type YearlyTriggerInput = {
+  type: SchedulableTriggerInputTypes.YEARLY;
   channelId?: string;
   day: number;
   month: number;
   hour: number;
   minute: number;
-  repeats: true;
-}
+};
 
 /**
- * A trigger that will cause the notification to be delivered once at the specified `Date`.
- * If you pass in a `number` it will be interpreted as a Unix timestamp.
+ * This trigger input will cause the notification to be delivered once
+ * on the specified value of the `date` property. The value of `repeats` will be ignored
+ * for this trigger type.
  */
-export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
+export type DateTriggerInput =
+  | Date
+  | number
+  | { type: SchedulableTriggerInputTypes.DATE; channelId?: string; date: Date | number };
 
 /**
- * A type represents time-based, schedulable triggers. For these triggers you can check the next trigger date
+ * This trigger input will cause the notification to be delivered once or many times
+ * (depends on the `repeats` field) after `seconds` time elapse.
+ * > **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater.
+ * Otherwise, the notification won't be triggered.
+ */
+export type TimeIntervalTriggerInput = {
+  type: SchedulableTriggerInputTypes.TIME_INTERVAL;
+  channelId?: string;
+  repeats?: boolean;
+  seconds: number;
+};
+
+/**
+ * Input for time-based, schedulable triggers.
+ * For these triggers you can check the next trigger date
  * with [`getNextTriggerDateAsync`](#notificationsgetnexttriggerdateasynctrigger).
+ * If you pass in a `number` (Unix timestamp) or `Date`, it will be processed as a
+ * trigger input of type [`CalendarTriggerTypes.DATE`](#date). Otherwise, the input must be
+ * an object, with a `type` value set to one of the allowed values in
+ * [`CalendarTriggerTypes`](#calendartriggertypes).
+ * If the input is an object, date components passed in will be validated, and
+ * an error is thrown if they are outside their allowed range (for example, the `minute` and
+ * `second` components must be between 0 and 59 inclusive).
  */
 export type SchedulableNotificationTriggerInput =
-  | DateTriggerInput
+  | CalendarTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | WeeklyTriggerInput
   | YearlyTriggerInput
-  | CalendarTriggerInput;
+  | DateTriggerInput;
 
 /**
  * A type represents possible triggers with which you can schedule notifications.
@@ -429,7 +461,7 @@ export type NotificationContentIos = {
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
    * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
-   * @platform ios 15+
+   * @platform ios
    */
   interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };
@@ -569,7 +601,7 @@ export type NotificationContentInput = {
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
    * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
-   * @platform ios 15+
+   * @platform ios
    */
   interruptionLevel?: 'passive' | 'active' | 'timeSensitive' | 'critical';
 };

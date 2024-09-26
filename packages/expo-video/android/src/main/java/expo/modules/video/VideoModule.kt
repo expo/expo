@@ -2,17 +2,18 @@
 
 package expo.modules.video
 
-import android.app.Activity
 import android.net.Uri
+import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
+import androidx.media3.common.Timeline
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.apifeatures.EitherType
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
@@ -24,11 +25,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
+@UnstableReactNativeAPI
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VideoModule : Module() {
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
-
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
@@ -37,18 +36,19 @@ class VideoModule : Module() {
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function VideoView.isPictureInPictureSupported(activity)
+      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
     }
 
     View(VideoView::class) {
       Events(
         "onPictureInPictureStart",
-        "onPictureInPictureStop"
+        "onPictureInPictureStop",
+        "onFullscreenEnter",
+        "onFullscreenExit"
       )
 
       Prop("player") { view: VideoView, player: VideoPlayer ->
         view.videoPlayer = player
-        player.prepare()
       }
 
       Prop("nativeControls") { view: VideoView, useNativeControls: Boolean ->
@@ -149,7 +149,11 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource? ->
-        VideoPlayer(activity.applicationContext, appContext, source)
+        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source)
+        appContext.mainQueue.launch {
+          player.prepare()
+        }
+        return@Constructor player
       }
 
       Property("playing")
@@ -190,6 +194,34 @@ class VideoModule : Module() {
         .set { ref: VideoPlayer, currentTime: Double ->
           appContext.mainQueue.launch {
             ref.player.seekTo((currentTime * 1000).toLong())
+          }
+        }
+
+      Property("currentLiveTimestamp")
+        .get { ref: VideoPlayer ->
+          // TODO: same as `currentTime`
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            val window = Timeline.Window()
+            if (!ref.player.currentTimeline.isEmpty) {
+              ref.player.currentTimeline.getWindow(ref.player.currentMediaItemIndex, window)
+            }
+            if (window.windowStartTimeMs == C.TIME_UNSET) {
+              null
+            } else {
+              window.windowStartTimeMs + ref.player.currentPosition
+            }
+          }
+        }
+
+      Property("currentOffsetFromLive")
+        .get { ref: VideoPlayer ->
+          // TODO: same as `currentTime`
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            if (ref.player.currentLiveOffset == C.TIME_UNSET) {
+              null
+            } else {
+              ref.player.currentLiveOffset / 1000f
+            }
           }
         }
 
@@ -284,9 +316,7 @@ class VideoModule : Module() {
 
         appContext.mainQueue.launch {
           ref.uncommittedSource = videoSource
-          if (VideoManager.isVideoPlayerAttachedToView(ref)) {
-            ref.prepare()
-          }
+          ref.prepare()
         }
       }
 

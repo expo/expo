@@ -249,11 +249,15 @@ export function getRouterE2ERoot(): string {
 
 export function getHtmlHelpers(outputDir: string) {
   async function getScriptTagsAsync(name: string) {
-    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
-      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+    const tags = (await getPageHtml(outputDir, name))
+      .querySelectorAll('script')
+      // Remove scripts without a src attribute
+      .filter((script) => !!script.attributes.src)
+      .map((script) => {
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
 
-      return script.attributes.src;
-    });
+        return script.attributes.src;
+      });
 
     ensureEntryChunk(tags[0]);
 

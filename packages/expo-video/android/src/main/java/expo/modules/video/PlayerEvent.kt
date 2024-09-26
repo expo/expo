@@ -23,7 +23,7 @@ sealed class PlayerEvent {
   }
 
   data class VolumeChanged(val newValue: VolumeEvent, val oldValue: VolumeEvent?) : PlayerEvent() {
-    override val name = "playingChange"
+    override val name = "volumeChange"
     override val arguments = arrayOf(newValue, oldValue)
   }
 

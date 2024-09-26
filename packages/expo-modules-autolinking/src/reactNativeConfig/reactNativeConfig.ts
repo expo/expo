@@ -1,18 +1,23 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-import { resolveDependencyConfigImplAndroidAsync } from './androidResolver';
+import {
+  findGradleAndManifestAsync,
+  parsePackageNameAsync,
+  resolveDependencyConfigImplAndroidAsync,
+} from './androidResolver';
 import { loadConfigAsync } from './config';
 import { resolveDependencyConfigImplIosAsync } from './iosResolver';
 import type {
   RNConfigCommandOptions,
   RNConfigDependency,
+  RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { fileExistsAsync } from './utils';
 import { getIsolatedModulesPath } from '../autolinking/utils';
+import { fileExistsAsync } from '../fileUtils';
 import type { SupportedPlatform } from '../types';
 
 /**
@@ -38,8 +43,7 @@ export async function createReactNativeConfigAsync({
       [string, RNConfigDependency]
     >
   );
-  const projectData =
-    platform === 'ios' ? { ios: { sourceDir: path.join(projectRoot, 'ios') } } : {};
+  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform);
   return {
     root: projectRoot,
     reactNativePath,
@@ -99,7 +103,12 @@ export async function resolveDependencyConfigAsync(
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
-    // For example, the `react-native` package.
+    return null;
+  }
+  if (name === 'react-native') {
+    // Starting from version 0.76, the `react-native` package only defines platforms
+    // when @react-native-community/cli-platform-android/ios is installed.
+    // Therefore, we need to manually filter it out.
     return null;
   }
 
@@ -125,4 +134,38 @@ export async function resolveDependencyConfigAsync(
       [platform]: platformData,
     },
   };
+}
+
+export async function resolveAppProjectConfigAsync(
+  projectRoot: string,
+  platform: SupportedPlatform
+): Promise<RNConfigReactNativeAppProjectConfig> {
+  if (platform === 'android') {
+    const androidDir = path.join(projectRoot, 'android');
+    const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });
+    if (gradle == null || manifest == null) {
+      return {};
+    }
+    const packageName = await parsePackageNameAsync(
+      path.join(androidDir, manifest),
+      path.join(androidDir, gradle)
+    );
+
+    return {
+      android: {
+        packageName: packageName ?? '',
+        sourceDir: path.join(projectRoot, 'android'),
+      },
+    };
+  }
+
+  if (platform === 'ios') {
+    return {
+      ios: {
+        sourceDir: path.join(projectRoot, 'ios'),
+      },
+    };
+  }
+
+  return {};
 }

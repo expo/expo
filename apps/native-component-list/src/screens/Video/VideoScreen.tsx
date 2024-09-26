@@ -190,6 +190,12 @@ export default function VideoScreen() {
           setIsInPictureInPicture(false);
           console.log('Exited Picture in Picture mode');
         }}
+        onFullscreenEnter={() => {
+          console.log('entered fullscreen');
+        }}
+        onFullscreenExit={() => {
+          console.log('exited fullscreen');
+        }}
       />
       <ScrollView style={styles.controlsContainer}>
         <Text>PictureInPicture Active: {isInPictureInPicture ? 'Yes' : 'No'}</Text>

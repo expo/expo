@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { PropsWithChildren } from 'react';
 
-import { cleanCopyValue } from '~/components/base/code';
+import { cleanCopyValue } from '~/common/code-utilities';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';

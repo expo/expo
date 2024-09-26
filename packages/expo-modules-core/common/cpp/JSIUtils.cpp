@@ -24,7 +24,7 @@ jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstruc
     nativeConstructorPropId,
     // The paramCount is not obligatory to match, it only affects the `length` property of the function.
     0,
-    [constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    [constructor = std::move(constructor)](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
       if (constructor) {
         return constructor(runtime, thisValue, args, count);
       }
@@ -83,7 +83,7 @@ std::vector<jsi::PropNameID> jsiArrayToPropNameIdsVector(jsi::Runtime &runtime, 
   return vector;
 }
 
-void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor descriptor) {
+void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor& descriptor) {
   jsi::Object jsDescriptor(runtime);
 
   // These three flags are all `false` by default, so set the property only when `true`.

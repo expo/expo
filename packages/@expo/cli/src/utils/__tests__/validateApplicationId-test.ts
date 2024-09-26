@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import nock from 'nock';
 
 import { Log } from '../../log';
 import { stripAnsi } from '../ansi';
@@ -14,9 +14,8 @@ import {
   assertValidPackage,
 } from '../validateApplicationId';
 
-jest.mock('node-fetch');
-jest.mock('../../log');
 jest.mock('../url');
+jest.mock('../../log');
 
 function resetOfflineMode() {
   beforeEach(() => {
@@ -147,30 +146,36 @@ describe(getBundleIdWarningInternalAsync, () => {
   });
   it(`returns warning if in use`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
-
-    jest.mocked(fetch).mockResolvedValueOnce({
-      status: 200,
-      json() {
-        return Promise.resolve({
-          resultCount: 1,
-          results: [
-            {
-              trackName: 'Pillar Valley',
-              sellerName: 'Evan Bacon',
-              kind: 'software',
-              artistName: 'Evan Bacon',
-              genres: ['Games', 'Entertainment', 'Family', 'Casual'],
-            },
-          ],
-        });
-      },
-    } as any);
+    nock('http://itunes.apple.com')
+      .get('/lookup?bundleId=com.bacon.pillarvalley')
+      .reply(200, {
+        resultCount: 1,
+        results: [
+          {
+            trackName: 'Pillar Valley',
+            sellerName: 'Evan Bacon',
+            kind: 'software',
+            artistName: 'Evan Bacon',
+            genres: ['Games', 'Entertainment', 'Family', 'Casual'],
+          },
+        ],
+      });
 
     expect(
       stripAnsi(await getBundleIdWarningInternalAsync('com.bacon.pillarvalley'))
     ).toMatchInlineSnapshot(
       `"⚠️  The app Pillar Valley by Evan Bacon is already using com.bacon.pillarvalley"`
     );
+    expect(isUrlAvailableAsync).toHaveBeenCalledWith('itunes.apple.com');
+  });
+  it(`returns null when available`, async () => {
+    jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
+    nock('http://itunes.apple.com')
+      .get('/lookup?bundleId=dev.expo.testapp')
+      .reply(200, { resultCount: 0, results: [] });
+
+    expect(await getBundleIdWarningInternalAsync('dev.expo.testapp')).toBeNull();
+    expect(isUrlAvailableAsync).toHaveBeenCalledWith('itunes.apple.com');
   });
 });
 
@@ -188,14 +193,20 @@ describe(getPackageNameWarningInternalAsync, () => {
   });
   it(`returns warning if in use`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
-    jest.mocked(fetch).mockResolvedValueOnce({
-      status: 200,
-    } as any);
+    nock('https://play.google.com').get('/store/apps/details?id=com.bacon.pillarvalley').reply(200);
 
     expect(
       stripAnsi(await getPackageNameWarningInternalAsync('com.bacon.pillarvalley'))
     ).toMatchInlineSnapshot(
       `"⚠️  The package com.bacon.pillarvalley is already in use. Learn more: https://play.google.com/store/apps/details?id=com.bacon.pillarvalley"`
     );
+    expect(isUrlAvailableAsync).toHaveBeenCalledWith('play.google.com');
+  });
+  it(`returns null when available`, async () => {
+    jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
+    nock('https://play.google.com').get('/store/apps/details?id=dev.expo.testapp').reply(404);
+
+    expect(await getPackageNameWarningInternalAsync('dev.expo.testapp')).toBeNull();
+    expect(isUrlAvailableAsync).toHaveBeenCalledWith('play.google.com');
   });
 });

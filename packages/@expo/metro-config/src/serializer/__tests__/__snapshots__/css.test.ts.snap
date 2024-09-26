@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`asserts that local imports in attributes are not yet supported 1`] = `
+"Importing local resources in CSS is not supported yet. (/app/styles.css:3:27):
+  1 |         
+  2 |         .container {
+> 3 |           background: url('./image.png');
+    |                           ^
+  4 |         }
+  5 |         "
+`;

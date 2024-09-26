@@ -130,23 +130,21 @@
 
 - (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager
 {
-  if (@available(iOS 14.0, *)) {
-    CLAuthorizationStatus status = [manager authorizationStatus];
-    if (status == kCLAuthorizationStatusNotDetermined || !_locationManagerWasCalled) {
-      // CLLocationManager calls this delegate method once on start with kCLAuthorizationNotDetermined even before the user responds
-      // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:
-      // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
-      _locationManagerWasCalled = true;
-      if (status != kCLAuthorizationStatusAuthorizedWhenInUse) {
-        return;
-      }
+  CLAuthorizationStatus status = [manager authorizationStatus];
+  if (status == kCLAuthorizationStatusNotDetermined || !_locationManagerWasCalled) {
+    // CLLocationManager calls this delegate method once on start with kCLAuthorizationNotDetermined even before the user responds
+    // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:
+    // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
+    _locationManagerWasCalled = true;
+    if (status != kCLAuthorizationStatusAuthorizedWhenInUse) {
+      return;
     }
+  }
 
-    if (_resolve) {
-      _resolve([self getPermissions]);
-      _resolve = nil;
-      _reject = nil;
-    }
+  if (_resolve) {
+    _resolve([self getPermissions]);
+    _resolve = nil;
+    _reject = nil;
   }
 }
 

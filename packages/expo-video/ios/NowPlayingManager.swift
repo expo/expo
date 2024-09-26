@@ -189,11 +189,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
-    if #available(iOS 15.0, tvOS 15.0, *) {
-      return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
-    }
-
-    return mediaItem.asset.metadata
+    return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress

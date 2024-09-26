@@ -30,7 +30,10 @@ module.exports = config;
         virtual: true,
       });
 
-      const { ignorePaths } = await normalizeOptionsAsync('/app', { ignorePaths: ['ccc'] });
+      const { ignorePathMatchObjects } = await normalizeOptionsAsync('/app', {
+        ignorePaths: ['ccc'],
+      });
+      const ignorePaths = ignorePathMatchObjects.map(({ pattern }) => pattern);
       expect(ignorePaths).toContain('aaa');
       expect(ignorePaths).toContain('bbb');
       expect(ignorePaths).toContain('ccc');

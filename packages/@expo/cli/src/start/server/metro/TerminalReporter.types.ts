@@ -14,7 +14,7 @@ export type BundleDetails = {
   entryFile: string;
   minify: boolean;
   platform: string | null | undefined;
-  customTransformOptions?: { environment?: MetroEnvironment };
+  customTransformOptions?: { environment?: MetroEnvironment; dom?: string };
   runtimeBytecodeVersion: number | null | undefined;
 };
 

@@ -1,9 +1,9 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 import { Text, TextProps, GestureResponderEvent, Platform } from 'react-native';
 
+import { Slot } from './LinkSlot';
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
 import { useRouter } from '../hooks';
@@ -81,6 +81,12 @@ export interface LinkProps<T extends string | object>
   className?: string;
 
   onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+
+  /**
+   * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
+   * @see: https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references
+   */
+  relativeToDirectory?: boolean;
 }
 
 export interface LinkComponent {
@@ -169,6 +175,7 @@ function ExpoRouterLink(
     replace,
     push,
     // TODO: This does not prevent default on the anchor tag.
+    relativeToDirectory,
     asChild,
     rel,
     target,
@@ -194,7 +201,7 @@ function ExpoRouterLink(
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
 
-  const props = useLinkToPathProps({ href: resolvedHref, event });
+  const props = useLinkToPathProps({ href: resolvedHref, event, relativeToDirectory });
 
   const onPress = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
     if ('onPress' in rest) {

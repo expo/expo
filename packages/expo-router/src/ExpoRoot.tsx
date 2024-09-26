@@ -1,9 +1,8 @@
 'use client';
 
 import { LinkingOptions, NavigationAction } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import UpstreamNavigationContainer from './fork/NavigationContainer';
@@ -50,15 +49,19 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
         <SafeAreaProvider
           // SSR support
           initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
+          {!hasViewControllerBasedStatusBarAppearance && <AutoStatusBar />}
+          {children}
         </SafeAreaProvider>
       </ParentWrapper>
     );
   };
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
+}
+
+function AutoStatusBar() {
+  return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'} />;
 }
 
 const initialUrl =

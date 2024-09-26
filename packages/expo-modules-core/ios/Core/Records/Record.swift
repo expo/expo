@@ -36,7 +36,10 @@ public extension Record {
 
   init(from dict: Dict, appContext: AppContext) throws {
     self.init()
+    try update(withDict: dict, appContext: appContext)
+  }
 
+  func update(withDict dict: Dict, appContext: AppContext) throws {
     let dictKeys = dict.keys
 
     try fieldsOf(self).forEach { field in
@@ -61,7 +64,7 @@ public extension Record {
  Returns an array of fields found in record's mirror. If the field is missing the `key`,
  it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
  */
-private func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
+internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
   return Mirror(reflecting: record).children.compactMap { (label: String?, value: Any) in
     guard var field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
       return nil

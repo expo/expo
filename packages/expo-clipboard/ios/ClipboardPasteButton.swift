@@ -48,10 +48,6 @@ class ClipboardPasteButton: ExpoView {
   }
 
   override func canPaste(_ itemProviders: [NSItemProvider]) -> Bool {
-    guard #available(iOS 14.0, *) else {
-      // never called below iOS 16
-      return true
-    }
     let hasConformantItem = itemProviders.contains { provider in
       provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) ||
       provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) ||
@@ -64,9 +60,6 @@ class ClipboardPasteButton: ExpoView {
   }
 
   override func paste(itemProviders: [NSItemProvider]) {
-    guard #available(iOS 14.0, *) else {
-      return
-    }
     for provider in itemProviders {
       if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
         _ = provider.loadObject(ofClass: UIImage.self) { data, error in
@@ -117,7 +110,6 @@ class ClipboardPasteButton: ExpoView {
     }
   }
 
-  @available(iOS 14.0, *)
   private func setContentTypes() {
     if acceptedContentTypes.isEmpty {
       pasteConfiguration = UIPasteConfiguration(acceptableTypeIdentifiers: [

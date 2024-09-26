@@ -3,7 +3,7 @@ import assert from 'assert';
 
 import { assignColorValue } from './Colors';
 import { ResourceXML } from './Resources';
-import { assignStylesValue, getAppThemeLightNoActionBarGroup } from './Styles';
+import { assignStylesValue, getAppThemeGroup } from './Styles';
 import { ConfigPlugin } from '../Plugin.types';
 import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins';
 
@@ -52,7 +52,7 @@ export function setStatusBarStyles(
   const floatElement = getStatusBarTranslucent(config);
 
   styles = assignStylesValue(styles, {
-    parent: getAppThemeLightNoActionBarGroup(),
+    parent: getAppThemeGroup(),
     name: WINDOW_LIGHT_STATUS_BAR,
     value: 'true',
     // Default is light-content, don't need to do anything to set it
@@ -60,9 +60,9 @@ export function setStatusBarStyles(
   });
 
   styles = assignStylesValue(styles, {
-    parent: getAppThemeLightNoActionBarGroup(),
+    parent: getAppThemeGroup(),
     name: STATUS_BAR_COLOR,
-    value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
+    value: floatElement ? '@android:color/transparent' : (hexString ?? '@color/colorPrimaryDark'),
     // Remove the color if translucent is used
     add: floatElement || !!hexString,
   });

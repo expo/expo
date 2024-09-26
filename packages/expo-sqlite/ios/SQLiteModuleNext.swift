@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import sqlite3
 
 private typealias SQLiteColumnNames = [String]
 private typealias SQLiteColumnValues = [Any]
@@ -79,7 +78,7 @@ public final class SQLiteModuleNext: Module {
             return cachedDb
           }
 
-          if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
+          if exsqlite3_open(path.absoluteString, &db) != SQLITE_OK {
             throw DatabaseException()
           }
         }
@@ -98,11 +97,11 @@ public final class SQLiteModuleNext: Module {
 
       AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
         try maybeThrowForClosedDatabase(database)
-        return sqlite3_get_autocommit(database.pointer) == 0
+        return exsqlite3_get_autocommit(database.pointer) == 0
       }
       Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
         try maybeThrowForClosedDatabase(database)
-        return sqlite3_get_autocommit(database.pointer) == 0
+        return exsqlite3_get_autocommit(database.pointer) == 0
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
@@ -206,22 +205,22 @@ public final class SQLiteModuleNext: Module {
 
   private func deserializeDatabase(_ serializedData: Data) throws -> OpaquePointer? {
     var db: OpaquePointer?
-    if sqlite3_open(MEMORY_DB_NAME, &db) != SQLITE_OK {
+    if exsqlite3_open(MEMORY_DB_NAME, &db) != SQLITE_OK {
       throw DatabaseException()
     }
     let size = sqlite3_int64(serializedData.count)
-    guard let buffer = sqlite3_malloc64(sqlite3_uint64(size)) else {
+    guard let buffer = exsqlite3_malloc64(sqlite3_uint64(size)) else {
       throw SQLiteErrorException("Unable to allocate memory for \(size) bytes")
     }
     try serializedData.withUnsafeBytes {
       guard let baseAddress = $0.baseAddress else {
-        sqlite3_free(buffer)
+        exsqlite3_free(buffer)
         throw SQLiteErrorException("Unable to get allocated memory base address")
       }
       memcpy(buffer, baseAddress, Int(size))
     }
     let flags = UInt32(SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE)
-    let ret = sqlite3_deserialize(db, "main", buffer.assumingMemoryBound(to: UInt8.self), size, size, flags)
+    let ret = exsqlite3_deserialize(db, "main", buffer.assumingMemoryBound(to: UInt8.self), size, size, flags)
     if ret != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(db))
     }
@@ -241,10 +240,10 @@ public final class SQLiteModuleNext: Module {
   private func exec(database: NativeDatabase, source: String) throws {
     try maybeThrowForClosedDatabase(database)
     var error: UnsafeMutablePointer<CChar>?
-    let ret = sqlite3_exec(database.pointer, source, nil, nil, &error)
+    let ret = exsqlite3_exec(database.pointer, source, nil, nil, &error)
     if ret != SQLITE_OK, let error = error {
       let errorString = String(cString: error)
-      sqlite3_free(error)
+      exsqlite3_free(error)
       throw SQLiteErrorException(errorString)
     }
   }
@@ -253,12 +252,12 @@ public final class SQLiteModuleNext: Module {
     try maybeThrowForClosedDatabase(database)
 
     var size: sqlite3_int64 = 0
-    guard let bytes = sqlite3_serialize(database.pointer, databaseName, &size, 0) else {
+    guard let bytes = exsqlite3_serialize(database.pointer, databaseName, &size, 0) else {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
 
     let serializedData = Data(bytes: bytes, count: Int(size))
-    sqlite3_free(bytes)
+    exsqlite3_free(bytes)
     return serializedData
   }
 
@@ -266,7 +265,7 @@ public final class SQLiteModuleNext: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     let sourceString = source.cString(using: .utf8)
-    if sqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
+    if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     maybeAddCachedStatement(database: database, statement: statement)
@@ -278,8 +277,8 @@ public final class SQLiteModuleNext: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
-    sqlite3_reset(statement.pointer)
-    sqlite3_clear_bindings(statement.pointer)
+    exsqlite3_reset(statement.pointer)
+    exsqlite3_clear_bindings(statement.pointer)
     for (key, param) in bindParams {
       let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
       if index > 0 {
@@ -293,14 +292,14 @@ public final class SQLiteModuleNext: Module {
       }
     }
 
-    let ret = sqlite3_step(statement.pointer)
+    let ret = exsqlite3_step(statement.pointer)
     if ret != SQLITE_ROW && ret != SQLITE_DONE {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
     return [
-      "lastInsertRowId": Int(sqlite3_last_insert_rowid(database.pointer)),
-      "changes": Int(sqlite3_changes(database.pointer)),
+      "lastInsertRowId": Int(exsqlite3_last_insert_rowid(database.pointer)),
+      "changes": Int(exsqlite3_changes(database.pointer)),
       "firstRowValues": firstRowValues
     ]
   }
@@ -310,7 +309,7 @@ public final class SQLiteModuleNext: Module {
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
-    let ret = sqlite3_step(statement.pointer)
+    let ret = exsqlite3_step(statement.pointer)
     if ret == SQLITE_ROW {
       return try getColumnValues(statement: statement)
     }
@@ -325,7 +324,7 @@ public final class SQLiteModuleNext: Module {
     try maybeThrowForFinalizedStatement(statement)
     var columnValuesList: [SQLiteColumnValues] = []
     while true {
-      let ret = sqlite3_step(statement.pointer)
+      let ret = exsqlite3_step(statement.pointer)
       if ret == SQLITE_ROW {
         columnValuesList.append(try getColumnValues(statement: statement))
         continue
@@ -340,7 +339,7 @@ public final class SQLiteModuleNext: Module {
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
-    if sqlite3_reset(statement.pointer) != SQLITE_OK {
+    if exsqlite3_reset(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
@@ -349,15 +348,15 @@ public final class SQLiteModuleNext: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     maybeRemoveCachedStatement(database: database, statement: statement)
-    if sqlite3_finalize(statement.pointer) != SQLITE_OK {
+    if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     statement.isFinalized = true
   }
 
   private func convertSqlLiteErrorToString(_ db: OpaquePointer?) -> String {
-    let code = sqlite3_errcode(db)
-    let message = String(cString: sqlite3_errmsg(db), encoding: .utf8) ?? ""
+    let code = exsqlite3_errcode(db)
+    let message = String(cString: exsqlite3_errmsg(db), encoding: .utf8) ?? ""
     return "Error code \(code): \(message)"
   }
 
@@ -368,13 +367,13 @@ public final class SQLiteModuleNext: Module {
   private func closeDatabase(_ db: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(db)
     for removedStatement in maybeRemoveAllCachedStatements(database: db) {
-      sqlite3_finalize(removedStatement.pointer)
+      exsqlite3_finalize(removedStatement.pointer)
     }
 
     if db.openOptions.enableCRSQLite {
-      sqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
+      exsqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
-    let ret = sqlite3_close(db.pointer)
+    let ret = exsqlite3_close(db.pointer)
     db.isClosed = true
 
     if let index = contextPairs.firstIndex(where: {
@@ -422,7 +421,7 @@ public final class SQLiteModuleNext: Module {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
     contextPairs.append(contextPair)
     // swiftlint:disable:next multiline_arguments
-    sqlite3_update_hook(database.pointer, { obj, action, databaseName, tableName, rowId in
+    exsqlite3_update_hook(database.pointer, { obj, action, databaseName, tableName, rowId in
       guard let obj,
         let tableName,
         let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -430,7 +429,7 @@ public final class SQLiteModuleNext: Module {
       }
       let selfInstance = pair.0
       let database = pair.1
-      let databaseFilePath = sqlite3_db_filename(database.pointer, databaseName)
+      let databaseFilePath = exsqlite3_db_filename(database.pointer, databaseName)
       if selfInstance.hasListeners, let databaseName, let databaseFilePath {
         selfInstance.sendEvent("onDatabaseChange", [
           "databaseName": String(cString: UnsafePointer(databaseName)),
@@ -446,17 +445,17 @@ public final class SQLiteModuleNext: Module {
 
   private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
     try maybeThrowForFinalizedStatement(statement)
-    let columnCount = Int(sqlite3_column_count(statement.pointer))
+    let columnCount = Int(exsqlite3_column_count(statement.pointer))
     var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
     for i in 0..<columnCount {
-      columnNames[i] = String(cString: sqlite3_column_name(statement.pointer, Int32(i)))
+      columnNames[i] = String(cString: exsqlite3_column_name(statement.pointer, Int32(i)))
     }
     return columnNames
   }
 
   private func getColumnValues(statement: NativeStatement) throws -> SQLiteColumnValues {
     try maybeThrowForFinalizedStatement(statement)
-    let columnCount = Int(sqlite3_column_count(statement.pointer))
+    let columnCount = Int(exsqlite3_column_count(statement.pointer))
     var columnValues: SQLiteColumnValues = Array(repeating: 0, count: columnCount)
     for i in 0..<columnCount {
       columnValues[i] = try getColumnValue(statement: statement, at: Int32(i))
@@ -467,23 +466,23 @@ public final class SQLiteModuleNext: Module {
   @inline(__always)
   private func getColumnValue(statement: NativeStatement, at index: Int32) throws -> Any {
     let instance = statement.pointer
-    let type = sqlite3_column_type(instance, index)
+    let type = exsqlite3_column_type(instance, index)
 
     switch type {
     case SQLITE_INTEGER:
-      return sqlite3_column_int64(instance, index)
+      return exsqlite3_column_int64(instance, index)
     case SQLITE_FLOAT:
-      return sqlite3_column_double(instance, index)
+      return exsqlite3_column_double(instance, index)
     case SQLITE_TEXT:
-      guard let text = sqlite3_column_text(instance, index) else {
+      guard let text = exsqlite3_column_text(instance, index) else {
         throw InvalidConvertibleException("Null text")
       }
       return String(cString: text)
     case SQLITE_BLOB:
-      guard let blob = sqlite3_column_blob(instance, index) else {
+      guard let blob = exsqlite3_column_blob(instance, index) else {
         throw InvalidConvertibleException("Null blob")
       }
-      let size = sqlite3_column_bytes(instance, index)
+      let size = exsqlite3_column_bytes(instance, index)
       return Data(bytes: blob, count: Int(size))
     case SQLITE_NULL:
       return NSNull()
@@ -496,21 +495,21 @@ public final class SQLiteModuleNext: Module {
     let instance = statement.pointer
     switch param {
     case Optional<Any>.none:
-      sqlite3_bind_null(instance, index)
+      exsqlite3_bind_null(instance, index)
     case _ as NSNull:
-      sqlite3_bind_null(instance, index)
+      exsqlite3_bind_null(instance, index)
     case let param as Int64:
-      sqlite3_bind_int64(instance, index, Int64(param))
+      exsqlite3_bind_int64(instance, index, Int64(param))
     case let param as Double:
-      sqlite3_bind_double(instance, index, param)
+      exsqlite3_bind_double(instance, index, param)
     case let param as String:
-      sqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
+      exsqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
     case let param as Data:
       _ = param.withUnsafeBytes {
-        sqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
+        exsqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
       }
     case let param as Bool:
-      sqlite3_bind_int(instance, index, param ? 1 : 0)
+      exsqlite3_bind_int(instance, index, param ? 1 : 0)
     default:
       throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
     }
@@ -537,7 +536,7 @@ public final class SQLiteModuleNext: Module {
       }
       index = intKey + 1
     } else {
-      index = sqlite3_bind_parameter_index(statement.pointer, key.cString(using: .utf8))
+      index = exsqlite3_bind_parameter_index(statement.pointer, key.cString(using: .utf8))
     }
     return index
   }

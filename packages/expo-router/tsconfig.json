@@ -17,6 +17,7 @@
     "**/.expo/*",
     "./build/*",
     "**/__tests__/*",
+    "**/__rsc_tests__/*",
     "./node",
     "./entry.js",
     "./_ctx.d.ts"

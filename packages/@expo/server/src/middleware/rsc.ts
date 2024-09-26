@@ -19,7 +19,9 @@ export type RenderRscArgs = {
   method: 'GET' | 'POST';
   body?: ReadableStream | null;
   contentType?: string | undefined;
+  decodedBody?: unknown;
   moduleIdCallback?: ((id: string) => void) | undefined;
+  onError?: (err: unknown) => void;
 };
 
 export const decodeInput = (encodedInput: string) => {
@@ -40,6 +42,7 @@ export function getRscMiddleware(options: {
   baseUrl: string;
   rscPath: string;
   renderRsc: (args: RenderRscArgs) => Promise<ReadableStream<any>>;
+  onError?: (err: unknown) => void;
 }): {
   GET: (req: Request) => Promise<Response>;
   POST: (req: Request) => Promise<Response>;
@@ -84,6 +87,10 @@ export function getRscMiddleware(options: {
       ''
     );
 
+    // First segment should be the target platform.
+    // This is used for aligning with production exports which are statically exported to a single location at build-time.
+    encodedInput = encodedInput.replace(new RegExp(`^${platform}/`), '');
+
     try {
       encodedInput = decodeInput(encodedInput);
     } catch {
@@ -105,6 +112,8 @@ export function getRscMiddleware(options: {
         method,
         body: req.body,
         contentType: req.headers.get('Content-Type') ?? '',
+        decodedBody: req.headers.get('x-expo-params'),
+        onError: options.onError,
       };
       const readable = await options.renderRsc(args);
 

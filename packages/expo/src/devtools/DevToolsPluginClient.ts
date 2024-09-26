@@ -1,7 +1,9 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
+import { MessageFramePacker } from './MessageFramePacker';
 import { WebSocketBackingStore } from './WebSocketBackingStore';
 import { WebSocketWithReconnect } from './WebSocketWithReconnect';
+import { blobToArrayBufferAsync } from './blobUtils';
 import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 import * as logger from './logger';
 
@@ -9,6 +11,11 @@ import * as logger from './logger';
 export const MESSAGE_PROTOCOL_VERSION = 2;
 
 export const DevToolsPluginMethod = 'Expo:DevToolsPlugin';
+
+interface MessageFramePackerMessageKey {
+  pluginName: string;
+  method: string;
+}
 
 /**
  * This client is for the Expo DevTools Plugins to communicate between the app and the DevTools webpage hosted in a browser.
@@ -22,12 +29,16 @@ export abstract class DevToolsPluginClient {
 
   protected isClosed = false;
   protected retries = 0;
+  private readonly useTransportationNext: boolean;
+  private readonly messageFramePacker: MessageFramePacker<MessageFramePackerMessageKey> | null;
 
   public constructor(
     public readonly connectionInfo: ConnectionInfo,
     private readonly options?: DevToolsPluginClientOptions
   ) {
     this.wsStore = connectionInfo.wsStore || DevToolsPluginClient.defaultWSStore;
+    this.useTransportationNext = options?.useTransportationNext ?? false;
+    this.messageFramePacker = this.useTransportationNext ? new MessageFramePacker() : null;
   }
 
   /**
@@ -66,7 +77,14 @@ export abstract class DevToolsPluginClient {
       logger.warn('Unable to send message in a disconnected state.');
       return;
     }
+    if (this.useTransportationNext) {
+      this.sendMessageImplTransportationNext(method, params);
+    } else {
+      this.sendMessageImplLegacy(method, params);
+    }
+  }
 
+  private sendMessageImplLegacy(method: string, params: any) {
     const payload: Record<string, any> = {
       version: MESSAGE_PROTOCOL_VERSION,
       pluginName: this.connectionInfo.pluginName,
@@ -77,6 +95,19 @@ export abstract class DevToolsPluginClient {
       },
     };
     this.wsStore.ws?.send(JSON.stringify(payload));
+  }
+
+  private async sendMessageImplTransportationNext(method: string, params: any) {
+    if (this.messageFramePacker == null) {
+      logger.warn('MessageFramePacker is not initialized');
+      return;
+    }
+    const messageKey: MessageFramePackerMessageKey = {
+      pluginName: this.connectionInfo.pluginName,
+      method,
+    };
+    const packedData = await this.messageFramePacker.pack({ messageKey, payload: params });
+    this.wsStore.ws?.send(packedData);
   }
 
   /**
@@ -109,7 +140,8 @@ export abstract class DevToolsPluginClient {
    */
   protected connectAsync(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/message`, {
+      const endpoint = this.useTransportationNext ? 'expo-dev-plugins/broadcast' : 'message';
+      const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
         binaryType: this.options?.websocketBinaryType,
         onError: (e: unknown) => {
           if (e instanceof Error) {
@@ -131,7 +163,15 @@ export abstract class DevToolsPluginClient {
     });
   }
 
-  protected handleMessage = (event: WebSocketMessageEvent): void => {
+  protected handleMessage = (event: WebSocketMessageEvent) => {
+    if (this.useTransportationNext) {
+      this.handleMessageImplTransportationNext(event);
+    } else {
+      this.handleMessageImplLegacy(event);
+    }
+  };
+
+  private handleMessageImplLegacy = (event: WebSocketMessageEvent) => {
     let payload;
     try {
       payload = JSON.parse(event.data);
@@ -148,6 +188,27 @@ export abstract class DevToolsPluginClient {
     }
 
     this.eventEmitter.emit(payload.params.method, payload.params.params);
+  };
+
+  private handleMessageImplTransportationNext = async (event: WebSocketMessageEvent) => {
+    if (this.messageFramePacker == null) {
+      logger.warn('MessageFramePacker is not initialized');
+      return;
+    }
+    let buffer: ArrayBuffer;
+    if (event.data instanceof ArrayBuffer) {
+      buffer = event.data;
+    } else if (event.data instanceof Blob) {
+      buffer = await blobToArrayBufferAsync(event.data);
+    } else {
+      logger.warn('Unsupported received data type in handleMessageImplTransportationNext');
+      return;
+    }
+    const { messageKey, payload } = await this.messageFramePacker.unpack(buffer);
+    if (messageKey.pluginName && messageKey.pluginName !== this.connectionInfo.pluginName) {
+      return;
+    }
+    this.eventEmitter.emit(messageKey.method, payload);
   };
 
   /**

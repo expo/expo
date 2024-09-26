@@ -78,6 +78,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Rendering a shared ref from ImageManipulator',
+    route: 'image/shared-ref-from-manipulator',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSharedRefFromManipulator'));
+    },
+  },
+  {
     name: 'Background',
     route: 'image/background',
     getComponent() {

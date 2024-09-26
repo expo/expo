@@ -21,6 +21,7 @@ jest.mock('../resolveAssets', () => ({
   resolveGoogleServicesFile: jest.fn(),
 }));
 jest.mock('@expo/config/paths', () => ({
+  ...jest.requireActual('@expo/config/paths'),
   resolveEntryPoint: jest.fn((projectRoot: string) =>
     require('path').join(projectRoot, './index.js')
   ),
@@ -48,9 +49,6 @@ class MockManifestMiddleware extends ManifestMiddleware<any> {
     throw new Error('Method not implemented.');
   }
   public getParsedHeaders(req: ServerRequest): ManifestRequestInfo {
-    throw new Error('Method not implemented.');
-  }
-  protected trackManifest(version?: string): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -281,7 +279,6 @@ describe('getHandler', () => {
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
-    middleware['trackManifest'] = jest.fn();
     // @ts-expect-error
     middleware.getParsedHeaders = jest.fn(() => ({}));
     // @ts-expect-error
@@ -318,7 +315,6 @@ describe('getHandler', () => {
 
     // Internals are invoked.
     expect(middleware._getManifestResponseAsync).toBeCalled();
-    expect(middleware['trackManifest']).toBeCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(200);
@@ -331,7 +327,6 @@ describe('getHandler', () => {
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
-    middleware['trackManifest'] = jest.fn();
     // @ts-expect-error
     middleware.getParsedHeaders = jest.fn(() => ({}));
     middleware._getManifestResponseAsync = jest.fn(async () => {
@@ -365,9 +360,6 @@ describe('getHandler', () => {
 
     // Internals are invoked.
     expect(middleware._getManifestResponseAsync).toBeCalled();
-
-    // Don't track failures.
-    expect(middleware['trackManifest']).not.toBeCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(500);

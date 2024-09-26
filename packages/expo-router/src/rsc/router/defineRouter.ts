@@ -31,9 +31,24 @@ type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
 
 type ShouldSkipValue = ShouldSkip[number][1];
 
+const safeJsonParse = (str: unknown) => {
+  if (typeof str === 'string') {
+    try {
+      const obj = JSON.parse(str);
+      if (typeof obj === 'object') {
+        return obj as Record<string, unknown>;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return undefined;
+};
+
 export function unstable_defineRouter(
   getPathConfig: () => Promise<
     Iterable<{
+      pattern: string;
       path: PathSpec;
       isStatic?: boolean;
       noSsr?: boolean;
@@ -50,9 +65,10 @@ export function unstable_defineRouter(
   ) => Promise<FunctionComponent<RouteProps> | FunctionComponent<RoutePropsForLayout> | null>
 ): ReturnType<typeof defineEntries> {
   type MyPathConfig = {
+    pattern: string;
     pathname: PathSpec;
     isStatic?: boolean | undefined;
-    customData: { noSsr?: boolean; data: unknown };
+    customData: { noSsr?: boolean; is404: boolean; data: unknown };
   }[];
   let cachedPathConfig: MyPathConfig | undefined;
   const getMyPathConfig = async (buildConfig?: BuildConfig): Promise<MyPathConfig> => {
@@ -61,10 +77,15 @@ export function unstable_defineRouter(
     }
     if (!cachedPathConfig) {
       cachedPathConfig = Array.from(await getPathConfig()).map((item) => {
+        const is404 =
+          item.path.length === 1 &&
+          item.path[0]!.type === 'literal' &&
+          item.path[0]!.name === '404';
         return {
+          pattern: item.pattern,
           pathname: item.path,
           isStatic: item.isStatic,
-          customData: { noSsr: !!item.noSsr, data: item.data },
+          customData: { is404, noSsr: !!item.noSsr, data: item.data },
         };
       });
     }
@@ -73,22 +94,30 @@ export function unstable_defineRouter(
   const existsPath = async (
     pathname: string,
     buildConfig: BuildConfig | undefined
-  ): Promise<['FOUND', 'NO_SSR'?] | ['NOT_FOUND']> => {
+  ): Promise<['FOUND', 'NO_SSR'?] | ['NOT_FOUND', 'HAS_404'?]> => {
     const pathConfig = await getMyPathConfig(buildConfig);
     const found = pathConfig.find(({ pathname: pathSpec }) => getPathMapping(pathSpec, pathname));
-    return found ? (found.customData.noSsr ? ['FOUND', 'NO_SSR'] : ['FOUND']) : ['NOT_FOUND'];
+    return found
+      ? found.customData.noSsr
+        ? ['FOUND', 'NO_SSR']
+        : ['FOUND']
+      : pathConfig.some(({ customData: { is404 } }) => is404) // FIXMEs should avoid re-computation
+        ? ['NOT_FOUND', 'HAS_404']
+        : ['NOT_FOUND'];
   };
-  const shouldSkipObj: {
-    [componentId: ShouldSkip[number][0]]: ShouldSkip[number][1];
-  } = {};
-
-  const renderEntries: RenderEntries = async (input, { searchParams, buildConfig }) => {
+  const renderEntries: RenderEntries = async (input, { params, buildConfig }) => {
     const pathname = parseInputString(input);
     if ((await existsPath(pathname, buildConfig))[0] === 'NOT_FOUND') {
       return null;
     }
-    const skip = searchParams.getAll(PARAM_KEY_SKIP) || [];
-    searchParams.delete(PARAM_KEY_SKIP); // delete all
+    const shouldSkipObj: {
+      [componentId: ShouldSkip[number][0]]: ShouldSkip[number][1];
+    } = {};
+
+    const parsedParams = safeJsonParse(params);
+
+    const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
+    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams?.skip as unknown[]) : [];
     const componentIds = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
@@ -96,7 +125,7 @@ export function unstable_defineRouter(
           if (skip?.includes(id)) {
             return [];
           }
-          const setShoudSkip = (val?: ShouldSkipValue) => {
+          const setShouldSkip = (val?: ShouldSkipValue) => {
             if (val) {
               shouldSkipObj[id] = val;
             } else {
@@ -104,19 +133,18 @@ export function unstable_defineRouter(
             }
           };
           const component = await getComponent(id, {
-            unstable_setShouldSkip: setShoudSkip,
+            unstable_setShouldSkip: setShouldSkip,
             unstable_buildConfig: buildConfig,
           });
           if (!component) {
             return [];
           }
-
           const element = createElement(
             component as FunctionComponent<{
               path: string;
-              searchParams?: URLSearchParams;
+              query?: string;
             }>,
-            id.endsWith('/layout') ? { path: pathname } : { path: pathname, searchParams },
+            id.endsWith('/layout') ? { path: pathname } : { path: pathname, query },
             createElement(Children)
           );
           return [[id, element]] as const;
@@ -124,17 +152,19 @@ export function unstable_defineRouter(
       )
     ).flat();
     entries.push([SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
-    entries.push([LOCATION_ID, [pathname, searchParams.toString()]]);
+    entries.push([LOCATION_ID, [pathname, query]]);
     return Object.fromEntries(entries);
   };
 
   const getBuildConfig: GetBuildConfig = async (unstable_collectClientModules) => {
     const pathConfig = await getMyPathConfig();
     const path2moduleIds: Record<string, string[]> = {};
+
     for (const { pathname: pathSpec } of pathConfig) {
       if (pathSpec.some(({ type }) => type !== 'literal')) {
         continue;
       }
+
       const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
       const input = getInputString(pathname);
       const moduleIds = await unstable_collectClientModules(input);
@@ -172,19 +202,27 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
       return null;
     }
     if (pathStatus[0] === 'NOT_FOUND') {
-      return null;
+      if (pathStatus[1] === 'HAS_404') {
+        pathname = '/404';
+      } else {
+        return null;
+      }
     }
     const componentIds = getComponentIds(pathname);
     const input = getInputString(pathname);
-    const body = createElement(
+    const html = createElement(
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
-      { route: { path: pathname, searchParams } },
+      { route: { path: pathname, query: searchParams.toString(), hash: '' } },
       componentIds.reduceRight(
         (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
         null
       )
     );
-    return { input, body };
+    return {
+      input,
+      params: JSON.stringify({ query: searchParams.toString() }),
+      html,
+    };
   };
 
   return { renderEntries, getBuildConfig, getSsrConfig };

@@ -287,7 +287,6 @@ const handler = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
   build: require('path').join(__dirname, '../../dist/server'),
   /* @end */
-  mode: process.env.NODE_ENV,
 });
 
 module.exports = { handler };
@@ -369,7 +368,6 @@ module.exports = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
   build: require('path').join(__dirname, '../dist/server'),
   /* @end */
-  mode: process.env.NODE_ENV,
 });
 ```
 

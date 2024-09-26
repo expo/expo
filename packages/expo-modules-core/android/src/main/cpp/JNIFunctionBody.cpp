@@ -10,7 +10,10 @@ namespace react = facebook::react;
 namespace expo {
 
 jni::local_ref<jni::JObject>
-JNIFunctionBody::invoke(jobjectArray args) {
+JNIFunctionBody::invoke(
+  jobject self,
+  jobjectArray args
+) {
   // Do NOT use getClass here!
   // Method obtained from `getClass` will point to the overridden version of the method.
   // Because of that, it can't be cached - we will try to invoke the nonexistent method
@@ -22,12 +25,13 @@ JNIFunctionBody::invoke(jobjectArray args) {
       "([Ljava/lang/Object;)Ljava/lang/Object;"
     );
 
-  auto result = jni::Environment::current()->CallObjectMethod(this->self(), method.getId(), args);
+  auto result = jni::Environment::current()->CallObjectMethod(self, method.getId(), args);
   throwPendingJniExceptionAsCppException();
   return jni::adopt_local(static_cast<jni::JniType<jni::JObject>>(result));
 }
 
 void JNIAsyncFunctionBody::invoke(
+  jobject self,
   jobjectArray args,
   jobject promise
 ) {
@@ -44,7 +48,7 @@ void JNIAsyncFunctionBody::invoke(
       "([Ljava/lang/Object;Lexpo/modules/kotlin/jni/PromiseImpl;)V"
     );
 
-  jni::Environment::current()->CallVoidMethod(this->self(), method.getId(), args, promise);
+  jni::Environment::current()->CallVoidMethod(self, method.getId(), args, promise);
   throwPendingJniExceptionAsCppException();
 }
 

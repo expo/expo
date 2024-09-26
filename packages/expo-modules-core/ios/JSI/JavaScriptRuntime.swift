@@ -4,7 +4,7 @@ public extension JavaScriptRuntime {
   /**
    A type of the closure that you pass to the `createSyncFunction` function.
    */
-  typealias SyncFunctionClosure = (_ this: JavaScriptValue, _ arguments: [JavaScriptValue]) throws -> Any
+  typealias SyncFunctionClosure = (_ this: JavaScriptValue, _ arguments: [JavaScriptValue]) throws -> JavaScriptValue
 
   /**
    Evaluates JavaScript code represented as a string.

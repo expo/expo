@@ -57,5 +57,8 @@ export declare function useGlobalSearchParams<TRoute extends Routes, TParams ext
  */
 export declare function useLocalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
 export declare function useLocalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
+export declare function useSearchParams({ global }?: {
+    global?: boolean | undefined;
+}): URLSearchParams;
 export {};
 //# sourceMappingURL=hooks.d.ts.map

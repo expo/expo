@@ -40,7 +40,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
     open = false,
   }: CollapsibleProps & HeadingManagerProps) => {
     // track open state so we can collapse header if it is set to open by the URL hash
-    const [isOpen, setOpen] = useState<boolean>(open);
+    const [isOpen, setIsOpen] = useState<boolean>(open);
     const router = useRouter();
 
     // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
@@ -54,7 +54,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         const splitUrl = router.asPath.split('#');
         const hash = splitUrl.length ? splitUrl[1] : undefined;
         if (hash && hash === heading.current.slug) {
-          setOpen(true);
+          setIsOpen(true);
         }
       }
     }, []);
@@ -63,10 +63,10 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
       // Detect if we are clicking the PermalinkIcon. Probably a better way to do this?
       if (event.target instanceof SVGElement) {
         if (!isOpen) {
-          setOpen(true);
+          setIsOpen(true);
         }
       } else {
-        setOpen(!isOpen);
+        setIsOpen(!isOpen);
         // Ensure that the collapsible opens nicely on the first click
         event.preventDefault();
       }
@@ -155,7 +155,10 @@ const markerStyle = css({
   transform: 'rotate(-90deg)',
   transition: `transform 200ms`,
 
-  'details[open] &': { transform: 'rotate(0)' },
+  // Only rotate the icon when its direct parent 'details' is open
+  'details[open] > summary &': {
+    transform: 'rotate(0)',
+  },
 });
 
 const contentStyle = css({

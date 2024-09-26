@@ -54,19 +54,10 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
   serializedContent[@"data"] = [self serializedNotificationData:request] ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
-
-  if (@available(iOS 12.0, *)) {
-    serializedContent[@"summaryArgument"] = content.summaryArgument ?: [NSNull null];
-    serializedContent[@"summaryArgumentCount"] = @(content.summaryArgumentCount);
-  }
   serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ? content.categoryIdentifier : [NSNull null];
   serializedContent[@"threadIdentifier"] = content.threadIdentifier ?: [NSNull null];
-  if (@available(iOS 13.0, *)) {
-    serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
-  }
-  if (@available(iOS 15.0, *)) {
-    serializedContent[@"interruptionLevel"] = [EXNotificationSerializer serializedInterruptionLevel:content.interruptionLevel];
-  }
+  serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
+  serializedContent[@"interruptionLevel"] = [EXNotificationSerializer serializedInterruptionLevel:content.interruptionLevel];
 
   return serializedContent;
 }
@@ -98,10 +89,8 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     return nil;
   }
 
-  if (@available(iOS 12.0, *)) {
-    if ([[UNNotificationSound defaultCriticalSound] isEqual:sound]) {
-      return @"defaultCritical";
-    }
+  if ([[UNNotificationSound defaultCriticalSound] isEqual:sound]) {
+    return @"defaultCritical";
   }
 
   if ([[UNNotificationSound defaultSound] isEqual:sound]) {
@@ -229,15 +218,13 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     serializedRegion[@"notifyEntryStateOnDisplay"] = @(beaconRegion.notifyEntryStateOnDisplay);
     serializedRegion[@"major"] = beaconRegion.major ?: [NSNull null];
     serializedRegion[@"minor"] = beaconRegion.minor ?: [NSNull null];
-    if (@available(iOS 13.0, *)) {
-      serializedRegion[@"uuid"] = beaconRegion.UUID;
-      NSDictionary *serializedConstraint = @{
-        @"uuid": beaconRegion.beaconIdentityConstraint.UUID,
-        @"major": beaconRegion.beaconIdentityConstraint.major ?: [NSNull null],
-        @"minor": beaconRegion.beaconIdentityConstraint.minor ?: [NSNull null],
-      };
-      serializedRegion[@"beaconIdentityConstraint"] = serializedConstraint;
-    }
+    serializedRegion[@"uuid"] = beaconRegion.UUID;
+    NSDictionary *serializedConstraint = @{
+      @"uuid": beaconRegion.beaconIdentityConstraint.UUID,
+      @"major": beaconRegion.beaconIdentityConstraint.major ?: [NSNull null],
+      @"minor": beaconRegion.beaconIdentityConstraint.minor ?: [NSNull null],
+    };
+    serializedRegion[@"beaconIdentityConstraint"] = serializedConstraint;
   } else {
     serializedRegion[@"type"] = @"unknown";
   }

@@ -9,7 +9,7 @@
 'use client';
 
 import * as React from 'react';
-import { NativeEventEmitter } from 'react-native-web';
+import { NativeEventEmitter } from 'react-native';
 
 import { LogBoxLog, StackType } from './LogBoxLog';
 import type { LogLevel } from './LogBoxLog';

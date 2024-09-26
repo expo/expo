@@ -40,7 +40,7 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 13.4."`
+      `"\`ios.deploymentTarget\` needs to be at least version 15.1."`
     );
   });
 

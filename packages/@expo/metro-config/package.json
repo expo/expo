@@ -44,12 +44,11 @@
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
-    "find-yarn-workspace-root": "~2.0.0",
     "fs-extra": "^9.1.0",
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
     "jsc-safe-url": "^0.2.4",
-    "lightningcss": "~1.19.0",
+    "lightningcss": "~1.27.0",
     "minimatch": "^3.0.4",
     "postcss": "~8.4.32",
     "resolve-from": "^5.0.0"

@@ -1,0 +1,13 @@
+# Basic test to ensure the mastro is working correctly
+appId: host.exp.Exponent
+name: Smoke tests
+---
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/'
+- assertVisible:
+    id: 'e2e-segments'
+    text: '/'

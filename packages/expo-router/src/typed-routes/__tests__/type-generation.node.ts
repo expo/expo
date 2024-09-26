@@ -45,6 +45,67 @@ it('basic single static route', () => {
   });
 });
 
+it('hoisting with layouts and groups', () => {
+  const generated = getGeneratedRoutes(
+    inMemoryContext({
+      '(app)/_layout': () => null,
+      '(app)/index': () => null,
+      '(app)/tabs/_layout': () => null,
+      '(app)/tabs/one': () => null,
+      '(app)/tabs/two': () => null,
+      '(app)/tabs/(apple,banana)/three': () => null,
+      '(app)/tabs/(apple)/three/apple': () => null,
+      '(app)/tabs/(banana)/three/banana': () => null,
+      '(app)/tabs/(apple,banana)/three/[fruit]': () => null,
+    })
+  );
+
+  expect(generated).toEqual({
+    dynamicRouteTemplates: [
+      '/(app)/tabs/(apple)/three/[fruit]',
+      '/(app)/tabs/(banana)/three/[fruit]',
+      '/(app)/tabs/three/[fruit]',
+      '/tabs/(apple)/three/[fruit]',
+      '/tabs/(banana)/three/[fruit]',
+      '/tabs/three/[fruit]',
+    ],
+    dynamicRoutes: [
+      '/(app)/tabs/(apple)/three/${Router.SingleRoutePart<T>}',
+      '/(app)/tabs/(banana)/three/${Router.SingleRoutePart<T>}',
+      '/(app)/tabs/three/${Router.SingleRoutePart<T>}',
+      '/tabs/(apple)/three/${Router.SingleRoutePart<T>}',
+      '/tabs/(banana)/three/${Router.SingleRoutePart<T>}',
+      '/tabs/three/${Router.SingleRoutePart<T>}',
+    ],
+    staticRoutes: [
+      '/',
+      '/(app)',
+      '/(app)/',
+      '/(app)/tabs',
+      '/(app)/tabs/(apple)/three',
+      '/(app)/tabs/(apple)/three/apple',
+      '/(app)/tabs/(banana)/three',
+      '/(app)/tabs/(banana)/three/banana',
+      '/(app)/tabs/one',
+      '/(app)/tabs/three',
+      '/(app)/tabs/three/apple',
+      '/(app)/tabs/three/banana',
+      '/(app)/tabs/two',
+      '/_sitemap',
+      '/tabs',
+      '/tabs/(apple)/three',
+      '/tabs/(apple)/three/apple',
+      '/tabs/(banana)/three',
+      '/tabs/(banana)/three/banana',
+      '/tabs/one',
+      '/tabs/three',
+      '/tabs/three/apple',
+      '/tabs/three/banana',
+      '/tabs/two',
+    ],
+  });
+});
+
 it('works with no routes', () => {
   const generated = getGeneratedRoutes(inMemoryContext({}));
 

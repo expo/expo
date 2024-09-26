@@ -3,11 +3,10 @@ import { UnavailabilityError } from 'expo-modules-core';
 import {
   CameraCapturedPicture,
   CameraPictureOptions,
-  CameraType,
   PermissionResponse,
   PermissionStatus,
-} from './legacy/Camera.types';
-import { ExponentCameraRef } from './legacy/ExpoCamera.web';
+} from './Camera.types';
+import { ExponentCameraRef } from './ExpoCamera.web';
 import {
   canGetUserMedia,
   isBackCameraAvailableAsync,
@@ -182,8 +181,8 @@ export default {
     const devices = await navigator.mediaDevices.enumerateDevices();
 
     const types: (string | null)[] = await Promise.all([
-      (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
-      (await isBackCameraAvailableAsync()) && CameraType.back,
+      (await isFrontCameraAvailableAsync(devices)) && 'front',
+      (await isBackCameraAvailableAsync()) && 'back',
     ]);
 
     return types.filter(Boolean) as string[];

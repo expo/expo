@@ -107,10 +107,10 @@
     EXJavaScriptValue * _Nonnull thisValue,
     NSArray<EXJavaScriptValue *> * _Nonnull arguments) {
       NSError *error;
-      id result = block(thisValue, arguments, &error);
+      EXJavaScriptValue *result = block(thisValue, arguments, &error);
 
       if (error == nil) {
-        return expo::convertObjCObjectToJSIValue(runtime, result);
+        return [result get];
       } else {
         // `expo::makeCodedError` doesn't work during unit tests, so we construct Error and add a code,
         // instead of using the CodedError subclass.
@@ -203,10 +203,10 @@
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
 {
   std::shared_ptr<jsi::StringBuffer> scriptBuffer = std::make_shared<jsi::StringBuffer>([scriptSource UTF8String]);
-  std::shared_ptr<jsi::Value> result;
+  jsi::Value result;
 
   try {
-    result = std::make_shared<jsi::Value>(_runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"));
+    result = _runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>");
   } catch (jsi::JSError &error) {
     NSString *reason = [NSString stringWithUTF8String:error.getMessage().c_str()];
     NSString *stack = [NSString stringWithUTF8String:error.getStack().c_str()];
@@ -222,7 +222,7 @@
       @"message": reason
     }];
   }
-  return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
+  return [[EXJavaScriptValue alloc] initWithRuntime:self value:std::move(result)];
 }
 
 #pragma mark - Runtime execution
@@ -251,8 +251,7 @@
     // there is no need to care about that for synchronous calls, so it's ensured in `createAsyncFunction` instead.
     auto callInvoker = weakCallInvoker.lock();
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
-    std::shared_ptr<jsi::Value> thisValPtr = std::make_shared<jsi::Value>(runtime, std::move(thisVal));
-    EXJavaScriptValue *thisValue = [[EXJavaScriptValue alloc] initWithRuntime:self value:thisValPtr];
+    EXJavaScriptValue *thisValue = [[EXJavaScriptValue alloc] initWithRuntime:self value:jsi::Value(runtime, thisVal)];
 
     return block(runtime, callInvoker, thisValue, arguments);
   };

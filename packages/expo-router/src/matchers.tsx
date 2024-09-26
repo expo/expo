@@ -20,6 +20,11 @@ export function matchGroupName(name: string): string | undefined {
   return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 
+/** Match `(app)/(page)` -> `page` */
+export function matchLastGroupName(name: string): string | undefined {
+  return name.match(/.*(?<=\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+}
+
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 export function matchArrayGroupName(name: string) {
   return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];

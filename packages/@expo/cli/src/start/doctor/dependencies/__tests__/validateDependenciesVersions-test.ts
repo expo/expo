@@ -192,6 +192,50 @@ describe(validateDependenciesVersionsAsync, () => {
     expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('expo-splash-screen'));
   });
 
+  it('supports npm package args for excluded packages', async () => {
+    jest.mocked(Log.warn).mockReset();
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '41.0.0',
+        }),
+        'node_modules/expo-splash-screen/package.json': JSON.stringify({
+          version: '0.2.3',
+        }),
+        'node_modules/expo-updates/package.json': JSON.stringify({
+          version: '1.3.4',
+        }),
+        'node_modules/firebase/package.json': JSON.stringify({
+          version: '10.0.0',
+        }),
+      },
+      projectRoot
+    );
+    const exp = {
+      sdkVersion: '41.0.0',
+    };
+    const pkg = {
+      dependencies: {
+        'expo-splash-screen': '~0.2.3',
+        'expo-updates': '~1.3.4',
+        firebase: '~10.0.0',
+      },
+      // "Don't validate this for me for me as long as you plan to recommend @~0.2.3 - I don't want that version"
+      expo: { install: { exclude: ['expo-splash-screen@~1.2.3', 'firebase@9.1.0'] } },
+    };
+
+    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
+      false
+    );
+    expect(Log.warn).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('The following packages should be updated for best compatibility')
+    );
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('expo-updates'));
+    expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('expo-splash-screen'));
+    expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('firebase'));
+  });
+
   it('resolves to true when installed package uses "exports"', async () => {
     const packageJsonPath = path.join(projectRoot, 'node_modules/firebase/package.json');
 

@@ -2,12 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
 import React from 'react';
 import { ToastAndroid, Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
-
-import Colors from './src/constants/Colors';
 
 type NavigationRouteConfigMap = React.ReactElement;
 
@@ -90,16 +89,24 @@ const linking: LinkingOptions<object> = {
 };
 
 function TabNavigator() {
+  const { theme } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.activeTintColor,
-        tabBarInactiveTintColor: Colors.inactiveTintColor,
+        tabBarActiveTintColor: theme.text.info,
+        tabBarInactiveTintColor: theme.text.default,
+        tabBarStyle: {
+          backgroundColor: theme.background.default,
+          borderTopColor: theme.border.default,
+        },
       }}
-      safeAreaInsets={{
-        top: 5,
-      }}
+      safeAreaInsets={Platform.select({
+        android: {
+          bottom: 5,
+        },
+        default: undefined,
+      })}
       initialRouteName="test-suite">
       {Object.keys(routes).map((name) => (
         <Tab.Screen

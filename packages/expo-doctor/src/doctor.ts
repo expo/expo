@@ -2,6 +2,7 @@ import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import semver from 'semver';
 
+import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from './checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
 import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
@@ -14,6 +15,7 @@ import { PackageJsonCheck } from './checks/PackageJsonCheck';
 import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
 import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
+import { StoreCompatibilityCheck } from './checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
 import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
@@ -133,6 +135,8 @@ export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConf
     new ProjectSetupCheck(),
     new MetroConfigCheck(),
     new NativeToolingVersionCheck(),
+    new AppConfigFieldsNotSyncedToNativeProjectsCheck(),
+    new StoreCompatibilityCheck(),
   ];
 
   if (getReactNativeDirectoryCheckEnabled(pkg)) {

@@ -24,6 +24,7 @@ const debug = require('debug')('expo:init:template') as typeof console.log;
 
 const isMacOS = process.platform === 'darwin';
 
+// keep this list in sync with the validation helper in WWW: src/utils/experienceParser.ts
 const FORBIDDEN_NAMES = [
   'react-native',
   'react',

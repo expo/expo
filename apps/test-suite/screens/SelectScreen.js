@@ -4,19 +4,20 @@ import React from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
-import Colors from '../constants/Colors';
 
 function ListItem({ title, onPressItem, selected, id }) {
+  const { theme } = useTheme();
   const onPress = () => onPressItem(id);
 
   return (
     <PlatformTouchable onPress={onPress}>
-      <View style={styles.listItem}>
+      <View style={[styles.listItem, { borderBottomColor: theme.border.secondary }]}>
         <Text style={styles.label}>{title}</Text>
         <View style={{ pointerEvents: 'none' }}>
-          <Checkbox color={Colors.tintColor} value={selected} />
+          <Checkbox color={theme.icon.info} value={selected} />
         </View>
       </View>
     </PlatformTouchable>
@@ -186,6 +187,7 @@ export default class SelectScreen extends React.PureComponent {
 
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
+  const { theme } = useTheme();
 
   const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
   const paddingVertical = 16;
@@ -194,7 +196,13 @@ function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
     <View
       style={[
         styles.buttonRow,
-        { paddingBottom: isRunningInBareExpo ? 0 : bottom, paddingLeft: left, paddingRight: right },
+        {
+          paddingBottom: isRunningInBareExpo ? 0 : bottom,
+          paddingLeft: left,
+          paddingRight: right,
+          borderColor: theme.border.default,
+          backgroundColor: theme.background.default,
+        },
       ]}>
       <FooterButton
         style={{ paddingVertical, alignItems: 'flex-start' }}
@@ -212,11 +220,12 @@ function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
 }
 
 function FooterButton({ title, style, ...props }) {
+  const { theme } = useTheme();
   return (
     <TouchableOpacity
       style={[styles.footerButton, { opacity: props.disabled ? 0.4 : 1 }, style]}
       {...props}>
-      <Text style={styles.footerButtonTitle}>{title}</Text>
+      <Text style={[styles.footerButtonTitle, { color: theme.text.info }]}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -229,7 +238,6 @@ const styles = StyleSheet.create({
   },
   footerButtonTitle: {
     fontSize: 16,
-    color: Colors.tintColor,
   },
   footerButton: {
     flex: 1,
@@ -243,7 +251,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: HORIZONTAL_MARGIN,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
   },
   label: {
     color: 'black',
@@ -254,7 +261,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.border,
     backgroundColor: 'white',
   },
   contentContainerStyle: {

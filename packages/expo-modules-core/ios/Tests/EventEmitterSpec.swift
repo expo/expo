@@ -122,8 +122,8 @@ final class EventEmitterSpec: ExpoSpec {
       it("calls startObserving on addListener") {
         var calls: Int = 0
         let eventName = "testEvent"
-        let listenerA = runtime.createSyncFunction("listenerA") { _, _ in }
-        let listenerB = runtime.createSyncFunction("listenerB") { _, _ in }
+        let listenerA = runtime.createSyncFunction("listenerA") { _, _ in .undefined }
+        let listenerB = runtime.createSyncFunction("listenerB") { _, _ in .undefined }
         let observer = try setupEventObserver(runtime: runtime, functionName: "startObserving") { arguments in
           expect(try arguments.first?.asString()) == eventName
           calls = calls + 1
@@ -138,7 +138,7 @@ final class EventEmitterSpec: ExpoSpec {
       it("calls stopObserving on removeListener") {
         var calls: Int = 0
         let eventName = "testEvent"
-        let listener = runtime.createSyncFunction("listener") { _, _ in }
+        let listener = runtime.createSyncFunction("listener") { _, _ in .undefined }
         let observer = try setupEventObserver(runtime: runtime, functionName: "stopObserving") { arguments in
           expect(try arguments.first?.asString()) == eventName
           calls = calls + 1
@@ -154,7 +154,7 @@ final class EventEmitterSpec: ExpoSpec {
       it("calls stopObserving on removeAllListeners") {
         var calls: Int = 0
         let eventName = "testEvent"
-        let listener = runtime.createSyncFunction("listener") { _, _ in }
+        let listener = runtime.createSyncFunction("listener") { _, _ in .undefined }
         let observer = try setupEventObserver(runtime: runtime, functionName: "stopObserving") { arguments in
           expect(try arguments.first?.asString()) == eventName
           calls = calls + 1
@@ -260,7 +260,7 @@ private func setupEventObserver(
   let emitter = try! runtime.eval("new expo.EventEmitter()").asObject()
   let observingFunction = runtime.createSyncFunction(functionName) { [callback] this, arguments in
     try callback(arguments)
-    return Optional<Any>.none as Any
+    return .undefined
   }
 
   emitter.setProperty(functionName, value: observingFunction)

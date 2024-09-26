@@ -85,7 +85,7 @@ import { Prism } from 'prism-react-renderer';
       // a) function foo {
       // b) foo() {
       // c) function foo() {
-      // but not “foo {”
+      // but not "foo {"
       {
         // a) and c)
         pattern: /(\bfunction\s+)[\w-]+(?=(?:\s*\(?:\s*\))?\s*\{)/,
@@ -105,7 +105,7 @@ import { Prism } from 'prism-react-renderer';
       lookbehind: true,
     },
     // Highlight variable names as variables in the left-hand part
-    // of assignments (“=” and “+=”).
+    // of assignments ("=" and "+=").
     'assign-left': {
       pattern: /(^|[\s;|&]|[<>]\()\w+(?:\.\w+)*(?=\+?=)/,
       inside: {
@@ -133,7 +133,7 @@ import { Prism } from 'prism-react-renderer';
         inside: insideString,
       },
       // Here-document with quotes around the tag
-      // → No expansion (so no “inside”).
+      // → No expansion (so no "inside").
       {
         pattern: /((?:^|[^<])<<-?\s*)(["'])(\w+)\2\s[\s\S]*?(?:\r?\n|\r)\3/,
         lookbehind: true,
@@ -142,7 +142,7 @@ import { Prism } from 'prism-react-renderer';
           bash: commandAfterHeredoc,
         },
       },
-      // “Normal” string
+      // "Normal" string
       {
         // https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html
         pattern: /(^|[^\\](?:\\\\)*)"(?:\\[\s\S]|\$\([^)]+\)|\$(?!\()|`[^`]+`|[^"\\`$])*"/,

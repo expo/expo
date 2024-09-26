@@ -836,8 +836,61 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       await db2.closeAsync();
     });
   });
+
+  describe('SQLCipher', () => {
+    const isSQLCipherSupported = checkIsSQLCipherSupportedSync();
+    const scopedIt = isSQLCipherSupported ? it : t.xit;
+
+    beforeAll(async () => {
+      if (!isSQLCipherSupported) {
+        return;
+      }
+      await SQLite.deleteDatabaseAsync('testcipher.db').catch(() => {});
+
+      const db = await SQLite.openDatabaseAsync('testcipher.db');
+      await db.execAsync(`PRAGMA key = 'testkey'`);
+
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+`);
+      const statement = await db.prepareAsync('INSERT INTO users (name, k, j) VALUES (?, ?, ?)');
+      await statement.executeAsync('Tim Duncan', 1, 23.4);
+      await statement.executeAsync(['Manu Ginobili', 5, 72.8]);
+      await statement.executeAsync(['Nikhilesh Sigatapu', 7, 42.14]);
+      await statement.finalizeAsync();
+    });
+
+    scopedIt('should open a database with a password', async () => {
+      const db = await SQLite.openDatabaseAsync('testcipher.db');
+      await db.execAsync(`PRAGMA key = 'testkey'`);
+      const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(3);
+      await db.closeAsync();
+    });
+
+    scopedIt('should throw when executing with wrong password', async () => {
+      const db = await SQLite.openDatabaseAsync('testcipher.db');
+      let error = null;
+      try {
+        await db.getAllAsync<UserEntity>('SELECT * FROM users');
+      } catch (e) {
+        error = e;
+      } finally {
+        await db.closeAsync();
+      }
+      expect(error).not.toBeNull();
+    });
+  });
 }
 
 async function delayAsync(timeMs: number) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
+}
+
+function checkIsSQLCipherSupportedSync(): boolean {
+  const db = SQLite.openDatabaseSync(':memory:');
+  const isSQLCipher = db.getFirstSync('PRAGMA cipher_version') != null;
+  db.closeSync();
+  return isSQLCipher;
 }

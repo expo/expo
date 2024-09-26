@@ -16,6 +16,7 @@ import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
   CommentContentData,
   CommentData,
+  DefaultPropsDefinitionData,
   MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
@@ -28,7 +29,6 @@ import {
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { Tag } from '~/ui/components/Tag';
 import {
   A,
@@ -335,6 +335,7 @@ export const resolveTypeName = (
     operator,
     objectType,
     indexType,
+    target,
   } = typeDefinition;
 
   try {
@@ -485,9 +486,18 @@ export const resolveTypeName = (
       }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
+      if (target && operator && ['readonly', 'keyof'].includes(operator)) {
+        return (
+          <>
+            {operator} {resolveTypeName(target, sdkVersion)}
+          </>
+        );
+      }
       return operator || 'undefined';
     } else if (type === 'intrinsic') {
       return name || 'undefined';
+    } else if (type === 'rest' && elementType) {
+      return `...${resolveTypeName(elementType, sdkVersion)}`;
     } else if (value === null) {
       return 'null';
     }
@@ -866,6 +876,19 @@ export function getPossibleComponentPropsNames(name?: string, children: PropData
   return [`${componentName}Props`, `${componentName.replace('View', '')}Props`];
 }
 
+export function extractDefaultPropValue(
+  { comment, name }: PropData,
+  defaultProps?: DefaultPropsDefinitionData
+) {
+  const annotationDefault = getTagData('default', comment);
+  if (annotationDefault) {
+    return getCommentContent(annotationDefault.content);
+  }
+  return defaultProps?.type?.declaration?.children?.filter(
+    (defaultProp: PropData) => defaultProp.name === name
+  )[0]?.defaultValue;
+}
+
 export const STYLES_APIBOX = css({
   borderRadius: borderRadius.lg,
   borderWidth: 1,
@@ -892,7 +915,7 @@ export const STYLES_APIBOX = css({
     marginBottom: 0,
   },
 
-  [`.css-${tableWrapperStyle.name}`]: {
+  [`.table-wrapper`]: {
     boxShadow: 'none',
     marginBottom: 0,
   },
@@ -916,7 +939,7 @@ export const STYLES_APIBOX_WRAPPER = css({
   marginBottom: spacing[3.5],
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
-  [`.css-${tableWrapperStyle.name}:last-child`]: {
+  [`.table-wrapper:last-child`]: {
     marginBottom: spacing[4],
   },
 });

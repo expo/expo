@@ -1,4 +1,4 @@
-export type AudioSource = {
+export type AudioSource = string | {
     /**
      * A string representing the resource identifier for the audio,
      * which could be an HTTPS address, a local file path, or the name of a static audio file resource.
@@ -9,7 +9,7 @@ export type AudioSource = {
      * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
      */
     headers?: Record<string, string>;
-};
+} | null;
 export type RecordingInput = {
     name: string;
     type: string;
@@ -36,6 +36,7 @@ export type RecordingStatus = {
     isFinished: boolean;
     hasError: boolean;
     error: string | null;
+    url: string | null;
 };
 export type RecorderState = {
     canRecord: boolean;
@@ -43,6 +44,7 @@ export type RecorderState = {
     durationMillis: number;
     mediaServicesDidReset: boolean;
     metering?: number;
+    url: string | null;
 };
 export type AndroidOutputFormat = 'default' | '3gp' | 'mpeg4' | 'amrnb' | 'amrwb' | 'aac_adts' | 'mpeg2ts' | 'webm';
 export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
@@ -123,8 +125,28 @@ export type RecordingOptions = {
      * Recording options for the iOS platform.
      */
     ios: RecordingOptionsIos;
+    /**
+     * Recording options for the Web platform.
+     */
+    web?: RecordingOptionsWeb;
+};
+export type RecordingOptionsWeb = {
+    mimeType?: string;
+    bitsPerSecond?: number;
 };
 export type RecordingOptionsIos = {
+    /**
+     * The desired file extension.
+     *
+     * @example `'.caf'`
+     */
+    extension?: string;
+    /**
+     * The desired sample rate.
+     *
+     * @example `44100`
+     */
+    sampleRate?: number;
     /**
      * The desired file format. See the [`IOSOutputFormat`](#iosoutputformat) enum for all valid values.
      */
@@ -162,6 +184,18 @@ export type RecordingOptionsIos = {
 };
 export type RecordingOptionsAndroid = {
     /**
+     * The desired file extension.
+     *
+     * @example `'.caf'`
+     */
+    extension?: string;
+    /**
+     * The desired sample rate.
+     *
+     * @example `44100`
+     */
+    sampleRate?: number;
+    /**
      * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) enum for all valid values.
      */
     outputFormat: AndroidOutputFormat;
@@ -183,7 +217,7 @@ export type AudioMode = {
     interruptionMode: InterruptionMode;
     allowsRecording: boolean;
     shouldPlayInBackground: boolean;
+    shouldRouteThroughEarpiece: boolean;
 };
-type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
-export {};
+export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
 //# sourceMappingURL=Audio.types.d.ts.map

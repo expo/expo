@@ -133,7 +133,7 @@ void JavaCallback::invokeJSFunction(T arg) {
       jsi::Function &jsFunction,
       T arg
     ) {
-      jsFunction.call(rt, convertToJS(rt, std::forward<T>(arg)));
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::forward<T>(arg)));
     },
     arg
   );

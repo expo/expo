@@ -84,6 +84,10 @@ export function getTestModules() {
     modules.push(require('./tests/Hermes'));
   }
 
+  if (__DEV__) {
+    modules.push(require('./tests/DevToolsPluginClient'));
+  }
+
   if (Platform.OS === 'web') {
     modules.push(
       require('./tests/Contacts'),

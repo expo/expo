@@ -12,7 +12,7 @@ This is the specification for Expo Updates, a protocol for delivering updates to
 
 Conforming servers and client libraries must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
 
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non-normative.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non-normative.
 
 A conforming implementation of this protocol MAY provide additional functionality, but MUST NOT where explicitly disallowed or would otherwise result in non-conformance. Where relevant, unknown fields should be allowed and ignored by conforming clients.
 
@@ -54,7 +54,7 @@ A conformant client library MUST make a GET request with the headers:
 
 A conformant client library MAY send one of `accept: application/expo+json`, `accept: application/json`, or `accept: multipart/mixed` based on the [supported response structures](#response), though it SHOULD send `accept: application/expo+json, application/json, multipart/mixed`. A conformant client library MAY express preference using "q" parameters as specified in [RFC 7231](https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.1), which default to `1`.
 
-A conformant client library configured to perform [code signing](#code-signing) verification MUST send a `expo-expect-signature` header to indicate that it expects the conformant server to include the `expo-signature` header in the manifest response. `expo-expect-signature` is an [Expo SFV](expo-sfv-0.mdx) dictionary which MAY contain any of the following key value pairs:
+A conformant client library configured to perform [code signing](#code-signing) verification MUST send a `expo-expect-signature` header to indicate that it expects the conformant server to include the `expo-signature` header in the manifest response. `expo-expect-signature` is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary which MAY contain any of the following key value pairs:
 
 - `sig` SHOULD contain the boolean `true` to indicate that it requires a conformant server to respond with the signature in the `sig` key.
 - `keyid` SHOULD contain the keyId of the public key the client will use to verify the signature
@@ -93,8 +93,8 @@ content-type: *
 
 - `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `1`.
 - `expo-sfv-version` MUST be `0`.
-- `expo-manifest-filters` is an [Expo SFV](expo-sfv-0.mdx) dictionary. It is used to filter updates stored by the client library by the `metadata` attribute found in the [manifest](#manifest-body). If a field is mentioned in the filter, the corresponding field in the metadata must either be missing or equal for the update to be included. The client library MUST store the manifest filters until it is overwritten by a newer response.
-- `expo-server-defined-headers` is an [Expo SFV](expo-sfv-0.mdx) dictionary. It defines headers that a client library MUST store until overwritten by a newer dictionary, and they MUST be included in every subsequent [update request](#request).
+- `expo-manifest-filters` is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary. It is used to filter updates stored by the client library by the `metadata` attribute found in the [manifest](#manifest-body). If a field is mentioned in the filter, the corresponding field in the metadata must either be missing or equal for the update to be included. The client library MUST store the manifest filters until it is overwritten by a newer response.
+- `expo-server-defined-headers` is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary. It defines headers that a client library MUST store until overwritten by a newer dictionary, and they MUST be included in every subsequent [update request](#request).
 - `cache-control` MUST be set to an appropriately short period of time. A value of `cache-control: private, max-age=0` is recommended to ensure the newest manifest is returned. Setting longer cache ages could result in stale updates.
 - `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`; otherwise the request would return a `406` error.
 
@@ -104,7 +104,7 @@ content-type: *
 expo-signature: *
 ```
 
-- `expo-signature` SHOULD contain the signature of the manifest to be used during the validation step of [code signing](#code-signing) if the request for the manifest contained the `expo-expect-signature` header. This is an [Expo SFV](expo-sfv-0.mdx) dictionary which MAY contain any of the following key value pairs:
+- `expo-signature` SHOULD contain the signature of the manifest to be used during the validation step of [code signing](#code-signing) if the request for the manifest contained the `expo-expect-signature` header. This is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary which MAY contain any of the following key value pairs:
   - `sig` MUST contain the signature of the manifest. The name of this field matches that of `expo-expect-signature`.
   - `keyid` MAY contain the keyId of the key the server used to sign the response. The client SHOULD use the certificate that matches this `keyid` to verify the signature.
   - `alg` MAY contain the algorithm the server used to sign the response. The client SHOULD use this field only if it matches the algorithm defined for the certificate matching `keyid`.

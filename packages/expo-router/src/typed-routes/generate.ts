@@ -13,17 +13,21 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
   const dynamicRoutes = new Set<string>();
   const dynamicRouteContextKeys = new Set<string>();
 
-  walkRouteNode(
-    getRoutes(ctx, {
+  let routeNode: RouteNode | null = null;
+
+  try {
+    routeNode = getRoutes(ctx, {
       platformRoutes: false, // We don't need to generate platform specific routes
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
       importMode: 'async',
-    }),
-    staticRoutes,
-    dynamicRoutes,
-    dynamicRouteContextKeys
-  );
+    });
+  } catch {
+    // Ignore errors from `getRoutes`. This is also called inside the app, which has
+    // a nicer UX for showing error messages
+  }
+
+  walkRouteNode(routeNode, '', staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
 
   return `/* eslint-disable */
 import * as Router from 'expo-router';
@@ -47,16 +51,19 @@ declare module 'expo-router' {
  */
 function walkRouteNode(
   routeNode: RouteNode | null,
+  parentRoutePath: string,
   staticRoutes: Set<string>,
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
 ) {
   if (!routeNode) return;
 
-  addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+  addRouteNode(routeNode, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+
+  parentRoutePath = `${removeSupportedExtensions(`${parentRoutePath}/${routeNode.route}`).replace(/\/?index$/, '')}`; // replace /index with /
 
   for (const child of routeNode.children) {
-    walkRouteNode(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    walkRouteNode(child, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
   }
 }
 
@@ -66,6 +73,7 @@ function walkRouteNode(
  */
 function addRouteNode(
   routeNode: RouteNode | null,
+  parentRoutePath: string,
   staticRoutes: Set<string>,
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
@@ -73,7 +81,7 @@ function addRouteNode(
   if (!routeNode?.route) return;
   if (!isTypedRoute(routeNode.route)) return;
 
-  let routePath = `${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
+  let routePath = `${parentRoutePath}/${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
 
   if (!routePath.startsWith('/')) {
     routePath = `/${routePath}`;

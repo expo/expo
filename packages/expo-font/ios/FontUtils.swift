@@ -25,7 +25,11 @@ internal func queryCustomNativeFonts() -> [String] {
   // [2] Retrieve font names by family names
   return fontFamilies.flatMap { fontFamilyNames in
     return fontFamilyNames.flatMap { fontFamilyName in
+    #if os(iOS) || os(tvOS)
       return UIFont.fontNames(forFamilyName: fontFamilyName)
+    #elseif os(macOS)
+      return NSFontManager.shared.availableMembers(ofFontFamily: fontFamilyName)?.compactMap { $0[0] as? String } ?? []
+    #endif
     }
   }
 }
@@ -45,7 +49,7 @@ internal func loadFont(fromUrl url: CFURL, alias: String) throws -> CGFont {
 /**
  Registers the given font to make it discoverable through font descriptor matching.
  */
-internal func registerFont(_ fontUrl: CFURL) throws {
+internal func registerFont(fontUrl: CFURL, fontFamilyAlias: String) throws {
   var error: Unmanaged<CFError>?
 
   if !CTFontManagerRegisterFontsForURL(fontUrl, .process, &error), let error = error?.takeRetainedValue() {
@@ -58,7 +62,7 @@ internal func registerFont(_ fontUrl: CFURL) throws {
       // - another instance already registered with the same name (assuming it's most likely the same font anyway)
       return
     default:
-      throw FontRegistrationFailedException(error)
+      throw FontRegistrationFailedException(FontRegistrationErrorInfo(fontFamilyAlias: fontFamilyAlias, cfError: error, ctFontManagerError: fontError))
     }
   }
 }

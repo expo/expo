@@ -20,6 +20,7 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
+import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -183,6 +184,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // Give users the ability to opt-out of the feature, per-platform.
     platformOptions['react-compiler'] !== false
   ) {
+    if (!hasModule('babel-plugin-react-compiler')) {
+      throw new Error(
+        'The `babel-plugin-react-compiler` must be installed before you can use React Compiler.'
+      );
+    }
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -272,11 +278,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (platform === 'web') {
     extraPlugins.push(require('babel-plugin-react-native-web'));
-
-    // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
-    if (bundler !== 'webpack') {
-      extraPlugins.push(expoInlineManifestPlugin);
-    }
+  }
+  // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+  if (bundler !== 'webpack') {
+    extraPlugins.push(expoInlineManifestPlugin);
   }
 
   if (hasModule('expo-router')) {
@@ -289,6 +294,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(reactClientReferencesPlugin);
 
     extraPlugins.push(environmentRestrictedReactAPIsPlugin);
+  } else {
+    // DOM components must run after "use client" and only in client environments.
+    extraPlugins.push(expoUseDomDirectivePlugin);
   }
 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.

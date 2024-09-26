@@ -6,11 +6,11 @@ import android.os.Parcelable;
 import java.util.Date;
 
 /**
- * A class representing a single notification received at a particular moment ({@link #mDate}).
+ * A class representing a single notification. Origin date ({@link #mOriginDate}) is time when it was sent (remote) or when it was posted (local).
  */
 public class Notification implements Parcelable {
   private NotificationRequest mRequest;
-  private Date mDate;
+  private Date mOriginDate;
 
   public Notification(NotificationRequest request) {
     this(request, new Date());
@@ -18,16 +18,16 @@ public class Notification implements Parcelable {
 
   public Notification(NotificationRequest request, Date date) {
     mRequest = request;
-    mDate = date;
+    mOriginDate = date;
   }
 
   protected Notification(Parcel in) {
     mRequest = in.readParcelable(getClass().getClassLoader());
-    mDate = new Date(in.readLong());
+    mOriginDate = new Date(in.readLong());
   }
 
-  public Date getDate() {
-    return mDate;
+  public Date getOriginDate() {
+    return mOriginDate;
   }
 
   public NotificationRequest getNotificationRequest() {
@@ -54,6 +54,6 @@ public class Notification implements Parcelable {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeParcelable(mRequest, 0);
-    dest.writeLong(mDate.getTime());
+    dest.writeLong(mOriginDate.getTime());
   }
 }

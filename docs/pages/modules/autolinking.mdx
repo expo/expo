@@ -54,9 +54,9 @@ The above command returns an object in JSON format with modules that have been f
 
 Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
 
-<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <ios|android>']} />
+<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <apple|android>']} />
 
-For example, with the `--platform ios` option it returns an object in JSON format with an array of modules and resolved details for the iOS platform:
+For example, with the `--platform apple` option it returns an object in JSON format with an array of modules and resolved details for the platform:
 
 ```json
 {

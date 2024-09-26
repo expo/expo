@@ -41,7 +41,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@testing-library/react-hooks": "^7.0.1",
+    "@testing-library/react-native": "^12.5.2",
     "expo-module-scripts": "^3.0.0"
   }
 }

@@ -70,7 +70,7 @@ For more information, see the [`uri-scheme` library](https://www.npmjs.com/packa
 
 ## Add additional optional configuration
 
-For certain types of errors, you can provide more helpful error messages. To turn this on, import `expo-dev-client` in the project's **index** file (in the managed workflow, you need to add this import on top of the **App.&lbrace;js|tsx&rbrace;**). Make sure that the import statement is above `import App from './App'`.
+For certain types of errors, you can obtain more helpful error messages when using `expo-dev-client`. To turn this on, import `expo-dev-client` in the project's **index** file. Make sure that the import statement is executed early, before your application's JS code is imported (place the import above `import App from './App'`).
 
 ```js
 import 'expo-dev-client';

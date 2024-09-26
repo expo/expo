@@ -3,15 +3,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isIgnoredPath = void 0;
+exports.isIgnoredPathWithMatchObjects = exports.buildPathMatchObjects = exports.isIgnoredPath = void 0;
 const minimatch_1 = __importDefault(require("minimatch"));
 /**
- * Indicate the given `filePath` should be excluded by `ignorePaths`
+ * Indicate the given `filePath` should be excluded by the `ignorePaths`.
  */
 function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) {
-    const minimatchObjs = ignorePaths.map((ignorePath) => new minimatch_1.default.Minimatch(ignorePath, minimatchOptions));
+    const matchObjects = buildPathMatchObjects(ignorePaths, minimatchOptions);
+    return isIgnoredPathWithMatchObjects(filePath, matchObjects);
+}
+exports.isIgnoredPath = isIgnoredPath;
+/**
+ * Prebuild match objects for `isIgnoredPathWithMatchObjects` calls.
+ */
+function buildPathMatchObjects(paths, minimatchOptions = { dot: true }) {
+    return paths.map((filePath) => new minimatch_1.default.Minimatch(filePath, minimatchOptions));
+}
+exports.buildPathMatchObjects = buildPathMatchObjects;
+/**
+ * Indicate the given `filePath` should be excluded by the prebuilt `matchObjects`.
+ */
+function isIgnoredPathWithMatchObjects(filePath, matchObjects) {
     let result = false;
-    for (const minimatchObj of minimatchObjs) {
+    for (const minimatchObj of matchObjects) {
         const normalizedFilePath = normalizeFilePath(filePath);
         const currMatch = minimatchObj.match(normalizedFilePath);
         if (minimatchObj.negate && result && !currMatch) {
@@ -23,7 +37,7 @@ function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) 
     }
     return result;
 }
-exports.isIgnoredPath = isIgnoredPath;
+exports.isIgnoredPathWithMatchObjects = isIgnoredPathWithMatchObjects;
 const STRIP_NODE_MODULES_PREFIX_REGEX = /^(\.\.\/)+(node_modules\/)/g;
 /**
  * Normalize the given `filePath` to be used for matching against `ignorePaths`.

@@ -3,6 +3,7 @@ import { useLayoutEffect, useState } from 'react';
 import { NotificationResponse } from './Notifications.types';
 import {
   addNotificationResponseReceivedListener,
+  addNotificationResponseClearedListener,
   getLastNotificationResponseAsync,
 } from './NotificationsEmitter';
 
@@ -80,8 +81,12 @@ export default function useLastNotificationResponse() {
     const subscription = addNotificationResponseReceivedListener((response) =>
       setLastNotificationResponse((prevResponse) => newResponseIfNeeded(prevResponse, response))
     );
+    const clearResponseSubscription = addNotificationResponseClearedListener(() => {
+      setLastNotificationResponse(undefined);
+    });
     return () => {
       subscription.remove();
+      clearResponseSubscription.remove();
     };
   }, []);
 

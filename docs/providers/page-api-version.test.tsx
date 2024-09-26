@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import mockRouter from 'next-router-mock';
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
 import { PropsWithChildren } from 'react';

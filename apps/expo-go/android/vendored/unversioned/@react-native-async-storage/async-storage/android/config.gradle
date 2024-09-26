@@ -54,6 +54,7 @@ String getKspVersion(String kotlinVersion) {
     }
     // https://github.com/google/ksp/releases
     def kspVersions = [
+            "1.9.24-1.0.20",
             "1.9.20-1.0.14",
             "1.9.10-1.0.13",
             "1.9.0-1.0.13",

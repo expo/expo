@@ -157,7 +157,8 @@ function normalizeExpoConfig(config, options) {
  */
 async function createTempIgnoredFileAsync(tmpDir, options) {
     const ignoredFile = path_1.default.join(tmpDir, '.fingerprintignore');
-    await promises_1.default.writeFile(ignoredFile, options.ignorePaths.join('\n'));
+    const ignorePaths = options.ignorePathMatchObjects.map((match) => match.pattern);
+    await promises_1.default.writeFile(ignoredFile, ignorePaths.join('\n'));
     return ignoredFile;
 }
 async function getEasBuildSourcesAsync(projectRoot, options) {

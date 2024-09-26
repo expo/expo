@@ -309,7 +309,10 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
                         delete focusedParams[param];
                     }
                 }
-                const query = new URLSearchParams(focusedParams).toString();
+                const params = new URLSearchParams(Object.entries(focusedParams).flatMap(([key, values]) => {
+                    return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
+                }));
+                const query = params.toString();
                 if (query) {
                     path += `?${query}`;
                 }
@@ -424,7 +427,7 @@ function getParamsWithConventionsCollapsed({ pattern, routeName, params, }) {
         // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
         const name = (0, matchers_1.testNotFound)(routeName)
             ? 'not-found'
-            : (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
+            : ((0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName);
         delete processedParams[name];
     }
     return processedParams;

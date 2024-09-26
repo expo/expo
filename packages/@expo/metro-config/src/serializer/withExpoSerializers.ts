@@ -6,7 +6,7 @@
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MetroConfig, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, InputConfigT } from 'metro-config';
 
@@ -44,6 +44,11 @@ export type SerializerConfigOptions = {
 export type SerializerPlugin = (
   ...props: SerializerParameters
 ) => SerializerParameters | Promise<SerializerParameters>;
+
+const sourceMapString =
+  typeof sourceMapStringMod !== 'function'
+    ? sourceMapStringMod.sourceMapString
+    : sourceMapStringMod;
 
 export function withExpoSerializers(
   config: InputConfigT,

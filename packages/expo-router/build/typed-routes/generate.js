@@ -11,12 +11,20 @@ function getTypedRoutesDeclarationFile(ctx) {
     const staticRoutes = new Set();
     const dynamicRoutes = new Set();
     const dynamicRouteContextKeys = new Set();
-    walkRouteNode((0, getRoutes_1.getRoutes)(ctx, {
-        platformRoutes: false,
-        ignoreEntryPoints: true,
-        ignoreRequireErrors: true,
-        importMode: 'async',
-    }), staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    let routeNode = null;
+    try {
+        routeNode = (0, getRoutes_1.getRoutes)(ctx, {
+            platformRoutes: false,
+            ignoreEntryPoints: true,
+            ignoreRequireErrors: true,
+            importMode: 'async',
+        });
+    }
+    catch {
+        // Ignore errors from `getRoutes`. This is also called inside the app, which has
+        // a nicer UX for showing error messages
+    }
+    walkRouteNode(routeNode, '', staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     return `/* eslint-disable */
 import * as Router from 'expo-router';
 
@@ -37,24 +45,25 @@ exports.getTypedRoutesDeclarationFile = getTypedRoutesDeclarationFile;
 /**
  * Walks a RouteNode tree and adds the routes to the provided sets
  */
-function walkRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
+function walkRouteNode(routeNode, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
     if (!routeNode)
         return;
-    addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    addRouteNode(routeNode, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    parentRoutePath = `${(0, matchers_1.removeSupportedExtensions)(`${parentRoutePath}/${routeNode.route}`).replace(/\/?index$/, '')}`; // replace /index with /
     for (const child of routeNode.children) {
-        walkRouteNode(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+        walkRouteNode(child, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
     }
 }
 /**
  * Given a RouteNode, adds the route to the correct sets
  * Modifies the RouteNode.route to be a typed-route string
  */
-function addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
+function addRouteNode(routeNode, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys) {
     if (!routeNode?.route)
         return;
     if (!(0, matchers_1.isTypedRoute)(routeNode.route))
         return;
-    let routePath = `${(0, matchers_1.removeSupportedExtensions)(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
+    let routePath = `${parentRoutePath}/${(0, matchers_1.removeSupportedExtensions)(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
     if (!routePath.startsWith('/')) {
         routePath = `/${routePath}`;
     }

@@ -31,6 +31,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
   external fun registerSyncFunction(
     name: String,
     takesOwner: Boolean,
+    enumerable: Boolean,
     desiredTypes: Array<ExpectedType>,
     body: JNIFunctionBody
   )
@@ -38,6 +39,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
   external fun registerAsyncFunction(
     name: String,
     takesOwner: Boolean,
+    enumerable: Boolean,
     desiredTypes: Array<ExpectedType>,
     body: JNIAsyncFunctionBody
   )
@@ -62,6 +64,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     prototypeDecorator: JSDecoratorsBridgingObject,
     takesOwner: Boolean,
     ownerClass: Class<*>?,
+    isSharedRef: Boolean,
     desiredTypes: Array<ExpectedType>,
     body: JNIFunctionBody
   )

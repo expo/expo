@@ -11,13 +11,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRsc = void 0;
 const server_1 = require("react-server-dom-webpack/server");
+const path_1 = require("./path");
+const utils_1 = require("./router/utils");
 const server_2 = require("./server");
-const server_actions_1 = require("../server-actions");
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = server_1.registerServerReference;
 async function renderRsc(args, opts) {
-    const { searchParams, method, input, body, contentType, context } = args;
+    const { searchParams, input, body, contentType, context, onError } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
     // @ts-expect-error
@@ -32,28 +33,27 @@ async function renderRsc(args, opts) {
             name = '',] = encodedId.split('#');
             // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
             if (encodedId.match(/[0-9a-z]{40}#/i)) {
-                return { id: encodedId, chunks: [encodedId], name, async: true };
+                // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+                return { id: encodedId, chunks: [encodedId], name: '*', async: true };
             }
-            const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-            // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
-            // This is similar to how we handle lazy bundling.
-            if (resolveClientEntry) {
-                const resolved = resolveClientEntry(filePath);
-                return { id: resolved.id, chunks: resolved.chunks, name, async: true };
-            }
-            return {
-                // TODO: Make relative to server root for production exports.
+            const filePath = file.startsWith('file://') ? (0, path_1.fileURLToFilePath)(file) : file;
+            args.moduleIdCallback?.({
                 id: filePath,
                 chunks: [
                     // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+                    // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
                     'chunk:' + filePath,
                 ],
                 name,
                 async: true,
-            };
+            });
+            // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
+            // This is similar to how we handle lazy bundling.
+            const resolved = resolveClientEntry(filePath);
+            return { id: resolved.id, chunks: resolved.chunks, name, async: true };
         },
     });
-    const renderWithContext = async (context, input, searchParams) => {
+    const renderWithContext = async (context, input, params) => {
         const renderStore = {
             context: context || {},
             rerender: () => {
@@ -62,7 +62,7 @@ async function renderRsc(args, opts) {
         };
         return (0, server_2.runWithRenderStore)(renderStore, async () => {
             const elements = await renderEntries(input, {
-                searchParams,
+                params,
                 buildConfig,
             });
             if (elements === null) {
@@ -73,7 +73,9 @@ async function renderRsc(args, opts) {
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
             }
-            return (0, server_1.renderToReadableStream)(elements, bundlerConfig);
+            return (0, server_1.renderToReadableStream)(elements, bundlerConfig, {
+                onError,
+            });
         });
     };
     const renderWithContextWithAction = async (context, actionFn, actionArgs) => {
@@ -81,13 +83,13 @@ async function renderRsc(args, opts) {
         let rendered = false;
         const renderStore = {
             context: context || {},
-            rerender: async (input, searchParams = new URLSearchParams()) => {
+            rerender: async (input, params) => {
                 if (rendered) {
                     throw new Error('already rendered');
                 }
                 elementsPromise = Promise.all([
                     elementsPromise,
-                    renderEntries(input, { searchParams, buildConfig }),
+                    renderEntries(input, { params, buildConfig }),
                 ]).then(([oldElements, newElements]) => ({
                     ...oldElements,
                     // FIXME we should actually check if newElements is null and send an error
@@ -102,32 +104,33 @@ async function renderRsc(args, opts) {
             if (Object.keys(elements).some((key) => key.startsWith('_'))) {
                 throw new Error('"_" prefix is reserved');
             }
-            return (0, server_1.renderToReadableStream)({ ...elements, _value: actionValue }, bundlerConfig);
+            return (0, server_1.renderToReadableStream)({ ...elements, _value: actionValue }, bundlerConfig, {
+                onError,
+            });
         });
     };
-    if (method === 'POST') {
-        // TODO(Bacon): Fix Server action ID generation
-        const rsfId = decodeURIComponent(input);
-        let args = [];
-        let bodyStr = '';
-        if (body) {
-            bodyStr = await streamToString(body);
-        }
+    let decodedBody = args.decodedBody;
+    if (body) {
+        const bodyStr = await streamToString(body);
         if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
             // XXX This doesn't support streaming unlike busboy
             const formData = parseFormData(bodyStr, contentType);
-            args = await (0, server_1.decodeReply)(formData, bundlerConfig);
+            decodedBody = await (0, server_1.decodeReply)(formData, 
+            // TODO: add server action config
+            bundlerConfig);
         }
         else if (bodyStr) {
-            args = await (0, server_1.decodeReply)(bodyStr, bundlerConfig);
+            decodedBody = await (0, server_1.decodeReply)(bodyStr, 
+            // TODO: add server action config
+            bundlerConfig);
         }
-        const [, name] = rsfId.split('#');
-        // xxxx#greet
-        if (!(0, server_actions_1.getServerReference)(rsfId)) {
-            throw new Error(`Server action not found: "${rsfId}". ${(0, server_actions_1.getDebugDescription)()}`);
-        }
-        const mod = (0, server_actions_1.getServerReference)(rsfId);
-        const fn = name ? mod[name] || mod : mod;
+    }
+    const actionId = (0, utils_1.decodeActionId)(input);
+    if (actionId) {
+        const args = Array.isArray(decodedBody) ? decodedBody : [];
+        const [fileId, name] = actionId.split('#');
+        const mod = await opts.loadServerModuleRsc((0, utils_1.filePathToFileURL)(fileId));
+        const fn = name === '*' ? name : mod[name] || mod;
         return renderWithContextWithAction(context, fn, args);
     }
     // method === 'GET'
@@ -165,12 +168,6 @@ const parseFormData = (body, contentType) => {
         }
     }
     return formData;
-};
-const fileURLToFilePath = (fileURL) => {
-    if (!fileURL.startsWith('file://')) {
-        throw new Error('Not a file URL');
-    }
-    return decodeURI(fileURL.slice('file://'.length));
 };
 const streamToString = async (stream) => {
     const decoder = new TextDecoder();

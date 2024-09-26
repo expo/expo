@@ -25,7 +25,7 @@ When Expo was first created, React Native had yet to be publicly released. This 
 
 The Expo SDK is well-tested, written in TypeScript, documented, and built for Android, iOS, and the web. Every module in the Expo SDK works together to ensure versioning always matches. This creates a nice upgrading experience.
 
-The Expo SDK is also written with the [Expo native API](/modules) to make contributing, maintaining, and understanding easier.
+The Expo SDK is also written with the [Expo Modules API](/modules) to make contributing, maintaining, and understanding easier.
 
 ## What is the difference between Expo and React Native?
 
@@ -174,11 +174,9 @@ For more information on what current limitations exist with EAS, see the followi
   Icon={Bell03Icon}
 />
 
-#### Bare workflow
+#### EAS and bare React Native projects
 
-Similar to [development builds](/develop/development-builds/introduction/), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android** and **ios** directories rather than continuously generating them on demand using the [app config and prebuild](/workflow/prebuild).
-
-EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
+EAS Build is compatible with bare (existing) React Native projects (where native directories are checked in version control). When these directories are present, it does not run prebuild, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
 ### Expo Go
 

@@ -1,4 +1,3 @@
-import { suppressErrorOutput } from '@testing-library/react-hooks';
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -124,7 +123,7 @@ describe(useSQLiteContext, () => {
   });
 
   it('should throw when using `onError` and `useSuspense` together', async () => {
-    const restoreConsole = suppressErrorOutput();
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const mockErrorHandler = jest.fn();
     render(
       <ErrorBoundary fallback={<View />} onError={mockErrorHandler}>
@@ -142,6 +141,6 @@ describe(useSQLiteContext, () => {
         /Cannot use `onError` with `useSuspense`, use error boundaries instead./
       );
     });
-    restoreConsole();
+    consoleErrorSpy.mockRestore();
   });
 });

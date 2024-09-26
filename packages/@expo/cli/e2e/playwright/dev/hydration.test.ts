@@ -38,15 +38,19 @@ test.describe(inputDir, () => {
       NODE_ENV: 'production',
     });
     console.timeEnd('hydration setup');
-  });
 
-  // This test generally ensures no errors are thrown during an export loading.
-  test('loads without hydration errors', async ({ page }) => {
     console.time('npx serve');
     await serveCmd.startAsync([inputDir]);
     console.timeEnd('npx serve');
     console.log('Server running:', serveCmd.url);
+  });
 
+  test.afterAll(async () => {
+    await serveCmd.stopAsync();
+  });
+
+  // This test generally ensures no errors are thrown during an export loading.
+  test('loads without hydration errors', async ({ page }) => {
     console.time('Open page');
     // Navigate to the app
     await page.goto(serveCmd.url);

@@ -29,10 +29,8 @@ jobject IntegerFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto &integerClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Integer");
-  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
-  return env->NewObject(integerClass.clazz, integerConstructor,
+  auto &integerClass = JCacheHolder::get().jInteger;
+  return env->NewObject(integerClass.clazz, integerClass.constructor,
                         static_cast<int>(value.asNumber()));
 }
 
@@ -45,10 +43,8 @@ jobject LongFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto &longClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Long");
-  jmethodID longConstructor = longClass.getMethod("<init>", "(J)V");
-  return env->NewObject(longClass.clazz, longConstructor,
+  auto &longClass = JCacheHolder::get().jLong;
+  return env->NewObject(longClass.clazz, longClass.constructor,
                         static_cast<jlong>(value.asNumber()));
 }
 
@@ -61,10 +57,8 @@ jobject FloatFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto &floatClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Float");
-  jmethodID floatConstructor = floatClass.getMethod("<init>", "(F)V");
-  return env->NewObject(floatClass.clazz, floatConstructor,
+  auto &floatClass = JCacheHolder::get().jFloat;
+  return env->NewObject(floatClass.clazz, floatClass.constructor,
                         static_cast<float>(value.asNumber()));
 }
 
@@ -77,10 +71,8 @@ jobject BooleanFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto &booleanClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Boolean");
-  jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
-  return env->NewObject(booleanClass.clazz, booleanConstructor, value.asBool());
+  auto &booleanClass = JCacheHolder::get().jBoolean;
+  return env->NewObject(booleanClass.clazz, booleanClass.constructor, value.asBool());
 }
 
 bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -92,10 +84,8 @@ jobject DoubleFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto &doubleClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Double");
-  jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
-  return env->NewObject(doubleClass.clazz, doubleConstructor, value.asNumber());
+  auto &doubleClass = JCacheHolder::get().jDouble;
+  return env->NewObject(doubleClass.clazz, doubleClass.constructor, value.asNumber());
 }
 
 bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -377,7 +367,7 @@ jobject PrimitiveArrayFrontendConverter::convert(
   size_t size = jsArray.size(rt);
   auto result = env->NewObjectArray(
     size,
-    JavaReferencesCache::instance()->getOrLoadJClass(env, javaType).clazz,
+    JCacheHolder::get().getOrLoadJClass(env, javaType),
     nullptr
   );
   for (size_t i = 0; i < size; i++) {
@@ -407,7 +397,16 @@ jobject ListFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  auto jsArray = value.asObject(rt).asArray(rt);
+  if (!value.isObject()) {
+    return convertSingleValue(rt, env, value);
+  }
+
+  auto valueObject = value.asObject(rt);
+  if (!valueObject.isArray(rt)) {
+    return convertSingleValue(rt, env, value);
+  }
+
+  auto jsArray = valueObject.asArray(rt);
   size_t size = jsArray.size(rt);
 
   auto arrayList = java::ArrayList<jobject>::create(size);
@@ -430,8 +429,19 @@ jobject ListFrontendConverter::convert(
   return arrayList.release();
 }
 
+jobject ListFrontendConverter::convertSingleValue(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  auto result = java::ArrayList<jobject>::create(1);
+  result->add(parameterConverter->convert(rt, env, value));
+  return result.release();
+}
+
 bool ListFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  return value.isObject() && value.getObject(rt).isArray(rt);
+  return (value.isObject() && value.getObject(rt).isArray(rt)) ||
+         parameterConverter->canConvert(rt, value);
 }
 
 MapFrontendConverter::MapFrontendConverter(
@@ -495,10 +505,8 @@ jobject ViewTagFrontendConverter::convert(
   }
 
   auto viewTag = (int) nativeTag.getNumber();
-  auto &integerClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Integer");
-  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
-  return env->NewObject(integerClass.clazz, integerConstructor, viewTag);
+  auto &integerClass = JCacheHolder::get().jInteger;
+  return env->NewObject(integerClass.clazz, integerClass.constructor, viewTag);
 }
 
 bool ViewTagFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -515,11 +523,9 @@ jobject SharedObjectIdConverter::convert(
     return nullptr;
   }
 
-  auto viewTag = (int) objectId.asNumber();
-  auto &integerClass = JavaReferencesCache::instance()
-    ->getJClass("java/lang/Integer");
-  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
-  return env->NewObject(integerClass.clazz, integerConstructor, viewTag);
+  int id = (int) objectId.asNumber();
+  auto &integerClass = JCacheHolder::get().jInteger;
+  return env->NewObject(integerClass.clazz, integerClass.constructor, id);
 }
 
 bool SharedObjectIdConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {

@@ -6,7 +6,11 @@ import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
-import { fileExistsAsync, globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from './utils';
+import {
+  fileExistsAsync,
+  globMatchFunctorAllAsync,
+  globMatchFunctorFirstAsync,
+} from '../fileUtils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -17,25 +21,8 @@ export async function resolveDependencyConfigImplAndroidAsync(
     return null;
   }
   const androidDir = path.join(packageRoot, 'android');
-
-  const globExcludes = [
-    'node_modules/**',
-    '**/build/**',
-    '**/debug/**',
-    'Examples/**',
-    'examples/**',
-    '**/Pods/**',
-    '**/sdks/hermes/android/**',
-    '**/src/androidTest/**',
-    '**/src/test/**',
-  ];
-  const [manifests, gradles] = await Promise.all([
-    glob('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
-    glob('build.gradle{,.kts}', { cwd: androidDir, ignore: globExcludes }),
-  ]);
-  const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
-  const gradle = gradles[0];
-  if (!manifest && !gradle) {
+  const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
+  if (!manifest || !gradle) {
     return null;
   }
 
@@ -241,4 +228,32 @@ function matchComponentDescriptors(filePath: string, contents: Buffer): string |
     return `${match[2]}ComponentDescriptor`;
   }
   return null;
+}
+
+export async function findGradleAndManifestAsync({
+  androidDir,
+  isLibrary,
+}: {
+  androidDir: string;
+  isLibrary: boolean;
+}): Promise<{ gradle: string | null; manifest: string | null }> {
+  const globExcludes = [
+    'node_modules/**',
+    '**/build/**',
+    '**/debug/**',
+    'Examples/**',
+    'examples/**',
+    '**/Pods/**',
+    '**/sdks/hermes/android/**',
+    '**/src/androidTest/**',
+    '**/src/test/**',
+  ];
+  const gradlePattern = isLibrary ? 'build.gradle{,.kts}' : 'app/build.gradle{,.kts}';
+  const [manifests, gradles] = await Promise.all([
+    glob('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
+    glob(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
+  ]);
+  const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
+  const gradle = gradles[0];
+  return { gradle: gradle || null, manifest: manifest || null };
 }

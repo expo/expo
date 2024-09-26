@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import resolveAssetSource from './resolveAssetSource';
 export function useVideoPlayer(source, setup) {
     const parsedSource = typeof source === 'string' ? { uri: source } : source;
     return useMemo(() => {
@@ -8,8 +9,14 @@ export function useVideoPlayer(source, setup) {
     }, [JSON.stringify(source)]);
 }
 export function getSourceUri(source) {
-    if (typeof source == 'string') {
+    if (typeof source === 'string') {
         return source;
+    }
+    if (typeof source === 'number') {
+        return resolveAssetSource(source)?.uri ?? null;
+    }
+    if (typeof source?.assetId === 'number' && !source?.uri) {
+        return resolveAssetSource(source.assetId)?.uri ?? null;
     }
     return source?.uri ?? null;
 }
@@ -33,6 +40,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     allowsExternalPlayback = false; // Not supported on web. Dummy to match the interface.
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.
+    currentLiveTimestamp = null; // Not supported on web. Dummy to match the interface.
+    currentOffsetFromLive = null; // Not supported on web. Dummy to match the interface.
+    targetOffsetFromLive = 0; // Not supported on web. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;

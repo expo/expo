@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/next/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,IAAI,EAAE,KAAK,EAAE,MAAM,cAAc,CAAC","sourcesContent":["export { Directory, File, write } from './FileSystem';\n"]}

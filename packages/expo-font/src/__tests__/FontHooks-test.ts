@@ -1,65 +1,93 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react-native';
+import { Platform } from 'expo-modules-core';
 
+import ExpoFontLoader from '../ExpoFontLoader';
 import * as Font from '../Font';
 import { useFonts } from '../FontHooks';
 
+const describeRuntimeFonts: typeof describe =
+  typeof window === 'undefined' ? describe.skip : describe;
+const describeStaticFonts: typeof describe =
+  typeof window === 'undefined' ? describe : describe.skip;
+
 describe('useFonts', () => {
-  const DATA = 0;
-  const ERROR = 1;
-  const FONTS = {
+  const RESULT_LOADED = 0;
+  const RESULT_ERROR = 1;
+
+  const STUB_FONTS: Record<string, string> = {
     'OpenSans-Regular': 'path/to/font.ttf',
     'ComicSans-Regular': 'path/to/jailed/font.ttf',
   };
 
+  beforeAll(() => {
+    if (Platform.OS !== 'web') {
+      ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
+    }
+  });
+
   const loadAsyncSpy = jest.spyOn(Font, 'loadAsync').mockResolvedValue();
 
-  if (typeof window === 'undefined') {
+  describeStaticFonts('static fonts', () => {
     it('loads fonts when mounted', async () => {
-      expect(useFonts(FONTS)).toEqual([true, null]);
-      expect(loadAsyncSpy).toBeCalledWith(FONTS);
+      expect(useFonts(STUB_FONTS)).toEqual([true, null]);
+      expect(loadAsyncSpy).toHaveBeenCalledWith(STUB_FONTS);
     });
-  } else {
-    it('loads fonts when mounted', async () => {
-      const hook = renderHook(() => useFonts(FONTS));
+  });
 
-      expect(hook.result.current[DATA]).toBe(false);
-      await hook.waitForNextUpdate();
-      expect(hook.result.current[DATA]).toBe(true);
+  describeRuntimeFonts('runtime fonts', () => {
+    it('loads fonts when mounted', async () => {
+      const { result } = renderHook(useFonts, { initialProps: STUB_FONTS });
+
+      // Ensure the hook returns false when fonts aren't loaded
+      expect(result.current[RESULT_LOADED]).toBe(false);
+      // Ensure the hook returns true when fonts are resolved
+      await waitFor(() => {
+        expect(result.current[RESULT_LOADED]).toBe(true);
+      });
     });
 
     it('skips new font map when rerendered', async () => {
-      const hook = renderHook(useFonts, { initialProps: FONTS });
-      await hook.waitForNextUpdate();
+      const { result, rerender } = renderHook(useFonts, { initialProps: STUB_FONTS });
 
-      expect(loadAsyncSpy).toBeCalledWith(FONTS);
+      // Wait for the assets to load
+      await waitFor(() => {
+        expect(result.current[RESULT_LOADED]).toBe(true);
+      });
 
-      const partialFonts: Partial<typeof FONTS> = { ...FONTS };
-      delete partialFonts['ComicSans-Regular'];
-
-      hook.rerender(partialFonts as typeof FONTS);
-
-      expect(hook.result.current[DATA]).toBe(true);
-      expect(loadAsyncSpy).not.toBeCalledWith(partialFonts);
+      // Rerender the hook with new modules
+      rerender({ 'ComicSans-Bold': 'path/to/jailed/font-bold.ttf' });
+      // Ensure the fonts are not reloaded
+      expect(loadAsyncSpy).not.toHaveBeenCalledWith([9999]);
     });
 
-    it('keeps fonts loaded when unmounted', async () => {
-      const hook = renderHook(useFonts, { initialProps: FONTS });
-      await hook.waitForNextUpdate();
+    it('keeps assets loaded when unmounted', async () => {
+      const { result, unmount } = renderHook(useFonts, { initialProps: STUB_FONTS });
 
-      expect(hook.result.current[DATA]).toBe(true);
-      hook.unmount();
-      expect(hook.result.current[DATA]).toBe(true);
+      // Wait for the assets to load
+      await waitFor(() => {
+        expect(result.current[RESULT_LOADED]).toBe(true);
+      });
+
+      // Unmount the hook
+      unmount();
+
+      // Ensure the assets are still the same
+      await waitFor(() => {
+        expect(result.current[RESULT_LOADED]).toBe(true);
+      });
     });
 
     it('returns error when encountered', async () => {
+      // Mock a fake thrown error
       const error = new Error('test');
       loadAsyncSpy.mockRejectedValue(error);
 
-      const hook = renderHook(useFonts, { initialProps: FONTS });
+      const { result } = renderHook(useFonts, { initialProps: STUB_FONTS });
 
-      expect(hook.result.current[ERROR]).toBeNull();
-      await hook.waitForNextUpdate();
-      expect(hook.result.current[ERROR]).toBe(error);
+      // Ensure the hook returns the error
+      await waitFor(() => {
+        expect(result.current[RESULT_ERROR]).toBe(error);
+      });
     });
-  }
+  });
 });

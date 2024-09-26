@@ -8,7 +8,7 @@ import { LightboxImage } from './LightboxImage';
 const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
 const PLAYER_WIDTH = '100%' as const;
-const PLAYER_HEIGHT = 400 as const;
+const PLAYER_HEIGHT = '100%' as const;
 const YOUTUBE_DOMAINS = ['youtube.com', 'youtu.be'] as const;
 
 type ContentSpotlightProps = {
@@ -64,7 +64,7 @@ export function ContentSpotlight({
       ) : isVideo ? (
         <VisibilitySensor partialVisibility>
           {({ isVisible }: { isVisible: boolean }) => (
-            <div className="relative w-full h-[400px] bg-palette-black rounded-lg overflow-hidden">
+            <div className="relative aspect-video bg-palette-black rounded-lg overflow-hidden">
               <ReactPlayer
                 url={isVisible ? url || `/static/videos/${file}` : undefined}
                 className="react-player"

@@ -14,7 +14,7 @@ export function TextWithNote({
       {note && (
         <>
           {/* divider pushing  */}
-          <span className="flex-1 border-b border-default opacity-60 mx-2 md:mx-3 min-w-8" />
+          <span className="flex-1 border-b border-default opacity-60 mx-3 min-w-8 max-md-gutters:mx-2" />
           {/* Optional note */}
           <code className="text-default">{note}</code>
         </>

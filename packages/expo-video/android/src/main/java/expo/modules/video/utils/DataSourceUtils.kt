@@ -25,13 +25,19 @@ fun buildDataSourceFactory(context: Context, videoSource: VideoSource): DataSour
 @OptIn(UnstableApi::class)
 fun buildOkHttpDataSourceFactory(context: Context, videoSource: VideoSource): OkHttpDataSource.Factory {
   val client = OkHttpClient.Builder().build()
-  val userAgent = Util.getUserAgent(context, getApplicationName(context))
+
+  // If the application name has ANY non-ASCII characters, we need to strip them out. This is because using non-ASCII characters
+  // in the User-Agent header can cause issues with getting the media to play.
+  val applicationName = getApplicationName(context).filter { it.code in 0..127 }
+
+  val defaultUserAgent = Util.getUserAgent(context, applicationName)
+
   return OkHttpDataSource.Factory(client).apply {
-    videoSource.headers?.let {
-      if (it.isNotEmpty()) {
-        setDefaultRequestProperties(it)
-      }
+    val headers = videoSource.headers
+    headers?.takeIf { it.isNotEmpty() }?.let {
+      setDefaultRequestProperties(it)
     }
+    val userAgent = headers?.get("User-Agent") ?: defaultUserAgent
     setUserAgent(userAgent)
   }
 }
@@ -44,7 +50,7 @@ fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Fact
 fun buildMediaSourceWithHeaders(context: Context, videoSource: VideoSource): MediaSource {
   val dataSourceFactory = buildDataSourceFactory(context, videoSource)
   val mediaSourceFactory = buildMediaSourceFactory(context, dataSourceFactory)
-  val mediaItem = videoSource.toMediaItem()
+  val mediaItem = videoSource.toMediaItem(context)
   return mediaSourceFactory.createMediaSource(mediaItem)
 }
 

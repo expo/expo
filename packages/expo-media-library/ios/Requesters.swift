@@ -12,7 +12,6 @@ public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermis
     return "mediaLibraryWriteOnly"
   }
 
-  @available(iOS 14.0, *)
   override internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.addOnly
   }
@@ -26,22 +25,12 @@ extension DefaultMediaLibraryPermissionRequester {
     let authorizationHandler = { (_: PHAuthorizationStatus) in
       resolve(self.getPermissions())
     }
-    if #available(iOS 14.0, *) {
-      PHPhotoLibrary.requestAuthorization(for: self.accessLevel(), handler: authorizationHandler)
-    } else {
-      PHPhotoLibrary.requestAuthorization(authorizationHandler)
-    }
+    PHPhotoLibrary.requestAuthorization(for: self.accessLevel(), handler: authorizationHandler)
   }
 
   @objc
   public func getPermissions() -> [AnyHashable: Any] {
-    var authorizationStatus: PHAuthorizationStatus
-    if #available(iOS 14.0, *) {
-      authorizationStatus = PHPhotoLibrary.authorizationStatus(for: self.accessLevel())
-    } else {
-      authorizationStatus = PHPhotoLibrary.authorizationStatus()
-    }
-
+    let authorizationStatus = PHPhotoLibrary.authorizationStatus(for: self.accessLevel())
     var status: EXPermissionStatus
     var scope: String
 
@@ -69,7 +58,6 @@ extension DefaultMediaLibraryPermissionRequester {
     ]
   }
 
-  @available(iOS 14.0, *)
   @objc
   internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.readWrite

@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -79,7 +79,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style'> {
     /** @hidden */
     style?: StyleProp<RNImageStyle>;
     /**
@@ -218,6 +218,10 @@ export interface ImageProps extends ViewProps {
      */
     onLoadEnd?: () => void;
     /**
+     * Called when the image view successfully rendered the source image.
+     */
+    onDisplay?: () => void;
+    /**
      * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
      * Use [`placeholder`](#placeholder) prop instead.
      */
@@ -334,25 +338,25 @@ export type ImageContentPosition =
 {
     top?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the top-left corner.
  */
-{
+ | {
     top?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-right corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-left corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
@@ -437,14 +441,16 @@ export declare class ImageRef extends SharedRef {
      */
     readonly height: number;
     /**
-     * If you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
-     * All other images are assumed to have a scale factor of **1.0**.
-     * If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+     * On iOS, if you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**. All other images are assumed to have a scale factor of **1.0**.
+     * On Android, it calculates the scale based on the bitmap density divided by screen density.
+     *
+     * On all platforms, if you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
      */
     readonly scale: number;
     /**
      * Media type (also known as MIME type) of the image, based on its format.
      * Returns `null` when the format is unknown or not supported.
+     * @platform ios
      */
     readonly mediaType: string | null;
     /**
@@ -452,5 +458,21 @@ export declare class ImageRef extends SharedRef {
      */
     readonly isAnimated?: boolean;
 }
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+    Image: typeof ImageRef;
+    loadAsync(source: ImageSource): Promise<ImageRef>;
+}
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type UseImageHookOptions = {
+    /**
+     * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+     */
+    onError?(error: object, retry: () => void): void;
+};
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

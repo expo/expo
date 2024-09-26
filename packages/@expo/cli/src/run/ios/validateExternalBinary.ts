@@ -2,8 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import { glob as globAsync } from 'glob';
 import path from 'path';
-import tempy from 'tempy';
 
+import { createTempDirectoryPath } from '../../utils/createTempPath';
 import { CommandError } from '../../utils/errors';
 import { parsePlistAsync } from '../../utils/plist';
 
@@ -18,7 +18,7 @@ export async function getValidBinaryPathAsync(input: string, props: { isSimulato
 
   // If the file is an ipa then move it to a temp directory and extract the app binary.
   if (resolved.endsWith('.ipa')) {
-    const outputPath = tempy.directory();
+    const outputPath = createTempDirectoryPath();
     debug('Extracting IPA:', resolved, outputPath);
     const appDir = await extractIpaAsync(resolved, outputPath);
 

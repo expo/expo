@@ -45,8 +45,7 @@
     result = _function->call(*runtime, data, arguments.count);
   }
 
-  std::shared_ptr<jsi::Value> resultPtr = std::make_shared<jsi::Value>(*runtime, result);
-  return [[EXJavaScriptValue alloc] initWithRuntime:_runtime value:resultPtr];
+  return [[EXJavaScriptValue alloc] initWithRuntime:_runtime value:std::move(result)];
 }
 
 @end

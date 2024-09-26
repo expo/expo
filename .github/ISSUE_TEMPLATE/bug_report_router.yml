@@ -54,5 +54,6 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
     validations:
       required: true

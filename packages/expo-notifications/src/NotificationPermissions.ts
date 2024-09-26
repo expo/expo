@@ -49,7 +49,6 @@ export async function getPermissionsAsync() {
  *       allowAlert: true,
  *       allowBadge: true,
  *       allowSound: true,
- *       allowAnnouncements: true,
  *     },
  *   });
  * }

@@ -4,7 +4,8 @@ import Jimp from 'jimp-compact';
 import path from 'path';
 import stream from 'stream';
 import type { ReadableStream } from 'stream/web';
-import temporary from 'tempy';
+import tempDir from 'temp-dir';
+import uniqueString from 'unique-string';
 import util from 'util';
 
 // cache downloaded images into memory
@@ -12,6 +13,12 @@ const cacheDownloadedKeys: Record<string, string> = {};
 
 function stripQueryParams(url: string): string {
   return url.split('?')[0].split('#')[0];
+}
+
+function temporaryDirectory() {
+  const directory = path.join(tempDir, uniqueString());
+  fs.mkdirSync(directory);
+  return directory;
 }
 
 export async function downloadOrUseCachedImage(url: string): Promise<string> {
@@ -27,7 +34,7 @@ export async function downloadOrUseCachedImage(url: string): Promise<string> {
 }
 
 export async function downloadImage(url: string): Promise<string> {
-  const outputPath = temporary.directory();
+  const outputPath = temporaryDirectory();
 
   const response = await fetch(url);
   if (!response.ok) {

@@ -445,7 +445,13 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = new URLSearchParams(focusedParams).toString();
+        const params = new URLSearchParams(
+          Object.entries(focusedParams).flatMap(([key, values]) => {
+            return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
+          })
+        );
+
+        const query = params.toString();
 
         if (query) {
           path += `?${query}`;
@@ -595,7 +601,7 @@ function getParamsWithConventionsCollapsed({
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
     const name = testNotFound(routeName)
       ? 'not-found'
-      : matchDeepDynamicRouteName(routeName) ?? routeName;
+      : (matchDeepDynamicRouteName(routeName) ?? routeName);
     delete processedParams[name];
   }
 

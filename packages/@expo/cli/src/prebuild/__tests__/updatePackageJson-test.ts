@@ -7,6 +7,7 @@ import {
   hashForDependencyMap,
   updatePkgDependencies,
   updatePackageJSONAsync,
+  updatePkgScripts,
 } from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
@@ -267,7 +268,7 @@ describe(updatePkgDependencies, () => {
       'react-native': 'version-from-project', // add-only package, do not overwrite
       expo: 'version-from-project',
     });
-    expect(Log.warn).toBeCalledWith(
+    expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining(
         `instead of recommended ${[
           `expo@version-from-template`,
@@ -277,5 +278,49 @@ describe(updatePkgDependencies, () => {
           .join(', ')}`
       )
     );
+  });
+});
+
+describe(updatePkgScripts, () => {
+  it(`modifies the default Expo project values`, () => {
+    const pkg = {
+      scripts: {
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('expo run:android');
+    expect(pkg.scripts.ios).toBe('expo run:ios');
+  });
+
+  it(`modifies the default RN CLI project values`, () => {
+    const pkg = {
+      scripts: {
+        android: 'react-native run-android',
+        ios: 'react-native run-ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('expo run:android');
+    expect(pkg.scripts.ios).toBe('expo run:ios');
+  });
+
+  it(`skips modification if user altered the script`, () => {
+    const pkg = {
+      scripts: {
+        android: 'echo 123 && expo start --android',
+        ios: 'time expo start --ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('echo 123 && expo start --android');
+    expect(pkg.scripts.ios).toBe('time expo start --ios');
   });
 });

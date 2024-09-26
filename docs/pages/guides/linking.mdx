@@ -5,8 +5,8 @@ description: Learn how to use Linking to handle a URL based on the URL scheme.
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
 
 URLs are the most powerful way to launch native applications. Native operating systems like macOS, Android, iOS, Windows, and so on, have built-in link handling which chooses an app to handle a URL based on the _URL scheme_. The most common _URL schemes_ are `https` and `http` which are delegated to web browsers like Chrome, or Safari. Native apps, like the ones built with React Native, can implement any _URL scheme_, and the JavaScript React layer can handle the URL used to launch the corresponding native app.

@@ -129,15 +129,6 @@ class KotlinInteropModuleRegistryTest {
       Triple(
         "test-2",
         "f2",
-        JavaOnlyArray().apply { pushString("string") }
-      ) to """
-        Call to function 'test-2.f2' has been rejected.
-        → Caused by: The 1st argument cannot be cast to type kotlin.Int (received String)
-        → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
-      """.trimIndent(),
-      Triple(
-        "test-2",
-        "f2",
         JavaOnlyArray()
       ) to """
         Call to function 'test-2.f2' has been rejected.

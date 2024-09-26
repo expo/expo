@@ -169,12 +169,10 @@ EX_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(UNNotification *)notification
 {
-  if (@available(iOS 12.0, *)) {
-    for (int i = 0; i < _delegates.count; i++) {
-      id pointer = [_delegates pointerAtIndex:i];
-      if ([pointer respondsToSelector:@selector(userNotificationCenter:openSettingsForNotification:)]) {
-        [pointer userNotificationCenter:center openSettingsForNotification:notification];
-      }
+  for (int i = 0; i < _delegates.count; i++) {
+    id pointer = [_delegates pointerAtIndex:i];
+    if ([pointer respondsToSelector:@selector(userNotificationCenter:openSettingsForNotification:)]) {
+      [pointer userNotificationCenter:center openSettingsForNotification:notification];
     }
   }
 }

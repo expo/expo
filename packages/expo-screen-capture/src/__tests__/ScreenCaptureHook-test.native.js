@@ -1,7 +1,13 @@
-import { renderHook, cleanup } from '@testing-library/react-hooks';
+import { renderHook, cleanup } from '@testing-library/react-native';
 
-import ExpoScreenCapture from '../ExpoScreenCapture';
+import { allowScreenCapture, preventScreenCapture } from '../ExpoScreenCapture';
 import * as ScreenCapture from '../ScreenCapture';
+
+jest.mock('../ExpoScreenCapture', () => ({
+  // Mock methods used in the hook
+  preventScreenCapture: jest.fn().mockResolvedValue(),
+  allowScreenCapture: jest.fn().mockResolvedValue(),
+}));
 
 describe('hooks', () => {
   afterEach(async () => {
@@ -9,53 +15,50 @@ describe('hooks', () => {
     await cleanup();
   });
 
-  const preventScreenCaptureAsyncSpy = jest
-    .spyOn(ExpoScreenCapture, 'preventScreenCapture')
-    .mockResolvedValue();
-  const allowScreenCaptureAsyncSpy = jest
-    .spyOn(ExpoScreenCapture, 'allowScreenCapture')
-    .mockResolvedValue();
-
   it('calls native methods once if mounted & unmounted', async () => {
-    const hook = renderHook(() => ScreenCapture.usePreventScreenCapture());
+    const hook = renderHook(ScreenCapture.usePreventScreenCapture);
     hook.rerender();
-    expect(preventScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
+    expect(preventScreenCapture).toHaveBeenCalledTimes(1);
 
     hook.unmount();
-    expect(allowScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
+    expect(allowScreenCapture).toHaveBeenCalledTimes(1);
   });
 
   it('calls native methods once if mounted & unmounted', async () => {
-    const hook = renderHook(() => ScreenCapture.usePreventScreenCapture());
+    const hook = renderHook(ScreenCapture.usePreventScreenCapture);
     hook.rerender();
-    expect(preventScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
+    expect(preventScreenCapture).toHaveBeenCalledTimes(1);
 
     hook.unmount();
-    expect(allowScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
+    expect(allowScreenCapture).toHaveBeenCalledTimes(1);
   });
 
   it('Re runs hook when tag changes', async () => {
-    const hook = renderHook(({ key }) => ScreenCapture.usePreventScreenCapture(key));
-    hook.rerender({ key: 'foo' });
-    hook.rerender({ key: 'bar' });
+    const hook = renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'foo' });
 
-    expect(preventScreenCaptureAsyncSpy).toHaveBeenCalledTimes(2);
-    expect(allowScreenCaptureAsyncSpy).toHaveBeenCalledTimes(1);
+    // Rerender first with the same key
+    hook.rerender('foo');
+    // Rerender secondly with a different key
+    hook.rerender('bar');
+
+    expect(preventScreenCapture).toHaveBeenCalledTimes(2);
+    expect(allowScreenCapture).toHaveBeenCalledTimes(1);
 
     hook.unmount();
     // Unmounting results in final allowScreenCapture native method call
-    expect(allowScreenCaptureAsyncSpy).toHaveBeenCalledTimes(2);
+    expect(allowScreenCapture).toHaveBeenCalledTimes(2);
   });
 
   it('Unmounting one hook when two are active does not re-allow screen capturing', async () => {
-    const hook1 = renderHook(() => ScreenCapture.usePreventScreenCapture());
-    const hook2 = renderHook(({ key }) => ScreenCapture.usePreventScreenCapture(key));
-    hook1.rerender();
-    hook2.rerender({ key: 'foo' });
+    const hook1 = renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'foo' });
+    const hook2 = renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'bar' });
+
+    // Rerender hook1 with the same 'foo' key
+    hook1.rerender('foo');
     hook2.unmount();
 
-    expect(preventScreenCaptureAsyncSpy).toHaveBeenCalledTimes(2);
-    expect(allowScreenCaptureAsyncSpy).toHaveBeenCalledTimes(0);
+    expect(preventScreenCapture).toHaveBeenCalledTimes(2);
+    expect(allowScreenCapture).toHaveBeenCalledTimes(0);
   });
 });
 

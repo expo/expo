@@ -1,6 +1,5 @@
 const expoTheme = require('@expo/styleguide/tailwind');
 const merge = require('lodash/merge');
-const plugin = require('tailwindcss/plugin');
 
 function getExpoTheme(extend = {}, plugins = []) {
   const customizedTheme = Object.assign({}, expoTheme);
@@ -20,120 +19,35 @@ module.exports = {
     './node_modules/@expo/styleguide/dist/**/*.{js,ts,jsx,tsx}',
     './node_modules/@expo/styleguide-search-ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
-  ...getExpoTheme(
-    {
-      backgroundImage: theme => ({
-        'default-fade': `linear-gradient(to bottom, ${theme('backgroundColor.default')}, transparent)`,
-        'default-fade-down': `linear-gradient(to bottom, transparent, ${theme('backgroundColor.default')})`,
-        'cell-quickstart-fade': `linear-gradient(${theme('backgroundColor.subtle')} 15%, #21262d00 100%)`,
-        'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
-        'cell-tutorial-fade': `linear-gradient(var(--blue3) 15%, #201d5200 100%)`,
-        'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
-        appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
-      }),
-      keyframes: {
-        fadeIn: {
-          '0%': {
-            opacity: 0,
-          },
-          '100%': {
-            opacity: 1,
-          },
+  ...getExpoTheme({
+    backgroundImage: () => ({
+      'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
+      'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
+      appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
+    }),
+    keyframes: {
+      wave: {
+        '0%, 100%': {
+          transform: 'rotate(0deg)',
         },
-        fadeOut: {
-          '0%': {
-            opacity: 1,
-          },
-          '100%': {
-            opacity: 0,
-          },
-        },
-        slideDownAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)',
-          },
-        },
-        slideRightAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateX(8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateX(0)',
-          },
-        },
-        slideLeftAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateX(-8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateX(0)',
-          },
-        },
-        slideUpAndFade: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(-8px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)',
-          },
-        },
-        slideUpAndFadeIn: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(16px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)',
-          },
-        },
-        wave: {
-          '0%, 100%': {
-            transform: 'rotate(0deg)',
-          },
-          '50%': {
-            transform: 'rotate(20deg)',
-          },
+        '50%': {
+          transform: 'rotate(20deg)',
         },
       },
-      animation: {
-        fadeIn: 'fadeIn 0.25s ease-out',
-        fadeOut: 'fadeOut 0.15s ease-in',
-        slideDownAndFade: 'slideDownAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideRightAndFade: 'slideRightAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideLeftAndFade: 'slideLeftAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideUpAndFade: 'slideUpAndFade 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
-        wave: 'wave 0.25s ease-in-out 4',
+      slideUpAndFadeIn: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateY(16px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateY(0)',
+        },
       },
     },
-    [
-      plugin(function ({ addUtilities }) {
-        addUtilities({
-          '.asset-shadow': {
-            filter:
-              'drop-shadow(0 3px 10px rgba(0, 0, 0, 0.12)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.07))',
-          },
-          '.asset-sm-shadow': {
-            filter:
-              'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.03))',
-          },
-          '.wrap-anywhere': {
-            'overflow-wrap': 'anywhere',
-          },
-        });
-      }),
-    ]
-  ),
+    animation: {
+      slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
+      wave: 'wave 0.25s ease-in-out 4',
+    },
+  }),
 };

@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Drop `node-fetch` in favor of Node built-in `fetch` for Node 22 support. ([#30554](https://github.com/expo/expo/pull/30554) by [@byCedric](https://github.com/byCedric))
+- Drop `tempy` in favor of equivalent code to avoid transitive, deprecated `rimraf` dependency. ([#30832](https://github.com/expo/expo/pull/30832) by [@kitten](https://github.com/kitten))
 
 ## 0.5.1 — 2024-04-23
 

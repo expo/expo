@@ -22,9 +22,9 @@ class JSI_EXPORT LazyObject : public jsi::HostObject {
 public:
   using Shared = std::shared_ptr<LazyObject>;
 
-  LazyObject(const LazyObjectInitializer initializer);
+  explicit LazyObject(LazyObjectInitializer initializer);
 
-  virtual ~LazyObject();
+  ~LazyObject() override;
 
   jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 

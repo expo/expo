@@ -55,8 +55,12 @@ jobs:
           NODE_ENV: production
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
-        working-directory: docs
-        run: yarn lint-prose
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          reporter: github-pr-check
+          files: 'docs/pages'
+          vale_flags: '--config=./docs/.vale.ini'
+          fail_on_error: true
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
         run: yarn export

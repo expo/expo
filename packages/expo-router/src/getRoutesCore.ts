@@ -4,6 +4,7 @@ import {
   matchDeepDynamicRouteName,
   matchDynamicName,
   matchGroupName,
+  matchLastGroupName,
   removeSupportedExtensions,
 } from './matchers';
 import type { RequireContext } from './types';
@@ -510,7 +511,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
    * Each of these layouts will have a different initialRouteName based upon the first group name.
    */
   // We may strip loadRoute during testing
-  const groupName = matchGroupName(node.route);
+  const groupName = matchLastGroupName(node.route);
   const childMatchingGroup = node.children.find((child) => {
     return child.route.replace(/\/index$/, '') === groupName;
   });

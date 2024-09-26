@@ -49,6 +49,12 @@ fun Bundle.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Writ
   return result
 }
 
+fun <K, V> Map<K, V>.toJSValueExperimental(): Map<String, Any?> {
+  return this.map { (key, value) ->
+    key.toString() to JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+  }.toMap()
+}
+
 fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableMap {
   val result = containerProvider.createMap()
 
@@ -60,7 +66,11 @@ fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvi
   return result
 }
 
-fun <T> Iterable<T>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun <T> Collection<T>.toJSValueExperimental(): List<Any?> {
+  return this.map { JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true) }
+}
+
+fun <T> Collection<T>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
   val result = containerProvider.createArray()
 
   for (value in this) {

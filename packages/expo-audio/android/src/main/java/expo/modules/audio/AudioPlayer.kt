@@ -1,6 +1,7 @@
 package expo.modules.audio
 
 import android.content.Context
+import android.media.audiofx.Visualizer
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -40,6 +41,30 @@ class AudioPlayer(
   var isPaused = false
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
+  private var samplingEnabled = false
+
+  private val visualizer = Visualizer(player.audioSessionId).apply {
+    captureSize = Visualizer.getCaptureSizeRange()[1]
+    setDataCaptureListener(
+      object : Visualizer.OnDataCaptureListener {
+        override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+          waveform?.let {
+            if (samplingEnabled) {
+              val data = extractAmplitudes(it)
+              sendAudioSampleUpdate(data)
+            }
+          }
+        }
+
+        override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?, samplingRate: Int) {
+        }
+      },
+      Visualizer.getMaxCaptureRate() / 2,
+      true,
+      false
+    )
+    enabled = true
+  }
 
   init {
     addPlayerListeners()
@@ -74,6 +99,15 @@ class AudioPlayer(
     })
   }
 
+  fun setSamplingEnabled(enabled: Boolean) {
+    samplingEnabled = enabled
+  }
+
+  private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
+    val unsignedByte = byte.toInt() and 0xFF
+    ((unsignedByte - 128).toDouble() / 128.0).toFloat()
+  }
+
   fun currentStatus(): Map<String, Any?> {
     val isMuted = player.volume == 0f
     val isLooping = player.repeatMode == Player.REPEAT_MODE_ONE
@@ -104,6 +138,16 @@ class AudioPlayer(
       emit("onPlaybackStatusUpdate", body)
     }
 
+  private fun sendAudioSampleUpdate(sample: List<Float>) {
+    val body = mapOf(
+      "channels" to listOf(
+        mapOf("frames" to sample)
+      ),
+      "timestamp" to player.currentPosition
+    )
+    emit("onAudioSampleUpdate", body)
+  }
+
   private fun playbackStateToString(state: Int): String {
     return when (state) {
       Player.STATE_READY -> "ready"
@@ -117,6 +161,7 @@ class AudioPlayer(
   override fun deallocate() {
     appContext?.mainQueue?.launch {
       playerScope.cancel()
+      visualizer.release()
       player.release()
     }
   }

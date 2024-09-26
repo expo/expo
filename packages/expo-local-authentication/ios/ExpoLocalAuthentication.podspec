@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms = {
-    :ios => '13.4',
+    :ios => '15.1',
     :osx => '10.15'
   }
   s.swift_version  = '5.4'

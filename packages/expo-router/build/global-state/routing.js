@@ -28,7 +28,6 @@ const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
 const href_1 = require("../link/href");
-const path_1 = require("../link/path");
 const matchers_1 = require("../matchers");
 const url_1 = require("../utils/url");
 function assertIsReady(store) {
@@ -36,20 +35,20 @@ function assertIsReady(store) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
-function navigate(url) {
-    return this.linkTo((0, href_1.resolveHref)(url), 'NAVIGATE');
+function navigate(url, options) {
+    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
 exports.navigate = navigate;
-function push(url) {
-    return this.linkTo((0, href_1.resolveHref)(url), 'PUSH');
+function push(url, options) {
+    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
 exports.push = push;
 function dismiss(count) {
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
 exports.dismiss = dismiss;
-function replace(url) {
-    return this.linkTo((0, href_1.resolveHref)(url), 'REPLACE');
+function replace(url, options) {
+    return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'REPLACE' });
 }
 exports.replace = replace;
 function dismissAll() {
@@ -92,7 +91,7 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, event) {
+function linkTo(href, { event, relativeToDirectory } = {}) {
     if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
@@ -110,34 +109,7 @@ function linkTo(href, event) {
         return;
     }
     const rootState = navigationRef.getRootState();
-    if (href.startsWith('.')) {
-        // Resolve base path by merging the current segments with the params
-        let base = this.routeInfo?.segments
-            ?.map((segment) => {
-            if (!segment.startsWith('['))
-                return segment;
-            if (segment.startsWith('[...')) {
-                segment = segment.slice(4, -1);
-                const params = this.routeInfo?.params?.[segment];
-                if (Array.isArray(params)) {
-                    return params.join('/');
-                }
-                else {
-                    return params?.split(',')?.join('/') ?? '';
-                }
-            }
-            else {
-                segment = segment.slice(1, -1);
-                return this.routeInfo?.params?.[segment];
-            }
-        })
-            .filter(Boolean)
-            .join('/') ?? '/';
-        if (!this.routeInfo?.isIndex) {
-            base += '/..';
-        }
-        href = (0, path_1.resolve)(base, href);
-    }
+    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, relativeToDirectory);
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
@@ -223,7 +195,10 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
             rootPayload.key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
-    if (type === 'REPLACE' && navigationState.type === 'tab') {
+    if (navigationState.type === 'expo-tab') {
+        type = 'JUMP_TO';
+    }
+    if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
     }
     return {

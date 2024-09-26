@@ -1,13 +1,10 @@
 package expo.modules.audio
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.net.Uri
-import android.os.Build
-import android.os.SystemClock
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.C.CONTENT_TYPE_DASH
@@ -40,18 +37,16 @@ import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
   private lateinit var audioManager: AudioManager
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val httpClient = OkHttpClient()
 
   private val players = mutableMapOf<String, AudioPlayer>()
+  private val recorders = mutableMapOf<String, AudioRecorder>()
   private var appIsPaused = false
   private var staysActiveInBackground = false
   private var audioEnabled = true
-  private var audioInterruptionMode = InterruptionMode.DO_NOT_MIX
   private var shouldRouteThroughEarpiece = false
 
   override fun definition() = ModuleDefinition {
@@ -62,12 +57,9 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
-      audioInterruptionMode = mode.interruptionMode
       staysActiveInBackground = mode.shouldPlayInBackground
       shouldRouteThroughEarpiece = mode.shouldRouteThroughEarpiece ?: false
-      if (shouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(true)
-      }
+      updatePlaySoundThroughEarpiece(shouldRouteThroughEarpiece)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
@@ -101,6 +93,12 @@ class AudioModule : Module() {
               player.ref.pause()
             }
           }
+
+          for (recorder in recorders.values) {
+            if (recorder.isRecording) {
+              recorder.pauseRecording()
+            }
+          }
         }
       }
     }
@@ -115,6 +113,13 @@ class AudioModule : Module() {
               player.ref.play()
             }
           }
+
+          for (recorder in recorders.values) {
+            if (recorder.isPaused) {
+              recorder.record()
+            }
+          }
+
           if (shouldRouteThroughEarpiece) {
             updatePlaySoundThroughEarpiece(true)
           }
@@ -125,7 +130,10 @@ class AudioModule : Module() {
     OnDestroy {
       for (player in players.values) {
         player.player.stop()
-        player.deallocate()
+      }
+
+      for (recorder in recorders.values) {
+        recorder.stopRecording()
       }
     }
 
@@ -171,6 +179,10 @@ class AudioModule : Module() {
         runOnMain {
           ref.currentStatus()
         }
+      }
+
+      Property("isAudioSamplingSupported") { _ ->
+        true
       }
 
       Property("loop") { ref ->
@@ -245,7 +257,7 @@ class AudioModule : Module() {
 
       Function("play") { ref: AudioPlayer ->
         if (!audioEnabled) {
-          Log.e(TAG, "Could not convert string to JSONObject")
+          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
         appContext.mainQueue.launch {
@@ -257,6 +269,10 @@ class AudioModule : Module() {
         appContext.mainQueue.launch {
           ref.player.pause()
         }
+      }
+
+      Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
+        ref.setSamplingEnabled(enabled)
       }
 
       AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
@@ -272,18 +288,19 @@ class AudioModule : Module() {
       }
 
       Function("remove") { ref: AudioPlayer ->
-        val id = ref.id
-        players.remove(id)
+        players.remove(ref.id)
       }
     }
 
     Class(AudioRecorder::class) {
       Constructor { options: RecordingOptions ->
-        AudioRecorder(
-          activity.applicationContext,
+        val recorder = AudioRecorder(
+          appContext.throwingActivity.applicationContext,
           appContext,
           options
         )
+        recorders[recorder.id] = recorder
+        recorder
       }
 
       Property("id") { ref ->
@@ -302,33 +319,21 @@ class AudioModule : Module() {
         ref.uptime
       }
 
+      AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
+        ref.prepareRecording(options)
+      }
+
       Function("record") { ref: AudioRecorder ->
         checkRecordingPermission()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          if (ref.isRecording) {
-            ref.recorder.resume()
-          } else {
-            ref.isRecording = true
-            ref.recorder.start()
-          }
-        } else {
-          ref.isRecording = true
-          ref.recorder.start()
-        }
-        ref.uptime = SystemClock.uptimeMillis()
+        ref.record()
       }
 
       Function("pause") { ref: AudioRecorder ->
         checkRecordingPermission()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          ref.recorder.pause()
-          ref.isRecording = false
-        } else {
-          // TODO: Log a warning?
-        }
+        ref.pauseRecording()
       }
 
-      Function("stop") { ref: AudioRecorder ->
+      AsyncFunction("stop") { ref: AudioRecorder ->
         checkRecordingPermission()
         ref.stopRecording()
       }
@@ -378,7 +383,7 @@ class AudioModule : Module() {
     runBlocking(appContext.mainQueue.coroutineContext) { block() }
 
   private fun checkRecordingPermission() {
-    val permission = ContextCompat.checkSelfPermission(activity.applicationContext, Manifest.permission.RECORD_AUDIO)
+    val permission = ContextCompat.checkSelfPermission(appContext.throwingActivity.applicationContext, Manifest.permission.RECORD_AUDIO)
     if (permission != PackageManager.PERMISSION_GRANTED) {
       throw AudioPermissionsException()
     }

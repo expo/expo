@@ -17,12 +17,13 @@ function getExpoDependencyChunks({
   includeTV: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env'],
+    ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
-    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
+    ['expo-manifests'],
+    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -51,6 +52,7 @@ function getExpoDependencyChunks({
             'expo-localization',
             'expo-crypto',
             'expo-network',
+            'expo-secure-store',
             'expo-video',
           ],
         ]
@@ -191,15 +193,6 @@ async function copyCommonFixturesToProject(
 
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
-
-  // Copy react-native patch
-  if (!isTV) {
-    await fs.mkdir(path.join(projectRoot, 'patches'));
-    await fs.copyFile(
-      path.resolve(repoRoot, 'patches', 'react-native+0.75.0-rc.5.patch'),
-      path.join(projectRoot, 'patches', 'react-native+0.75.0-rc.5.patch')
-    );
-  }
 
   // Modify specific files for TV
   if (isTV) {
@@ -364,7 +357,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.3-0',
+        'react-native': 'npm:react-native-tvos@~0.75.2-0',
         '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
@@ -463,6 +456,7 @@ function transformAppJsonForE2E(
       '@react-native-tvos/config-tv',
       {
         isTV: true,
+        tvosDeploymentTarget: '15.1',
         showVerboseWarnings: true,
       },
     ]);
@@ -480,14 +474,38 @@ function transformAppJsonForE2E(
       updates: {
         ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
+        assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
-        updates: {
-          assetPatternsToBeBundled: ['includedAssets/*'],
-        },
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
+      },
+    },
+  };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, and sets the runtime version policy to fingerprint
+ */
+export function transformAppJsonForE2EWithFingerprint(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      runtimeVersion: {
+        policy: 'fingerprint',
       },
     },
   };
@@ -852,6 +870,38 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesFingerprintE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    [
+      'tsconfig.json',
+      '.fingerprintignore',
+      '.detoxrc.json',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'includedAssets',
+      'scripts',
+    ],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-fingerprint.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

@@ -5,8 +5,7 @@ import {
   PackageJSONConfig,
   ProjectConfig,
 } from '@expo/config';
-import { resolveEntryPoint } from '@expo/config/paths';
-import findWorkspaceRoot from 'find-yarn-workspace-root';
+import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
 import path from 'path';
 import { resolve } from 'url';
 
@@ -24,7 +23,6 @@ import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
@@ -34,18 +32,6 @@ import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
-
-/** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
-export function getWorkspaceRoot(projectRoot: string): string | null {
-  try {
-    return findWorkspaceRoot(projectRoot);
-  } catch (error: any) {
-    if (error.message.includes('Unexpected end of JSON input')) {
-      return null;
-    }
-    throw error;
-  }
-}
 
 const supportedPlatforms = ['ios', 'android', 'web', 'none'];
 
@@ -59,14 +45,6 @@ export function getEntryWithServerRoot(
     );
   }
   return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
-}
-
-export function getMetroServerRoot(projectRoot: string) {
-  if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
-    return projectRoot;
-  }
-
-  return getWorkspaceRoot(projectRoot) ?? projectRoot;
 }
 
 /** Get the main entry module ID (file) relative to the project root. */
@@ -278,9 +256,6 @@ export abstract class ManifestMiddleware<
     );
   }
 
-  /** Log telemetry. */
-  protected abstract trackManifest(version?: string): void;
-
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
   public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<{
     body: string;
@@ -415,13 +390,10 @@ export abstract class ManifestMiddleware<
 
     // Read from headers
     const options = this.getParsedHeaders(req);
-    const { body, version, headers } = await this._getManifestResponseAsync(options);
+    const { body, headers } = await this._getManifestResponseAsync(options);
     for (const [headerName, headerValue] of headers) {
       res.setHeader(headerName, headerValue);
     }
     res.end(body);
-
-    // Log analytics
-    this.trackManifest(version ?? null);
   }
 }

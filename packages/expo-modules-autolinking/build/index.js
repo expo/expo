@@ -22,10 +22,12 @@ function registerSearchCommand(commandName, fn) {
         .option('--only-project-deps', 'For a monorepo, include only modules that are the project dependencies.', true)
         .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
         .action(async (searchPaths, providedOptions) => {
-        const options = await (0, autolinking_1.mergeLinkingOptionsAsync)({
-            ...providedOptions,
-            searchPaths,
-        });
+        const options = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
+            ? {
+                ...providedOptions,
+                searchPaths,
+            }
+            : providedOptions);
         const searchResults = await (0, autolinking_1.findModulesAsync)(options);
         return await fn(searchResults, options);
     });
@@ -102,7 +104,7 @@ module.exports = async function (args) {
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.
-    // It's deprecated, use `generate-modules-provider` instead.
+    // It's deprecated for apple platforms, use `generate-modules-provider` instead.
     registerResolveCommand('generate-package-list', async (results, options) => {
         const modules = options.empty ? [] : await (0, autolinking_1.resolveModulesAsync)(results, options);
         (0, autolinking_1.generatePackageListAsync)(modules, options);
@@ -115,9 +117,10 @@ module.exports = async function (args) {
         const packages = options.packages ?? [];
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
         const filteredModules = modules.filter((module) => packages.includes(module.packageName));
-        (0, autolinking_1.generatePackageListAsync)(filteredModules, options);
+        (0, autolinking_1.generateModulesProviderAsync)(filteredModules, options);
     })
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
+        .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.');
     registerPatchReactImportsCommand();
     registerReactNativeConfigCommand();

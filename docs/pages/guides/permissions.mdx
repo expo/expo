@@ -3,7 +3,7 @@ title: Permissions
 description: Learn about configuring and adding permissions in an app config file.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 When developing a native app that requires access to potentially sensitive information on a user's device, such as their location or contacts, the app must request the user's permission first. For example, to access the user's media library, the app will need to run [`MediaLibrary.requestPermissionsAsync()`](/versions/latest/sdk/media-library#medialibraryrequestpermissionsasync).
 
@@ -85,7 +85,7 @@ Many of these properties are also directly configurable using the [config plugin
 }
 ```
 
-- Changes to the **Info.plist** cannot be updated over-the-air, they will only be deployed when you submit a new native binary, eg: with [`eas build`](/build/introduction).
+- Changes to the **Info.plist** cannot be updated over-the-air, they will only be deployed when you submit a new native binary. For example, with [`eas build`](/build/introduction).
 - Apple's official [permission message recommendations](https://developer.apple.com/design/human-interface-guidelines/privacy#Requesting-permission).
 - [All available **Info.plist** properties](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html).
 

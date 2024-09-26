@@ -188,7 +188,8 @@ async function createTempIgnoredFileAsync(
   options: NormalizedOptions
 ): Promise<string> {
   const ignoredFile = path.join(tmpDir, '.fingerprintignore');
-  await fs.writeFile(ignoredFile, options.ignorePaths.join('\n'));
+  const ignorePaths = options.ignorePathMatchObjects.map((match) => match.pattern);
+  await fs.writeFile(ignoredFile, ignorePaths.join('\n'));
   return ignoredFile;
 }
 

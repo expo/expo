@@ -13,7 +13,7 @@ import {
   ReadOnlyGraph,
   SerializerOptions,
 } from 'metro';
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
@@ -58,6 +58,11 @@ function pathToRegex(path: string) {
   return new RegExp('^' + regexSafePath + '$');
 }
 
+const sourceMapString =
+  typeof sourceMapStringMod !== 'function'
+    ? sourceMapStringMod.sourceMapString
+    : sourceMapStringMod;
+
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
   serializeChunkOptions: SerializeChunkOptions,
@@ -69,8 +74,8 @@ export async function graphToSerialAssetsAsync(
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
+    entryFile,
     projectRoot: options.projectRoot,
-    processModuleFilter: options.processModuleFilter,
   });
 
   // Create chunks for splitting.
@@ -383,7 +388,7 @@ export class Chunk {
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     // Create hash without wrapping to prevent it changing when the wrapping changes.
-    const outputFile = this.getFilenameForConfig(serializerConfig);
+    let outputFile = this.getFilenameForConfig(serializerConfig);
     // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
     const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
 
@@ -393,6 +398,9 @@ export class Chunk {
         premodules = plugin({ graph: this.graph, premodules, debugId });
       }
       this.preModules = new Set(premodules);
+
+      // If the premodules have changed, we need to recompute the output file hash.
+      outputFile = this.getFilenameForConfig(serializerConfig);
     }
 
     const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
@@ -412,6 +420,23 @@ export class Chunk {
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
         paths: jsCode.paths,
+        expoDomComponentReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'expoDomComponentReference' in output.data &&
+                    typeof output.data.expoDomComponentReference === 'string'
+                  ) {
+                    return output.data.expoDomComponentReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
         reactClientReferences: [
           ...new Set(
             [...this.deps]
@@ -518,6 +543,21 @@ export class Chunk {
         // @ts-expect-error: TODO
         jsAsset.source = hermesBundleOutput.hbc;
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+
+        // Replace mappings with hbc
+        if (jsAsset.metadata.paths) {
+          jsAsset.metadata.paths = Object.fromEntries(
+            Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
+              key,
+              Object.fromEntries(
+                Object.entries(value).map(([key, value]) => [
+                  key,
+                  value ? value.replace(/\.js$/, '.hbc') : value,
+                ])
+              ),
+            ])
+          );
+        }
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
         assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);

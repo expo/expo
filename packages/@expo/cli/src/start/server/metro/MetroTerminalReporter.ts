@@ -42,9 +42,22 @@ export class MetroTerminalReporter extends TerminalReporter {
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
-    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
-      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
-      : progress.bundleDetails.entryFile;
+    let localPath: string;
+
+    if (
+      typeof progress.bundleDetails?.customTransformOptions?.dom === 'string' &&
+      progress.bundleDetails.customTransformOptions.dom.includes('/')
+    ) {
+      // Because we use a generated entry file for DOM components, we need to adjust the logging path so it
+      // shows a unique path for each component.
+      // Here, we take the relative import path and remove all the starting slashes.
+      localPath = progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.\/)+/, '');
+    } else {
+      const inputFile = progress.bundleDetails.entryFile;
+      localPath = inputFile.startsWith(path.sep)
+        ? path.relative(this.projectRoot, inputFile)
+        : inputFile;
+    }
 
     if (!inProgress) {
       const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
@@ -101,7 +114,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
     // Don't print a giant logo...
-    this.terminal.log('Starting Metro Bundler');
+    this.terminal.log(chalk.dim('Starting Metro Bundler'));
   }
 
   shouldFilterClientLog(event: {
@@ -262,6 +275,13 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
     return chalk.bold('λ') + ' ';
   } else if (env === 'react-server') {
     return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
+  }
+
+  if (
+    bundleDetails?.customTransformOptions?.dom &&
+    typeof bundleDetails?.customTransformOptions?.dom === 'string'
+  ) {
+    return chalk.bold(`DOM`) + ' ';
   }
 
   return '';

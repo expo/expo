@@ -17,7 +17,9 @@ export type RenderRscArgs = {
     method: 'GET' | 'POST';
     body?: ReadableStream | null;
     contentType?: string | undefined;
+    decodedBody?: unknown;
     moduleIdCallback?: ((id: string) => void) | undefined;
+    onError?: (err: unknown) => void;
 };
 export declare const decodeInput: (encodedInput: string) => string;
 export declare function getRscMiddleware(options: {
@@ -25,6 +27,7 @@ export declare function getRscMiddleware(options: {
     baseUrl: string;
     rscPath: string;
     renderRsc: (args: RenderRscArgs) => Promise<ReadableStream<any>>;
+    onError?: (err: unknown) => void;
 }): {
     GET: (req: Request) => Promise<Response>;
     POST: (req: Request) => Promise<Response>;

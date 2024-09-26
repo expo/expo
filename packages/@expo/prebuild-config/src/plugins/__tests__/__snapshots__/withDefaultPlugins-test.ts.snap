@@ -667,10 +667,10 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Automatically convert third-party libraries to use AndroidX",
+            "value": "Enable AAPT2 PNG crunching",
           },
           {
-            "key": "android.enableJetifier",
+            "key": "android.enablePngCrunchInReleaseBuilds",
             "type": "property",
             "value": "true",
           },
@@ -814,6 +814,7 @@ exports[`built-in plugins introspects mods 1`] = `
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:supportsRtl": "true",
                   "android:theme": "@style/AppTheme",
                 },
                 "activity": [

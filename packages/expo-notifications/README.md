@@ -825,7 +825,6 @@ An optional object of conforming to the following interface:
     allowCriticalAlerts?: boolean;
     provideAppNotificationSettings?: boolean;
     allowProvisional?: boolean;
-    allowAnnouncements?: boolean;
   }
 }
 ```
@@ -849,7 +848,6 @@ export function requestPermissionsAsync() {
       allowAlert: true,
       allowBadge: true,
       allowSound: true,
-      allowAnnouncements: true,
     },
   });
 }

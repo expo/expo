@@ -23,16 +23,21 @@ export function guessEditor(): editors.Editor {
 }
 
 /** Open a file path in a given editor. */
-export async function openInEditorAsync(path: string): Promise<boolean> {
+export async function openInEditorAsync(path: string, lineNumber?: number): Promise<boolean> {
   const editor = guessEditor();
+  const fileReference = lineNumber ? `${path}:${lineNumber}` : path;
 
-  debug(`Opening ${path} in ${editor?.name} (bin: ${editor?.binary}, id: ${editor?.id})`);
+  debug(`Opening ${fileReference} in ${editor?.name} (bin: ${editor?.binary}, id: ${editor?.id})`);
+
   if (editor) {
     try {
-      await spawnAsync(editor.binary, [path]);
+      await spawnAsync(editor.binary, getEditorArguments(editor, path, lineNumber));
       return true;
     } catch (error: any) {
-      debug(`Failed to auto open path in editor (path: ${path}, binary: ${editor.binary}):`, error);
+      debug(
+        `Failed to open ${fileReference} in editor (path: ${path}, binary: ${editor.binary}):`,
+        error
+      );
     }
   }
 
@@ -40,4 +45,37 @@ export async function openInEditorAsync(path: string): Promise<boolean> {
     'Could not open editor, you can set it by defining the $EDITOR environment variable with the binary of your editor. (e.g. "vscode" or "atom")'
   );
   return false;
+}
+
+function getEditorArguments(editor: editors.Editor, path: string, lineNumber?: number): string[] {
+  if (!lineNumber) {
+    return [path];
+  }
+
+  switch (editor.id) {
+    case 'atom':
+    case 'sublime':
+      return [`${path}:${lineNumber}`];
+
+    case 'emacs':
+    case 'emacsforosx':
+    case 'nano':
+    case 'neovim':
+    case 'vim':
+      return [`+${lineNumber}`, path];
+
+    case 'android-studio':
+    case 'intellij':
+    case 'textmate':
+    case 'webstorm':
+    case 'xcode':
+      return [`--line=${lineNumber}`, path];
+
+    case 'vscode':
+    case 'vscodium':
+      return ['-g', `${path}:${lineNumber}`];
+
+    default:
+      return [path];
+  }
 }

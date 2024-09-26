@@ -94,11 +94,10 @@ class ExpoCameraView(
 ) : ExpoView(context, appContext),
   CameraViewInterface {
   private val currentActivity
-    get() = appContext.currentActivity as? AppCompatActivity
-      ?: throw Exceptions.MissingActivity()
+    get() = appContext.throwingActivity as AppCompatActivity
 
   val orientationEventListener by lazy {
-    object : OrientationEventListener(currentActivity) {
+    object : OrientationEventListener(appContext.throwingActivity) {
       override fun onOrientationChanged(orientation: Int) {
         if (orientation == ORIENTATION_UNKNOWN) {
           return
@@ -164,7 +163,7 @@ class ExpoCameraView(
       shouldCreateCamera = true
     }
 
-  var ratio: CameraRatio = CameraRatio.FOUR_THREE
+  var ratio: CameraRatio? = null
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -242,12 +241,13 @@ class ExpoCameraView(
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
     val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+    val hasShutterSound = options.shutterSound
 
     imageCaptureUseCase?.takePicture(
       ContextCompat.getMainExecutor(context),
       object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureStarted() {
-          if (volume != 0) {
+          if (hasShutterSound && volume != 0) {
             MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
           }
           if (!animateShutter) {
@@ -353,13 +353,15 @@ class ExpoCameraView(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
+        previewView.scaleType = if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+          PreviewView.ScaleType.FIT_CENTER
+        } else {
+          PreviewView.ScaleType.FILL_CENTER
+        }
+
+        val resolutionSelector = buildResolutionSelector()
         val preview = Preview.Builder()
-          .setResolutionSelector(
-            ResolutionSelector.Builder()
-              .setAspectRatioStrategy(ratio.mapToStrategy())
-              .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-              .build()
-          )
+          .setResolutionSelector(resolutionSelector)
           .build()
           .also {
             it.surfaceProvider = previewView.surfaceProvider
@@ -370,19 +372,7 @@ class ExpoCameraView(
           .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
-          .apply {
-            if (pictureSize.isNotEmpty()) {
-              val size = Size.parseSize(pictureSize)
-              setTargetResolution(size)
-            } else {
-              setResolutionSelector(
-                ResolutionSelector.Builder()
-                  .setAspectRatioStrategy(ratio.mapToStrategy())
-                  .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
-                  .build()
-              )
-            }
-          }
+          .setResolutionSelector(resolutionSelector)
           .build()
 
         val videoCapture = createVideoCapture()
@@ -438,6 +428,30 @@ class ExpoCameraView(
           )
         }
       }
+
+  private fun buildResolutionSelector(): ResolutionSelector {
+    val strategy = if (pictureSize.isNotEmpty()) {
+      val size = Size.parseSize(pictureSize)
+      ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+    } else {
+      ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+    }
+
+    return if (ratio == CameraRatio.ONE_ONE) {
+      ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+        return@setResolutionFilter supportedSizes.filter {
+          it.width == it.height
+        }
+      }.setResolutionStrategy(strategy).build()
+    } else {
+      ResolutionSelector.Builder().apply {
+        ratio?.let {
+          setAspectRatioStrategy(it.mapToStrategy())
+        }
+        setResolutionStrategy(strategy)
+      }.build()
+    }
+  }
 
   private fun createVideoCapture(): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
@@ -516,7 +530,7 @@ class ExpoCameraView(
   }
 
   private fun getDeviceOrientation() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    appContext.currentActivity?.display?.rotation ?: 0
+    appContext.throwingActivity.display?.rotation ?: 0
   } else {
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
   }

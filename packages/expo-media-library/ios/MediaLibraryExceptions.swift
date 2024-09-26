@@ -2,12 +2,6 @@ import ExpoModulesCore
 
 let defaultErrorMessage = "unspecified error"
 
-internal class MethodUnavailableException: Exception {
-  override var reason: String {
-    "presentLimitedLibraryPickerAsync is only available on iOS >= 14"
-  }
-}
-
 internal class MediaLibraryPermissionsException: Exception {
   override var reason: String {
     "Media Library permission is required to do this operation"

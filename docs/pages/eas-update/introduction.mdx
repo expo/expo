@@ -13,25 +13,12 @@ import { BoxLink } from '~/ui/components/BoxLink';
 
 EAS Update makes fixing small bugs and pushing quick fixes a snap in between app store submissions. It accomplishes this by enabling an app to update its own non-native pieces (such as JS, styling, and images) over-the-air.
 
-All apps that include the `expo-updates` library have the ability to receive updates. To start using EAS Update, continue to the [Getting Started](/eas-update/getting-started) guide.
+All apps that include the `expo-updates` library have the ability to receive updates.
 
-## Pitch
+- To start using EAS Update, continue to the [Getting Started](/eas-update/getting-started) guide.
+- For a complete tutorial of using EAS Update with other EAS services, refer to the [EAS Tutorial](/tutorial/eas/introduction/).
 
-### Improve user experience
-
-EAS Update allows you to quickly release hotfixes and enhancements in response to user feedback or market trends. It helps you keep users engaged and satisfied with your app. Don't wait for the next planned update or manual update request.
-
-### Tailored for Expo
-
-EAS Update is designed for easy integration with Expo apps. Use the Expo website to see app deployment status and debug issues, and seamlessly integrate with [EAS Build](/build/introduction/).
-
-### Broad compatibility
-
-EAS Update also works with [vanilla React Native apps](/bare/installing-updates/). All you need to do is install the lightweight `expo` npm package as a prerequisite.
-
-### Customizable update strategies
-
-Configure behavior in your app using the [`expo-updates` API](/versions/latest/sdk/updates) and [app config](/versions/latest/config/app/#updates). You will always have the upper hand in shaping the update process without compromising your users' experience.
+> **info** For a look at some of our favorite features of EAS Update, check out the [6 reasons to use EAS Update blog post](https://expo.dev/blog/6-reasons-to-use-eas-update).
 
 ## Get started
 
@@ -45,7 +32,14 @@ Configure behavior in your app using the [`expo-updates` API](/versions/latest/s
 <BoxLink
   title="Publish an update"
   description="Learn how to publish an update to a specific branch with EAS Update."
-  href="/eas-update/publish/"
+  href="/eas-update/getting-started/#publish-an-update"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="Preview updates"
+  description="View your teammate's changes with EAS Update."
+  href="/eas-update/develop-faster/"
   Icon={LayersTwo02Icon}
 />
 
@@ -57,8 +51,8 @@ Configure behavior in your app using the [`expo-updates` API](/versions/latest/s
 />
 
 <BoxLink
-  title="Develop faster"
-  description="View your teammate's changes with EAS Update."
-  href="/eas-update/develop-faster/"
+  title="Migrate from CodePush"
+  description="Learn how to migrate from CodePush to EAS Update."
+  href="/eas-update/codepush/"
   Icon={LayersTwo02Icon}
 />

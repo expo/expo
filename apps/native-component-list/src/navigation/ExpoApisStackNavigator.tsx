@@ -1,10 +1,12 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 
-import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
+import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
+import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
@@ -426,24 +428,25 @@ export const Screens: ScreenConfig[] = [
 ];
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
-  return (
-    <Stack.Navigator {...props} {...getStackConfig(props)}>
-      <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
+  const { theme } = useTheme();
 
+  return (
+    <Stack.Navigator {...props} {...getStackNavWithConfig(props.navigation, theme)}>
+      <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
       {Screens.map(({ name, options, getComponent }) => (
         <Stack.Screen name={name} key={name} getComponent={getComponent} options={options ?? {}} />
       ))}
     </Stack.Navigator>
   );
 }
-const icon = ({ focused }: { focused: boolean }) => {
-  return <TabIcon name="code-tags" focused={focused} />;
-};
+
 ExpoApisStackNavigator.navigationOptions = {
   title: 'APIs',
   tabBarLabel: 'APIs',
-  tabBarIcon: icon,
-  drawerIcon: icon,
+  tabBarIcon: ({ focused }: { focused: boolean }) => {
+    return <TabIcon name="code-tags" focused={focused} />;
+  },
+  tabBarBackground: () => <TabBackground />,
 };
 
 export default ExpoApisStackNavigator;

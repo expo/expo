@@ -3,6 +3,7 @@ package expo.modules.av.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -89,6 +90,7 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
         .setTrackSelector(trackSelector)
         .setBandwidthMeter(bandwidthMeter)
+        .setLooper(Looper.getMainLooper())
         .build();
 
     mSimpleExoPlayer.addListener(this);

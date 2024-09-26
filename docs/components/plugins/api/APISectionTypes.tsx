@@ -107,8 +107,8 @@ const renderType = (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
-        <H3Code tags={getTagNamesList(comment)}>
-          <MONOSPACE weight="medium" className="wrap-anywhere">
+        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
+          <MONOSPACE weight="medium">
             {name}
             {type.declaration.signatures ? '()' : ''}
           </MONOSPACE>
@@ -149,7 +149,9 @@ const renderType = (
                 </SPAN>
                 {type.types
                   .filter(type =>
-                    ['reference', 'union', 'intersection', 'intrinsic'].includes(type.type)
+                    ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(
+                      type.type
+                    )
                   )
                   .map(validType => (
                     <Fragment key={`nested-reference-type-${validType.name}`}>

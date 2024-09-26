@@ -5,6 +5,7 @@ import { Changelog } from '../../Changelogs';
 import { EXPO_DIR } from '../../Constants';
 import { PullRequest } from '../../GitHub';
 import * as Markdown from '../../Markdown';
+import { markdownLink } from '../reports';
 import { ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput> {
@@ -71,13 +72,6 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
       status: ReviewStatus.PASSIVE,
     };
   }
-}
-
-/**
- * Returns a link in markdown format.
- */
-function markdownLink(name: string, url: string): string {
-  return `[${name}](${url})`;
 }
 
 /**

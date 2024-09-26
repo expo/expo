@@ -1,11 +1,39 @@
 ---
-title: Continuous Deployment
+title: Continuous deployment
 description: Learn how to use the fingerprint runtime version for continuous deployment in production and during development.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
+## Prerequisites
+
+- You need to have a GitHub account and use it to host your git project.
+- You need to have an Expo token configured in your GitHub repository.
+
+<Collapsible summary="How to configure the EXPO_TOKEN environment variable on your GitHub repository">
+
+- Navigate to [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and then:
+- Click **Create token** to create a new personal access token.
+- Copy the generated token.
+- Navigate to https://github.com/your-username/your-repo-name/settings/secrets/actions by replacing "your-username" and "your-repo-name" with your project's info.
+- Under **Repository secrets**, click **New repository secret**.
+- Create a secret with the name **EXPO_TOKEN**, and paste the copied access token in as the value.
+
+</Collapsible>
+
+## GitHub Action: continuous-deploy-fingerprint
+
 > **info** This is available in beta for SDK 51 and not yet considered stable. Use may result in unexpected system behavior.
 
-## Concepts
+Expo provides a GitHub Action called [continuous-deploy-fingerprint](https://github.com/expo/expo-github-action/tree/main/continuous-deploy-fingerprint) to provide CI/CD for a React Native project. It dictates that every JS change (update) is deployed to all compatible builds over-the-air, and new builds are created when the runtime changes.
+
+It is typically accomplished by performing roughly these steps:
+
+1. Run application tests, abort if tests fail (`continuous-deploy-fingerprint` does not currently run tests, you can do configure your workflow to run tests first).
+2. Calculate fingerprint for relevant platforms using the `npx expo-updates fingerprint:generate` command.
+3. Check for EAS builds with a runtime version equal to the fingerprint (`eas build:list --runtimeVersion <fingerprint>`). Create a new build if none exists yet.
+   - (optional) Submit to app stores for full continuous deployment. This has not yet been tested and is not recommended.
+4. Run `eas update` to publish an update for the current commit.
 
 ### Fingerprint runtime versioning
 
@@ -13,23 +41,7 @@ The [`fingerprint` runtime version policy](/eas-update/runtime-versions/#fingerp
 
 By automatically calculating the runtime version, you don't have to be concerned about native layer compatibility with the JavaScript application when deploying updates to builds.
 
-## Continuous Integration (CI) and Continuous Deployment (CD)
-
-CI/CD for a React Native project dictates that every JS change (update) is deployed to all compatible builds over-the-air, and new builds are created when the runtime changes.
-
-It can be accomplished by performing roughly these steps:
-
-1. Run application tests, abort if tests fail.
-2. Calculate fingerprint for relevant platforms using the `npx expo-updates fingerprint:generate` command.
-3. Check for EAS builds with a runtime version equal to the fingerprint (`eas build:list --runtimeVersion <fingerprint>`). Create a new build if none exists yet.
-   - (optional) Submit to app stores for full continuous deployment. This has not yet been tested and is not recommended.
-4. Run `eas update` to publish an update for the current commit.
-
-### GitHub Actions
-
-Expo provides a [GitHub Action](https://github.com/expo/expo-github-action/tree/main/continuous-deploy-fingerprint) for performing the steps mentioned in the previous section within a GitHub Actions workflow.
-
-## Debugging fingerprint inconsistencies
+<Collapsible summary="How do I debug fingerprint inconsistencies between my local machine and CI/CD?">
 
 If you notice different fingerprints being generated across different machines or environments, it may mean that unanticipated files are being included in the hash calculation. `@expo/fingerprint` has a predetermined set of files to include/exclude for hash calculation, but often your project setup may require additional excludes. For projects that include native directories (**android** and **ios**) this is more common.
 
@@ -44,6 +56,17 @@ To identify differences in fingerprints on different machines or environments:
 
 To exclude files causing the differences, add them to the **.fingerprintignore** file as described in the [`@expo/fingerprint` README](https://www.npmjs.com/package/@expo/fingerprint).
 
-### Debugging with GitHub Actions
+</Collapsible>
 
-Running the workflow in debug mode will automatically add the `--debug` flag to the commands run as part of the action, and the output will be available in the workflow run logs.
+<Collapsible summary="How do I debug the commands that are run in the workflow?">
+
+Running your GitHub workflows in debug mode will automatically add the `--debug` flag to the commands run as part of the action, and the output will be available in the workflow run logs.
+
+</Collapsible>
+
+## GitHub Action: expo-github-action
+
+An alternative GitHub action is [expo-github-action](https://github.com/expo/expo-github-action/tree/main) that can be used to publish updates on push and previews on pull requests. `continuous-deploy-fingerprint` uses fingerprints to determine if a build is needed or not to deploy an update, while `expo-github-action` will only publish updates.
+
+- To learn about publishing updates when code is pushed to the main branch, refer to the [README](https://github.com/expo/expo-github-action/tree/main?tab=readme-ov-file#create-new-eas-update-on-push-to-main).
+- To learn about Pull Request previews with `expo-github-action`, refer to the [GitHub PR Previews guide](/eas-update/github-actions/).

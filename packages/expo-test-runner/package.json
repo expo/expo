@@ -43,6 +43,7 @@
     "dot": "^2.0.0-beta.1",
     "fs-extra": "^10.0.0",
     "node-fetch": "^2.6.1",
-    "tempy": "^0.7.1"
+    "temp-dir": "~2.0.0",
+    "unique-string": "~2.0.0"
   }
 }

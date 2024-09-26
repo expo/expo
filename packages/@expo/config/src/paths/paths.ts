@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
 import { env } from './env';
 import { getBareExtensions } from './extensions';
-import { findWorkspaceRoot } from './workspaces';
 import { getPackageJson } from '../Config';
 import { PackageJSONConfig } from '../Config.types';
 import { ConfigError } from '../Errors';
@@ -119,12 +119,12 @@ export function getFileWithExtensions(
 }
 
 /** Get the Metro server root, when working in monorepos */
-function getMetroServerRoot(projectRoot: string): string {
+export function getMetroServerRoot(projectRoot: string): string {
   if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
     return projectRoot;
   }
 
-  return findWorkspaceRoot(projectRoot) ?? projectRoot;
+  return resolveWorkspaceRoot(projectRoot) ?? projectRoot;
 }
 
 /**

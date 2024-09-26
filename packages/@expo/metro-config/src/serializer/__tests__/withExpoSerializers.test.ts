@@ -604,6 +604,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -626,6 +627,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/foo.js",
@@ -656,6 +658,7 @@ describe('serializes', () => {
       modulePaths: ['/app/foo.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
     });
   });
@@ -682,6 +685,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -708,6 +712,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/foo.js",
@@ -738,6 +743,7 @@ describe('serializes', () => {
       modulePaths: ['/app/foo.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
     });
   });
@@ -773,6 +779,7 @@ describe('serializes', () => {
       modulePaths: ['/app/(foo)/index.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
     });
   });
@@ -802,6 +809,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -834,6 +842,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/foo-aac9e47d61669a7fb7a95ea6aeb91d64.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/foo.js",
@@ -864,6 +873,7 @@ describe('serializes', () => {
       modulePaths: ['/app/foo.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
     });
   });
@@ -901,6 +911,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/index-6deb415e9765e2f7033a805e8c5f20ee.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
@@ -939,6 +950,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/math-751c65eacf161e04a1cff839cdf43b51.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/math.js",
@@ -963,6 +975,7 @@ describe('serializes', () => {
         {
           "filename": "_expo/static/js/web/shapes-3d697f5eb8b842d8141b9a849a473086.js",
           "metadata": {
+            "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
               "/app/shapes.js",
@@ -994,6 +1007,7 @@ describe('serializes', () => {
       modulePaths: ['/app/math.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
     });
     expect(artifacts[2].metadata).toEqual({
@@ -1001,6 +1015,7 @@ describe('serializes', () => {
       modulePaths: ['/app/shapes.js'],
       requires: [],
       paths: {},
+      expoDomComponentReferences: [],
       reactClientReferences: [],
     });
 
@@ -1109,6 +1124,7 @@ describe('serializes', () => {
         isAsync: false,
         modulePaths: ['/app/index.js', '/app/other.js', '/app/react-server-dom-webpack/server'],
         paths: {},
+        expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js'],
         requires: [],
       });
@@ -1161,6 +1177,7 @@ describe('serializes', () => {
           '/app/second.js',
         ],
         paths: {},
+        expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
         requires: [],
       });

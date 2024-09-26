@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
@@ -88,7 +88,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style'> {
   /** @hidden */
   style?: StyleProp<RNImageStyle>;
 
@@ -245,6 +245,11 @@ export interface ImageProps extends ViewProps {
    */
   onLoadEnd?: () => void;
 
+  /**
+   * Called when the image view successfully rendered the source image.
+   */
+  onDisplay?: () => void;
+
   // DEPRECATED
 
   /**
@@ -361,8 +366,6 @@ export interface ImageNativeProps extends ImageProps {
  */
 export type ImageContentPositionValue = number | string | `${number}%` | `${number}` | 'center';
 
-// eslint-disable
-// prettier-ignore
 /**
  * Specifies the position of the image inside its container. One value controls the x-axis and the second value controls the y-axis.
  *
@@ -376,33 +379,32 @@ export type ImageContentPosition =
   /**
    * An object that positions the image relatively to the top-right corner.
    */
-  {
-    top?: ImageContentPositionValue;
-    right?: ImageContentPositionValue;
-  } |
+  | {
+      top?: ImageContentPositionValue;
+      right?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the top-left corner.
    */
-  {
-    top?: ImageContentPositionValue;
-    left?: ImageContentPositionValue;
-  } |
+  | {
+      top?: ImageContentPositionValue;
+      left?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the bottom-right corner.
    */
-  {
-    bottom?: ImageContentPositionValue;
-    right?: ImageContentPositionValue;
-  } |
+  | {
+      bottom?: ImageContentPositionValue;
+      right?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the bottom-left corner.
    */
-  {
-    bottom?: ImageContentPositionValue;
-    left?: ImageContentPositionValue;
-  }
+  | {
+      bottom?: ImageContentPositionValue;
+      left?: ImageContentPositionValue;
+    }
   | ImageContentPositionString;
-// eslint-enable
 
 export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
   /** The style of the image container */
@@ -522,14 +524,16 @@ export declare class ImageRef extends SharedRef {
    */
   readonly height: number;
   /**
-   * If you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
-   * All other images are assumed to have a scale factor of **1.0**.
-   * If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+   * On iOS, if you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**. All other images are assumed to have a scale factor of **1.0**.
+   * On Android, it calculates the scale based on the bitmap density divided by screen density.
+   *
+   * On all platforms, if you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
    */
   readonly scale: number;
   /**
    * Media type (also known as MIME type) of the image, based on its format.
    * Returns `null` when the format is unknown or not supported.
+   * @platform ios
    */
   readonly mediaType: string | null;
   /**
@@ -537,3 +541,23 @@ export declare class ImageRef extends SharedRef {
    */
   readonly isAnimated?: boolean;
 }
+
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+  // TODO: Add missing function declarations
+  Image: typeof ImageRef;
+
+  loadAsync(source: ImageSource): Promise<ImageRef>;
+}
+
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type UseImageHookOptions = {
+  /**
+   * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+   */
+  onError?(error: object, retry: () => void): void;
+};

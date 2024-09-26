@@ -7,7 +7,8 @@
  */
 export type RouteProps = {
     path: string;
-    searchParams: URLSearchParams;
+    query: string;
+    hash: string;
 };
 export declare function getComponentIds(path: string): readonly string[];
 export declare function getInputString(path: string): string;

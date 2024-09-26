@@ -46,10 +46,10 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      getter?.takesOwner ?: false,
+      getter?.takesOwner == true,
       getter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniGetter,
-      setter?.takesOwner ?: false,
+      setter?.takesOwner == true,
       setter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniSetter
     )

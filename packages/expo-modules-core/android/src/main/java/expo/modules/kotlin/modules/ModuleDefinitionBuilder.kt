@@ -17,6 +17,7 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import kotlin.reflect.KClass
@@ -126,7 +127,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name, Unit::class, typeOf<Unit>())
+    val clazzBuilder = ClassComponentBuilder(name, Unit::class, toAnyType<Unit>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -136,7 +137,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, typeOf<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -145,7 +146,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, toAnyType<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }

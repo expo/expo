@@ -1,19 +1,14 @@
 import fs from 'fs';
 import path from 'path';
+import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import {
-  findPnpmWorkspaceRoot,
-  findYarnOrNpmWorkspaceRoot,
-  NPM_LOCK_FILE,
-  PNPM_LOCK_FILE,
-  YARN_LOCK_FILE,
-  BUN_LOCK_FILE,
-} from './nodeWorkspaces';
 import { PackageManagerOptions } from '../PackageManager';
 import { BunPackageManager } from '../node/BunPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
+
+export { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
 export type NodePackageManager =
   | NpmPackageManager
@@ -24,37 +19,13 @@ export type NodePackageManager =
 export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
 
+export const NPM_LOCK_FILE = 'package-lock.json';
+export const YARN_LOCK_FILE = 'yarn.lock';
+export const PNPM_LOCK_FILE = 'pnpm-lock.yaml';
+export const BUN_LOCK_FILE = 'bun.lockb';
+
 /** The order of the package managers to use when resolving automatically */
 export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['bun', 'yarn', 'npm', 'pnpm'];
-
-/**
- * Resolve the workspace root for a project, if its part of a monorepo.
- * Optionally, provide a specific packager to only resolve that one specifically.
- */
-export function findWorkspaceRoot(
-  projectRoot: string,
-  preferredManager?: NodePackageManager['name']
-): string | null {
-  const strategies: Record<NodePackageManager['name'], (projectRoot: string) => string | null> = {
-    npm: findYarnOrNpmWorkspaceRoot,
-    yarn: findYarnOrNpmWorkspaceRoot,
-    pnpm: findPnpmWorkspaceRoot,
-    bun: findYarnOrNpmWorkspaceRoot,
-  };
-
-  if (preferredManager) {
-    return strategies[preferredManager](projectRoot);
-  }
-
-  for (const strategy of RESOLUTION_ORDER) {
-    const root = strategies[strategy](projectRoot);
-    if (root) {
-      return root;
-    }
-  }
-
-  return null;
-}
 
 /**
  * Resolve the used node package manager for a project by checking the lockfile.
@@ -65,7 +36,7 @@ export function resolvePackageManager(
   projectRoot: string,
   preferredManager?: NodePackageManager['name']
 ): NodePackageManager['name'] | null {
-  const root = findWorkspaceRoot(projectRoot, preferredManager) ?? projectRoot;
+  const root = resolveWorkspaceRoot(projectRoot) ?? projectRoot;
   const lockFiles: Record<NodePackageManager['name'], string> = {
     npm: NPM_LOCK_FILE,
     pnpm: PNPM_LOCK_FILE,

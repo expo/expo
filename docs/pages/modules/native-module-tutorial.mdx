@@ -1,12 +1,17 @@
 ---
 title: 'Tutorial: Creating a native module'
 sidebar_title: Create a native module
-description: A tutorial on creating a native module with Expo modules API.
+description: A tutorial on creating a native module that persists settings with Expo Modules API.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 In this tutorial, we are going to build a module that stores the user's preferred app theme - either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
+
+All the steps for creating a native module are listed below. If you're a visual learner, check out the video tutorial:
+
+<ContentSpotlight url="https://www.youtube.com/embed/CdaQSlyGik8" />
 
 ## 1. Initialize a new module
 
@@ -308,13 +313,13 @@ export function setTheme(theme: string): void {
 
 ```tsx example/App.tsx
 import * as Settings from 'expo-settings';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
 export default function App() {
-  const [theme, setTheme] = React.useState<string>(Settings.getTheme());
+  const [theme, setTheme] = useState<string>(Settings.getTheme());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = Settings.addThemeListener(({ theme: newTheme }) => {
       setTheme(newTheme);
     });

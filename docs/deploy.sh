@@ -37,7 +37,7 @@ aws s3 sync \
   --no-progress \
   --exclude "*" \
   --include "static/**" \
-  --cache-control "public, max-age=3600" \
+  --cache-control "public, max-age=3600, immutable" \
   "$target" \
   "s3://${bucket}"
 echo "::endgroup::"
@@ -180,6 +180,8 @@ redirects[eas-update/custom-updates-server]=versions/latest/sdk/updates
 redirects[distribution/custom-updates-server]=versions/latest/sdk/updates
 redirects[bare/error-recovery]=eas-update/error-recovery
 redirects[deploy/instant-updates]=eas-update/send-over-the-air-updates
+redirects[eas-update/publish]=eas-update/getting-started
+redirects[eas-update/debug-advanced]=eas-update/debug
 
 # Redirects for Expo Router docs
 redirects[routing/next-steps]=router/introduction
