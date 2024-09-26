@@ -8,8 +8,8 @@ import { XcodeProject } from 'xcode';
 import { InfoPlist } from './IosConfig.types';
 import { getSourceRoot } from './Paths';
 import { appendScheme } from './Scheme';
-import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { ConfigPlugin, ModProps } from '../Plugin.types';
+import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { withInfoPlist, withXcodeProject } from '../plugins/ios-plugins';
 
 export const withGoogle: ConfigPlugin = (config) => {

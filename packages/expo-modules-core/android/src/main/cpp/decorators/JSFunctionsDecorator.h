@@ -24,6 +24,7 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
+    jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -31,6 +32,7 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jboolean takesOwner,
+    jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
@@ -40,11 +42,22 @@ public:
     jsi::Object &jsObject
   ) override;
 
+  static std::vector<std::unique_ptr<AnyType>> mapConverters(jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes);
+
 private:
   /**
   * Metadata map that stores information about all available methods on this module.
   */
   std::unordered_map<std::string, std::shared_ptr<MethodMetadata>> methodsMetadata;
+
+  void registerFunction(
+    const std::string &name,
+    bool takesOwner,
+    bool enumerable,
+    bool isAsync,
+    std::vector<std::unique_ptr<AnyType>> &&argTypes,
+    jni::global_ref<jobject> body
+  );
 };
 
 }

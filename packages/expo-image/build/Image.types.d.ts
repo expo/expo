@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -218,6 +218,10 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
      */
     onLoadEnd?: () => void;
     /**
+     * Called when the image view successfully rendered the source image.
+     */
+    onDisplay?: () => void;
+    /**
      * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
      * Use [`placeholder`](#placeholder) prop instead.
      */
@@ -334,25 +338,25 @@ export type ImageContentPosition =
 {
     top?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the top-left corner.
  */
-{
+ | {
     top?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-right corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-left corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
@@ -454,5 +458,21 @@ export declare class ImageRef extends SharedRef {
      */
     readonly isAnimated?: boolean;
 }
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+    Image: typeof ImageRef;
+    loadAsync(source: ImageSource): Promise<ImageRef>;
+}
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type UseImageHookOptions = {
+    /**
+     * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+     */
+    onError?(error: object, retry: () => void): void;
+};
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

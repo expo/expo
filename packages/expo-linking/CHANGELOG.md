@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add shims for `react-server` environments. ([#31622](https://github.com/expo/expo/pull/31622) by [@EvanBacon](https://github.com/EvanBacon))
 - Add native `getLinkingURL` function. ([#29405](https://github.com/expo/expo/pull/29405) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes

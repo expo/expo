@@ -111,7 +111,7 @@ interface ExperimentalJSTypeConverter<T> {
     }
   }
 
-  class UriConverter : ExperimentalJSTypeConverter<android.net.Uri> {
+  class AndroidUriConverter : ExperimentalJSTypeConverter<android.net.Uri> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<android.net.Uri?>(value)
       return value?.toJSValue()
@@ -174,7 +174,7 @@ class ReturnType(
       ByteArray::class -> ExperimentalJSTypeConverter.ByteArrayConverter()
       java.net.URI::class -> ExperimentalJSTypeConverter.URIConverter()
       java.net.URL::class -> ExperimentalJSTypeConverter.URLConverter()
-      android.net.Uri::class -> ExperimentalJSTypeConverter.UriConverter()
+      android.net.Uri::class -> ExperimentalJSTypeConverter.AndroidUriConverter()
       java.io.File::class -> ExperimentalJSTypeConverter.FileConverter()
       Pair::class -> ExperimentalJSTypeConverter.PairConverter()
       Long::class -> ExperimentalJSTypeConverter.LongConverter()

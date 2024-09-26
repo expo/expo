@@ -8,7 +8,6 @@ import {
   ImageNativeProps,
   ImageProgressEventData,
 } from './Image.types';
-import ExpoImageModule from './ImageModule';
 
 const NativeExpoImage = requireNativeViewManager('ExpoImage');
 
@@ -115,5 +114,4 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
   }
 }
 
-export { ExpoImageModule };
 export default ExpoImage;

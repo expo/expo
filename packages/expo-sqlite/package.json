@@ -11,13 +11,17 @@
       "default": "./build/index.js",
       "types": "./build/index.d.ts"
     },
+    "./async-storage": {
+      "default": "./async-storage.js",
+      "types": "./async-storage.d.ts"
+    },
     "./legacy": {
-      "default": "./build/legacy/index.js",
-      "types": "./build/legacy/index.d.ts"
+      "default": "./legacy.js",
+      "types": "./legacy.d.ts"
     },
     "./next": {
-      "default": "./build/index.js",
-      "types": "./build/index.d.ts"
+      "default": "./next.js",
+      "types": "./next.d.ts"
     }
   },
   "scripts": {

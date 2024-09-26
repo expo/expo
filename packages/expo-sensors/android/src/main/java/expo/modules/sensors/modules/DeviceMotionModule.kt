@@ -232,7 +232,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private fun getOrientation(): Int {
     val windowManager = appContext.reactContext?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
     val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      appContext.currentActivity?.display?.rotation
+      appContext.throwingActivity.display?.rotation
     } else {
       @Suppress("DEPRECATION")
       windowManager?.defaultDisplay?.rotation

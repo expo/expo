@@ -31,9 +31,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
           }
         })
         appRecords[params.appScopeKey] = reactInstanceManager
-        if (reactInstanceManager.hasStartedCreatingInitialContext()) {
-          reactInstanceManager.recreateReactContextInBackground()
-        } else {
+        if (!reactInstanceManager.hasStartedCreatingInitialContext()) {
           reactInstanceManager.createReactContextInBackground()
         }
       } else {

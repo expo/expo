@@ -125,8 +125,8 @@ class ContactsModule : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+  private val currentActivity: Activity
+    get() = appContext.throwingActivity
 
   override fun definition() = ModuleDefinition {
     Name("ExpoContacts")
@@ -233,7 +233,7 @@ class ContactsModule : Module() {
         putExtra(Intent.EXTRA_STREAM, uri)
         putExtra(Intent.EXTRA_SUBJECT, subject)
       }
-      activity.startActivity(intent)
+      currentActivity.startActivity(intent)
     }
 
     AsyncFunction("writeContactToFileAsync") { contact: Map<String, Any?> ->
@@ -295,7 +295,7 @@ class ContactsModule : Module() {
       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
 
       contactPickingPromise = promise
-      activity.startActivityForResult(intent, RC_PICK_CONTACT)
+      currentActivity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
@@ -304,7 +304,7 @@ class ContactsModule : Module() {
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
     contactManipulationPromise = promise
-    activity.startActivityForResult(intent, RC_ADD_CONTACT)
+    currentActivity.startActivityForResult(intent, RC_ADD_CONTACT)
   }
 
   private fun presentEditForm(contact: Contact, promise: Promise) {
@@ -315,7 +315,7 @@ class ContactsModule : Module() {
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
     contactManipulationPromise = promise
-    activity.startActivityForResult(intent, RC_EDIT_CONTACT)
+    currentActivity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
   private val resolver: ContentResolver

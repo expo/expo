@@ -11,11 +11,15 @@ import { CODE } from '~/ui/components/Text';
 
 > **info** Available for SDK 50 and above ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.23.0).
 
-In SDK 49 and earlier, all assets resolved in the Metro bundler are included in every update and are uploaded to the update server. The experimental **asset selection feature** in SDK 50 allows the developer to specify that only certain assets should be included in updates. This can greatly reduce the number of assets that need to be uploaded to and downloaded from the updates server. This feature will work with the EAS Update server or any custom server that complies with the [`expo-updates` protocol](/technical-specs/expo-updates-1).
+In SDK 49 and earlier, all assets resolved in the Metro bundler are included in every update and are uploaded to the update server.
+
+SDK 50 added the experimental **asset selection feature**, which allows the developer to specify that only certain assets should be included in updates. This can greatly reduce the number of assets that need to be uploaded to and downloaded from the updates server. This feature will work with the EAS Update server or any custom server that complies with the [`expo-updates` protocol](/technical-specs/expo-updates-1).
+
+SDK 52 launched this feature to general availability.
 
 ## Using asset selection
 
-To use the asset selection, include the property `extra.updates.assetPatternsToBeBundled` in your app config. It should define one or more file-matching patterns (regular expressions). For example, an **app.json** file has the patterns defined in the following way:
+To use asset selection in SDK 51 and below, include the property `extra.updates.assetPatternsToBeBundled` in your app config. It should define one or more file-matching patterns (regular expressions). For example, an **app.json** file has the patterns defined in the following way:
 
 ```json app.json
   "expo": {
@@ -26,6 +30,19 @@ To use the asset selection, include the property `extra.updates.assetPatternsToB
           "app/images/**/*.png"
         ]
       }
+    }
+  }
+```
+
+To use asset selection in SDK 52 and above, include the property `updates.assetPatternsToBeBundled` in your app config. It should define one or more file-matching patterns (regular expressions). For example, an **app.json** file has the patterns defined in the following way:
+
+```json app.json
+  "expo": {
+    /* @hide ... */ /* @end */
+    "updates": {
+      "assetPatternsToBeBundled": [
+        "app/images/**/*.png"
+      ]
     }
   }
 ```

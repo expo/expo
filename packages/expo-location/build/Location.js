@@ -1,7 +1,10 @@
+import { isRunningInExpoGo } from 'expo';
 import { createPermissionHook, Platform } from 'expo-modules-core';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, } from './Location.types';
 import { LocationSubscriber, HeadingSubscriber } from './LocationSubscribers';
+// Flag for warning about background services not being available in Expo Go
+let warnAboutExpoGoDisplayed = false;
 // @needsAudit
 /**
  * Check status of location providers.
@@ -254,9 +257,19 @@ export async function hasServicesEnabledAsync() {
     return await ExpoLocation.hasServicesEnabledAsync();
 }
 // --- Background location updates
-function _validateTaskName(taskName) {
+function _validate(taskName) {
     if (!taskName || typeof taskName !== 'string') {
         throw new Error(`\`taskName\` must be a non-empty string. Got ${taskName} instead.`);
+    }
+    if (isRunningInExpoGo()) {
+        if (!warnAboutExpoGoDisplayed) {
+            const message = 'Background location is limited in Expo Go:\n' +
+                'On Android, it is not available at all.\n' +
+                'On iOS, it works when running in the Simulator.\n' +
+                'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+            console.warn(message);
+            warnAboutExpoGoDisplayed = true;
+        }
     }
 }
 // @docsMissing
@@ -292,7 +305,7 @@ export async function isBackgroundLocationAvailableAsync() {
  * @return A promise resolving once the task with location updates is registered.
  */
 export async function startLocationUpdatesAsync(taskName, options = { accuracy: LocationAccuracy.Balanced }) {
-    _validateTaskName(taskName);
+    _validate(taskName);
     await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
 // @needsAudit
@@ -302,7 +315,7 @@ export async function startLocationUpdatesAsync(taskName, options = { accuracy: 
  * @return A promise resolving as soon as the task is unregistered.
  */
 export async function stopLocationUpdatesAsync(taskName) {
-    _validateTaskName(taskName);
+    _validate(taskName);
     await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
 // @needsAudit
@@ -312,7 +325,7 @@ export async function stopLocationUpdatesAsync(taskName) {
  * started or not.
  */
 export async function hasStartedLocationUpdatesAsync(taskName) {
-    _validateTaskName(taskName);
+    _validate(taskName);
     return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
 // --- Geofencing
@@ -370,7 +383,7 @@ function _validateRegions(regions) {
  * ```
  */
 export async function startGeofencingAsync(taskName, regions = []) {
-    _validateTaskName(taskName);
+    _validate(taskName);
     _validateRegions(regions);
     await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
@@ -382,7 +395,7 @@ export async function startGeofencingAsync(taskName, regions = []) {
  * @return A promise resolving as soon as the task is unregistered.
  */
 export async function stopGeofencingAsync(taskName) {
-    _validateTaskName(taskName);
+    _validate(taskName);
     await ExpoLocation.stopGeofencingAsync(taskName);
 }
 // @needsAudit
@@ -392,7 +405,7 @@ export async function stopGeofencingAsync(taskName) {
  * started or not.
  */
 export async function hasStartedGeofencingAsync(taskName) {
-    _validateTaskName(taskName);
+    _validate(taskName);
     return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
 //# sourceMappingURL=Location.js.map

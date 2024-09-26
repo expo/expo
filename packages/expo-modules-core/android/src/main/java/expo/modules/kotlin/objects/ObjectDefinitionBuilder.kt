@@ -51,21 +51,20 @@ open class ObjectDefinitionBuilder {
   private val eventObservers = mutableListOf<EventObservingDefinition>()
 
   fun buildObject(): ObjectDefinitionData {
-    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
-      .toMutableMap()
-
     EventObservingDefinition.Type.entries.forEach { type ->
       // If the user exports a function that is called `startObserving` or `stopObserving`, we don't add the observer
       // In the long run, we probably want to add a warning here or make it impossible to export such functions.
       if (!asyncFunctions.containsKey(type.value)) {
-        val observerFunction = AsyncFunction(type.value) { eventName: String ->
+        AsyncFunction(type.value) { eventName: String ->
           eventObservers.forEach {
             it.invokedIfNeed(type, eventName)
           }
         }
-        asyncFunctions[type.value] = observerFunction
       }
     }
+
+    val asyncFunctions = (asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() })
+      .toMutableMap()
 
     return ObjectDefinitionData(
       constantsProvider,

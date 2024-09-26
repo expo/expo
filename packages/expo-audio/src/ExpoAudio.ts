@@ -44,7 +44,6 @@ export function useAudioSampleListener(
     }
     const subscription = player.addListener('onAudioSampleUpdate', listener);
     return () => {
-      player.setAudioSamplingEnabled(false);
       subscription.remove();
     };
   }, [player.id]);
@@ -87,7 +86,7 @@ export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);
 }
 
-export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
+export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void> {
   return await AudioModule.setAudioModeAsync(mode);
 }
 

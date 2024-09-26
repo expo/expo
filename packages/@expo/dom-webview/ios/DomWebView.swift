@@ -168,6 +168,16 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       userContentController.addUserScript(injectedJSBeforeContentLoaded)
     }
 
+    let addDomWebViewBridgeScript = """
+    window.ExpoDomWebViewBridge = {
+      eval: function eval(params) {
+        return window.prompt('\(Self.EVAL_PROMPT_HEADER)' + params);
+      },
+    };
+    true;
+    """
+    userContentController.addUserScript(WKUserScript(source: addDomWebViewBridgeScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+
     let addRNWObjectScript = """
     window.ReactNativeWebView ||= {};
     window.ReactNativeWebView.postMessage = function postMessage(data) {
@@ -181,8 +191,8 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       return
     }
 
-    let addExpoDomWebViewObjectScript = "\(browserScripts);true;"
-      .replacingOccurrences(of: "%%WEBVIEW_ID%%", with: String(webViewId))
+    let addExpoDomWebViewObjectScript = "\(INSTALL_GLOBALS_SCRIPT);true;"
+      .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))
     userContentController.addUserScript(WKUserScript(source: addExpoDomWebViewObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
   }
 
@@ -200,27 +210,10 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       return
     }
     appContext.executeOnJavaScriptThread {
-      let wrappedSource = """
-      (function() {
-      const result = \(source);
-      if (result instanceof Promise) {
-        result
-          .then((resolved) => {
-            const resolvedString = JSON.stringify(resolved);
-            const script = 'window.ExpoDomWebView.resolveDeferred(\(deferredId), ' + resolvedString + ')';
-            globalThis.expo.modules.ExpoDomWebViewModule.evalJsForWebViewAsync(\(webViewId), script);
-          })
-          .catch((error) => {
-            const errorString = JSON.stringify(error);
-            const script = 'window.ExpoDomWebView.rejectDeferred(\(deferredId), ' + errorString + ')';
-            globalThis.expo.modules.ExpoDomWebViewModule.evalJsForWebViewAsync(\(webViewId), script);
-          });
-        return JSON.stringify({ isPromise: true, value: null });
-      } else {
-        return JSON.stringify({ isPromise: false, value: result });
-      }
-      })();
-      """
+      let wrappedSource = NATIVE_EVAL_WRAPPER_SCRIPT
+        .replacingOccurrences(of: "\"%%DEFERRED_ID%%\"", with: String(deferredId))
+        .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))
+        .replacingOccurrences(of: "\"%%SOURCE%%\"", with: source)
       do {
         let result = try runtime.eval(wrappedSource)
         completionHandler(result.getString())

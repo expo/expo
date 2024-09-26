@@ -13,7 +13,7 @@ import {
 
 export interface AudioModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
-  setAudioModeAsync(category: AudioMode): Promise<void>;
+  setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
   getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
 
@@ -181,7 +181,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   /**
    * Stop the recording.
    */
-  stop(): void;
+  stop(): Promise<void>;
 
   /**
    * Pause the recording.
@@ -221,7 +221,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   /**
    * Prepares the recording for recording.
    */
-  prepareToRecordAsync(): Promise<void>;
+  prepareToRecordAsync(options?: RecordingOptions): Promise<void>;
 
   /**
    * Stops the recording once the specified time has elapsed.

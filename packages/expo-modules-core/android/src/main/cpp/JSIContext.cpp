@@ -5,6 +5,7 @@
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "SharedObject.h"
+#include "SharedRef.h"
 #include "NativeModule.h"
 
 #include <fbjni/detail/Meta.h>
@@ -111,7 +112,6 @@ void JSIContext::prepareRuntime() noexcept {
   runtimeHolder->installMainObject();
 
   EventEmitter::installClass(runtime);
-
   SharedObject::installBaseClass(
     runtime,
     // We can't predict the order of deallocation of the JSIContext and the SharedObject.
@@ -122,7 +122,7 @@ void JSIContext::prepareRuntime() noexcept {
       });
     }
   );
-
+  SharedRef::installBaseClass(runtime);
   NativeModule::installClass(runtime);
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);

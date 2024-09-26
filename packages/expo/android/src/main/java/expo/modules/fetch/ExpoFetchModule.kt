@@ -21,7 +21,12 @@ import java.net.URL
 
 @Suppress("unused")
 class ExpoFetchModule : Module() {
-  private val client by lazy { OkHttpClientProvider.createClient(reactContext) }
+  private val client by lazy {
+    OkHttpClientProvider.createClient(reactContext)
+      .newBuilder()
+      .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
+      .build()
+  }
   private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
   private val cookieJarContainer by lazy { client.cookieJar as CookieJarContainer }
 

@@ -3,7 +3,6 @@ package expo.modules.notifications.notifications;
 import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
 import static expo.modules.notifications.UtilsKt.isValidJSONString;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -22,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import expo.modules.notifications.notifications.interfaces.INotificationContent;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
@@ -51,7 +50,7 @@ public class NotificationSerializer {
   public static Bundle toBundle(Notification notification) {
     Bundle serializedNotification = new Bundle();
     serializedNotification.putBundle("request", toBundle(notification.getNotificationRequest()));
-    serializedNotification.putLong("date", notification.getDate().getTime());
+    serializedNotification.putLong("date", notification.getOriginDate().getTime());
     return serializedNotification;
   }
 
@@ -99,7 +98,7 @@ public class NotificationSerializer {
     return result;
   }
 
-  public static Bundle toBundle(NotificationContent content) {
+  public static Bundle toBundle(INotificationContent content) {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", content.getTitle());
     serializedContent.putString("subtitle", content.getSubtitle());
@@ -113,9 +112,9 @@ public class NotificationSerializer {
     } else {
       serializedContent.putString("badge", null);
     }
-    if (content.shouldPlayDefaultSound()) {
+    if (content.getShouldPlayDefaultSound()) {
       serializedContent.putString("sound", "default");
-    } else if (content.getSound() != null) {
+    } else if (content.getSoundName() != null) {
       serializedContent.putString("sound", "custom");
     } else {
       serializedContent.putString("sound", null);
@@ -228,10 +227,7 @@ public class NotificationSerializer {
 
   @Nullable
   private static String getChannelId(NotificationTrigger trigger) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      return trigger.getNotificationChannel();
-    }
-    return null;
+    return trigger.getNotificationChannel();
   }
 
   @NotNull

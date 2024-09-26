@@ -19,8 +19,7 @@ class SyncFunctionComponent(
 ) : AnyFunction(name, argTypes) {
   private var shouldUseExperimentalConverter = false
 
-  @Suppress("FunctionName")
-  fun UseExperimentalConverter(shouldUse: Boolean = true) = apply {
+  fun useExperimentalConverter(shouldUse: Boolean = true) = apply {
     shouldUseExperimentalConverter = shouldUse
   }
 
@@ -52,6 +51,7 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       takesOwner,
+      isEnumerable,
       getCppRequiredTypes().toTypedArray(),
       getJNIFunctionBody(moduleName, appContext)
     )

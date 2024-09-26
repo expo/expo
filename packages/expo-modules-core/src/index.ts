@@ -18,7 +18,6 @@ export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
 
 export {
-  NativeModulesProxy,
   ProxyNativeModule,
   Platform,
   requireNativeViewManager,
@@ -33,6 +32,7 @@ export {
   // Types
   EventSubscription,
   // Deprecated
+  NativeModulesProxy,
   LegacyEventEmitter,
 };
 

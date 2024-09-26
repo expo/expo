@@ -28,6 +28,13 @@ EX_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
   resolve(lastResponse ? [self serializedNotificationResponse:lastResponse] : [NSNull null]);
 }
 
+EX_EXPORT_METHOD_AS(clearLastNotificationResponseAsync,
+                    clearLastNotificationResponseAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
+{
+  _notificationCenterDelegate.lastNotificationResponse = nil;
+  resolve([NSNull null]);
+}
+
 # pragma mark - EXModuleRegistryConsumer
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry

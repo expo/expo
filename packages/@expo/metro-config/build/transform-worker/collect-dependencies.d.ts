@@ -27,6 +27,11 @@ type MutableDependencyData = {
     locs: readonly t.SourceLocation[];
     contextParams?: RequireContextParams;
     exportNames: string[];
+    css?: {
+        url: string;
+        supports: string | null;
+        media: string | null;
+    };
 };
 export type DependencyData = Readonly<MutableDependencyData>;
 type MutableInternalDependency = MutableDependencyData & {

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Update `@typescript-eslint` dependencies to new major version, migrate rule set. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 - Bring over more lint rules from Expo server for typescript configs. ([#30491](https://github.com/expo/expo/pull/30491) by [@wschurman](https://github.com/wschurman))

@@ -18,6 +18,8 @@ final class RelaunchProcedure: StateMachineProcedure {
   private let successBlock: () -> Void
   private let errorBlock: (_ error: Exception) -> Void
 
+  private let launcherWithDatabase: AppLauncherWithDatabase
+
   init(
     database: UpdatesDatabase,
     config: UpdatesConfig,
@@ -46,6 +48,13 @@ final class RelaunchProcedure: StateMachineProcedure {
     self.requestStartErrorMonitoring = requestStartErrorMonitoring
     self.successBlock = successBlock
     self.errorBlock = errorBlock
+
+    self.launcherWithDatabase = AppLauncherWithDatabase(
+      config: config,
+      database: database,
+      directory: updatesDirectory,
+      completionQueue: controllerQueue
+    )
   }
 
   func getLoggerTimerLabel() -> String {
@@ -54,17 +63,11 @@ final class RelaunchProcedure: StateMachineProcedure {
 
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventRestart())
-    let launcherWithDatabase = AppLauncherWithDatabase(
-      config: config,
-      database: database,
-      directory: updatesDirectory,
-      completionQueue: controllerQueue
-    )
     launcherWithDatabase.launchUpdate(withSelectionPolicy: selectionPolicy) { error, success in
       if success {
-        self.setLauncher(launcherWithDatabase)
+        self.setLauncher(self.launcherWithDatabase)
         self.requestStartErrorMonitoring()
-        RCTReloadCommandSetBundleURL(launcherWithDatabase.launchAssetUrl)
+        RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
         RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
 
         // TODO(wschurman): this was moved to after the RCT calls to unify reload

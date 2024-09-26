@@ -3,10 +3,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester';
 import { noDynamicEnvVar } from '../rules/noDynamicEnvVar';
 
 const ruleTester = new RuleTester({
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
+  languageOptions: {
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
     },
   },
 });
