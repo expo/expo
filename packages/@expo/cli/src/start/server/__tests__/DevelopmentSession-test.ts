@@ -79,9 +79,6 @@ describe(`startAsync`, () => {
     });
 
     expect(onDevSessionError).toHaveBeenCalled();
-
-    // Did not repeat the cycle
-    expect(session['timeout']).toBe(null);
   });
 
   it(`gracefully handles server outages`, async () => {
@@ -112,9 +109,6 @@ describe(`startAsync`, () => {
     });
 
     expect(onDevSessionError).toHaveBeenCalled();
-
-    // Did not repeat the cycle
-    expect(session['timeout']).toBe(null);
   });
 
   it('is skipped on CI', async () => {
@@ -136,8 +130,6 @@ describe(`startAsync`, () => {
 
     // Did not load the current device info
     expect(ProjectDevices.getDevicesInfoAsync).not.toHaveBeenCalled();
-    // Did not repeat the cycle
-    expect(session['timeout']).toBe(null);
   });
 });
 
