@@ -22,8 +22,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private var totalDataReceived: Int64 = 0
 
   private var cachableRequests: NSHashTable<CachableRequest> = NSHashTable()
-  private var isNetworkAvailable = true
-
   private let cachedResource: CachedResource
 
   /**
@@ -77,8 +75,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       return
     }
 
-    totalDataReceived += Int64(data.count)
-    print("Data received: \(totalDataReceived / 1_000_000) MB")
     let dataRequest = cachableRequest.dataRequest
     let requestedOffset = dataRequest.requestedOffset
     let currentOffset = dataRequest.currentOffset
@@ -104,12 +100,11 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   }
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-    self.response = response
 
     if let cachedDataRequest = cachableRequest(by: dataTask) {
       cachedDataRequest.response = response
       if (cachedDataRequest.loadingRequest.contentInformationRequest != nil) {
-        fillInContentInformationRequest(cachedDataRequest.loadingRequest.contentInformationRequest)
+        fillInContentInformationRequest(forDataRequest: cachedDataRequest)
         cachedDataRequest.loadingRequest.response = response
         cachedDataRequest.loadingRequest.finishLoading()
         cachedDataRequest.dataTask.cancel()
@@ -123,7 +118,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     if let error = error as? URLError, 
         error.code == URLError.networkConnectionLost || error.code == URLError.notConnectedToInternet {
-      isNetworkAvailable = false
     }
 
     guard let cachedDataRequest = cachableRequest(by: task) else {
@@ -135,8 +129,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       cachedDataRequest.saveData(to: cachedResource)
     } else if error == nil {
       cachedDataRequest.saveData(to: cachedResource)
-      // Request responded successfully - network is online
-      isNetworkAvailable = true
     } else {
       cachedDataRequest.loadingRequest.finishLoading(with: error)
     }
@@ -147,23 +139,30 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   // MARK: - Internal methods
 
   func processLoadingRequest(loadingRequest: AVAssetResourceLoadingRequest) {
-    let (didRespond, remainingRequest) = attemptToRespondFromCache(forRequest: loadingRequest)
-    if didRespond && remainingRequest == nil {
+    let (remainingRequest, dataReceived) = attemptToRespondFromCache(forRequest: loadingRequest)
+    
+    // Cache fulfilled the entire request
+    if dataReceived != nil && remainingRequest == nil {
       return
     }
 
     var request = remainingRequest ?? createUrlRequest()
-    // TODO: when network is available check if this check is necessary
-    // Remaining request already has correct range header fields
-    if loadingRequest.contentInformationRequest == nil && remainingRequest == nil {
+
+    // remainingRequest already has correct range header fields
+    if remainingRequest == nil {
       addRangeHeaderFields(loadingRequest: loadingRequest, urlRequest: &request)
     }
 
     let dataTask = session.dataTask(with: request)
 
-    // we can't do if let loadingRequest = loadingRequest.dataRequest as this would create new variable by copying
+    // we can't do `if let loadingRequest = loadingRequest.dataRequest` as this would create new variable by copying
     if loadingRequest.dataRequest != nil {
-      cachableRequests.add(CachableRequest(loadingRequest: loadingRequest, dataTask: dataTask, dataRequest: loadingRequest.dataRequest!))
+      let cachableRequest = CachableRequest(loadingRequest: loadingRequest, dataTask: dataTask, dataRequest: loadingRequest.dataRequest!)
+      // We need to add the data that was received from cache in order to keep byte offsets consistent
+      if let dataReceived {
+        cachableRequest.onReceivedData(data: dataReceived)
+      }
+      cachableRequests.add(cachableRequest)
     } else {
       log.warn("ResourceLoaderDelegate has received a loading request without a data request")
     }
@@ -174,31 +173,19 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     session.invalidateAndCancel()
   }
 
-  private func fillInContentInformationRequest(
-    _ contentInformationRequest: AVAssetResourceLoadingContentInformationRequest?) {
-    guard let response = response as? HTTPURLResponse else {
+  private func fillInContentInformationRequest(forDataRequest request: CachableRequest?) {
+    guard let response = request?.response as? HTTPURLResponse else {
       return
     }
-    contentInformationRequest?.contentLength = response.expectedContentLength
-    contentInformationRequest?.isByteRangeAccessSupported = true
+
+    request?.loadingRequest.contentInformationRequest?.contentLength = response.expectedContentLength
+    request?.loadingRequest.contentInformationRequest?.isByteRangeAccessSupported = true
 
     if let mimeType = response.mimeType {
       let rawUti = UTType(mimeType: mimeType)?.identifier
-      contentInformationRequest?.contentType = rawUti ?? response.mimeType
+      request?.loadingRequest.contentInformationRequest?.contentType = rawUti ?? response.mimeType
       cachedResource.onResponseReceived(response: response)
     }
-  }
-
-  private func verifyResponse(response: URLResponse?) -> NSError? {
-    guard let response = response as? HTTPURLResponse else {
-      return nil
-    }
-    var error: NSError?
-
-    if response.statusCode >= 400 {
-      error = NSError(domain: "Failed downloading asset. Reason: response status code \(response.statusCode).", code: response.statusCode, userInfo: nil)
-    }
-    return error
   }
 
   @objc private func handleAppWillTerminate() {
@@ -209,10 +196,10 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     invalidateAndCancelSession()
   }
 
-  /// Attempts to load the request from cache, if just the beginning of the request is available, returns a URL request to fetch the rest of the data
-  private func attemptToRespondFromCache(forRequest loadingRequest: AVAssetResourceLoadingRequest) -> (didRespond: Bool, request: URLRequest?) {
+  /// Attempts to load the request from cache, if just the beginning of the requested data  is available, returns a URL request to fetch the rest of the data
+  private func attemptToRespondFromCache(forRequest loadingRequest: AVAssetResourceLoadingRequest) -> (request: URLRequest?, dataReceived: Data?) {
     guard let dataRequest = loadingRequest.dataRequest else {
-      return (false, nil)
+      return (nil, nil)
     }
 
     let from = dataRequest.requestedOffset
@@ -225,7 +212,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       }
       loadingRequest.dataRequest?.respond(with: cachedData)
       loadingRequest.finishLoading()
-      return (true, nil)
+      return (nil, cachedData)
     }
 
     // Try to return the beginning of the data, and create a request for the rest
@@ -243,25 +230,21 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
         } else if let dataRequest = loadingRequest.dataRequest {
           let requestedOffset = dataRequest.requestedOffset
           let requestedLength = dataRequest.requestedLength
-          let from = Int(requestedOffset) + partialData.count - 1
+          let from = Int(requestedOffset) + partialData.count
           let to = from + requestedLength - partialData.count - 1
           request.setValue("bytes=\(from)-\(to)", forHTTPHeaderField: "Range")
         }
       }
-      return (true, request)
+      return (request, partialData)
     }
 
-    return (false, nil)
+    return (nil, nil)
   }
 
   // The loading resource might want only a part of the video
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range
   private func addRangeHeaderFields(loadingRequest: AVAssetResourceLoadingRequest, urlRequest: inout URLRequest) {
-    if loadingRequest.contentInformationRequest != nil {
-      urlRequest.setValue("bytes=0-1", forHTTPHeaderField: "Range")
-    }
-
-    guard let dataRequest = loadingRequest.dataRequest else {
+    guard let dataRequest = loadingRequest.dataRequest, loadingRequest.contentInformationRequest == nil else {
       return
     }
 

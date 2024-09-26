@@ -10,12 +10,7 @@ import ExpoModulesCore
  */
 class CachableRequest: Equatable {
   let loadingRequest: AVAssetResourceLoadingRequest
-  var dataRequest: AVAssetResourceLoadingDataRequest // {
-//    if (loadingRequest.dataRequest == nil) {
-//      fatalError()
-//    }
-//    return loadingRequest.dataRequest!
-//  }
+  var dataRequest: AVAssetResourceLoadingDataRequest
   let dataTask: URLSessionDataTask
 
   var isFulfilled = false

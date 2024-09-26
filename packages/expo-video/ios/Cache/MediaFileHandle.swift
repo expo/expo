@@ -40,7 +40,7 @@ extension MediaFileHandle {
     do {
       return try FileManager.default.attributesOfItem(atPath: filePath)
     } catch let error as NSError {
-      print("FileAttribute error: \(error)")
+      log.warn("An error occured while reading the file attributes at \(filePath) error: \(error)")
     }
     return nil
   }
@@ -95,7 +95,7 @@ extension MediaFileHandle {
     do {
       try FileManager.default.removeItem(atPath: filePath)
     } catch let error {
-      print("File deletion error: \(error)")
+      log.warn("Failed to delete file at \(filePath): \(error.localizedDescription)")
     }
   }
 }

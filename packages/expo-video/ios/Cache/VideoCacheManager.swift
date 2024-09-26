@@ -72,7 +72,7 @@ class VideoCacheManager {
   }
 
   func limitCacheSize(to maxSize: Int) throws {
-    let allFileURLs = try getVideoFilesUrls()
+    let allFileURLs = getVideoFilesUrls()
     let fileURLs = allFileURLs.filter { !fileIsOpen(url: $0) }
 
     var totalSize: Int64 = 0
@@ -90,7 +90,7 @@ class VideoCacheManager {
       return
     }
 
-    let sortedFiles = fileInfo.sorted { $0.accessDate < $1.accessDate }.reversed()
+    let sortedFiles = fileInfo.sorted { $0.accessDate < $1.accessDate }
 
     for file in sortedFiles {
       if totalSize <= maxSize {
@@ -98,6 +98,18 @@ class VideoCacheManager {
       }
       try removeVideoAndMimeTypeFile(at: file.url)
       totalSize -= file.size
+    }
+  }
+
+  func ensureCacheIntegrity(forSavePath videoFilePath: String) {
+    let mediaInfoPath = videoFilePath + Self.mediaInfoSuffix
+    let videoFileExists = FileManager.default.fileExists(atPath: videoFilePath)
+    let mediaInfoExists = FileManager.default.fileExists(atPath: mediaInfoPath)
+
+    // If mediaInfo exists and the corresponding data file doesn't we need to remove to avoid false data in
+    // the `loadedDataRanges` field
+    if (mediaInfoExists && !videoFileExists) {
+      try? FileManager.default.removeItem(atPath: mediaInfoPath)
     }
   }
 
@@ -125,22 +137,24 @@ class VideoCacheManager {
     }
   }
 
-  func getCacheDirectorySize() throws -> UInt64 {
+  func getCacheDirectorySize() -> Int64 {
     guard let folderUrl = getCacheDirectory() else {
       return 0
     }
     let fileManager = FileManager.default
-    var totalSize: UInt64 = 0
+    var totalSize: Int64 = 0
 
     guard let enumerator = fileManager.enumerator(at: folderUrl, includingPropertiesForKeys: [.fileSizeKey], options: .skipsHiddenFiles) else {
       return 0
     }
 
     for case let fileURL as URL in enumerator {
-        let fileAttributes = try fileURL.resourceValues(forKeys: [.fileSizeKey])
-        if let fileSize = fileAttributes.fileSize {
-          totalSize += UInt64(fileSize)
-        }
+      guard let fileAttributes = try? fileURL.resourceValues(forKeys: [.fileSizeKey]) else {
+        continue
+      }
+      if let fileSize = fileAttributes.fileSize {
+        totalSize += Int64(fileSize)
+      }
     }
 
     return totalSize
@@ -155,7 +169,7 @@ class VideoCacheManager {
     return nil
   }
 
-  private func getVideoFilesUrls() throws -> [URL] {
+  private func getVideoFilesUrls() -> [URL] {
     guard let videoCacheDir = getCacheDirectory() else {
       print("Failed to get the video cache directory.")
       return []

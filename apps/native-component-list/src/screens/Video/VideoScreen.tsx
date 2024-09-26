@@ -23,13 +23,18 @@ const bigBuckBunnySource: VideoSource = {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
   },
+  useCaching: true,
 };
 
-const elephantsDreamSource: VideoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+const elephantsDreamSource: VideoSource = {
+  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  useCaching: true,
+};
 
-const forBiggerBlazesSource: VideoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+const forBiggerBlazesSource: VideoSource = {
+  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  useCaching: true,
+};
 
 // source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {
@@ -42,6 +47,7 @@ const androidDrmSource: VideoSource = {
     },
     licenseServer: 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
   },
+  useCaching: true,
 };
 const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream', 'For Bigger Blazes'];
 const videoSources: VideoSource[] = [
@@ -111,7 +117,7 @@ export default function VideoScreen() {
 
   const seekBy = useCallback(() => {
     player.release();
-    setVideoCacheSizeAsync(20 * 1024 * 1024).then(() => {
+    setVideoCacheSizeAsync(200 * 1024 * 1024).then(() => {
       setCurrentSource(videoSources[0]);
     });
   }, [player]);

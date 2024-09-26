@@ -11,7 +11,7 @@ public class CachingPlayerItem: AVPlayerItem {
   private let initialScheme: String?
   private let saveFilePath: String?
   private var customFileExtension: String?
-  private var cachedFileUrl: URL?
+  private let useCaching: Bool
 
   internal var urlRequestHeaders: [String: String]?
 
@@ -20,25 +20,27 @@ public class CachingPlayerItem: AVPlayerItem {
   }
 
   init(url: URL, useCaching: Bool, avUrlAssetOptions: [String: Any]? = nil) {
-    let cachedMimeType = CachedResource.readMediaInfo(for: url)?.mimeType
+    self.useCaching = useCaching
+    let cachedMimeType = MediaInfo(forResourceUrl: url)?.mimeType
     let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
     let fileExtension = url.pathExtension != "" ? url.pathExtension : cachedExtension
-    let cachedVideoPath = Self.pathForUrl(url: url, fileExtension: fileExtension)
+    self.saveFilePath = Self.pathForUrl(url: url, fileExtension: fileExtension)
 
     self.url = url
-    self.saveFilePath = cachedVideoPath
     self.initialScheme = URLComponents(url: url, resolvingAgainstBaseURL: false)?.scheme
 
+    // Creates an AVUrlAsset that will delegate it's requests to ResourceLoaderDelegate
+    let urlWithCustomScheme = url.withScheme(VideoCacheManager.expoVideoCacheScheme)
+
     // Creates a regular AVURLAsset
-    guard let saveFilePath, useCaching else {
+    guard let saveFilePath, let urlWithCustomScheme, useCaching else {
+      if urlWithCustomScheme == nil && useCaching {
+        log.warn("CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
+      }
+
       self.urlAsset = AVURLAsset(url: url, options: avUrlAssetOptions)
       super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
       return
-    }
-
-    // Creates an AVUrlAsset that will delegate it's requests to ResourceLoaderDelegate
-    guard var urlWithCustomScheme = url.withScheme(VideoCacheManager.expoVideoCacheScheme) else {
-      fatalError("CachingPlayerItem error: Urls without a scheme are not supported")
     }
 
     if let headers = avUrlAssetOptions?["AVURLAssetHTTPHeaderFieldsKey"] as? [String: String] {
@@ -46,24 +48,25 @@ public class CachingPlayerItem: AVPlayerItem {
     }
 
     urlAsset = AVURLAsset(url: urlWithCustomScheme, options: avUrlAssetOptions)
-
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
 
     self.createCacheDirectoryIfNeeded()
+    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
     resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, owner: self)
     urlAsset.resourceLoader.setDelegate(resourceLoaderDelegate, queue: DispatchQueue.main)
   }
 
   deinit {
-    if let cachedFileUrl {
+    guard useCaching else {
+      return
+    }
+    if let saveFilePath, let cachedFileUrl = URL(string: saveFilePath) {
       VideoCacheManager.shared.unregisterOpenFile(at: cachedFileUrl)
     }
-    guard initialScheme != nil else { return }
-
+    VideoCacheManager.shared.ensureCacheSize()
     resourceLoaderDelegate?.invalidateAndCancelSession()
   }
 
-  // MARK: Public methods
 
   static func pathForUrl(url: URL, fileExtension: String) -> String? {
     let hashedData = SHA256.hash(data: Data(url.absoluteString.utf8))

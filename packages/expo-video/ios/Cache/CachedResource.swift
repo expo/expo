@@ -9,12 +9,13 @@ class CachedResource {
   private let url: URL
   private let dataPath: String
   private let fileHandle: MediaFileHandle
-  private(set) lazy var mediaInfo: MediaInfo? = readMediaInfo()
+  private(set) var mediaInfo: MediaInfo?
 
   init(dataFileUrl: String, resourceUrl: URL, dataPath: String) {
-    url = resourceUrl
-    fileHandle = MediaFileHandle(filePath: dataFileUrl)
     self.dataPath = dataPath
+    self.url = resourceUrl
+    self.fileHandle = MediaFileHandle(filePath: dataFileUrl)
+    self.mediaInfo = MediaInfo(forResourceUrl: resourceUrl)
   }
 
   func onResponseReceived(response: HTTPURLResponse) {
@@ -26,14 +27,14 @@ class CachedResource {
       expectedContentLength: response.expectedContentLength,
       mimeType: response.mimeType,
       supportsByteRangeAccess: urlResponseSupportsByteRangeAcces(response),
-      headerFields: headers
+      headerFields: headers, 
+      savePath: dataPath + VideoCacheManager.mediaInfoSuffix
     )
+    mediaInfo?.saveToFile()
   }
 
   func fill(forLoadingRequest request: AVAssetResourceLoadingRequest) {
-    guard let mediaInfo, 
-          let mimeType = mediaInfo.mimeType,
-          let dataRequest = request.dataRequest else {
+    guard let mediaInfo, let mimeType = mediaInfo.mimeType else {
       return
     }
     let fakeResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: mediaInfo.headerFields)
@@ -55,8 +56,9 @@ class CachedResource {
       } else {
         log.warn("Received data to write, but didn't receive a `onContentInformationReceived` call")
       }
+
       try fileHandle.write(data: data, atOffset: Int(offset))
-      saveMediaInfo()
+      mediaInfo?.saveToFile()
     } catch {
       log.warn("Failed to write at offset with the file handle")
     }
@@ -124,32 +126,6 @@ class CachedResource {
     return merged
   }
 
-  func maybeLoadMediaInfo() {
-    if mediaInfo == nil {
-      mediaInfo = readMediaInfo()
-    }
-  }
-
-  // Saves the mime type of a video fetched from the server into a file. This allows playing videos without an extension in the
-  // url.
-  private func saveMediaInfo() {
-    let mediaInfoPath = dataPath + VideoCacheManager.mediaInfoSuffix
-
-    do {
-      if (FileManager.default.fileExists(atPath: mediaInfoPath)) {
-        try FileManager.default.removeItem(atPath: mediaInfoPath)
-      }
-
-      FileManager.default.createFile(atPath: mediaInfoPath, contents: mediaInfo?.encodeToData())
-    } catch {
-      log.warn("Failed to save media info at: \(mediaInfoPath)")
-    }
-  }
-  
-  private func readMediaInfo() -> MediaInfo? {
-    return Self.readMediaInfo(for: self.url)
-  }
-
   private func urlResponseSupportsByteRangeAcces(_ urlResponse: HTTPURLResponse) -> Bool {
     // The first option is the standard-correct one, but we can check for some more in case someone
     // didn't follow the documention fully when implementing the server
@@ -158,13 +134,4 @@ class CachedResource {
            urlResponse.allHeaderFields["accept-ranges"] as? String == "bytes" ||
            urlResponse.allHeaderFields["accept-ranges"] as? String == "Bytes"
   }
-
-  static func readMediaInfo(for url: URL) -> MediaInfo? {
-    guard let filePath = CachingPlayerItem.pathForUrl(url: url, fileExtension: url.pathExtension) else {
-      return nil
-    }
-    let mediaInfoPath = filePath + VideoCacheManager.mediaInfoSuffix
-    return MediaInfo(at: mediaInfoPath)
-  }
 }
-
