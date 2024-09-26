@@ -2,15 +2,8 @@
 
 #import <objc/runtime.h>
 
-#import <React/RCTLog.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTComponentData.h>
-#import <React/RCTModuleData.h>
-#import <React/RCTEventDispatcherProtocol.h>
-
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <React/RCTComponentViewFactory.h>
-#endif
+#import <React/React-Core-umbrella.h>
+#import <RCTFabric/React-RCTFabric-umbrella.h>
 
 #import <jsi/jsi.h>
 

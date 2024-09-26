@@ -3,10 +3,11 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 
 #import <UIKit/UIKit.h>
-#import <React/RCTView.h>
+#import <React/React-Core-umbrella.h>
 
 #ifdef __cplusplus
-#import <React/RCTViewComponentView.h>
+
+#import <RCTFabric/React-RCTFabric-umbrella.h>
 
 @interface ExpoFabricViewObjC : RCTViewComponentView
 @end
