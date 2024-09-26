@@ -10,7 +10,7 @@ import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
 
-const UPDATE_FREQUENCY = 20 * 1000; // 20 seconds
+const UPDATE_FREQUENCY = 60 * 1000; // 20 seconds
 
 async function isAuthenticatedAsync(): Promise<boolean> {
   return !!(await getUserAsync().catch(() => null));
