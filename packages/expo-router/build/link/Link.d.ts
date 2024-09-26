@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import * as React from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href } from '../types';
 export interface WebAnchorProps {
@@ -70,7 +70,7 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
     relativeToDirectory?: boolean;
 }
 export interface LinkComponent {
-    <T extends string | object>(props: PropsWithChildren<LinkProps<T>>): JSX.Element;
+    <T extends string | object>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */
     resolveHref: (href: Href) => string;
 }
