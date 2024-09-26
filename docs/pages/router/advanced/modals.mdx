@@ -183,15 +183,16 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Traditional web modals
+## Web modals implementation
 
 Below is an example of a common web modal:
 
 <ContentSpotlight file="expo-router/web-modal.mp4" />
 
-You can achieve this behavior by using the [`transparentModal`](https://reactnavigation.org/docs/stack-navigator/#presentation) presentation mode, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
+You can achieve the above web modal behavior by using the [`transparentModal`](https://reactnavigation.org/docs/stack-navigator/#presentation) presentation mode, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
 
-### Implementation
+Modify your project's root layout (**app/_layout.tsx**) to add an `options` object to the modal route:
+
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -210,7 +211,7 @@ export default function Layout() {
           /* @info Set the <CODE>presentation</CODE> mode to <CODE>transparentModal</CODE> for the modal route.*/
           presentation: 'transparentModal',
           /* @end */
-          /* @info Set the <CODE>animation</CODE> to <CODE>fade</CODE> this is optional.*/
+          /* @info (Optional) Set the <CODE>animation</CODE> to <CODE>fade</CODE>.*/
           animation: 'fade',
           /* @end */
           /* @info Prevents showing the header. Useful for the behavior of web modals.*/
@@ -223,9 +224,9 @@ export default function Layout() {
 }
 ```
 
-The above example sets the `index` screen as the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) using `unstable_settings`, ensuring the transparent modal is always rendered on top of the current screen, even when users navigate to the modal screen via a direct link.
+The above example sets the `index` screen as the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) using `unstable_settings`. This ensures that the transparent modal is always rendered on top of the current screen, even when users navigate to the modal screen via a direct link.
 
-Finally, style the overlay and modal content.
+Style the overlay and modal content in **modal.tsx** as shown below:
 
 {/* prettier-ignore */}
 ```tsx app/modal.tsx|collapseHeight=250
