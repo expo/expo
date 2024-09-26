@@ -8,7 +8,8 @@ import {
 } from './LaunchBrowser.types';
 import LaunchBrowserImplLinux from './LaunchBrowserImplLinux';
 import LaunchBrowserImplMacOS from './LaunchBrowserImplMacOS';
-import LaunchBrowserImplWindows from './LaunchBrowserImplWindows';
+import LaunchBrowserImplWindows from './LaunchBrowserImplWindowsPowershell';
+import LaunchBrowserImplWSL from './LaunchBrowserImplWindowsWSL';
 
 export type { LaunchBrowserInstance };
 
@@ -21,7 +22,9 @@ export function createLaunchBrowser(): LaunchBrowser {
   let launchBrowser: LaunchBrowser;
   if (os.platform() === 'darwin') {
     launchBrowser = new LaunchBrowserImplMacOS();
-  } else if (os.platform() === 'win32' || IS_WSL) {
+  } else if (IS_WSL) {
+    launchBrowser = new LaunchBrowserImplWSL();
+  } else if (os.platform() === 'win32') {
     launchBrowser = new LaunchBrowserImplWindows();
   } else if (os.platform() === 'linux') {
     launchBrowser = new LaunchBrowserImplLinux();
