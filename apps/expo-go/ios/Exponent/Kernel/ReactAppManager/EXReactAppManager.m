@@ -127,11 +127,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                    logFunction:[self logFunction]
                                                   logThreshold:[self logLevel]];
     
-    EXExpoGoAppDelegate* appDelegate = [EXExpoGoAppDelegate new];
-    appDelegate.sourceURL = [self bundleUrl];
-    appDelegate.manager = _versionManager;
-    appDelegate.rootViewFactory.reactHost = [appDelegate.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
-    appDelegate.rootViewFactory = [appDelegate createRCTRootViewFactory];
+    EXExpoGoAppDelegate* appDelegate = [self _setupAppDelegateWithManager:_versionManager];
     
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
@@ -139,7 +135,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       _reactRootView = [appDelegate.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
-    _reactAppDelegate = appDelegate;
     [self _startObservingBridgeNotificationsForBridge:self.reactBridge];
     
     [self setupWebSocketControls];
@@ -147,6 +142,17 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _isHostRunning = YES;
     [_versionManager bridgeWillStartLoading:appDelegate];
   }
+}
+
+- (EXExpoGoAppDelegate *)_setupAppDelegateWithManager:(EXVersionManager *)versionManager {
+  EXExpoGoAppDelegate *appDelegate = [[EXExpoGoAppDelegate alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager];
+  
+  appDelegate.rootViewFactory.reactHost = [appDelegate.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
+  appDelegate.rootViewFactory = [appDelegate createRCTRootViewFactory];
+  
+  _reactAppDelegate = appDelegate;
+  
+  return appDelegate;
 }
 
 - (NSDictionary *)extraParams
@@ -306,7 +312,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:RCTInstanceDidLoadBundle
-                                             object:self.reactBridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptStartLoadingEvent:)
                                                name:RCTJavaScriptWillStartLoadingNotification
