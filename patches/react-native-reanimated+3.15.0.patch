@@ -34,7 +34,7 @@ index 4a7df1b..26a462b 100644
  };
  
 diff --git a/node_modules/react-native-reanimated/android/build.gradle b/node_modules/react-native-reanimated/android/build.gradle
-index 4558653..6fb4775 100644
+index 4558653..797a228 100644
 --- a/node_modules/react-native-reanimated/android/build.gradle
 +++ b/node_modules/react-native-reanimated/android/build.gradle
 @@ -319,6 +319,7 @@ android {
@@ -138,10 +138,40 @@ index ab0e79b..ee161c1 100644
        return;
      }
 diff --git a/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt b/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt
-index a962a50..f8eb6c7 100644
+index a962a50..1af5619 100644
 --- a/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt
 +++ b/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt
-@@ -77,50 +77,62 @@ set_target_properties(
+@@ -59,14 +59,21 @@ if(${IS_NEW_ARCHITECTURE_ENABLED})
+         "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
+     )
+ 
+-    target_link_libraries(
+-        worklets
+-        ReactAndroid::fabricjni
+-        ReactAndroid::react_debug
+-        ReactAndroid::react_render_core
+-        ReactAndroid::react_render_componentregistry
+-        ReactAndroid::rrc_view
+-    )
++    if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 76)
++        target_link_libraries(
++            worklets
++            ReactAndroid::reactnative
++        )
++    else()
++        target_link_libraries(
++            worklets
++            ReactAndroid::fabricjni
++            ReactAndroid::react_debug
++            ReactAndroid::react_render_core
++            ReactAndroid::react_render_componentregistry
++            ReactAndroid::rrc_view
++        )
++    endif()
+ endif()
+ 
+ # build shared lib
+@@ -77,50 +84,62 @@ set_target_properties(
      CXX
  )
  
@@ -157,16 +187,16 @@ index a962a50..f8eb6c7 100644
  
 -if(${JS_RUNTIME} STREQUAL "hermes")
 +if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 76)
-     target_link_libraries(
-         worklets
--        hermes-engine::libhermes
++    target_link_libraries(
++        worklets
 +        log
 +        ReactAndroid::reactnative
 +        fbjni::fbjni
-     )
++    )
 +else()
-+    target_link_libraries(
-+        worklets
+     target_link_libraries(
+         worklets
+-        hermes-engine::libhermes
 +        log
 +        ReactAndroid::folly_runtime
 +        ReactAndroid::glog
@@ -175,14 +205,14 @@ index a962a50..f8eb6c7 100644
 +    )
 +endif()
 +target_link_libraries(worklets ReactAndroid::jsi)
- 
++
 +if(${JS_RUNTIME} STREQUAL "hermes")
 +target_link_libraries(
 +    worklets
 +    hermes-engine::libhermes
-+    )
+     )
 +endif()
-+
+ 
 +if(${REACT_NATIVE_MINOR_VERSION} VERSION_LESS 76)
      if(${HERMES_ENABLE_DEBUGGER})
          target_link_libraries(
