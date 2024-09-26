@@ -58,7 +58,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-haptics': ['Haptics.ts'],
-  'expo-image': [['Image.tsx', 'Image.types.ts']],
+  'expo-image': ['index.ts'],
   'expo-image-manipulator': [['index.ts', 'ImageManipulator.types.ts']],
   'expo-image-picker': ['ImagePicker.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
