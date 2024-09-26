@@ -20,15 +20,15 @@ export const ModulesCoreScreens = [
   },
 ];
 
-if (!isRunningInExpoGo()) {
-  ModulesCoreScreens.push({
-    name: 'Benchmarks',
-    route: 'modulescore/benchmarks',
-    getComponent() {
-      return optionalRequire(() => require('./ModulesBenchmarksScreen'));
-    },
-  });
-}
+// if (!isRunningInExpoGo()) {
+//   ModulesCoreScreens.push({
+//     name: 'Benchmarks',
+//     route: 'modulescore/benchmarks',
+//     getComponent() {
+//       return optionalRequire(() => require('./ModulesBenchmarksScreen'));
+//     },
+//   });
+// }
 
 export default function ModulesCoreScreen() {
   const apis: ListElement[] = ModulesCoreScreens.map((screen) => {
