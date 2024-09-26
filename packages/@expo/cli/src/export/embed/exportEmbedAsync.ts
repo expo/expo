@@ -321,11 +321,6 @@ async function runServerDeployCommandAsync(
       cwd: projectRoot,
       // Ensures that errors can be caught.
       stdio: 'pipe',
-      env: {
-        // TODO: NO MERGE
-        EXPO_STAGING: '1',
-        ...process.env,
-      },
     };
     // TODO: Support absolute paths in EAS CLI
     const exportDir = path.relative(projectRoot, distDirectory);
