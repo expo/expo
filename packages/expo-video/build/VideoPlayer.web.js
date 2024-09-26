@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
+import resolveAssetSource from './resolveAssetSource';
 export function useVideoPlayer(source, setup) {
     const parsedSource = typeof source === 'string' ? { uri: source } : source;
     return useMemo(() => {

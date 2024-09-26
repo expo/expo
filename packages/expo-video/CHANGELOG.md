@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix invalid `resolveAssetSource` for web. ([#31664](https://github.com/expo/expo/pull/31664) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 1.2.6 — 2024-09-13
