@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Add clearLastNotificationResponseAsync to API. ([#31607](https://github.com/expo/expo/pull/31607) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - [Android] image was missing on android when in foreground ([#31405](https://github.com/expo/expo/pull/31405) by [@vonovak](https://github.com/vonovak))
