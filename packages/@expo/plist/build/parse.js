@@ -1,5 +1,4 @@
 "use strict";
-/* eslint-disable */
 /* (The MIT License)
 
 Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net>
@@ -48,7 +47,7 @@ function shouldIgnoreNode(node) {
 /**
  * Check if the node is empty. Some plist file has such node:
  * <key />
- * this node shoud be ignored.
+ * this node should be ignored.
  *
  * @see https://github.com/TooTallNate/plist.js/issues/66
  * @param {Element} node
@@ -66,13 +65,13 @@ function isEmptyNode(node) {
  * @api public
  */
 function parse(xml) {
-    // prevent the parser from logging non-fatel errors
+    // prevent the parser from logging non-fatal errors
     const doc = new xmldom_1.DOMParser({ errorHandler() { } }).parseFromString(xml);
     (0, assert_1.default)(doc.documentElement.nodeName === 'plist', 'malformed document. First element should be <plist>');
     let plist = parsePlistXML(doc.documentElement);
     // the root <plist> node gets interpreted as an Array,
     // so pull out the inner data first
-    if (plist.length == 1)
+    if (plist.length === 1)
         plist = plist[0];
     return plist;
 }

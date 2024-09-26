@@ -1,5 +1,4 @@
 "use strict";
-/* eslint-disable */
 /* (The MIT License)
 
 Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net>
@@ -106,7 +105,7 @@ exports.build = build;
 function walk_obj(next, next_child) {
     let tag_type, i, prop;
     const name = type(next);
-    if (name == 'Undefined') {
+    if (name === 'Undefined') {
     }
     else if (Array.isArray(next)) {
         next_child = next_child.ele('array');
@@ -117,7 +116,7 @@ function walk_obj(next, next_child) {
     else if (Buffer.isBuffer(next)) {
         next_child.ele('data').raw(next.toString('base64'));
     }
-    else if (name == 'Object') {
+    else if (name === 'Object') {
         next_child = next_child.ele('dict');
         for (prop in next) {
             if (next.hasOwnProperty(prop) && next[prop] !== undefined) {
@@ -126,25 +125,25 @@ function walk_obj(next, next_child) {
             }
         }
     }
-    else if (name == 'Number') {
+    else if (name === 'Number') {
         // detect if this is an integer or real
         // TODO: add an ability to force one way or another via a "cast"
         tag_type = next % 1 === 0 ? 'integer' : 'real';
         next_child.ele(tag_type).txt(next.toString());
     }
-    else if (name == 'Date') {
+    else if (name === 'Date') {
         next_child.ele('date').txt(ISODateString(new Date(next)));
     }
-    else if (name == 'Boolean') {
+    else if (name === 'Boolean') {
         next_child.ele(next ? 'true' : 'false');
     }
-    else if (name == 'String') {
+    else if (name === 'String') {
         next_child.ele('string').txt(next);
     }
-    else if (name == 'ArrayBuffer') {
+    else if (name === 'ArrayBuffer') {
         next_child.ele('data').raw(base64_js_1.default.fromByteArray(next));
     }
-    else if (next && next.buffer && type(next.buffer) == 'ArrayBuffer') {
+    else if (next && next.buffer && type(next.buffer) === 'ArrayBuffer') {
         // a typed array
         next_child.ele('data').raw(base64_js_1.default.fromByteArray(new Uint8Array(next.buffer)));
     }

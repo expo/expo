@@ -1,13 +1,14 @@
 import { getTelemetry } from '..';
 
+jest.mock('../../../api/user/user');
+
 beforeEach(() => setEnv('EXPO_NO_TELEMETRY', undefined));
 afterEach(() => resetEnv());
 
-it('returns detached client by default', () => {
+it('returns telemetry with detached strategy by default', () => {
   jest.isolateModules(() => {
     const { getTelemetry } = require('../') as typeof import('../');
-    const { DetachedClient } = require('../DetachedClient') as typeof import('../DetachedClient');
-    expect(getTelemetry()).toBeInstanceOf(DetachedClient);
+    expect(getTelemetry()?.strategy).toBe('detached');
   });
 });
 
@@ -15,8 +16,7 @@ it('returns non-detached client when `env.EXPO_NO_TELEMETRY_DETACH` is true', ()
   setEnv('EXPO_NO_TELEMETRY_DETACH', 'true');
   jest.isolateModules(() => {
     const { getTelemetry } = require('../') as typeof import('../');
-    const { RudderClient } = require('../RudderClient') as typeof import('../RudderClient');
-    expect(getTelemetry()).toBeInstanceOf(RudderClient);
+    expect(getTelemetry()?.strategy).toBe('debug');
   });
 });
 

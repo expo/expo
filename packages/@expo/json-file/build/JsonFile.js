@@ -27,13 +27,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const code_frame_1 = require("@babel/code-frame");
-const fs_1 = __importDefault(require("fs"));
 const json5_1 = __importDefault(require("json5"));
-const path_1 = __importDefault(require("path"));
-const util_1 = require("util");
+const node_fs_1 = __importDefault(require("node:fs"));
+const node_path_1 = __importDefault(require("node:path"));
+const node_util_1 = require("node:util");
 const write_file_atomic_1 = __importDefault(require("write-file-atomic"));
 const JsonFileError_1 = __importStar(require("./JsonFileError"));
-const writeFileAtomicAsync = (0, util_1.promisify)(write_file_atomic_1.default);
+const writeFileAtomicAsync = (0, node_util_1.promisify)(write_file_atomic_1.default);
 const DEFAULT_OPTIONS = {
     badJsonDefault: undefined,
     jsonParseErrorDefault: undefined,
@@ -57,12 +57,19 @@ class JsonFile {
     static read = read;
     static readAsync = readAsync;
     static parseJsonString = parseJsonString;
+    static write = write;
     static writeAsync = writeAsync;
+    static get = getSync;
     static getAsync = getAsync;
+    static set = setSync;
     static setAsync = setAsync;
+    static merge = merge;
     static mergeAsync = mergeAsync;
+    static deleteKey = deleteKey;
     static deleteKeyAsync = deleteKeyAsync;
+    static deleteKeys = deleteKeys;
     static deleteKeysAsync = deleteKeysAsync;
+    static rewrite = rewrite;
     static rewriteAsync = rewriteAsync;
     constructor(file, options = {}) {
         this.file = file;
@@ -74,26 +81,47 @@ class JsonFile {
     async readAsync(options) {
         return readAsync(this.file, this._getOptions(options));
     }
+    write(object, options) {
+        return write(this.file, object, this._getOptions(options));
+    }
     async writeAsync(object, options) {
         return writeAsync(this.file, object, this._getOptions(options));
     }
     parseJsonString(json, options) {
         return parseJsonString(json, options);
     }
+    get(key, defaultValue, options) {
+        return getSync(this.file, key, defaultValue, this._getOptions(options));
+    }
     async getAsync(key, defaultValue, options) {
         return getAsync(this.file, key, defaultValue, this._getOptions(options));
+    }
+    set(key, value, options) {
+        return setSync(this.file, key, value, this._getOptions(options));
     }
     async setAsync(key, value, options) {
         return setAsync(this.file, key, value, this._getOptions(options));
     }
+    async merge(sources, options) {
+        return merge(this.file, sources, this._getOptions(options));
+    }
     async mergeAsync(sources, options) {
         return mergeAsync(this.file, sources, this._getOptions(options));
+    }
+    deleteKey(key, options) {
+        return deleteKey(this.file, key, this._getOptions(options));
     }
     async deleteKeyAsync(key, options) {
         return deleteKeyAsync(this.file, key, this._getOptions(options));
     }
+    deleteKeys(keys, options) {
+        return deleteKeys(this.file, keys, this._getOptions(options));
+    }
     async deleteKeysAsync(keys, options) {
         return deleteKeysAsync(this.file, keys, this._getOptions(options));
+    }
+    rewrite(options) {
+        return rewrite(this.file, this._getOptions(options));
     }
     async rewriteAsync(options) {
         return rewriteAsync(this.file, this._getOptions(options));
@@ -109,7 +137,7 @@ exports.default = JsonFile;
 function read(file, options) {
     let json;
     try {
-        json = fs_1.default.readFileSync(file, 'utf8');
+        json = node_fs_1.default.readFileSync(file, 'utf8');
     }
     catch (error) {
         assertEmptyJsonString(json, file);
@@ -126,7 +154,7 @@ function read(file, options) {
 async function readAsync(file, options) {
     let json;
     try {
-        json = await fs_1.default.promises.readFile(file, 'utf8');
+        json = await node_fs_1.default.promises.readFile(file, 'utf8');
     }
     catch (error) {
         assertEmptyJsonString(json, file);
@@ -166,6 +194,16 @@ function parseJsonString(json, options, fileName) {
         }
     }
 }
+function getSync(file, key, defaultValue, options) {
+    const object = read(file, options);
+    if (key in object) {
+        return object[key];
+    }
+    if (defaultValue === undefined) {
+        throw new JsonFileError_1.default(`No value at key path "${String(key)}" in JSON object from: ${file}`);
+    }
+    return defaultValue;
+}
 async function getAsync(file, key, defaultValue, options) {
     const object = await readAsync(file, options);
     if (key in object) {
@@ -176,9 +214,32 @@ async function getAsync(file, key, defaultValue, options) {
     }
     return defaultValue;
 }
+function write(file, object, options) {
+    if (options?.ensureDir) {
+        node_fs_1.default.mkdirSync(node_path_1.default.dirname(file), { recursive: true });
+    }
+    const space = _getOption(options, 'space');
+    const json5 = _getOption(options, 'json5');
+    const addNewLineAtEOF = _getOption(options, 'addNewLineAtEOF');
+    let json;
+    try {
+        if (json5) {
+            json = json5_1.default.stringify(object, null, space);
+        }
+        else {
+            json = JSON.stringify(object, null, space);
+        }
+    }
+    catch (e) {
+        throw new JsonFileError_1.default(`Couldn't JSON.stringify object for file: ${file}`, e);
+    }
+    const data = addNewLineAtEOF ? `${json}\n` : json;
+    write_file_atomic_1.default.sync(file, data, {});
+    return object;
+}
 async function writeAsync(file, object, options) {
     if (options?.ensureDir) {
-        await fs_1.default.promises.mkdir(path_1.default.dirname(file), { recursive: true });
+        await node_fs_1.default.promises.mkdir(node_path_1.default.dirname(file), { recursive: true });
     }
     const space = _getOption(options, 'space');
     const json5 = _getOption(options, 'json5');
@@ -199,6 +260,12 @@ async function writeAsync(file, object, options) {
     await writeFileAtomicAsync(file, data, {});
     return object;
 }
+function setSync(file, key, value, options) {
+    // TODO: Consider implementing some kind of locking mechanism, but
+    // it's not critical for our use case, so we'll leave it out for now
+    const object = read(file, options);
+    return write(file, { ...object, [key]: value }, options);
+}
 async function setAsync(file, key, value, options) {
     // TODO: Consider implementing some kind of locking mechanism, but
     // it's not critical for our use case, so we'll leave it out for now
@@ -215,8 +282,21 @@ async function mergeAsync(file, sources, options) {
     }
     return writeAsync(file, object, options);
 }
+function merge(file, sources, options) {
+    const object = read(file, options);
+    if (Array.isArray(sources)) {
+        Object.assign(object, ...sources);
+    }
+    else {
+        Object.assign(object, sources);
+    }
+    return write(file, object, options);
+}
 async function deleteKeyAsync(file, key, options) {
     return deleteKeysAsync(file, [key], options);
+}
+function deleteKey(file, key, options) {
+    return deleteKeys(file, [key], options);
 }
 async function deleteKeysAsync(file, keys, options) {
     const object = await readAsync(file, options);
@@ -233,9 +313,27 @@ async function deleteKeysAsync(file, keys, options) {
     }
     return object;
 }
+function deleteKeys(file, keys, options) {
+    const object = read(file, options);
+    let didDelete = false;
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if (object.hasOwnProperty(key)) {
+            delete object[key];
+            didDelete = true;
+        }
+    }
+    if (didDelete) {
+        return write(file, object, options);
+    }
+    return object;
+}
 async function rewriteAsync(file, options) {
     const object = await readAsync(file, options);
     return writeAsync(file, object, options);
+}
+function rewrite(file, options) {
+    return write(file, read(file, options), options);
 }
 function jsonParseErrorDefault(options = {}) {
     if (options.jsonParseErrorDefault === undefined) {

@@ -296,7 +296,7 @@ async function generateMultiLayerImageAsync(
       src: icon,
       scale,
       // backgroundImage overrides backgroundColor
-      backgroundColor: backgroundImage ? 'transparent' : backgroundColor ?? 'transparent',
+      backgroundColor: backgroundImage ? 'transparent' : (backgroundColor ?? 'transparent'),
       borderRadiusRatio,
     });
 

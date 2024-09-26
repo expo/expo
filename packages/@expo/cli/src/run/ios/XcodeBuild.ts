@@ -85,11 +85,13 @@ export function getProcessOptions({
   shouldSkipInitialBundling,
   terminal,
   port,
+  eagerBundleOptions,
 }: {
   packager: boolean;
   shouldSkipInitialBundling?: boolean;
   terminal: string | undefined;
   port: number;
+  eagerBundleOptions?: string;
 }): SpawnOptionsWithoutStdio {
   const SKIP_BUNDLING = shouldSkipInitialBundling ? '1' : undefined;
   if (packager) {
@@ -99,6 +101,7 @@ export function getProcessOptions({
         RCT_TERMINAL: terminal,
         SKIP_BUNDLING,
         RCT_METRO_PORT: port.toString(),
+        __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
       },
     };
   }
@@ -108,6 +111,7 @@ export function getProcessOptions({
       ...process.env,
       RCT_TERMINAL: terminal,
       SKIP_BUNDLING,
+      __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
       // Always skip launching the packager from a build script.
       // The script is used for people building their project directly from Xcode.
       // This essentially means "› Running script 'Start Packager'" does nothing.
@@ -270,7 +274,7 @@ async function spawnXcodeBuildWithFormat(
 export async function buildAsync(props: BuildProps): Promise<string> {
   const args = await getXcodeBuildArgsAsync(props);
 
-  const { projectRoot, xcodeProject, shouldSkipInitialBundling, port } = props;
+  const { projectRoot, xcodeProject, shouldSkipInitialBundling, port, eagerBundleOptions } = props;
 
   const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
     args,
@@ -279,6 +283,7 @@ export async function buildAsync(props: BuildProps): Promise<string> {
       terminal: getUserTerminal(),
       shouldSkipInitialBundling,
       port,
+      eagerBundleOptions,
     }),
     {
       projectRoot,

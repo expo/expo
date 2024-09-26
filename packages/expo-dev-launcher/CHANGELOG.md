@@ -28,6 +28,14 @@
 
 ### 📚 3rd party library updates
 
+## 4.0.27 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.26 - 2024-08-21
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.23 - 2024-07-29
 
 ### 🐛 Bug fixes

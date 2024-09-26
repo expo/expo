@@ -14,13 +14,22 @@
 
 - [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
 - [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
-- [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix a crash on android when calling `setSystemGestureExclusionRects` on apis below 29. ([#31114](https://github.com/expo/expo/pull/31114) by [@alanjhughes](https://github.com/alanjhughes))
 - Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
 ### 📚 3rd party library updates
+
+## 5.0.21 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.20 - 2024-08-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix a crash on android when calling `setSystemGestureExclusionRects` on apis below 29. ([#31114](https://github.com/expo/expo/pull/31114) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 5.0.17 - 2024-07-29
 

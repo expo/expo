@@ -181,6 +181,7 @@ export type PropData = {
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   overwrites?: TypeDefinitionData;
   implementationOf?: TypeDefinitionData;
   inheritedFrom?: InheritedFromData;

@@ -69,7 +69,17 @@ export declare function addNotificationResponseReceivedListener(listener: (event
  */
 export declare function removeNotificationSubscription(subscription: EventSubscription): void;
 /**
- * @header listen
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export declare function getLastNotificationResponseAsync(): Promise<NotificationResponse | null>;
+export declare function clearLastNotificationResponseAsync(): Promise<void>;
+/**
+ * @hidden
+ */
+export declare function addNotificationResponseClearedListener(listener: () => void): EventSubscription;
 //# sourceMappingURL=NotificationsEmitter.d.ts.map
