@@ -20,7 +20,7 @@ public final class ClassDefinition: ObjectDefinition {
   let associatedType: AnyDynamicType?
 
   /**
-    Whetere the associatedType inherits from `SharedRef`.
+   Whether the associatedType inherits from `SharedRef`.
    */
   let isSharedRef: Bool
 
@@ -32,7 +32,7 @@ public final class ClassDefinition: ObjectDefinition {
     self.name = name
     self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
     self.associatedType = ~AssociatedObject.self
-    self.isSharedRef = AssociatedObject.self is SharedRerAssociatedObject.Type
+    self.isSharedRef = AssociatedObject.self is SharedRefAssociatedObject.Type
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
@@ -110,10 +110,10 @@ extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptVal
 extension SharedObject: ClassAssociatedObject {}
 
 /**
- A protocol that allows us to detect `SharedRef's`.
+ A protocol that allows us to detect `SharedRef`'s.
  */
-internal protocol SharedRerAssociatedObject {}
-extension SharedRef : SharedRerAssociatedObject {}
+internal protocol SharedRefAssociatedObject {}
+extension SharedRef : SharedRefAssociatedObject {}
 
 // MARK: - Privates
 
