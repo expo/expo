@@ -3,6 +3,7 @@ import React from 'react';
 
 import { HapticTab } from '@/components/HapticTab';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import BlurTabBarBackground from '@/components/ui/BlurTabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -15,6 +16,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarBackground: BlurTabBarBackground,
       }}>
       <Tabs.Screen
         name="index"
