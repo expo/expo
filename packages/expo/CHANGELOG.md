@@ -45,6 +45,7 @@
 - Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
 - Added public assets support for DOM components. ([#30975](https://github.com/expo/expo/pull/30975) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

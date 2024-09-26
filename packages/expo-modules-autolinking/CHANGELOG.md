@@ -22,6 +22,8 @@
 
 ### 💡 Others
 
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+
 ## 1.11.2 - 2024-08-14
 
 ### 🎉 New features
